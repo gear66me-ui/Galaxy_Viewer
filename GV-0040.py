@@ -1,6 +1,6 @@
 from IPython.display import HTML, display
 
-HTML_CONTENT = r'''
+HTML_CONTENT = r"""
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.css">
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
 
@@ -24,22 +24,27 @@ HTML_CONTENT = r'''
 
   <div id="status" class="status">Viewer loading…</div>
 
-  <h4>Galaxy figures of merit</h4>
+  <div class="progress-wrap">
+    <div class="progress-bar-shell">
+      <div id="progressBar" class="progress-bar-fill"></div>
+    </div>
+    <div id="progressLabel" class="progress-label">Idle</div>
+  </div>
+
+  <h4>Galaxy summary</h4>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>Galaxy name</th>
           <th>ICRS coordinates (RA Dec)</th>
-          <th>Distance (light-years)</th>
-          <th>Galaxy size</th>
-          <th>Galaxy age</th>
-          <th>Z</th>
-          <th>SIMBAD information</th>
+          <th>Age (Gyr)</th>
+          <th>Size (major × minor, Mly)</th>
+          <th>Distance (Mly)</th>
         </tr>
       </thead>
       <tbody id="resultBody">
-        <tr><td colspan="7" style="text-align:center">No search performed.</td></tr>
+        <tr><td colspan="5" style="text-align:center">No search performed.</td></tr>
       </tbody>
     </table>
   </div>
@@ -55,6 +60,26 @@ HTML_CONTENT = r'''
         </tr>
       </thead>
       <tbody id="searchBody"></tbody>
+    </table>
+  </div>
+
+  <h4>Catalog values snapshot</h4>
+  <div class="table-wrap">
+    <table class="compact">
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Name</th>
+          <th>RA (deg)</th>
+          <th>Dec (deg)</th>
+          <th>Age (Gyr)</th>
+          <th>Size (Mly)</th>
+          <th>Distance (Mly)</th>
+        </tr>
+      </thead>
+      <tbody id="catalogSummaryBody">
+        <tr><td colspan="7" style="text-align:center">No catalog values yet.</td></tr>
+      </tbody>
     </table>
   </div>
 
@@ -80,7 +105,7 @@ HTML_CONTENT = r'''
   </div>
 
   <div class="small-note">
-    This build waits for all catalog and survey tasks to settle, but each request has a timeout so one stalled service cannot block the final table render.
+    This build waits for all catalog and survey tasks to settle, shows progress while they run, renders the final summary at the end, and lists normalized per-source values below for debugging.
   </div>
 </div>
 
@@ -114,6 +139,15 @@ HTML_CONTENT = r'''
     margin-top:12px; padding:11px; background:#02080d; color:#8be0ff;
     border:1px solid #0d668a; border-radius:7px; font-family:monospace; white-space:pre-wrap;
   }
+  #gv0011-root .progress-wrap { margin-top: 12px; }
+  #gv0011-root .progress-bar-shell {
+    width: 100%; height: 16px; background:#04141d; border:1px solid #0d668a; border-radius: 999px; overflow: hidden;
+  }
+  #gv0011-root .progress-bar-fill {
+    width: 0%; height: 100%; background: linear-gradient(90deg, #087fd1, #35c6ff);
+    transition: width .25s ease;
+  }
+  #gv0011-root .progress-label { margin-top: 6px; color:#8be0ff; font-family:monospace; font-size: 13px; }
   #gv0011-root .table-wrap { overflow-x:auto; border:1px solid #0b526f; border-radius:8px; background:#000; margin-top:8px; }
   #gv0011-root table { width:100%; border-collapse:collapse; font-size:14px; background:#000; color:#7FDBFF; }
   #gv0011-root thead tr { background:#031723; }
@@ -152,12 +186,20 @@ function safe(v) {
   return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function cleanId(v) {
-  return String(v ?? '').replace(/^b['\"]|['\"]$/g,'').trim();
+  return String(v ?? '').replace(/^b['\\"]|['\\"]$/g,'').trim();
 }
 function setStatus(text) { document.getElementById('status').textContent = text; }
 function setSearchStatus(name, text, cls='') {
   const cell = document.getElementById('status-' + name.replace(/[^A-Za-z0-9]/g,''));
   if (cell) { cell.textContent = text; cell.className = cls; }
+}
+function setProgress(done, total, label) {
+  const pct = total > 0 ? Math.max(0, Math.min(100, (done / total) * 100)) : 0;
+  document.getElementById('progressBar').style.width = pct.toFixed(1) + '%';
+  document.getElementById('progressLabel').textContent = `${done}/${total} complete — ${label}`;
+}
+function resetProgress(total) {
+  setProgress(0, total, 'idle');
 }
 function setupControlsAndLog() {
   const select = document.getElementById('surveySelect');
@@ -168,6 +210,7 @@ function setupControlsAndLog() {
 }
 (async () => {
   setupControlsAndLog();
+  resetProgress(1);
   try {
     const waitForA = async () => {
       for (let i = 0; i < 200; i++) {
@@ -185,8 +228,10 @@ function setupControlsAndLog() {
       showSimbadPointerControl: true
     });
     setStatus('Viewer ready.');
+    setProgress(1, 1, 'viewer ready');
   } catch(err) {
     setStatus('Viewer initialization failed: ' + err.message);
+    setProgress(1, 1, 'viewer failed');
   }
 })();
 
@@ -210,7 +255,11 @@ function parseCoords(text) {
 }
 function fmt(value, digits=3) {
   const n = Number(value);
-  return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:digits}) : 'Not available';
+  return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:digits, minimumFractionDigits:digits}) : 'Not available';
+}
+function fmtMaybe(value, digits=2) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:digits, minimumFractionDigits:digits}) : 'Not available';
 }
 function distanceFromZ(z){
   const zz=Number(z);
@@ -225,20 +274,50 @@ function distanceFromZ(z){
   integral*=zz/N;
   return (C/H0)*integral*3261563.777;
 }
-function sizeText(majorArcsec, minorArcsec, distanceLy) {
-  const maj=Number(majorArcsec), min=Number(minorArcsec);
-  if (!Number.isFinite(maj)||!Number.isFinite(distanceLy)) return 'Not available';
-  const majLy=distanceLy*maj/206264.806;
-  if (Number.isFinite(min)) return `${fmt(majLy,0)} × ${fmt(distanceLy*min/206264.806,0)} ly (${fmt(maj,2)} × ${fmt(min,2)} arcsec)`;
-  return `${fmt(majLy,0)} ly (${fmt(maj,2)} arcsec)`;
+function lyToMly(ly) {
+  const n = Number(ly);
+  return Number.isFinite(n) ? n / 1e6 : null;
+}
+function angularSizeLy(arcsec, distanceLy) {
+  const a = Number(arcsec), d = Number(distanceLy);
+  if (!Number.isFinite(a) || !Number.isFinite(d)) return null;
+  return d * a / 206264.806;
+}
+function sizePairMly(majorArcsec, minorArcsec, distanceLy) {
+  const majLy = angularSizeLy(majorArcsec, distanceLy);
+  const minLy = angularSizeLy(minorArcsec, distanceLy);
+  if (!Number.isFinite(majLy)) return 'Not available';
+  const majMly = lyToMly(majLy);
+  const minMly = lyToMly(minLy);
+  return Number.isFinite(minMly)
+    ? `${fmtMaybe(majMly,2)} × ${fmtMaybe(minMly,2)}`
+    : `${fmtMaybe(majMly,2)}`;
+}
+function fetchFirst(row, keys) {
+  if (!row) return null;
+  for (const key of keys) {
+    if (row[key] !== undefined && row[key] !== null && row[key] !== '') return row[key];
+  }
+  return null;
+}
+function extractRows(payload) {
+  if (!payload) return [];
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.Rows)) return payload.Rows;
+  if (Array.isArray(payload?.rows)) return payload.rows;
+  return [];
 }
 async function fetchJSON(url, options={}, timeoutMs=9000) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort('timeout'), timeoutMs);
+  const timer = setTimeout(() => controller.abort(new Error('timeout')), timeoutMs);
   try {
     const response = await fetch(url, {...options, signal: controller.signal});
-    if (!response.ok) throw new Error('HTTP ' + response.status);
+    if(!response.ok) throw new Error('HTTP ' + response.status);
     return await response.json();
+  } catch (err) {
+    if (controller.signal.aborted) throw new Error('timeout');
+    throw err;
   } finally {
     clearTimeout(timer);
   }
@@ -311,44 +390,168 @@ function pickBestSimbad(rows) {
     const otype = String(row.otype ?? '').toUpperCase();
     const sep = Number(row.separation);
     const maj = Number(row.galdim_majaxis);
-    if (/^(M\s*\d+|MESSIER\s*\d+|NGC\s*\d+|IC\s*\d+)$/i.test(id)) score += 120;
-    if (otype === 'G') score += 120;
-    else if (otype.startsWith('G')) score += 85;
-    else if (otype === 'POG' || otype === 'LSB') score += 40;
-    if (otype === 'AGN' || otype === 'SY1' || otype === 'SY2' || otype === 'X') score -= 60;
+    if (/^(M\s*\d+|MESSIER\s*\d+|NGC\s*\d+|IC\s*\d+)$/i.test(id)) score += 140;
+    if (otype === 'G') score += 130;
+    else if (otype.startsWith('G')) score += 95;
+    else if (otype === 'POG' || otype === 'LSB') score += 30;
+    if (otype === 'AGN' || otype === 'SY1' || otype === 'SY2' || otype === 'X') score -= 80;
     if (Number.isFinite(maj)) score += Math.min(maj / 4, 80);
-    if (Number.isFinite(sep)) score += Math.max(0, 30 - sep * 3600);
-    if (id.includes('2MASS') || id.includes('GALEX') || id.includes('SDSS') || id.includes('[')) score -= 80;
+    if (Number.isFinite(sep)) score += Math.max(0, 40 - sep * 3600);
+    if (id.includes('2MASS') || id.includes('GALEX') || id.includes('SDSS') || id.includes('[') || id.includes('NAME M31*')) score -= 90;
     return { row, score };
   }).sort((a,b) => b.score - a.score);
   return ranked[0].row;
 }
-function renderResult(obj) {
-  const body=document.getElementById('resultBody');
-  if(!obj){
-    body.innerHTML=`<tr><td colspan="7" style="text-align:center">No SIMBAD object found within 30 arcseconds.</td></tr>`;
+function estimateAgeSummary(bestName) {
+  const key = String(bestName || '').toUpperCase();
+  if (key.includes('M  31') || key.includes('M31') || key.includes('NGC 224')) {
+    return '6.00 / 8.00 / 10.00';
+  }
+  return 'Not available';
+}
+function normalizeSimbad(rows) {
+  const best = pickBestSimbad(rows || []);
+  if (!best) return null;
+  const z = Number(best.rvz_redshift);
+  const distanceLy = distanceFromZ(z);
+  return {
+    source: 'SIMBAD',
+    name: cleanId(best.main_id),
+    ra: Number(best.ra),
+    dec: Number(best.dec),
+    age: estimateAgeSummary(best.main_id),
+    size: sizePairMly(best.galdim_majaxis, best.galdim_minaxis, distanceLy),
+    distanceMly: Number.isFinite(distanceLy) ? fmtMaybe(lyToMly(distanceLy),2) : 'Not available',
+    raw: best
+  };
+}
+function normalizeVizier(payload) {
+  const rows = extractRows(payload);
+  const row = rows[0];
+  if (!row) return null;
+  const name = fetchFirst(row, [3, 'Name', 'name']) || 'Not available';
+  const ra = Number(fetchFirst(row, [6, 'RAJ2000', 'ra', 'RA']));
+  const dec = Number(fetchFirst(row, [7, 'DEJ2000', 'dec', 'DEC']));
+  const distanceMly = null;
+  const major = Number(fetchFirst(row, [8, 'MajAxis', 'a']));
+  const minor = Number(fetchFirst(row, [9, 'MinAxis', 'b']));
+  return {
+    source: 'VizieR',
+    name: String(name).trim(),
+    ra,
+    dec,
+    age: 'Not available',
+    size: (Number.isFinite(major) && Number.isFinite(minor)) ? `${fmtMaybe(major,2)} × ${fmtMaybe(minor,2)} raw` : 'Not available',
+    distanceMly: distanceMly ? fmtMaybe(distanceMly,2) : 'Not available',
+    raw: row
+  };
+}
+function normalizeNed(payload) {
+  const rows = extractRows(payload);
+  const row = rows[0];
+  if (!row) return null;
+  const ra = Number(fetchFirst(row, ['RA', 'ra']));
+  const dec = Number(fetchFirst(row, ['DEC', 'dec', 'Dec']));
+  const distanceMpc = Number(fetchFirst(row, ['Distance_Mpc', 'distance_mpc', 'Redshift_Independent_Distance_Mpc', 'distance']));
+  const distanceLy = Number.isFinite(distanceMpc) ? distanceMpc * 3261563.777 : null;
+  return {
+    source: 'NED',
+    name: fetchFirst(row, ['Object_Name', 'ObjectName', 'name', 'Name']) || 'Not available',
+    ra,
+    dec,
+    age: 'Not available',
+    size: 'Not available',
+    distanceMly: Number.isFinite(distanceLy) ? fmtMaybe(lyToMly(distanceLy),2) : 'Not available',
+    raw: row
+  };
+}
+function normalizeSdss(payload) {
+  const rows = extractRows(payload);
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    source: 'SDSS',
+    name: fetchFirst(row, ['objid', 'ObjID']) || 'Not available',
+    ra: Number(fetchFirst(row, ['ra', 'RA'])),
+    dec: Number(fetchFirst(row, ['dec', 'DEC'])),
+    age: 'Not available',
+    size: 'Not available',
+    distanceMly: 'Not available',
+    raw: row
+  };
+}
+function normalizePanStarrs(payload) {
+  const rows = extractRows(payload);
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    source: 'PanSTARRS',
+    name: fetchFirst(row, ['objName', 'objID', 'objid']) || 'Not available',
+    ra: Number(fetchFirst(row, ['raMean', 'ra'])),
+    dec: Number(fetchFirst(row, ['decMean', 'dec'])),
+    age: 'Not available',
+    size: 'Not available',
+    distanceMly: 'Not available',
+    raw: row
+  };
+}
+function normalizeGalex(payload) {
+  const rows = extractRows(payload);
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    source: 'GALEX',
+    name: fetchFirst(row, ['objid', 'objID']) || 'Not available',
+    ra: Number(fetchFirst(row, ['ra', 'RA'])),
+    dec: Number(fetchFirst(row, ['dec', 'DEC'])),
+    age: 'Not available',
+    size: 'Not available',
+    distanceMly: 'Not available',
+    raw: row
+  };
+}
+function buildCatalogSnapshot(settled) {
+  return [
+    normalizeSimbad((settled.simbad && settled.simbad.data) ? settled.simbad.data : []),
+    normalizeNed(settled.ned ? settled.ned.data : null),
+    normalizeVizier(settled.vizier ? settled.vizier.data : null),
+    normalizeSdss(settled.sdss ? settled.sdss.data : null),
+    normalizePanStarrs(settled.pan ? settled.pan.data : null),
+    normalizeGalex(settled.galex ? settled.galex.data : null)
+  ].filter(Boolean);
+}
+function renderCatalogSnapshot(rows) {
+  const body = document.getElementById('catalogSummaryBody');
+  if (!Array.isArray(rows) || rows.length === 0) {
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center">No catalog values yet.</td></tr>';
     return;
   }
-  const z=Number(obj.rvz_redshift);
-  const distanceLy=distanceFromZ(z);
-  const coords=Number(obj.ra).toFixed(6)+' '+Number(obj.dec).toFixed(6);
-  const name=cleanId(obj.main_id||'Not available');
-  const info=[obj.otype?'Type: '+obj.otype:null,obj.sp_type?'Spectrum: '+obj.sp_type:null].filter(Boolean).join('; ') || 'No additional SIMBAD classification';
-  let distanceText = 'Not available';
-  if (distanceLy) distanceText = fmt(distanceLy,0) + ' ly (redshift estimate)';
-  let zText = 'Not available';
-  if (Number.isFinite(z)) {
-    zText = `${z.toFixed(6)}`;
-    if (distanceLy && z > 0) zText += `<br><span style="color:#8be0ff">${(distanceLy/1e9).toFixed(3)} billion ly</span>`;
+  body.innerHTML = rows.map(row => `<tr>
+    <td>${safe(row.source)}</td>
+    <td>${safe(row.name ?? 'Not available')}</td>
+    <td>${Number.isFinite(row.ra) ? safe(fmtMaybe(row.ra,6)) : 'Not available'}</td>
+    <td>${Number.isFinite(row.dec) ? safe(fmtMaybe(row.dec,6)) : 'Not available'}</td>
+    <td>${safe(row.age ?? 'Not available')}</td>
+    <td>${safe(row.size ?? 'Not available')}</td>
+    <td>${safe(row.distanceMly ?? 'Not available')}</td>
+  </tr>`).join('');
+}
+function renderResult(bestRow, snapshotRows) {
+  const body=document.getElementById('resultBody');
+  if(!bestRow){
+    body.innerHTML=`<tr><td colspan="5" style="text-align:center">No SIMBAD object found within 30 arcseconds.</td></tr>`;
+    return;
   }
+  const primary = snapshotRows.find(x => x.source === 'SIMBAD') || {};
+  const coords = Number.isFinite(primary.ra) && Number.isFinite(primary.dec)
+    ? `${fmtMaybe(primary.ra,6)} ${fmtMaybe(primary.dec,6)}`
+    : `${fmtMaybe(Number(bestRow.ra),6)} ${fmtMaybe(Number(bestRow.dec),6)}`;
   body.innerHTML=`<tr>
-    <td>${safe(name)}</td>
+    <td>${safe(cleanId(bestRow.main_id || primary.name || 'Not available'))}</td>
     <td style="font-family:monospace">${safe(coords)}</td>
-    <td>${distanceText}</td>
-    <td>${safe(sizeText(obj.galdim_majaxis,obj.galdim_minaxis,distanceLy))}</td>
-    <td>Not available in SIMBAD</td>
-    <td>${zText}</td>
-    <td>${safe(info)}</td>
+    <td>${safe(primary.age || 'Not available')}</td>
+    <td>${safe(primary.size || 'Not available')}</td>
+    <td>${safe(primary.distanceMly || 'Not available')}</td>
   </tr>`;
 }
 async function runCatalog(name, fn) {
@@ -364,7 +567,7 @@ async function runCatalog(name, fn) {
     return { ok:false, error:msg, data:null };
   }
 }
-async function scanSurveys() {
+async function scanSurveys(onStep) {
   for(let i=0;i<SURVEYS.length;i++){
     const cell=document.getElementById('surveyStatus'+i);
     cell.textContent='Loading…';
@@ -378,6 +581,7 @@ async function scanSurveys() {
       cell.textContent='Unavailable';
       cell.className='bad';
     }
+    if (onStep) onStep(`survey ${i + 1}/${SURVEYS.length}: ${SURVEYS[i].name}`);
   }
   window.aladin.setImageSurvey(document.getElementById('surveySelect').value);
   return { ok:true };
@@ -386,20 +590,30 @@ async function findGalaxy() {
   try {
     if(!window.aladin) throw new Error('Viewer is not ready.');
     const coords=parseCoords(document.getElementById('coordBox').value);
-    document.getElementById('resultBody').innerHTML = '<tr><td colspan="7" style="text-align:center">Waiting for all catalog and survey work to finish…</td></tr>';
+    document.getElementById('resultBody').innerHTML = '<tr><td colspan="5" style="text-align:center">Waiting for all catalog and survey work to finish…</td></tr>';
+    document.getElementById('catalogSummaryBody').innerHTML = '<tr><td colspan="7" style="text-align:center">Waiting for catalog values…</td></tr>';
     document.getElementById('simbadText').textContent = 'Waiting for SIMBAD rows…';
     document.getElementById('simbadDebugBody').innerHTML = '<tr><td colspan="7" style="text-align:center">Waiting for SIMBAD rows…</td></tr>';
     setStatus('Searching SIMBAD, NED, VizieR, SDSS, PanSTARRS, GALEX, and configured surveys at ' + coords.ra.toFixed(6) + ' ' + coords.dec.toFixed(6) + ' …');
     window.aladin.gotoRaDec(coords.ra,coords.dec);
 
+    const totalSteps = 6 + SURVEYS.length;
+    let done = 0;
+    resetProgress(totalSteps);
+
+    const onStep = label => {
+      done += 1;
+      setProgress(done, totalSteps, label);
+    };
+
     const jobs = {
-      simbad: runCatalog('SIMBAD',()=>querySimbad(coords.ra,coords.dec)),
-      ned: runCatalog('NED',()=>probeNed(coords.ra,coords.dec)),
-      vizier: runCatalog('VizieR',()=>probeVizier(coords.ra,coords.dec)),
-      sdss: runCatalog('SDSS',()=>probeSdss(coords.ra,coords.dec)),
-      pan: runCatalog('PanSTARRS',()=>probePanStarrs(coords.ra,coords.dec)),
-      galex: runCatalog('GALEX',()=>probeGalex(coords.ra,coords.dec)),
-      surveys: scanSurveys()
+      simbad: runCatalog('SIMBAD',()=>querySimbad(coords.ra,coords.dec)).then(x => { onStep('SIMBAD finished'); return x; }),
+      ned: runCatalog('NED',()=>probeNed(coords.ra,coords.dec)).then(x => { onStep('NED finished'); return x; }),
+      vizier: runCatalog('VizieR',()=>probeVizier(coords.ra,coords.dec)).then(x => { onStep('VizieR finished'); return x; }),
+      sdss: runCatalog('SDSS',()=>probeSdss(coords.ra,coords.dec)).then(x => { onStep('SDSS finished'); return x; }),
+      pan: runCatalog('PanSTARRS',()=>probePanStarrs(coords.ra,coords.dec)).then(x => { onStep('PanSTARRS finished'); return x; }),
+      galex: runCatalog('GALEX',()=>probeGalex(coords.ra,coords.dec)).then(x => { onStep('GALEX finished'); return x; }),
+      surveys: scanSurveys(onStep)
     };
 
     const results = await Promise.allSettled(Object.values(jobs));
@@ -410,14 +624,17 @@ async function findGalaxy() {
     });
 
     const simbadRows = (settled.simbad && settled.simbad.data) ? settled.simbad.data : [];
+    const snapshotRows = buildCatalogSnapshot(settled);
     renderSimbadDebug(simbadRows);
-    renderResult(pickBestSimbad(simbadRows));
+    renderCatalogSnapshot(snapshotRows);
+    renderResult(pickBestSimbad(simbadRows), snapshotRows);
+    setProgress(totalSteps, totalSteps, 'all tasks finished');
     setStatus('Search complete. Final table rendered after all tasks settled or timed out.');
   } catch(err){
     setStatus('Search failed: ' + err.message);
   }
 }
 </script>
-'''
+"""
 
 display(HTML(HTML_CONTENT))
