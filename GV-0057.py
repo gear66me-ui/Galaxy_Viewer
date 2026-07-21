@@ -83,7 +83,8 @@ def _ned_query(ra, dec):
             df = frame.loc[numbered_rows].copy()
             break
     if df is None or df.empty:
-        return json.dumps({"rows":[]}, ensure_ascii=False)
+        json_text = json.dumps({"rows":[]}, ensure_ascii=False, allow_nan=False)
+        return base64.b64encode(json_text.encode("utf-8")).decode("ascii")
     row = df.iloc[0]
     cells = [_clean(v) for v in row.tolist()]
     obj = {
