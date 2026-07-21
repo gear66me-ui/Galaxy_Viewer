@@ -10,12 +10,14 @@ except Exception:
 BASE_WRAPPER_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/main/GV-0054.py"
 
 base_wrapper = urllib.request.urlopen(BASE_WRAPPER_URL, timeout=60).read().decode("utf-8")
-exec_marker = "exec(source, globals())"
-if base_wrapper.count(exec_marker) != 1:
-    raise RuntimeError("GV-0054 execution marker not found exactly once")
+exec_marker = "\nexec(source, globals())"
+exec_index = base_wrapper.rfind(exec_marker)
+if exec_index < 0:
+    raise RuntimeError("GV-0054 final execution marker not found")
 
 scope = {}
-exec(compile(base_wrapper.replace(exec_marker, "", 1), "GV-0054.py", "exec"), scope)
+base_without_final_exec = base_wrapper[:exec_index] + base_wrapper[exec_index + len(exec_marker):]
+exec(compile(base_without_final_exec, "GV-0054.py", "exec"), scope)
 source = scope["source"]
 
 
