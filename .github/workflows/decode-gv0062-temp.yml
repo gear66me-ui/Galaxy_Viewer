@@ -1,0 +1,32 @@
+name: Decode GV-0062 temporary
+on:
+  push:
+    paths:
+      - '.github/workflows/decode-gv0062-temp.yml'
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode standalone source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import ast, base64, re, zlib
+          text = Path('GV-0062.py').read_text(encoding='utf-8')
+          m = re.search(r"b64decode\(\s*\n?(['\"])(.*?)\1\s*\n?\)\)", text, re.S)
+          if not m:
+              raise SystemExit('payload not found')
+          payload = m.group(2)
+          source = zlib.decompress(base64.b64decode(payload)).decode('utf-8')
+          Path('GV-0062_DECODED_TMP.py').write_text(source, encoding='utf-8')
+          PY
+      - name: Commit temporary decoded source
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add GV-0062_DECODED_TMP.py
+          git commit -m 'Temporary decoded GV-0062 source for GV-0064 preparation'
+          git push
