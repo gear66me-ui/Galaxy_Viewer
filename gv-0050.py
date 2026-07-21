@@ -7,6 +7,10 @@ source = urllib.request.urlopen(RAW_URL).read().decode("utf-8")
 
 replacements = [
     (
+        '<input id="coordBox" type="text" value="10.684708 41.268750" style="min-width:280px" />',
+        '<input id="coordBox" type="text" value="53.162500 -27.791667" style="min-width:280px" />'
+    ),
+    (
         "<h3>Galaxy Viewer — GV-0048</h3>",
         "<h3>Galaxy Viewer — GV-0050</h3>"
     ),
