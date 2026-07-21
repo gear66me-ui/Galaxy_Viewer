@@ -1,3 +1,0 @@
-Connector test successful
-Updated by ChatGPT connector
-GV_PIPELINE_ACTIVE
