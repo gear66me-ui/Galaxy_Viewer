@@ -73,7 +73,7 @@ source = source.replace(
 )
 source = source.replace(
     'async function run(n,f){cat(n,"Searching…","warn");try{const d=await f(),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}}',
-    'async function run(n,f){cat(n,"Searching…","warn");try{const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error("Timed out after 45 seconds")),45000))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}',
+    'async function run(n,f){cat(n,"Searching…","warn");try{const timeoutMs=n==="VizieR"?180000:45000;const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error(`Timed out after ${timeoutMs/1000} seconds`)),timeoutMs))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}',
     1
 )
 source = source.replace(
