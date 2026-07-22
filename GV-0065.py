@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 import urllib.request
 
 from google.colab import output
@@ -18,6 +17,7 @@ source = source.replace("gv0062", "gv0065")
 source = source.replace("GV-0062", "GV-0065")
 source = source.replace('fov:3.0', 'fov:0.05')
 source = source.replace('The default field of view is 3 degrees.', 'The default field of view is 3 arcminutes.')
+
 source = source.replace(
     'function restore(m=""){if(!window.aladin)return;const s=load();document.getElementById("coordBox").value=`${s.ra.toFixed(6)} ${s.dec.toFixed(6)}`;',
     'function restore(m=""){if(!window.aladin||window.gv0065CoordDirty)return;const s=load();'
@@ -28,15 +28,58 @@ source = source.replace(
 )
 source = source.replace(
     'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);',
-    'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);window.gv0065CoordDirty=false;'
+    'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);window.gv0065CoordDirty=false;searchProgressStart();'
 )
-source, ned_fix_count = re.subn(
-    r'coords\s*=\s*SkyCoord\(table\[ra_col\],\s*table\[dec_col\],\s*unit=\(u\.deg,\s*u\.deg\),\s*frame="icrs"\)',
-    'coords = SkyCoord(ra=table[ra_col], dec=table[dec_col], frame="icrs")',
-    source,
-    count=1,
+
+old_ned = '''    if ra_col and dec_col:
+        coords = SkyCoord(table[ra_col], table[dec_col], unit=(u.deg, u.deg), frame="icrs")
+        table["_gv_sep"] = center.separation(coords).arcsec
+        table.sort("_gv_sep")'''
+new_ned = '''    if ra_col and dec_col:
+        separations = []
+        for ned_row in table:
+            ned_ra = _number(ned_row[ra_col])
+            ned_dec = _number(ned_row[dec_col])
+            if ned_ra is None or ned_dec is None:
+                separations.append(float("inf"))
+            else:
+                ned_coord = SkyCoord(ned_ra * u.deg, ned_dec * u.deg, frame="icrs")
+                separations.append(center.separation(ned_coord).arcsec)
+        table["_gv_sep"] = separations
+        table.sort("_gv_sep")'''
+if source.count(old_ned) != 1:
+    raise RuntimeError("GV-0065 NED block was not found exactly once.")
+source = source.replace(old_ned, new_ned, 1)
+
+source = source.replace(
+    '#gv0065-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0065-root .fetch-btn{background:#159447}#gv0065-root .find-btn{background:#087fd1}',
+    '#gv0065-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0065-root .fetch-btn{background:#159447}#gv0065-root .find-btn{background:#087fd1}#gv0065-root .progress-shell{display:flex;align-items:center;gap:10px;margin-top:10px;padding:9px 11px;background:#02080d;border:1px solid #0d668a;border-radius:7px}#gv0065-root .progress-spinner{width:18px;height:18px;border:3px solid #164d63;border-top-color:#43d2ff;border-radius:50%;animation:gv0065spin .8s linear infinite;display:none;flex:0 0 auto}#gv0065-root .progress-track{height:12px;flex:1;background:#031723;border:1px solid #116482;border-radius:8px;overflow:hidden}#gv0065-root .progress-fill{width:0%;height:100%;background:#159447;transition:width .25s ease}#gv0065-root .progress-text{min-width:150px;color:#8be0ff;font-family:monospace;font-size:12px}@keyframes gv0065spin{to{transform:rotate(360deg)}}',
+    1
 )
-if ned_fix_count != 1:
-    raise RuntimeError("GV-0065 NED coordinate fix was not applied exactly once.")
+source = source.replace(
+    '<div class="controls"><button class="fetch-btn" onclick="fetchCoords()">Fetch Coordinates</button><input id="coordBox" type="text" value="53.162500 -27.791667" style="min-width:280px"><button class="find-btn" onclick="findGalaxy()">Find Galaxy / Star</button></div>',
+    '<div class="controls"><button class="fetch-btn" onclick="fetchCoords()">Fetch Coordinates</button><input id="coordBox" type="text" value="53.162500 -27.791667" style="min-width:280px"><button class="find-btn" onclick="findGalaxy()">Find Galaxy / Star</button></div><div class="progress-shell"><div id="searchSpinner" class="progress-spinner"></div><div class="progress-track"><div id="searchProgressFill" class="progress-fill"></div></div><div id="searchProgressText" class="progress-text">Search idle</div></div>',
+    1
+)
+source = source.replace(
+    'function status(t){document.getElementById("status").textContent=t}',
+    'let gv0065ProgressDone=0;const gv0065ProgressTotal=6;function searchProgressStart(){gv0065ProgressDone=0;document.getElementById("searchSpinner").style.display="block";document.getElementById("searchProgressFill").style.width="0%";document.getElementById("searchProgressText").textContent="Searching: 0 / 6"}function searchProgressStep(){gv0065ProgressDone=Math.min(gv0065ProgressTotal,gv0065ProgressDone+1);document.getElementById("searchProgressFill").style.width=`${100*gv0065ProgressDone/gv0065ProgressTotal}%`;document.getElementById("searchProgressText").textContent=`Searching: ${gv0065ProgressDone} / ${gv0065ProgressTotal}`}function searchProgressDone(failed=false){document.getElementById("searchSpinner").style.display="none";document.getElementById("searchProgressFill").style.width="100%";document.getElementById("searchProgressText").textContent=failed?"Search stopped with an error":"Search complete"}function status(t){document.getElementById("status").textContent=t}',
+    1
+)
+source = source.replace(
+    'async function run(n,f){cat(n,"Searching…","warn");try{const d=await f(),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}}',
+    'async function run(n,f){cat(n,"Searching…","warn");try{const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error("Timed out after 45 seconds")),45000))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}',
+    1
+)
+source = source.replace(
+    'save();status("Search complete. GV-0065 used SIMBAD row 1, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
+    'save();searchProgressDone();status("Search complete. GV-0065 used SIMBAD row 1, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
+    1
+)
+source = source.replace(
+    '}catch(e){status("Search failed: "+e.message);debug(String(e.stack||e))}}',
+    '}catch(e){searchProgressDone(true);status("Search failed: "+e.message);debug(String(e.stack||e))}}',
+    1
+)
 
 exec(compile(source, "GV-0065.py", "exec"))
