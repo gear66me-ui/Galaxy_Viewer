@@ -52,7 +52,6 @@ def _interest_score(row: dict[str, Any]) -> float:
     distance_mpc = _number(_pick(row, "D"))
     velocity = _number(_pick(row, "V"))
     name = _pick(row, "OBJNAME", "ID_NED")
-
     score = 0.0
     if r1 is not None:
         score += min(34.0, 13.0 * math.log10(max(1.0, 2.0 * r1 * 60.0)))
@@ -73,37 +72,52 @@ def _interest_score(row: dict[str, Any]) -> float:
         score += 4.0
     if velocity is not None:
         score += 2.0
-
     completeness = sum(
         _number(_pick(row, key)) is not None
         for key in ("D", "V", "BT", "R1", "R2", "T", "INCL")
     )
-    score += completeness * 1.5
-    return round(score, 3)
+    return round(score + completeness * 1.5, 3)
+
+
+def _normalize_record(record: dict[str, Any]) -> dict[str, Any] | None:
+    """Accept either VIEWER-15 cache keys or debugger-native keys."""
+    name = _clean(record.get("name"))
+    ra = _number(record.get("ra_deg", record.get("ra")))
+    dec = _number(record.get("dec_deg", record.get("dec")))
+    if not name or ra is None or dec is None:
+        return None
+    return {
+        "name": name,
+        "ra_deg": ra,
+        "dec_deg": dec,
+        "distance_mpc": _number(record.get("distance_mpc")),
+        "distance_method": _clean(record.get("distance_method")) or "Not available",
+        "velocity_kms": _number(record.get("velocity_kms", record.get("velocity"))),
+        "major_radius_arcmin": _number(record.get("major_radius_arcmin", record.get("r1"))),
+        "minor_radius_arcmin": _number(record.get("minor_radius_arcmin", record.get("r2"))),
+        "magnitude_b": _number(record.get("magnitude_b", record.get("magnitude"))),
+        "morphology_t": _number(record.get("morphology_t", record.get("t"))),
+        "inclination_deg": _number(record.get("inclination_deg", record.get("incl"))),
+        "interest_score": _number(record.get("interest_score", record.get("score"))),
+    }
 
 
 def _download_hecate() -> list[dict[str, str]]:
-    request = urllib.request.Request(
-        HECATE_URL,
-        headers={"User-Agent": f"{VERSION}/1.0"},
-    )
+    request = urllib.request.Request(HECATE_URL, headers={"User-Agent": f"{VERSION}/1.0"})
     with urllib.request.urlopen(request, timeout=180) as response:
         text = response.read().decode("utf-8", errors="replace")
     return list(csv.DictReader(io.StringIO(text)))
 
 
 def _build_catalog() -> list[dict[str, Any]]:
-    rows = _download_hecate()
     scored: list[dict[str, Any]] = []
-
-    for row in rows:
+    for row in _download_hecate():
         ra = _number(_pick(row, "RA"))
         dec = _number(_pick(row, "DEC"))
         name = _pick(row, "OBJNAME", "ID_NED")
         if ra is None or dec is None or not name:
             continue
-
-        record = {
+        scored.append({
             "name": name,
             "ra_deg": ra,
             "dec_deg": dec,
@@ -116,24 +130,22 @@ def _build_catalog() -> list[dict[str, Any]]:
             "morphology_t": _number(_pick(row, "T")),
             "inclination_deg": _number(_pick(row, "INCL")),
             "interest_score": _interest_score(row),
-        }
-        scored.append(record)
-
+        })
     scored.sort(key=lambda item: item["interest_score"], reverse=True)
     catalog = scored[:TOP_CATALOG_SIZE]
-    CACHE_PATH.write_text(
-        json.dumps(catalog, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    CACHE_PATH.write_text(json.dumps(catalog, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return catalog
 
 
 def _load_catalog() -> list[dict[str, Any]]:
     if CACHE_PATH.exists():
         try:
-            data = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
-            if isinstance(data, list) and len(data) >= SAMPLE_SIZE:
-                return data
+            raw = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+            if isinstance(raw, list):
+                normalized = [_normalize_record(item) for item in raw if isinstance(item, dict)]
+                catalog = [item for item in normalized if item is not None]
+                if len(catalog) >= SAMPLE_SIZE:
+                    return catalog
         except Exception:
             pass
     return _build_catalog()
@@ -143,15 +155,11 @@ def _distance_text(distance_mpc: float | None) -> str:
     if distance_mpc is None or distance_mpc <= 0:
         return "Not available"
     million_ly = distance_mpc * 3.26156
-    if million_ly < 1000.0:
-        return f"{million_ly:.3f} million ly"
-    return f"{million_ly / 1000.0:.6f} billion ly"
+    return f"{million_ly:.3f} million ly" if million_ly < 1000.0 else f"{million_ly / 1000.0:.6f} billion ly"
 
 
 def _z_value(velocity_kms: float | None) -> float | None:
-    if velocity_kms is None:
-        return None
-    return velocity_kms / C_KMS
+    return None if velocity_kms is None else velocity_kms / C_KMS
 
 
 def _angular_size(record: dict[str, Any]) -> str:
@@ -160,9 +168,7 @@ def _angular_size(record: dict[str, Any]) -> str:
     if r1 is None:
         return "Not available"
     major = 2.0 * r1
-    if r2 is None:
-        return f"{major:.3f} arcmin"
-    return f"{major:.3f} x {2.0 * r2:.3f} arcmin"
+    return f"{major:.3f} arcmin" if r2 is None else f"{major:.3f} x {2.0 * r2:.3f} arcmin"
 
 
 def _physical_size(record: dict[str, Any]) -> str:
@@ -185,19 +191,16 @@ def _format_number(value: float | None, digits: int = 3) -> str:
 def main() -> None:
     catalog = _load_catalog()
     sample = random.sample(catalog, k=min(SAMPLE_SIZE, len(catalog)))
-
-    print(f"{VERSION}")
+    print(VERSION)
     print(f"SOURCE: HECATE v1.1 Beauty Catalog Top {len(catalog):,}")
     print(f"SAMPLE SIZE: {len(sample)}")
     print("=" * 72)
-
     for index, galaxy in enumerate(sample, start=1):
         velocity = _number(galaxy.get("velocity_kms"))
         z = _z_value(velocity)
         morphology = _number(galaxy.get("morphology_t"))
         magnitude = _number(galaxy.get("magnitude_b"))
         score = _number(galaxy.get("interest_score"))
-
         print(f"GALAXY {index:03d}")
         print(f"1. Object: {galaxy.get('name') or 'Not available'}")
         print(f"2. ICRS coordinates: {float(galaxy['ra_deg']):.6f} {float(galaxy['dec_deg']):.6f}")
