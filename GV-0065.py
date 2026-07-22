@@ -29,5 +29,9 @@ source = source.replace(
     'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);',
     'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);window.gv0065CoordDirty=false;'
 )
+source = source.replace(
+    'coords = SkyCoord(table[ra_col], table[dec_col], unit=(u.deg, u.deg), frame="icrs")',
+    'coords = SkyCoord(ra=table[ra_col], dec=table[dec_col], frame="icrs")'
+)
 
 exec(compile(source, "GV-0065.py", "exec"))
