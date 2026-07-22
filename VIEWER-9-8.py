@@ -1,0 +1,84 @@
+from __future__ import annotations
+import base64
+import json
+import re
+import urllib.request
+
+BASE_BLOB_URL = "https://api.github.com/repos/gear66me-ui/Galaxy_Viewer/git/blobs/2e2829d05c5fba6bd5b0ffc431987612eebe1aee"
+with urllib.request.urlopen(BASE_BLOB_URL, timeout=60) as response:
+    payload = json.loads(response.read().decode("utf-8"))
+source = base64.b64decode(payload["content"]).decode("utf-8")
+source = source.replace("Galaxy Viewer — VIEWER-9-1", "Galaxy Viewer — VIEWER-9-8 GEMINI", 1)
+
+gemini_backend = base64.b64decode("ZGVmIF9vcGVuYWlfanNvbihwcm9tcHQ6IHN0ciwgc2NoZW1hX25hbWU6IHN0ciwgc2NoZW1hOiBkaWN0KSAtPiBkaWN0OgogICAgYXBpX2tleSA9IF9zZWNyZXQoIkdlbWluaSBBUEkgS2V5Iikgb3IgX3NlY3JldCgiR0VNSU5JX0FQSV9LRVkiKQogICAgaWYgbm90IGFwaV9rZXk6CiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKCdBZGQgdGhlIENvbGFiIHNlY3JldCBuYW1lZCBleGFjdGx5ICJHZW1pbmkgQVBJIEtleSIgYW5kIGVuYWJsZSBub3RlYm9vayBhY2Nlc3MuJykKICAgIHByb21wdCA9IHByb21wdCArICJcblJldHVybiBvbmx5IG9uZSB2YWxpZCBKU09OIG9iamVjdCB3aXRoIG5vIE1hcmtkb3duIGZlbmNlcy4gRm9sbG93IHRoaXMgc2NoZW1hIGV4YWN0bHk6XG4iICsganNvbi5kdW1wcyhzY2hlbWEsIHNlcGFyYXRvcnM9KCIsIiwgIjoiKSkKICAgIGJvZHkgPSB7CiAgICAgICAgImNvbnRlbnRzIjogW3sicGFydHMiOiBbeyJ0ZXh0IjogcHJvbXB0fV19XSwKICAgICAgICAidG9vbHMiOiBbeyJnb29nbGVfc2VhcmNoIjoge319XSwKICAgICAgICAiZ2VuZXJhdGlvbkNvbmZpZyI6IHsKICAgICAgICAgICAgInRlbXBlcmF0dXJlIjogMC45IGlmIHNjaGVtYV9uYW1lID09ICJyYW5kb21fZ2FsYXh5IiBlbHNlIDAuMgogICAgICAgIH0sCiAgICB9CiAgICByZXF1ZXN0ID0gdXJsbGliLnJlcXVlc3QuUmVxdWVzdCgKICAgICAgICAiaHR0cHM6Ly9nZW5lcmF0aXZlbGFuZ3VhZ2UuZ29vZ2xlYXBpcy5jb20vdjFiZXRhL21vZGVscy9nZW1pbmktMi41LWZsYXNoOmdlbmVyYXRlQ29udGVudCIsCiAgICAgICAgZGF0YT1qc29uLmR1bXBzKGJvZHkpLmVuY29kZSgidXRmLTgiKSwKICAgICAgICBoZWFkZXJzPXsieC1nb29nLWFwaS1rZXkiOiBhcGlfa2V5LCAiQ29udGVudC1UeXBlIjogImFwcGxpY2F0aW9uL2pzb24ifSwKICAgICAgICBtZXRob2Q9IlBPU1QiLAogICAgKQogICAgdHJ5OgogICAgICAgIHdpdGggdXJsbGliLnJlcXVlc3QudXJsb3BlbihyZXF1ZXN0LCB0aW1lb3V0PTc1KSBhcyByZXNwb25zZToKICAgICAgICAgICAgcmVzdWx0ID0ganNvbi5sb2FkcyhyZXNwb25zZS5yZWFkKCkuZGVjb2RlKCJ1dGYtOCIpKQogICAgZXhjZXB0IHVybGxpYi5lcnJvci5IVFRQRXJyb3IgYXMgZXhjOgogICAgICAgIGRldGFpbCA9IGV4Yy5yZWFkKCkuZGVjb2RlKCJ1dGYtOCIsIGVycm9ycz0icmVwbGFjZSIpCiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiR2VtaW5pIEFQSSBlcnJvciB7ZXhjLmNvZGV9OiB7ZGV0YWlsWzoxMjAwXX0iKSBmcm9tIGV4YwogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBleGM6CiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiR2VtaW5pIHJlcXVlc3QgZmFpbGVkOiB7ZXhjfSIpIGZyb20gZXhjCiAgICBjYW5kaWRhdGVzID0gcmVzdWx0LmdldCgiY2FuZGlkYXRlcyIpIG9yIFtdCiAgICBpZiBub3QgY2FuZGlkYXRlczoKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoIkdlbWluaSByZXR1cm5lZCBubyBjYW5kaWRhdGU6ICIgKyBqc29uLmR1bXBzKHJlc3VsdC5nZXQoInByb21wdEZlZWRiYWNrIikgb3Ige30pWzo4MDBdKQogICAgcGFydHMgPSAoKGNhbmRpZGF0ZXNbMF0uZ2V0KCJjb250ZW50Iikgb3Ige30pLmdldCgicGFydHMiKSBvciBbXSkKICAgIHRleHQgPSAiIi5qb2luKHN0cihwYXJ0LmdldCgidGV4dCIsICIiKSkgZm9yIHBhcnQgaW4gcGFydHMgaWYgcGFydC5nZXQoInRleHQiKSkuc3RyaXAoKQogICAgaWYgdGV4dC5zdGFydHN3aXRoKCJgYGAiKToKICAgICAgICB0ZXh0ID0gdGV4dC5zdHJpcCgiYCIpLnN0cmlwKCkKICAgICAgICBpZiB0ZXh0Lmxvd2VyKCkuc3RhcnRzd2l0aCgianNvbiIpOgogICAgICAgICAgICB0ZXh0ID0gdGV4dFs0Ol0uc3RyaXAoKQogICAgc3RhcnQgPSB0ZXh0LmZpbmQoInsiKQogICAgZW5kID0gdGV4dC5yZmluZCgifSIpCiAgICBpZiBzdGFydCA8IDAgb3IgZW5kIDwgc3RhcnQ6CiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiR2VtaW5pIHJldHVybmVkIG5vbi1KU09OIHRleHQ6IHt0ZXh0WzoxMDAwXX0iKQogICAgdHJ5OgogICAgICAgIHJldHVybiBqc29uLmxvYWRzKHRleHRbc3RhcnQ6ZW5kICsgMV0pCiAgICBleGNlcHQganNvbi5KU09ORGVjb2RlRXJyb3IgYXMgZXhjOgogICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcihmIkdlbWluaSByZXR1cm5lZCBpbnZhbGlkIEpTT046IHt0ZXh0WzoxMDAwXX0iKSBmcm9tIGV4Yw==").decode("utf-8")
+source, count = re.subn(
+    r'def _openai_json\(prompt: str, schema_name: str, schema: dict\) -> dict:\n.*?\n    return json\.loads\(text\)',
+    lambda match: gemini_backend,
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("VIEWER-9-8 Gemini backend replacement failed")
+
+callbacks = base64.b64decode("ZGVmIHZpZXdlcjlfcmFuZG9tX2NhbGxiYWNrKCk6CiAgICB0cnk6CiAgICAgICAgcmV0dXJuIHsib2siOiBUcnVlLCAicGF5bG9hZCI6IHZpZXdlcjlfcmFuZG9tX2FpKCl9CiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGV4YzoKICAgICAgICByZXR1cm4geyJvayI6IEZhbHNlLCAiZXJyb3IiOiBzdHIoZXhjKX0KCmRlZiB2aWV3ZXI5X2luZm9fY2FsbGJhY2sobmFtZTogc3RyLCByYTogZmxvYXQsIGRlYzogZmxvYXQpOgogICAgdHJ5OgogICAgICAgIHJldHVybiB7Im9rIjogVHJ1ZSwgInBheWxvYWQiOiB2aWV3ZXI5X2dldF9pbmZvKG5hbWUsIHJhLCBkZWMpfQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBleGM6CiAgICAgICAgcmV0dXJuIHsib2siOiBGYWxzZSwgImVycm9yIjogc3RyKGV4Yyl9Cgpjb2xhYl9vdXRwdXQucmVnaXN0ZXJfY2FsbGJhY2soInZpZXdlcjkucmFuZG9tR2FsYXh5QUkiLCB2aWV3ZXI5X3JhbmRvbV9jYWxsYmFjaykKY29sYWJfb3V0cHV0LnJlZ2lzdGVyX2NhbGxiYWNrKCJ2aWV3ZXI5LmdldEdhbGF4eUluZm8iLCB2aWV3ZXI5X2luZm9fY2FsbGJhY2sp").decode("utf-8")
+source, count = re.subn(
+    r'colab_output\.register_callback\("viewer9\.randomGalaxyAI".*?\ncolab_output\.register_callback\("viewer9\.getGalaxyInfo".*?\)',
+    lambda match: callbacks,
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("VIEWER-9-8 callback replacement failed")
+
+random_js = base64.b64decode("YXN5bmMgZnVuY3Rpb24gZ3Y5MVJhbmRvbUdhbGF4eSgpe2d2OTFCdXN5KCJndjkxLXJhbmRvbSIsdHJ1ZSwiU2VhcmNoaW5nLi4uIiwiUmFuZG9tIEdhbGF4eSIpO2d2OTFTdGF0dXMoIkdlbWluaSBTZWFyY2ggaXMgc2VsZWN0aW5nIGFuZCB2ZXJpZnlpbmcgYSByYW5kb20gZ2FsYXh5Li4uIik7dHJ5e2NvbnN0IHI9YXdhaXQgZ29vZ2xlLmNvbGFiLmtlcm5lbC5pbnZva2VGdW5jdGlvbigidmlld2VyOS5yYW5kb21HYWxheHlBSSIsW10se30pO2NvbnN0IHJhdz1yJiZyLmRhdGE/ci5kYXRhOnt9O2xldCBvdXQ9cmF3WyJhcHBsaWNhdGlvbi9qc29uIl0/P3Jhd1sidGV4dC9wbGFpbiJdPz9PYmplY3QudmFsdWVzKHJhdylbMF07aWYodHlwZW9mIG91dD09PSJzdHJpbmciKXt0cnl7b3V0PUpTT04ucGFyc2Uob3V0KX1jYXRjaChfKXt9fWlmKCFvdXQpdGhyb3cgRXJyb3IoIkNvbGFiIHJldHVybmVkIG5vIGNhbGxiYWNrIHBheWxvYWQuIik7aWYob3V0Lm9rPT09ZmFsc2UpdGhyb3cgRXJyb3Iob3V0LmVycm9yfHwiR2VtaW5pIHJhbmRvbSBzZWFyY2ggZmFpbGVkLiIpO2NvbnN0IGc9b3V0LnBheWxvYWQ/P291dDtpZighZ3x8IU51bWJlci5pc0Zpbml0ZSgrZy5yYSl8fCFOdW1iZXIuaXNGaW5pdGUoK2cuZGVjKXx8IU51bWJlci5pc0Zpbml0ZSgrZy5mb3YpKXRocm93IEVycm9yKCJHZW1pbmkgcmV0dXJuZWQgaW52YWxpZCBnYWxheHkgZGF0YS4iKTtndjkxU2hvd0dhbGF4eShnLCJHZW1pbmkgcmFuZG9tIGdhbGF4eSBsb2FkZWQiKTtkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiZ3Y5MS1wYW5lbCIpLmlubmVySFRNTD0nPGRpdiBjbGFzcz0iaW5mby1sb2FkaW5nIj5QcmVzcyBHZXQgSW5mbyB0byByZXNlYXJjaCAnK2d2OTFFc2MoZy5uYW1lKSsnLjwvZGl2Pid9Y2F0Y2goZSl7Z3Y5MVN0YXR1cygiUmFuZG9tIEdhbGF4eSBmYWlsZWQ6ICIrU3RyaW5nKGUubWVzc2FnZXx8ZSkpfWZpbmFsbHl7Z3Y5MUJ1c3koImd2OTEtcmFuZG9tIixmYWxzZSwiIiwiUmFuZG9tIEdhbGF4eSIpfX0=").decode("utf-8")
+source, count = re.subn(
+    r'async function gv91RandomGalaxy\(\)\{.*?\}\nasync function gv91GetInfo',
+    lambda match: random_js + "\nasync function gv91GetInfo",
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("VIEWER-9-8 Random Galaxy replacement failed")
+
+info_js = base64.b64decode("YXN5bmMgZnVuY3Rpb24gZ3Y5MUdldEluZm8oKXtndjkxQnVzeSgiZ3Y5MS1pbmZvIix0cnVlLCJSZXNlYXJjaGluZy4uLiIsIkdldCBJbmZvIik7Y29uc3QgcD1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiZ3Y5MS1wYW5lbCIpO3AuaW5uZXJIVE1MPSc8ZGl2IGNsYXNzPSJpbmZvLWxvYWRpbmciPkdlbWluaSBTZWFyY2ggaXMgY2hlY2tpbmcgU0lNQkFELCBORUQsIGFuZCBhc3Ryb25vbXkgc291cmNlcy4uLjwvZGl2Pic7dHJ5e2NvbnN0IGM9d2luZG93Lmd2OTFBbGFkaW4uZ2V0UmFEZWMoKTtjb25zdCBuPWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJndjkxLW5hbWUiKS52YWx1ZXx8IkRpc3BsYXllZCBnYWxheHkiO2NvbnN0IHI9YXdhaXQgZ29vZ2xlLmNvbGFiLmtlcm5lbC5pbnZva2VGdW5jdGlvbigidmlld2VyOS5nZXRHYWxheHlJbmZvIixbbiwrY1swXSwrY1sxXV0se30pO2NvbnN0IHJhdz1yJiZyLmRhdGE/ci5kYXRhOnt9O2xldCBvdXQ9cmF3WyJhcHBsaWNhdGlvbi9qc29uIl0/P3Jhd1sidGV4dC9wbGFpbiJdPz9PYmplY3QudmFsdWVzKHJhdylbMF07aWYodHlwZW9mIG91dD09PSJzdHJpbmciKXt0cnl7b3V0PUpTT04ucGFyc2Uob3V0KX1jYXRjaChfKXt9fWlmKCFvdXQpdGhyb3cgRXJyb3IoIkNvbGFiIHJldHVybmVkIG5vIGNhbGxiYWNrIHBheWxvYWQuIik7aWYob3V0Lm9rPT09ZmFsc2UpdGhyb3cgRXJyb3Iob3V0LmVycm9yfHwiR2VtaW5pIEdldCBJbmZvIGZhaWxlZC4iKTtjb25zdCBkPW91dC5wYXlsb2FkPz9vdXQ7aWYoIWR8fCFBcnJheS5pc0FycmF5KGQucm93cykpdGhyb3cgRXJyb3IoIkdlbWluaSByZXR1cm5lZCBubyBpbmZvcm1hdGlvbiByb3dzLiIpO2NvbnN0IHJvd3M9ZC5yb3dzLm1hcCh4PT5gPHRyPjx0ZD4ke2d2OTFFc2MoeC5wYXJhbWV0ZXIpfTwvdGQ+PHRkPiR7Z3Y5MUVzYyh4LnZhbHVlKX08L3RkPjx0ZD4ke2d2OTFFc2MoeC5ub3Rlcyl9PC90ZD48dGQ+JHtndjkxRXNjKHguc291cmNlKX08L3RkPjwvdHI+YCkuam9pbigiIik7cC5pbm5lckhUTUw9YDxkaXYgY2xhc3M9ImluZm8taGVhZCI+PGRpdiBjbGFzcz0iaW5mby10aXRsZSI+JHtndjkxRXNjKGQudGl0bGV8fG4pfTwvZGl2PjxwIGNsYXNzPSJpbmZvLXN1bW1hcnkiPiR7Z3Y5MUVzYyhkLnN1bW1hcnl8fCIiKX08L3A+PC9kaXY+PHRhYmxlIGNsYXNzPSJpbmZvLXRhYmxlIj48dGhlYWQ+PHRyPjx0aD5QYXJhbWV0ZXI8L3RoPjx0aD5WYWx1ZTwvdGg+PHRoPk5vdGVzPC90aD48dGg+U291cmNlPC90aD48L3RyPjwvdGhlYWQ+PHRib2R5PiR7cm93c308L3Rib2R5PjwvdGFibGU+YDtndjkxU3RhdHVzKCJHYWxheHkgaW5mb3JtYXRpb24gcG9wdWxhdGVkIGJ5IEdlbWluaSBTZWFyY2guIil9Y2F0Y2goZSl7Y29uc3QgdGV4dD1TdHJpbmcoZS5tZXNzYWdlfHxlKTtwLmlubmVySFRNTD0nPGRpdiBjbGFzcz0iaW5mby1lcnJvciI+JytndjkxRXNjKHRleHQpKyc8L2Rpdj4nO2d2OTFTdGF0dXMoIkdldCBJbmZvIGZhaWxlZDogIit0ZXh0KX1maW5hbGx5e2d2OTFCdXN5KCJndjkxLWluZm8iLGZhbHNlLCIiLCJHZXQgSW5mbyIpfX0=").decode("utf-8")
+source, count = re.subn(
+    r'async function gv91GetInfo\(\)\{.*?\}\n\(async\(\)=>',
+    lambda match: info_js + "\n(async()=>",
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("VIEWER-9-8 Get Info replacement failed")
+
+source = source.replace(
+    'gv91Status("Viewer ready.")})().catch',
+    'gv91Status("Viewer ready. Loading a Gemini random galaxy...");setTimeout(gv91RandomGalaxy,300)})().catch',
+    1,
+)
+
+# Same-frame rendering is required so Aladin and Colab callbacks share the output frame.
+if "display(HTML(page))" not in source:
+    raise RuntimeError("VIEWER-9-8 display token missing")
+
+for forbidden in ["OPENAI_API_KEY", "api.openai.com", "GV97_GALAXIES", "<iframe"]:
+    if forbidden in source:
+        raise RuntimeError(f"VIEWER-9-8 forbidden behavior remains: {forbidden}")
+
+for required in [
+    '"Gemini API Key"',
+    "gemini-2.5-flash:generateContent",
+    '"google_search": {}',
+    'google.colab.kernel.invokeFunction("viewer9.randomGalaxyAI"',
+    'google.colab.kernel.invokeFunction("viewer9.getGalaxyInfo"',
+    "display(HTML(page))",
+    "setTimeout(gv91RandomGalaxy,300)",
+]:
+    if required not in source:
+        raise RuntimeError(f"VIEWER-9-8 required behavior missing: {required}")
+
+compile(source, "VIEWER-9-8.py", "exec")
+exec(compile(source, "VIEWER-9-8.py", "exec"))
