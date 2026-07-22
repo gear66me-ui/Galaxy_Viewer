@@ -66,6 +66,17 @@ display(Javascript(r'''
   window.viewer36ChatGPTSearch = chatGPTSearch;
   window.viewer36GeminiSearch = geminiSearch;
 
+  const geminiIcon = `
+    <svg class="viewer36-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M12 1.8c.7 5.1 4.1 8.5 9.2 9.2-5.1.7-8.5 4.1-9.2 9.2-.7-5.1-4.1-8.5-9.2-9.2C7.9 10.3 11.3 6.9 12 1.8Z"/>
+    </svg>`;
+
+  const chatGPTIcon = `
+    <svg class="viewer36-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M8.2 4.1A4.1 4.1 0 0 1 15 3.7a4.1 4.1 0 0 1 4.6 5.5 4.1 4.1 0 0 1-.4 7 4.1 4.1 0 0 1-6.4 3.9 4.1 4.1 0 0 1-6.8-2.7 4.1 4.1 0 0 1-.3-7.3 4.1 4.1 0 0 1 2.5-6Z"/>
+      <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m8.1 4.3 7.1 4.1v7.2l-6.3 3.7m10.3-10-7.2 4.1-6.3-3.6m.4 7.5v-8l6-3.5 6.9 4"/>
+    </svg>`;
+
   function install() {
     const root = document.getElementById('viewer14-root');
     if (!root) return false;
@@ -98,8 +109,8 @@ display(Javascript(r'''
       actions.id = 'viewer36SearchActions';
       actions.className = 'viewer36-search-actions';
       actions.innerHTML = `
-        <button id="viewer36GeminiSearch" type="button" class="viewer36-search viewer36-gemini">Gemini Search</button>
-        <button id="viewer36ChatGPTSearch" type="button" class="viewer36-search viewer36-chatgpt">ChatGPT Search</button>`;
+        <button id="viewer36GeminiSearch" type="button" class="viewer36-search viewer36-gemini" title="Open Gemini app or website">${geminiIcon}<span>Search</span></button>
+        <button id="viewer36ChatGPTSearch" type="button" class="viewer36-search viewer36-chatgpt" title="Open ChatGPT app or website">${chatGPTIcon}<span>Search</span></button>`;
       title.appendChild(actions);
       document.getElementById('viewer36GeminiSearch').onclick = geminiSearch;
       document.getElementById('viewer36ChatGPTSearch').onclick = chatGPTSearch;
@@ -114,7 +125,8 @@ display(Javascript(r'''
     #viewer14Status .fom-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
     #viewer14Status .viewer36-title-label{white-space:nowrap}
     #viewer14Status .viewer36-search-actions{display:flex;align-items:center;gap:7px;margin-left:auto}
-    #viewer14Status .viewer36-search{padding:7px 11px!important;border-radius:7px!important;font-size:13px!important;font-weight:700!important;white-space:nowrap}
+    #viewer14Status .viewer36-search{display:inline-flex!important;align-items:center!important;gap:6px!important;padding:7px 11px!important;border-radius:7px!important;font-size:13px!important;font-weight:700!important;white-space:nowrap}
+    #viewer14Status .viewer36-icon{width:17px;height:17px;display:block;flex:0 0 17px}
     #viewer14Status .viewer36-chatgpt{background:#10a37f!important;color:#fff!important;border:1px solid #19c39a!important}
     #viewer14Status .viewer36-gemini{background:#1a73e8!important;color:#fff!important;border:1px solid #8ab4f8!important}
     #viewer14Status .viewer36-search:hover{filter:brightness(1.12)}
