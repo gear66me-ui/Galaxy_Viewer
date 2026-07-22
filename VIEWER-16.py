@@ -12,21 +12,13 @@ exec(compile(source, "VIEWER-15-base.py", "exec"))
 
 display(Javascript(r'''
 (() => {
-  const METHOD_LABELS = {
-    N: 'N — redshift-independent NED-D measurement',
-    Z: 'Z — HECATE regression estimate',
-    Zv: 'Zv — Virgo regression estimate',
-    C: 'C — NED-D distance with regression uncertainty',
-    Cv: 'Cv — Virgo NED-D distance with regression uncertainty'
-  };
-
   function distanceText(g) {
     let text = g.distance_bly || (String(g.redshift_distance || '').split('/')[1] || 'Not available').trim();
     const match = String(text).match(/^([0-9]+(?:\.[0-9]+)?)\s+billion\s+ly/i);
     if (match) {
       const billion = Number(match[1]);
       if (Number.isFinite(billion) && billion < 1) {
-        return `${(billion * 1000).toFixed(3)} million ly`;
+        return `${(billion * 1000).toFixed(2)} million ly`;
       }
     }
     return text || 'Not available';
@@ -36,11 +28,6 @@ display(Javascript(r'''
     const text = String(g.redshift_distance || '');
     const first = text.split('/')[0].trim();
     return first || 'Not available';
-  }
-
-  function methodText(g) {
-    const method = String(g.distance_method || '').trim();
-    return METHOD_LABELS[method] || method || 'Not available';
   }
 
   function installLayout() {
@@ -90,19 +77,20 @@ display(Javascript(r'''
         Number.isFinite(Number(g.velocity_kms))
       ) ? `${Number(g.velocity_kms).toLocaleString(undefined, {maximumFractionDigits: 1})} km/s` : 'Not available';
 
-      const combined = `${zText(g)} / ${distanceText(g)} / ${methodText(g)}`;
+      const combined = `${zText(g)} / ${distanceText(g)}`;
       const rows = [
         ['Object', g.name],
         ['Source catalog', g.catalog],
         ['ICRS coordinates', `${Number(g.ra).toFixed(6)} ${Number(g.dec).toFixed(6)}`],
         ['Galaxy age', g.age || 'Not available', 'emphasis'],
-        ['Z / Distance / Method', combined, 'emphasis'],
+        ['Redshift (z) / Distance', combined, 'emphasis'],
         ['Morphological type', g.morphology || 'Not available'],
         ['Angular size', g.angular_size || 'Not available'],
         ['Radial velocity', velocity],
         ['Physical size', g.physical_size || 'Not available'],
         ['Magnitude', g.magnitude || 'Not available'],
         ['Interest score', g.interest_score ?? 'Not available'],
+        ['Distance method', g.distance_method || 'Not available'],
         ['Displayed survey', survey],
         ['Field of view', `${fov.toFixed(3)}°`],
         ['Catalog elapsed time', `${Number(g.elapsed_seconds || 0).toFixed(2)} s`],
@@ -130,30 +118,32 @@ display(Javascript(r'''
     #viewer14-root .viewer16-coordinate-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
       flex: 1 0 100%;
     }
     #viewer14-root .viewer16-action-row button,
     #viewer14-root .viewer16-coordinate-row button {
-      padding: 10px 16px;
-      font-size: 15px;
-      min-height: 44px;
+      padding: 8px 13px;
+      font-size: 14px;
+      min-height: 40px;
     }
     #viewer14-root .viewer16-action-row button {
-      flex: 0 1 auto;
+      flex: 0 0 auto;
     }
     #viewer14-root .viewer16-coordinate-row input {
-      flex: 1 1 420px;
+      flex: 0 1 360px;
+      width: 360px;
+      max-width: 360px;
       min-width: 220px;
-      padding: 10px 12px;
-      font-size: 15px;
+      padding: 8px 10px;
+      font-size: 14px;
     }
     #viewer14-root .viewer16-coordinate-row button {
       flex: 0 0 auto;
     }
     #viewer14-root .controls {
-      gap: 10px;
+      gap: 8px;
     }
     #viewer14Status th,
     #viewer14Status td {
@@ -164,14 +154,16 @@ display(Javascript(r'''
         flex: 1 1 0;
       }
       #viewer14-root .viewer16-coordinate-row {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
       }
       #viewer14-root .viewer16-coordinate-row input {
-        flex: 1 1 100%;
-        width: 100%;
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        max-width: none;
       }
       #viewer14-root .viewer16-coordinate-row button {
-        width: 100%;
+        width: auto;
       }
     }
   `;
