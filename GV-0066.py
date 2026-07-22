@@ -86,9 +86,11 @@ if source.count('n==="VizieR"?180000:45000') != 1:
 
 source = source.replace(
     'save();status("Search complete. GV-0066 used SIMBAD row 1, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
-    'save();searchProgressDone();status("Search complete. GV-0066 used the nearest SIMBAD row, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
+    'save();searchProgressDone();window.gv0066CoordDirty=true;status("Search complete. GV-0066 used the nearest SIMBAD row, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
     1
 )
+if source.count('searchProgressDone();window.gv0066CoordDirty=true;status("Search complete.') != 1:
+    raise RuntimeError("GV-0066 post-search coordinate register release was not applied exactly once.")
 source = source.replace(
     '}catch(e){status("Search failed: "+e.message);debug(String(e.stack||e))}}',
     '}catch(e){searchProgressDone(true);status("Search failed: "+e.message);debug(String(e.stack||e))}}',
