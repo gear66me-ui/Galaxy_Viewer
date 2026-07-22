@@ -1,5 +1,9 @@
 from __future__ import annotations
-import base64, json, re, urllib.error, urllib.request
+import base64
+import json
+import re
+import urllib.error
+import urllib.request
 
 BASE_BLOB_URL = "https://api.github.com/repos/gear66me-ui/Galaxy_Viewer/git/blobs/2e2829d05c5fba6bd5b0ffc431987612eebe1aee"
 with urllib.request.urlopen(BASE_BLOB_URL, timeout=60) as response:
@@ -7,69 +11,75 @@ with urllib.request.urlopen(BASE_BLOB_URL, timeout=60) as response:
 source = base64.b64decode(payload["content"]).decode("utf-8")
 source = source.replace("Galaxy Viewer — VIEWER-9-1", "Galaxy Viewer — VIEWER-9-7 GEMINI", 1)
 
-gemini_backend = r'''def _openai_json(prompt: str, schema_name: str, schema: dict) -> dict:
-    api_key = _secret("Gemini API Key") or _secret("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError('Add the Colab secret named exactly "Gemini API Key" and enable notebook access.')
-    prompt = prompt + "\nReturn only one valid JSON object with no Markdown fences. Follow this schema exactly:\n" + json.dumps(schema, separators=(",", ":"))
-    body = {"contents":[{"parts":[{"text":prompt}]}],"tools":[{"google_search":{}}],"generationConfig":{"temperature":0.9 if schema_name=="random_galaxy" else 0.2}}
-    request = urllib.request.Request("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",data=json.dumps(body).encode("utf-8"),headers={"x-goog-api-key":api_key,"Content-Type":"application/json"},method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=75) as response:
-            result = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"Gemini API error {exc.code}: {detail[:1200]}") from exc
-    except Exception as exc:
-        raise RuntimeError(f"Gemini request failed: {exc}") from exc
-    candidates = result.get("candidates") or []
-    if not candidates:
-        raise RuntimeError("Gemini returned no candidate: " + json.dumps(result.get("promptFeedback") or {})[:800])
-    parts = ((candidates[0].get("content") or {}).get("parts") or [])
-    text = "".join(str(x.get("text","")) for x in parts if x.get("text")).strip()
-    if text.startswith("```"):
-        text = text.strip("`").strip()
-        if text.lower().startswith("json"): text = text[4:].strip()
-    a,b=text.find("{"),text.rfind("}")
-    if a<0 or b<a: raise RuntimeError(f"Gemini returned non-JSON text: {text[:1000]}")
-    try:
-        return json.loads(text[a:b+1])
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Gemini returned invalid JSON: {text[:1000]}") from exc'''
+gemini_backend = base64.b64decode("ZGVmIF9vcGVuYWlfanNvbihwcm9tcHQ6IHN0ciwgc2NoZW1hX25hbWU6IHN0ciwgc2NoZW1hOiBkaWN0KSAtPiBkaWN0OgogICAgYXBpX2tleSA9IF9zZWNyZXQoIkdlbWluaSBBUEkgS2V5Iikgb3IgX3NlY3JldCgiR0VNSU5JX0FQSV9LRVkiKQogICAgaWYgbm90IGFwaV9rZXk6CiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKCdBZGQgdGhlIENvbGFiIHNlY3JldCBuYW1lZCBleGFjdGx5ICJHZW1pbmkgQVBJIEtleSIgYW5kIGVuYWJsZSBub3RlYm9vayBhY2Nlc3MuJykKICAgIHByb21wdCA9IHByb21wdCArICJcblJldHVybiBvbmx5IG9uZSB2YWxpZCBKU09OIG9iamVjdCB3aXRoIG5vIE1hcmtkb3duIGZlbmNlcy4gRm9sbG93IHRoaXMgc2NoZW1hIGV4YWN0bHk6XG4iICsganNvbi5kdW1wcyhzY2hlbWEsIHNlcGFyYXRvcnM9KCIsIiwgIjoiKSkKICAgIGJvZHkgPSB7CiAgICAgICAgImNvbnRlbnRzIjogW3sicGFydHMiOiBbeyJ0ZXh0IjogcHJvbXB0fV19XSwKICAgICAgICAidG9vbHMiOiBbeyJnb29nbGVfc2VhcmNoIjoge319XSwKICAgICAgICAiZ2VuZXJhdGlvbkNvbmZpZyI6IHsidGVtcGVyYXR1cmUiOiAwLjkgaWYgc2NoZW1hX25hbWUgPT0gInJhbmRvbV9nYWxheHkiIGVsc2UgMC4yfSwKICAgIH0KICAgIHJlcXVlc3QgPSB1cmxsaWIucmVxdWVzdC5SZXF1ZXN0KAogICAgICAgICJodHRwczovL2dlbmVyYXRpdmVsYW5ndWFnZS5nb29nbGVhcGlzLmNvbS92MWJldGEvbW9kZWxzL2dlbWluaS0yLjUtZmxhc2g6Z2VuZXJhdGVDb250ZW50IiwKICAgICAgICBkYXRhPWpzb24uZHVtcHMoYm9keSkuZW5jb2RlKCJ1dGYtOCIpLAogICAgICAgIGhlYWRlcnM9eyJ4LWdvb2ctYXBpLWtleSI6IGFwaV9rZXksICJDb250ZW50LVR5cGUiOiAiYXBwbGljYXRpb24vanNvbiJ9LAogICAgICAgIG1ldGhvZD0iUE9TVCIsCiAgICApCiAgICB0cnk6CiAgICAgICAgd2l0aCB1cmxsaWIucmVxdWVzdC51cmxvcGVuKHJlcXVlc3QsIHRpbWVvdXQ9NzUpIGFzIHJlc3BvbnNlOgogICAgICAgICAgICByZXN1bHQgPSBqc29uLmxvYWRzKHJlc3BvbnNlLnJlYWQoKS5kZWNvZGUoInV0Zi04IikpCiAgICBleGNlcHQgdXJsbGliLmVycm9yLkhUVFBFcnJvciBhcyBleGM6CiAgICAgICAgZGV0YWlsID0gZXhjLnJlYWQoKS5kZWNvZGUoInV0Zi04IiwgZXJyb3JzPSJyZXBsYWNlIikKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJHZW1pbmkgQVBJIGVycm9yIHtleGMuY29kZX06IHtkZXRhaWxbOjEyMDBdfSIpIGZyb20gZXhjCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGV4YzoKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJHZW1pbmkgcmVxdWVzdCBmYWlsZWQ6IHtleGN9IikgZnJvbSBleGMKICAgIGNhbmRpZGF0ZXMgPSByZXN1bHQuZ2V0KCJjYW5kaWRhdGVzIikgb3IgW10KICAgIGlmIG5vdCBjYW5kaWRhdGVzOgogICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigiR2VtaW5pIHJldHVybmVkIG5vIGNhbmRpZGF0ZTogIiArIGpzb24uZHVtcHMocmVzdWx0LmdldCgicHJvbXB0RmVlZGJhY2siKSBvciB7fSlbOjgwMF0pCiAgICBwYXJ0cyA9ICgoY2FuZGlkYXRlc1swXS5nZXQoImNvbnRlbnQiKSBvciB7fSkuZ2V0KCJwYXJ0cyIpIG9yIFtdKQogICAgdGV4dCA9ICIiLmpvaW4oc3RyKHBhcnQuZ2V0KCJ0ZXh0IiwgIiIpKSBmb3IgcGFydCBpbiBwYXJ0cyBpZiBwYXJ0LmdldCgidGV4dCIpKS5zdHJpcCgpCiAgICBpZiB0ZXh0LnN0YXJ0c3dpdGgoImBgYCIpOgogICAgICAgIHRleHQgPSB0ZXh0LnN0cmlwKCJgIikuc3RyaXAoKQogICAgICAgIGlmIHRleHQubG93ZXIoKS5zdGFydHN3aXRoKCJqc29uIik6CiAgICAgICAgICAgIHRleHQgPSB0ZXh0WzQ6XS5zdHJpcCgpCiAgICBzdGFydCA9IHRleHQuZmluZCgieyIpCiAgICBlbmQgPSB0ZXh0LnJmaW5kKCJ9IikKICAgIGlmIHN0YXJ0IDwgMCBvciBlbmQgPCBzdGFydDoKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJHZW1pbmkgcmV0dXJuZWQgbm9uLUpTT04gdGV4dDoge3RleHRbOjEwMDBdfSIpCiAgICB0cnk6CiAgICAgICAgcmV0dXJuIGpzb24ubG9hZHModGV4dFtzdGFydDplbmQgKyAxXSkKICAgIGV4Y2VwdCBqc29uLkpTT05EZWNvZGVFcnJvciBhcyBleGM6CiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiR2VtaW5pIHJldHVybmVkIGludmFsaWQgSlNPTjoge3RleHRbOjEwMDBdfSIpIGZyb20gZXhj").decode("utf-8")
+source, count = re.subn(
+    r'def _openai_json\(prompt: str, schema_name: str, schema: dict\) -> dict:\n.*?\n    return json\.loads\(text\)',
+    lambda match: gemini_backend,
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("Gemini backend replacement failed")
 
-source,n=re.subn(r'def _openai_json\(prompt: str, schema_name: str, schema: dict\) -> dict:\n.*?\n    return json\.loads\(text\)',gemini_backend,source,count=1,flags=re.S)
-if n!=1: raise RuntimeError("Gemini backend replacement failed")
+callbacks = base64.b64decode("ZGVmIHZpZXdlcjlfcmFuZG9tX2NhbGxiYWNrKCk6CiAgICB0cnk6CiAgICAgICAgcmV0dXJuIHsib2siOiBUcnVlLCAicGF5bG9hZCI6IHZpZXdlcjlfcmFuZG9tX2FpKCl9CiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGV4YzoKICAgICAgICByZXR1cm4geyJvayI6IEZhbHNlLCAiZXJyb3IiOiBzdHIoZXhjKX0KCmRlZiB2aWV3ZXI5X2luZm9fY2FsbGJhY2sobmFtZTogc3RyLCByYTogZmxvYXQsIGRlYzogZmxvYXQpOgogICAgdHJ5OgogICAgICAgIHJldHVybiB7Im9rIjogVHJ1ZSwgInBheWxvYWQiOiB2aWV3ZXI5X2dldF9pbmZvKG5hbWUsIHJhLCBkZWMpfQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBleGM6CiAgICAgICAgcmV0dXJuIHsib2siOiBGYWxzZSwgImVycm9yIjogc3RyKGV4Yyl9Cgpjb2xhYl9vdXRwdXQucmVnaXN0ZXJfY2FsbGJhY2soInZpZXdlcjku cmFuZG9tR2FsYXh5QUkiLCB2aWV3ZXI5X3JhbmRvbV9jYWxsYmFjaykKY29sYWJfb3V0cHV0LnJlZ2lzdGVyX2NhbGxiYWNrKCJ2aWV3ZXI5LmdldEdhbGF4eUluZm8iLCB2aWV3ZXI5X2luZm9fY2FsbGJhY2sp".replace(" ", "")).decode("utf-8")
+source, count = re.subn(
+    r'colab_output\.register_callback\("viewer9\.randomGalaxyAI".*?\ncolab_output\.register_callback\("viewer9\.getGalaxyInfo".*?\)',
+    lambda match: callbacks,
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("Callback replacement failed")
 
-callbacks = '''def viewer9_random_callback():
-    try: return {"ok": True, "payload": viewer9_random_ai()}
-    except Exception as exc: return {"ok": False, "error": str(exc)}
+random_js = base64.b64decode("YXN5bmMgZnVuY3Rpb24gZ3Y5MVJhbmRvbUdhbGF4eSgpe2d2OTFCdXN5KCJndjkxLXJhbmRvbSIsdHJ1ZSwiU2VhcmNoaW5nLi4uIiwiUmFuZG9tIEdhbGF4eSIpO2d2OTFTdGF0dXMoIkdlbWluaSBTZWFyY2ggaXMgc2VsZWN0aW5nIGFuZCB2ZXJpZnlpbmcgYSByYW5kb20gZ2FsYXh5Li4uIik7dHJ5e2NvbnN0IGFyZ3M9cGFyZW50LkpTT04ucGFyc2UoIltdIiksa3dhcmdzPXBhcmVudC5KU09OLnBhcnNlKCJ7fSIpO2NvbnN0IHI9YXdhaXQgcGFyZW50Lmdvb2dsZS5jb2xhYi5rZXJuZWwuaW52b2tlRnVuY3Rpb24oInZpZXdlcjkucmFuZG9tR2FsYXh5QUkiLGFyZ3Msa3dhcmdzKTtjb25zdCByYXc9ciYmci5kYXRhP3IuZGF0YTp7fTtsZXQgb3V0PXJhd1siYXBwbGljYXRpb24vanNvbiJdPz9yYXdbInRleHQvcGxhaW4iXT8/T2JqZWN0LnZhbHVlcyhyYXcpWzBdO2lmKHR5cGVvZiBvdXQ9PT0ic3RyaW5nIil7dHJ5e291dD1KU09OLnBhcnNlKG91dCl9Y2F0Y2goXyl7fX1pZighb3V0KXRocm93IEVycm9yKCJDb2xhYiByZXR1cm5lZCBubyBjYWxsYmFjayBwYXlsb2FkLiIpO2lmKG91dC5vaz09PWZhbHNlKXRocm93IEVycm9yKG91dC5lcnJvcnx8IkdlbWluaSByYW5kb20gc2VhcmNoIGZhaWxlZC4iKTtjb25zdCBnPW91dC5wYXlsb2FkPz9vdXQ7aWYoIWd8fCFOdW1iZXIuaXNGaW5pdGUoK2cucmEpfHwhTnVtYmVyLmlzRmluaXRlKCtnLmRlYyl8fCFOdW1iZXIuaXNGaW5pdGUoK2cuZm92KSl0aHJvdyBFcnJvcigiR2VtaW5pIHJldHVybmVkIGludmFsaWQgZ2FsYXh5IGRhdGEuIik7Z3Y5MVNob3dHYWxheHkoZywiR2VtaW5pIHJhbmRvbSBnYWxheHkgbG9hZGVkIik7ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImd2OTEtcGFuZWwiKS5pbm5lckhUTUw9JzxkaXYgY2xhc3M9ImluZm8tbG9hZGluZyI+UHJlc3MgR2V0IEluZm8gdG8gcmVzZWFyY2ggJytndjkxRXNjKGcubmFtZSkrJy48L2Rpdj4nfWNhdGNoKGUpe2d2OTFTdGF0dXMoIlJhbmRvbSBHYWxheHkgZmFpbGVkOiAiK1N0cmluZyhlLm1lc3NhZ2V8fGUpKX1maW5hbGx5e2d2OTFCdXN5KCJndjkxLXJhbmRvbSIsZmFsc2UsIiIsIlJhbmRvbSBHYWxheHkiKX19").decode("utf-8")
+source, count = re.subn(
+    r'async function gv91RandomGalaxy\(\)\{.*?\}\nasync function gv91GetInfo',
+    lambda match: random_js + "\nasync function gv91GetInfo",
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("Random replacement failed")
 
-def viewer9_info_callback(name: str, ra: float, dec: float):
-    try: return {"ok": True, "payload": viewer9_get_info(name, ra, dec)}
-    except Exception as exc: return {"ok": False, "error": str(exc)}
+info_js = base64.b64decode("YXN5bmMgZnVuY3Rpb24gZ3Y5MUdldEluZm8oKXtndjkxQnVzeSgiZ3Y5MS1pbmZvIix0cnVlLCJSZXNlYXJjaGluZy4uLiIsIkdldCBJbmZvIik7Y29uc3QgcD1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiZ3Y5MS1wYW5lbCIpO3AuaW5uZXJIVE1MPSc8ZGl2IGNsYXNzPSJpbmZvLWxvYWRpbmciPkdlbWluaSBTZWFyY2ggaXMgY2hlY2tpbmcgU0lNQkFELCBORUQsIGFuZCBhc3Ryb25vbXkgc291cmNlcy4uLjwvZGl2Pic7dHJ5e2NvbnN0IGM9d2luZG93Lmd2OTFBbGFkaW4uZ2V0UmFEZWMoKSxuPWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJndjkxLW5hbWUiKS52YWx1ZXx8IkRpc3BsYXllZCBnYWxheHkiO2NvbnN0IGFyZ3M9cGFyZW50LkpTT04ucGFyc2UoSlNPTi5zdHJpbmdpZnkoW24sK2NbMF0sK2NbMV1dKSkpLGt3YXJncz1wYXJlbnQuSlNPTi5wYXJzZSgie30iKTtjb25zdCByPWF3YWl0IHBhcmVudC5nb29nbGUuY29sYWIua2VybmVsLmludm9rZUZ1bmN0aW9uKCJ2aWV3ZXI5LmdldEdhbGF4eUluZm8iLGFyZ3Msa3dhcmdzKTtjb25zdCByYXc9ciYmci5kYXRhP3IuZGF0YTp7fTtsZXQgb3V0PXJhd1siYXBwbGljYXRpb24vanNvbiJdPz9yYXdbInRleHQvcGxhaW4iXT8/T2JqZWN0LnZhbHVlcyhyYXcpWzBdO2lmKHR5cGVvZiBvdXQ9PT0ic3RyaW5nIil7dHJ5e291dD1KU09OLnBhcnNlKG91dCl9Y2F0Y2goXyl7fX1pZighb3V0KXRocm93IEVycm9yKCJDb2xhYiByZXR1cm5lZCBubyBjYWxsYmFjayBwYXlsb2FkLiIpO2lmKG91dC5vaz09PWZhbHNlKXRocm93IEVycm9yKG91dC5lcnJvcnx8IkdlbWluaSBHZXQgSW5mbyBmYWlsZWQuIik7Y29uc3QgZD1vdXQucGF5bG9hZD8/b3V0O2lmKCFkfHwhQXJyYXkuaXNBcnJheShkLnJvd3MpKXRocm93IEVycm9yKCJHZW1pbmkgcmV0dXJuZWQgbm8gaW5mb3JtYXRpb24gcm93cy4iKTtjb25zdCByb3dzPWQucm93cy5tYXAoeD0+YDx0cj48dGQ+JHtndjkxRXNjKHgucGFyYW1ldGVyKX08L3RkPjx0ZD4ke2d2OTFFc2MoeC52YWx1ZSl9PC90ZD48dGQ+JHtndjkxRXNjKHgubm90ZXMpfTwvdGQ+PHRkPiR7Z3Y5MUVzYyh4LnNvdXJjZSl9PC90ZD48L3RyPmApLmpvaW4oIiIpO3AuaW5uZXJIVE1MPWA8ZGl2IGNsYXNzPSJpbmZvLWhlYWQiPjxkaXYgY2xhc3M9ImluZm8tdGl0bGUiPiR7Z3Y5MUVzYyhkLnRpdGxlfHxuKX08L2Rpdj48cCBjbGFzcz0iaW5mby1zdW1tYXJ5Ij4ke2d2OTFFc2MoZC5zdW1tYXJ5fHwiIil9PC9wPjwvZGl2Pjx0YWJsZSBjbGFzcz0iaW5mby10YWJsZSI+PHRoZWFkPjx0cj48dGg+UGFyYW1ldGVyPC90aD48dGg+VmFsdWU8L3RoPjx0aD5Ob3RlczwvdGg+PHRoPlNvdXJjZTwvdGg+PC90cj48L3RoZWFkPjx0Ym9keT4ke3Jvd3N9PC90Ym9keT48L3RhYmxlPmA7Z3Y5MVN0YXR1cygiR2FsYXh5IGluZm9ybWF0aW9uIHBvcHVsYXRlZCBieSBHZW1pbmkgU2VhcmNoLiIpfWNhdGNoKGUpe2NvbnN0IHRleHQ9U3RyaW5nKGUubWVzc2FnZXx8ZSk7cC5pbm5lckhUTUw9JzxkaXYgY2xhc3M9ImluZm8tZXJyb3IiPicrZ3Y5MUVzYyh0ZXh0KSsnPC9kaXY+JztndjkxU3RhdHVzKCJHZXQgSW5mbyBmYWlsZWQ6ICIrdGV4dCl9ZmluYWxseXtndjkxQnVzeSgiZ3Y5MS1pbmZvIixmYWxzZSwiIiwiR2V0IEluZm8iKX19").decode("utf-8")
+source, count = re.subn(
+    r'async function gv91GetInfo\(\)\{.*?\}\n\(async\(\)=>',
+    lambda match: info_js + "\n(async()=>",
+    source,
+    count=1,
+    flags=re.S,
+)
+if count != 1:
+    raise RuntimeError("Info replacement failed")
 
-colab_output.register_callback("viewer9.randomGalaxyAI", viewer9_random_callback)
-colab_output.register_callback("viewer9.getGalaxyInfo", viewer9_info_callback)'''
-source,n=re.subn(r'colab_output\.register_callback\("viewer9\.randomGalaxyAI".*?\ncolab_output\.register_callback\("viewer9\.getGalaxyInfo".*?\)',callbacks,source,count=1,flags=re.S)
-if n!=1: raise RuntimeError("Callback replacement failed")
+source = source.replace(
+    'gv91Status("Viewer ready.")})().catch',
+    'gv91Status("Viewer ready. Loading a Gemini random galaxy...");setTimeout(gv91RandomGalaxy,300)})().catch',
+    1,
+)
+source = source.replace(
+    "display(HTML(page))",
+    'import html as _html\niframe = f\'<iframe srcdoc="{_html.escape(page, quote=True)}" style="width:100%;height:1250px;border:0;background:#000" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>\'\ndisplay(HTML(iframe))',
+    1,
+)
 
-random_js='''async function gv91RandomGalaxy(){gv91Busy("gv91-random",true,"Searching...","Random Galaxy");gv91Status("Gemini Search is selecting and verifying a random galaxy...");try{const args=parent.JSON.parse("[]"),kwargs=parent.JSON.parse("{}");const r=await parent.google.colab.kernel.invokeFunction("viewer9.randomGalaxyAI",args,kwargs);const raw=r&&r.data?r.data:{};let out=raw["application/json"]??raw["text/plain"]??Object.values(raw)[0];if(typeof out==="string"){try{out=JSON.parse(out)}catch(_){}}if(!out)throw Error("Colab returned no callback payload.");if(out.ok===false)throw Error(out.error||"Gemini random search failed.");const g=out.payload??out;if(!g||!Number.isFinite(+g.ra)||!Number.isFinite(+g.dec)||!Number.isFinite(+g.fov))throw Error("Gemini returned invalid galaxy data.");gv91ShowGalaxy(g,"Gemini random galaxy loaded");document.getElementById("gv91-panel").innerHTML='<div class="info-loading">Press Get Info to research '+gv91Esc(g.name)+'.</div>'}catch(e){gv91Status("Random Galaxy failed: "+String(e.message||e))}finally{gv91Busy("gv91-random",false,"","Random Galaxy")}}'''
-source,n=re.subn(r'async function gv91RandomGalaxy\(\)\{.*?\}\nasync function gv91GetInfo',random_js+'\nasync function gv91GetInfo',source,count=1,flags=re.S)
-if n!=1: raise RuntimeError("Random replacement failed")
+for forbidden in ["OPENAI_API_KEY", "api.openai.com", "GV97_GALAXIES", "Incomplete information table."]:
+    if forbidden in source:
+        raise RuntimeError(f"Forbidden behavior remains: {forbidden}")
 
-info_js='''async function gv91GetInfo(){gv91Busy("gv91-info",true,"Researching...","Get Info");const p=document.getElementById("gv91-panel");p.innerHTML='<div class="info-loading">Gemini Search is checking SIMBAD, NED, and astronomy sources...</div>';try{const c=window.gv91Aladin.getRaDec(),n=document.getElementById("gv91-name").value||"Displayed galaxy";const args=parent.JSON.parse(JSON.stringify([n,+c[0],+c[1]])),kwargs=parent.JSON.parse("{}");const r=await parent.google.colab.kernel.invokeFunction("viewer9.getGalaxyInfo",args,kwargs);const raw=r&&r.data?r.data:{};let out=raw["application/json"]??raw["text/plain"]??Object.values(raw)[0];if(typeof out==="string"){try{out=JSON.parse(out)}catch(_){}}if(!out)throw Error("Colab returned no callback payload.");if(out.ok===false)throw Error(out.error||"Gemini Get Info failed.");const d=out.payload??out;if(!d||!Array.isArray(d.rows))throw Error("Gemini returned no information rows.");const rows=d.rows.map(x=>`<tr><td>${gv91Esc(x.parameter)}</td><td>${gv91Esc(x.value)}</td><td>${gv91Esc(x.notes)}</td><td>${gv91Esc(x.source)}</td></tr>`).join("");p.innerHTML=`<div class="info-head"><div class="info-title">${gv91Esc(d.title||n)}</div><p class="info-summary">${gv91Esc(d.summary||"")}</p></div><table class="info-table"><thead><tr><th>Parameter</th><th>Value</th><th>Notes</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table>`;gv91Status("Galaxy information populated by Gemini Search.")}catch(e){const text=String(e.message||e);p.innerHTML='<div class="info-error">'+gv91Esc(text)+'</div>';gv91Status("Get Info failed: "+text)}finally{gv91Busy("gv91-info",false,"","Get Info")}}'''
-source,n=re.subn(r'async function gv91GetInfo\(\)\{.*?\}\n\(async\(\)=>',info_js+'\n(async()=>',source,count=1,flags=re.S)
-if n!=1: raise RuntimeError("Info replacement failed")
+for required in [
+    '"Gemini API Key"',
+    "gemini-2.5-flash:generateContent",
+    '"google_search": {}',
+    'invokeFunction("viewer9.randomGalaxyAI"',
+    'invokeFunction("viewer9.getGalaxyInfo"',
+    "setTimeout(gv91RandomGalaxy,300)",
+]:
+    if required not in source:
+        raise RuntimeError(f"Required behavior missing: {required}")
 
-source=source.replace('gv91Status("Viewer ready.")})().catch','gv91Status("Viewer ready. Loading a Gemini random galaxy...");setTimeout(gv91RandomGalaxy,300)})().catch',1)
-source=source.replace("display(HTML(page))",'''import html as _html
-iframe=f'<iframe srcdoc="{_html.escape(page,quote=True)}" style="width:100%;height:1250px;border:0;background:#000" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>'
-display(HTML(iframe))''',1)
-
-for forbidden in ["OPENAI_API_KEY","api.openai.com","GV97_GALAXIES","Incomplete information table."]:
-    if forbidden in source: raise RuntimeError(f"Forbidden behavior remains: {forbidden}")
-for required in ['"Gemini API Key"',"gemini-2.5-flash:generateContent",'"google_search":{}','invokeFunction("viewer9.randomGalaxyAI"','invokeFunction("viewer9.getGalaxyInfo"',"setTimeout(gv91RandomGalaxy,300)"]:
-    if required not in source: raise RuntimeError(f"Required behavior missing: {required}")
-
-compile(source,"VIEWER-9-7.py","exec")
-exec(compile(source,"VIEWER-9-7.py","exec"))
+compile(source, "VIEWER-9-7.py", "exec")
+exec(compile(source, "VIEWER-9-7.py", "exec"))
