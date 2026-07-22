@@ -5,6 +5,12 @@ import base64
 import json
 import urllib.request
 
+from google.colab import output
+from IPython.display import Javascript, display
+
+output.no_vertical_scroll()
+display(Javascript("google.colab.output.setIframeHeight(0, true, {maxHeight: 5000})"))
+
 GV0055_BLOB_URL = "https://api.github.com/repos/gear66me-ui/Galaxy_Viewer/git/blobs/bc0df8ddebb8a230a6709c51c893bbd67a228f2d"
 
 with urllib.request.urlopen(GV0055_BLOB_URL, timeout=60) as response:
