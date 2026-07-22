@@ -17,5 +17,9 @@ source = source.replace("gv0062", "gv0064")
 source = source.replace("GV-0062", "GV-0064")
 source = source.replace('fov:3.0', 'fov:0.05')
 source = source.replace('The default field of view is 3 degrees.', 'The default field of view is 3 arcminutes.')
+source = source.replace(
+    'function restore(m=""){if(!window.aladin)return;const s=load();document.getElementById("coordBox").value=`${s.ra.toFixed(6)} ${s.dec.toFixed(6)}`;',
+    'function restore(m=""){if(!window.aladin)return;const s=load();'
+)
 
 exec(compile(source, "GV-0064.py", "exec"))
