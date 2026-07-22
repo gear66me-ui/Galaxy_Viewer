@@ -68,7 +68,7 @@ display(HTML(iframe))''',1)
 
 for forbidden in ["OPENAI_API_KEY","api.openai.com","GV97_GALAXIES","Incomplete information table."]:
     if forbidden in source: raise RuntimeError(f"Forbidden behavior remains: {forbidden}")
-for required in ['"Gemini API Key"',"gemini-2.5-flash:generateContent",'"google_search": {}','invokeFunction("viewer9.randomGalaxyAI"','invokeFunction("viewer9.getGalaxyInfo"',"setTimeout(gv91RandomGalaxy,300)"]:
+for required in ['"Gemini API Key"',"gemini-2.5-flash:generateContent",'"google_search":{}','invokeFunction("viewer9.randomGalaxyAI"','invokeFunction("viewer9.getGalaxyInfo"',"setTimeout(gv91RandomGalaxy,300)"]:
     if required not in source: raise RuntimeError(f"Required behavior missing: {required}")
 
 compile(source,"VIEWER-9-7.py","exec")
