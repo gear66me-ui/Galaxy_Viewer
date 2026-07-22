@@ -56,45 +56,28 @@ if source.count('    service.ROW_LIMIT = 20') != 1:
 source = source.replace('    service.ROW_LIMIT = 20', '    service.ROW_LIMIT = -1', 1)
 source = source.replace('"_candidateCount": len(table), "_selectionRule": "SIMBAD row 1",', '"_candidateCount": len(table), "_selectionRule": "Nearest SIMBAD row",', 1)
 
-source = source.replace(
-    'function survey(id){id=norm(id);document.getElementById("surveySelect").value=id;window.aladin.setImageSurvey(id)}',
-    'function survey(id){id=norm(id);document.getElementById("surveySelect").value=id;window.aladin.setBaseImageLayer(id)}',
-    1
-)
-if source.count('window.aladin.setBaseImageLayer(id)') != 1:
-    raise RuntimeError("GV-0066 base survey API replacement was not applied exactly once.")
+# Restore only the GV-0055 viewer/survey implementation.
+aladin_css = '<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css">\n'
+if source.count(aladin_css) != 1:
+    raise RuntimeError("GV-0066 Aladin stylesheet line was not found exactly once.")
+source = source.replace(aladin_css, '', 1)
 
-source = source.replace(
-    '<div class="controls"><label for="surveySelect">Displayed survey:</label><select id="surveySelect" onchange="changeSurvey()"></select></div>',
-    '<div class="controls"><label for="surveySelect">Displayed survey:</label><select id="surveySelect" onpointerdown="window.gv0066SurveyUntil=Date.now()+4000" ontouchstart="window.gv0066SurveyUntil=Date.now()+4000" onfocus="window.gv0066SurveyUntil=Date.now()+4000" onchange="changeSurvey(this.value)"></select></div>',
-    1
-)
-if source.count('onchange="changeSurvey(this.value)"') != 1:
-    raise RuntimeError("GV-0066 direct survey value handler was not applied exactly once.")
+original_init_tail = 'restore("Viewer ready. Restored last saved view.");save();try{window.aladin.on("positionChanged",()=>save());window.aladin.on("zoomChanged",()=>save())}catch(e){}setInterval(()=>{if(!document.hidden)save()},1000)})().catch(e=>status("Viewer initialization failed: "+e.message));'
+gv0055_init_tail = 'restore("Viewer ready. Restored last saved view.");save()})().catch(e=>status("Viewer initialization failed: "+e.message));'
+if source.count(original_init_tail) != 1:
+    raise RuntimeError("GV-0066 viewer initialization tail was not found exactly once.")
+source = source.replace(original_init_tail, gv0055_init_tail, 1)
 
-source = source.replace(
-    'function fetchCoords(){const c=window.aladin.getRaDec(),t=`${c[0].toFixed(6)} ${c[1].toFixed(6)}`;document.getElementById("coordBox").value=t;save({ra:c[0],dec:c[1]});status("Coordinates fetched: "+t)}function changeSurvey(){const id=norm(document.getElementById("surveySelect").value);survey(id);save({survey:id});status("Loaded survey: "+id)}',
-    'function fetchCoords(){const c=window.aladin.getRaDec(),t=`${c[0].toFixed(6)} ${c[1].toFixed(6)}`;document.getElementById("coordBox").value=t;save({ra:c[0],dec:c[1]});status("Coordinates fetched: "+t)}function changeSurvey(selectedId){const id=norm(selectedId);window.gv0066SurveyUntil=Date.now()+1500;survey(id);save({survey:id});status("Loaded survey: "+id)}',
-    1
-)
-if source.count('function changeSurvey(selectedId)') != 1:
-    raise RuntimeError("GV-0066 direct survey change function was not applied exactly once.")
+original_lifecycle = 'document.addEventListener("visibilitychange",()=>{if(document.hidden){save()}else{restore("Viewer restored from saved tab state.")}});window.addEventListener("pagehide",()=>save());window.addEventListener("blur",()=>save());window.addEventListener("focus",()=>restore("Viewer restored from saved tab state."));'
+gv0055_lifecycle = 'document.addEventListener("visibilitychange",()=>document.hidden?save():restore("Viewer restored from saved tab state."));window.addEventListener("pagehide",()=>save());window.addEventListener("blur",()=>save());'
+if source.count(original_lifecycle) != 1:
+    raise RuntimeError("GV-0066 viewer lifecycle block was not found exactly once.")
+source = source.replace(original_lifecycle, gv0055_lifecycle, 1)
 
-source = source.replace(
-    'window.addEventListener("focus",()=>restore("Viewer restored from saved tab state."));',
-    'window.addEventListener("focus",()=>{if(Date.now()>(window.gv0066SurveyUntil||0))restore("Viewer restored from saved tab state.")});',
-    1
-)
-if source.count('Date.now()>(window.gv0066SurveyUntil||0)') != 1:
-    raise RuntimeError("GV-0066 survey focus guard was not applied exactly once.")
-
-source = source.replace(
-    '#gv0066-root .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}',
-    '#gv0066-root .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;position:relative;z-index:1000}#gv0066-root #surveySelect{position:relative;z-index:1001;pointer-events:auto!important;touch-action:manipulation}',
-    1
-)
-if source.count('#gv0066-root #surveySelect{position:relative;z-index:1001;pointer-events:auto!important;touch-action:manipulation}') != 1:
-    raise RuntimeError("GV-0066 survey selector tap-access CSS was not applied exactly once.")
+if source.count('<select id="surveySelect" onchange="changeSurvey()"></select>') != 1:
+    raise RuntimeError("GV-0066 GV-0055 survey selector markup was not preserved exactly once.")
+if source.count('window.aladin.setImageSurvey(id)') != 1:
+    raise RuntimeError("GV-0066 GV-0055 survey-loading call was not preserved exactly once.")
 
 source = source.replace(
     '#gv0066-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0066-root .fetch-btn{background:#159447}#gv0066-root .find-btn{background:#087fd1}',
