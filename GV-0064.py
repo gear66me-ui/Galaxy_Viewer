@@ -2,6 +2,12 @@ from __future__ import annotations
 
 import urllib.request
 
+from google.colab import output
+from IPython.display import Javascript, display
+
+output.no_vertical_scroll()
+display(Javascript("google.colab.output.setIframeHeight(0, true, {maxHeight: 5000})"))
+
 SOURCE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/f085610ad94f22bacb30f23ea5a3bc605a9d619f/GV-0062_DECODED_TMP.py"
 
 with urllib.request.urlopen(SOURCE_URL, timeout=60) as response:
