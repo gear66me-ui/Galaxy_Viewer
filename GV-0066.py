@@ -38,7 +38,8 @@ new_ned = '''    if ra_col and dec_col:
                 separations.append(float("inf"))
             else:
                 ned_coord = SkyCoord(ned_ra * u.deg, ned_dec * u.deg, frame="icrs")
-                separations.append(center.separation(ned_coord).arcsec)
+                separations.append(center.separation(ned_coord).arcsec
+                )
         table["_gv_sep"] = separations
         table.sort("_gv_sep")'''
 if source.count(old_ned) != 1:
@@ -68,10 +69,20 @@ if source.count(original_lifecycle) != 1:
     raise RuntimeError("GV-0066 viewer lifecycle block was not found exactly once.")
 source = source.replace(original_lifecycle, gv0055_lifecycle, 1)
 
-if source.count('<select id="surveySelect" onchange="changeSurvey()"></select>') != 1:
-    raise RuntimeError("GV-0066 GV-0055 survey selector markup was not preserved exactly once.")
-if source.count('window.aladin.setImageSurvey(id)') != 1:
-    raise RuntimeError("GV-0066 GV-0055 survey-loading call was not preserved exactly once.")
+# GV-0066-1: hardcode the survey options directly into the HTML.
+empty_selector = '<select id="surveySelect" onchange="changeSurvey()"></select>'
+hardcoded_selector = '''<select id="surveySelect" onchange="changeSurvey()">
+<option value="CDS/P/HST/EPO">Hubble Outreach Color</option>
+<option value="P/DSS2/color">DSS2 Color</option>
+<option value="P/DSS2/red">DSS2 Red</option>
+<option value="P/PanSTARRS/DR1/color-z-zg-g">Pan-STARRS DR1 Color</option>
+<option value="P/DECaLS/DR5/color">DECaLS DR5 Color</option>
+<option value="P/2MASS/color">2MASS Color</option>
+<option value="P/GALEXGR6/AIS/color">GALEX GR6/7 Color</option>
+</select>'''
+if source.count(empty_selector) != 1:
+    raise RuntimeError("GV-0066 survey selector was not found exactly once.")
+source = source.replace(empty_selector, hardcoded_selector, 1)
 
 source = source.replace(
     '#gv0066-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0066-root .fetch-btn{background:#159447}#gv0066-root .find-btn{background:#087fd1}',
@@ -115,7 +126,6 @@ source = source.replace(
 )
 
 # Isolate the GV-0066 viewer and survey controls from retained Colab outputs.
-# GV-0055 and GV-0066 previously reused the same DOM IDs and global names.
 source = source.replace('aladin-lite-div', 'aladin-lite-div-gv0066')
 source = source.replace('surveySelect', 'surveySelect-gv0066')
 source = source.replace('changeSurvey(', 'gv0066ChangeSurvey(')
