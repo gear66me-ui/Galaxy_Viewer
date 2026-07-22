@@ -114,4 +114,28 @@ source = source.replace(
     1
 )
 
+# Isolate the GV-0066 viewer and survey controls from retained Colab outputs.
+# GV-0055 and GV-0066 previously reused the same DOM IDs and global names.
+source = source.replace('aladin-lite-div', 'aladin-lite-div-gv0066')
+source = source.replace('surveySelect', 'surveySelect-gv0066')
+source = source.replace('changeSurvey(', 'gv0066ChangeSurvey(')
+source = source.replace('survey(', 'gv0066Survey(')
+source = source.replace('window.aladin', 'window.gv0066Aladin')
+source = source.replace('SURVEYS', 'GV0066_SURVEYS')
+source = source.replace('CATALOGS', 'GV0066_CATALOGS')
+source = source.replace('KEY', 'GV0066_KEY')
+source = source.replace('LYM', 'GV0066_LYM')
+source = source.replace('LYP', 'GV0066_LYP')
+
+if source.count('id="surveySelect-gv0066"') != 1:
+    raise RuntimeError("GV-0066 unique survey selector ID was not applied exactly once.")
+if source.count('id="aladin-lite-div-gv0066"') != 1:
+    raise RuntimeError("GV-0066 unique Aladin container ID was not applied exactly once.")
+if source.count('function gv0066ChangeSurvey()') != 1:
+    raise RuntimeError("GV-0066 namespaced survey handler was not applied exactly once.")
+if source.count('function gv0066Survey(id)') != 1:
+    raise RuntimeError("GV-0066 namespaced survey loader was not applied exactly once.")
+if source.count('window.gv0066Aladin.setImageSurvey(id)') != 1:
+    raise RuntimeError("GV-0066 namespaced Aladin survey call was not applied exactly once.")
+
 exec(compile(source, "GV-0066.py", "exec"))
