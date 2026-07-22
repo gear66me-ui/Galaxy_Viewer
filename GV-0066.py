@@ -65,6 +65,30 @@ if source.count('window.aladin.setBaseImageLayer(id)') != 1:
     raise RuntimeError("GV-0066 base survey API replacement was not applied exactly once.")
 
 source = source.replace(
+    '<div class="controls"><label for="surveySelect">Displayed survey:</label><select id="surveySelect" onchange="changeSurvey()"></select></div>',
+    '<div class="controls"><label for="surveySelect">Displayed survey:</label><select id="surveySelect" onpointerdown="window.gv0066SurveyUntil=Date.now()+4000" ontouchstart="window.gv0066SurveyUntil=Date.now()+4000" onfocus="window.gv0066SurveyUntil=Date.now()+4000" onchange="changeSurvey(this.value)"></select></div>',
+    1
+)
+if source.count('onchange="changeSurvey(this.value)"') != 1:
+    raise RuntimeError("GV-0066 direct survey value handler was not applied exactly once.")
+
+source = source.replace(
+    'function fetchCoords(){const c=window.aladin.getRaDec(),t=`${c[0].toFixed(6)} ${c[1].toFixed(6)}`;document.getElementById("coordBox").value=t;save({ra:c[0],dec:c[1]});status("Coordinates fetched: "+t)}function changeSurvey(){const id=norm(document.getElementById("surveySelect").value);survey(id);save({survey:id});status("Loaded survey: "+id)}',
+    'function fetchCoords(){const c=window.aladin.getRaDec(),t=`${c[0].toFixed(6)} ${c[1].toFixed(6)}`;document.getElementById("coordBox").value=t;save({ra:c[0],dec:c[1]});status("Coordinates fetched: "+t)}function changeSurvey(selectedId){const id=norm(selectedId);window.gv0066SurveyUntil=Date.now()+1500;survey(id);save({survey:id});status("Loaded survey: "+id)}',
+    1
+)
+if source.count('function changeSurvey(selectedId)') != 1:
+    raise RuntimeError("GV-0066 direct survey change function was not applied exactly once.")
+
+source = source.replace(
+    'window.addEventListener("focus",()=>restore("Viewer restored from saved tab state."));',
+    'window.addEventListener("focus",()=>{if(Date.now()>(window.gv0066SurveyUntil||0))restore("Viewer restored from saved tab state.")});',
+    1
+)
+if source.count('Date.now()>(window.gv0066SurveyUntil||0)') != 1:
+    raise RuntimeError("GV-0066 survey focus guard was not applied exactly once.")
+
+source = source.replace(
     '#gv0066-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0066-root .fetch-btn{background:#159447}#gv0066-root .find-btn{background:#087fd1}',
     '#gv0066-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0066-root .fetch-btn{background:#159447}#gv0066-root .find-btn{background:#087fd1}#gv0066-root .progress-shell{display:flex;align-items:center;gap:10px;margin-top:10px;padding:9px 11px;background:#02080d;border:1px solid #0d668a;border-radius:7px}#gv0066-root .progress-spinner{width:18px;height:18px;border:3px solid #164d63;border-top-color:#43d2ff;border-radius:50%;animation:gv0066spin .8s linear infinite;display:none;flex:0 0 auto}#gv0066-root .progress-track{height:12px;flex:1;background:#031723;border:1px solid #116482;border-radius:8px;overflow:hidden}#gv0066-root .progress-fill{width:0%;height:100%;background:#159447;transition:width .25s ease}#gv0066-root .progress-text{min-width:150px;color:#8be0ff;font-family:monospace;font-size:12px}@keyframes gv0066spin{to{transform:rotate(360deg)}}',
     1
