@@ -51,6 +51,11 @@ if source.count(old_ned) != 1:
     raise RuntimeError("GV-0065 NED block was not found exactly once.")
 source = source.replace(old_ned, new_ned, 1)
 
+if source.count('    service.ROW_LIMIT = 20') != 1:
+    raise RuntimeError("GV-0065 SIMBAD row limit was not found exactly once.")
+source = source.replace('    service.ROW_LIMIT = 20', '    service.ROW_LIMIT = -1', 1)
+source = source.replace('"_candidateCount": len(table), "_selectionRule": "SIMBAD row 1",', '"_candidateCount": len(table), "_selectionRule": "Nearest SIMBAD row",', 1)
+
 source = source.replace(
     '#gv0065-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0065-root .fetch-btn{background:#159447}#gv0065-root .find-btn{background:#087fd1}',
     '#gv0065-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0065-root .fetch-btn{background:#159447}#gv0065-root .find-btn{background:#087fd1}#gv0065-root .progress-shell{display:flex;align-items:center;gap:10px;margin-top:10px;padding:9px 11px;background:#02080d;border:1px solid #0d668a;border-radius:7px}#gv0065-root .progress-spinner{width:18px;height:18px;border:3px solid #164d63;border-top-color:#43d2ff;border-radius:50%;animation:gv0065spin .8s linear infinite;display:none;flex:0 0 auto}#gv0065-root .progress-track{height:12px;flex:1;background:#031723;border:1px solid #116482;border-radius:8px;overflow:hidden}#gv0065-root .progress-fill{width:0%;height:100%;background:#159447;transition:width .25s ease}#gv0065-root .progress-text{min-width:150px;color:#8be0ff;font-family:monospace;font-size:12px}@keyframes gv0065spin{to{transform:rotate(360deg)}}',
@@ -73,7 +78,7 @@ source = source.replace(
 )
 source = source.replace(
     'save();status("Search complete. GV-0065 used SIMBAD row 1, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
-    'save();searchProgressDone();status("Search complete. GV-0065 used SIMBAD row 1, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
+    'save();searchProgressDone();status("Search complete. GV-0065 used the nearest SIMBAD row, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
     1
 )
 source = source.replace(
