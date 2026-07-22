@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import urllib.request
 
 from google.colab import output
@@ -29,9 +30,13 @@ source = source.replace(
     'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);',
     'async function findGalaxy(){try{const c=coords(document.getElementById("coordBox").value);window.gv0065CoordDirty=false;'
 )
-source = source.replace(
-    'coords = SkyCoord(table[ra_col], table[dec_col], unit=(u.deg, u.deg), frame="icrs")',
-    'coords = SkyCoord(ra=table[ra_col], dec=table[dec_col], frame="icrs")'
+source, ned_fix_count = re.subn(
+    r'coords\s*=\s*SkyCoord\(table\[ra_col\],\s*table\[dec_col\],\s*unit=\(u\.deg,\s*u\.deg\),\s*frame="icrs"\)',
+    'coords = SkyCoord(ra=table[ra_col], dec=table[dec_col], frame="icrs")',
+    source,
+    count=1,
 )
+if ned_fix_count != 1:
+    raise RuntimeError("GV-0065 NED coordinate fix was not applied exactly once.")
 
 exec(compile(source, "GV-0065.py", "exec"))
