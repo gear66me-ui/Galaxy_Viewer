@@ -71,11 +71,19 @@ source = source.replace(
     'let gv0066ProgressDone=0;const gv0066ProgressTotal=6;function searchProgressStart(){gv0066ProgressDone=0;document.getElementById("searchSpinner").style.display="block";document.getElementById("searchProgressFill").style.width="0%";document.getElementById("searchProgressText").textContent="Searching: 0 / 6"}function searchProgressStep(){gv0066ProgressDone=Math.min(gv0066ProgressTotal,gv0066ProgressDone+1);document.getElementById("searchProgressFill").style.width=`${100*gv0066ProgressDone/gv0066ProgressTotal}%`;document.getElementById("searchProgressText").textContent=`Searching: ${gv0066ProgressDone} / ${gv0066ProgressTotal}`}function searchProgressDone(failed=false){document.getElementById("searchSpinner").style.display="none";document.getElementById("searchProgressFill").style.width="100%";document.getElementById("searchProgressText").textContent=failed?"Search stopped with an error":"Search complete"}function status(t){document.getElementById("status").textContent=t}',
     1
 )
-source = source.replace(
-    'async function run(n,f){cat(n,"Searching…","warn");try{const d=await f(),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}}',
-    'async function run(n,f){cat(n,"Searching…","warn");try{const timeoutMs=n==="VizieR"?180000:45000;const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error(`Timed out after ${timeoutMs/1000} seconds`)),timeoutMs))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}',
-    1
-)
+
+original_run = 'async function run(n,f){cat(n,"Searching…","warn");try{const d=await f(),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}}'
+old_timed_run = 'async function run(n,f){cat(n,"Searching…","warn");try{const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error("Timed out after 45 seconds")),45000))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}'
+new_timed_run = 'async function run(n,f){cat(n,"Searching…","warn");try{const timeoutMs=n==="VizieR"?180000:45000;const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error(`Timed out after ${timeoutMs/1000} seconds`)),timeoutMs))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}'
+if source.count(original_run) == 1:
+    source = source.replace(original_run, new_timed_run, 1)
+elif source.count(old_timed_run) == 1:
+    source = source.replace(old_timed_run, new_timed_run, 1)
+else:
+    raise RuntimeError("GV-0066 search timeout function was not found exactly once.")
+if source.count('n==="VizieR"?180000:45000') != 1:
+    raise RuntimeError("GV-0066 VizieR 180-second timeout was not applied exactly once.")
+
 source = source.replace(
     'save();status("Search complete. GV-0066 used SIMBAD row 1, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
     'save();searchProgressDone();status("Search complete. GV-0066 used the nearest SIMBAD row, NED row 1, and the closest VizieR row from the 30-arcsecond search window.")',
