@@ -1,21 +1,193 @@
 from __future__ import annotations
 
-import base64
+import csv
+import io
 import json
+import math
+import random
+import urllib.parse
 import urllib.request
+from collections import deque
 
-VIEWER6_BLOB_URL = "https://api.github.com/repos/gear66me-ui/Galaxy_Viewer/git/blobs/62096681b8b997d6f4b53fcd95bb1f6b94f7e3a4"
+from google.colab import output
+from IPython.display import HTML, Javascript, display
 
-with urllib.request.urlopen(VIEWER6_BLOB_URL, timeout=60) as response:
-    payload = json.loads(response.read().decode("utf-8"))
-wrapper = base64.b64decode(payload["content"]).decode("utf-8")
+output.no_vertical_scroll()
+display(Javascript("google.colab.output.setIframeHeight(0, true, {maxHeight: 5000})"))
 
-old_exec = 'exec(compile(source, "VIEWER-6.py", "exec"))'
-insert = base64.b64decode("c291cmNlID0gc291cmNlLnJlcGxhY2UoIkdhbGF4eSBWaWV3ZXIg4oCUIFZJRVdFUi02IiwgIkdhbGF4eSBWaWV3ZXIg4oCUIFZJRVdFUi0xMSIsIDEpCgpiYWNrZW5kID0gYmFzZTY0LmI2NGRlY29kZSgiYVcxd2IzSjBJR056ZGlCaGN5QmZkakV4WDJOemRncHBiWEJ2Y25RZ2FXOGdZWE1nWDNZeE1WOXBid3BwYlhCdmNuUWdhbk52YmlCaGN5QmZkakV4WDJwemIyNEthVzF3YjNKMElHMWhkR2dnWVhNZ1gzWXhNVjl0WVhSb0NtbHRjRzl5ZENCeVlXNWtiMjBnWVhNZ1gzWXhNVjl5WVc1a2IyMEthVzF3YjNKMElIVnliR3hwWWk1d1lYSnpaU0JoY3lCZmRqRXhYM0JoY25ObENtbHRjRzl5ZENCMWNteHNhV0l1Y21WeGRXVnpkQ0JoY3lCZmRqRXhYM0psY1hWbGMzUUtDbDlXTVRGZlVrVkRSVTVVSUQwZ1cxMEtDbVJsWmlCZmRqRXhYM0poYm1SdmJWOXlaV0ZzWDJkaGJHRjRlU2dwT2dvZ0lDQWdaWEp5YjNKeklEMGdXMTBLSUNBZ0lHWnZjaUJoZEhSbGJYQjBJR2x1SUhKaGJtZGxLREV5S1RvS0lDQWdJQ0FnSUNCeVlUQWdQU0JmZGpFeFgzSmhibVJ2YlM1MWJtbG1iM0p0S0RBdU1Dd2dNell3TGpBcENpQWdJQ0FnSUNBZ1pHVmpNQ0E5SUY5Mk1URmZiV0YwYUM1a1pXZHlaV1Z6S0Y5Mk1URmZiV0YwYUM1aGMybHVLRjkyTVRGZmNtRnVaRzl0TG5WdWFXWnZjbTBvTFRFdU1Dd2dNUzR3S1NrcENpQWdJQ0FnSUNBZ2NYVmxjbmtnUFNCZmRqRXhYM0JoY25ObExuVnliR1Z1WTI5a1pTaDdDaUFnSUNBZ0lDQWdJQ0FnSUNJdGMyOTFjbU5sSWpvZ0lsWkpTUzh5TXpjdmNHZGpJaXdLSUNBZ0lDQWdJQ0FnSUNBZ0lpMWpJam9nWmlKN2NtRXdPaTQ0Wm4wZ2UyUmxZekE2TGpobWZTSXNDaUFnSUNBZ0lDQWdJQ0FnSUNJdFl5NXliU0k2SUNJNU1DSXNDaUFnSUNBZ0lDQWdJQ0FnSUNJdGIzVjBJam9nSWxCSFF5eFNRVW95TURBd0xFUkZTakl3TURBc2JHOW5SREkxSWl3S0lDQWdJQ0FnSUNBZ0lDQWdJaTF2ZFhRdWJXRjRJam9nSWpJd01DSXNDaUFnSUNBZ0lDQWdmU2tLSUNBZ0lDQWdJQ0IxY213Z1BTQWlhSFIwY0hNNkx5OTJhWHBwWlhJdVkyUnpMblZ1YVhOMGNtRXVabkl2ZG1sNkxXSnBiaTloYzNVdGRITjJQeUlnS3lCeGRXVnllUW9nSUNBZ0lDQWdJSFJ5ZVRvS0lDQWdJQ0FnSUNBZ0lDQWdkMmwwYUNCZmRqRXhYM0psY1hWbGMzUXVkWEpzYjNCbGJpaDFjbXdzSUhScGJXVnZkWFE5TXpVcElHRnpJSEpsYzNCdmJuTmxPZ29nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdkR1Y0ZENBOUlISmxjM0J2Ym5ObExuSmxZV1FvS1M1a1pXTnZaR1VvSW5WMFppMDRJaXdnWlhKeWIzSnpQU0p5WlhCc1lXTmxJaWtLSUNBZ0lDQWdJQ0FnSUNBZ2JHbHVaWE1nUFNCYmJHbHVaU0JtYjNJZ2JHbHVaU0JwYmlCMFpYaDBMbk53YkdsMGJHbHVaWE1vS1NCcFppQnNhVzVsSUdGdVpDQnViM1FnYkdsdVpTNXpkR0Z5ZEhOM2FYUm9LQ0lqSWlsZENpQWdJQ0FnSUNBZ0lDQWdJR2xtSUd4bGJpaHNhVzVsY3lrZ1BDQXlPZ29nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdaWEp5YjNKekxtRndjR1Z1WkNobUltRjBkR1Z0Y0hRZ2UyRjBkR1Z0Y0hRZ0t5QXhmVG9nYm04Z2NtOTNjeUlwQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JqYjI1MGFXNTFaUW9nSUNBZ0lDQWdJQ0FnSUNCeWIzZHpJRDBnYkdsemRDaGZkakV4WDJOemRpNUVhV04wVW1WaFpHVnlLRjkyTVRGZmFXOHVVM1J5YVc1blNVOG9JbHh1SWk1cWIybHVLR3hwYm1WektTa3NJR1JsYkdsdGFYUmxjajBpWEhRaUtTa0tJQ0FnSUNBZ0lDQWdJQ0FnWDNZeE1WOXlZVzVrYjIwdWMyaDFabVpzWlNoeWIzZHpLUW9nSUNBZ0lDQWdJQ0FnSUNCbWIzSWdjbTkzSUdsdUlISnZkM002Q2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0J3WjJNZ1BTQnpkSElvY205M0xtZGxkQ2dpVUVkRElpd2dJaUlwS1M1emRISnBjQ2dwQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JwWmlCdWIzUWdjR2RqSUc5eUlIQm5ZeUJwYmlCZlZqRXhYMUpGUTBWT1ZEb0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JqYjI1MGFXNTFaUW9nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdkSEo1T2dvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lHWnliMjBnWVhOMGNtOXdlUzVqYjI5eVpHbHVZWFJsY3lCcGJYQnZjblFnVTJ0NVEyOXZjbVFLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCcGJYQnZjblFnWVhOMGNtOXdlUzUxYm1sMGN5QmhjeUIxQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ1l5QTlJRk5yZVVOdmIzSmtLQW9nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQm1KM3R5YjNkYklsSkJTakl3TURBaVhYMGdlM0p2ZDFzaVJFVktNakF3TUNKZGZTY3NDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lIVnVhWFE5S0hVdWFHOTFjbUZ1WjJ4bExDQjFMbVJsWnlrc0NpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUdaeVlXMWxQU0pwWTNKeklpd0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FwQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ2NtRWdQU0JtYkc5aGRDaGpMbkpoTG1SbFp5a0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JrWldNZ1BTQm1iRzloZENoakxtUmxZeTVrWldjcENpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCbGVHTmxjSFFnUlhoalpYQjBhVzl1T2dvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lHTnZiblJwYm5WbENpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCbWIzWWdQU0F3TGpFNENpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCMGNuazZDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnWkY5aGNtTnRhVzRnUFNBd0xqRWdLaUFvTVRBdU1DQXFLaUJtYkc5aGRDaHliM2N1WjJWMEtDSnNiMmRFTWpVaUxDQWlJaWtwS1FvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lHbG1JR1JmWVhKamJXbHVJRDRnTURvS0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnWm05MklEMGdiV0Y0S0RBdU1ETTFMQ0J0YVc0b01pNDFMQ0JrWDJGeVkyMXBiaUF2SURZd0xqQWdLaUF6TGpJcEtRb2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ1pYaGpaWEIwSUVWNFkyVndkR2x2YmpvS0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQndZWE56Q2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JmVmpFeFgxSkZRMFZPVkM1aGNIQmxibVFvY0dkaktRb2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ1pHVnNJRjlXTVRGZlVrVkRSVTVVV3pvdE5UQmRDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQnlaWFIxY200Z2V3b2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0p2YXlJNklGUnlkV1VzQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0ltNWhiV1VpT2lBaVVFZERJQ0lnS3lCd1oyTXNDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSW5KaElqb2djbUVzQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0ltUmxZeUk2SUdSbFl5d0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FpWm05Mklqb2dabTkyTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDSnpkWEoyWlhsZmFXUWlPaUFpVUM5RVUxTXlMMk52Ykc5eUlpd0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FpYzI5MWNtTmxJam9nSWtoNWNHVnlURVZFUVNCMmFXRWdWbWw2YVdWU0lISmhibVJ2YlNCamIyNWxJaXdLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSDBLSUNBZ0lDQWdJQ0FnSUNBZ1pYSnliM0p6TG1Gd2NHVnVaQ2htSW1GMGRHVnRjSFFnZTJGMGRHVnRjSFFnS3lBeGZUb2djbTkzY3lCMWJuVnpZV0pzWlNCdmNpQnlaV05sYm5Sc2VTQnphRzkzYmlJcENpQWdJQ0FnSUNBZ1pYaGpaWEIwSUVWNFkyVndkR2x2YmlCaGN5QmxlR002Q2lBZ0lDQWdJQ0FnSUNBZ0lHVnljbTl5Y3k1aGNIQmxibVFvWmlKaGRIUmxiWEIwSUh0aGRIUmxiWEIwSUNzZ01YMDZJSHRsZUdOOUlpa0tJQ0FnSUhKaGFYTmxJRkoxYm5ScGJXVkZjbkp2Y2lnaVVtRnVaRzl0SUVoNWNHVnlURVZFUVM5V2FYcHBaVklnYzJWaGNtTm9JR1poYVd4bFpDNGdJaUFySUNJZ2ZDQWlMbXB2YVc0b1pYSnliM0p6V3kwME9sMHBLUW9LWkdWbUlIWnBaWGRsY2pFeFgzSmhibVJ2YlY5allXeHNZbUZqYXlncE9nb2dJQ0FnZEhKNU9nb2dJQ0FnSUNBZ0lISmxjM1ZzZENBOUlGOTJNVEZmY21GdVpHOXRYM0psWVd4ZloyRnNZWGg1S0NrS0lDQWdJR1Y0WTJWd2RDQkZlR05sY0hScGIyNGdZWE1nWlhoak9nb2dJQ0FnSUNBZ0lISmxjM1ZzZENBOUlIc2liMnNpT2lCR1lXeHpaU3dnSW1WeWNtOXlJam9nYzNSeUtHVjRZeWw5Q2lBZ0lDQnlaWFIxY200Z1gzWXhNVjlxYzI5dUxtUjFiWEJ6S0hKbGMzVnNkQ2tLQ205MWRIQjFkQzV5WldkcGMzUmxjbDlqWVd4c1ltRmpheWdpZG1sbGQyVnlNVEV1Y21GdVpHOXRSMkZzWVhoNUlpd2dkbWxsZDJWeU1URmZjbUZ1Wkc5dFgyTmhiR3hpWVdOcktRb0siKS5kZWNvZGUoInV0Zi04IikKbWFya2VyID0gInBhZ2UgPSByJycnIgppZiBzb3VyY2UuY291bnQobWFya2VyKSAhPSAxOgogICAgcmFpc2UgUnVudGltZUVycm9yKCJWSUVXRVItMTEgYmFja2VuZCBtYXJrZXIgbWlzc2luZyIpCnNvdXJjZSA9IHNvdXJjZS5yZXBsYWNlKG1hcmtlciwgYmFja2VuZCArIG1hcmtlciwgMSkKCm9sZCA9ICdjb25zdCBWSUVXRVIxX1NVUlZFWVM9W1xue25hbWU6Ikh1YmJsZSBPdXRyZWFjaCBDb2xvciIsaWQ6IkNEUy9QL0hTVC9FUE8ifSwnCm5ldyA9ICdjb25zdCBWSUVXRVIxX1NVUlZFWVM9W1xue25hbWU6Ikh1YmJsZSBPdXRyZWFjaCBDb2xvciIsaWQ6IkNEUy9QL0hTVC9FUE8ifSxcbntuYW1lOiJKV1NUIE91dHJlYWNoIENvbG9yIixpZDoiQ0RTL1AvSldTVC9FUE8ifSwnCmlmIHNvdXJjZS5jb3VudChvbGQpICE9IDE6CiAgICByYWlzZSBSdW50aW1lRXJyb3IoIlZJRVdFUi0xMSBzdXJ2ZXkgdG9rZW4gbWlzc2luZyIpCnNvdXJjZSA9IHNvdXJjZS5yZXBsYWNlKG9sZCwgbmV3LCAxKQoKb2xkID0gJzxkaXYgY2xhc3M9ImNvbnRyb2xzIj5cbjxidXR0b24gY2xhc3M9InJhbmRvbS1idG4iIG9uY2xpY2s9InZpZXdlcjFSYW5kb21HYWxheHkoKSI+UmFuZG9tIEdhbGF4eTwvYnV0dG9uPlxuPGJ1dHRvbiBjbGFzcz0iZmV0Y2gtYnRuIiBvbmNsaWNrPSJ2aWV3ZXIxRmV0Y2hDb29yZHMoKSI+RmV0Y2ggQ29vcmRpbmF0ZXM8L2J1dHRvbj5cbjxpbnB1dCBpZD0idmlld2VyMUNvb3JkQm94IiB0eXBlPSJ0ZXh0IiB2YWx1ZT0iNTMuMTYyNTAwIC0yNy43OTE2NjciIHN0eWxlPSJtaW4td2lkdGg6MjgwcHgiPlxuPGJ1dHRvbiBjbGFzcz0iZmluZC1idG4iIG9uY2xpY2s9InZpZXdlcjFGaW5kR2FsYXh5KCkiPkZpbmQgR2FsYXh5IC8gU3RhcjwvYnV0dG9uPlxuPC9kaXY+JwpuZXcgPSAnPGRpdiBjbGFzcz0iY29udHJvbHMiPlxuPGJ1dHRvbiBjbGFzcz0icmFuZG9tLWJ0biIgb25jbGljaz0idmlld2VyMVJhbmRvbUdhbGF4eSgpIj5SYW5kb20gR2FsYXh5PC9idXR0b24+XG48YnV0dG9uIGNsYXNzPSJmZXRjaC1idG4iIG9uY2xpY2s9InZpZXdlcjFGZXRjaENvb3JkcygpIj5GZXRjaCBDb29yZGluYXRlczwvYnV0dG9uPlxuPGlucHV0IGlkPSJ2aWV3ZXIxQ29vcmRCb3giIHR5cGU9InRleHQiIHZhbHVlPSI1My4xNjI1MDAgLTI3Ljc5MTY2NyIgcmVhZG9ubHkgc3R5bGU9Im1pbi13aWR0aDoyODBweCI+XG48L2Rpdj4nCmlmIHNvdXJjZS5jb3VudChvbGQpICE9IDE6CiAgICByYWlzZSBSdW50aW1lRXJyb3IoIlZJRVdFUi0xMSBjb250cm9scyB0b2tlbiBtaXNzaW5nIikKc291cmNlID0gc291cmNlLnJlcGxhY2Uob2xkLCBuZXcsIDEpCgpzdGFydCA9IHNvdXJjZS5maW5kKCdjb25zdCBWSUVXRVIxX0dBTEFYSUVTPVsnKQplbmRfdG9rZW4gPSAnXTtcbmNvbnN0IFZJRVdFUjFfS0VZPSJnYWxheHktdmlld2VyLXZpZXdlcjEtc3RhdGUiOycKZW5kID0gc291cmNlLmZpbmQoZW5kX3Rva2VuKQppZiBzdGFydCA8IDAgb3IgZW5kIDwgMDoKICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigiVklFV0VSLTExIGZpeGVkIGNhdGFsb2cgbWlzc2luZyIpCnNvdXJjZSA9IHNvdXJjZVs6c3RhcnRdICsgJ2NvbnN0IFZJRVdFUjFfS0VZPSJnYWxheHktdmlld2VyLXZpZXdlcjEtc3RhdGUiOycgKyBzb3VyY2VbZW5kICsgbGVuKGVuZF90b2tlbik6XQoKb2xkID0gJ2Z1bmN0aW9uIHZpZXdlcjFQaWNrUmFuZG9tKCl7cmV0dXJuIFZJRVdFUjFfR0FMQVhJRVNbTWF0aC5mbG9vcihNYXRoLnJhbmRvbSgpKlZJRVdFUjFfR0FMQVhJRVMubGVuZ3RoKV19JwpuZXcgPSAnJydmdW5jdGlvbiB2aWV3ZXIxMVBhcnNlKHYpe2lmKHY9PW51bGwpcmV0dXJuIHY7aWYodHlwZW9mIHYhPT0ic3RyaW5nIilyZXR1cm4gdjt2PXYudHJpbSgpO2lmKHYuc3RhcnRzV2l0aCgiJyIpJiZ2LmVuZHNXaXRoKCInIikpdj12LnNsaWNlKDEsLTEpLnJlcGxhY2UoL1xcXFwnL2csIiciKS5yZXBsYWNlKC9cXFxcXFxcXC9nLCJcXFxcIik7dHJ5e3JldHVybiBKU09OLnBhcnNlKHYpfWNhdGNoKF8pe3JldHVybiB2fX0KZnVuY3Rpb24gdmlld2VyMTFSZXN1bHQocil7Y29uc3QgZD1yPy5kYXRhPz9yO2lmKGQmJnR5cGVvZiBkPT09Im9iamVjdCImJmQub2shPT11bmRlZmluZWQpcmV0dXJuIGQ7aWYoZCYmdHlwZW9mIGQ9PT0ib2JqZWN0IilyZXR1cm4gdmlld2VyMTFQYXJzZShkWyJhcHBsaWNhdGlvbi9qc29uIl0/P2RbInRleHQvcGxhaW4iXT8/T2JqZWN0LnZhbHVlcyhkKVswXSk7cmV0dXJuIHZpZXdlcjExUGFyc2UoZCl9JycnCmlmIHNvdXJjZS5jb3VudChvbGQpICE9IDE6CiAgICByYWlzZSBSdW50aW1lRXJyb3IoIlZJRVdFUi0xMSBwaWNrZXIgdG9rZW4gbWlzc2luZyIpCnNvdXJjZSA9IHNvdXJjZS5yZXBsYWNlKG9sZCwgbmV3LCAxKQoKb2xkID0gJ2Z1bmN0aW9uIHZpZXdlcjFTaG93R2FsYXh5KGcsbWVzc2FnZT0iUmFuZG9tIGdhbGF4eSBsb2FkZWQiKXtkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgidmlld2VyMUNvb3JkQm94IikudmFsdWU9YCR7Zy5yYS50b0ZpeGVkKDYpfSAke2cuZGVjLnRvRml4ZWQoNil9YDt3aW5kb3cudmlld2VyMUFsYWRpbi5zZXRJbWFnZVN1cnZleSgiUC9EU1MyL2NvbG9yIik7d2luZG93LnZpZXdlcjFBbGFkaW4uZ290b1JhRGVjKGcucmEsZy5kZWMpO2NvbnN0IGY9KCk9Pnt0cnl7d2luZG93LnZpZXdlcjFBbGFkaW4uc2V0Rm9WKGcuZm92KX1jYXRjaChlKXt9fTtmKCk7c2V0VGltZW91dChmLDE1MCk7c2V0VGltZW91dChmLDUwMCk7dmlld2VyMVNhdmUoe3JhOmcucmEsZGVjOmcuZGVjLHN1cnZleToiUC9EU1MyL2NvbG9yIixmb3Y6Zy5mb3Z9KTt2aWV3ZXIxU3RhdHVzKGAke21lc3NhZ2V9OiAke2cubmFtZX0gfCBJQ1JTICR7Zy5yYS50b0ZpeGVkKDYpfSAke2cuZGVjLnRvRml4ZWQoNil9IHwgRk9WICR7Zy5mb3Z9wrBgKX0nCm5ldyA9ICdmdW5jdGlvbiB2aWV3ZXIxU2hvd0dhbGF4eShnLG1lc3NhZ2U9IlJhbmRvbSBnYWxheHkgbG9hZGVkIil7Y29uc3QgcmE9TnVtYmVyKGcucmEpLGRlYz1OdW1iZXIoZy5kZWMpLGZvdj1OdW1iZXIoZy5mb3YpO2RvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJ2aWV3ZXIxQ29vcmRCb3giKS52YWx1ZT1gJHtyYS50b0ZpeGVkKDYpfSAke2RlYy50b0ZpeGVkKDYpfWA7dmlld2VyMVN1cnZleShnLnN1cnZleV9pZHx8IlAvRFNTMi9jb2xvciIpO3dpbmRvdy52aWV3ZXIxQWxhZGluLmdvdG9SYURlYyhyYSxkZWMpO2NvbnN0IHo9KCk9Pnt0cnl7d2luZG93LnZpZXdlcjFBbGFkaW4uc2V0Rm9WKGZvdil9Y2F0Y2goZSl7fX07eigpO3NldFRpbWVvdXQoeiwxNTApO3NldFRpbWVvdXQoeiw1MDApO3ZpZXdlcjFTYXZlKHtyYSxkZWMsc3VydmV5Omcuc3VydmV5X2lkfHwiUC9EU1MyL2NvbG9yIixmb3Z9KTt2aWV3ZXIxU3RhdHVzKGAke21lc3NhZ2V9OiAke2cubmFtZX0gfCBJQ1JTICR7cmEudG9GaXhlZCg2KX0gJHtkZWMudG9GaXhlZCg2KX0gfCBGT1YgJHtmb3YudG9GaXhlZCgzKX3CsCB8ICR7Zy5zb3VyY2V9YCl9JwppZiBzb3VyY2UuY291bnQob2xkKSAhPSAxOgogICAgcmFpc2UgUnVudGltZUVycm9yKCJWSUVXRVItMTEgZGlzcGxheSB0b2tlbiBtaXNzaW5nIikKc291cmNlID0gc291cmNlLnJlcGxhY2Uob2xkLCBuZXcsIDEpCgpvbGQgPSAnKGFzeW5jKCk9Pnt2aWV3ZXIxU2V0dXAoKTtjb25zdCBnPXZpZXdlcjFQaWNrUmFuZG9tKCk7ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInZpZXdlcjFDb29yZEJveCIpLnZhbHVlPWAke2cucmEudG9GaXhlZCg2KX0gJHtnLmRlYy50b0ZpeGVkKDYpfWA7ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInZpZXdlcjFTdXJ2ZXlTZWxlY3QiKS52YWx1ZT0iUC9EU1MyL2NvbG9yIjthd2FpdCBBLmluaXQ7d2luZG93LnZpZXdlcjFBbGFkaW49QS5hbGFkaW4oIiN2aWV3ZXIxLWFsYWRpbiIse3RhcmdldDpgJHtnLnJhfSAke2cuZGVjfWAsc3VydmV5OiJQL0RTUzIvY29sb3IiLGZvdjpnLmZvdixjb29GcmFtZToiSUNSUyIsc2hvd1JldGljbGU6dHJ1ZSxzaG93Wm9vbUNvbnRyb2w6dHJ1ZSxzaG93RnVsbHNjcmVlbkNvbnRyb2w6dHJ1ZSxzaG93TGF5ZXJzQ29udHJvbDp0cnVlLHNob3dHb3RvQ29udHJvbDp0cnVlLHNob3dDb29HcmlkQ29udHJvbDp0cnVlLHNob3dTaW1iYWRQb2ludGVyQ29udHJvbDp0cnVlfSk7dmlld2VyMVNob3dHYWxheHkoZywiTGF1bmNoIGdhbGF4eSIpfSkoKS5jYXRjaChlPT52aWV3ZXIxU3RhdHVzKCJWaWV3ZXIgaW5pdGlhbGl6YXRpb24gZmFpbGVkOiAiK2UubWVzc2FnZSkpOycKbmV3ID0gJyhhc3luYygpPT57dmlld2VyMVNldHVwKCk7Y29uc3Qgcz12aWV3ZXIxTG9hZCgpO2RvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJ2aWV3ZXIxQ29vcmRCb3giKS52YWx1ZT1gJHtzLnJhLnRvRml4ZWQoNil9ICR7cy5kZWMudG9GaXhlZCg2KX1gO2RvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJ2aWV3ZXIxU3VydmV5U2VsZWN0IikudmFsdWU9cy5zdXJ2ZXk7YXdhaXQgQS5pbml0O3dpbmRvdy52aWV3ZXIxQWxhZGluPUEuYWxhZGluKCIjdmlld2VyMS1hbGFkaW4iLHt0YXJnZXQ6YCR7cy5yYX0gJHtzLmRlY31gLHN1cnZleTpzLnN1cnZleSxmb3Y6cy5mb3YsY29vRnJhbWU6IklDUlMiLHNob3dSZXRpY2xlOnRydWUsc2hvd1pvb21Db250cm9sOnRydWUsc2hvd0Z1bGxzY3JlZW5Db250cm9sOnRydWUsc2hvd0xheWVyc0NvbnRyb2w6dHJ1ZSxzaG93R290b0NvbnRyb2w6dHJ1ZSxzaG93Q29vR3JpZENvbnRyb2w6dHJ1ZSxzaG93U2ltYmFkUG9pbnRlckNvbnRyb2w6dHJ1ZX0pO2F3YWl0IHZpZXdlcjFSYW5kb21HYWxheHkoIkxhdW5jaCByYW5kb20gZ2FsYXh5Iil9KSgpLmNhdGNoKGU9PnZpZXdlcjFTdGF0dXMoIlZpZXdlciBpbml0aWFsaXphdGlvbiBmYWlsZWQ6ICIrZS5tZXNzYWdlKSk7JwppZiBzb3VyY2UuY291bnQob2xkKSAhPSAxOgogICAgcmFpc2UgUnVudGltZUVycm9yKCJWSUVXRVItMTEgbGF1bmNoIHRva2VuIG1pc3NpbmciKQpzb3VyY2UgPSBzb3VyY2UucmVwbGFjZShvbGQsIG5ldywgMSkKCm9sZCA9ICdmdW5jdGlvbiB2aWV3ZXIxUmFuZG9tR2FsYXh5KCl7dmlld2VyMVNob3dHYWxheHkodmlld2VyMVBpY2tSYW5kb20oKSl9JwpuZXcgPSAnYXN5bmMgZnVuY3Rpb24gdmlld2VyMVJhbmRvbUdhbGF4eShtZXNzYWdlPSJSYW5kb20gZ2FsYXh5IGxvYWRlZCIpe3ZpZXdlcjFTdGF0dXMoIlNlYXJjaGluZyBhIG5ldyByYW5kb20gSHlwZXJMRURBL1ZpemllUiBza3kgY29uZeKApiIpO3RyeXtjb25zdCByPWF3YWl0IGdvb2dsZS5jb2xhYi5rZXJuZWwuaW52b2tlRnVuY3Rpb24oInZpZXdlcjExLnJhbmRvbUdhbGF4eSIsW10se30pO2NvbnN0IGc9dmlld2VyMTFSZXN1bHQocik7aWYoIWd8fGcub2shPT10cnVlKXRocm93IEVycm9yKGc/LmVycm9yfHwiTG9va3VwIGZhaWxlZCIpO3ZpZXdlcjFTaG93R2FsYXh5KGcsbWVzc2FnZSl9Y2F0Y2goZSl7dmlld2VyMVN0YXR1cygiUmFuZG9tIGdhbGF4eSBmYWlsZWQ6ICIrU3RyaW5nKGU/Lm1lc3NhZ2V8fGUpKX19JwppZiBzb3VyY2UuY291bnQob2xkKSAhPSAxOgogICAgcmFpc2UgUnVudGltZUVycm9yKCJWSUVXRVItMTEgcmFuZG9tIHRva2VuIG1pc3NpbmciKQpzb3VyY2UgPSBzb3VyY2UucmVwbGFjZShvbGQsIG5ldywgMSkKCm9sZCA9ICdmdW5jdGlvbiB2aWV3ZXIxRmluZEdhbGF4eSgpe3RyeXtjb25zdCBjPXZpZXdlcjFDb29yZHMoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInZpZXdlcjFDb29yZEJveCIpLnZhbHVlKTt3aW5kb3cuVklFV0VSMV9GSU5EX1JFUVVFU1Q9e3JhOmMucmEsZGVjOmMuZGVjLHRpbWVzdGFtcDpEYXRlLm5vdygpfTt2aWV3ZXIxU2F2ZSh7cmE6Yy5yYSxkZWM6Yy5kZWN9KTt2aWV3ZXIxU3RhdHVzKGBGaW5kIHJlcXVlc3QgcmVhZHkgZm9yIHRoZSBuZXh0IG1vZHVsZTogJHtjLnJhLnRvRml4ZWQoNil9ICR7Yy5kZWMudG9GaXhlZCg2KX1gKX1jYXRjaChlKXt2aWV3ZXIxU3RhdHVzKCJGaW5kIHJlcXVlc3QgZmFpbGVkOiAiK2UubWVzc2FnZSl9fScKaWYgc291cmNlLmNvdW50KG9sZCkgIT0gMToKICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigiVklFV0VSLTExIGZpbmQgZnVuY3Rpb24gdG9rZW4gbWlzc2luZyIpCnNvdXJjZSA9IHNvdXJjZS5yZXBsYWNlKG9sZCwgJycsIDEpCgpmb3IgcmVxdWlyZWQgaW4gWydSYW5kb20gR2FsYXh5JywnRmV0Y2ggQ29vcmRpbmF0ZXMnLCd2aWV3ZXIxMS5yYW5kb21HYWxheHknLCdWSUkvMjM3L3BnYycsJ0NEUy9QL0pXU1QvRVBPJywndmlld2VyMVN1cnZleU1lbnUnLCd2aWV3ZXIxQ2hvb3NlU3VydmV5Jywndmlld2VyMUZldGNoQ29vcmRzKCknXToKICAgIGlmIHJlcXVpcmVkIG5vdCBpbiBzb3VyY2U6CiAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKCJWSUVXRVItMTEgcmVxdWlyZWQgYmVoYXZpb3IgbWlzc2luZzogIityZXF1aXJlZCkKZm9yIGZvcmJpZGRlbiBpbiBbJ0ZpbmQgR2FsYXh5IC8gU3RhcicsJ3ZpZXdlcjFGaW5kR2FsYXh5KCknLCdjb25zdCBWSUVXRVIxX0dBTEFYSUVTPVsnLCd2ZXJpZmllZCBmYWxsYmFjayddOgogICAgaWYgZm9yYmlkZGVuIGluIHNvdXJjZToKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoIlZJRV0VSLTExIGZvcmJpZGRlbiBiZWhhdmlvciBwcmVzZW50OiAiK2ZvcmJpZGRlbikKCmV4ZWMoY29tcGlsZShzb3VyY2UsICJWSUVXRVI tMTEucHkiLCAiZXhlYyIpKQo=").decode("utf-8")
+_RECENT_PGC: deque[str] = deque(maxlen=50)
 
-if wrapper.count(old_exec) != 1:
-    raise RuntimeError("VIEWER-11 execution token missing")
-wrapper = wrapper.replace(old_exec, insert, 1)
 
-compile(wrapper, "VIEWER-11-wrapper.py", "exec")
-exec(compile(wrapper, "VIEWER-11-wrapper.py", "exec"))
+def _query_random_galaxy() -> dict:
+    errors: list[str] = []
+
+    for _ in range(20):
+        ra0 = random.uniform(0.0, 360.0)
+        dec0 = math.degrees(math.asin(random.uniform(-1.0, 1.0)))
+
+        query = urllib.parse.urlencode(
+            {
+                "-source": "VII/237/pgc",
+                "-c": f"{ra0:.8f} {dec0:.8f}",
+                "-c.rm": "90",
+                "-out": "PGC,RAJ2000,DEJ2000,logD25",
+                "-out.max": "200",
+            }
+        )
+        url = "https://vizier.cds.unistra.fr/viz-bin/asu-tsv?" + query
+
+        try:
+            with urllib.request.urlopen(url, timeout=35) as response:
+                text = response.read().decode("utf-8", errors="replace")
+        except Exception as exc:
+            errors.append(str(exc))
+            continue
+
+        lines = [line for line in text.splitlines() if line and not line.startswith("#")]
+        if len(lines) < 2:
+            continue
+
+        try:
+            rows = list(csv.DictReader(io.StringIO("\n".join(lines)), delimiter="\t"))
+        except Exception as exc:
+            errors.append(str(exc))
+            continue
+
+        candidates: list[dict] = []
+        for row in rows:
+            pgc = str(row.get("PGC", "")).strip()
+            if not pgc or pgc in _RECENT_PGC:
+                continue
+
+            try:
+                from astropy.coordinates import SkyCoord
+                import astropy.units as u
+
+                coord = SkyCoord(
+                    f'{row["RAJ2000"]} {row["DEJ2000"]}',
+                    unit=(u.hourangle, u.deg),
+                    frame="icrs",
+                )
+                ra = float(coord.ra.deg)
+                dec = float(coord.dec.deg)
+            except Exception:
+                continue
+
+            fov = 0.18
+            try:
+                log_d25 = float(row.get("logD25", ""))
+                diameter_arcmin = 0.1 * (10.0 ** log_d25)
+                if diameter_arcmin > 0:
+                    fov = max(0.035, min(2.5, diameter_arcmin / 60.0 * 3.2))
+            except Exception:
+                pass
+
+            candidates.append(
+                {
+                    "ok": True,
+                    "name": f"PGC {pgc}",
+                    "ra": ra,
+                    "dec": dec,
+                    "fov": fov,
+                    "survey_id": "P/DSS2/color",
+                    "source": "HyperLEDA via VizieR random-sky cone",
+                }
+            )
+
+        if candidates:
+            chosen = random.choice(candidates)
+            _RECENT_PGC.append(chosen["name"].replace("PGC ", "", 1))
+            return chosen
+
+    raise RuntimeError(
+        "No non-repeating HyperLEDA galaxy was returned after 20 random-sky searches. "
+        + " | ".join(errors[-3:])
+    )
+
+
+def viewer11_random_callback() -> str:
+    try:
+        result = _query_random_galaxy()
+    except Exception as exc:
+        result = {"ok": False, "error": str(exc)}
+    return json.dumps(result, ensure_ascii=False)
+
+
+output.register_callback("viewer11.randomGalaxy", viewer11_random_callback)
+
+page = r'''
+<div id="viewer11-root">
+<style>
+#viewer11-root{box-sizing:border-box;width:100%;max-width:1180px;margin:0 auto;padding:14px;background:#000;color:#7FDBFF;font-family:Arial,Helvetica,sans-serif;border:1px solid #0b4f6c;border-radius:10px;box-shadow:0 0 18px rgba(0,174,239,.18)}
+#viewer11-root h3{color:#35c6ff;margin:12px 0 9px}
+#viewer11-root .viewer-shell{background:#000;border:1px solid #137aa3;border-radius:8px;overflow:hidden}
+#viewer11-root .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}
+#viewer11-root input{background:#000;color:#7FDBFF;border:1px solid #169ac7;border-radius:8px;padding:12px;font-size:16px;outline:none}
+#viewer11-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}
+#viewer11-root button:disabled{opacity:.55;cursor:wait}
+#viewer11-root .fetch-btn{background:#159447}
+#viewer11-root .random-btn{background:#8a4fd4}
+#viewer11-root .status{margin-top:12px;padding:11px;background:#02080d;color:#8be0ff;border:1px solid #0d668a;border-radius:7px;font-family:monospace;white-space:pre-wrap}
+#viewer11-root .survey-menu-wrap{position:relative;display:inline-block;min-width:290px}
+#viewer11-root .survey-menu-button{width:100%;text-align:left;background:#000;color:#7FDBFF;border:1px solid #169ac7;border-radius:8px;padding:12px;font-size:16px;font-weight:400}
+#viewer11-root .survey-menu{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:999999;background:#000;border:1px solid #169ac7;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.75)}
+#viewer11-root .survey-menu.open{display:block}
+#viewer11-root .survey-option{display:block;width:100%;text-align:left;background:#000;color:#7FDBFF;border:0;border-bottom:1px solid #0b526f;border-radius:0;padding:12px;font-size:16px;font-weight:400}
+#viewer11-root .survey-option:last-child{border-bottom:0}
+#viewer11-root .survey-option:active{background:#063047}
+</style>
+<h3>Galaxy Viewer — VIEWER-11</h3>
+<div class="viewer-shell"><div id="viewer11-aladin" style="width:100%;height:520px"></div></div>
+<div class="controls">
+<button id="viewer11RandomButton" class="random-btn" onclick="viewer11RandomGalaxy()">Random Galaxy</button>
+<button class="fetch-btn" onclick="viewer11FetchCoords()">Fetch Coordinates</button>
+<input id="viewer11CoordBox" type="text" value="53.162500 -27.791667" readonly style="min-width:280px">
+</div>
+<div class="controls">
+<label>Displayed survey:</label>
+<div class="survey-menu-wrap">
+<input type="hidden" id="viewer11SurveySelect">
+<button type="button" id="viewer11SurveyButton" class="survey-menu-button" onclick="viewer11ToggleSurveyMenu(event)">DSS2 Color ▾</button>
+<div id="viewer11SurveyMenu" class="survey-menu"></div>
+</div>
+</div>
+<div id="viewer11Status" class="status">Viewer loading…</div>
+</div>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+<script>
+const VIEWER11_SURVEYS=[
+{name:"Hubble Outreach Color",id:"CDS/P/HST/EPO"},
+{name:"JWST Outreach Color",id:"CDS/P/JWST/EPO"},
+{name:"DSS2 Color",id:"P/DSS2/color"},
+{name:"DSS2 Red",id:"P/DSS2/red"},
+{name:"Pan-STARRS DR1 Color",id:"P/PanSTARRS/DR1/color-z-zg-g"},
+{name:"DECaLS DR5 Color",id:"P/DECaLS/DR5/color"},
+{name:"2MASS Color",id:"P/2MASS/color"},
+{name:"GALEX GR6/7 Color",id:"P/GALEXGR6/AIS/color"}
+];
+const VIEWER11_KEY="galaxy-viewer-viewer11-state";
+function viewer11State0(){return{ra:53.1625,dec:-27.791667,survey:"P/DSS2/color",fov:1}}
+function viewer11Norm(id){return VIEWER11_SURVEYS.some(s=>s.id===id)?id:viewer11State0().survey}
+function viewer11Load(){try{const p=JSON.parse(localStorage.getItem(VIEWER11_KEY)||"null")||{},d=viewer11State0();return{ra:Number.isFinite(+p.ra)?+p.ra:d.ra,dec:Number.isFinite(+p.dec)?+p.dec:d.dec,survey:viewer11Norm(p.survey),fov:Number.isFinite(+p.fov)&&+p.fov>0?+p.fov:d.fov}}catch(e){return viewer11State0()}}
+function viewer11Capture(){const d=viewer11Load();let ra=d.ra,dec=d.dec,fov=d.fov;try{[ra,dec]=window.viewer11Aladin.getRaDec()}catch(e){}try{const z=+window.viewer11Aladin.getFov();if(z>0)fov=z}catch(e){}return{ra:+ra,dec:+dec,survey:viewer11Norm(document.getElementById("viewer11SurveySelect")?.value||d.survey),fov}}
+function viewer11Save(o={}){const s={...viewer11State0(),...viewer11Capture(),...o};s.survey=viewer11Norm(s.survey);localStorage.setItem(VIEWER11_KEY,JSON.stringify(s));window.VIEWER11_STATE=s;return s}
+function viewer11Status(t){document.getElementById("viewer11Status").textContent=t}
+function viewer11Setup(){document.getElementById("viewer11SurveyMenu").innerHTML=VIEWER11_SURVEYS.map(s=>`<button type="button" class="survey-option" onclick="viewer11ChooseSurvey('${s.id}',event)">${s.name}</button>`).join("")}
+function viewer11Survey(id){id=viewer11Norm(id);document.getElementById("viewer11SurveySelect").value=id;const item=VIEWER11_SURVEYS.find(s=>s.id===id);document.getElementById("viewer11SurveyButton").textContent=(item?item.name:id)+" ▾";window.viewer11Aladin.setImageSurvey(id)}
+function viewer11ToggleSurveyMenu(e){e.stopPropagation();document.getElementById("viewer11SurveyMenu").classList.toggle("open")}
+function viewer11ChooseSurvey(id,e){e.stopPropagation();viewer11Survey(id);viewer11Save({survey:id});document.getElementById("viewer11SurveyMenu").classList.remove("open");viewer11Status("Loaded survey: "+id)}
+document.addEventListener("click",()=>{const m=document.getElementById("viewer11SurveyMenu");if(m)m.classList.remove("open")})
+function viewer11Parse(v){if(v==null)return v;if(typeof v!=="string")return v;v=v.trim();if(v.startsWith("'")&&v.endsWith("'"))v=v.slice(1,-1).replace(/\\'/g,"'").replace(/\\\\/g,"\\");try{return JSON.parse(v)}catch(_){return v}}
+function viewer11Result(r){const d=r?.data??r;if(d&&typeof d==="object"&&d.ok!==undefined)return d;if(d&&typeof d==="object")return viewer11Parse(d["application/json"]??d["text/plain"]??Object.values(d)[0]);return viewer11Parse(d)}
+function viewer11ShowGalaxy(g,message="Random galaxy loaded"){const ra=Number(g.ra),dec=Number(g.dec),fov=Number(g.fov),survey=viewer11Norm(g.survey_id||"P/DSS2/color");document.getElementById("viewer11CoordBox").value=`${ra.toFixed(6)} ${dec.toFixed(6)}`;viewer11Survey(survey);window.viewer11Aladin.gotoRaDec(ra,dec);const z=()=>{try{window.viewer11Aladin.setFoV(fov)}catch(e){}};z();setTimeout(z,150);setTimeout(z,500);viewer11Save({ra,dec,survey,fov});viewer11Status(`${message}: ${g.name} | ICRS ${ra.toFixed(6)} ${dec.toFixed(6)} | FOV ${fov.toFixed(3)}° | ${g.source}`)}
+async function viewer11RandomGalaxy(message="Random galaxy loaded"){const b=document.getElementById("viewer11RandomButton");b.disabled=true;viewer11Status("Searching random sky regions in HyperLEDA/VizieR…");try{const r=await google.colab.kernel.invokeFunction("viewer11.randomGalaxy",[],{});const g=viewer11Result(r);if(!g||g.ok!==true)throw Error(g?.error||"Lookup failed");viewer11ShowGalaxy(g,message)}catch(e){viewer11Status("Random galaxy failed: "+String(e?.message||e))}finally{b.disabled=false}}
+function viewer11FetchCoords(){const c=window.viewer11Aladin.getRaDec(),t=`${c[0].toFixed(6)} ${c[1].toFixed(6)}`;document.getElementById("viewer11CoordBox").value=t;viewer11Save({ra:c[0],dec:c[1]});viewer11Status("Coordinates fetched: "+t)}
+function viewer11Restore(m=""){if(!window.viewer11Aladin)return;const s=viewer11Load();document.getElementById("viewer11CoordBox").value=`${s.ra.toFixed(6)} ${s.dec.toFixed(6)}`;viewer11Survey(s.survey);window.viewer11Aladin.gotoRaDec(s.ra,s.dec);const f=()=>{try{window.viewer11Aladin.setFoV(s.fov)}catch(e){}};f();setTimeout(f,150);setTimeout(f,500);if(m)viewer11Status(m)}
+(async()=>{viewer11Setup();const s=viewer11Load();document.getElementById("viewer11CoordBox").value=`${s.ra.toFixed(6)} ${s.dec.toFixed(6)}`;document.getElementById("viewer11SurveySelect").value=s.survey;await A.init;window.viewer11Aladin=A.aladin("#viewer11-aladin",{target:`${s.ra} ${s.dec}`,survey:s.survey,fov:s.fov,cooFrame:"ICRS",showReticle:true,showZoomControl:true,showFullscreenControl:true,showLayersControl:true,showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true});await viewer11RandomGalaxy("Launch random galaxy")})().catch(e=>viewer11Status("Viewer initialization failed: "+e.message));
+document.addEventListener("visibilitychange",()=>document.hidden?viewer11Save():viewer11Restore("Viewer restored from saved tab state."));
+window.addEventListener("pagehide",()=>viewer11Save());
+window.addEventListener("blur",()=>viewer11Save());
+</script>
+'''
+
+display(HTML(page))
