@@ -43,35 +43,35 @@ new_ned = '''    if ra_col and dec_col:
         table["_gv_sep"] = separations
         table.sort("_gv_sep")'''
 if source.count(old_ned) != 1:
-    raise RuntimeError("GV-0066-8 NED block was not found exactly once.")
+    raise RuntimeError("GV-0066-9 NED block was not found exactly once.")
 source = source.replace(old_ned, new_ned, 1)
 
 if source.count('    service.ROW_LIMIT = 20') != 1:
-    raise RuntimeError("GV-0066-8 SIMBAD row limit was not found exactly once.")
+    raise RuntimeError("GV-0066-9 SIMBAD row limit was not found exactly once.")
 source = source.replace('    service.ROW_LIMIT = 20', '    service.ROW_LIMIT = -1', 1)
 source = source.replace('"_candidateCount": len(table), "_selectionRule": "SIMBAD row 1",', '"_candidateCount": len(table), "_selectionRule": "Nearest SIMBAD row",', 1)
 
 aladin_css = '<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css">\n'
 if source.count(aladin_css) != 1:
-    raise RuntimeError("GV-0066-8 Aladin stylesheet line was not found exactly once.")
+    raise RuntimeError("GV-0066-9 Aladin stylesheet line was not found exactly once.")
 source = source.replace(aladin_css, '', 1)
 
 original_init_tail = 'restore("Viewer ready. Restored last saved view.");save();try{window.aladin.on("positionChanged",()=>save());window.aladin.on("zoomChanged",()=>save())}catch(e){}setInterval(()=>{if(!document.hidden)save()},1000)})().catch(e=>status("Viewer initialization failed: "+e.message));'
 gv0055_init_tail = 'restore("Viewer ready. Restored last saved view.");save()})().catch(e=>status("Viewer initialization failed: "+e.message));'
 if source.count(original_init_tail) != 1:
-    raise RuntimeError("GV-0066-8 viewer initialization tail was not found exactly once.")
+    raise RuntimeError("GV-0066-9 viewer initialization tail was not found exactly once.")
 source = source.replace(original_init_tail, gv0055_init_tail, 1)
 
 original_lifecycle = 'document.addEventListener("visibilitychange",()=>{if(document.hidden){save()}else{restore("Viewer restored from saved tab state.")}});window.addEventListener("pagehide",()=>save());window.addEventListener("blur",()=>save());window.addEventListener("focus",()=>restore("Viewer restored from saved tab state."));'
 gv0055_lifecycle = 'document.addEventListener("visibilitychange",()=>document.hidden?save():restore("Viewer restored from saved tab state."));window.addEventListener("pagehide",()=>save());window.addEventListener("blur",()=>save());'
 if source.count(original_lifecycle) != 1:
-    raise RuntimeError("GV-0066-8 viewer lifecycle block was not found exactly once.")
+    raise RuntimeError("GV-0066-9 viewer lifecycle block was not found exactly once.")
 source = source.replace(original_lifecycle, gv0055_lifecycle, 1)
 
 old_title = '<h3>Galaxy Viewer — GV-0066</h3>'
-new_title = '<h3>Galaxy Viewer — GV-0066-8</h3>'
+new_title = '<h3>Galaxy Viewer — GV-0066-9</h3>'
 if source.count(old_title) != 1:
-    raise RuntimeError("GV-0066-8 viewer title markup was not found exactly once.")
+    raise RuntimeError("GV-0066-9 viewer title markup was not found exactly once.")
 source = source.replace(old_title, new_title, 1)
 
 old_selector = '<select id="surveySelect" onchange="changeSurvey()"></select>'
@@ -85,8 +85,14 @@ new_selector = '''<select id="surveySelect" onchange="changeSurvey()" style="dis
 <option value="P/GALEXGR6/AIS/color">GALEX GR6/7 Color</option>
 </select>'''
 if source.count(old_selector) != 1:
-    raise RuntimeError("GV-0066-8 survey selector was not found exactly once.")
+    raise RuntimeError("GV-0066-9 survey selector was not found exactly once.")
 source = source.replace(old_selector, new_selector, 1)
+
+source = source.replace(
+    '#gv0066-root .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}',
+    '#gv0066-root .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}#aladin-lite-div,#aladin-lite-div *{pointer-events:none!important}',
+    1
+)
 
 source = source.replace(
     '#gv0066-root button{padding:14px 24px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:9px;cursor:pointer}#gv0066-root .fetch-btn{background:#159447}#gv0066-root .find-btn{background:#087fd1}',
@@ -107,7 +113,7 @@ source = source.replace(
 original_run = 'async function run(n,f){cat(n,"Searching…","warn");try{const d=await f(),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}}'
 new_timed_run = 'async function run(n,f){cat(n,"Searching…","warn");try{const timeoutMs=n==="VizieR"?180000:45000;const d=await Promise.race([f(),new Promise((_,reject)=>setTimeout(()=>reject(Error(`Timed out after ${timeoutMs/1000} seconds`)),timeoutMs))]),count=Array.isArray(d)?d.length:(Array.isArray(d?.data)?d.data.length:null);cat(n,count===0?"No match":"Query completed",count===0?"warn":"ok");return d}catch(e){cat(n,"Unavailable: "+e.message,"bad");return null}finally{searchProgressStep()}}'
 if source.count(original_run) != 1:
-    raise RuntimeError("GV-0066-8 search timeout function was not found exactly once.")
+    raise RuntimeError("GV-0066-9 search timeout function was not found exactly once.")
 source = source.replace(original_run, new_timed_run, 1)
 
 source = source.replace(
@@ -121,5 +127,5 @@ source = source.replace(
     1
 )
 
-ast.parse(source, filename="GV-0066-8-generated.py")
+ast.parse(source, filename="GV-0066-9-generated.py")
 exec(compile(source, "GV-0066.py", "exec"))
