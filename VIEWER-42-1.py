@@ -21,19 +21,14 @@ display(Javascript(r'''
   const YELLOW = '#FFD84D';
   const STATUS_ID = 'viewer14Status';
   const ORDER = [
-    'Object',
-    'Common name / nickname',
-    'Alternate names',
-    'Constellation',
-    'ICRS coordinates',
-    'Galaxy age',
-    'Redshift (z) / Distance',
-    'Morphological type',
-    'Physical / angular size',
-    'Radial velocity',
-    'Magnitudes',
-    'Magnitude guide'
+    'Object', 'Common name / nickname', 'Alternate names', 'Constellation',
+    'ICRS coordinates', 'Galaxy age', 'Redshift (z) / Distance',
+    'Morphological type', 'Physical / angular size', 'Radial velocity',
+    'Magnitudes', 'Magnitude guide'
   ];
+  let lastKey = '';
+  let lastData = undefined;
+  let requestInFlight = false;
 
   function clean(v){ return String(v ?? '').replace(/\s+/g, ' ').trim(); }
   function status(){ return document.getElementById(STATUS_ID); }
@@ -44,10 +39,9 @@ display(Javascript(r'''
     return rows().find(row => wanted.includes(labelOf(row).toLowerCase()));
   }
   function value(...labels){ return clean(rowBy(...labels)?.querySelector('td')?.textContent); }
-  function setLabel(row, label){ const th=row?.querySelector('th'); if(th) th.textContent=label; }
-  function setValue(row, text){ const td=row?.querySelector('td'); if(td) td.textContent=text; }
+  function setLabel(row, label){ const th=row?.querySelector('th'); if(th && clean(th.textContent)!==label) th.textContent=label; }
+  function setValue(row, text){ const td=row?.querySelector('td'); if(td && clean(td.textContent)!==clean(text)) td.textContent=text; }
   function firstNumber(text){ const m=clean(text).match(/[-+]?\d+(?:,\d{3})*(?:\.\d+)?/); return m ? Number(m[0].replace(/,/g,'')) : null; }
-  function unavailable(text){ return !clean(text) || /not available|pending|not returned|awaits|not confirmed|unavailable/i.test(clean(text)); }
 
   function templateRow(){ return rows().find(row => row.querySelector('th') && row.querySelector('td')) || null; }
   function ensureRow(label){
@@ -59,7 +53,7 @@ display(Javascript(r'''
     row.removeAttribute('id');
     setLabel(row, label);
     setValue(row, '');
-    status().querySelector('tbody')?.appendChild(row) || status().appendChild(row);
+    (status().querySelector('tbody') || status()).appendChild(row);
     return row;
   }
   function removeRows(...labels){
@@ -68,20 +62,34 @@ display(Javascript(r'''
   }
 
   function parseCoords(){
-    const text=value('ICRS coordinates');
-    const nums=text.match(/[-+]?\d+(?:\.\d+)?/g)?.map(Number) || [];
-    if(nums.length < 2 || !Number.isFinite(nums[0]) || !Number.isFinite(nums[1])) return null;
-    return {ra:nums[0], dec:nums[1]};
+    const nums=value('ICRS coordinates').match(/[-+]?\d+(?:\.\d+)?/g)?.map(Number) || [];
+    return nums.length>=2 && Number.isFinite(nums[0]) && Number.isFinite(nums[1]) ? {ra:nums[0],dec:nums[1]} : null;
   }
 
-  function constellationApprox(ra, dec){
-    const hours=((ra/15)%24+24)%24;
-    if(dec > 66) return hours < 9 || hours > 20 ? 'Cassiopeia / Cepheus region' : 'Ursa Minor / Draco region';
-    if(dec > 45) return hours < 4 ? 'Andromeda / Perseus region' : hours < 9 ? 'Auriga region' : hours < 16 ? 'Ursa Major region' : 'Cygnus region';
-    if(dec > 20) return hours < 3 ? 'Andromeda / Aries region' : hours < 7 ? 'Taurus / Gemini region' : hours < 12 ? 'Leo region' : hours < 18 ? 'Boötes / Hercules region' : 'Pegasus region';
-    if(dec > -10) return hours < 3 ? 'Pisces / Cetus region' : hours < 7 ? 'Orion region' : hours < 12 ? 'Hydra / Sextans region' : hours < 18 ? 'Virgo / Ophiuchus region' : 'Aquarius region';
-    if(dec > -40) return hours < 6 ? 'Eridanus region' : hours < 12 ? 'Puppis / Vela region' : hours < 18 ? 'Centaurus / Scorpius region' : 'Sagittarius / Capricornus region';
-    return 'Southern-sky constellation region';
+  async function loadAstronomyEngine(){
+    if(window.Astronomy?.Constellation) return true;
+    if(window.viewer42AstronomyPromise) return window.viewer42AstronomyPromise;
+    window.viewer42AstronomyPromise = new Promise(resolve => {
+      const script=document.createElement('script');
+      script.src='https://cdn.jsdelivr.net/npm/astronomy-engine/astronomy.browser.min.js';
+      script.async=true;
+      script.onload=()=>resolve(Boolean(window.Astronomy?.Constellation));
+      script.onerror=()=>resolve(false);
+      document.head.appendChild(script);
+    });
+    return window.viewer42AstronomyPromise;
+  }
+
+  async function constellationName(coords){
+    const existing=value('Constellation');
+    if(existing && !/pending|region/i.test(existing)) return existing;
+    if(!coords) return 'Constellation pending';
+    const loaded=await loadAstronomyEngine();
+    if(!loaded) return 'Constellation pending';
+    try{
+      const info=window.Astronomy.Constellation(coords.ra/15,coords.dec);
+      return clean(info?.name) || 'Constellation pending';
+    }catch(_){ return 'Constellation pending'; }
   }
 
   function morphologyPlain(raw){
@@ -113,98 +121,102 @@ display(Javascript(r'''
 
   function redshiftDistance(zRaw, rvRaw){
     let z=Number(zRaw), rv=Number(rvRaw);
-    if(!Number.isFinite(z) || z<=0) z=Number.isFinite(rv)&&rv>0 ? rv/299792.458 : 0.02000;
-    let mly=(Number.isFinite(rv)&&rv>0 ? rv/70 : z*299792.458/70)*3.26156;
+    if(!Number.isFinite(z)||z<=0) z=Number.isFinite(rv)&&rv>0?rv/299792.458:0.02000;
+    const mly=(Number.isFinite(rv)&&rv>0?rv/70:z*299792.458/70)*3.26156;
     return `z = ${z.toFixed(5)}; ${mly.toFixed(1)} million light-years`;
   }
 
-  function dimensions(majRaw, minRaw, distanceText, morphology){
-    let maj=Number(majRaw), min=Number(minRaw);
+  function dimensions(majRaw,minRaw,distanceText,morphology){
+    let maj=Number(majRaw),min=Number(minRaw);
     if(!Number.isFinite(maj)||maj<=0) maj=0.80;
-    if(!Number.isFinite(min)||min<=0){
-      const m=morphology.toLowerCase();
-      min=maj*(m.includes('elliptical')?0.75:m.includes('spiral')?0.55:0.65);
-    }
+    if(!Number.isFinite(min)||min<=0){const m=morphology.toLowerCase();min=maj*(m.includes('elliptical')?0.75:m.includes('spiral')?0.55:0.65);}
     const dm=clean(distanceText).match(/([0-9.]+)\s*million\s*light-years/i);
     const distanceLy=dm?Number(dm[1])*1e6:250e6;
-    const scale=Math.PI/(180*60);
-    const majorLy=distanceLy*maj*scale, minorLy=distanceLy*min*scale;
+    const scale=Math.PI/(180*60),majorLy=distanceLy*maj*scale,minorLy=distanceLy*min*scale;
     const physical=Math.max(majorLy,minorLy)>=1e6
-      ? `${(majorLy/1e6).toFixed(2)} × ${(minorLy/1e6).toFixed(2)} million light-years`
-      : `${(majorLy/1e3).toFixed(1)} × ${(minorLy/1e3).toFixed(1)} thousand light-years`;
+      ?`${(majorLy/1e6).toFixed(2)} × ${(minorLy/1e6).toFixed(2)} million light-years`
+      :`${(majorLy/1e3).toFixed(1)} × ${(minorLy/1e3).toFixed(1)} thousand light-years`;
     return `${physical} / ${maj.toFixed(2)} × ${min.toFixed(2)} arcminutes`;
   }
 
   function magnitudes(existing){
     const b=firstNumber(existing);
-    if(!Number.isFinite(b)) return '14–18 (B), 13–17 (V), 10–15 (K)';
-    return `${b.toFixed(2)} (catalog band unspecified), ${(b-1).toFixed(2)}–${(b-0.3).toFixed(2)} (V), ${(b-4.2).toFixed(2)}–${(b-2).toFixed(2)} (K)`;
+    return Number.isFinite(b)
+      ?`${b.toFixed(2)} (catalog band unspecified), ${(b-1).toFixed(2)}–${(b-0.3).toFixed(2)} (V), ${(b-4.2).toFixed(2)}–${(b-2).toFixed(2)} (K)`
+      :'14–18 (B), 13–17 (V), 10–15 (K)';
   }
 
-  function preferredAlias(ids, objectName){
-    const cleaned=[...new Set((ids||[]).map(clean).filter(Boolean))];
-    const preferred=cleaned.find(id=>/^(M\s*\d+|MESSIER\s*\d+|NGC\s*\d+|IC\s*\d+|UGC\s*\d+)/i.test(id) && id.toLowerCase()!==objectName.toLowerCase());
-    return preferred || '';
+  function preferredAlias(ids,objectName){
+    return [...new Set((ids||[]).map(clean).filter(Boolean))].find(id=>/^(M\s*\d+|MESSIER\s*\d+|NGC\s*\d+|IC\s*\d+|UGC\s*\d+)/i.test(id)&&id.toLowerCase()!==objectName.toLowerCase())||'';
   }
 
-  async function simbadCone(){
-    const c=parseCoords(); if(!c) return null;
-    const query=`SELECT TOP 50 b.main_id,b.ra,b.dec,b.otype,b.rvz_redshift,b.rvz_radvel,b.galdim_majaxis,b.galdim_minaxis,i.id FROM basic AS b LEFT JOIN ident AS i ON b.oid=i.oidref WHERE 1=CONTAINS(POINT('ICRS',b.ra,b.dec),CIRCLE('ICRS',${c.ra},${c.dec},0.0083333333))`;
+  async function simbadCone(coords){
+    if(!coords) return null;
+    const query=`SELECT TOP 50 b.main_id,b.ra,b.dec,b.otype,b.rvz_redshift,b.rvz_radvel,b.galdim_majaxis,b.galdim_minaxis,i.id FROM basic AS b LEFT JOIN ident AS i ON b.oid=i.oidref WHERE 1=CONTAINS(POINT('ICRS',b.ra,b.dec),CIRCLE('ICRS',${coords.ra},${coords.dec},0.0083333333))`;
     const url='https://simbad.cds.unistra.fr/simbad/sim-tap/sync?request=doQuery&lang=adql&format=json&query='+encodeURIComponent(query);
     const response=await fetch(url); if(!response.ok) throw Error(`SIMBAD HTTP ${response.status}`);
     const json=await response.json(); if(!json.data?.length) return null;
     const records=json.data.map(row=>{const o={};json.metadata.forEach((m,i)=>o[m.name]=row[i]);return o;});
-    const first=records[0]; first._ids=records.map(r=>r.id).filter(Boolean); return first;
+    const first=records[0];
+    first._ids=records.filter(r=>clean(r.main_id)===clean(first.main_id)).map(r=>r.id).filter(Boolean);
+    return first;
   }
 
   function reorder(){
-    const body=status()?.querySelector('tbody') || status(); if(!body) return;
-    ORDER.forEach(label=>{ const row=rowBy(label); if(row) body.appendChild(row); });
+    const body=status()?.querySelector('tbody')||status(); if(!body) return;
+    const desired=ORDER.map(label=>rowBy(label)).filter(Boolean);
+    const current=[...body.querySelectorAll(':scope > tr')].filter(row=>desired.includes(row));
+    if(desired.length===current.length && desired.every((row,i)=>row===current[i])) return;
+    desired.forEach(row=>body.appendChild(row));
   }
 
   function highlight(){
     ['Galaxy age','Redshift (z) / Distance','Redshift / Distance'].forEach(label=>{
-      const cell=rowBy(label)?.querySelector('td'); if(cell){cell.style.color=YELLOW;cell.style.fontWeight='800';}
+      const cell=rowBy(label)?.querySelector('td');if(cell){cell.style.color=YELLOW;cell.style.fontWeight='800';}
     });
   }
 
   async function apply(){
-    if(!status() || !templateRow()) return false;
-    const objectName=value('Object') || clean(window.viewer30CurrentGalaxy?.name) || clean(window.viewer27LastDisplayedGalaxy?.name) || 'Catalog galaxy';
-    let data=null; try{data=await simbadCone();}catch(_){ }
-    const ids=data?data._ids:[];
-    const morphology=morphologyPlain(data?.otype || value('Morphological type'));
-    const distance=redshiftDistance(data?.rvz_redshift, data?.rvz_radvel || firstNumber(value('Radial velocity')));
+    if(!status()||!templateRow()) return false;
+    const objectName=value('Object')||clean(window.viewer30CurrentGalaxy?.name)||clean(window.viewer27LastDisplayedGalaxy?.name)||'Catalog galaxy';
     const coords=parseCoords();
-    const constellation=coords?constellationApprox(coords.ra,coords.dec):'Constellation pending';
-    const common=preferredAlias(ids,objectName) || `Catalog galaxy in ${constellation}`;
-    const alternates=[...new Set(ids.map(clean).filter(id=>id && id.toLowerCase()!==objectName.toLowerCase() && id.toLowerCase()!==common.toLowerCase()))].slice(0,6).join('; ') || 'None confirmed';
+    const key=`${objectName}|${coords?.ra??''}|${coords?.dec??''}`;
+    if(key!==lastKey){
+      if(requestInFlight) return false;
+      requestInFlight=true;
+      try{lastData=await simbadCone(coords);}catch(_){lastData=null;}finally{requestInFlight=false;lastKey=key;}
+    }
+    const data=lastData||null;
+    const ids=data?data._ids:[];
+    const morphology=morphologyPlain(data?.otype||value('Morphological type'));
+    const distance=redshiftDistance(data?.rvz_redshift,data?.rvz_radvel||firstNumber(value('Radial velocity')));
+    const constellation=await constellationName(coords);
+    const common=preferredAlias(ids,objectName)||`Catalog galaxy in ${constellation}`;
+    const alternates=[...new Set(ids.map(clean).filter(id=>id&&id.toLowerCase()!==objectName.toLowerCase()&&id.toLowerCase()!==common.toLowerCase()))].slice(0,6).join('; ')||'None confirmed';
 
     setValue(ensureRow('Object'),objectName);
     setValue(ensureRow('Common name / nickname'),common);
     setValue(ensureRow('Alternate names'),alternates);
     setValue(ensureRow('Constellation'),constellation);
-    setValue(ensureRow('ICRS coordinates'),value('ICRS coordinates') || (data?`${Number(data.ra).toFixed(6)} ${Number(data.dec).toFixed(6)}`:'Coordinates pending'));
+    setValue(ensureRow('ICRS coordinates'),value('ICRS coordinates')||(data?`${Number(data.ra).toFixed(6)} ${Number(data.dec).toFixed(6)}`:'Coordinates pending'));
     setValue(ensureRow('Galaxy age'),ageFor(morphology));
     setValue(ensureRow('Redshift (z) / Distance'),distance);
     setValue(ensureRow('Morphological type'),morphology);
-    setValue(ensureRow('Physical / angular size'),dimensions(data?.galdim_majaxis, data?.galdim_minaxis, distance, morphology));
+    setValue(ensureRow('Physical / angular size'),dimensions(data?.galdim_majaxis,data?.galdim_minaxis,distance,morphology));
     setValue(ensureRow('Radial velocity'),Number.isFinite(Number(data?.rvz_radvel))?`${Number(data.rvz_radvel).toLocaleString()} km/s`:(value('Radial velocity')||'6,000 km/s'));
     setValue(ensureRow('Magnitudes'),magnitudes(value('Magnitude','Magnitudes')));
     setValue(ensureRow('Magnitude guide'),'Apparent magnitude describes how bright an object looks from Earth. Lower numbers are brighter; negative numbers are extremely bright. The Sun is about −26.7, while magnitude 1 is a bright night-sky star.');
-
     removeRows('Angular size','Physical size','Magnitude','Interest score','Distance method','Data score','Data source');
-    reorder(); highlight();
-    return true;
+    reorder();highlight();return true;
   }
 
-  function install(){ apply(); return true; }
+  function install(){apply().catch(()=>{});}
   install();
   const target=status();
   if(target){
-    const observer=new MutationObserver(()=>{clearTimeout(window.viewer42BridgeTimer);window.viewer42BridgeTimer=setTimeout(install,80);});
-    observer.observe(target,{childList:true,subtree:true});
+    const observer=new MutationObserver(()=>{clearTimeout(window.viewer42BridgeTimer);window.viewer42BridgeTimer=setTimeout(install,120);});
+    observer.observe(target,{childList:true,subtree:true,characterData:true});
   }
-  const timer=setInterval(install,500); setTimeout(()=>clearInterval(timer),20000);
+  const timer=setInterval(install,1000);setTimeout(()=>clearInterval(timer),20000);
 })();
 '''))
