@@ -29,9 +29,18 @@ exec(compile(source, "VIEWER-45-immutable-base.py", "exec"))
 
 display(Javascript(r'''
 (() => {
-  const PATCH_ID = 'viewer46-controlled-repair';
-  if (window[PATCH_ID]) return;
-  window[PATCH_ID] = true;
+  if(window.viewer46Observer){
+    try{ window.viewer46Observer.disconnect(); }catch(_){ }
+    window.viewer46Observer = null;
+  }
+  if(window.viewer46Guard){
+    clearInterval(window.viewer46Guard);
+    window.viewer46Guard = null;
+  }
+  if(window.viewer46ApplyTimer){
+    clearTimeout(window.viewer46ApplyTimer);
+    window.viewer46ApplyTimer = null;
+  }
 
   const YELLOW = '#ffd84d';
 
@@ -52,7 +61,8 @@ display(Javascript(r'''
       style.id = 'viewer46TitleStyle';
       document.head.appendChild(style);
     }
-    style.textContent = `#viewer14-root h3{font-size:0!important}#viewer14-root h3::after{content:"${title}";font-size:22px!important;color:#35c6ff!important}`;
+    const css = `#viewer14-root h3{font-size:0!important}#viewer14-root h3::after{content:"${title}";font-size:22px!important;color:#35c6ff!important}`;
+    if(style.textContent !== css) style.textContent = css;
   }
 
   function conciseAge(text){
