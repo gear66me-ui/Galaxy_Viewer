@@ -27,10 +27,10 @@ source = source.replace(
 '''        "Magnitude": "Observed galaxy; brightness estimates vary with filter, aperture, and catalog",
         "Data source": "Multiple astronomy catalogs and web-audit query; verify critical values",''',
 '''        "Magnitudes": "EST 14–18 (B), 13–17 (V), 10–15 (K) [broad apparent-magnitude ranges; verify]",
-        "Magnitude guide": "Lower magnitude numbers mean a brighter-looking galaxy; values depend on the observing filter.",'''
+        "Magnitude guide": "Apparent magnitude describes how bright an object looks from Earth. Lower numbers are brighter; negative numbers are extremely bright. The Sun is about −26.7, while magnitude 1 is a bright night-sky star.",'''
 )
 
-marker = '''def morphology_plain(value: str) -> str:
+old_morphology = '''def morphology_plain(value: str) -> str:
     text = clean_name(value)
     if not text or missing(text):
         return ""
@@ -40,6 +40,48 @@ marker = '''def morphology_plain(value: str) -> str:
     }
     return replacements.get(text, text)
 '''
+
+new_morphology = r'''def morphology_plain(value: str) -> str:
+    text = clean_name(value)
+    if not text or missing(text):
+        return "G (galaxy; detailed morphology not securely classified)"
+
+    upper = text.upper()
+    explanations = [
+        (r"\bGIP\b", "GiP", "galaxy in a pair"),
+        (r"\bGIG\b", "GiG", "galaxy in a group"),
+        (r"\bGIC\b", "GiC", "galaxy in a cluster"),
+        (r"\bH2G\b", "H2G", "galaxy with prominent ionized-hydrogen emission"),
+        (r"\bLSB\b", "LSB", "low-surface-brightness galaxy"),
+        (r"\bAGN\b", "AGN", "active galactic nucleus"),
+        (r"\bAG\?", "AG?", "possible active galaxy"),
+        (r"\bSAB[A-DM]?\b", None, "weakly barred or intermediate spiral galaxy"),
+        (r"\bSB[A-DM]?\b", None, "barred spiral galaxy"),
+        (r"\bSA[A-DM]?\b", None, "unbarred spiral galaxy"),
+        (r"\bS0\b", "S0", "lenticular galaxy"),
+        (r"\bE\d?\b", None, "elliptical galaxy"),
+        (r"\bIRR\b", "Irr", "irregular galaxy"),
+        (r"\bG\b", "G", "galaxy; detailed morphology not specified"),
+    ]
+
+    for pattern, standard, meaning in explanations:
+        match = re.search(pattern, upper)
+        if match:
+            code = standard or match.group(0)
+            return f"{code} ({meaning})"
+
+    if "SPIRAL" in upper:
+        return f"{text} (spiral galaxy classification)"
+    if "ELLIPTICAL" in upper:
+        return f"{text} (elliptical galaxy classification)"
+    if "LENTICULAR" in upper:
+        return f"{text} (lenticular galaxy classification)"
+    return f"{text} (catalog morphology; wording retained as published)"
+'''
+
+if old_morphology not in source:
+    raise RuntimeError("Could not locate morphology helper in BRIDGE-SEARCH-0007")
+source = source.replace(old_morphology, new_morphology)
 
 helpers = r'''
 
@@ -65,7 +107,7 @@ def labeled_magnitudes(*values: str) -> str:
     v_low, v_high = b - 1.0, b - 0.3
     k_low, k_high = b - 4.2, b - 2.0
     return (
-        f"{b:.2f} (catalog band); "
+        f"{b:.2f} (catalog/B-like); "
         f"EST {v_low:.2f}–{v_high:.2f} (V); "
         f"EST {k_low:.2f}–{k_high:.2f} (K) [band estimates; verify]"
     )
@@ -96,9 +138,7 @@ def mandatory_physical_size(row: dict[str, str]) -> str:
     return "EST 15–100 thousand ly [broad galaxy-size range; verify]"
 '''
 
-if marker not in source:
-    raise RuntimeError("Could not locate morphology helper in BRIDGE-SEARCH-0007")
-source = source.replace(marker, marker + helpers)
+source = source.replace(new_morphology, new_morphology + helpers)
 
 source = source.replace(
 '''        "Physical size": choose("Physical size"),
@@ -121,7 +161,7 @@ source = source.replace(
             backup_a.get("Magnitude", ""),
             backup_b.get("Magnitude", ""),
         ),
-        "Magnitude guide": "Lower magnitude numbers mean a brighter-looking galaxy; values depend on the observing filter.",
+        "Magnitude guide": "Apparent magnitude describes how bright an object looks from Earth. Lower numbers are brighter; negative numbers are extremely bright. The Sun is about −26.7, while magnitude 1 is a bright night-sky star.",
     }
     row["Physical size"] = mandatory_physical_size(row)
     return row'''
@@ -131,11 +171,10 @@ source = source.replace(
 '''        for index, column in enumerate(columns, 1):
             width = 38 if column in {"Galaxy age", "Redshift (z) / Distance", "Morphological type", "Physical size", "Google search string", "Manual source notes"} else 24''',
 '''        for index, column in enumerate(columns, 1):
-            width = 38 if column in {"Galaxy age", "Redshift (z) / Distance", "Morphological type", "Physical size", "Magnitudes", "Magnitude guide", "Google search string", "Manual source notes"} else 24'''
+            width = 42 if column in {"Galaxy age", "Redshift (z) / Distance", "Morphological type", "Physical size", "Magnitudes", "Magnitude guide", "Google search string", "Manual source notes"} else 24'''
 )
 
 source = source.replace('root = "bridge_search_0007_viewer"', 'root = "bridge_search_0008_viewer"')
-source = source.replace('"Magnitude"', '"Magnitudes"')
 source = source.replace('BRIDGE-SEARCH-0007-base.py', 'BRIDGE-SEARCH-0008-base.py')
 
 exec(compile(source, "BRIDGE-SEARCH-0008-runtime.py", "exec"), globals())
