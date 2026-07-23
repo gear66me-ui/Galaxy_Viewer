@@ -81,8 +81,6 @@ display(Javascript(r'''
   }
 
   async function constellationName(coords){
-    const existing=value('Constellation');
-    if(existing && !/pending|region/i.test(existing)) return existing;
     if(!coords) return 'Constellation pending';
     const loaded=await loadAstronomyEngine();
     if(!loaded) return 'Constellation pending';
