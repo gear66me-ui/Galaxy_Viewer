@@ -181,6 +181,9 @@ A.init.then(() => {
     function findNativeCoordinateBox(){return root.querySelector(".aladin-location")||root.querySelector(".aladin-coordinates")}
 
     function getCanonicalSimbadButton(){
+        const claimed=root.querySelector("button.gv-native-simbad-moved");
+        if(claimed)return claimed;
+
         const direct = root.querySelector(
             "button.aladin-simbadPointer-control,"+
             "button.aladin-simbadPointerControl,"+
