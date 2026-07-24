@@ -8,9 +8,11 @@
 </head>
 <body>
 
-  <!-- TOP BANNER FIXED -->
+  <!-- TOP BANNER FIXED (robust load) -->
   <div style="width:100%;text-align:center;margin-bottom:20px;">
-    <img src="assets/Banner Top.png" style="width:100%;max-width:1200px;">
+    <img src="assets/Banner Top.png" 
+         onerror="this.onerror=null;this.src='assets/banner-top.png';"
+         style="width:100%;max-width:1200px;">
   </div>
 
   <!-- CLEAN STATEMENT -->
