@@ -294,7 +294,7 @@ A.init.then(() => {
     }
 
     function cancelSimbadByGesture(){
-        if(!simbadModeActive||resultReady)return;
+        if(!simbadModeActive&&!resultReady)return;
         simbadModeActive=false;
         resultReady=false;
         resetHelperAndStatus(
@@ -310,9 +310,11 @@ A.init.then(() => {
     }
 
     function beginGestureTracking(event){
-        if(!simbadModeActive||resultReady)return;
-        gestureStartX=event.clientX;
-        gestureStartY=event.clientY;
+        if(!simbadModeActive&&!resultReady)return;
+        const clientX=event.clientX ?? event.touches?.[0]?.clientX ?? 0;
+        const clientY=event.clientY ?? event.touches?.[0]?.clientY ?? 0;
+        gestureStartX=clientX;
+        gestureStartY=clientY;
         gestureStartTime=Date.now();
         if(!gestureWindowStart){
             gestureWindowStart=gestureStartTime;
@@ -322,9 +324,11 @@ A.init.then(() => {
     }
 
     function finishGestureTracking(event){
-        if(!simbadModeActive||resultReady||!gestureWindowStart)return;
-        const deltaX=event.clientX-gestureStartX;
-        const deltaY=event.clientY-gestureStartY;
+        if((!simbadModeActive&&!resultReady)||!gestureWindowStart)return;
+        const clientX=event.clientX ?? event.changedTouches?.[0]?.clientX ?? gestureStartX;
+        const clientY=event.clientY ?? event.changedTouches?.[0]?.clientY ?? gestureStartY;
+        const deltaX=clientX-gestureStartX;
+        const deltaY=clientY-gestureStartY;
         const elapsed=Date.now()-gestureStartTime;
         const horizontal=Math.abs(deltaX)>70 && Math.abs(deltaX)>Math.abs(deltaY)*1.2 && elapsed<450;
         if(!horizontal)return;
@@ -336,7 +340,7 @@ A.init.then(() => {
         if(gestureWindowTimer){clearTimeout(gestureWindowTimer);}
         gestureWindowTimer=setTimeout(()=>resetGestureState(),2000);
         if(gestureSwipeCount>=3){
-            event.preventDefault();
+            event.preventDefault?.();
             cancelSimbadByGesture();
             resetGestureState();
         }
@@ -387,7 +391,7 @@ A.init.then(() => {
                 proxy.classList.add("gv-active");
                 proxy.setAttribute("aria-pressed","true");
                 setHelperText("Tap a galaxy or star<br>to find SIMBAD info",true);
-                setStatus("SIMBAD active — tap an object.",false);
+                setStatus("SIMBAD active — tap an object.<br>Swipe left/right 3 times to cancel",false);
             }else{
                 resetHelperAndStatus();
             }
@@ -399,9 +403,15 @@ A.init.then(() => {
             }
         });
 
+        root.style.touchAction="none";
         root.addEventListener("pointerdown",beginGestureTracking);
         root.addEventListener("pointerup",finishGestureTracking);
         root.addEventListener("pointercancel",resetGestureState);
+        root.addEventListener("touchstart",beginGestureTracking,{passive:false});
+        root.addEventListener("touchend",finishGestureTracking,{passive:false});
+        root.addEventListener("touchcancel",resetGestureState,{passive:false});
+        root.addEventListener("mousedown",beginGestureTracking);
+        root.addEventListener("mouseup",finishGestureTracking);
     }
 
     function createProxy(){
