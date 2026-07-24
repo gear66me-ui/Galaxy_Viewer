@@ -1,0 +1,20 @@
+body {
+  background: #000;
+  color: #7FDBFF;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+#banner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.banner {
+  background: #111;
+  border: 1px solid #0b4f6c;
+  padding: 10px;
+  cursor: pointer;
+}
