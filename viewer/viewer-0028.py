@@ -71,15 +71,17 @@ display(HTML(r"""
 #aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal:active{
     transform:none!important;
 }
+#aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal>*{
+    transform:scale(.81)!important;
+    transform-origin:center center!important;
+}
 #aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal svg,
 #aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal img,
 #aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal canvas,
 #aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal .aladin-icon,
 #aladin-cosmic-command-test .gv-native-simbad-moved.gv-target-normal [class*="icon"]{
-    transform:scale(.81)!important;
-    transform-origin:center center!important;
-    max-width:81%!important;
-    max-height:81%!important;
+    max-width:100%!important;
+    max-height:100%!important;
 }
 #aladin-cosmic-command-test .gv-simbad-helper-stack{
     display:flex!important; flex-direction:column!important; align-self:center!important;
@@ -212,12 +214,14 @@ A.init.then(() => {
             element.classList.remove("toggled");
             element.blur?.();
         });
+        [...button.children].forEach(child=>{
+            child.style.setProperty("transform","scale(.81)","important");
+            child.style.setProperty("transform-origin","center center","important");
+        });
         const visuals=button.querySelectorAll("svg,img,canvas,.aladin-icon,[class*='icon']");
         visuals.forEach(element=>{
-            element.style.setProperty("transform","scale(.81)","important");
-            element.style.setProperty("transform-origin","center center","important");
-            element.style.setProperty("max-width","81%","important");
-            element.style.setProperty("max-height","81%","important");
+            element.style.setProperty("max-width","100%","important");
+            element.style.setProperty("max-height","100%","important");
         });
         if(coordinateBox)synchronizeTargetGeometry(coordinateBox,button);
         return true;
