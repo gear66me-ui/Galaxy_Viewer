@@ -178,7 +178,8 @@ A.init.then(() => {
     let resultReady=false;
     let paletteScheduled=false;
     let gestureSwipeCount=0;
-    let gestureSweepTimer=null;
+    let gestureWindowTimer=null;
+    let gestureWindowStart=0;
     let gestureStartX=0;
     let gestureStartY=0;
     let gestureStartTime=0;
@@ -304,7 +305,8 @@ A.init.then(() => {
 
     function resetGestureState(){
         gestureSwipeCount=0;
-        if(gestureSweepTimer){clearTimeout(gestureSweepTimer);gestureSweepTimer=null;}
+        gestureWindowStart=0;
+        if(gestureWindowTimer){clearTimeout(gestureWindowTimer);gestureWindowTimer=null;}
     }
 
     function beginGestureTracking(event){
@@ -312,19 +314,27 @@ A.init.then(() => {
         gestureStartX=event.clientX;
         gestureStartY=event.clientY;
         gestureStartTime=Date.now();
-        resetGestureState();
+        if(!gestureWindowStart){
+            gestureWindowStart=gestureStartTime;
+        }
+        if(gestureWindowTimer){clearTimeout(gestureWindowTimer);}
+        gestureWindowTimer=setTimeout(()=>resetGestureState(),2000);
     }
 
     function finishGestureTracking(event){
-        if(!simbadModeActive||resultReady)return;
+        if(!simbadModeActive||resultReady||!gestureWindowStart)return;
         const deltaX=event.clientX-gestureStartX;
         const deltaY=event.clientY-gestureStartY;
         const elapsed=Date.now()-gestureStartTime;
         const horizontal=Math.abs(deltaX)>70 && Math.abs(deltaX)>Math.abs(deltaY)*1.2 && elapsed<450;
         if(!horizontal)return;
+        if(Date.now()-gestureWindowStart>2000){
+            resetGestureState();
+            return;
+        }
         gestureSwipeCount+=1;
-        if(gestureSweepTimer){clearTimeout(gestureSweepTimer);}
-        gestureSweepTimer=setTimeout(()=>resetGestureState(),650);
+        if(gestureWindowTimer){clearTimeout(gestureWindowTimer);}
+        gestureWindowTimer=setTimeout(()=>resetGestureState(),2000);
         if(gestureSwipeCount>=3){
             event.preventDefault();
             cancelSimbadByGesture();
