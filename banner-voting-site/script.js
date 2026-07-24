@@ -24,11 +24,32 @@ banners.forEach((src, index) => {
   grid.appendChild(container);
 });
 
-submitBtn.addEventListener('click', () => {
+// 🔥 GOOGLE SHEETS INTEGRATION
+const SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
+
+submitBtn.addEventListener('click', async () => {
   if (selectedIndex === null) {
     alert('Please select a banner first');
     return;
   }
 
-  alert(`You voted for Banner ${selectedIndex}`);
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ banner: selectedIndex }),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success") {
+      alert("Vote submitted successfully!");
+    } else {
+      alert("Error submitting vote.");
+    }
+
+  } catch (err) {
+    alert("Network error.");
+    console.error(err);
+  }
 });
