@@ -173,10 +173,15 @@ A.init.then(() => {
     };
 
     const normalize=value=>String(value||"").trim().split(/\s+/).join(" ");
-    const helperDefaultText="Click target, then click<br>a galaxy or star to find info";
+    const helperDefaultText="Tap a galaxy or star<br>to find SIMBAD info";
     let simbadModeActive=false;
     let resultReady=false;
     let paletteScheduled=false;
+    let gestureSwipeCount=0;
+    let gestureSweepTimer=null;
+    let gestureStartX=0;
+    let gestureStartY=0;
+    let gestureStartTime=0;
 
     function describe(element){
         return [element.className||"",element.id||"",element.getAttribute?.("title")||"",element.getAttribute?.("aria-label")||"",element.getAttribute?.("data-tooltip")||"",element.textContent||""].join(" ").toLowerCase();
@@ -261,7 +266,7 @@ A.init.then(() => {
         }
     }
 
-    function resetHelperAndStatus(){
+    function resetHelperAndStatus(helperMessage=null,statusMessage=null){
         const stack=root.querySelector(".gv-simbad-helper-stack");
         const proxy=getProxy();
         if(proxy){
@@ -270,8 +275,8 @@ A.init.then(() => {
             proxy.blur?.();
         }
         if(!stack)return;
-        setHelperText(helperDefaultText,false);
-        setStatus("",false);
+        setHelperText(helperMessage??helperDefaultText,false);
+        setStatus(statusMessage??"",false);
     }
 
     function clearSimbad(){
@@ -287,12 +292,52 @@ A.init.then(() => {
         resetHelperAndStatus();
     }
 
+    function cancelSimbadByGesture(){
+        if(!simbadModeActive||resultReady)return;
+        simbadModeActive=false;
+        resultReady=false;
+        resetHelperAndStatus(
+            "SIMBAD deactivated<br>Press the Target button again to invoke SIMBAD",
+            "SIMBAD deactivated<br>Press the Target button again to invoke SIMBAD"
+        );
+    }
+
+    function resetGestureState(){
+        gestureSwipeCount=0;
+        if(gestureSweepTimer){clearTimeout(gestureSweepTimer);gestureSweepTimer=null;}
+    }
+
+    function beginGestureTracking(event){
+        if(!simbadModeActive||resultReady)return;
+        gestureStartX=event.clientX;
+        gestureStartY=event.clientY;
+        gestureStartTime=Date.now();
+        resetGestureState();
+    }
+
+    function finishGestureTracking(event){
+        if(!simbadModeActive||resultReady)return;
+        const deltaX=event.clientX-gestureStartX;
+        const deltaY=event.clientY-gestureStartY;
+        const elapsed=Date.now()-gestureStartTime;
+        const horizontal=Math.abs(deltaX)>70 && Math.abs(deltaX)>Math.abs(deltaY)*1.2 && elapsed<450;
+        if(!horizontal)return;
+        gestureSwipeCount+=1;
+        if(gestureSweepTimer){clearTimeout(gestureSweepTimer);}
+        gestureSweepTimer=setTimeout(()=>resetGestureState(),650);
+        if(gestureSwipeCount>=3){
+            event.preventDefault();
+            cancelSimbadByGesture();
+            resetGestureState();
+        }
+    }
+
     function setClearReady(){
         const status=root.querySelector(".gv-simbad-live-status");
         if(!status||resultReady)return;
         resultReady=true;
         setHelperText(helperDefaultText,false);
-        setStatus("SIMBAD result displayed<br>TAP HERE TO CLEAR",true);
+        setStatus("Screen locked for SIMBAD<br>Tap here to clear and resume navigation",true);
     }
 
     function ensureHelper(row,proxy){
@@ -331,8 +376,8 @@ A.init.then(() => {
             if(simbadModeActive){
                 proxy.classList.add("gv-active");
                 proxy.setAttribute("aria-pressed","true");
-                setHelperText("Now click a galaxy or star<br>to find information",true);
-                setStatus("SIMBAD active — tap one object.",false);
+                setHelperText("Tap a galaxy or star<br>to find SIMBAD info",true);
+                setStatus("SIMBAD active — tap an object.",false);
             }else{
                 resetHelperAndStatus();
             }
@@ -343,6 +388,10 @@ A.init.then(() => {
                 event.preventDefault();activateProxy();
             }
         });
+
+        root.addEventListener("pointerdown",beginGestureTracking);
+        root.addEventListener("pointerup",finishGestureTracking);
+        root.addEventListener("pointercancel",resetGestureState);
     }
 
     function createProxy(){
