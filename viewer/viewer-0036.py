@@ -567,5 +567,61 @@ function gvEscapePointerUp() {
 
     window.addEventListener("resize",()=>schedulePalette());
 });
+// Viewer-0036-Patch F
+
+const gvInteractionSurface =
+    root.querySelector("canvas") ||
+    root.querySelector(".aladin-imageCanvas") ||
+    root;
+
+let gvPointerActive = false;
+let gvPointerId = null;
+
+gvInteractionSurface.addEventListener("pointerdown", function(event) {
+
+    if (!simbadModeActive) return;
+    if (!event.isPrimary) return;
+
+    gvPointerActive = true;
+    gvPointerId = event.pointerId;
+
+    gvEscapePointerDown(event.clientX, event.clientY);
+
+}, { passive: true });
+
+gvInteractionSurface.addEventListener("pointermove", function(event) {
+
+    if (!gvPointerActive) return;
+    if (event.pointerId !== gvPointerId) return;
+
+    gvEscapePointerMove(event.clientX, event.clientY);
+
+}, { passive: true });
+
+function gvFinishPointer(event) {
+
+    if (!gvPointerActive) return;
+    if (event.pointerId !== gvPointerId) return;
+
+    gvPointerActive = false;
+    gvPointerId = null;
+
+    gvEscapePointerUp();
+
+}
+
+gvInteractionSurface.addEventListener(
+    "pointerup",
+    gvFinishPointer,
+    { passive: true }
+);
+
+gvInteractionSurface.addEventListener(
+    "pointercancel",
+    gvFinishPointer,
+    { passive: true }
+);
+
+// End Viewer-0036-Patch F
 </script>
 """))
