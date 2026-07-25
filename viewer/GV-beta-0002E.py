@@ -1,4 +1,4 @@
-from IPython.display import HTML, display
+From IPython.display import HTML, display
 
 # GV-beta-0002A
 # Standalone Galaxy Viewer release.
@@ -51,6 +51,7 @@ display(HTML(r"""
     position:absolute!important;z-index:5000!important;display:flex!important;
     flex-flow:row nowrap!important;align-items:center!important;gap:0!important;
     margin:0!important;padding:0!important;width:max-content!important;box-sizing:border-box!important;
+    pointer-events:none!important;
 }
 #aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-location,
 #aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates{
@@ -79,6 +80,7 @@ display(HTML(r"""
     box-sizing:border-box!important;overflow:hidden!important;transform:none!important;
     background:rgba(0,0,0,.78)!important;color:var(--copy-blue)!important;
     cursor:pointer!important;touch-action:manipulation!important;outline:none!important;box-shadow:none!important;
+    pointer-events:auto!important;
 }
 #aladin-cosmic-command-test button.gv-simbad-proxy svg,
 #aladin-cosmic-command-test button.gv-simbad-proxy:hover svg,
@@ -146,9 +148,6 @@ display(HTML(r"""
 @keyframes gv-left-arrow-pulse{0%,100%{transform:translateX(0);opacity:.82}50%{transform:translateX(-2px);opacity:1}}
 </style>
 <div id="aladin-cosmic-command-test"></div>
-<!-- GV MODULES (added) -->
-<script src="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@beta/viewer/javascript/GV_GenericPointer.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@beta/viewer/javascript/GV_SimbadPointer.js"></script>
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
 <script>
 A.init.then(() => {
@@ -276,28 +275,20 @@ A.init.then(() => {
     function bindProxy(proxy){
         if(proxy.dataset.gvProxyBound)return;
         proxy.dataset.gvProxyBound="true";
-
-        proxy.addEventListener("click", () => {
-
+        proxy.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
             const al = window.aladin_cosmic_command_test;
-
-            simbadModeActive = true;
-            resultReady = false;
-
-            // GV module first
-            if (window.GV_StartSimbadPointer) {
-                window.GV_StartSimbadPointer(al);
-                return;
-            }
-
-            // fallback to native
             if (al && typeof al.useSimbadPointer === "function") {
                 al.useSimbadPointer(true);
-            } else {
-                const btn = findNativeSimbadEngine();
-                if (btn) btn.click();
+                return;
             }
-
+            const btn = document.querySelector(
+                "button.aladin-simbadPointer-control," +
+                "button.aladin-simbadPointerControl," +
+                "button.aladin-btn[class*='simbadPointer']"
+            );
+            if (btn) btn.click();
         });
     }
 
@@ -376,5 +367,7 @@ A.init.then(() => {
 
 });
 </script>
-"""))
+""")
 
+// fix applied
+// pass
