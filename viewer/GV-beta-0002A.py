@@ -1,6 +1,6 @@
 from IPython.display import HTML, display
 
-# GV-beta-0002
+# GV-beta-0002A
 # Standalone Galaxy Viewer release.
 # GV-beta-0002
 # Fixed-size Galaxy Viewer SIMBAD proxy; native Aladin control is hidden command engine.
