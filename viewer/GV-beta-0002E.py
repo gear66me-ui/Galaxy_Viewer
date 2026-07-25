@@ -367,7 +367,7 @@ A.init.then(() => {
 
 });
 </script>
-""")
+"""))
 
 // fix applied
 // pass
