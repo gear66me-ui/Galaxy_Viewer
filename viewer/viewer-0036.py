@@ -1,7 +1,8 @@
 from IPython.display import HTML, display
 
-# viewer-0031
+# viewer-0036
 # Standalone Galaxy Viewer release.
+# Viewer 36
 # Fixed-size Galaxy Viewer SIMBAD proxy; native Aladin control is hidden command engine.
 # No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.
 
@@ -279,7 +280,7 @@ function gvHandleEscapeGesture() {
 }
 
 // End Viewer 0035 - Patch D
-    .// Viewer 0035 - Patch E
+// Viewer 0035 - Patch E
 // Inserted: 2026-07-24 (Colombia Time)
 // Purpose: Measure drag gestures while SIMBAD mode is active
 
