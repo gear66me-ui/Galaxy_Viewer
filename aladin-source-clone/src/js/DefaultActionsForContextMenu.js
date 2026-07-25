@@ -1,0 +1,272 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
+// Copyright 2013 - UDS/CNRS
+// The Aladin Lite program is distributed under the terms
+// of the GNU Lesser General Public License version 3
+// or (at your option) any later version.
+//
+// This file is part of Aladin Lite.
+//
+//    Aladin Lite is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Lesser General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    Aladin Lite is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//    GNU Lesser General Public License for more details.
+//
+//    You should have received a copy of the GNU Lesser General Public License
+//    along with Aladin Lite. If not, see <https://www.gnu.org/licenses/>.
+//
+
+
+/******************************************************************************
+ * Aladin Lite project
+ *
+ * File DefaultActionsForContextMenu
+ *
+ * Author: Thomas Boch[CDS]
+ *
+ *****************************************************************************/
+
+import { GenericPointer } from "./GenericPointer.js";
+import A from "./A.js";
+import { CatalogQueryBox } from "./gui/Box/CatalogQueryBox.js";
+import cameraIconUrl from '../../assets/icons/camera.svg'
+import targetIconUrl from '../../assets/icons/target.svg';
+import uploadIconUrl from '../../assets/icons/upload.svg';
+import selectIconUrl from '../../assets/icons/select.svg';
+import { Utils } from "./Utils";
+
+export let DefaultActionsForContextMenu = (function () {
+
+    let DefaultActionsForContextMenu = {};
+
+    DefaultActionsForContextMenu.getDefaultActions = function (aladinInstance) {
+        const a = aladinInstance;
+
+        const selectObjects = (selection) => {
+            a.view.selectObjects(selection);
+        };
+        return [
+            {
+                label: "Copy position", action(o) {
+                    let msg;
+                    let text = o.target.innerText;
+                    if (!text) {
+                        return false;
+                    }
+
+                    Utils.copy2Clipboard(text)
+                        .then(() => {
+                            msg = 'successful'
+                            if (aladinInstance.statusBar) {
+                                aladinInstance.statusBar.appendMessage({
+                                    message: 'Reticle location saved!',
+                                    duration: 2000,
+                                    type: 'info'
+                                })
+                            }
+                        })
+                        .catch((e) => {
+                            msg = 'unsuccessful'
+                            console.info('Oops, unable to copy', e);
+                        })
+                        .finally(() => {
+                            console.info('Copying text command was ' + msg);
+                        })
+                }
+            },
+            {
+                label: {
+                    icon: {
+                        tooltip: {content: 'Download a PNG image file of the view', position: {direction: 'top'}},
+                        monochrome: true,
+                        url: cameraIconUrl,
+                        size: 'small',
+                    },
+                    content: 'Take a snapshot'
+                },
+                action(o) { a.exportAsPNG(); }
+            },
+            {
+                label: "Add",
+                subMenu: [
+                    {
+                        label: 'New image layer', action(o) {
+                            a.addNewImageLayer();
+                            if (a.menu) {
+                                a.menu.open('stack')
+                            }
+                        }
+                    },
+                    {
+                        label: 'New catalogue layer', action(o) {
+                            let catBox = new CatalogQueryBox(a)
+                            catBox._show({
+                                position: {
+                                    anchor :'center center'
+                                },
+                            });
+                        }
+                    },
+                ]
+            },
+            {
+                label: {
+                    icon: {
+                        monochrome: true,
+                        url: uploadIconUrl,
+                        cssStyle: {
+                            cursor: 'help',
+                        }
+                    },
+                    content: "Load a local file"
+                },
+                subMenu: [
+                    {
+                        label: 'Load image', action(o) {
+                            let input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = ['.fits', '.png', '.jpg'];
+                            input.onchange = _ => {
+                                let files = Array.from(input.files);
+
+                                files.forEach(file => {
+                                    const url = URL.createObjectURL(file);
+                                    const name = file.name;
+
+                                    // Consider other cases
+                                    const image = A.image(
+                                        url,
+                                        {
+                                            name,
+                                            successCallback: (ra, dec, fov, _) => {
+                                                // Center the view around the new fits object
+                                                a.gotoRaDec(ra, dec);
+                                                a.setFoV(fov * 1.1);
+                                            }
+                                        },
+                                    );
+
+                                    a.setOverlayImageLayer(image, name)
+                                });
+                            };
+                            input.click();
+                        }
+                    },
+                    {
+                        label: 'FITS MOC', action(o) {
+                            let input = document.createElement('input');
+                            input.type = 'file';
+                            input.onchange = _ => {
+                                let files = Array.from(input.files);
+
+                                files.forEach(file => {
+                                    const url = URL.createObjectURL(file);
+                                    let moc = A.MOCFromURL(url, { name: file.name });
+                                    a.addMOC(moc);
+                                });
+                            };
+                            input.click();
+                        }
+                    },
+                    {
+                        label: 'VOTable', action(o) {
+                            let input = document.createElement('input');
+                            input.type = 'file';
+                            input.onchange = _ => {
+                                let files = Array.from(input.files);
+
+                                files.forEach(file => {
+                                    const url = URL.createObjectURL(file);
+                                    A.catalogFromURL(url, { name: file.name, hoverColor: 'yellow', onClick: 'showTable'}, (catalog) => {
+                                        a.addCatalog(catalog);
+                                    }, false);
+                                });
+                            };
+                            input.click();
+                        }
+                    }
+                ]
+            },
+            {
+                label: {
+                    icon: {
+                        monochrome: true,
+                        url: selectIconUrl,
+                        size: 'small',
+                    },
+                    content: "Select sources"
+                },
+                subMenu: [
+                    {
+                        label: 'Circular',
+                        action(o) {
+                            a.select('circle', selectObjects)
+                        }
+                    },
+                    {
+                        label: 'Rectangular',
+                        action(o) {        
+                            a.select('rect', selectObjects)
+                        }
+                    },
+                    {
+                        label: 'Polygon',
+                        action(o) {        
+                            a.select('poly', selectObjects)
+                        }
+                    }
+                ]
+            },
+            {
+                label: {
+                    icon: {
+                        tooltip: {content: 'Use Sesame, our name resolver!', position: {direction: 'top'}},
+                        monochrome: true,
+                        url: targetIconUrl,
+                        size: 'small',
+                    },
+                    content: 'What is this?'
+                },
+                
+                action(o, ctxMenu) {
+                    GenericPointer(a.view, {
+                        x: parseInt(ctxMenu.element().style.left),
+                        y: parseInt(ctxMenu.element().style.top)
+                    });
+                }
+            },
+            {
+                label: "HiPS2FITS cutout", action(o) {
+                    let hipsId = a.getBaseImageLayer().id;
+                    let wcs = JSON.stringify(a.getViewWCS());
+                    let radec = a.getRaDec();
+                    let fov = Math.max.apply(null, a.getFov());
+
+                    let hips2fitsUrl  = 'https://alasky.cds.unistra.fr/hips-image-services/hips2fits#'
+                    // HiPS identifier
+                    hips2fitsUrl += 'hips=' + encodeURIComponent(hipsId)
+
+                    // Parameter given for full support of the Aladin view position and orientation in the sky
+                    // WCS object
+                    hips2fitsUrl += '&wcs=' + encodeURIComponent(wcs)
+                    // Parameters given to fill the more readable user formular in HiPS2FITS interface
+                    // Sky projection center
+                    hips2fitsUrl += '&ra=' + radec[0]
+                    hips2fitsUrl += '&dec=' + radec[1]
+                    // FoV
+                    hips2fitsUrl += '&fov=' + fov
+
+                    // Open HiPS2FITS interface in a new browser tab
+                    window.open(hips2fitsUrl, '_blank');
+                }
+            },
+        ]
+    }
+
+    return DefaultActionsForContextMenu;
+
+})();
