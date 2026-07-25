@@ -172,6 +172,156 @@ A.init.then(() => {
     let simbadModeActive=false;
     let resultReady=false;
     let paletteScheduled=false;
+    // Viewer 0035 - Patch A
+// Inserted: 2026-07-24 (Colombia Time)
+// Purpose: SIMBAD frustration escape support
+
+let gvEscapeSwipeCount = 0;
+let gvEscapeTimer = null;
+
+const GV_ESCAPE_REQUIRED = 3;
+const GV_ESCAPE_TIMEOUT = 2000;
+const GV_ESCAPE_DISTANCE = 40;
+
+function gvResetEscape() {
+
+    gvEscapeSwipeCount = 0;
+
+    if (gvEscapeTimer) {
+        clearTimeout(gvEscapeTimer);
+        gvEscapeTimer = null;
+    }
+
+}
+// End Viewer 0035 - Patch A
+
+// Viewer 0035 - Patch B
+// Inserted: 2026-07-24 (Colombia Time)
+// Purpose: Register SIMBAD frustration gestures
+
+function gvRegisterEscapeGesture() {
+
+    if (!simbadModeActive) {
+        return;
+    }
+
+    if (resultReady) {
+        return;
+    }
+
+    gvEscapeSwipeCount++;
+
+    if (gvEscapeTimer) {
+        clearTimeout(gvEscapeTimer);
+    }
+
+    gvEscapeTimer = setTimeout(function () {
+
+        gvEscapeSwipeCount = 0;
+        gvEscapeTimer = null;
+
+    }, GV_ESCAPE_TIMEOUT);
+
+}
+
+// End Viewer 0035 - Patch B
+// Viewer 0035 - Patch C
+// Inserted: 2026-07-24 (Colombia Time)
+// Purpose: Trigger automatic SIMBAD escape
+
+function gvCheckEscapeThreshold() {
+
+    if (gvEscapeSwipeCount < GV_ESCAPE_REQUIRED) {
+        return;
+    }
+
+    gvResetEscape();
+
+    clearSimbad();
+
+    const status = root.querySelector(".gv-simbad-live-status");
+
+    if (status) {
+
+        status.innerHTML =
+            "SIMBAD disabled.<br>Press TARGET again to search.";
+
+        status.classList.add("gv-visible");
+        status.classList.remove("gv-clear-ready");
+
+        setTimeout(function () {
+
+            if (!simbadModeActive) {
+
+                status.textContent = "";
+                status.classList.remove("gv-visible");
+
+            }
+
+        }, 2500);
+
+    }
+
+}
+
+// End Viewer 0035 - Patch C
+
+// Viewer 0035 - Patch D
+// Inserted: 2026-07-24 (Colombia Time)
+// Purpose: Connect gesture counter to escape logic
+
+function gvHandleEscapeGesture() {
+
+    gvRegisterEscapeGesture();
+
+    gvCheckEscapeThreshold();
+
+}
+
+// End Viewer 0035 - Patch D
+    .// Viewer 0035 - Patch E
+// Inserted: 2026-07-24 (Colombia Time)
+// Purpose: Measure drag gestures while SIMBAD mode is active
+
+let gvEscapeStartX = null;
+let gvEscapeStartY = null;
+
+function gvEscapePointerDown(x, y) {
+
+    gvEscapeStartX = x;
+    gvEscapeStartY = y;
+
+}
+
+function gvEscapePointerMove(x, y) {
+
+    if (gvEscapeStartX === null || gvEscapeStartY === null) {
+        return;
+    }
+
+    const dx = x - gvEscapeStartX;
+    const dy = y - gvEscapeStartY;
+
+    if (Math.hypot(dx, dy) >= GV_ESCAPE_DISTANCE) {
+
+        gvEscapeStartX = null;
+        gvEscapeStartY = null;
+
+        gvHandleEscapeGesture();
+
+    }
+
+}
+
+function gvEscapePointerUp() {
+
+    gvEscapeStartX = null;
+    gvEscapeStartY = null;
+
+}
+
+// End Viewer 0035 - Patch E
+
 
     function describe(element){
         return [element.className||"",element.id||"",element.getAttribute?.("title")||"",element.getAttribute?.("aria-label")||"",element.getAttribute?.("data-tooltip")||"",element.textContent||""].join(" ").toLowerCase();
