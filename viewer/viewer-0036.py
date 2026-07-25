@@ -173,156 +173,6 @@ A.init.then(() => {
     let simbadModeActive=false;
     let resultReady=false;
     let paletteScheduled=false;
-    // Viewer 0035 - Patch A
-// Inserted: 2026-07-24 (Colombia Time)
-// Purpose: SIMBAD frustration escape support
-
-let gvEscapeSwipeCount = 0;
-let gvEscapeTimer = null;
-
-const GV_ESCAPE_REQUIRED = 3;
-const GV_ESCAPE_TIMEOUT = 2000;
-const GV_ESCAPE_DISTANCE = 40;
-
-function gvResetEscape() {
-
-    gvEscapeSwipeCount = 0;
-
-    if (gvEscapeTimer) {
-        clearTimeout(gvEscapeTimer);
-        gvEscapeTimer = null;
-    }
-
-}
-// End Viewer 0035 - Patch A
-
-// Viewer 0035 - Patch B
-// Inserted: 2026-07-24 (Colombia Time)
-// Purpose: Register SIMBAD frustration gestures
-
-function gvRegisterEscapeGesture() {
-
-    if (!simbadModeActive) {
-        return;
-    }
-
-    if (resultReady) {
-        return;
-    }
-
-    gvEscapeSwipeCount++;
-
-    if (gvEscapeTimer) {
-        clearTimeout(gvEscapeTimer);
-    }
-
-    gvEscapeTimer = setTimeout(function () {
-
-        gvEscapeSwipeCount = 0;
-        gvEscapeTimer = null;
-
-    }, GV_ESCAPE_TIMEOUT);
-
-}
-
-// End Viewer 0035 - Patch B
-// Viewer 0035 - Patch C
-// Inserted: 2026-07-24 (Colombia Time)
-// Purpose: Trigger automatic SIMBAD escape
-
-function gvCheckEscapeThreshold() {
-
-    if (gvEscapeSwipeCount < GV_ESCAPE_REQUIRED) {
-        return;
-    }
-
-    gvResetEscape();
-
-    clearSimbad();
-
-    const status = root.querySelector(".gv-simbad-live-status");
-
-    if (status) {
-
-        status.innerHTML =
-            "SIMBAD disabled.<br>Press TARGET again to search.";
-
-        status.classList.add("gv-visible");
-        status.classList.remove("gv-clear-ready");
-
-        setTimeout(function () {
-
-            if (!simbadModeActive) {
-
-                status.textContent = "";
-                status.classList.remove("gv-visible");
-
-            }
-
-        }, 2500);
-
-    }
-
-}
-
-// End Viewer 0035 - Patch C
-
-// Viewer 0035 - Patch D
-// Inserted: 2026-07-24 (Colombia Time)
-// Purpose: Connect gesture counter to escape logic
-
-function gvHandleEscapeGesture() {
-
-    gvRegisterEscapeGesture();
-
-    gvCheckEscapeThreshold();
-
-}
-
-// End Viewer 0035 - Patch D
-// Viewer 0035 - Patch E
-// Inserted: 2026-07-24 (Colombia Time)
-// Purpose: Measure drag gestures while SIMBAD mode is active
-
-let gvEscapeStartX = null;
-let gvEscapeStartY = null;
-
-function gvEscapePointerDown(x, y) {
-
-    gvEscapeStartX = x;
-    gvEscapeStartY = y;
-
-}
-
-function gvEscapePointerMove(x, y) {
-
-    if (gvEscapeStartX === null || gvEscapeStartY === null) {
-        return;
-    }
-
-    const dx = x - gvEscapeStartX;
-    const dy = y - gvEscapeStartY;
-
-    if (Math.hypot(dx, dy) >= GV_ESCAPE_DISTANCE) {
-
-        gvEscapeStartX = null;
-        gvEscapeStartY = null;
-
-        gvHandleEscapeGesture();
-
-    }
-
-}
-
-function gvEscapePointerUp() {
-
-    gvEscapeStartX = null;
-    gvEscapeStartY = null;
-
-}
-
-// End Viewer 0035 - Patch E
-
 
     function describe(element){
         return [element.className||"",element.id||"",element.getAttribute?.("title")||"",element.getAttribute?.("aria-label")||"",element.getAttribute?.("data-tooltip")||"",element.textContent||""].join(" ").toLowerCase();
@@ -566,62 +416,89 @@ function gvEscapePointerUp() {
     },250);
 
     window.addEventListener("resize",()=>schedulePalette());
+
+    // Viewer-0036-Patch G
+    // Tap performs a SIMBAD lookup; an intentional drag immediately restores PAN mode.
+    const GV_SIMBAD_DRAG_DISTANCE=12;
+    let gvSimbadPointerActive=false;
+    let gvSimbadPointerId=null;
+    let gvSimbadDragStartX=0;
+    let gvSimbadDragStartY=0;
+    let gvSimbadDragReleased=false;
+
+    function gvGetInteractionSurface(){
+        return aladin?.view?.catalogCanvas||root.querySelector(".aladin-catalogCanvas")||root.querySelector("canvas")||root;
+    }
+
+    function gvReleaseSimbadForPan(){
+        if(!simbadModeActive||gvSimbadDragReleased)return;
+        gvSimbadDragReleased=true;
+        try{aladin.fire("default")}catch(error){
+            try{if(aladin.view)aladin.view.setMode(0)}catch(innerError){
+                console.warn("Galaxy Viewer could not restore Aladin PAN mode.",innerError);
+            }
+        }
+        simbadModeActive=false;
+        resultReady=false;
+        resetHelperAndStatus();
+        const status=root.querySelector(".gv-simbad-live-status");
+        if(status){
+            status.innerHTML="Navigation restored.<br>Press TARGET to search again.";
+            status.classList.add("gv-visible");
+            status.classList.remove("gv-clear-ready");
+            status.setAttribute("role","status");
+            status.removeAttribute("tabindex");
+            setTimeout(()=>{
+                if(!simbadModeActive&&!resultReady){
+                    status.textContent="";
+                    status.classList.remove("gv-visible");
+                }
+            },1800);
+        }
+    }
+
+    function gvSimbadPointerDown(event){
+        if(!simbadModeActive||resultReady)return;
+        if(event.isPrimary===false)return;
+        gvSimbadPointerActive=true;
+        gvSimbadPointerId=event.pointerId!==undefined?event.pointerId:null;
+        gvSimbadDragStartX=event.clientX;
+        gvSimbadDragStartY=event.clientY;
+        gvSimbadDragReleased=false;
+    }
+
+    function gvSimbadPointerMove(event){
+        if(!gvSimbadPointerActive)return;
+        if(gvSimbadPointerId!==null&&event.pointerId!==undefined&&event.pointerId!==gvSimbadPointerId)return;
+        if(!simbadModeActive||resultReady)return;
+        const dx=event.clientX-gvSimbadDragStartX;
+        const dy=event.clientY-gvSimbadDragStartY;
+        if(Math.hypot(dx,dy)>=GV_SIMBAD_DRAG_DISTANCE)gvReleaseSimbadForPan();
+    }
+
+    function gvSimbadPointerFinish(event){
+        if(!gvSimbadPointerActive)return;
+        if(gvSimbadPointerId!==null&&event.pointerId!==undefined&&event.pointerId!==gvSimbadPointerId)return;
+        gvSimbadPointerActive=false;
+        gvSimbadPointerId=null;
+        gvSimbadDragStartX=0;
+        gvSimbadDragStartY=0;
+        gvSimbadDragReleased=false;
+    }
+
+    function gvBindSimbadDragRelease(){
+        const surface=gvGetInteractionSurface();
+        if(!surface||surface.dataset.gvSimbadDragReleaseBound)return;
+        surface.dataset.gvSimbadDragReleaseBound="true";
+        surface.addEventListener("pointerdown",gvSimbadPointerDown,{passive:true});
+        surface.addEventListener("pointermove",gvSimbadPointerMove,{passive:true});
+        surface.addEventListener("pointerup",gvSimbadPointerFinish,{passive:true});
+        surface.addEventListener("pointercancel",gvSimbadPointerFinish,{passive:true});
+    }
+
+    gvBindSimbadDragRelease();
+    [100,300,700,1400].forEach(delay=>setTimeout(gvBindSimbadDragRelease,delay));
+    // End Viewer-0036-Patch G
 });
-// Viewer-0036-Patch F
-
-const gvInteractionSurface =
-    root.querySelector("canvas") ||
-    root.querySelector(".aladin-imageCanvas") ||
-    root;
-
-let gvPointerActive = false;
-let gvPointerId = null;
-
-gvInteractionSurface.addEventListener("pointerdown", function(event) {
-
-    if (!simbadModeActive) return;
-    if (!event.isPrimary) return;
-
-    gvPointerActive = true;
-    gvPointerId = event.pointerId;
-
-    gvEscapePointerDown(event.clientX, event.clientY);
-
-}, { passive: true });
-
-gvInteractionSurface.addEventListener("pointermove", function(event) {
-
-    if (!gvPointerActive) return;
-    if (event.pointerId !== gvPointerId) return;
-
-    gvEscapePointerMove(event.clientX, event.clientY);
-
-}, { passive: true });
-
-function gvFinishPointer(event) {
-
-    if (!gvPointerActive) return;
-    if (event.pointerId !== gvPointerId) return;
-
-    gvPointerActive = false;
-    gvPointerId = null;
-
-    gvEscapePointerUp();
-
-}
-
-gvInteractionSurface.addEventListener(
-    "pointerup",
-    gvFinishPointer,
-    { passive: true }
-);
-
-gvInteractionSurface.addEventListener(
-    "pointercancel",
-    gvFinishPointer,
-    { passive: true }
-);
-
-// End Viewer-0036-Patch F
 </script>
 """))
