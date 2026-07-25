@@ -1,4 +1,4 @@
-From IPython.display import HTML, display
+from IPython.display import HTML, display
 
 # GV-beta-0002
 # Standalone Galaxy Viewer release.
