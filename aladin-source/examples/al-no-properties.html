@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+    <div id="aladin-lite-div" style="width: 1024px; height: 768px"></div>
+    <script type="module">
+        import A from '../src/js/A.js';
+A.init.then(() => {
+    let aladin = A.aladin('#aladin-lite-div', {fov: 70,projection: "AIT"});
+    
+    aladin.setOverlayImageLayer(A.imageHiPS(
+        "https://alasky.cds.unistra.fr/Fermi/Color",
+        {
+            name: "Fermi color",
+            maxOrder: 3,
+            imgFormat: 'jpeg',
+            tileSize: 512,
+            cooFrame: 'equatorial'
+        }
+    ));
+
+});
+</script>
+</body>
+</html>

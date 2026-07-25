@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+
+<div id="aladin-lite-div" style="width: 500px; height: 400px"></div>
+
+<script type="module">
+    import A from '../src/js/A.js';
+    let aladin;
+    A.init.then(() => {
+        aladin = A.aladin('#aladin-lite-div', {target: 'NGC 1367', fov: 360, samp: false, projection: 'AIT', fullScreen: true, showContextMenu: true});
+
+        A.catalogFromURL('https://raw.githubusercontent.com/VisIVOLab/SKA-Discovery-Service-Mockup/main/ObsCore/ObsCore_003.xml', {onClick: 'showTable', hoverColor: 'purple'}, (catalog) => {
+            aladin.addCatalog(catalog)
+        });
+
+        aladin.addCatalog(A.catalogFromVizieR("B/assocdata/obscore", "0 +0", 20, {onClick: 'showTable', hoverColor: 'yellow', limit: 1000}))
+        aladin.addCatalog(A.catalogFromSKAORucio("0 +0", 70, {onClick: 'showTable', hoverColor: 'yellow', limit: 1000}))
+
+    });
+</script>
+</body>
+</html>

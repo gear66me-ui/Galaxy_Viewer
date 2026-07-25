@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, initial-scale=1.0, user-scalable=no">
+</head>
+<body>
+
+<div id="aladin-lite-div" style="width: 1024px; height: 768px"></div>
+<script>let aladin;</script>
+<script type="module">
+  import A from '../src/js/A.js';
+  A.init.then(() => {
+      // Start up Aladin Lite
+      aladin = A.aladin('#aladin-lite-div', {
+        target: "LMC",
+        fov: 10,
+        showContextMenu: true,
+        fullScreen: true,
+        showSettingsControl: true,
+        showStackLayerControl: true,
+        samp: true,
+      });
+
+      let pmraMean = null, pmdecMean = null;
+
+      const pmCat = A.catalogFromURL('./data/votable/proper_motion.xml', {
+        onClick: 'showTable',
+        name: 'mean pm over HPX cells around LMC from GaiaDR2',
+        hoverColor: 'yellow',
+        selectionColor: 'white',
+        // Footprint associated to sources
+        color: (s) => {
+          // discard drawing a vector for big pm
+          let totalPmSquared = s.data.pmra*s.data.pmra + s.data.pmdec*s.data.pmdec;
+          if (totalPmSquared > 6) {
+            return;
+          }
+
+          return rainbowColorMap((totalPmSquared - 2.5) / 2)
+        },
+        shape: (s) => {
+          // discard drawing a vector for big pm
+          let totalPmSquared = s.data.pmra*s.data.pmra + s.data.pmdec*s.data.pmdec;
+          if (totalPmSquared > 6) {
+            return;
+          }
+          // Compute the mean of pm over the catalog sources
+          if (!pmraMean || !pmdecMean) {
+            pmraMean = 0, pmdecMean = 0;
+            for (var s of pmCat.getSources()) {
+              pmraMean += +s.data.pmra;
+              pmdecMean += +s.data.pmdec;
+            }
+
+            const numSources = pmCat.getSources().length;
+
+            pmraMean /= numSources
+            pmdecMean /= numSources
+          }
+
+          let dra = +s.data.pmra - pmraMean;
+          let ddec = +s.data.pmdec - pmdecMean;
+
+          return A.vector(
+            s.ra,
+            s.dec,
+            s.ra + dra,
+            s.dec + ddec,
+          )
+        }
+      },
+      () => {
+        aladin.addCatalog(pmCat);
+
+        pmCat.select((s) => {
+          let totalPmSquared = s.data.pmra*s.data.pmra + s.data.pmdec*s.data.pmdec;
+          if (totalPmSquared > 6) {
+            return false;
+          }
+          return totalPmSquared < 3.0;
+        });
+      });
+  });
+
+  
+
+  function rainbowColorMap(value) {
+    // Ensure value is within range [0, 1]
+    value = Math.max(0, Math.min(1, value));
+
+    // Convert value to hue
+    var hue = (1 - value) * 240; // 240 is the maximum hue value for blue
+
+    // Convert HSV to RGB
+    var chroma = 1;
+    var x = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
+    var r1, g1, b1;
+
+    if (hue >= 0 && hue < 60) {
+        [r1, g1, b1] = [chroma, x, 0];
+    } else if (hue >= 60 && hue < 120) {
+        [r1, g1, b1] = [x, chroma, 0];
+    } else if (hue >= 120 && hue < 180) {
+        [r1, g1, b1] = [0, chroma, x];
+    } else if (hue >= 180 && hue < 240) {
+        [r1, g1, b1] = [0, x, chroma];
+    }
+
+    var m = 1 - chroma;
+    var r = r1 + m;
+    var g = g1 + m;
+    var b = b1 + m;
+
+    // Convert RGB to HEX
+    r = Math.round(r * 255);
+    g = Math.round(g * 255);
+    b = Math.round(b * 255);
+    var colorHex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+    return colorHex;
+  }
+</script>
+
+</body>
+</html>

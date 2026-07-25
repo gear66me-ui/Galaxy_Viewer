@@ -1,0 +1,347 @@
+pub mod bitmap;
+pub mod canvas;
+pub mod fits;
+pub mod format;
+pub mod html;
+pub mod raw;
+
+use crate::image::bitmap::Bitmap;
+use crate::image::raw::ImageBuffer;
+use crate::texture::format::RGB8U;
+use crate::texture::format::RGBA8U;
+pub trait ArrayBuffer: AsRef<js_sys::Object> + std::fmt::Debug {
+    type Item: std::cmp::PartialOrd + Clone + Copy + std::fmt::Debug + cgmath::Zero;
+
+    fn new(buf: &[Self::Item]) -> Self;
+    fn empty(size: u32, blank_value: Self::Item) -> Self;
+
+    fn to_vec(&self) -> Vec<Self::Item>;
+
+    fn set_index(&self, idx: u32, value: Self::Item);
+    fn get(&self, idx: u32) -> Self::Item;
+}
+#[derive(Debug)]
+pub struct ArrayU8(js_sys::Uint8Array);
+impl AsRef<js_sys::Object> for ArrayU8 {
+    fn as_ref(&self) -> &js_sys::Object {
+        self.0.as_ref()
+    }
+}
+
+impl ArrayBuffer for ArrayU8 {
+    type Item = u8;
+
+    fn new(buf: &[Self::Item]) -> Self {
+        ArrayU8(buf.into())
+    }
+
+    fn empty(size: u32, blank_value: Self::Item) -> Self {
+        let uint8_arr = js_sys::Uint8Array::new_with_length(size).fill(blank_value, 0, size);
+        ArrayU8(uint8_arr)
+    }
+
+    fn to_vec(&self) -> Vec<Self::Item> {
+        self.0.to_vec()
+    }
+
+    fn set_index(&self, idx: u32, value: Self::Item) {
+        self.0.set_index(idx, value);
+    }
+
+    fn get(&self, idx: u32) -> Self::Item {
+        self.0.get_index(idx)
+    }
+}
+#[derive(Debug)]
+pub struct ArrayI16(js_sys::Int16Array);
+impl AsRef<js_sys::Object> for ArrayI16 {
+    fn as_ref(&self) -> &js_sys::Object {
+        self.0.as_ref()
+    }
+}
+
+impl ArrayBuffer for ArrayI16 {
+    type Item = i16;
+    fn new(buf: &[Self::Item]) -> Self {
+        ArrayI16(buf.into())
+    }
+
+    fn empty(size: u32, blank_value: Self::Item) -> Self {
+        let int16_arr = js_sys::Int16Array::new_with_length(size).fill(blank_value, 0, size);
+        ArrayI16(int16_arr)
+    }
+
+    fn to_vec(&self) -> Vec<Self::Item> {
+        self.0.to_vec()
+    }
+
+    fn set_index(&self, idx: u32, value: Self::Item) {
+        self.0.set_index(idx, value);
+    }
+
+    fn get(&self, idx: u32) -> Self::Item {
+        self.0.get_index(idx)
+    }
+}
+#[derive(Debug)]
+pub struct ArrayI32(js_sys::Int32Array);
+impl AsRef<js_sys::Object> for ArrayI32 {
+    fn as_ref(&self) -> &js_sys::Object {
+        self.0.as_ref()
+    }
+}
+impl ArrayBuffer for ArrayI32 {
+    type Item = i32;
+
+    fn new(buf: &[Self::Item]) -> Self {
+        ArrayI32(buf.into())
+    }
+
+    fn empty(size: u32, blank_value: Self::Item) -> Self {
+        let int32_arr = js_sys::Int32Array::new_with_length(size).fill(blank_value, 0, size);
+        ArrayI32(int32_arr)
+    }
+
+    fn to_vec(&self) -> Vec<Self::Item> {
+        self.0.to_vec()
+    }
+
+    fn set_index(&self, idx: u32, value: Self::Item) {
+        self.0.set_index(idx, value);
+    }
+
+    fn get(&self, idx: u32) -> Self::Item {
+        self.0.get_index(idx)
+    }
+}
+#[derive(Debug)]
+pub struct ArrayF32(js_sys::Float32Array);
+impl AsRef<js_sys::Object> for ArrayF32 {
+    fn as_ref(&self) -> &js_sys::Object {
+        self.0.as_ref()
+    }
+}
+
+impl ArrayBuffer for ArrayF32 {
+    type Item = f32;
+
+    fn new(buf: &[Self::Item]) -> Self {
+        ArrayF32(buf.into())
+    }
+    fn empty(size: u32, blank_value: Self::Item) -> Self {
+        let f32_arr = js_sys::Float32Array::new_with_length(size).fill(blank_value, 0, size);
+        ArrayF32(f32_arr)
+    }
+
+    fn to_vec(&self) -> Vec<Self::Item> {
+        self.0.to_vec()
+    }
+
+    fn set_index(&self, idx: u32, value: Self::Item) {
+        self.0.set_index(idx, value);
+    }
+
+    fn get(&self, idx: u32) -> Self::Item {
+        self.0.get_index(idx)
+    }
+}
+
+#[derive(Debug)]
+pub struct ArrayF64(js_sys::Float64Array);
+impl AsRef<js_sys::Object> for ArrayF64 {
+    fn as_ref(&self) -> &js_sys::Object {
+        self.0.as_ref()
+    }
+}
+
+impl ArrayBuffer for ArrayF64 {
+    type Item = f64;
+
+    fn new(buf: &[Self::Item]) -> Self {
+        ArrayF64(buf.into())
+    }
+    fn empty(size: u32, blank_value: Self::Item) -> Self {
+        let f64_arr = js_sys::Float64Array::new_with_length(size).fill(blank_value, 0, size);
+        ArrayF64(f64_arr)
+    }
+
+    fn to_vec(&self) -> Vec<Self::Item> {
+        self.0.to_vec()
+    }
+
+    fn set_index(&self, idx: u32, value: Self::Item) {
+        self.0.set_index(idx, value);
+    }
+
+    fn get(&self, idx: u32) -> Self::Item {
+        self.0.get_index(idx)
+    }
+}
+
+use self::canvas::Canvas;
+use self::fits::FitsImage;
+use self::html::HTMLImage;
+use wasm_bindgen::JsValue;
+pub trait Image {
+    fn insert_into_3d_texture<T: Tex3D>(
+        &self,
+        // The texture array
+        textures: &T,
+        // An offset to write the image in the texture array
+        offset: &Vector3<i32>,
+    ) -> Result<(), JsValue>;
+
+    fn get_size(&self) -> (u32, u32, u32);
+}
+
+impl<I> Image for &I
+where
+    I: Image,
+{
+    fn insert_into_3d_texture<T: Tex3D>(
+        &self,
+        // The texture array
+        textures: &T,
+        // An offset to write the image in the texture array
+        offset: &Vector3<i32>,
+    ) -> Result<(), JsValue> {
+        let image = &**self;
+        image.insert_into_3d_texture(textures, offset)?;
+
+        Ok(())
+    }
+
+    #[inline]
+    fn get_size(&self) -> (u32, u32, u32) {
+        let image = &**self;
+        image.get_size()
+    }
+}
+
+use std::rc::Rc;
+impl<I> Image for Rc<I>
+where
+    I: Image,
+{
+    fn insert_into_3d_texture<T: Tex3D>(
+        &self,
+        // The texture array
+        textures: &T,
+        // An offset to write the image in the texture array
+        offset: &Vector3<i32>,
+    ) -> Result<(), JsValue> {
+        let image = &**self;
+        image.insert_into_3d_texture(textures, offset)?;
+
+        Ok(())
+    }
+
+    #[inline]
+    fn get_size(&self) -> (u32, u32, u32) {
+        let image = &**self;
+        image.get_size()
+    }
+}
+
+use crate::texture::format::{R16I, R32F, R32I, R8U};
+use crate::texture::Tex3D;
+
+#[derive(Debug)]
+pub enum ImageType {
+    FitsRawBytes {
+        raw_bytes: js_sys::Uint8Array,
+        size: (u32, u32, u32),
+    },
+    Canvas {
+        canvas: Canvas<RGBA8U>,
+    },
+    ImageRgba8u {
+        image: Bitmap<RGBA8U>,
+    },
+    ImageRgb8u {
+        image: Bitmap<RGB8U>,
+    },
+    HTMLImageRgba8u {
+        image: HTMLImage<RGBA8U>,
+    },
+    HTMLImageRgb8u {
+        image: HTMLImage<RGB8U>,
+    },
+    RawRgb8u {
+        image: ImageBuffer<RGB8U>,
+    },
+    RawRgba8u {
+        image: ImageBuffer<RGBA8U>,
+    },
+    RawR32f {
+        image: ImageBuffer<R32F>,
+    },
+    RawR32i {
+        image: ImageBuffer<R32I>,
+    },
+    RawR16i {
+        image: ImageBuffer<R16I>,
+    },
+    RawR8ui {
+        image: ImageBuffer<R8U>,
+    },
+}
+
+use cgmath::Vector3;
+impl Image for ImageType {
+    fn insert_into_3d_texture<T: Tex3D>(
+        &self,
+        // The texture array
+        textures: &T,
+        // An offset to write the image in the texture array
+        offset: &Vector3<i32>,
+    ) -> Result<(), JsValue> {
+        match self {
+            ImageType::FitsRawBytes {
+                raw_bytes: raw_bytes_buf,
+                ..
+            } => {
+                let raw_bytes = raw_bytes_buf.to_vec();
+
+                let images = FitsImage::from_raw_bytes(&raw_bytes)?;
+                for image in images {
+                    image.insert_into_3d_texture(textures, offset)?
+                }
+            }
+            ImageType::Canvas { canvas } => canvas.insert_into_3d_texture(textures, offset)?,
+            ImageType::ImageRgba8u { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::ImageRgb8u { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::HTMLImageRgba8u { image, .. } => {
+                image.insert_into_3d_texture(textures, offset)?
+            }
+            ImageType::HTMLImageRgb8u { image, .. } => {
+                image.insert_into_3d_texture(textures, offset)?
+            }
+            ImageType::RawRgb8u { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::RawRgba8u { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::RawR32f { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::RawR32i { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::RawR16i { image } => image.insert_into_3d_texture(textures, offset)?,
+            ImageType::RawR8ui { image } => image.insert_into_3d_texture(textures, offset)?,
+        }
+
+        Ok(())
+    }
+
+    fn get_size(&self) -> (u32, u32, u32) {
+        match self {
+            ImageType::FitsRawBytes { size, .. } => *size,
+            ImageType::Canvas { canvas } => canvas.get_size(),
+            ImageType::ImageRgba8u { image } => image.get_size(),
+            ImageType::ImageRgb8u { image } => image.get_size(),
+            ImageType::HTMLImageRgba8u { image } => image.get_size(),
+            ImageType::HTMLImageRgb8u { image } => image.get_size(),
+            ImageType::RawRgb8u { image } => image.get_size(),
+            ImageType::RawRgba8u { image } => image.get_size(),
+            ImageType::RawR32f { image } => image.get_size(),
+            ImageType::RawR32i { image } => image.get_size(),
+            ImageType::RawR16i { image } => image.get_size(),
+            ImageType::RawR8ui { image } => image.get_size(),
+        }
+    }
+}
