@@ -1,0 +1,55 @@
+name: Measure M31 HiPS footprint
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - tools/measure_m31_hips.py
+      - .github/workflows/measure-m31-hips.yml
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install measurement dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests astropy astropy-healpix
+
+      - name: Download and measure M31 DSS2 HiPS footprint
+        run: |
+          python tools/measure_m31_hips.py --output hips-measurement --workers 12
+
+      - name: Publish report in workflow summary
+        if: always()
+        run: |
+          if [ -f hips-measurement/reports/summary.md ]; then
+            cat hips-measurement/reports/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '# Measurement report was not generated' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload measurement reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m31-hips-measurement
+          path: hips-measurement/reports/
+          if-no-files-found: warn
+          retention-days: 14
