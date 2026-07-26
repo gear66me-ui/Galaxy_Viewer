@@ -1,0 +1,48 @@
+name: GV Agent
+
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run GV fixer
+        run: |
+          python << 'EOF'
+          import os
+
+          src = "viewer/GV-beta-0002F.py"
+          dst = "viewer/GV-beta-0002G.py"
+
+          if not os.path.exists(src):
+              print("Source not found")
+              exit(0)
+
+          with open(src, "r") as f:
+              code = f.read()
+
+          # ===== FIXES =====
+          code = code.replace('\\s+', '\\\\s+')
+          code = code.replace('HTML(r"""', 'HTML("""')
+          code = code.replace('//', '#')
+
+          with open(dst, "w") as f:
+              f.write(code)
+
+          print("Created:", dst)
+          EOF
+
+      - name: Commit new file
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add viewer/GV-beta-0002G.py
+          git commit -m "GV: auto-create 0002G with fixes" || echo "No changes"
+          git push
