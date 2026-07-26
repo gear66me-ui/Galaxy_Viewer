@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Galaxy Viewer Diagnostic Build 4 — CDS Latency Laboratory</title>
+  <style>
+    :root{color-scheme:dark;--bg:#02070d;--panel:#071522;--panel2:#0b2030;--line:#24506a;--text:#d9f4ff;--muted:#89a9ba;--accent:#62d8ff;--good:#62f7a5;--warn:#ffd166;--bad:#ff6b7a}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    body{padding:0 0 40px}
+    header{position:sticky;top:0;z-index:5;background:#03101a;border-bottom:2px solid var(--accent);padding:12px 14px}
+    h1{font-size:17px;margin:0 0 5px;color:var(--accent);letter-spacing:.04em}
+    header p{margin:0;color:var(--muted);font-size:12px;line-height:1.4}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    button{appearance:none;border:1px solid var(--accent);background:#0a2a3c;color:#fff;border-radius:7px;padding:9px 12px;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    main{padding:12px;max-width:1500px;margin:auto}
+    .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin-bottom:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+    .card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+    .card .value{font-size:20px;font-weight:800;margin-top:3px}
+    #status{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:12px;font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;max-height:170px;overflow:auto}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}
+    table{border-collapse:collapse;width:100%;min-width:1320px;background:var(--panel)}
+    th,td{border-bottom:1px solid #16394d;padding:7px 8px;text-align:left;vertical-align:top;font-size:11px}
+    th{position:sticky;top:0;background:#0b2638;color:var(--accent);z-index:2}
+    tr.running{background:#182c18}
+    tr.ok td.result{color:var(--good);font-weight:800}
+    tr.fail td.result{color:var(--bad);font-weight:800}
+    .muted{color:var(--muted)}
+    .note{margin-top:10px;color:var(--muted);font-size:11px;line-height:1.45}
+  </style>
+</head>
+<body>
+<header>
+  <h1>DIAGNOSTIC BUILD 4 — CDS LATENCY LABORATORY</h1>
+  <p>No Aladin viewer is initialized. Tests run sequentially: 2 endpoints × 4 resources × 2 browser methods × 5 attempts, with a 30-second timeout.</p>
+  <div class="toolbar">
+    <button id="start">Start benchmark</button>
+    <button id="stop" disabled>Stop</button>
+    <button id="json" disabled>Download JSON</button>
+    <button id="csv" disabled>Download CSV</button>
+    <button id="clear">Clear results</button>
+  </div>
+</header>
+<main>
+  <section class="summary">
+    <div class="card"><div class="label">State</div><div class="value" id="state">Ready</div></div>
+    <div class="card"><div class="label">Completed</div><div class="value" id="completed">0 / 80</div></div>
+    <div class="card"><div class="label">Successful</div><div class="value" id="success">0</div></div>
+    <div class="card"><div class="label">Failed / timed out</div><div class="value" id="failed">0</div></div>
+    <div class="card"><div class="label">Elapsed</div><div class="value" id="elapsed">0.0 s</div></div>
+  </section>
+  <div id="status">Ready. Press “Start benchmark”.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Endpoint</th><th>Resource</th><th>Method</th><th>Attempt</th><th>Started</th><th>First response</th><th>Completed</th><th>HTTP</th><th>Bytes</th><th>TTFB</th><th>Total</th><th class="result">Result / failure reason</th><th>URL</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <p class="note">For <code>&lt;img&gt;</code> loading, browser security rules do not expose the HTTP status or response body byte count. Those fields are intentionally reported as “N/A”. Resource Timing values are included only when the server and browser expose them.</p>
+</main>
+<script>
+(() => {
+  'use strict';
+  const ATTEMPTS = 5;
+  const TIMEOUT_MS = 30000;
+  const M31_RA_DEG = 10.6847083;
+  const M31_DEC_DEG = 41.26875;
+
+  const endpoints = [
+    {id:'cds-primary', label:'CDS primary', base:'https://alasky.cds.unistra.fr/DSS/DSSColor'},
+    {id:'cds-alternate', label:'CDS alternate', base:'https://alasky.u-strasbg.fr/DSS/DSSColor'}
+  ];
+
+  function spreadBits(value){
+    let input=value>>>0, output=0, bit=0;
+    while(input){ output |= (input & 1) << (2*bit); input >>>= 1; bit++; }
+    return output>>>0;
+  }
+
+  function healpixNestedPixel(order, raDeg, decDeg){
+    const nside=1<<order;
+    const z=Math.sin(decDeg*Math.PI/180), za=Math.abs(z);
+    const tt=((raDeg*Math.PI/180)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)/(0.5*Math.PI);
+    let face, ix, iy;
+    if(za<=2/3){
+      const jp=Math.floor(nside*(0.5+tt-z*0.75));
+      const jm=Math.floor(nside*(0.5+tt+z*0.75));
+      const ifp=Math.floor(jp/nside), ifm=Math.floor(jm/nside);
+      if(ifp===ifm) face=ifp|4;
+      else if(ifp<ifm) face=ifp;
+      else face=ifm+8;
+      ix=jm%nside;
+      iy=nside-(jp%nside)-1;
+    }else{
+      const ntt=Math.min(3,Math.floor(tt));
+      const tp=tt-ntt;
+      const tmp=nside*Math.sqrt(3*(1-za));
+      const jp=Math.min(nside-1,Math.floor(tp*tmp));
+      const jm=Math.min(nside-1,Math.floor((1-tp)*tmp));
+      if(z>=0){ face=ntt; ix=nside-jm-1; iy=nside-jp-1; }
+      else{ face=ntt+8; ix=jp; iy=jm; }
+    }
+    const ipf=(spreadBits(ix)|(spreadBits(iy)<<1))>>>0;
+    return face*nside*nside+ipf;
+  }
+
+  function tilePath(order){
+    const npix=healpixNestedPixel(order,M31_RA_DEG,M31_DEC_DEG);
+    const dir=Math.floor(npix/10000)*10000;
+    return {npix, path:`Norder${order}/Dir${dir}/Npix${npix}.jpg`};
+  }
+
+  const lowM31=tilePath(6);
+  const highM31=tilePath(9);
+  const resources = [
+    {id:'properties',label:'DSS properties',path:'properties'},
+    {id:'low-sky-tile',label:'Low-resolution sample tile',path:'Norder3/Dir0/Npix0.jpg'},
+    {id:'m31-medium',label:`M31 tile order 6 (Npix ${lowM31.npix})`,path:lowM31.path},
+    {id:'m31-high',label:`M31 tile order 9 (Npix ${highM31.npix})`,path:highM31.path}
+  ];
+  const methods=['fetch','img'];
+  const total=endpoints.length*resources.length*methods.length*ATTEMPTS;
+
+  const $=id=>document.getElementById(id);
+  const rows=$('rows'), status=$('status');
+  let results=[], stopped=false, running=false, benchmarkStart=0, ticker=null;
+
+  function nowIso(){ return new Date().toISOString(); }
+  function fmtMs(value){ return Number.isFinite(value)?`${value.toFixed(1)} ms`:'N/A'; }
+  function log(message){ status.textContent+=`\n${message}`; status.scrollTop=status.scrollHeight; }
+  function refresh(){
+    const success=results.filter(r=>r.ok).length;
+    $('completed').textContent=`${results.length} / ${total}`;
+    $('success').textContent=String(success);
+    $('failed').textContent=String(results.length-success);
+    $('json').disabled=results.length===0;
+    $('csv').disabled=results.length===0;
+  }
+  function addPending(index,ep,res,method,attempt,url){
+    const tr=document.createElement('tr'); tr.className='running';
+    tr.innerHTML=`<td>${index}</td><td>${ep.label}</td><td>${res.label}</td><td>${method}</td><td>${attempt}/${ATTEMPTS}</td><td>${nowIso()}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="result">Running…</td><td>${url}</td>`;
+    rows.appendChild(tr); tr.scrollIntoView({block:'nearest'}); return tr;
+  }
+  function finishRow(tr,r){
+    tr.className=r.ok?'ok':'fail';
+    const c=tr.children;
+    c[5].textContent=r.startedAt;
+    c[6].textContent=r.firstResponseAt||'N/A';
+    c[7].textContent=r.completedAt;
+    c[8].textContent=r.httpStatus==null?'N/A':String(r.httpStatus);
+    c[9].textContent=r.bytes==null?'N/A':String(r.bytes);
+    c[10].textContent=fmtMs(r.ttfbMs);
+    c[11].textContent=fmtMs(r.totalMs);
+    c[12].textContent=r.ok?'Completed':r.error;
+  }
+
+  async function fetchTest(url,base){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort('timeout'),TIMEOUT_MS);
+    const started=performance.now();
+    try{
+      const response=await fetch(`${url}${url.includes('?')?'&':'?'}gv_diag=${Date.now()}_${Math.random()}`,{cache:'no-store',signal:controller.signal,mode:'cors'});
+      const first=performance.now();
+      const firstAt=nowIso();
+      const buffer=await response.arrayBuffer();
+      const ended=performance.now();
+      return {...base,ok:response.ok,httpStatus:response.status,bytes:buffer.byteLength,firstResponseAt:firstAt,completedAt:nowIso(),ttfbMs:first-started,totalMs:ended-started,error:response.ok?'':`HTTP ${response.status} ${response.statusText}`};
+    }catch(error){
+      const ended=performance.now();
+      const timedOut=error.name==='AbortError'||controller.signal.aborted;
+      return {...base,ok:false,httpStatus:null,bytes:null,firstResponseAt:null,completedAt:nowIso(),ttfbMs:null,totalMs:ended-started,error:timedOut?`Timeout after ${(TIMEOUT_MS/1000).toFixed(0)} s`:`${error.name}: ${error.message}`};
+    }finally{ clearTimeout(timer); }
+  }
+
+  function imageTest(url,base){
+    return new Promise(resolve=>{
+      const started=performance.now();
+      const img=new Image();
+      let done=false;
+      const cacheBust=`${url}${url.includes('?')?'&':'?'}gv_diag=${Date.now()}_${Math.random()}`;
+      const finish=(ok,error)=>{
+        if(done)return; done=true; clearTimeout(timer);
+        const ended=performance.now();
+        let timing=null;
+        try{ timing=performance.getEntriesByName(cacheBust).slice(-1)[0]||null; }catch(_){ }
+        img.onload=img.onerror=null; img.remove();
+        resolve({...base,ok,httpStatus:null,bytes:timing&&timing.transferSize?timing.transferSize:null,firstResponseAt:null,completedAt:nowIso(),ttfbMs:timing&&timing.responseStart>0?timing.responseStart-timing.startTime:null,totalMs:ended-started,error});
+      };
+      const timer=setTimeout(()=>finish(false,`Timeout after ${(TIMEOUT_MS/1000).toFixed(0)} s`),TIMEOUT_MS);
+      img.style.display='none'; document.body.appendChild(img);
+      img.onload=()=>finish(true,'');
+      img.onerror=()=>finish(false,'Image load error (HTTP status unavailable)');
+      img.src=cacheBust;
+    });
+  }
+
+  function download(filename,text,type){
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([text],{type})); a.download=filename; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+  function csvEscape(v){ const s=v==null?'':String(v); return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s; }
+  function toCsv(){
+    const keys=['endpoint','resource','method','attempt','url','startedAt','firstResponseAt','completedAt','httpStatus','bytes','ttfbMs','totalMs','ok','error'];
+    return [keys.join(','),...results.map(r=>keys.map(k=>csvEscape(r[k])).join(','))].join('\n');
+  }
+
+  async function run(){
+    if(running)return;
+    running=true; stopped=false; results=[]; rows.textContent=''; status.textContent='Benchmark started.';
+    benchmarkStart=performance.now();
+    $('state').textContent='Running'; $('start').disabled=true; $('stop').disabled=false;
+    refresh();
+    ticker=setInterval(()=>$('elapsed').textContent=`${((performance.now()-benchmarkStart)/1000).toFixed(1)} s`,100);
+    let index=0;
+    outer: for(const ep of endpoints){
+      for(const res of resources){
+        for(const method of methods){
+          for(let attempt=1;attempt<=ATTEMPTS;attempt++){
+            if(stopped)break outer;
+            index++;
+            const url=`${ep.base}/${res.path}`;
+            const startedAt=nowIso();
+            const base={index,endpoint:ep.label,endpointId:ep.id,resource:res.label,resourceId:res.id,method,attempt,url,startedAt};
+            log(`[${index}/${total}] ${ep.label} | ${res.label} | ${method} | attempt ${attempt}`);
+            const tr=addPending(index,ep,res,method,attempt,url);
+            const result=method==='fetch'?await fetchTest(url,base):await imageTest(url,base);
+            results.push(result); finishRow(tr,result); refresh();
+            log(`  ${result.ok?'OK':'FAILED'} — ${result.totalMs.toFixed(1)} ms${result.error?` — ${result.error}`:''}`);
+          }
+        }
+      }
+    }
+    clearInterval(ticker); ticker=null;
+    $('elapsed').textContent=`${((performance.now()-benchmarkStart)/1000).toFixed(1)} s`;
+    $('state').textContent=stopped?'Stopped':'Complete';
+    $('start').disabled=false; $('stop').disabled=true; running=false;
+    log(stopped?'Benchmark stopped by user.':'Benchmark complete.');
+  }
+
+  $('start').addEventListener('click',run);
+  $('stop').addEventListener('click',()=>{stopped=true;$('state').textContent='Stopping…';});
+  $('clear').addEventListener('click',()=>{if(running)return;results=[];rows.textContent='';status.textContent='Ready. Press “Start benchmark”.';$('state').textContent='Ready';$('elapsed').textContent='0.0 s';refresh();});
+  $('json').addEventListener('click',()=>download(`galaxy-viewer-diagnostic-4-${Date.now()}.json`,JSON.stringify({generatedAt:nowIso(),page:location.href,userAgent:navigator.userAgent,attempts:ATTEMPTS,timeoutMs:TIMEOUT_MS,m31:{raDeg:M31_RA_DEG,decDeg:M31_DEC_DEG,order6:lowM31,order9:highM31},results},null,2),'application/json'));
+  $('csv').addEventListener('click',()=>download(`galaxy-viewer-diagnostic-4-${Date.now()}.csv`,toCsv(),'text/csv'));
+  refresh();
+  log(`M31 order 6 tile: ${lowM31.path}`);
+  log(`M31 order 9 tile: ${highM31.path}`);
+})();
+</script>
+</body>
+</html>
