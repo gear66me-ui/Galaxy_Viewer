@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — CDS Diagnostic Build 6</title>
+<style>
+:root{color-scheme:dark;--bg:#050912;--panel:#0c1523;--line:#29415c;--text:#e8f3ff;--muted:#9db0c5;--blue:#62d8ff;--good:#76e6a5;--bad:#ff8c8c;--warn:#ffd27a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0a1625 0,#050912 48%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1100px;margin:auto;padding:18px}.panel{background:rgba(12,21,35,.96);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 12px 30px rgba(0,0,0,.22)}h1{font-size:22px;margin:0 0 6px;color:var(--blue)}p{margin:6px 0;color:var(--muted)}code{color:#c8efff}button{border:1px solid var(--blue);background:#10263a;color:#fff;border-radius:8px;padding:11px 16px;margin-top:10px;font-weight:800;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#07101c;border:1px solid #213650;border-radius:9px;padding:10px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:900px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #20354c;white-space:nowrap}th{color:var(--blue);font-size:12px}.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.timeline{display:grid;gap:8px}.track{display:grid;grid-template-columns:52px 1fr 90px;gap:9px;align-items:center}.barbox{height:18px;background:#06101a;border:1px solid #213650;border-radius:999px;overflow:hidden}.bar{height:100%;min-width:2px;background:linear-gradient(90deg,#267ca3,#62d8ff);border-radius:999px}.bar.fail{background:linear-gradient(90deg,#8c3535,#ff8c8c)}.status{font-weight:800}.small{font-size:12px;color:var(--muted)}@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.track{grid-template-columns:42px 1fr 74px}.wrap{padding:10px}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="panel">
+<h1>CDS DIAGNOSTIC BUILD 6</h1>
+<p>Requests the same DSS2 JPEG ten times with <code>fetch()</code>, cache disabled, a 10-second timeout, and a 5-second pause between requests.</p>
+<p class="small">Target: https://alasky.cds.unistra.fr/DSS/DSSColor/Norder3/Dir0/Npix0.jpg</p>
+<button id="run">Run Build 6</button>
+<div class="grid">
+<div class="metric"><div class="label">State</div><div class="value" id="state">Ready</div></div>
+<div class="metric"><div class="label">Average time</div><div class="value" id="average">—</div></div>
+<div class="metric"><div class="label">Fastest / Slowest</div><div class="value" id="range">—</div></div>
+<div class="metric"><div class="label">Failures</div><div class="value" id="failures">0</div></div>
+</div>
+</section>
+<section class="panel table-wrap">
+<table>
+<thead><tr><th>#</th><th>HTTP</th><th>TTFB</th><th>Total</th><th>Bytes</th><th>Result</th><th>Error</th></tr></thead>
+<tbody id="results"><tr><td colspan="7" class="small">No requests run yet.</td></tr></tbody>
+</table>
+</section>
+<section class="panel">
+<h2>Request timeline</h2>
+<div id="timeline" class="timeline"><div class="small">Bars will appear as requests finish.</div></div>
+</section>
+</main>
+<script>
+const CDS_URL='https://alasky.cds.unistra.fr/DSS/DSSColor/Norder3/Dir0/Npix0.jpg';
+const TOTAL_REQUESTS=10, PAUSE_MS=5000, TIMEOUT_MS=10000;
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const fmtMs=value=>Number.isFinite(value)?`${value.toFixed(1)} ms`:'—';
+const fmtBytes=value=>Number.isFinite(value)?value.toLocaleString():'—';
+let results=[];
+async function runRequest(number){
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),TIMEOUT_MS);
+ const started=performance.now();
+ let responseStarted=null;
+ try{
+  const url=`${CDS_URL}?gvbuild6=${Date.now()}-${number}-${Math.random().toString(16).slice(2)}`;
+  const response=await fetch(url,{cache:'no-store',signal:controller.signal,headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+  responseStarted=performance.now();
+  const buffer=await response.arrayBuffer();
+  const ended=performance.now();
+  return {number,status:response.status,ttfb:responseStarted-started,total:ended-started,bytes:buffer.byteLength,success:response.ok,error:response.ok?'':`HTTP ${response.status} ${response.statusText}`};
+ }catch(error){
+  const ended=performance.now();
+  const timedOut=error.name==='AbortError';
+  return {number,status:null,ttfb:responseStarted===null?null:responseStarted-started,total:ended-started,bytes:null,success:false,error:timedOut?'Timeout after 10 seconds':`${error.name}: ${error.message}`};
+ }finally{clearTimeout(timeout)}
+}
+function renderTable(){
+ $('results').innerHTML=results.map(r=>`<tr><td>${r.number}</td><td>${r.status??'—'}</td><td>${fmtMs(r.ttfb)}</td><td>${fmtMs(r.total)}</td><td>${fmtBytes(r.bytes)}</td><td class="${r.success?'good':'bad'} status">${r.success?'SUCCESS':'FAILURE'}</td><td>${r.error||'—'}</td></tr>`).join('');
+}
+function renderTimeline(){
+ if(!results.length){$('timeline').innerHTML='<div class="small">Bars will appear as requests finish.</div>';return}
+ const max=Math.max(TIMEOUT_MS,...results.map(r=>r.total));
+ $('timeline').innerHTML=results.map(r=>`<div class="track"><div>#${r.number}</div><div class="barbox"><div class="bar ${r.success?'':'fail'}" style="width:${Math.max(1,(r.total/max)*100)}%"></div></div><div>${fmtMs(r.total)}</div></div>`).join('');
+}
+function renderSummary(){
+ const completed=results.length;
+ const failures=results.filter(r=>!r.success).length;
+ $('failures').textContent=failures;
+ if(!completed){$('average').textContent='—';$('range').textContent='—';return}
+ const times=results.map(r=>r.total);
+ const average=times.reduce((sum,v)=>sum+v,0)/times.length;
+ $('average').textContent=fmtMs(average);
+ $('range').textContent=`${fmtMs(Math.min(...times))} / ${fmtMs(Math.max(...times))}`;
+}
+$('run').addEventListener('click',async()=>{
+ $('run').disabled=true;results=[];$('results').innerHTML='';renderTimeline();renderSummary();
+ for(let i=1;i<=TOTAL_REQUESTS;i++){
+  $('state').textContent=`Request ${i} of ${TOTAL_REQUESTS}`;
+  const result=await runRequest(i);results.push(result);renderTable();renderTimeline();renderSummary();
+  if(i<TOTAL_REQUESTS){$('state').textContent=`Waiting 5 seconds…`;await sleep(PAUSE_MS)}
+ }
+ $('state').textContent='Completed';$('run').disabled=false;
+});
+</script></body></html>
