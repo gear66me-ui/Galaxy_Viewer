@@ -1,0 +1,249 @@
+name: Deploy Aladin comparison test
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - ".github/workflows/deploy-aladin-pages-test.yml"
+      - "aladin-source-clone/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out beta branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: aladin-source-clone/package.json
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+
+      - name: Install Aladin dependencies
+        working-directory: aladin-source-clone
+        run: npm install
+
+      - name: Build local Aladin package
+        working-directory: aladin-source-clone
+        run: npm run build:npm
+
+      - name: Assemble comparison website
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SITE="$GITHUB_WORKSPACE/_site"
+          mkdir -p "$SITE/local"
+          cp -R aladin-source-clone/dist/. "$SITE/local/"
+          touch "$SITE/.nojekyll"
+
+          cat > "$SITE/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Galaxy Viewer — Aladin Comparison</title>
+            <style>
+              :root { color-scheme: dark; }
+              * { box-sizing: border-box; }
+              body {
+                margin: 0;
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                background: #020712;
+                color: #eefaff;
+                font-family: Arial, Helvetica, sans-serif;
+              }
+              main {
+                width: min(720px, calc(100% - 32px));
+                padding: 28px;
+                border: 1px solid #247eae;
+                border-radius: 14px;
+                background: #071525;
+              }
+              h1 { margin-top: 0; color: #62d8ff; }
+              p { line-height: 1.55; }
+              .links { display: grid; gap: 14px; margin-top: 24px; }
+              a {
+                display: block;
+                padding: 16px;
+                border: 1px solid #62d8ff;
+                border-radius: 10px;
+                color: #fff;
+                text-decoration: none;
+                background: #0b2038;
+                font-weight: 700;
+              }
+              a:hover { background: #123253; }
+              small { color: #b9d6e4; }
+            </style>
+          </head>
+          <body>
+            <main>
+              <h1>Galaxy Viewer — Aladin Comparison</h1>
+              <p>These two tests use the same M31 coordinates, DSS color survey, field of view, and controls. Only the Aladin engine source changes.</p>
+              <div class="links">
+                <a href="official.html">Open official Aladin 3.8.2 test</a>
+                <a href="local.html">Open locally built Aladin 3.9.0-beta test</a>
+              </div>
+              <p><small>Run each page in the same browser and compare the time until DSS imagery appears.</small></p>
+            </main>
+          </body>
+          </html>
+          HTML
+
+          cat > "$SITE/official.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+            <title>Official Aladin 3.8.2 Test</title>
+            <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css">
+            <style>
+              html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #000; }
+              #status { height: 58px; padding: 9px 12px; background: #071525; border-bottom: 1px solid #62d8ff; color: #fff; font: 13px/19px Arial, sans-serif; }
+              #status strong { color: #62d8ff; }
+              #aladin-lite-div { width: 100%; height: calc(100vh - 58px); background: #000; }
+            </style>
+          </head>
+          <body>
+            <div id="status"><strong>OFFICIAL ALADIN 3.8.2</strong><br>Loading engine…</div>
+            <div id="aladin-lite-div"></div>
+            <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>
+            <script>
+              const statusBox = document.getElementById('status');
+              const started = performance.now();
+              window.addEventListener('error', event => {
+                statusBox.innerHTML = '<strong>ERROR</strong><br>' + String(event.message || 'A resource failed to load.');
+              });
+              A.init.then(() => {
+                statusBox.innerHTML = '<strong>OFFICIAL ALADIN 3.8.2 INITIALIZED</strong><br>Requesting P/DSS2/color for M31…';
+                window.OFFICIAL_ALADIN_TEST = A.aladin('#aladin-lite-div', {
+                  target: '10.6847083 +41.26875',
+                  survey: 'P/DSS2/color',
+                  fov: 1.5,
+                  projection: 'TAN',
+                  cooFrame: 'ICRSd',
+                  showReticle: true,
+                  reticleColor: '#62D8FF',
+                  reticleSize: 22,
+                  showZoomControl: true,
+                  showFullscreenControl: true,
+                  showLayersControl: true,
+                  showGotoControl: true,
+                  showCooGridControl: true,
+                  showSimbadPointerControl: true,
+                  showProjectionControl: true
+                });
+                console.log('Official viewer created after', (performance.now() - started).toFixed(1), 'ms');
+              }).catch(error => {
+                statusBox.innerHTML = '<strong>INITIALIZATION FAILED</strong><br>' + String(error);
+                console.error(error);
+              });
+            </script>
+          </body>
+          </html>
+          HTML
+
+          cat > "$SITE/local.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+            <title>Local Aladin 3.9.0-beta Test</title>
+            <style>
+              html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #000; }
+              #status { height: 58px; padding: 9px 12px; background: #071525; border-bottom: 1px solid #62d8ff; color: #fff; font: 13px/19px Arial, sans-serif; }
+              #status strong { color: #62d8ff; }
+              #aladin-lite-div { width: 100%; height: calc(100vh - 58px); background: #000; }
+            </style>
+          </head>
+          <body>
+            <div id="status"><strong>LOCAL ALADIN 3.9.0-BETA</strong><br>Loading locally built engine and WASM…</div>
+            <div id="aladin-lite-div"></div>
+            <script type="module">
+              const statusBox = document.getElementById('status');
+              const started = performance.now();
+              window.addEventListener('error', event => {
+                statusBox.innerHTML = '<strong>ERROR</strong><br>' + String(event.message || 'A resource failed to load.');
+              });
+              window.addEventListener('unhandledrejection', event => {
+                statusBox.innerHTML = '<strong>PROMISE ERROR</strong><br>' + String(event.reason || 'Unknown rejection');
+              });
+              try {
+                const module = await import('./local/aladin.js');
+                const A = module.default || module.A || module;
+                await A.init;
+                statusBox.innerHTML = '<strong>LOCAL ALADIN 3.9.0-BETA INITIALIZED</strong><br>Requesting P/DSS2/color for M31…';
+                window.LOCAL_ALADIN_TEST = A.aladin('#aladin-lite-div', {
+                  target: '10.6847083 +41.26875',
+                  survey: 'P/DSS2/color',
+                  fov: 1.5,
+                  projection: 'TAN',
+                  cooFrame: 'ICRSd',
+                  showReticle: true,
+                  reticleColor: '#62D8FF',
+                  reticleSize: 22,
+                  showZoomControl: true,
+                  showFullscreenControl: true,
+                  showLayersControl: true,
+                  showGotoControl: true,
+                  showCooGridControl: true,
+                  showSimbadPointerControl: true,
+                  showProjectionControl: true
+                });
+                console.log('Local viewer created after', (performance.now() - started).toFixed(1), 'ms');
+              } catch (error) {
+                statusBox.innerHTML = '<strong>INITIALIZATION FAILED</strong><br>' + String(error);
+                console.error(error);
+              }
+            </script>
+          </body>
+          </html>
+          HTML
+
+          echo "Website contents:"
+          find "$SITE" -maxdepth 3 -type f -printf '%P\n' | sort
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
