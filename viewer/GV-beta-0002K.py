@@ -1,8 +1,8 @@
 from IPython.display import HTML, display
 
-# GV-beta-0002J
+# GV-beta-0002JK
 # Standalone Galaxy Viewer release.
-# GV-beta-0002J
+# GV-beta-0002K
 # Fixed-size Galaxy Viewer SIMBAD proxy; native Aladin control is hidden command engine.
 # No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.
 
@@ -174,7 +174,7 @@ white-space:nowrap!important;
 box-sizing:border-box!important;
 }
 
-@keyframes gv-left-arrow-pulse{0%,100%{transform:translateX(0);opacity:.82}50%{transform:translateX(-2px);opacity:1}}
+@keyframes gv-left-arrow-pulse{0%,100%{transform:translateX(8px);opacity:.82}50%{transform:translateX(-2px);opacity:1}}
 </style>
 <div id="aladin-cosmic-command-test"></div>
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
