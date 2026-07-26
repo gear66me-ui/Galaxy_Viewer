@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — CDS Diagnostic Build 7</title>
+<style>
+:root{color-scheme:dark;--bg:#050912;--panel:#0c1523;--line:#29415c;--text:#e8f3ff;--muted:#9db0c5;--blue:#62d8ff;--good:#76e6a5;--bad:#ff8c8c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0a1625 0,#050912 48%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1120px;margin:auto;padding:18px}.panel{background:rgba(12,21,35,.96);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}h1{font-size:22px;margin:0 0 6px;color:var(--blue)}h2{font-size:17px;margin:0 0 10px}p{margin:6px 0;color:var(--muted)}code{color:#c8efff}button{border:1px solid var(--blue);background:#10263a;color:#fff;border-radius:8px;padding:11px 16px;margin-top:10px;font-weight:800;cursor:pointer}button:disabled{opacity:.5}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#07101c;border:1px solid #213650;border-radius:9px;padding:10px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:980px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #20354c;white-space:nowrap}th{color:var(--blue);font-size:12px}.good{color:var(--good)}.bad{color:var(--bad)}.status{font-weight:800}.small{font-size:12px;color:var(--muted)}.timeline{display:grid;gap:8px}.track{display:grid;grid-template-columns:58px 1fr 92px;gap:9px;align-items:center}.barbox{height:18px;background:#06101a;border:1px solid #213650;border-radius:999px;overflow:hidden}.bar{height:100%;min-width:2px;background:linear-gradient(90deg,#267ca3,#62d8ff);border-radius:999px}.bar.fail{background:linear-gradient(90deg,#8c3535,#ff8c8c)}@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.track{grid-template-columns:46px 1fr 76px}.wrap{padding:10px}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="panel">
+<h1>CDS DIAGNOSTIC BUILD 7</h1>
+<p>Simulates a short Galaxy Viewer pan by downloading ten different nearby DSS2 HiPS JPEG tiles in sequence.</p>
+<p class="small">Survey: <code>CDS/P/DSS2/color</code> · Order 3 · Tile sequence Npix 0–9 · Cache disabled · 10-second timeout · 1-second pause</p>
+<button id="run">Run Build 7</button>
+<div class="grid">
+<div class="metric"><div class="label">State</div><div class="value" id="state">Ready</div></div>
+<div class="metric"><div class="label">Average time</div><div class="value" id="average">—</div></div>
+<div class="metric"><div class="label">Fastest / Slowest</div><div class="value" id="range">—</div></div>
+<div class="metric"><div class="label">Failures</div><div class="value" id="failures">0</div></div>
+</div>
+</section>
+<section class="panel table-wrap"><table><thead><tr><th>#</th><th>Tile</th><th>HTTP</th><th>TTFB</th><th>Total</th><th>Bytes</th><th>Result</th><th>Error</th></tr></thead><tbody id="results"><tr><td colspan="8" class="small">No requests run yet.</td></tr></tbody></table></section>
+<section class="panel"><h2>Pan-sequence timeline</h2><div id="timeline" class="timeline"><div class="small">Bars will appear as tiles finish.</div></div></section>
+</main>
+<script>
+const BASE='https://alasky.cds.unistra.fr/DSS/DSSColor/Norder3/Dir0';
+const TILES=Array.from({length:10},(_,i)=>({npix:i,url:`${BASE}/Npix${i}.jpg`}));
+const PAUSE_MS=1000,TIMEOUT_MS=10000;
+const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmtMs=v=>Number.isFinite(v)?`${v.toFixed(1)} ms`:'—';
+const fmtBytes=v=>Number.isFinite(v)?v.toLocaleString():'—';
+let results=[];
+async function requestTile(tile,number){
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),TIMEOUT_MS);const started=performance.now();let first=null;
+ try{
+  const response=await fetch(`${tile.url}?gvbuild7=${Date.now()}-${number}`,{cache:'no-store',signal:controller.signal,headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+  first=performance.now();const buffer=await response.arrayBuffer();const ended=performance.now();
+  return {number,npix:tile.npix,status:response.status,ttfb:first-started,total:ended-started,bytes:buffer.byteLength,success:response.ok,error:response.ok?'':`HTTP ${response.status} ${response.statusText}`};
+ }catch(error){const ended=performance.now();return {number,npix:tile.npix,status:null,ttfb:first===null?null:first-started,total:ended-started,bytes:null,success:false,error:error.name==='AbortError'?'Timeout after 10 seconds':`${error.name}: ${error.message}`};}
+ finally{clearTimeout(timer)}
+}
+function render(){
+ $('results').innerHTML=results.map(r=>`<tr><td>${r.number}</td><td>Npix${r.npix}.jpg</td><td>${r.status??'—'}</td><td>${fmtMs(r.ttfb)}</td><td>${fmtMs(r.total)}</td><td>${fmtBytes(r.bytes)}</td><td class="${r.success?'good':'bad'} status">${r.success?'SUCCESS':'FAILURE'}</td><td>${r.error||'—'}</td></tr>`).join('');
+ const max=Math.max(TIMEOUT_MS,...results.map(r=>r.total));
+ $('timeline').innerHTML=results.length?results.map(r=>`<div class="track"><div>Npix${r.npix}</div><div class="barbox"><div class="bar ${r.success?'':'fail'}" style="width:${Math.max(1,r.total/max*100)}%"></div></div><div>${fmtMs(r.total)}</div></div>`).join(''):'<div class="small">Bars will appear as tiles finish.</div>';
+ const failures=results.filter(r=>!r.success).length;$('failures').textContent=failures;
+ if(results.length){const times=results.map(r=>r.total),avg=times.reduce((a,b)=>a+b,0)/times.length;$('average').textContent=fmtMs(avg);$('range').textContent=`${fmtMs(Math.min(...times))} / ${fmtMs(Math.max(...times))}`}
+}
+$('run').addEventListener('click',async()=>{
+ $('run').disabled=true;results=[];$('average').textContent='—';$('range').textContent='—';$('failures').textContent='0';render();
+ for(let i=0;i<TILES.length;i++){$('state').textContent=`Tile ${i+1} of ${TILES.length}`;results.push(await requestTile(TILES[i],i+1));render();if(i<TILES.length-1){$('state').textContent='Waiting 1 second…';await sleep(PAUSE_MS)}}
+ $('state').textContent='Completed';$('run').disabled=false;
+});
+</script></body></html>
