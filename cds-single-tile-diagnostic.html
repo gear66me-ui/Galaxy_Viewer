@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — CDS Single-Tile Diagnostic</title>
+<style>
+:root{color-scheme:dark;--bg:#050912;--panel:#0c1523;--line:#29415c;--text:#e8f3ff;--muted:#9db0c5;--blue:#62d8ff;--good:#76e6a5;--bad:#ff8c8c;--warn:#ffd27a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:920px;margin:auto;padding:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}h1{font-size:21px;margin:0 0 6px;color:var(--blue)}p{margin:6px 0;color:var(--muted)}button,a.btn{display:inline-block;border:1px solid var(--blue);background:#10263a;color:#fff;border-radius:8px;padding:10px 13px;margin:8px 6px 0 0;font-weight:700;text-decoration:none}button:disabled{opacity:.55}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.metric{background:#07101c;border:1px solid #213650;border-radius:9px;padding:10px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800}.log{white-space:pre-wrap;background:#02060b;border:1px solid #20354c;border-radius:9px;padding:12px;min-height:150px;overflow:auto}.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}img.preview{display:none;max-width:240px;border:1px solid var(--line);margin-top:10px}@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="panel">
+<h1>DIAGNOSTIC BUILD 5 — SINGLE CDS JPEG</h1>
+<p>Run this once on Wi-Fi. It tests one known-good GitHub control, then one genuine CDS JPEG using both <code>fetch()</code> and browser image loading. Each request stops after 10 seconds.</p>
+<button id="run">Run Wi-Fi test</button><button id="stop" disabled>Stop</button>
+<a class="btn" href="https://alasky.cds.unistra.fr/DSS/DSSColor/Norder3/Dir0/Npix0.jpg" target="_blank" rel="noopener">Open CDS JPEG directly</a>
+<div class="grid">
+<div class="metric"><div class="label">State</div><div class="value" id="state">Ready</div></div>
+<div class="metric"><div class="label">Completed</div><div class="value" id="completed">0 / 3</div></div>
+<div class="metric"><div class="label">Successful</div><div class="value good" id="success">0</div></div>
+<div class="metric"><div class="label">Failed</div><div class="value bad" id="failed">0</div></div>
+</div>
+</section>
+<section class="panel"><div id="log" class="log">Ready.</div><img id="preview" class="preview" alt="CDS test tile"></section>
+<section class="panel"><p><strong>Interpretation:</strong> If the GitHub control succeeds but both CDS methods time out, the page and general HTTPS connection are working while the route to CDS is failing. After this Wi-Fi run, repeat the same page using the phone hotspot.</p><p>This browser test cannot force IPv4 or IPv6. That distinction requires a command-line network test.</p></section>
+</main>
+<script>
+const CONTROL = location.href.split('#')[0] + '?control=' + Date.now();
+const CDS = 'https://alasky.cds.unistra.fr/DSS/DSSColor/Norder3/Dir0/Npix0.jpg';
+const tests=[
+ {name:'GitHub Pages control',method:'fetch',url:CONTROL},
+ {name:'CDS low-resolution JPEG',method:'fetch',url:CDS},
+ {name:'CDS low-resolution JPEG',method:'img',url:CDS}
+];
+let activeController=null, stopped=false, done=0, ok=0, bad=0;
+const $=id=>document.getElementById(id);
+function line(s,cls=''){const span=document.createElement('span');span.textContent=s+'\n';if(cls)span.className=cls;$('log').appendChild(span);$('log').scrollTop=$('log').scrollHeight}
+function refresh(){ $('completed').textContent=`${done} / ${tests.length}`;$('success').textContent=ok;$('failed').textContent=bad }
+async function fetchTest(t){
+ const controller=new AbortController();activeController=controller;const timer=setTimeout(()=>controller.abort('timeout'),10000);const start=performance.now();
+ try{const r=await fetch(t.url,{cache:'no-store',signal:controller.signal});const first=performance.now();const blob=await r.blob();const total=performance.now()-start;return {pass:r.ok,status:r.status,bytes:blob.size,ttfb:first-start,total,reason:r.ok?'OK':`HTTP ${r.status}`}}
+ catch(e){return {pass:false,total:performance.now()-start,reason:e.name==='AbortError'?'Timeout after 10 s':`${e.name}: ${e.message}`}}
+ finally{clearTimeout(timer);activeController=null}
+}
+function imgTest(t){return new Promise(resolve=>{const img=new Image();const start=performance.now();let settled=false;const finish=r=>{if(settled)return;settled=true;clearTimeout(timer);activeController=null;resolve(r)};activeController={abort:()=>{img.src='';finish({pass:false,total:performance.now()-start,reason:'Stopped'})}};const timer=setTimeout(()=>{img.src='';finish({pass:false,total:performance.now()-start,reason:'Timeout after 10 s'})},10000);img.onload=()=>{const total=performance.now()-start;$('preview').src=t.url;$('preview').style.display='block';finish({pass:true,total,reason:`Decoded image ${img.naturalWidth}×${img.naturalHeight}`})};img.onerror=()=>finish({pass:false,total:performance.now()-start,reason:'Browser image load failed'});img.src=t.url+(t.url.includes('?')?'&':'?')+'gvdiag='+Date.now()})}
+$('run').onclick=async()=>{stopped=false;done=ok=bad=0;refresh();$('log').textContent='';$('preview').style.display='none';$('state').textContent='Running';$('run').disabled=true;$('stop').disabled=false;line(`Started ${new Date().toISOString()}`);
+ for(let i=0;i<tests.length;i++){if(stopped)break;const t=tests[i];line(`[${i+1}/${tests.length}] ${t.name} | ${t.method}`);const r=t.method==='fetch'?await fetchTest(t):await imgTest(t);if(stopped)break;done++;if(r.pass){ok++;line(`  SUCCESS — ${r.total.toFixed(1)} ms${r.status?` — HTTP ${r.status}`:''}${r.bytes!=null?` — ${r.bytes} bytes`:''}${r.ttfb!=null?` — first response ${r.ttfb.toFixed(1)} ms`:''} — ${r.reason}`,'good')}else{bad++;line(`  FAILED — ${r.total.toFixed(1)} ms — ${r.reason}`,'bad')}refresh()}
+ $('state').textContent=stopped?'Stopped':'Completed';$('run').disabled=false;$('stop').disabled=true;line(stopped?'Test stopped.':'Test completed.',stopped?'warn':'good')};
+$('stop').onclick=()=>{stopped=true;if(activeController?.abort)activeController.abort();$('state').textContent='Stopping…'};
+</script></body></html>
