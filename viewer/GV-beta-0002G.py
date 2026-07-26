@@ -171,7 +171,7 @@ A.init.then(() => {
         minus:"brightness(0) saturate(100%) invert(53%) sepia(84%) saturate(3287%) hue-rotate(319deg) brightness(105%) contrast(101%)"
     };
 
-    const normalize=value=>String(value||"").trim().split(/\s+/).join(" ");
+    const normalize=value=>String(value||"").trim().split(/\\s+/).join(" ");
     let simbadModeActive=false;
     let resultReady=false;
     let paletteScheduled=false;
@@ -346,7 +346,7 @@ A.init.then(() => {
             if(description.includes("fullscreen")||description.includes("full screen")||description.includes("maximize"))mark(element,"gv-fullscreen","fullscreen");
             if(description.includes("zoom in")||description.includes("zoomin")||text==="+")mark(element,"gv-plus","plus");
             if(description.includes("zoom out")||description.includes("zoomout")||text==="-"||text==="−")mark(element,"gv-minus","minus");
-            if(text==="ICRS"||text==="ICRSd"||/^[-+]?\d+(\.\d+)?\s+[-+]?\d+(\.\d+)?$/.test(text)){
+            if(text==="ICRS"||text==="ICRSd"||/^[-+]?\d+(\.\d+)?\\s+[-+]?\d+(\.\d+)?$/.test(text)){
                 if(!element.classList.contains("gv-standard-text"))element.classList.add("gv-standard-text");
             }
         });
