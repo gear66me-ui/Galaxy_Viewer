@@ -1,4 +1,5 @@
 name: Deploy Aladin comparison test
+# Triggered by ChatGPT to start a clean GitHub Pages deployment.
 
 on:
   push:
