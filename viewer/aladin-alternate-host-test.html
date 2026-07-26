@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Aladin Alternate Host Test</title>
+  <link rel="stylesheet" href="./local/aladin.min.css">
+  <style>
+    html,body{width:100%;height:100%;margin:0;background:#000;color:#fff;font-family:Arial;overflow:hidden}
+    #stamp{height:26px;background:#43ff8b;color:#000;font-weight:900;text-align:center;line-height:26px}
+    #diag{height:170px;overflow:auto;padding:10px;background:#07351b;border-bottom:3px solid #43ff8b;font:12px/17px monospace;white-space:pre-wrap}
+    #aladin-lite-div{width:100%;height:calc(100vh - 219px)}
+  </style>
+</head>
+<body>
+  <div id="stamp">DIAGNOSTIC BUILD 3 — ALTERNATE CDS HOST</div>
+  <div id="diag">Starting…</div>
+  <div id="aladin-lite-div"></div>
+  <script type="module">
+    const box=document.getElementById('diag');
+    const log=(text)=>{box.textContent+='\n'+text;box.scrollTop=box.scrollHeight;};
+    const hips='https://alasky.u-strasbg.fr/DSS/DSSColor';
+    addEventListener('error',(event)=>log('WINDOW ERROR: '+(event.message||event.target?.src||'resource error')),true);
+    addEventListener('unhandledrejection',(event)=>log('PROMISE ERROR: '+String(event.reason)));
+    async function probe(label,url){
+      try{const response=await fetch(url,{cache:'no-store'});log(label+': HTTP '+response.status+' '+response.statusText+' | type='+response.type);}
+      catch(error){log(label+': FAILED '+error.name+': '+error.message);}
+    }
+    box.textContent='DIAGNOSTIC BUILD 3\nForced HiPS: '+hips+'\nPage: '+location.href;
+    await probe('Alternate DSS properties',hips+'/properties');
+    await probe('Alternate DSS sample tile',hips+'/Norder3/Dir0/Npix0.jpg');
+    try{
+      const module=await import('./local/aladin.js');
+      const A=module.default||module.A||module;
+      log('Local JS import: OK');
+      await A.init;
+      log('A.init: OK');
+      const viewer=A.aladin('#aladin-lite-div',{survey:hips,target:'M 31',fov:1.5,showReticle:true});
+      window.TEST=viewer;
+      log('A.aladin: viewer created with alternate host');
+      setTimeout(()=>log('Canvas count after 5s: '+document.querySelectorAll('canvas').length),5000);
+    }catch(error){
+      log('ALADIN FAILURE: '+error.name+': '+error.message);
+      log(error.stack||'');
+    }
+  </script>
+</body>
+</html>
