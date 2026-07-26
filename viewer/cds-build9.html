@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — CDS Diagnostic Build 9</title>
+<style>
+:root{color-scheme:dark;--bg:#050912;--panel:#0c1523;--line:#29415c;--text:#e8f3ff;--muted:#9db0c5;--blue:#62d8ff;--good:#76e6a5;--bad:#ff8c8c;--accent:#ffd27a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0a1625 0,#050912 48%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1200px;margin:auto;padding:18px}.panel{background:rgba(12,21,35,.96);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}h1{font-size:22px;margin:0 0 6px;color:var(--blue)}h2{font-size:17px;margin:0 0 10px}p{margin:6px 0;color:var(--muted)}code{color:#c8efff}button{border:1px solid var(--blue);background:#10263a;color:#fff;border-radius:8px;padding:11px 16px;margin-top:10px;font-weight:800;cursor:pointer}button:disabled{opacity:.5}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:14px}.metric{background:#07101c;border:1px solid #213650;border-radius:9px;padding:10px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:1100px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #20354c;white-space:nowrap}th{color:var(--blue);font-size:12px}.good{color:var(--good)}.bad{color:var(--bad)}.status{font-weight:800}.small{font-size:12px;color:var(--muted)}.timeline{display:grid;gap:8px}.track{display:grid;grid-template-columns:120px 1fr 92px;gap:9px;align-items:center}.barbox{height:18px;background:#06101a;border:1px solid #213650;border-radius:999px;overflow:hidden}.bar{height:100%;min-width:2px;background:linear-gradient(90deg,#267ca3,#62d8ff);border-radius:999px}.bar.fail{background:linear-gradient(90deg,#8c3535,#ff8c8c)}.summary-table{min-width:760px}@media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.track{grid-template-columns:98px 1fr 76px}.wrap{padding:10px}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="panel">
+<h1>CDS DIAGNOSTIC BUILD 9</h1>
+<p>Measures how DSS2 tile latency changes as browser concurrency rises. Each level runs three rounds using fresh cache-busting URLs.</p>
+<p class="small">Survey: <code>CDS/P/DSS2/color</code> · Order 3 · Concurrency levels 1, 2, 4, and 6 · Three rounds per level · 10-second timeout · 3-second pause between rounds</p>
+<button id="run">Run Build 9</button>
+<div class="grid">
+<div class="metric"><div class="label">State</div><div class="value" id="state">Ready</div></div>
+<div class="metric"><div class="label">Requests completed</div><div class="value" id="completed">0 / 39</div></div>
+<div class="metric"><div class="label">Best concurrency</div><div class="value" id="best">—</div></div>
+<div class="metric"><div class="label">Worst concurrency</div><div class="value" id="worst">—</div></div>
+<div class="metric"><div class="label">Failures</div><div class="value" id="failures">0</div></div>
+</div>
+</section>
+<section class="panel table-wrap"><h2>Concurrency summary</h2><table class="summary-table"><thead><tr><th>Concurrency</th><th>Requests</th><th>Average TTFB</th><th>Average total</th><th>Median total</th><th>Fastest</th><th>Slowest</th><th>Failures</th></tr></thead><tbody id="summary"><tr><td colspan="8" class="small">No data yet.</td></tr></tbody></table></section>
+<section class="panel table-wrap"><h2>Individual requests</h2><table><thead><tr><th>Concurrency</th><th>Round</th><th>Tile</th><th>HTTP</th><th>TTFB</th><th>Total</th><th>Bytes</th><th>Result</th><th>Error</th></tr></thead><tbody id="results"><tr><td colspan="9" class="small">No requests run yet.</td></tr></tbody></table></section>
+<section class="panel"><h2>Request timeline</h2><div id="timeline" class="timeline"><div class="small">Bars will appear as each round completes.</div></div></section>
+</main>
+<script>
+const BASE='https://alasky.cds.unistra.fr/DSS/DSSColor/Norder3/Dir0';
+const LEVELS=[1,2,4,6],ROUNDS=3,TIMEOUT_MS=10000,ROUND_PAUSE_MS=3000;
+const TOTAL_REQUESTS=LEVELS.reduce((sum,c)=>sum+c*ROUNDS,0);
+const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmtMs=v=>Number.isFinite(v)?`${v.toFixed(1)} ms`:'—';
+const fmtBytes=v=>Number.isFinite(v)?v.toLocaleString():'—';
+let results=[];
+function median(values){const a=[...values].sort((x,y)=>x-y),m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
+async function requestTile(concurrency,round,index){
+ const npix=(concurrency*11+round*7+index)%48;
+ const url=`${BASE}/Npix${npix}.jpg?gvbuild9=${concurrency}-${round}-${index}-${Date.now()}`;
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),TIMEOUT_MS);const started=performance.now();let first=null;
+ try{
+  const response=await fetch(url,{cache:'no-store',signal:controller.signal,headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+  first=performance.now();const buffer=await response.arrayBuffer();const ended=performance.now();
+  return {concurrency,round,npix,status:response.status,ttfb:first-started,total:ended-started,bytes:buffer.byteLength,success:response.ok,error:response.ok?'':`HTTP ${response.status} ${response.statusText}`};
+ }catch(error){const ended=performance.now();return {concurrency,round,npix,status:null,ttfb:first===null?null:first-started,total:ended-started,bytes:null,success:false,error:error.name==='AbortError'?'Timeout after 10 seconds':`${error.name}: ${error.message}`};}
+ finally{clearTimeout(timer)}
+}
+function statsFor(concurrency){
+ const group=results.filter(r=>r.concurrency===concurrency);if(!group.length)return null;
+ const totals=group.map(r=>r.total),ttfbs=group.filter(r=>Number.isFinite(r.ttfb)).map(r=>r.ttfb);
+ return {count:group.length,avgTtfb:ttfbs.length?ttfbs.reduce((a,b)=>a+b,0)/ttfbs.length:null,avgTotal:totals.reduce((a,b)=>a+b,0)/totals.length,medianTotal:median(totals),fastest:Math.min(...totals),slowest:Math.max(...totals),failures:group.filter(r=>!r.success).length};
+}
+function render(){
+ $('completed').textContent=`${results.length} / ${TOTAL_REQUESTS}`;$('failures').textContent=results.filter(r=>!r.success).length;
+ $('results').innerHTML=results.length?results.map(r=>`<tr><td>${r.concurrency}</td><td>${r.round}</td><td>Npix${r.npix}.jpg</td><td>${r.status??'—'}</td><td>${fmtMs(r.ttfb)}</td><td>${fmtMs(r.total)}</td><td>${fmtBytes(r.bytes)}</td><td class="${r.success?'good':'bad'} status">${r.success?'SUCCESS':'FAILURE'}</td><td>${r.error||'—'}</td></tr>`).join(''):'<tr><td colspan="9" class="small">No requests run yet.</td></tr>';
+ const summaries=LEVELS.map(c=>({c,s:statsFor(c)})).filter(x=>x.s);
+ $('summary').innerHTML=summaries.length?summaries.map(({c,s})=>`<tr><td>${c}</td><td>${s.count}</td><td>${fmtMs(s.avgTtfb)}</td><td>${fmtMs(s.avgTotal)}</td><td>${fmtMs(s.medianTotal)}</td><td>${fmtMs(s.fastest)}</td><td>${fmtMs(s.slowest)}</td><td>${s.failures}</td></tr>`).join(''):'<tr><td colspan="8" class="small">No data yet.</td></tr>';
+ if(summaries.length){const ordered=[...summaries].sort((a,b)=>a.s.avgTotal-b.s.avgTotal);$('best').textContent=`${ordered[0].c} (${fmtMs(ordered[0].s.avgTotal)})`;$('worst').textContent=`${ordered.at(-1).c} (${fmtMs(ordered.at(-1).s.avgTotal)})`}
+ const max=Math.max(TIMEOUT_MS,...results.map(r=>r.total));
+ $('timeline').innerHTML=results.length?results.map(r=>`<div class="track"><div>C${r.concurrency} R${r.round} N${r.npix}</div><div class="barbox"><div class="bar ${r.success?'':'fail'}" style="width:${Math.max(1,r.total/max*100)}%"></div></div><div>${fmtMs(r.total)}</div></div>`).join(''):'<div class="small">Bars will appear as each round completes.</div>';
+}
+async function runRound(concurrency,round){
+ $('state').textContent=`Concurrency ${concurrency}, round ${round}…`;
+ const burst=await Promise.all(Array.from({length:concurrency},(_,i)=>requestTile(concurrency,round,i+1)));
+ results.push(...burst);render();
+}
+$('run').addEventListener('click',async()=>{
+ $('run').disabled=true;results=[];$('best').textContent='—';$('worst').textContent='—';$('failures').textContent='0';render();
+ for(const concurrency of LEVELS){for(let round=1;round<=ROUNDS;round++){await runRound(concurrency,round);const last=concurrency===LEVELS.at(-1)&&round===ROUNDS;if(!last){$('state').textContent='Waiting 3 seconds…';await sleep(ROUND_PAUSE_MS)}}}
+ $('state').textContent='Completed';$('run').disabled=false;
+});
+</script></body></html>
