@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/deploy-aladin-pages-test.yml"
       - "aladin-source-clone/**"
+      - "viewer/aladin-latency-lab.html"
   workflow_dispatch:
 
 permissions:
@@ -60,6 +61,7 @@ jobs:
           SITE="$GITHUB_WORKSPACE/_site"
           mkdir -p "$SITE/local"
           cp -R aladin-source-clone/dist/. "$SITE/local/"
+          cp viewer/aladin-latency-lab.html "$SITE/latency.html"
           touch "$SITE/.nojekyll"
 
           cat > "$SITE/index.html" <<'HTML'
@@ -67,7 +69,7 @@ jobs:
           <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
           <title>Galaxy Viewer Aladin Diagnostics</title>
           <style>body{margin:0;background:#020712;color:#fff;font-family:Arial;padding:24px}a{display:block;margin:16px 0;padding:16px;background:#0b2038;border:1px solid #62d8ff;color:#fff;text-decoration:none;border-radius:10px}h1{color:#62d8ff}</style>
-          </head><body><h1>ALADIN DIAGNOSTIC BUILD 2</h1><a href="official.html?v=2">Official 3.8.2 diagnostic</a><a href="local.html?v=2">Local 3.9.0-beta diagnostic</a></body></html>
+          </head><body><h1>GALAXY VIEWER ALADIN DIAGNOSTICS</h1><a href="latency.html?v=4">Diagnostic Build 4 — CDS latency laboratory</a><a href="official.html?v=2">Official 3.8.2 diagnostic</a><a href="local.html?v=2">Local 3.9.0-beta diagnostic</a></body></html>
           HTML
 
           cat > "$SITE/official.html" <<'HTML'
