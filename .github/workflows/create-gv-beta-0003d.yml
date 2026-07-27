@@ -1,0 +1,106 @@
+name: Create GV-beta-0003D
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/create-gv-beta-0003d.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Create standalone 0003D from 0003C
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          src = Path('viewer/GV-beta-0003C.py')
+          dst = Path('viewer/GV-beta-0003D.py')
+          text = src.read_text(encoding='utf-8')
+
+          text = text.replace('# GV-beta-0003C\n# Standalone Galaxy Viewer release based on the known-good GV-beta-0003B state.\n# Keeps the synchronized diagonal rainbow across the active Target icon and\n# the "or Tap Target Again / to Exit" text, but slows the motion and removes\n# the glow/bloom so the icon and lettering retain sharp, readable edges.\n# No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.', '# GV-beta-0003D\n# Standalone Galaxy Viewer release based exactly on GV-beta-0003C.\n# Replaces only the active synchronized rainbow motion with a three-shade blue\n# sequence: electric cyan, cosmic blue, and deep violet-blue, 500 ms per shade.\n# No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.')
+
+          old = r'''    let rainbowFrame=null;
+    let rainbowStart=0;
+    let speed=0.072;
+    let speedTarget=0.072;
+    let nextSpeedChange=0;
+    const hueOffsets=[0,48,103,161,219,278,332];
+
+    function hsl(h,s=100,l=66){return `hsl(${((h%360)+360)%360} ${s}% ${l}%)`}
+    function ensureGradient(svg){
+        if(svg.querySelector("#gv-0003c-rainbow"))return;
+        svg.insertAdjacentHTML("afterbegin",`<defs><linearGradient id="gv-0003c-rainbow" x1="0" y1="1" x2="1" y2="0"><stop offset="0%"></stop><stop offset="16%"></stop><stop offset="33%"></stop><stop offset="50%"></stop><stop offset="67%"></stop><stop offset="84%"></stop><stop offset="100%"></stop></linearGradient></defs>`);
+    }
+    function rainbowTick(now){
+        if(!rainbowStart)rainbowStart=now;
+        if(now>=nextSpeedChange){speedTarget=.055+Math.random()*.035;nextSpeedChange=now+1800+Math.random()*1400}
+        speed+=(speedTarget-speed)*.004;
+        const t=(now-rainbowStart)*speed;
+        const wobble=Math.sin(now*.00055)*7+Math.sin(now*.00023)*4;
+        const colors=hueOffsets.map((offset,i)=>hsl(t+offset+wobble+Math.sin(now*.00042+i)*5,96,64+Math.round(Math.sin(now*.00048+i)*3)));
+        const gradient=`linear-gradient(135deg,${colors[0]} 0%,${colors[1]} 16%,${colors[2]} 33%,${colors[3]} 50%,${colors[4]} 67%,${colors[5]} 84%,${colors[6]} 100%)`;
+        root.style.setProperty("--gv-rainbow",gradient);
+        const phase=((now-rainbowStart)*.035)%260;
+        root.style.setProperty("--gv-rainbow-x",`${phase}%`);
+        root.style.setProperty("--gv-rainbow-y",`${260-phase}%`);
+        const svg=root.querySelector("button.gv-simbad-proxy.gv-active svg");
+        if(svg){
+            ensureGradient(svg);
+            const stops=svg.querySelectorAll("#gv-0003c-rainbow stop");
+            stops.forEach((stop,i)=>stop.setAttribute("stop-color",colors[i]));
+            const grad=svg.querySelector("#gv-0003c-rainbow");
+            if(grad)grad.setAttribute("gradientTransform",`translate(${Math.sin(now*.00045)*.08} ${Math.cos(now*.00039)*.08}) rotate(${(now*.018)%360} .5 .5)`);
+        }
+        rainbowFrame=requestAnimationFrame(rainbowTick);
+    }'''
+
+          new = r'''    let rainbowFrame=null;
+    let rainbowStart=0;
+    const blueSequence=["#45E7FF","#4F9DFF","#756BFF"];
+
+    function ensureGradient(svg){
+        if(svg.querySelector("#gv-0003c-rainbow"))return;
+        svg.insertAdjacentHTML("afterbegin",`<defs><linearGradient id="gv-0003c-rainbow" x1="0" y1="1" x2="1" y2="0"><stop offset="0%"></stop><stop offset="16%"></stop><stop offset="33%"></stop><stop offset="50%"></stop><stop offset="67%"></stop><stop offset="84%"></stop><stop offset="100%"></stop></linearGradient></defs>`);
+    }
+    function rainbowTick(now){
+        if(!rainbowStart)rainbowStart=now;
+        const color=blueSequence[Math.floor((now-rainbowStart)/500)%blueSequence.length];
+        root.style.setProperty("--gv-rainbow",`linear-gradient(135deg,${color} 0%,${color} 100%)`);
+        root.style.setProperty("--gv-rainbow-x","0%");
+        root.style.setProperty("--gv-rainbow-y","100%");
+        const svg=root.querySelector("button.gv-simbad-proxy.gv-active svg");
+        if(svg){
+            ensureGradient(svg);
+            const stops=svg.querySelectorAll("#gv-0003c-rainbow stop");
+            stops.forEach(stop=>stop.setAttribute("stop-color",color));
+            const grad=svg.querySelector("#gv-0003c-rainbow");
+            if(grad)grad.removeAttribute("gradientTransform");
+        }
+        rainbowFrame=requestAnimationFrame(rainbowTick);
+    }'''
+
+          if old not in text:
+              raise SystemExit('Exact 0003C animation block not found; refusing to create 0003D')
+          text = text.replace(old, new, 1)
+          text = text.replace('# GV-beta-0003C released', '# GV-beta-0003D released', 1)
+
+          if 'GV-beta-0003C.py' in text or '_Q12_URL' in text or 'exec(compile(' in text:
+              raise SystemExit('Standalone verification failed')
+          dst.write_text(text, encoding='utf-8')
+      - name: Commit release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/GV-beta-0003D.py
+          git commit -m "Release standalone GV-beta-0003D blue sequence"
+          git push origin beta
