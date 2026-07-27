@@ -1,0 +1,20 @@
+{
+  "name": "Galaxy Viewer Mobile",
+  "short_name": "Galaxy Viewer",
+  "description": "Standalone mobile Galaxy Viewer powered by Aladin Lite.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "./icons/galaxy-viewer.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
