@@ -1,0 +1,39 @@
+name: Create GV-beta-0004
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/create-gv-beta-0004.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Create standalone GV-beta-0004
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp viewer/GV-beta-0003E.py viewer/GV-beta-0004.py
+          sed -i 's/# GV-beta-0003E/# GV-beta-0004/' viewer/GV-beta-0004.py
+          sed -i 's#https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js#https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js#' viewer/GV-beta-0004.py
+
+          test "$(grep -c 'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js' viewer/GV-beta-0004.py)" -eq 1
+          test "$(grep -c 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' viewer/GV-beta-0004.py || true)" -eq 0
+
+          rm .github/workflows/create-gv-beta-0004.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Release GV-beta-0004 with local Aladin JavaScript"
+          git push origin beta
