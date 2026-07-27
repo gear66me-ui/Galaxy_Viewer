@@ -48,7 +48,7 @@ jobs:
         run: |
           set +e
           set -o pipefail
-          npm run build:prod 2>&1 | tee aladin-build.log
+          npm run build:npm 2>&1 | tee aladin-build.log
           build_status=${PIPESTATUS[0]}
 
           if [ "$build_status" -ne 0 ]; then
