@@ -3,8 +3,7 @@ name: Create GV beta 0004H
 on:
   push:
     branches: [beta]
-    paths:
-      - '.github/workflows/create-0004h.yml'
+    paths: ['.github/workflows/create-0004h.yml']
 
 permissions:
   contents: write
@@ -16,32 +15,47 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: beta
-          fetch-depth: 0
-
-      - name: Create audited H from G
+      - name: Create H from G with audited replacements
         shell: python
         run: |
           from pathlib import Path
-
-          source_path = Path('viewer/GV-beta-0004G.py')
-          target_path = Path('viewer/GV-beta-0004H.py')
-          text = source_path.read_text(encoding='utf-8')
-          original = text
-
-          def replace_once(old, new, label):
-              global text
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'{label}: expected exactly 1 match, found {count}')
-              text = text.replace(old, new, 1)
-
-          text = text.replace('GV-beta-0004G', 'GV-beta-0004H')
-          replace_once('    --gv-active-blue:#45E7FF;\n','    --gv-active-blue:#45E7FF;--coordinate-blue:#7575FF;\n','coordinate color variable')
-          replace_once('    position:static!important;inset:auto!important;margin:0!important;transform:none!important;\n','    position:static!important;inset:auto!important;margin:0!important;transform:none!important;\n    height:32px!important;min-height:32px!important;max-height:32px!important;box-sizing:border-box!important;\n    color:var(--coordinate-blue)!important;\n','coordinate box sizing')
-          anchor = '#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates{\n    position:static!important;inset:auto!important;margin:0!important;transform:none!important;\n    height:32px!important;min-height:32px!important;max-height:32px!important;box-sizing:border-box!important;\n    color:var(--coordinate-blue)!important;\n}\n'
-          replace_once(anchor,anchor+'#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-location *,\n#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates *{\n    color:var(--coordinate-blue)!important;fill:var(--coordinate-blue)!important;\n    text-shadow:0 0 5px rgba(117,117,255,.55)!important;\n}\n','coordinate descendant color')
-          replace_once('    width:34px!important;min-width:34px!important;max-width:34px!important;\n    height:34px!important;min-height:34px!important;max-height:34px!important;\n    flex:0 0 34px!important;align-self:center!important;\n','    width:32px!important;min-width:32px!important;max-width:32px!important;\n    height:32px!important;min-height:32px!important;max-height:32px!important;\n    flex:0 0 32px!important;align-self:center!important;\n','target button dimensions')
-          old_svg_css = '''#aladin-cosmic-command-test button.gv-simbad-proxy svg{
+          p=Path('viewer/GV-beta-0004G.py')
+          q=Path('viewer/GV-beta-0004H.py')
+          s=p.read_text(encoding='utf-8')
+          original=s
+          def once(a,b,name):
+              global s
+              n=s.count(a)
+              if n!=1: raise SystemExit(f'{name}: expected 1 match, found {n}')
+              s=s.replace(a,b,1)
+          s=s.replace('GV-beta-0004G','GV-beta-0004H')
+          once('    --gv-active-blue:#45E7FF;\n','    --gv-active-blue:#45E7FF;--coordinate-blue:#7575FF;\n','coordinate variable')
+          old='''#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-location,
+#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates{
+    position:static!important;inset:auto!important;margin:0!important;transform:none!important;
+}
+'''
+          new='''#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-location,
+#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates{
+    position:static!important;inset:auto!important;margin:0!important;transform:none!important;
+    height:32px!important;min-height:32px!important;max-height:32px!important;box-sizing:border-box!important;
+    color:var(--coordinate-blue)!important;
+}
+#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-location *,
+#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates *{
+    color:var(--coordinate-blue)!important;fill:var(--coordinate-blue)!important;
+    text-shadow:0 0 5px rgba(117,117,255,.55)!important;
+}
+'''
+          once(old,new,'coordinate box')
+          once('''    width:34px!important;min-width:34px!important;max-width:34px!important;
+    height:34px!important;min-height:34px!important;max-height:34px!important;
+    flex:0 0 34px!important;align-self:center!important;
+''','''    width:32px!important;min-width:32px!important;max-width:32px!important;
+    height:32px!important;min-height:32px!important;max-height:32px!important;
+    flex:0 0 32px!important;align-self:center!important;
+''','button size')
+          oldcss='''#aladin-cosmic-command-test button.gv-simbad-proxy svg{
     display:block!important;width:27px!important;height:27px!important;
     min-width:27px!important;min-height:27px!important;max-width:27px!important;max-height:27px!important;
     transform:none!important;transform-origin:center center!important;overflow:visible!important;
@@ -62,28 +76,22 @@ jobs:
     transform:none!important;
 }
 '''
-          new_img_css = '''#aladin-cosmic-command-test button.gv-simbad-proxy img{
+          newcss='''#aladin-cosmic-command-test button.gv-simbad-proxy img{
     display:block!important;width:21px!important;height:21px!important;
     min-width:21px!important;min-height:21px!important;max-width:21px!important;max-height:21px!important;
     object-fit:contain!important;transform:none!important;filter:none!important;
     opacity:1!important;pointer-events:none!important;
 }
 '''
-          replace_once(old_svg_css,new_img_css,'target artwork CSS')
-          old_icon = 'proxy.innerHTML=`<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="8.5"></circle><circle cx="16" cy="16" r="2.2"></circle><path d="M16 2.5V8"></path><path d="M16 24V29.5"></path><path d="M2.5 16H8"></path><path d="M24 16H29.5"></path></svg>`;'
-          new_icon = 'proxy.innerHTML=`<img src="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/mobile/icon-skeleton.svg" alt="" aria-hidden="true" draggable="false">`;'
-          replace_once(old_icon,new_icon,'target artwork markup')
-          text = text.replace('# Preserves the GV-beta-0004A visuals and behavior while separating notebook HTML\n# from executable JavaScript and loading the official Aladin Lite 3.8.2 browser bundle.\n','# Preserves the GV-beta-0004G viewer behavior and official Aladin Lite 3.8.2 loader.\n# Places the protected transparent target artwork beside a 32 px coordinate box and\n# changes only the coordinate readout color to the center-dot blue #7575FF.\n')
-          if target_path.exists():
-              raise SystemExit(f'{target_path} already exists')
-          target_path.write_text(text, encoding='utf-8')
-          print(f'G chars: {len(original)}')
-          print(f'H chars: {len(text)}')
-          print(f'G lines: {len(original.splitlines())}')
-          print(f'H lines: {len(text.splitlines())}')
-          print(f'Net chars: {len(text)-len(original)}')
-          print(f'Net lines: {len(text.splitlines())-len(original.splitlines())}')
-
+          once(oldcss,newcss,'artwork CSS')
+          oldicon='proxy.innerHTML=`<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="8.5"></circle><circle cx="16" cy="16" r="2.2"></circle><path d="M16 2.5V8"></path><path d="M16 24V29.5"></path><path d="M2.5 16H8"></path><path d="M24 16H29.5"></path></svg>`;'
+          newicon='proxy.innerHTML=`<img src="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/mobile/icon-skeleton.svg" alt="" aria-hidden="true" draggable="false">`;'
+          once(oldicon,newicon,'artwork markup')
+          s=s.replace('# Preserves the GV-beta-0004A visuals and behavior while separating notebook HTML\n# from executable JavaScript and loading the official Aladin Lite 3.8.2 browser bundle.\n','# Preserves the GV-beta-0004G viewer behavior and official Aladin Lite 3.8.2 loader.\n# Places the protected transparent target artwork beside a 32 px coordinate box and\n# changes only the coordinate readout color to the center-dot blue #7575FF.\n')
+          if q.exists(): raise SystemExit('H already exists')
+          q.write_text(s,encoding='utf-8')
+          print('G lines',len(original.splitlines()),'H lines',len(s.splitlines()))
+          print('G chars',len(original),'H chars',len(s),'net',len(s)-len(original))
       - name: Commit H
         run: |
           git config user.name "github-actions[bot]"
@@ -91,3 +99,4 @@ jobs:
           git add viewer/GV-beta-0004H.py
           git commit -m "Create GV-beta-0004H target layout"
           git push origin beta
+# retrigger
