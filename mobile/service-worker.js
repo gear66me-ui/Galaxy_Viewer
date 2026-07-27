@@ -1,5 +1,5 @@
-const CACHE_NAME='galaxy-viewer-mobile-0006';
-const APP_SHELL=['./','./index.html?v=0006','./manifest.webmanifest','./icons/galaxy-viewer.svg','./assets/gv-mobile-splash-0006.jpg','./releases/GV-mobile-0006.html'];
+const CACHE_NAME='galaxy-viewer-mobile-0007';
+const APP_SHELL=['./','./index.html?v=0007','./manifest.webmanifest','./icons/galaxy-viewer.svg','./assets/gv-mobile-splash-0007.jpg','./releases/GV-mobile-0007.html'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
