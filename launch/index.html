@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Launch Galaxy Viewer</title>
+<link rel="icon" href="../mobile/icon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#000;color:#fff}
+body{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(100%,520px);text-align:center}
+img{display:block;width:min(100%,420px);max-height:48vh;object-fit:contain;margin:0 auto 22px}
+h1{margin:0 0 10px;font-size:clamp(28px,7vw,44px)}
+p{margin:0 auto 22px;max-width:44ch;color:#d5eaff;line-height:1.5}
+.actions{display:grid;gap:12px}
+a{display:flex;min-height:56px;align-items:center;justify-content:center;padding:14px 18px;border-radius:14px;font-weight:750;text-decoration:none}
+.primary{background:#45e7ff;color:#001019}
+.secondary{border:1px solid #75bfff;color:#dff7ff;background:rgba(45,120,255,.12)}
+small{display:block;margin-top:18px;color:#a7b8c8;line-height:1.45}
+</style>
+</head>
+<body>
+<main>
+<img src="../viewer/artwork/GV-splash-0002.png" alt="Galaxy Viewer">
+<h1>Galaxy Viewer</h1>
+<p>Open the installed Galaxy Viewer app when your browser supports app handoff. Otherwise, continue directly in Chrome or Safari.</p>
+<div class="actions">
+<a class="primary" href="../mobile/" target="_blank" rel="noopener">Open Galaxy Viewer App</a>
+<a class="secondary" href="../mobile/">Continue in This Browser</a>
+</div>
+<small>Android: Chrome may open the installed app. iPhone or iPad: Safari opens the viewer and can add it to the Home Screen from the Share menu.</small>
+</main>
+</body>
+</html>
