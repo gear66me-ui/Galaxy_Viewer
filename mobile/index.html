@@ -6,114 +6,12 @@
 <meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Galaxy Viewer Mobile</title>
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css">
-<style>
-:root{color-scheme:dark}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-body{font-family:"Roboto Mono",Consolas,monospace}
-#gv-app{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:#000}
-#aladin-lite-div{position:absolute;inset:0;width:100%;height:100%}
-#gv-startup{position:fixed;z-index:2147483647;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#7DF4FF;text-align:center;font-size:13px;line-height:1.5}
-body.gv-ready #gv-startup{display:none}
-
-/* Leave the entire top edge clear for camera cutouts and phone status areas. */
-#aladin-lite-div .aladin-cooFrame{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 98px)!important;left:6px!important}
-#aladin-lite-div .aladin-location{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 98px)!important;left:104px!important;max-width:calc(100vw - 110px)!important}
-#aladin-lite-div .aladin-location .aladin-input-text{width:calc(100vw - 126px)!important;max-width:430px!important}
-#aladin-lite-div .aladin-widgets-toolbar{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 48px)!important;left:6px!important;margin:0!important;display:flex!important;flex-wrap:nowrap!important}
-#aladin-lite-div .aladin-fullScreen-control{top:auto!important;right:6px!important;bottom:calc(env(safe-area-inset-bottom) + 48px)!important}
-#aladin-lite-div .aladin-projection-control{top:auto!important;right:52px!important;bottom:calc(env(safe-area-inset-bottom) + 48px)!important}
-#aladin-lite-div .aladin-fov{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;left:6px!important}
-#aladin-lite-div .aladin-logo-container{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;right:6px!important}
-#aladin-lite-div .aladin-status-bar{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;max-width:46vw!important}
-
-#gv-controls{position:fixed;z-index:2147483646;left:0;right:0;bottom:0;height:calc(env(safe-area-inset-bottom) + 142px);pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.40) 72%,transparent)}
-#gv-size{position:absolute;left:112px;bottom:calc(env(safe-area-inset-bottom) + 10px);padding:4px 6px;border-radius:4px;background:rgba(0,0,0,.72);color:#BCEEFF;font-size:10px;line-height:1;white-space:nowrap}
-#gv-exit{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:calc(env(safe-area-inset-bottom) + 8px);pointer-events:auto;appearance:none;-webkit-appearance:none;border:1px solid #fff;border-radius:6px;background:rgba(0,0,0,.86);color:#fff;padding:9px 12px;font:700 12px/1 "Roboto Mono",Consolas,monospace;touch-action:manipulation}
-#gv-exit:active{transform:scale(.97)}
-#gv-version{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:calc(env(safe-area-inset-bottom) + 48px);color:#7DF4FF;font-size:9px;line-height:1;opacity:.8}
-
-@media (max-width:480px){
-  #aladin-lite-div .aladin-location>.aladin-btn{display:none!important}
-  #aladin-lite-div .aladin-location{left:92px!important;max-width:calc(100vw - 98px)!important}
-  #aladin-lite-div .aladin-location .aladin-input-text{width:calc(100vw - 108px)!important;font-size:12px!important}
-  #aladin-lite-div .aladin-cooFrame{font-size:12px!important}
-  #gv-size{display:none}
-}
-@media (orientation:landscape){
-  #aladin-lite-div .aladin-cooFrame,#aladin-lite-div .aladin-location{bottom:calc(env(safe-area-inset-bottom) + 58px)!important}
-  #aladin-lite-div .aladin-widgets-toolbar,#aladin-lite-div .aladin-fullScreen-control,#aladin-lite-div .aladin-projection-control{bottom:calc(env(safe-area-inset-bottom) + 8px)!important}
-  #gv-controls{height:calc(env(safe-area-inset-bottom) + 96px)}
-  #gv-version{display:none}
-}
-</style>
+<meta http-equiv="refresh" content="0;url=./releases/GV-mobile-0002.html">
+<style>html,body{margin:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;color:#7DF4FF;font:600 13px/1.4 monospace}</style>
 </head>
-<body>
-<div id="gv-app"><div id="aladin-lite-div"></div></div>
-<div id="gv-startup">Loading standalone Galaxy Viewer…</div>
-<div id="gv-controls" aria-hidden="true">
-  <div id="gv-size"></div>
-  <div id="gv-version">GV MOBILE 0001</div>
-  <button id="gv-exit" type="button" aria-label="Exit full screen or return to previous window">↙ EXIT</button>
-</div>
-<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
-<script>
-(() => {
-  const exitButton=document.getElementById('gv-exit');
-  const size=document.getElementById('gv-size');
-  const startup=document.getElementById('gv-startup');
-
-  function updateSize(){
-    const vv=window.visualViewport;
-    const width=Math.round(vv?vv.width:window.innerWidth);
-    const height=Math.round(vv?vv.height:window.innerHeight);
-    size.textContent=`${width}×${height}`;
-  }
-
-  async function exitViewer(){
-    try{
-      if(document.fullscreenElement){
-        const exit=document.exitFullscreen||document.webkitExitFullscreen;
-        if(exit){await exit.call(document);return;}
-      }
-    }catch(error){console.warn('Fullscreen exit failed',error)}
-    if(history.length>1){history.back();return;}
-    location.href='../';
-  }
-
-  exitButton.addEventListener('click',exitViewer);
-  window.addEventListener('resize',updateSize);
-  window.visualViewport?.addEventListener('resize',updateSize);
-  window.addEventListener('orientationchange',()=>setTimeout(updateSize,250));
-  updateSize();
-
-  if(!window.A||!window.A.init){
-    startup.textContent='Galaxy Viewer startup failure: Aladin 3.8.2 did not create window.A.';
-    return;
-  }
-
-  window.A.init.then(() => {
-    const aladin=window.A.aladin('#aladin-lite-div',{
-      target:'M 31',survey:'P/DSS2/color',fov:1.5,cooFrame:'ICRSd',projection:'TAN',
-      reticleColor:'#62D8FF',reticleSize:22,showReticle:true,
-      showZoomControl:true,showFullscreenControl:false,showLayersControl:true,
-      showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true,
-      showProjectionControl:true
-    });
-    window.galaxyViewerMobile=aladin;
-    document.body.classList.add('gv-ready');
-    updateSize();
-  }).catch(error => {
-    console.error('Galaxy Viewer startup failure',error);
-    startup.textContent='Galaxy Viewer failed to initialize. Open the browser console for details.';
-  });
-
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('./service-worker.js').catch(()=>{})}
-})();
-</script>
+<body>Launching Galaxy Viewer Mobile 0002…
+<script>location.replace('./releases/GV-mobile-0002.html');</script>
 </body>
 </html>
