@@ -155,7 +155,14 @@ display(HTML(r'''
 
     function syncState(){
         const target = root.querySelector("button.gv-simbad-proxy");
-        const active = !!target && target.classList.contains("gv-active");
+        const helperRow = root.querySelector(".gv-helper-row");
+        const active = !!helperRow && helperRow.classList.contains("gv-active");
+
+        if(target){
+            target.classList.toggle("gv-active", active);
+            target.setAttribute("aria-pressed", active ? "true" : "false");
+        }
+
         if(active) startIris();
         else stopIris();
     }
