@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="no">
+<meta name="apple-mobile-web-app-capable" content="no">
+<title>Galaxy Viewer Mobile 0010</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}body{font-family:"Roboto Mono",Consolas,monospace}#gv-app{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:#000}#aladin-lite-div{position:absolute;inset:0;width:100%;height:100%}#gv-startup{position:fixed;z-index:2147483647;inset:0;display:flex;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}#gv-startup img{display:block;width:100%;height:100%;object-fit:contain;background:#000}body.gv-ready #gv-startup{opacity:0;pointer-events:none}#aladin-lite-div .aladin-cooFrame{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 58px)!important;left:6px!important}#aladin-lite-div .aladin-location{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 58px)!important;left:104px!important;max-width:calc(100vw - 110px)!important}#aladin-lite-div .aladin-location .aladin-input-text{width:calc(100vw - 126px)!important;max-width:430px!important}#aladin-lite-div .aladin-widgets-toolbar{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 8px)!important;left:6px!important;margin:0!important;display:flex!important;flex-wrap:nowrap!important}#aladin-lite-div .aladin-fullScreen-control{display:none!important}#aladin-lite-div .aladin-projection-control,#aladin-lite-div .aladin-projectionControl{display:block!important;visibility:visible!important;opacity:1!important;top:max(8px,env(safe-area-inset-top))!important;right:max(8px,env(safe-area-inset-right))!important;bottom:auto!important;left:auto!important}#aladin-lite-div .aladin-logo-container{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;right:6px!important}#aladin-lite-div .aladin-status-bar{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;max-width:42vw!important}#aladin-lite-div .aladin-fov{top:max(8px,env(safe-area-inset-top))!important;left:max(8px,env(safe-area-inset-left))!important;right:auto!important;bottom:auto!important;display:flex!important;align-items:center!important;background:rgba(0,0,0,.76)!important;border-radius:6px!important;padding:0!important;white-space:nowrap!important}#aladin-lite-div .aladin-fov .aladin-btn{background:rgba(0,0,0,.86)!important;color:#fff!important;border-color:#fff!important}#aladin-lite-div .aladin-fov .aladin-status-bar-message{display:inline-block!important;overflow:visible!important;max-width:none!important;padding-left:7px!important;padding-right:7px!important;color:#fff!important;background:rgba(0,0,0,.76)!important}#gv-controls{position:fixed;z-index:2147483645;left:0;right:0;bottom:0;height:calc(env(safe-area-inset-bottom) + 102px);pointer-events:none;background:none!important}#gv-exit{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:calc(env(safe-area-inset-bottom) + 8px);pointer-events:auto;appearance:none;-webkit-appearance:none;border:1px solid #fff;border-radius:6px;background:rgba(0,0,0,.86);color:#fff;padding:9px 12px;font:700 12px/1 "Roboto Mono",Consolas,monospace;touch-action:manipulation}#gv-exit:active{transform:scale(.97)}#gv-version{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:calc(env(safe-area-inset-bottom) + 48px);color:#7DF4FF;font-size:9px;line-height:1;opacity:.85}@media(max-width:480px){#aladin-lite-div .aladin-location>.aladin-btn{display:none!important}#aladin-lite-div .aladin-location{left:92px!important;max-width:calc(100vw - 98px)!important}#aladin-lite-div .aladin-location .aladin-input-text{width:calc(100vw - 108px)!important;font-size:12px!important}#aladin-lite-div .aladin-cooFrame{font-size:12px!important}}@media(orientation:landscape){#aladin-lite-div .aladin-cooFrame,#aladin-lite-div .aladin-location{bottom:calc(env(safe-area-inset-bottom) + 48px)!important}#aladin-lite-div .aladin-widgets-toolbar{bottom:calc(env(safe-area-inset-bottom) + 4px)!important}#gv-version{display:none}}
+</style>
+</head>
+<body>
+<div id="gv-app"><div id="aladin-lite-div"></div></div>
+<div id="gv-startup"><img id="gv-splash-image" src="../../viewer/file_0000000084e4820e9973d90b20799862.png?v=0010" alt="Galaxy Viewer launch artwork"></div>
+<div id="gv-controls" aria-hidden="true"><div id="gv-version">GV MOBILE 0010</div><button id="gv-exit" type="button" aria-label="Exit full screen or return to previous window">↙ EXIT</button></div>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
+<script>
+(()=>{
+ const startup=document.getElementById('gv-startup');
+ const splashImage=document.getElementById('gv-splash-image');
+ const exitButton=document.getElementById('gv-exit');
+ const splashStarted=Date.now();
+ splashImage.addEventListener('error',()=>{startup.textContent='Galaxy Viewer artwork failed to load.'});
+ async function exitViewer(){try{if(document.fullscreenElement){const exit=document.exitFullscreen||document.webkitExitFullscreen;if(exit){await exit.call(document);return}}}catch(error){console.warn('Fullscreen exit failed',error)}if(history.length>1){history.back();return}location.href='../'}
+ exitButton.addEventListener('click',exitViewer);
+ if(!window.A||!window.A.init){startup.textContent='Galaxy Viewer startup failure: Aladin 3.8.2 did not create window.A.';return}
+ window.A.init.then(()=>{
+  const aladin=window.A.aladin('#aladin-lite-div',{target:'M 31',survey:'P/DSS2/color',fov:1.5,cooFrame:'ICRSd',projection:'SIN',reticleColor:'#62D8FF',reticleSize:22,showReticle:true,showZoomControl:true,showFullscreenControl:false,showLayersControl:true,showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true,showProjectionControl:true});
+  window.galaxyViewerMobile=aladin;
+  const delay=Math.max(0,2200-(Date.now()-splashStarted));
+  setTimeout(()=>document.body.classList.add('gv-ready'),delay);
+ }).catch(error=>{console.error('Galaxy Viewer startup failure',error);startup.textContent='Galaxy Viewer failed to initialize. Open the browser console for details.'});
+})();
+</script>
+</body>
+</html>
