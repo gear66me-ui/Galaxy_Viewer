@@ -1,3 +1,4 @@
+# One-shot viewer cleanup — retriggered
 name: Reorganize viewer folder
 
 on:
