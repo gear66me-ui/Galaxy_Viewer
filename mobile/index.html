@@ -27,7 +27,39 @@
  const splashImage=document.getElementById('gv-splash-image');
  const splashStarted=Date.now();
  splashImage.addEventListener('error',()=>{startup.textContent='Galaxy Viewer artwork failed to load.'});
+ /*
+ GALAXY VIEWER MOBILE 0021 — SERVICE-WORKER ACTIVATION MAINTENANCE
+ Date: 2026-07-27
+
+ Previous registration retained for traceability:
  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=0022').catch(error=>console.warn('Service worker registration failed',error)))}
+
+ Reason for replacement:
+ The installed application could remain controlled by an older cached worker. The new
+ registration bypasses the browser HTTP cache for worker updates, explicitly checks for
+ an update, activates a waiting worker, and reloads once when the new worker takes control.
+ The visible application revision remains Mobile 0021.
+ */
+ if('serviceWorker' in navigator){
+  window.addEventListener('load',async()=>{
+   try{
+    const registration=await navigator.serviceWorker.register(
+     './service-worker.js?maintenance=0021-refresh-1',
+     {updateViaCache:'none'}
+    );
+    await registration.update();
+    if(registration.waiting){registration.waiting.postMessage('SKIP_WAITING')}
+    let refreshing=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+     if(refreshing)return;
+     refreshing=true;
+     window.location.reload();
+    });
+   }catch(error){
+    console.warn('Service worker registration failed',error);
+   }
+  });
+ }
  if(!window.A||!window.A.init){startup.textContent='Galaxy Viewer startup failure: Aladin 3.8.2 did not create window.A.';return}
  window.A.init.then(()=>{
   const aladin=window.A.aladin('#aladin-lite-div',{target:'M 31',survey:'P/DSS2/color',fov:1.5,cooFrame:'ICRSd',projection:'SIN',reticleColor:'#62D8FF',reticleSize:22,showReticle:true,showZoomControl:true,showFullscreenControl:false,showLayersControl:true,showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true,showProjectionControl:true});
