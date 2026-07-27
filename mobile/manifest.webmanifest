@@ -1,10 +1,14 @@
 {
+  "id": "/Galaxy_Viewer/mobile/",
   "name": "Galaxy Viewer",
   "short_name": "Galaxy Viewer",
   "description": "Galaxy Viewer mobile astronomy app",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/Galaxy_Viewer/mobile/",
+  "scope": "/Galaxy_Viewer/mobile/",
   "display": "standalone",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "orientation": "any",
   "background_color": "#000000",
   "theme_color": "#000000",
