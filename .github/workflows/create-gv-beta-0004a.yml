@@ -1,0 +1,57 @@
+name: Create GV-beta-0004A
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/create-gv-beta-0004a.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Create GV-beta-0004A from GV-beta-0003E
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('viewer/GV-beta-0003E.py')
+          target = Path('viewer/GV-beta-0004A.py')
+          text = source.read_text(encoding='utf-8')
+
+          old_loader = '''<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
+          <script>
+          A.init.then(() => {'''
+
+          new_loader = '''<script type="module">
+          import * as A from "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js";
+
+          A.init.then(() => {'''
+
+          if old_loader not in text:
+              raise SystemExit('Expected CDN loader block was not found in GV-beta-0003E.py')
+
+          text = text.replace('# GV-beta-0003E', '# GV-beta-0004A', 1)
+          text = text.replace(old_loader, new_loader, 1)
+          target.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit GV-beta-0004A and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/create-gv-beta-0004a.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Release GV-beta-0004A with ES module Aladin loader"
+          git push origin beta
