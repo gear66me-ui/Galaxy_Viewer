@@ -8,10 +8,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Galaxy Viewer">
-<title>Galaxy Viewer Mobile 0018</title>
-<link rel="manifest" href="./manifest.webmanifest?v=0019">
-<link rel="icon" href="./icon.svg?v=0019" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../viewer/artwork/GV-splash-0002.png?v=0019">
+<title>Galaxy Viewer Mobile 0019</title>
+<link rel="manifest" href="./manifest.webmanifest?v=0020">
+<link rel="icon" href="./icon.svg?v=0020" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/GV-splash-0002.png?v=0020">
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css">
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}body{font-family:"Roboto Mono",Consolas,monospace}#gv-app{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:#000}#aladin-lite-div{position:absolute;inset:0;width:100%;height:100%}#gv-startup{position:fixed;z-index:2147483647;inset:0;display:flex;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}#gv-startup img{display:block;width:100%;height:100%;object-fit:contain;background:#000}body.gv-ready #gv-startup{opacity:0;pointer-events:none}#aladin-lite-div .aladin-fov{display:none!important}#aladin-lite-div .aladin-cooFrame{top:max(8px,env(safe-area-inset-top))!important;bottom:auto!important;left:max(8px,env(safe-area-inset-left))!important;width:72px!important;min-width:72px!important;font-size:12px!important}#aladin-lite-div .aladin-location{top:max(8px,env(safe-area-inset-top))!important;bottom:auto!important;left:86px!important;right:170px!important;width:auto!important;max-width:none!important}#aladin-lite-div .aladin-location>.aladin-btn{display:none!important}#aladin-lite-div .aladin-location .aladin-input-text{width:100%!important;max-width:none!important;font-size:12px!important;padding-left:7px!important;padding-right:4px!important}#aladin-lite-div .aladin-widgets-toolbar{top:max(8px,env(safe-area-inset-top))!important;right:max(8px,env(safe-area-inset-right))!important;bottom:auto!important;left:auto!important;margin:0!important;display:flex!important;flex-wrap:nowrap!important;width:156px!important;overflow:visible!important}#aladin-lite-div .aladin-widgets-toolbar>*{box-sizing:border-box!important;flex:0 0 52px!important;width:52px!important;min-width:52px!important;max-width:52px!important;height:52px!important;min-height:52px!important;max-height:52px!important;margin:0!important}#aladin-lite-div .aladin-widgets-toolbar>*>button,#aladin-lite-div .aladin-widgets-toolbar>button{box-sizing:border-box!important;width:52px!important;min-width:52px!important;max-width:52px!important;height:52px!important;min-height:52px!important;max-height:52px!important;margin:0!important}#aladin-lite-div .aladin-fullScreen-control{display:none!important}#aladin-lite-div .aladin-projection-control,#aladin-lite-div .aladin-projectionControl{display:block!important;visibility:visible!important;opacity:1!important;top:calc(max(8px,env(safe-area-inset-top)) + 62px)!important;right:max(8px,env(safe-area-inset-right))!important;bottom:auto!important;left:auto!important}#aladin-lite-div .aladin-logo-container{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;right:6px!important}#aladin-lite-div .aladin-status-bar{bottom:calc(env(safe-area-inset-bottom) + 4px)!important;max-width:42vw!important}@media(max-width:480px){#aladin-lite-div .aladin-cooFrame{width:66px!important;min-width:66px!important}#aladin-lite-div .aladin-location{left:80px!important;right:140px!important}#aladin-lite-div .aladin-widgets-toolbar{width:126px!important}#aladin-lite-div .aladin-widgets-toolbar>*{flex-basis:42px!important;width:42px!important;min-width:42px!important;max-width:42px!important;height:42px!important;min-height:42px!important;max-height:42px!important}#aladin-lite-div .aladin-widgets-toolbar>*>button,#aladin-lite-div .aladin-widgets-toolbar>button{width:42px!important;min-width:42px!important;max-width:42px!important;height:42px!important;min-height:42px!important;max-height:42px!important}#aladin-lite-div .aladin-location .aladin-input-text{font-size:11px!important;padding-right:2px!important}}@media(orientation:landscape){#aladin-lite-div .aladin-location .aladin-input-text{font-size:12px!important}}
@@ -19,7 +19,7 @@
 </head>
 <body>
 <div id="gv-app"><div id="aladin-lite-div"></div></div>
-<div id="gv-startup"><img id="gv-splash-image" src="../viewer/artwork/GV-splash-0002.png?v=0019" alt="Galaxy Viewer launch artwork"></div>
+<div id="gv-startup"><img id="gv-splash-image" src="../viewer/artwork/GV-splash-0002.png?v=0020" alt="Galaxy Viewer launch artwork"></div>
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
 <script>
 (()=>{
@@ -27,20 +27,61 @@
  const splashImage=document.getElementById('gv-splash-image');
  const splashStarted=Date.now();
  splashImage.addEventListener('error',()=>{startup.textContent='Galaxy Viewer artwork failed to load.'});
- if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=0019').catch(error=>console.warn('Service worker registration failed',error)))}
+ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=0020').catch(error=>console.warn('Service worker registration failed',error)))}
  if(!window.A||!window.A.init){startup.textContent='Galaxy Viewer startup failure: Aladin 3.8.2 did not create window.A.';return}
  window.A.init.then(()=>{
   const aladin=window.A.aladin('#aladin-lite-div',{target:'M 31',survey:'P/DSS2/color',fov:1.5,cooFrame:'ICRSd',projection:'SIN',reticleColor:'#62D8FF',reticleSize:22,showReticle:true,showZoomControl:true,showFullscreenControl:false,showLayersControl:true,showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true,showProjectionControl:true});
   window.galaxyViewerMobile=aladin;
   const showDiagnostics=()=>{
    const cooFrame=document.querySelector('#aladin-lite-div .aladin-cooFrame');
-   const button=cooFrame?.querySelector('button');
-   const select=cooFrame?.querySelector('select');
-   const width=element=>element?`${element.getBoundingClientRect().width.toFixed(1)}px`:'not found';
    const panel=document.createElement('pre');
    panel.id='gv-mobile-diagnostic';
-   panel.style.cssText='position:fixed;z-index:2147483646;left:8px;bottom:8px;margin:0;padding:8px;background:rgba(0,0,0,.82);color:#62D8FF;border:1px solid #62D8FF;font:12px/1.4 monospace;pointer-events:none';
-   panel.textContent=`cooFrame width: ${width(cooFrame)}\nbutton width: ${width(button)}\nselect width: ${width(select)}`;
+   panel.style.cssText='position:fixed;z-index:2147483646;left:8px;right:8px;bottom:8px;max-height:48vh;overflow:auto;margin:0;padding:8px;background:rgba(0,0,0,.88);color:#62D8FF;border:1px solid #62D8FF;font:11px/1.35 monospace;white-space:pre-wrap;pointer-events:auto';
+   if(!cooFrame){panel.textContent='COORDINATE-FRAME DIAGNOSTIC\n.aladin-cooFrame not found';document.body.appendChild(panel);return}
+   const cs=getComputedStyle(cooFrame);
+   const rect=cooFrame.getBoundingClientRect();
+   const lines=[
+    'COORDINATE-FRAME DIAGNOSTIC',
+    `tag: ${cooFrame.tagName}`,
+    `classes: ${cooFrame.className}`,
+    `value: ${cooFrame.value}`,
+    `inline style: ${cooFrame.getAttribute('style')||'(none)'}`,
+    `rect width: ${rect.width.toFixed(2)}px`,
+    `offsetWidth: ${cooFrame.offsetWidth}px`,
+    `clientWidth: ${cooFrame.clientWidth}px`,
+    `computed width: ${cs.width}`,
+    `min-width: ${cs.minWidth}`,
+    `max-width: ${cs.maxWidth}`,
+    `box-sizing: ${cs.boxSizing}`,
+    `padding L/R: ${cs.paddingLeft} / ${cs.paddingRight}`,
+    `border L/R: ${cs.borderLeftWidth} / ${cs.borderRightWidth}`,
+    `font-size: ${cs.fontSize}`,
+    `appearance: ${cs.appearance||cs.webkitAppearance||'(unreported)'}`,
+    '',
+    'MATCHING ACCESSIBLE CSS RULES'
+   ];
+   const walkRules=(rules,source)=>{
+    for(const rule of rules){
+     if(rule.cssRules){walkRules(rule.cssRules,source);continue}
+     if(!rule.selectorText)continue;
+     let matches=false;
+     try{matches=cooFrame.matches(rule.selectorText)}catch(error){}
+     if(!matches)continue;
+     const props=['width','min-width','max-width','box-sizing','padding','padding-left','padding-right','border','font-size','appearance','-webkit-appearance'];
+     const declarations=props.map(prop=>{
+      const value=rule.style.getPropertyValue(prop);
+      if(!value)return null;
+      const priority=rule.style.getPropertyPriority(prop);
+      return `${prop}:${value}${priority?' !important':''}`;
+     }).filter(Boolean);
+     if(declarations.length)lines.push(`${source}\n${rule.selectorText}\n  ${declarations.join('; ')}`);
+    }
+   };
+   for(const sheet of document.styleSheets){
+    const source=sheet.href||'inline <style>';
+    try{walkRules(sheet.cssRules,source)}catch(error){lines.push(`${source}\n  rules inaccessible: ${error.name}`)}
+   }
+   panel.textContent=lines.join('\n');
    document.body.appendChild(panel);
   };
   setTimeout(showDiagnostics,500);
