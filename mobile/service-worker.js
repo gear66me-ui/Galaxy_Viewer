@@ -1,5 +1,5 @@
-const CACHE_NAME='galaxy-viewer-mobile-0001';
-const APP_SHELL=['./','./index.html','./manifest.webmanifest','./icons/galaxy-viewer.svg'];
+const CACHE_NAME='galaxy-viewer-mobile-0003';
+const APP_SHELL=['./','./index.html?v=0003','./manifest.webmanifest','./icons/galaxy-viewer.svg','./releases/GV-mobile-0003.html'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
@@ -13,7 +13,7 @@ self.addEventListener('activate',event=>{
 
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
-  event.respondWith(fetch(event.request).then(response=>{
+  event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>{
     const copy=response.clone();
     caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
     return response;
