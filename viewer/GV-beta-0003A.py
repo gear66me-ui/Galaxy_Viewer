@@ -1,0 +1,416 @@
+from IPython.display import HTML, display
+
+# GV-beta-0003A
+# Standalone Galaxy Viewer release based on the known-good GV-beta-0003 state.
+# Adds the coordinated active-state color flow requested for:
+#   1. the active Target icon, and
+#   2. the "or Tap Target Again / to Exit" instruction.
+# The first instruction line remains steady yellow.
+# No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.
+
+display(HTML("""
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css" />
+<style>
+#aladin-cosmic-command-test{
+    width:100%;height:650px;position:relative!important;
+    --text-blue:#62D8FF;--copy-blue:#7DF4FF;--layers-blue:#4F9DFF;
+    --world-blue:#8B7CFF;--projection-blue:#6FC7FF;--fullscreen-blue:#BCEEFF;
+    --zoom-plus:#55FF88;--zoom-minus:#FF5E78;
+    --gv-iris-color:hsl(190 100% 70%);
+    --gv-iris-glow:hsl(190 100% 70% / .82);
+}
+#aladin-cosmic-command-test .gv-standard-text,
+#aladin-cosmic-command-test .gv-standard-text *{
+    color:var(--text-blue)!important;fill:var(--text-blue)!important;
+    text-shadow:0 0 5px rgba(98,216,255,.55)!important;
+}
+#aladin-cosmic-command-test .gv-copy{--command-color:var(--copy-blue)}
+#aladin-cosmic-command-test .gv-layers{--command-color:var(--layers-blue)}
+#aladin-cosmic-command-test .gv-world{--command-color:var(--world-blue)}
+#aladin-cosmic-command-test .gv-projection{--command-color:var(--projection-blue)}
+#aladin-cosmic-command-test .gv-fullscreen{--command-color:var(--fullscreen-blue)}
+#aladin-cosmic-command-test .gv-plus{--command-color:var(--zoom-plus)}
+#aladin-cosmic-command-test .gv-minus{--command-color:var(--zoom-minus)}
+#aladin-cosmic-command-test .gv-command,
+#aladin-cosmic-command-test .gv-command *{color:var(--command-color)!important}
+#aladin-cosmic-command-test .gv-command svg,
+#aladin-cosmic-command-test .gv-command svg *{color:var(--command-color)!important}
+#aladin-cosmic-command-test .gv-command svg path,
+#aladin-cosmic-command-test .gv-command svg line,
+#aladin-cosmic-command-test .gv-command svg polyline,
+#aladin-cosmic-command-test .gv-command svg polygon,
+#aladin-cosmic-command-test .gv-command svg circle,
+#aladin-cosmic-command-test .gv-command svg ellipse,
+#aladin-cosmic-command-test .gv-command svg rect{stroke:var(--command-color)!important}
+#aladin-cosmic-command-test .gv-command svg path[fill]:not([fill="none"]),
+#aladin-cosmic-command-test .gv-command svg polygon[fill]:not([fill="none"]),
+#aladin-cosmic-command-test .gv-command svg circle[fill]:not([fill="none"]),
+#aladin-cosmic-command-test .gv-command svg rect[fill]:not([fill="none"]),
+#aladin-cosmic-command-test .gv-command svg text,
+#aladin-cosmic-command-test .gv-command svg tspan{fill:var(--command-color)!important}
+#aladin-cosmic-command-test .gv-command img,
+#aladin-cosmic-command-test .gv-command canvas{filter:var(--command-filter)!important}
+
+#aladin-cosmic-command-test .gv-native-coordinate-target-row{
+    position:absolute!important;z-index:5000!important;display:flex!important;
+    flex-flow:row nowrap!important;align-items:center!important;gap:0!important;
+    margin:0!important;padding:0!important;width:max-content!important;box-sizing:border-box!important;
+    pointer-events:none!important;
+}
+#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-location,
+#aladin-cosmic-command-test .gv-native-coordinate-target-row>.aladin-coordinates{
+    position:static!important;inset:auto!important;margin:0!important;transform:none!important;
+}
+#aladin-cosmic-command-test .gv-native-simbad-engine{
+    position:absolute!important;left:-10000px!important;top:-10000px!important;
+    width:1px!important;height:1px!important;min-width:1px!important;min-height:1px!important;
+    max-width:1px!important;max-height:1px!important;padding:0!important;margin:0!important;
+    opacity:0!important;visibility:hidden!important;pointer-events:none!important;overflow:hidden!important;
+}
+
+#aladin-cosmic-command-test button.gv-simbad-proxy,
+#aladin-cosmic-command-test button.gv-simbad-proxy:hover,
+#aladin-cosmic-command-test button.gv-simbad-proxy:focus,
+#aladin-cosmic-command-test button.gv-simbad-proxy:focus-visible,
+#aladin-cosmic-command-test button.gv-simbad-proxy:active,
+#aladin-cosmic-command-test button.gv-simbad-proxy.gv-active{
+    appearance:none!important;-webkit-appearance:none!important;
+    position:static!important;inset:auto!important;margin:0!important;padding:0!important;
+    width:34px!important;min-width:34px!important;max-width:34px!important;
+    height:34px!important;min-height:34px!important;max-height:34px!important;
+    flex:0 0 34px!important;align-self:center!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    box-sizing:border-box!important;overflow:hidden!important;transform:none!important;
+    background:rgba(0,0,0,.78)!important;color:var(--copy-blue)!important;
+    cursor:pointer!important;touch-action:manipulation!important;outline:none!important;box-shadow:none!important;
+    pointer-events:auto!important;
+}
+#aladin-cosmic-command-test button.gv-simbad-proxy svg,
+#aladin-cosmic-command-test button.gv-simbad-proxy:hover svg,
+#aladin-cosmic-command-test button.gv-simbad-proxy:focus svg,
+#aladin-cosmic-command-test button.gv-simbad-proxy:active svg,
+#aladin-cosmic-command-test button.gv-simbad-proxy.gv-active svg{
+    display:block!important;width:27px!important;height:27px!important;
+    min-width:27px!important;min-height:27px!important;max-width:27px!important;max-height:27px!important;
+    transform:none!important;transform-origin:center center!important;overflow:visible!important;
+    color:var(--copy-blue)!important;filter:drop-shadow(0 0 3px rgba(125,244,255,.7))!important;
+    pointer-events:none!important;
+}
+#aladin-cosmic-command-test button.gv-simbad-proxy svg *{
+    fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;
+    stroke-linecap:round!important;stroke-linejoin:round!important;vector-effect:non-scaling-stroke!important;
+}
+
+#aladin-cosmic-command-test .gv-simbad-helper-stack{
+    display:flex!important;flex-direction:column!important;align-self:center!important;
+    margin:0 0 0 9px!important;padding:0!important;
+}
+#aladin-cosmic-command-test .gv-simbad-helper{
+    display:flex!important;align-items:center!important;gap:6px!important;margin:0!important;padding:0!important;
+    border:0!important;background:transparent!important;color:#FFD166!important;
+    font-family:"Roboto Mono","DejaVu Sans Mono",Consolas,monospace!important;
+    font-size:11px!important;font-weight:700!important;line-height:1.12!important;letter-spacing:.15px!important;
+    width:238px!important;max-width:238px!important;white-space:normal!important;
+    text-shadow:0 0 4px rgba(255,209,102,.45)!important;pointer-events:none!important;
+}
+#aladin-cosmic-command-test .gv-simbad-helper-text{display:block!important;width:205px!important;max-width:205px!important}
+#aladin-cosmic-command-test .gv-simbad-helper-arrow{
+    width:19px!important;min-width:19px!important;height:12px!important;display:block!important;
+    overflow:visible!important;color:var(--copy-blue)!important;
+    filter:drop-shadow(0 0 3px rgba(125,244,255,.72))!important;
+}
+#aladin-cosmic-command-test .gv-simbad-helper-arrow path{
+    fill:none!important;stroke:currentColor!important;stroke-width:2!important;
+    stroke-linecap:round!important;stroke-linejoin:round!important;
+}
+#aladin-cosmic-command-test .gv-simbad-helper.gv-active .gv-simbad-helper-arrow{
+    animation:gv-left-arrow-pulse 1.15s ease-in-out infinite;
+}
+#aladin-cosmic-command-test .gv-simbad-live-status{
+    display:none!important;margin:4px 0 0 25px!important;padding:3px 8px!important;
+    width:max-content!important;max-width:294px!important;box-sizing:border-box!important;
+    color:#FFD166!important;background:rgba(0,0,0,.78)!important;
+    border:1px solid rgba(255,209,102,.65)!important;border-radius:4px!important;
+    font-family:"Roboto Mono","DejaVu Sans Mono",Consolas,monospace!important;
+    font-size:14px!important;font-weight:700!important;line-height:1.25!important;
+    white-space:normal!important;pointer-events:none!important;
+}
+#aladin-cosmic-command-test .gv-simbad-live-status.gv-visible{display:block!important}
+#aladin-cosmic-command-test .gv-simbad-live-status.gv-clear-ready{
+    pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important;
+    user-select:none!important;border-color:#7DF4FF!important;box-shadow:0 0 8px rgba(125,244,255,.55)!important;
+}
+#aladin-cosmic-command-test .gv-plus,
+#aladin-cosmic-command-test .gv-plus *{color:#55FF88!important}
+#aladin-cosmic-command-test .gv-minus,
+#aladin-cosmic-command-test .gv-minus *{color:#FF5E78!important}
+#aladin-cosmic-command-test .gv-plus svg,
+#aladin-cosmic-command-test .gv-plus svg *{stroke:#55FF88!important;fill:#55FF88!important}
+#aladin-cosmic-command-test .gv-minus svg,
+#aladin-cosmic-command-test .gv-minus svg *{stroke:#FF5E78!important;fill:#FF5E78!important}
+
+#aladin-cosmic-command-test .gv-helper-row{
+    display:flex!important;align-items:center!important;margin-left:-15px!important;
+}
+#aladin-cosmic-command-test .gv-arrow{
+    color:var(--copy-blue)!important;font-size:22px!important;font-weight:bold!important;
+    margin-right:6px!important;position:relative!important;left:5px!important;top:0!important;
+    text-shadow:0 0 6px rgba(125,244,255,.70)!important;
+}
+#aladin-cosmic-command-test .gv-helper-box{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    height:34px!important;padding:0 16px!important;position:relative!important;top:2px!important;
+    background:transparent!important;border:1px solid #FFFFFF!important;border-radius:6px!important;
+    color:var(--copy-blue)!important;font-family:"Roboto Mono",Consolas,monospace!important;
+    font-size:13px!important;font-weight:600!important;line-height:1.3!important;
+    white-space:nowrap!important;box-sizing:border-box!important;
+}
+#aladin-cosmic-command-test .gv-helper-row.gv-active .gv-helper-box{
+    width:200px!important;max-width:200px!important;height:56px!important;min-height:56px!important;
+    padding:3px 10px!important;flex-direction:column!important;align-items:center!important;
+    justify-content:center!important;text-align:center!important;color:#FFD166!important;
+    line-height:1.12!important;text-shadow:0 0 10px rgba(255,209,102,.75)!important;
+}
+#aladin-cosmic-command-test .gv-helper-row.gv-active .gv-helper-active-line{
+    display:block!important;width:100%!important;text-align:center!important;color:#FFD166!important;
+}
+#aladin-cosmic-command-test .gv-helper-row.gv-active .gv-helper-active-line:nth-child(1){
+    color:#FFD166!important;text-shadow:0 0 10px rgba(255,209,102,.75)!important;
+}
+#aladin-cosmic-command-test .gv-helper-row.gv-active .gv-helper-active-line:nth-child(2),
+#aladin-cosmic-command-test .gv-helper-row.gv-active .gv-helper-active-line:nth-child(3){
+    color:var(--gv-iris-color)!important;
+    text-shadow:0 0 4px var(--gv-iris-glow),0 0 9px var(--gv-iris-glow),0 0 15px var(--gv-iris-glow)!important;
+    transition:color 420ms ease-in-out,text-shadow 420ms ease-in-out!important;
+}
+#aladin-cosmic-command-test button.gv-simbad-proxy.gv-active,
+#aladin-cosmic-command-test button.gv-simbad-proxy.gv-active svg,
+#aladin-cosmic-command-test button.gv-simbad-proxy.gv-active svg *{
+    color:var(--gv-iris-color)!important;
+    transition:color 420ms ease-in-out,filter 420ms ease-in-out!important;
+}
+#aladin-cosmic-command-test button.gv-simbad-proxy.gv-active svg{
+    filter:drop-shadow(0 0 2px var(--gv-iris-glow)) drop-shadow(0 0 5px var(--gv-iris-glow)) drop-shadow(0 0 9px var(--gv-iris-glow))!important;
+    animation:gv-0003a-cloud-bloom 1.6s ease-in-out infinite!important;
+}
+@keyframes gv-left-arrow-pulse{0%,100%{transform:translateX(0);opacity:.82}50%{transform:translateX(-2px);opacity:1}}
+@keyframes gv-0003a-cloud-bloom{0%,100%{opacity:.88;transform:scale(.985)}35%{opacity:1;transform:scale(1.035)}68%{opacity:.94;transform:scale(1.005)}}
+@media (prefers-reduced-motion:reduce){
+    #aladin-cosmic-command-test button.gv-simbad-proxy.gv-active svg{animation:none!important}
+}
+</style>
+<div id="aladin-cosmic-command-test"></div>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
+<script>
+A.init.then(() => {
+    const root=document.getElementById("aladin-cosmic-command-test");
+    const aladin=A.aladin("#aladin-cosmic-command-test",{
+        target:"M 31",survey:"P/DSS2/color",fov:1.5,cooFrame:"ICRSd",projection:"TAN",
+        reticleColor:"#62D8FF",reticleSize:22,showReticle:true,
+        showZoomControl:true,showFullscreenControl:true,showLayersControl:true,
+        showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true,
+        showProjectionControl:true
+    });
+    window.aladin_cosmic_command_test=aladin;
+
+    const filters={
+        copy:"brightness(0) saturate(100%) invert(94%) sepia(44%) saturate(1415%) hue-rotate(160deg) brightness(103%) contrast(103%)",
+        layers:"brightness(0) saturate(100%) invert(58%) sepia(99%) saturate(1819%) hue-rotate(190deg) brightness(102%) contrast(101%)",
+        world:"brightness(0) saturate(100%) invert(55%) sepia(94%) saturate(1690%) hue-rotate(219deg) brightness(101%) contrast(101%)",
+        projection:"brightness(0) saturate(100%) invert(79%) sepia(38%) saturate(1260%) hue-rotate(172deg) brightness(101%) contrast(102%)",
+        fullscreen:"brightness(0) saturate(100%) invert(94%) sepia(21%) saturate(996%) hue-rotate(171deg) brightness(104%) contrast(102%)",
+        plus:"brightness(0) saturate(100%) invert(84%) sepia(66%) saturate(654%) hue-rotate(77deg) brightness(105%) contrast(104%)",
+        minus:"brightness(0) saturate(100%) invert(53%) sepia(84%) saturate(3287%) hue-rotate(319deg) brightness(105%) contrast(101%)"
+    };
+
+    const normalize=value=>String(value||"").trim().split(/\\s+/).join(" ");
+    let simbadModeActive=false;
+    let resultReady=false;
+    let paletteScheduled=false;
+    let irisTimer=null;
+    let irisSequence=[];
+    let irisSequenceIndex=0;
+    const IRIS_STEP_MS=200;
+    const IRIS_STEPS_PER_SEQUENCE=20;
+    const irisHueAnchors=[188,202,222,246,272,300,326,350,24,48,78,112,146,170];
+
+    function randomBetween(min,max){return min+Math.random()*(max-min)}
+    function circularHueDistance(a,b){const d=Math.abs(a-b)%360;return Math.min(d,360-d)}
+    function buildIrisSequence(){
+        const colors=[];let previousHue=Math.random()*360;
+        for(let i=0;i<IRIS_STEPS_PER_SEQUENCE;i++){
+            const nearby=irisHueAnchors.filter(h=>circularHueDistance(h,previousHue)<=105);
+            const pool=nearby.length?nearby:irisHueAnchors;
+            const anchor=pool[Math.floor(Math.random()*pool.length)];
+            const hue=(anchor+randomBetween(-18,18)+360)%360;
+            const saturation=Math.round(randomBetween(82,100));
+            const lightness=Math.round(randomBetween(61,76));
+            const alpha=randomBetween(.68,.92).toFixed(2);
+            colors.push({hue,saturation,lightness,alpha});previousHue=hue;
+        }
+        return colors;
+    }
+    function setIrisColor(color){
+        root.style.setProperty("--gv-iris-color",`hsl(${color.hue.toFixed(1)} ${color.saturation}% ${color.lightness}%)`);
+        root.style.setProperty("--gv-iris-glow",`hsl(${color.hue.toFixed(1)} ${color.saturation}% ${color.lightness}% / ${color.alpha})`);
+    }
+    function nextIrisColor(){
+        if(irisSequenceIndex>=irisSequence.length){irisSequence=buildIrisSequence();irisSequenceIndex=0}
+        setIrisColor(irisSequence[irisSequenceIndex++]);
+    }
+    function startIris(){
+        if(irisTimer)return;
+        irisSequence=buildIrisSequence();irisSequenceIndex=0;nextIrisColor();
+        irisTimer=setInterval(nextIrisColor,IRIS_STEP_MS);
+    }
+    function stopIris(){
+        if(irisTimer){clearInterval(irisTimer);irisTimer=null}
+        root.style.setProperty("--gv-iris-color","hsl(190 100% 70%)");
+        root.style.setProperty("--gv-iris-glow","hsl(190 100% 70% / .82)");
+    }
+    function syncIrisState(){
+        const target=root.querySelector("button.gv-simbad-proxy");
+        const helperRow=root.querySelector(".gv-helper-row");
+        const active=!!helperRow&&helperRow.classList.contains("gv-active");
+        if(target){target.classList.toggle("gv-active",active);target.setAttribute("aria-pressed",active?"true":"false")}
+        if(active)startIris();else stopIris();
+    }
+
+    function describe(element){
+        return [element.className||"",element.id||"",element.getAttribute?.("title")||"",element.getAttribute?.("aria-label")||"",element.getAttribute?.("data-tooltip")||"",element.textContent||""].join(" ").toLowerCase();
+    }
+    function controlContainer(element){
+        return element.closest("button,[role='button'],[class*='Control'],[class*='control'],[class*='projection'],[class*='fullscreen'],[class*='location']")||element;
+    }
+    function mark(element,className,filterName){
+        const control=controlContainer(element);
+        if(!control.classList.contains("gv-command"))control.classList.add("gv-command");
+        if(!control.classList.contains(className))control.classList.add(className);
+        if(control.style.getPropertyValue("--command-filter")!==filters[filterName])control.style.setProperty("--command-filter",filters[filterName],"important");
+    }
+    function findCoordinateBox(){return root.querySelector(".aladin-location")||root.querySelector(".aladin-coordinates")}
+    function findNativeSimbadEngine(){
+        const claimed=root.querySelector("button.gv-native-simbad-engine");if(claimed)return claimed;
+        const direct=root.querySelector("button.aladin-simbadPointer-control,button.aladin-simbadPointerControl,button.aladin-btn[class*='simbadPointer']");
+        if(direct)return direct;
+        const wrapper=root.querySelector(".aladin-simbadPointer-control,.aladin-simbadPointerControl,[class*='simbadPointer']");
+        if(!wrapper)return null;if(wrapper.matches?.("button.aladin-btn"))return wrapper;
+        return wrapper.querySelector?.("button.aladin-btn")||null;
+    }
+    function getProxy(){return root.querySelector("button.gv-simbad-proxy")}
+    function syncProxyBorder(coordinateBox,proxy){
+        const style=window.getComputedStyle(coordinateBox);
+        const borderColor=style.borderRightColor||"rgb(236,236,236)";
+        const borderWidth=parseFloat(style.borderRightWidth)>0?style.borderRightWidth:"1px";
+        const borderStyle=style.borderRightStyle!=="none"?style.borderRightStyle:"solid";
+        const radius=style.borderTopRightRadius!=="0px"?style.borderTopRightRadius:"6px";
+        [["border-style",borderStyle],["border-width",borderWidth],["border-color",borderColor],["border-radius",radius]].forEach(([property,value])=>{
+            if(proxy.style.getPropertyValue(property)!==value)proxy.style.setProperty(property,value,"important");
+        });
+    }
+    function setHelperIdle(){
+        const stack=root.querySelector(".gv-simbad-helper-stack");if(!stack)return;
+        const row=stack.querySelector(".gv-helper-row");const arrow=stack.querySelector(".gv-arrow");const box=stack.querySelector(".gv-helper-box");
+        row?.classList.remove("gv-active");
+        if(arrow){arrow.style.color="var(--copy-blue)";arrow.style.animation="none"}
+        if(box){box.innerHTML="Tap Target to Find Info";box.style.color="var(--copy-blue)";box.style.setProperty("border-color","#FFFFFF","important");box.style.animation="";box.style.textShadow="0 0 6px rgba(125,244,255,.60)"}
+        syncIrisState();
+    }
+    function setHelperActive(){
+        const stack=root.querySelector(".gv-simbad-helper-stack");if(!stack)return;
+        const row=stack.querySelector(".gv-helper-row");const arrow=stack.querySelector(".gv-arrow");const box=stack.querySelector(".gv-helper-box");
+        row?.classList.add("gv-active");
+        if(arrow){arrow.style.color="var(--copy-blue)";arrow.style.animation="none"}
+        if(box){
+            box.innerHTML='<span class="gv-helper-active-line">✨ Tap Galaxy / Star</span><span class="gv-helper-active-line">or Tap Target Again</span><span class="gv-helper-active-line">to Exit</span>';
+            box.style.setProperty("color","#FFD166","important");box.style.setProperty("border-color","#FFFFFF","important");box.style.animation="none";box.style.setProperty("text-shadow","0 0 10px rgba(255,209,102,.75)","important");
+        }
+        syncIrisState();
+    }
+    function resetHelperAndStatus(){
+        setHelperIdle();const stack=root.querySelector(".gv-simbad-helper-stack");const proxy=getProxy();
+        if(proxy){proxy.classList.remove("gv-active");proxy.setAttribute("aria-pressed","false");proxy.blur?.()}
+        if(!stack)return;
+        stack.querySelector(".gv-simbad-helper")?.classList.remove("gv-active");
+        const text=stack.querySelector(".gv-simbad-helper-text");const status=stack.querySelector(".gv-simbad-live-status");
+        if(text)text.innerHTML="Click target, then click<br>a galaxy or star to find info";
+        if(status){status.textContent="";status.classList.remove("gv-visible","gv-clear-ready");status.setAttribute("aria-label","");status.setAttribute("role","status");status.removeAttribute("tabindex")}
+        syncIrisState();
+    }
+    function ensureHelper(row,proxy){
+        let stack=row.querySelector(".gv-simbad-helper-stack");
+        if(!stack){stack=document.createElement("div");stack.className="gv-simbad-helper-stack";stack.innerHTML=`<div class="gv-helper-row"><div class="gv-arrow">◀</div><div class="gv-helper-box">Tap Target to Find Info</div></div><div class="gv-simbad-live-status" role="status" aria-live="polite"></div>`}
+        if(stack.parentElement!==row||proxy.nextElementSibling!==stack)proxy.insertAdjacentElement("afterend",stack);
+        const status=stack.querySelector(".gv-simbad-live-status");
+        if(!status.dataset.gvClearBound){
+            status.dataset.gvClearBound="true";
+            status.addEventListener("click",()=>{if(status.classList.contains("gv-clear-ready"))clearSimbad()});
+            status.addEventListener("keydown",event=>{if((event.key==="Enter"||event.key===" ")&&status.classList.contains("gv-clear-ready")){event.preventDefault();clearSimbad()}});
+        }
+    }
+    function bindProxy(proxy){
+        if(proxy.dataset.gvProxyBound)return;proxy.dataset.gvProxyBound="true";
+        proxy.addEventListener("click",e=>{
+            e.stopPropagation();e.preventDefault();const al=window.aladin_cosmic_command_test;
+            if(simbadModeActive){
+                if(al&&typeof al.useSimbadPointer==="function")al.useSimbadPointer(false);
+                else{const btn=document.querySelector("button.aladin-simbadPointer-control,button.aladin-simbadPointerControl,button.aladin-btn[class*='simbadPointer']");if(btn)btn.click()}
+                simbadModeActive=false;resetHelperAndStatus();return;
+            }
+            setHelperActive();simbadModeActive=true;
+            if(al&&typeof al.useSimbadPointer==="function"){al.useSimbadPointer(true);return}
+            const btn=document.querySelector("button.aladin-simbadPointer-control,button.aladin-simbadPointerControl,button.aladin-btn[class*='simbadPointer']");if(btn)btn.click();
+        });
+    }
+    function createProxy(){
+        let proxy=getProxy();if(proxy)return proxy;
+        proxy=document.createElement("button");proxy.type="button";proxy.className="gv-simbad-proxy gv-command gv-copy";
+        proxy.setAttribute("title","SIMBAD pointer");proxy.setAttribute("aria-label","SIMBAD pointer");proxy.setAttribute("aria-pressed","false");
+        proxy.style.setProperty("--command-filter",filters.copy,"important");
+        proxy.innerHTML=`<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="8.5"></circle><circle cx="16" cy="16" r="2.2"></circle><path d="M16 2.5V8"></path><path d="M16 24V29.5"></path><path d="M2.5 16H8"></path><path d="M24 16H29.5"></path></svg>`;
+        bindProxy(proxy);return proxy;
+    }
+    function buildTargetRow(){
+        const coordinateBox=findCoordinateBox();const engine=findNativeSimbadEngine();if(!coordinateBox||!engine)return false;
+        engine.classList.add("gv-native-simbad-engine");engine.setAttribute("aria-hidden","true");engine.tabIndex=-1;
+        let row=root.querySelector(".gv-native-coordinate-target-row");
+        if(!row){
+            const rootRect=root.getBoundingClientRect();const coordinateRect=coordinateBox.getBoundingClientRect();if(coordinateRect.width<=0||coordinateRect.height<=0)return false;
+            row=document.createElement("div");row.className="gv-native-coordinate-target-row";
+            row.style.setProperty("left",Math.round(coordinateRect.left-rootRect.left)+"px","important");
+            row.style.setProperty("top",Math.round(coordinateRect.top-rootRect.top)+"px","important");
+            coordinateBox.parentElement.insertBefore(row,coordinateBox);row.appendChild(coordinateBox);
+        }
+        const proxy=createProxy();if(proxy.parentElement!==row)row.appendChild(proxy);syncProxyBorder(coordinateBox,proxy);ensureHelper(row,proxy);syncIrisState();
+        return coordinateBox.nextElementSibling===proxy;
+    }
+    function applyPalette(){
+        root.querySelectorAll("*").forEach(element=>{
+            const description=describe(element);const text=normalize(element.textContent);
+            if(description.includes("copy")||description.includes("clipboard"))mark(element,"gv-copy","copy");
+            if(description.includes("layer")||description.includes("stack"))mark(element,"gv-layers","layers");
+            if(description.includes("world")||description.includes("globe")||description.includes("grid"))mark(element,"gv-world","world");
+            if(description.includes("projection")||text==="TAN"||text==="SIN")mark(element,"gv-projection","projection");
+            if(description.includes("fullscreen")||description.includes("full screen")||description.includes("maximize"))mark(element,"gv-fullscreen","fullscreen");
+            if(description.includes("zoom in")||description.includes("zoomin")||text==="+")mark(element,"gv-plus","plus");
+            if(description.includes("zoom out")||description.includes("zoomout")||text==="-"||text==="−")mark(element,"gv-minus","minus");
+            if(text==="ICRS"||text==="ICRSd"||/^[-+]?\\d+(\\.\\d+)?\\s+[-+]?\\d+(\\.\\d+)?$/.test(text)){
+                if(!element.classList.contains("gv-standard-text"))element.classList.add("gv-standard-text");
+            }
+        });
+        buildTargetRow();syncIrisState();
+    }
+    function schedulePalette(){
+        if(paletteScheduled)return;paletteScheduled=true;
+        requestAnimationFrame(()=>{paletteScheduled=false;applyPalette()});
+    }
+    [250,700,1400,2400].forEach(delay=>setTimeout(schedulePalette,delay));
+    const observer=new MutationObserver(()=>{schedulePalette();syncIrisState()});
+    observer.observe(root,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["class"]});
+    window.addEventListener("resize",()=>schedulePalette());
+    [100,300,700,1400,2400].forEach(delay=>setTimeout(syncIrisState,delay));
+});
+</script>
+"""))
+
+# GV-beta-0003A released
