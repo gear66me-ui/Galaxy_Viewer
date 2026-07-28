@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Galaxy Viewer">
-<title>Galaxy Viewer 4N</title>
+<title>Galaxy Viewer 4O</title>
 <link rel="manifest" href="./manifest.webmanifest?v=829faf3594e85d4ff529d3c2b069a309d580b054">
 <link rel="icon" href="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054">
@@ -55,7 +55,7 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-splash"><img src="../viewer/artwork/GV-splash-0003.svg?v=0023" alt="Galaxy Viewer launch artwork"></div>
-<div id="gv-loading">Loading Galaxy Viewer 4N…</div>
+<div id="gv-loading">Loading Galaxy Viewer 4O…</div>
 <script>
 (async()=>{
   const splashStarted=Date.now();
@@ -63,7 +63,7 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
     window.addEventListener('load',async()=>{
       try{
         const registration=await navigator.serviceWorker.register(
-          './service-worker.js?maintenance=0021-refresh-10',
+          './service-worker.js?maintenance=0021-refresh-11',
           {updateViaCache:'none'}
         );
         await registration.update();
@@ -76,12 +76,12 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
 
   const loading=document.getElementById('gv-loading');
   try{
-    const response=await fetch('../viewer/GV-beta-0004N.py?v=eed0b265dab27ede0a4a5f0d2bdae7ccc3e0c4d4',{cache:'no-store'});
-    if(!response.ok)throw new Error(`GV-beta-0004N.py returned HTTP ${response.status}`);
+    const response=await fetch('../viewer/GV-beta-0004O.py?v=b8274b7eea6fd1e381f1dcf84cf920f1588b3d57',{cache:'no-store'});
+    if(!response.ok)throw new Error(`GV-beta-0004O.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
     const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4N HTML and JavaScript blocks.');
+    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4O HTML and JavaScript blocks.');
     loading.remove();
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const script=document.createElement('script');
@@ -100,13 +100,15 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
       const coordinate=root.querySelector('.gv-native-coordinate-target-row')||root.querySelector('.aladin-location')||root.querySelector('.aladin-coordinates');
       if(!layers||!world||!coordinate)return;
       let group=layers;
-      while(group.parentElement&&group.parentElement!==root&&!group.parentElement.contains(world))group=group.parentElement;
-      if(group.parentElement&&group.parentElement!==root&&group.parentElement.contains(world))group=group.parentElement;
-      if(group===root)return;
-      const rootRect=root.getBoundingClientRect();
+      while(group.parentElement&&group.parentElement!==root&&!group.contains(world))group=group.parentElement;
+      if(!group||group===root||!group.contains(world))return;
+      group.style.setProperty('translate','0 0','important');
+      const groupRect=group.getBoundingClientRect();
       const coordinateRect=coordinate.getBoundingClientRect();
-      group.style.setProperty('left',Math.round(coordinateRect.left-rootRect.left)+'px','important');
-      group.style.setProperty('right','auto','important');
+      const delta=Math.round(coordinateRect.left-groupRect.left);
+      group.style.setProperty('translate',delta+'px 0','important');
+      const versionLabel=root.querySelector('#gv-version-label');
+      if(versionLabel)versionLabel.textContent='Galaxy Viewer 4O';
     };
     [250,700,1400,2400].forEach(delay=>setTimeout(applyVectorIcon,delay));
     [300,800,1500,2500].forEach(delay=>setTimeout(alignUpperLeftControls,delay));
@@ -114,8 +116,8 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
     const splashDelay=Math.max(0,2200-(Date.now()-splashStarted));
     setTimeout(()=>document.body.classList.add('gv-ready'),splashDelay);
   }catch(error){
-    console.error('Galaxy Viewer 4N mobile launcher failure',error);
-    loading.textContent=`Galaxy Viewer 4N failed to load: ${error.message}`;
+    console.error('Galaxy Viewer 4O mobile launcher failure',error);
+    loading.textContent=`Galaxy Viewer 4O failed to load: ${error.message}`;
   }
 })();
 </script>
