@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Galaxy Viewer">
-<title>Galaxy Viewer 4M</title>
+<title>Galaxy Viewer 4N</title>
 <link rel="manifest" href="./manifest.webmanifest?v=0022">
 <link rel="icon" href="./icon.svg?v=0022" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../viewer/artwork/GV-splash-0002.png?v=0022">
@@ -51,14 +51,14 @@ body{font-family:"Roboto Mono",Consolas,monospace}
 </style>
 </head>
 <body>
-<div id="gv-loading">Loading Galaxy Viewer 4M…</div>
+<div id="gv-loading">Loading Galaxy Viewer 4N…</div>
 <script>
 (async()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load',async()=>{
       try{
         const registration=await navigator.serviceWorker.register(
-          './service-worker.js?maintenance=0021-refresh-6',
+          './service-worker.js?maintenance=0021-refresh-7',
           {updateViaCache:'none'}
         );
         await registration.update();
@@ -71,26 +71,26 @@ body{font-family:"Roboto Mono",Consolas,monospace}
 
   const loading=document.getElementById('gv-loading');
   try{
-    const response=await fetch('../viewer/GV-beta-0004M.py?v=fbb79915ef091c2946a2390d8a6dcdcd62492b74',{cache:'no-store'});
-    if(!response.ok)throw new Error(`GV-beta-0004M.py returned HTTP ${response.status}`);
+    const response=await fetch('../viewer/GV-beta-0004N.py?v=eed0b265dab27ede0a4a5f0d2bdae7ccc3e0c4d4',{cache:'no-store'});
+    if(!response.ok)throw new Error(`GV-beta-0004N.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
     const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4M HTML and JavaScript blocks.');
+    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4N HTML and JavaScript blocks.');
     loading.remove();
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const script=document.createElement('script');
     script.textContent=jsMatch[1];
     document.body.appendChild(script);
-    const vectorIconUrl='../viewer/artwork/icon_target_vector.svg?v=273286b1c4df499c2b6015b74eef685f27ecb8b5';
+    const vectorIconUrl='../viewer/artwork/icon_target_vector.svg?v=608828c6835dd2d892969475469937f0a6956552';
     const applyVectorIcon=()=>{
       const icon=document.querySelector('button.gv-simbad-proxy img.gv-target-trademark');
       if(icon)icon.src=vectorIconUrl;
     };
     [250,700,1400,2400].forEach(delay=>setTimeout(applyVectorIcon,delay));
   }catch(error){
-    console.error('Galaxy Viewer 4M mobile launcher failure',error);
-    loading.textContent=`Galaxy Viewer 4M failed to load: ${error.message}`;
+    console.error('Galaxy Viewer 4N mobile launcher failure',error);
+    loading.textContent=`Galaxy Viewer 4N failed to load: ${error.message}`;
   }
 })();
 </script>
