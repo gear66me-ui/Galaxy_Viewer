@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Galaxy Viewer — Aladin Source Audit</title>
+  <style>
+    :root{color-scheme:dark;--bg:#050816;--panel:#0d1428;--line:#2c3d69;--text:#eef5ff;--muted:#9dafcc;--accent:#62d8ff;--good:#62e6a7;--warn:#ffd36a;--bad:#ff7d91}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}main{width:min(1280px,100%);margin:auto;padding:18px}h1{margin:0 0 5px}h2{font-size:1.1rem;margin:0 0 12px}.muted{color:var(--muted)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}button{padding:11px 15px;border:1px solid var(--accent);border-radius:10px;background:#112849;color:var(--text);font-weight:700}button:disabled{opacity:.5}.status,.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px;margin-top:14px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{border:1px solid var(--line);border-radius:10px;padding:12px;background:#111b32}.metric span{display:block;color:var(--muted);font-size:.82rem}.metric strong{display:block;margin-top:5px;font-size:1.25rem}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:.88rem;vertical-align:top}th{color:var(--muted)}code{overflow-wrap:anywhere}.lists{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.listbox{border:1px solid var(--line);border-radius:10px;padding:10px;min-height:180px;max-height:430px;overflow:auto}.listbox ul{margin:0;padding-left:20px}.listbox li{margin:5px 0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.78rem}@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lists{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Aladin Source Tree Audit</h1>
+  <p class="muted">Official <code>cds-astro/aladin-lite@master</code> versus <code>gear66me-ui/Galaxy_Viewer@beta/aladin-source-clone/</code>.</p>
+  <div class="toolbar">
+    <button id="run" type="button">Run complete source audit</button>
+    <button id="download" type="button" disabled>Download JSON report</button>
+  </div>
+  <div id="status" class="status" aria-live="polite">Ready. This uses GitHub’s public recursive-tree API and does not modify either repository.</div>
+  <section class="panel">
+    <div class="grid">
+      <div class="metric"><span>Official files</span><strong id="official-count">—</strong></div>
+      <div class="metric"><span>Clone files</span><strong id="clone-count">—</strong></div>
+      <div class="metric"><span>Identical files</span><strong id="identical-count">—</strong></div>
+      <div class="metric"><span>Completeness</span><strong id="completeness">—</strong></div>
+      <div class="metric"><span>Missing from clone</span><strong id="missing-count">—</strong></div>
+      <div class="metric"><span>Different content</span><strong id="changed-count">—</strong></div>
+      <div class="metric"><span>Extra in clone</span><strong id="extra-count">—</strong></div>
+      <div class="metric"><span>Audit verdict</span><strong id="verdict">—</strong></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Repository snapshots</h2>
+    <div class="table-wrap"><table><thead><tr><th>Tree</th><th>Repository</th><th>Ref</th><th>Resolved SHA</th><th>Files</th><th>Bytes</th><th>Truncated</th></tr></thead><tbody id="snapshot-body"><tr><td colspan="7">No audit run.</td></tr></tbody></table></div>
+  </section>
+  <section class="panel">
+    <h2>Comparison by category</h2>
+    <div class="table-wrap"><table><thead><tr><th>Category</th><th>Official</th><th>Clone</th><th>Missing</th><th>Changed</th><th>Extra</th></tr></thead><tbody id="category-body"><tr><td colspan="6">No audit run.</td></tr></tbody></table></div>
+  </section>
+  <section class="panel">
+    <h2>Exact path results</h2>
+    <div class="lists">
+      <div class="listbox"><strong class="bad">Missing from clone</strong><ul id="missing-list"><li>—</li></ul></div>
+      <div class="listbox"><strong class="warn">Same path, different blob</strong><ul id="changed-list"><li>—</li></ul></div>
+      <div class="listbox"><strong>Extra in clone</strong><ul id="extra-list"><li>—</li></ul></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Report</h2>
+    <p><strong>Filename:</strong> <code id="filename">Generated after the audit completes</code></p>
+    <p class="muted">Git blob SHA equality proves byte-identical content for matching paths. A different SHA means the file contents differ. Empty Git directories are not represented because Git tracks files, not folders.</p>
+  </section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const API='https://api.github.com';
+  const SOURCE={owner:'cds-astro',repo:'aladin-lite',ref:'master'};
+  const LOCAL={owner:'gear66me-ui',repo:'Galaxy_Viewer',ref:'beta',prefix:'aladin-source-clone/'};
+  const $=id=>document.getElementById(id);
+  const ui={run:$('run'),download:$('download'),status:$('status'),official:$('official-count'),clone:$('clone-count'),identical:$('identical-count'),completeness:$('completeness'),missing:$('missing-count'),changed:$('changed-count'),extra:$('extra-count'),verdict:$('verdict'),snapshots:$('snapshot-body'),categories:$('category-body'),missingList:$('missing-list'),changedList:$('changed-list'),extraList:$('extra-list'),filename:$('filename')};
+  let latest=null,latestName=null;
+  const setStatus=(text,cls='')=>{ui.status.textContent=text;ui.status.className=`status ${cls}`.trim();};
+  const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]);
+  const fmtBytes=n=>{if(!Number.isFinite(n))return '—';if(n>=1073741824)return `${(n/1073741824).toFixed(2)} GB`;if(n>=1048576)return `${(n/1048576).toFixed(2)} MB`;if(n>=1024)return `${(n/1024).toFixed(1)} KB`;return `${n} B`;};
+  async function getJson(url){const response=await fetch(url,{headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},cache:'no-store'});if(!response.ok){const body=await response.text();throw new Error(`GitHub API ${response.status}: ${body.slice(0,300)}`);}return response.json();}
+  async function loadTree(spec){
+    const ref=await getJson(`${API}/repos/${spec.owner}/${spec.repo}/git/ref/heads/${encodeURIComponent(spec.ref)}`);
+    const commitSha=ref.object.sha;
+    const commit=await getJson(`${API}/repos/${spec.owner}/${spec.repo}/git/commits/${commitSha}`);
+    const tree=await getJson(`${API}/repos/${spec.owner}/${spec.repo}/git/trees/${commit.tree.sha}?recursive=1`);
+    const files=tree.tree.filter(x=>x.type==='blob').map(x=>({path:x.path,sha:x.sha,size:Number(x.size)||0,mode:x.mode}));
+    return {repository:`${spec.owner}/${spec.repo}`,ref:spec.ref,commitSha,treeSha:commit.tree.sha,truncated:Boolean(tree.truncated),files};
+  }
+  function category(path){
+    const first=path.split('/')[0]||'(root)';
+    if(path.startsWith('.github/'))return '.github';
+    if(path.startsWith('src/core/'))return 'src/core (Rust/WASM)';
+    if(path.startsWith('src/js/'))return 'src/js';
+    if(path.startsWith('src/css/'))return 'src/css';
+    if(path.startsWith('dist/'))return 'dist';
+    if(path.startsWith('examples/'))return 'examples';
+    if(path.startsWith('tests/'))return 'tests';
+    if(path.startsWith('scripts/'))return 'scripts';
+    if(path.startsWith('deploy/'))return 'deploy';
+    if(path.startsWith('assets/'))return 'assets';
+    return first.includes('.')?'(root files)':first;
+  }
+  function summarizeByCategory(official,clone,missing,changed,extra){
+    const names=new Set([...official,...clone].map(x=>category(x.path)));
+    return [...names].sort().map(name=>({category:name,official:official.filter(x=>category(x.path)===name).length,clone:clone.filter(x=>category(x.path)===name).length,missing:missing.filter(x=>category(x.path)===name).length,changed:changed.filter(x=>category(x.path)===name).length,extra:extra.filter(x=>category(x.path)===name).length}));
+  }
+  function renderList(node,items,formatter){node.innerHTML=items.length?items.map(x=>`<li>${formatter(x)}</li>`).join(''):'<li>None</li>';}
+  async function run(){
+    ui.run.disabled=true;ui.download.disabled=true;latest=null;latestName=null;setStatus('Resolving official CDS master tree…','warn');
+    try{
+      const official=await loadTree(SOURCE);
+      setStatus('Resolving Galaxy Viewer beta tree…','warn');
+      const fullLocal=await loadTree(LOCAL);
+      const cloneFiles=fullLocal.files.filter(x=>x.path.startsWith(LOCAL.prefix)).map(x=>({...x,path:x.path.slice(LOCAL.prefix.length),repositoryPath:x.path}));
+      const officialMap=new Map(official.files.map(x=>[x.path,x]));
+      const cloneMap=new Map(cloneFiles.map(x=>[x.path,x]));
+      const identical=[],changed=[],missing=[],extra=[];
+      for(const file of official.files){const local=cloneMap.get(file.path);if(!local)missing.push(file);else if(local.sha===file.sha)identical.push({path:file.path,sha:file.sha,size:file.size});else changed.push({path:file.path,officialSha:file.sha,cloneSha:local.sha,officialSize:file.size,cloneSize:local.size});}
+      for(const file of cloneFiles){if(!officialMap.has(file.path))extra.push(file);}
+      const categories=summarizeByCategory(official.files,cloneFiles,missing,changed,extra);
+      const officialBytes=official.files.reduce((s,x)=>s+x.size,0),cloneBytes=cloneFiles.reduce((s,x)=>s+x.size,0);
+      const present=official.files.length-missing.length;
+      const completeness=official.files.length?present/official.files.length*100:0;
+      const exactness=official.files.length?identical.length/official.files.length*100:0;
+      ui.official.textContent=official.files.length;ui.clone.textContent=cloneFiles.length;ui.identical.textContent=identical.length;ui.completeness.textContent=`${completeness.toFixed(2)}%`;ui.missing.textContent=missing.length;ui.changed.textContent=changed.length;ui.extra.textContent=extra.length;
+      const perfect=!official.truncated&&!fullLocal.truncated&&missing.length===0&&changed.length===0;
+      ui.verdict.textContent=perfect?'100% MATCH':'DIFFERENCES FOUND';ui.verdict.className=perfect?'good':'bad';
+      ui.snapshots.innerHTML=`<tr><td>Official</td><td>${esc(official.repository)}</td><td>${esc(official.ref)}</td><td><code>${official.commitSha}</code></td><td>${official.files.length}</td><td>${fmtBytes(officialBytes)}</td><td>${official.truncated}</td></tr><tr><td>Clone subtree</td><td>${esc(fullLocal.repository)}</td><td>${esc(fullLocal.ref)}</td><td><code>${fullLocal.commitSha}</code></td><td>${cloneFiles.length}</td><td>${fmtBytes(cloneBytes)}</td><td>${fullLocal.truncated}</td></tr>`;
+      ui.categories.innerHTML=categories.map(x=>`<tr><td>${esc(x.category)}</td><td>${x.official}</td><td>${x.clone}</td><td class="${x.missing?'bad':''}">${x.missing}</td><td class="${x.changed?'warn':''}">${x.changed}</td><td>${x.extra}</td></tr>`).join('');
+      renderList(ui.missingList,missing,x=>`${esc(x.path)} <span class="muted">(${fmtBytes(x.size)})</span>`);
+      renderList(ui.changedList,changed,x=>`${esc(x.path)}<br><span class="muted">official ${x.officialSha.slice(0,12)} · clone ${x.cloneSha.slice(0,12)}</span>`);
+      renderList(ui.extraList,extra,x=>`${esc(x.path)} <span class="muted">(${fmtBytes(x.size)})</span>`);
+      const finished=new Date();
+      latest={schema:'galaxy-viewer-aladin-source-audit',version:'v0001',startedAt:new Date().toISOString(),finishedAt:finished.toISOString(),pageUrl:location.href,method:'GitHub recursive tree API; path comparison and Git blob SHA equality',official:{repository:official.repository,ref:official.ref,commitSha:official.commitSha,treeSha:official.treeSha,truncated:official.truncated,fileCount:official.files.length,totalBytes:officialBytes},clone:{repository:fullLocal.repository,ref:fullLocal.ref,prefix:LOCAL.prefix,commitSha:fullLocal.commitSha,treeSha:fullLocal.treeSha,truncated:fullLocal.truncated,fileCount:cloneFiles.length,totalBytes:cloneBytes},summary:{officialFiles:official.files.length,cloneFiles:cloneFiles.length,presentFiles:present,identicalFiles:identical.length,missingFiles:missing.length,changedFiles:changed.length,extraFiles:extra.length,pathCompletenessPercent:completeness,byteIdenticalPercent:exactness,perfectMatch:perfect},categories,missing,changed,extra,identical};
+      latestName=`aladin-source-audit-v0001-${finished.toISOString().replace(/\.\d{3}Z$/,'Z').replace(/:/g,'-')}.json`;ui.filename.textContent=latestName;ui.download.disabled=false;setStatus(`Audit complete: ${missing.length} missing, ${changed.length} changed, ${extra.length} extra.`,perfect?'good':'bad');
+    }catch(error){setStatus(`AUDIT FAILED: ${error instanceof Error?error.message:String(error)}`,'bad');}
+    finally{ui.run.disabled=false;}
+  }
+  function download(){if(!latest)return;const blob=new Blob([JSON.stringify(latest,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=latestName;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  ui.run.addEventListener('click',run);ui.download.addEventListener('click',download);
+})();
+</script>
+</body>
+</html>
