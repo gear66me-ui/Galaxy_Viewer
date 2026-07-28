@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Galaxy Viewer — Local Aladin Test</title>
+
+  <!--
+  GALAXY VIEWER LOCAL ALADIN TEST — v0001
+  Created: 2026-07-28
+
+  Purpose:
+  - Load Aladin JavaScript and CSS exclusively from the Galaxy Viewer GitHub Pages site.
+  - Verify that the cloned browser bundle creates window.A and launches a basic M31 viewer.
+
+  Scope:
+  - Diagnostic only.
+  - No production viewer, launcher, mobile, or service-worker files are referenced or changed.
+  - No Aladin JavaScript or CSS is loaded from the CDS Aladin API host.
+  -->
+
+  <link rel="stylesheet" href="../../../aladin-source-clone/src/css/aladin.css?v=local-test-0001">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050816;
+      --panel: #0d1428;
+      --line: #2c3d69;
+      --text: #eef5ff;
+      --muted: #9dafcc;
+      --good: #62e6a7;
+      --warn: #ffd36a;
+      --bad: #ff7d91;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body { padding: 14px; }
+
+    main {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(1.3rem, 4vw, 2rem);
+    }
+
+    .subtitle {
+      margin: 0 0 12px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    #status {
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #status.good { color: var(--good); }
+    #status.warn { color: var(--warn); }
+    #status.bad { color: var(--bad); }
+
+    #aladin-lite-div {
+      width: 100%;
+      height: min(72vh, 760px);
+      min-height: 430px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    details {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: var(--panel);
+    }
+
+    pre {
+      margin: 10px 0 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Local Aladin Launch Test</h1>
+    <p class="subtitle">JavaScript: /Galaxy_Viewer/aladin-source-clone/dist/aladin.js<br>CSS: /Galaxy_Viewer/aladin-source-clone/src/css/aladin.css</p>
+
+    <div id="status" class="warn" aria-live="polite">Loading the repository-hosted Aladin bundle…</div>
+    <div id="aladin-lite-div" aria-label="Local Aladin viewer test"></div>
+
+    <details>
+      <summary>Diagnostic log</summary>
+      <pre id="log">Page initialized.</pre>
+    </details>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const status = document.getElementById("status");
+      const log = document.getElementById("log");
+      const started = performance.now();
+      const LOCAL_SCRIPT = "../../../aladin-source-clone/dist/aladin.js?v=local-test-0001";
+
+      function write(message) {
+        const elapsed = (performance.now() - started).toFixed(1);
+        log.textContent += `\n[${elapsed} ms] ${message}`;
+      }
+
+      function setStatus(message, type) {
+        status.textContent = message;
+        status.className = type;
+        write(message);
+      }
+
+      window.addEventListener("error", event => {
+        const source = event.filename ? ` — ${event.filename}:${event.lineno || 0}` : "";
+        write(`WINDOW ERROR: ${event.message || "Unknown error"}${source}`);
+      });
+
+      window.addEventListener("unhandledrejection", event => {
+        const reason = event.reason instanceof Error ? event.reason.stack || event.reason.message : String(event.reason);
+        write(`UNHANDLED PROMISE REJECTION: ${reason}`);
+      });
+
+      async function launch() {
+        if (!window.A) {
+          setStatus("FAIL: The local script downloaded, but window.A was not created.", "bad");
+          return;
+        }
+
+        write("PASS: window.A exists.");
+
+        try {
+          if (window.A.init && typeof window.A.init.then === "function") {
+            setStatus("Local bundle loaded. Waiting for A.init…", "warn");
+            await window.A.init;
+            write("PASS: A.init resolved.");
+          } else {
+            write("A.init is not a Promise; continuing with the available API.");
+          }
+
+          setStatus("Initializing the local Aladin viewer on M31…", "warn");
+
+          const aladin = window.A.aladin("#aladin-lite-div", {
+            survey: "P/DSS2/color",
+            target: "M 31",
+            fov: 1.5,
+            cooFrame: "ICRSd",
+            projection: "TAN",
+            reticleColor: "#62D8FF",
+            reticleSize: 22,
+            showLayersControl: true,
+            showCooGridControl: true,
+            showZoomControl: true,
+            showProjectionControl: true,
+            showFullscreenControl: true,
+            showSimbadPointerControl: true
+          });
+
+          window.localAladinTest = aladin;
+
+          window.setTimeout(() => {
+            const canvasCount = document.querySelectorAll("#aladin-lite-div canvas").length;
+            const controlCount = document.querySelectorAll("#aladin-lite-div button, #aladin-lite-div .aladin-btn").length;
+
+            if (canvasCount > 0) {
+              setStatus(`PASS: Repository-hosted Aladin launched. Canvas: ${canvasCount}; visible controls detected: ${controlCount}.`, "good");
+            } else {
+              setStatus("PARTIAL: A.aladin returned, but no viewer canvas was detected after 5 seconds. Open the diagnostic log.", "bad");
+            }
+          }, 5000);
+        } catch (error) {
+          const detail = error instanceof Error ? error.stack || error.message : String(error);
+          setStatus(`FAIL: Local Aladin initialization threw an error.\n${detail}`, "bad");
+        }
+      }
+
+      const script = document.createElement("script");
+      script.src = LOCAL_SCRIPT;
+      script.async = true;
+      script.addEventListener("load", () => {
+        write(`Local script load event fired: ${script.src}`);
+        launch();
+      });
+      script.addEventListener("error", () => {
+        setStatus(`FAIL: Could not download the local Aladin script.\n${script.src}`, "bad");
+      });
+      document.head.appendChild(script);
+    })();
+  </script>
+</body>
+</html>
