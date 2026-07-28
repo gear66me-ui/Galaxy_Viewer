@@ -1,9 +1,9 @@
 from IPython.display import HTML, Javascript, display
 
 # GV-beta-0005A
-# Standalone Galaxy Viewer release based on GV-beta-0004O.
-# Restores the standard Aladin viewer controls and reticle.
-# Contains no custom coordinate module, Target control, SIMBAD proxy, helper, or overlay.
+# Standalone empty-canvas Galaxy Viewer release based on GV-beta-0004O.
+# Contains no controls, icons, reticle, coordinate display, FoV indicator, frame,
+# status bar, catalog, Target, SIMBAD, helper, label, logo, or overlay.
 # No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.
 
 display(HTML("""
@@ -11,13 +11,19 @@ display(HTML("""
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test{width:100%;height:100vh;height:100dvh;position:relative!important}
+#aladin-cosmic-command-test button,
+#aladin-cosmic-command-test select,
+#aladin-cosmic-command-test input,
 #aladin-cosmic-command-test .aladin-location,
 #aladin-cosmic-command-test .aladin-coordinates,
 #aladin-cosmic-command-test .aladin-logo,
 #aladin-cosmic-command-test .aladin-copyright,
 #aladin-cosmic-command-test .aladin-fov,
 #aladin-cosmic-command-test .aladin-status-bar,
-#aladin-cosmic-command-test .aladin-cooFrame{
+#aladin-cosmic-command-test .aladin-cooFrame,
+#aladin-cosmic-command-test [class*="Control"],
+#aladin-cosmic-command-test [class*="control"],
+#aladin-cosmic-command-test [class*="reticle"]{
     display:none!important;
     visibility:hidden!important;
     opacity:0!important;
@@ -41,18 +47,18 @@ display(Javascript(r"""
             const A=window.A;
             const aladin=A.aladin("#aladin-cosmic-command-test",{
                 target:"M 31",survey:"P/DSS2/color",fov:1.5,cooFrame:"ICRSd",projection:"TAN",
-                reticleColor:"#62D8FF",reticleSize:22,showReticle:true,
-                showZoomControl:true,
+                showReticle:false,
+                showZoomControl:false,
                 showFullscreenControl:false,
-                showLayersControl:true,
+                showLayersControl:false,
                 showGotoControl:false,
-                showCooGridControl:true,
+                showCooGridControl:false,
                 showSettingsControl:false,
                 showSelectionModeControl:false,
                 showColorPickerControl:false,
                 showShareControl:false,
                 showSimbadPointerControl:false,
-                showProjectionControl:true,
+                showProjectionControl:false,
                 showStatusBar:false,
                 showFrame:false,
                 showFov:false,
