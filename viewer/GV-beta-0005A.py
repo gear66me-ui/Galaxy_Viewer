@@ -1,8 +1,8 @@
 from IPython.display import HTML, Javascript, display
 
 # GV-beta-0005A
-# Standalone stripped-down Galaxy Viewer release based on GV-beta-0004O.
-# Contains no coordinate module, Target control, SIMBAD control, helper, or viewer control icons.
+# Standalone empty-canvas Galaxy Viewer release based on GV-beta-0004O.
+# Contains no controls, icons, reticle, coordinate display, Target, SIMBAD, helper, label, or overlay.
 # No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.
 
 display(HTML("""
@@ -10,12 +10,20 @@ display(HTML("""
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test{width:100%;height:100vh;height:100dvh;position:relative!important}
-#aladin-cosmic-command-test #gv-version-label{
-    position:absolute!important;left:50%!important;bottom:4px!important;transform:translateX(-50%)!important;
-    z-index:6000!important;padding:2px 7px!important;border:1px solid rgba(255,255,255,.65)!important;
-    border-radius:4px!important;background:rgba(0,0,0,.70)!important;color:#BCEEFF!important;
-    font-family:"Roboto Mono",Consolas,monospace!important;font-size:11px!important;font-weight:700!important;
-    line-height:1.2!important;letter-spacing:.2px!important;white-space:nowrap!important;pointer-events:none!important;
+#aladin-cosmic-command-test button,
+#aladin-cosmic-command-test select,
+#aladin-cosmic-command-test input,
+#aladin-cosmic-command-test .aladin-location,
+#aladin-cosmic-command-test .aladin-coordinates,
+#aladin-cosmic-command-test .aladin-logo,
+#aladin-cosmic-command-test .aladin-copyright,
+#aladin-cosmic-command-test [class*="Control"],
+#aladin-cosmic-command-test [class*="control"],
+#aladin-cosmic-command-test [class*="reticle"]{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
 }
 </style>
 <div id="aladin-cosmic-command-test"></div>
@@ -33,20 +41,14 @@ display(Javascript(r"""
 
         window.A.init.then(() => {
             const A=window.A;
-            const root=document.getElementById("aladin-cosmic-command-test");
             const aladin=A.aladin("#aladin-cosmic-command-test",{
                 target:"M 31",survey:"P/DSS2/color",fov:1.5,cooFrame:"ICRSd",projection:"TAN",
-                reticleColor:"#62D8FF",reticleSize:22,showReticle:true,
+                showReticle:false,
                 showZoomControl:false,showFullscreenControl:false,showLayersControl:false,
                 showGotoControl:false,showCooGridControl:false,showSimbadPointerControl:false,
                 showProjectionControl:false
             });
             window.aladin_cosmic_command_test=aladin;
-
-            const versionLabel=document.createElement("div");
-            versionLabel.id="gv-version-label";
-            versionLabel.textContent="Galaxy Viewer 5A";
-            root.appendChild(versionLabel);
         }).catch(error=>console.error("GV-beta-0005A STARTUP FAILURE:",error));
     }
 
