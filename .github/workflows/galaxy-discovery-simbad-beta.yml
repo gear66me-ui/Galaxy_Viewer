@@ -1,0 +1,118 @@
+name: Galaxy Discovery — SIMBAD Beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      galaxy_count:
+        description: Number of random SIMBAD galaxies to save
+        required: true
+        default: "10"
+        type: choice
+        options:
+          - "10"
+          - "25"
+          - "50"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-discovery-simbad-beta
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out beta branch
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch galaxies from SIMBAD
+        env:
+          GALAXY_COUNT: ${{ inputs.galaxy_count }}
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import os
+          import sys
+          from pathlib import Path
+
+          adapter_path = Path("discovery/simbad_adapter.py")
+          spec = importlib.util.spec_from_file_location("gv_simbad_adapter", adapter_path)
+          if spec is None or spec.loader is None:
+              raise RuntimeError(f"Could not load {adapter_path}")
+
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          spec.loader.exec_module(module)
+
+          count = int(os.environ["GALAXY_COUNT"])
+          galaxies = module.fetch_random_galaxies(
+              limit=count,
+              pool_size=max(500, count * 20),
+          )
+          foundation = module._load_foundation_module()
+          foundation.save_catalog(galaxies)
+          print(f"Saved {len(galaxies)} SIMBAD galaxies to {foundation.CATALOG_PATH}")
+          PY
+
+      - name: Validate generated catalog
+        env:
+          GALAXY_COUNT: ${{ inputs.galaxy_count }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path("discovery/galaxy-catalog-beta.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          expected = int(os.environ["GALAXY_COUNT"])
+          records = payload.get("records", [])
+
+          if payload.get("record_count") != expected:
+              raise SystemExit(
+                  f"record_count={payload.get('record_count')} but expected {expected}"
+              )
+          if len(records) != expected:
+              raise SystemExit(f"records length={len(records)} but expected {expected}")
+
+          required = {"primary_name", "ra_deg", "dec_deg", "source", "preferred_fov_deg"}
+          for index, record in enumerate(records, start=1):
+              missing = required.difference(record)
+              if missing:
+                  raise SystemExit(f"Record {index} is missing: {sorted(missing)}")
+              if record["source"] != "SIMBAD":
+                  raise SystemExit(f"Record {index} has source={record['source']!r}")
+              if not (-90.0 <= float(record["dec_deg"]) <= 90.0):
+                  raise SystemExit(f"Record {index} has invalid Dec")
+              if not (0.0 <= float(record["ra_deg"]) < 360.0):
+                  raise SystemExit(f"Record {index} has invalid RA")
+              if float(record["preferred_fov_deg"]) <= 0:
+                  raise SystemExit(f"Record {index} has invalid FOV")
+
+          print(f"Validated {expected} SIMBAD galaxy records.")
+          PY
+
+      - name: Commit catalog update
+        run: |
+          if git diff --quiet -- discovery/galaxy-catalog-beta.json; then
+            echo "Catalog did not change; nothing to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add discovery/galaxy-catalog-beta.json
+          git commit -m "Update beta galaxy catalog from SIMBAD"
+          git push origin HEAD:beta
