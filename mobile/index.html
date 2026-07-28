@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Galaxy Viewer">
-<title>Galaxy Viewer 4J</title>
+<title>Galaxy Viewer 4K</title>
 <link rel="manifest" href="./manifest.webmanifest?v=0022">
 <link rel="icon" href="./icon.svg?v=0022" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../viewer/artwork/GV-splash-0002.png?v=0022">
@@ -19,7 +19,7 @@ body{font-family:"Roboto Mono",Consolas,monospace}
 </style>
 </head>
 <body>
-<div id="gv-loading">Loading Galaxy Viewer 4J…</div>
+<div id="gv-loading">Loading Galaxy Viewer 4K…</div>
 <script>
 (async()=>{
   if('serviceWorker' in navigator){
@@ -39,20 +39,20 @@ body{font-family:"Roboto Mono",Consolas,monospace}
 
   const loading=document.getElementById('gv-loading');
   try{
-    const response=await fetch('../viewer/GV-beta-0004J.py?v=ac3f801508583c76752da28657dee4eb25f2a0f6',{cache:'no-store'});
-    if(!response.ok)throw new Error(`GV-beta-0004J.py returned HTTP ${response.status}`);
+    const response=await fetch('../viewer/GV-beta-0004K.py?v=729fd57a4c4c5b7a3db945078fb104b6f2317927',{cache:'no-store'});
+    if(!response.ok)throw new Error(`GV-beta-0004K.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
     const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4J HTML and JavaScript blocks.');
+    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4K HTML and JavaScript blocks.');
     loading.remove();
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const script=document.createElement('script');
     script.textContent=jsMatch[1];
     document.body.appendChild(script);
   }catch(error){
-    console.error('Galaxy Viewer 4J mobile launcher failure',error);
-    loading.textContent=`Galaxy Viewer 4J failed to load: ${error.message}`;
+    console.error('Galaxy Viewer 4K mobile launcher failure',error);
+    loading.textContent=`Galaxy Viewer 4K failed to load: ${error.message}`;
   }
 })();
 </script>
