@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Galaxy Viewer — Local Engine Validation</title>
+<style>
+:root{color-scheme:dark;--bg:#050816;--panel:#0d1428;--line:#2c3d69;--text:#eef5ff;--muted:#9dafcc;--good:#62e6a7;--warn:#ffd36a;--bad:#ff7d91;--accent:#62d8ff}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}body{padding:14px}main{width:min(1180px,100%);margin:auto}h1{margin:0 0 4px;font-size:clamp(1.35rem,4vw,2rem)}.muted{color:var(--muted);overflow-wrap:anywhere}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}button{padding:11px 15px;border:1px solid var(--accent);border-radius:10px;background:#112849;color:var(--text);font-weight:700}button:disabled{opacity:.5}.status,.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px;margin-top:12px}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}#viewer-shell{position:relative;height:min(70vh,720px);min-height:460px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#000;margin-top:12px}#viewer-shell>#aladin-cosmic-command-test{height:100%!important;min-height:100%!important}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.metric{border:1px solid var(--line);border-radius:9px;padding:10px;background:#111b32}.metric span{display:block;color:var(--muted);font-size:.8rem}.metric strong{display:block;margin-top:4px;font-size:1rem;overflow-wrap:anywhere}details{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem;color:var(--muted)}@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<main>
+<h1>Galaxy Viewer Local Engine Validation</h1>
+<p class="muted">Loads the real Galaxy Viewer release, replaces only the Aladin engine URLs in memory, and verifies that JavaScript, CSS, and WASM come from Galaxy Viewer GitHub Pages.</p>
+<div class="toolbar"><button id="run" type="button">Run validation</button><button id="download" type="button" disabled>Download JSON report</button></div>
+<div id="status" class="status warn" aria-live="polite">Ready. Production launcher and release files are not modified.</div>
+<div class="panel"><div class="grid">
+<div class="metric"><span>Galaxy Viewer source</span><strong id="source">—</strong></div>
+<div class="metric"><span>Local JS detected</span><strong id="js">—</strong></div>
+<div class="metric"><span>Local CSS detected</span><strong id="css">—</strong></div>
+<div class="metric"><span>Local WASM detected</span><strong id="wasm">—</strong></div>
+<div class="metric"><span>CDS engine resources</span><strong id="cds">—</strong></div>
+<div class="metric"><span>window.A</span><strong id="api">—</strong></div>
+<div class="metric"><span>Viewer canvases</span><strong id="canvas">—</strong></div>
+<div class="metric"><span>Final verdict</span><strong id="verdict">—</strong></div>
+</div></div>
+<div id="viewer-shell"></div>
+<details><summary>Diagnostic log</summary><pre id="log">Page ready.</pre></details>
+</main>
+<script>
+(()=>{
+'use strict';
+const RELEASE='../../../GV-beta-0004O.py?v=local-engine-validation-0001';
+const LOCAL_CSS='../../../../aladin-source-clone/src/css/aladin.css?v=local-engine-validation-0001';
+const LOCAL_JS='../../../../aladin-source-clone/dist/aladin.umd.cjs?v=local-engine-validation-0001';
+const CDS_CSS='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css';
+const CDS_JS='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
+const ENGINE_RE=/aladin\.cds\.unistra\.fr\/AladinLite\/api\//i;
+const runBtn=document.getElementById('run'),downloadBtn=document.getElementById('download'),status=document.getElementById('status'),shell=document.getElementById('viewer-shell'),log=document.getElementById('log');
+const fields={source:document.getElementById('source'),js:document.getElementById('js'),css:document.getElementById('css'),wasm:document.getElementById('wasm'),cds:document.getElementById('cds'),api:document.getElementById('api'),canvas:document.getElementById('canvas'),verdict:document.getElementById('verdict')};
+let report=null,reportName=null,observer=null;
+const write=m=>{log.textContent+='\n'+m};
+const setStatus=(m,c)=>{status.textContent=m;status.className='status '+c;write(m)};
+const resources=()=>performance.getEntriesByType('resource').map(r=>({name:r.name,initiatorType:r.initiatorType,durationMs:r.duration,transferSize:r.transferSize,encodedBodySize:r.encodedBodySize,decodedBodySize:r.decodedBodySize}));
+const cleanup=()=>{if(observer){observer.disconnect();observer=null}document.querySelectorAll('link[data-gv-validation],script[data-gv-validation]').forEach(n=>n.remove());shell.innerHTML='';delete window.A;delete window.aladin_cosmic_command_test;performance.clearResourceTimings();};
+function save(){if(!report)return;const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=reportName;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+async function run(){
+cleanup();runBtn.disabled=true;downloadBtn.disabled=true;Object.values(fields).forEach(f=>f.textContent='—');log.textContent='Validation started.';const started=performance.now(),startedAt=new Date().toISOString(),errors=[];
+const onError=e=>errors.push({type:'error',message:e.message,filename:e.filename,line:e.lineno});const onReject=e=>errors.push({type:'unhandledrejection',message:String(e.reason)});addEventListener('error',onError);addEventListener('unhandledrejection',onReject);
+try{
+setStatus('Fetching the current Galaxy Viewer release…','warn');
+const response=await fetch(RELEASE,{cache:'no-store'});if(!response.ok)throw new Error('Galaxy Viewer source HTTP '+response.status);let source=await response.text();fields.source.textContent='GV-beta-0004O.py';write('Fetched '+source.length+' characters.');
+source=source.replaceAll(CDS_CSS,LOCAL_CSS).replaceAll(CDS_JS,LOCAL_JS);
+if(source.includes(CDS_CSS)||source.includes(CDS_JS))throw new Error('CDS engine URL remained after in-memory rewrite.');
+const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);if(!htmlMatch||!jsMatch)throw new Error('Could not extract Galaxy Viewer HTML/JavaScript blocks.');
+const wrapped=document.createElement('div');wrapped.innerHTML=htmlMatch[1];wrapped.querySelectorAll('link[rel="stylesheet"]').forEach(l=>l.dataset.gvValidation='1');while(wrapped.firstChild)shell.appendChild(wrapped.firstChild);
+observer=new PerformanceObserver(()=>{});observer.observe({type:'resource',buffered:true});
+const script=document.createElement('script');script.dataset.gvValidation='1';script.textContent=jsMatch[1];document.body.appendChild(script);
+setStatus('Galaxy Viewer is launching with the local engine…','warn');
+await new Promise(r=>setTimeout(r,9000));
+const all=resources();const localJs=all.filter(r=>r.name.includes('/aladin-source-clone/dist/aladin.umd.cjs'));const localCss=all.filter(r=>r.name.includes('/aladin-source-clone/src/css/aladin.css'));const localWasm=all.filter(r=>r.name.includes('/aladin-source-clone/dist/assets/core_bg.wasm'));const cdsEngine=all.filter(r=>ENGINE_RE.test(r.name));const canvases=shell.querySelectorAll('canvas').length;const controls=shell.querySelectorAll('button,.aladin-btn').length;const api=!!window.A;
+fields.js.textContent=localJs.length?'YES':'NO';fields.css.textContent=localCss.length?'YES':'NO';fields.wasm.textContent=localWasm.length?'YES':'NO';fields.cds.textContent=String(cdsEngine.length);fields.api.textContent=api?'AVAILABLE':'MISSING';fields.canvas.textContent=String(canvases);
+const passed=localJs.length>0&&localCss.length>0&&localWasm.length>0&&cdsEngine.length===0&&api&&canvases>0&&errors.length===0;fields.verdict.textContent=passed?'PASS':'FAIL';fields.verdict.className=passed?'good':'bad';
+const finished=new Date();report={schema:'galaxy-viewer-local-engine-validation',version:'v0001',startedAt,finishedAt:finished.toISOString(),durationMs:performance.now()-started,pageUrl:location.href,userAgent:navigator.userAgent,releaseUrl:new URL(RELEASE,location.href).href,expected:{css:new URL(LOCAL_CSS,location.href).href,js:new URL(LOCAL_JS,location.href).href,wasmPattern:'/aladin-source-clone/dist/assets/core_bg.wasm'},checks:{localJsDetected:localJs.length>0,localCssDetected:localCss.length>0,localWasmDetected:localWasm.length>0,cdsEngineResourceCount:cdsEngine.length,apiAvailable:api,canvasCount:canvases,controlCount:controls,errorCount:errors.length,passed},localJs,localCss,localWasm,cdsEngineResources:cdsEngine,errors,resources:all};reportName='galaxy-viewer-local-engine-validation-v0001-'+finished.toISOString().replace(/\.\d{3}Z$/,'Z').replace(/:/g,'-')+'.json';downloadBtn.disabled=false;
+setStatus(passed?'PASS — GALAXY VIEWER ENGINE FULLY SELF-HOSTED':'FAIL — Open the diagnostic log and download the report',''+(passed?'good':'bad'));
+}catch(error){errors.push({type:'exception',message:error&&error.stack||String(error)});setStatus('FAIL — '+(error.message||String(error)),'bad');write(error.stack||String(error));}
+finally{removeEventListener('error',onError);removeEventListener('unhandledrejection',onReject);runBtn.disabled=false;}
+}
+runBtn.addEventListener('click',run);downloadBtn.addEventListener('click',save);
+})();
+</script>
+</body>
+</html>
