@@ -40,7 +40,25 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
       const icon=document.querySelector('button.gv-simbad-proxy img.gv-target-trademark');
       if(icon)icon.src=vectorIconUrl;
     };
+    const alignUpperLeftControls=()=>{
+      const root=document.getElementById('aladin-cosmic-command-test');
+      if(!root)return;
+      const layers=root.querySelector('.gv-layers');
+      const world=root.querySelector('.gv-world');
+      const coordinate=root.querySelector('.gv-native-coordinate-target-row')||root.querySelector('.aladin-location')||root.querySelector('.aladin-coordinates');
+      if(!layers||!world||!coordinate)return;
+      let group=layers;
+      while(group.parentElement&&group.parentElement!==root&&!group.parentElement.contains(world))group=group.parentElement;
+      if(group.parentElement&&group.parentElement!==root&&group.parentElement.contains(world))group=group.parentElement;
+      if(group===root)return;
+      const rootRect=root.getBoundingClientRect();
+      const coordinateRect=coordinate.getBoundingClientRect();
+      group.style.setProperty('left',Math.round(coordinateRect.left-rootRect.left)+'px','important');
+      group.style.setProperty('right','auto','important');
+    };
     [250,700,1400,2400].forEach(delay=>setTimeout(applyVectorIcon,delay));
+    [300,800,1500,2500].forEach(delay=>setTimeout(alignUpperLeftControls,delay));
+    window.addEventListener('resize',alignUpperLeftControls);
     const splashDelay=Math.max(0,2200-(Date.now()-splashStarted));
     setTimeout(()=>document.body.classList.add('gv-ready'),splashDelay);
   }catch(error){
