@@ -76,7 +76,7 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
 
   const loading=document.getElementById('gv-loading');
   try{
-    const response=await fetch('../viewer/GV-beta-0004O.py?v=b8274b7eea6fd1e381f1dcf84cf920f1588b3d57',{cache:'no-store'});
+    const response=await fetch('../viewer/GV-beta-0004O.py?v=08ee11eb392cd909b229a93a0554130f24499cb9',{cache:'no-store'});
     if(!response.ok)throw new Error(`GV-beta-0004O.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
