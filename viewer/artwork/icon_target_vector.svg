@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="96 96 320 320" role="img" aria-label="Galaxy Viewer target icon">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#45E7FF"/>
+      <stop offset="0.52" stop-color="#4F9DFF"/>
+      <stop offset="1" stop-color="#7575FF"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="116" fill="#000000" stroke="#FF6B2D" stroke-width="14.3"/>
+  <ellipse cx="256" cy="256" rx="126" ry="46" fill="none" stroke="url(#ring)" stroke-width="19.8" transform="rotate(-18 256 256)"/>
+  <ellipse cx="256" cy="256" rx="62" ry="24" fill="none" stroke="#45E7FF" stroke-width="12.1" transform="rotate(-18 256 256)"/>
+  <circle cx="256" cy="256" r="18" fill="#7575FF"/>
+  <path d="M256 104v62M256 346v62M104 256h62M346 256h62" fill="none" stroke="#FFFFFF" stroke-width="13.2" stroke-linecap="round"/>
+</svg>
