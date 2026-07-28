@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
 <title>Galaxy Viewer 5A Beta</title>
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5A-raw-002" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5A-raw-002">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5A-raw-003" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5A-raw-003">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -18,17 +18,17 @@ body{font-family:"Roboto Mono",Consolas,monospace}
 .gv-startup-message{position:relative;z-index:2;margin-top:18px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,.72);color:#62D8FF;font-size:13px;font-weight:700;text-align:center}
 #gv-splash-stage .gv-startup-message{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;white-space:nowrap}
 body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
-#gv-loading-error{display:none;padding:18px;color:#ff7b8b;white-space:pre-wrap}
+#gv-loading-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#ff7b8b;white-space:pre-wrap;font:700 14px/1.5 "Roboto Mono",Consolas,monospace}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important;min-height:100vh!important;min-height:100svh!important;min-height:100dvh!important}
 </style>
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../viewer/artwork/icon_target_vector.svg?v=5A-raw-002" alt="Galaxy Viewer trademark">
+  <img src="../../viewer/artwork/icon_target_vector.svg?v=5A-raw-003" alt="Galaxy Viewer trademark">
   <div class="gv-startup-message">Starting Galaxy Viewer Beta 5A…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5A-raw-002" alt="Galaxy Viewer splash artwork">
+  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5A-raw-003" alt="Galaxy Viewer splash artwork">
   <div class="gv-startup-message">Loading Galaxy Viewer Beta 5A…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -36,40 +36,60 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 (async()=>{
   const TRADEMARK_MS=1000;
   const TOTAL_STARTUP_MS=4200;
+  const VIEWER_TIMEOUT_MS=20000;
   const started=performance.now();
   const trademarkStage=document.getElementById('gv-trademark-stage');
   const splashStage=document.getElementById('gv-splash-stage');
   const errorBox=document.getElementById('gv-loading-error');
   const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
-  const viewerReady=(async()=>{
-    const response=await fetch('../../viewer/GV-beta-0005A.py?v=5A-raw-002',{cache:'no-store'});
+  const showError=message=>{
+    trademarkStage.hidden=true;
+    splashStage.hidden=true;
+    errorBox.style.display='block';
+    errorBox.textContent=message;
+  };
+
+  const waitForViewer=()=>new Promise((resolve,reject)=>{
+    const deadline=performance.now()+VIEWER_TIMEOUT_MS;
+    const check=()=>{
+      const root=document.getElementById('aladin-cosmic-command-test');
+      const hasCanvas=!!root?.querySelector('canvas');
+      const hasViewer=!!window.aladin_cosmic_command_test;
+      if(hasCanvas&&hasViewer){resolve();return;}
+      if(performance.now()>=deadline){
+        reject(new Error('The Aladin viewer did not create a canvas within 20 seconds.'));
+        return;
+      }
+      setTimeout(check,100);
+    };
+    check();
+  });
+
+  try{
+    const response=await fetch('../../viewer/GV-beta-0005A.py?v=5A-raw-003',{cache:'no-store'});
     if(!response.ok)throw new Error(`GV-beta-0005A.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
     const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
     if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 5A HTML and JavaScript blocks.');
+
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const script=document.createElement('script');
     script.textContent=jsMatch[1];
     document.body.appendChild(script);
-  })();
 
-  await sleep(TRADEMARK_MS);
-  trademarkStage.hidden=true;
-  splashStage.hidden=false;
+    await sleep(TRADEMARK_MS);
+    trademarkStage.hidden=true;
+    splashStage.hidden=false;
 
-  try{
-    await viewerReady;
+    await waitForViewer();
     await sleep(Math.max(0,TOTAL_STARTUP_MS-(performance.now()-started)));
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
     console.error('Galaxy Viewer 5A beta startup failure',error);
-    trademarkStage.hidden=true;
-    splashStage.hidden=true;
-    errorBox.style.display='block';
-    errorBox.textContent=`Galaxy Viewer 5A beta failed to load: ${error.message}`;
+    showError(`Galaxy Viewer 5A beta failed to load:\n${error.message}`);
   }
 })();
 </script>
