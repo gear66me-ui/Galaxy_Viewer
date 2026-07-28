@@ -1,0 +1,23 @@
+{
+  "id": "/Galaxy_Viewer/mobile/beta/",
+  "name": "Galaxy Viewer Beta 5A",
+  "short_name": "Galaxy Viewer Beta",
+  "description": "Galaxy Viewer beta mobile application",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5A-pwa-001",
+  "scope": "/Galaxy_Viewer/mobile/beta/",
+  "display": "standalone",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "../../viewer/artwork/icon_target_vector.svg?v=5A-pwa-001",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
