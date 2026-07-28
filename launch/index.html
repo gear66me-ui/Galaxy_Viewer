@@ -25,10 +25,24 @@ small{display:block;margin-top:20px;color:#7d8796;line-height:1.4}
 <h1>Galaxy Viewer</h1>
 <p>Pick how you want to open it.</p>
 <div class="choices">
-<a class="primary" href="../mobile/">Open Mobile App</a>
+<a class="primary" id="gv-open-mobile" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/">Open Mobile App</a>
 <a class="secondary" href="./4N/">Open Web Browser</a>
 </div>
-<small>The mobile option opens the installed Galaxy Viewer experience when available. The web option opens release 4N in your browser.</small>
+<small>The mobile option attempts to open the installed Galaxy Viewer app on Android and falls back to the mobile website. The web option opens release 4N in your browser.</small>
 </main>
+<script>
+(() => {
+  const mobileButton = document.getElementById('gv-open-mobile');
+  const mobileUrl = 'https://gear66me-ui.github.io/Galaxy_Viewer/mobile/';
+  const androidIntent = 'intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/#Intent;scheme=https;S.browser_fallback_url=https%3A%2F%2Fgear66me-ui.github.io%2FGalaxy_Viewer%2Fmobile%2F;end';
+
+  mobileButton.addEventListener('click', event => {
+    if (/Android/i.test(navigator.userAgent)) {
+      event.preventDefault();
+      window.location.href = androidIntent;
+    }
+  });
+})();
+</script>
 </body>
 </html>
