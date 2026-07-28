@@ -2,7 +2,8 @@ from IPython.display import HTML, Javascript, display
 
 # GV-beta-0005A
 # Standalone empty-canvas Galaxy Viewer release based on GV-beta-0004O.
-# Contains no controls, icons, reticle, coordinate display, Target, SIMBAD, helper, label, or overlay.
+# Contains no controls, icons, reticle, coordinate display, FoV indicator, frame,
+# status bar, catalog, Target, SIMBAD, helper, label, logo, or overlay.
 # No earlier Galaxy Viewer file is imported, downloaded, patched, or executed.
 
 display(HTML("""
@@ -17,6 +18,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test .aladin-coordinates,
 #aladin-cosmic-command-test .aladin-logo,
 #aladin-cosmic-command-test .aladin-copyright,
+#aladin-cosmic-command-test .aladin-fov,
+#aladin-cosmic-command-test .aladin-status-bar,
+#aladin-cosmic-command-test .aladin-cooFrame,
 #aladin-cosmic-command-test [class*="Control"],
 #aladin-cosmic-command-test [class*="control"],
 #aladin-cosmic-command-test [class*="reticle"]{
@@ -44,9 +48,24 @@ display(Javascript(r"""
             const aladin=A.aladin("#aladin-cosmic-command-test",{
                 target:"M 31",survey:"P/DSS2/color",fov:1.5,cooFrame:"ICRSd",projection:"TAN",
                 showReticle:false,
-                showZoomControl:false,showFullscreenControl:false,showLayersControl:false,
-                showGotoControl:false,showCooGridControl:false,showSimbadPointerControl:false,
-                showProjectionControl:false
+                showZoomControl:false,
+                showFullscreenControl:false,
+                showLayersControl:false,
+                showGotoControl:false,
+                showCooGridControl:false,
+                showSettingsControl:false,
+                showSelectionModeControl:false,
+                showColorPickerControl:false,
+                showShareControl:false,
+                showSimbadPointerControl:false,
+                showProjectionControl:false,
+                showStatusBar:false,
+                showFrame:false,
+                showFov:false,
+                showCooLocation:false,
+                showContextMenu:false,
+                showCatalog:false,
+                showCooGrid:false
             });
             window.aladin_cosmic_command_test=aladin;
         }).catch(error=>console.error("GV-beta-0005A STARTUP FAILURE:",error));
