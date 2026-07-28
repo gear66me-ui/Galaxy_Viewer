@@ -12,6 +12,7 @@ import csv
 import importlib.util
 import io
 import random
+import sys
 from pathlib import Path
 from typing import Iterable
 from urllib.error import HTTPError, URLError
@@ -30,11 +31,21 @@ class SimbadAdapterError(RuntimeError):
 
 
 def _load_foundation_module():
-    spec = importlib.util.spec_from_file_location("gv_discovery_foundation", FOUNDATION_PATH)
+    module_name = "gv_discovery_foundation"
+    if module_name in sys.modules:
+        return sys.modules[module_name]
+
+    spec = importlib.util.spec_from_file_location(module_name, FOUNDATION_PATH)
     if spec is None or spec.loader is None:
         raise SimbadAdapterError(f"Could not load discovery foundation: {FOUNDATION_PATH}")
+
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    sys.modules[module_name] = module
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        sys.modules.pop(module_name, None)
+        raise
     return module
 
 
@@ -54,8 +65,6 @@ def _build_adql(pool_size: int) -> str:
     if pool_size < 1:
         raise ValueError("pool_size must be at least 1")
 
-    # SIMBAD object type GGG represents the galaxy hierarchy. The direct TAP
-    # query uses the basic table and requests only fields needed by step two.
     return f"""
 SELECT TOP {pool_size}
     main_id,
@@ -127,7 +136,6 @@ def _normalize_rows(rows: Iterable[dict[str, str]]):
         major_axis = _optional_float(row.get("galdim_majaxis"))
         minor_axis = _optional_float(row.get("galdim_minaxis"))
         morphology = (row.get("morph_type") or "").strip() or None
-        otype = (row.get("otype") or "G").strip() or "G"
 
         records.append(
             GalaxyCandidate(
