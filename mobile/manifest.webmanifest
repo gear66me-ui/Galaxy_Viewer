@@ -14,7 +14,7 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "../viewer/artwork/icon.svg",
+      "src": "../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
