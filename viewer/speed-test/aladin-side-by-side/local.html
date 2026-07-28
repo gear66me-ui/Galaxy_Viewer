@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Local Aladin Diagnostic</title>
+  <link rel="stylesheet" href="../../../aladin-source-clone/dist/aladin.css?compare=v0001">
+  <style>html,body{margin:0;background:#02040b;color:#eef5ff;font-family:system-ui,sans-serif}#status{padding:8px 10px;background:#0d1428;font-size:13px;min-height:20px}#aladin{height:440px;background:#000}.good{color:#62e6a7}.bad{color:#ff7d91}.warn{color:#ffd36a}</style>
+</head>
+<body>
+<div id="status" class="warn">Loading GitHub-hosted Aladin UMD bundle…</div>
+<div id="aladin"></div>
+<script>
+(() => {
+  'use strict';
+  const SOURCE='github';
+  const SCRIPT='../../../aladin-source-clone/dist/aladin.umd.cjs?compare=v0001-'+Date.now();
+  const start=performance.now();
+  const status=document.getElementById('status');
+  const report={source:SOURCE,url:new URL(SCRIPT,location.href).href,startedAt:new Date().toISOString(),milestones:{pageStart:0},errors:[],resources:[]};
+  const mark=(name)=>{report.milestones[name]=performance.now()-start; send('progress');};
+  const set=(text,cls)=>{status.textContent=text;status.className=cls;};
+  const collect=()=>{report.resources=performance.getEntriesByType('resource').map(r=>({name:r.name,durationMs:r.duration,transferSize:r.transferSize,encodedBodySize:r.encodedBodySize,decodedBodySize:r.decodedBodySize,initiatorType:r.initiatorType}));};
+  const send=(type='result')=>{collect();parent.postMessage({type:'aladin-diagnostic',event:type,report},'*');};
+  addEventListener('error',e=>{report.errors.push({message:e.message,filename:e.filename,line:e.lineno});send('progress');});
+  addEventListener('unhandledrejection',e=>{report.errors.push({message:String(e.reason)});send('progress');});
+  async function launch(){
+    mark('scriptLoaded');
+    if(!window.A){set('FAIL: UMD script loaded but window.A is missing.','bad');report.ok=false;report.failure='window.A missing';send();return;}
+    mark('apiAvailable');
+    try{
+      if(A.init&&typeof A.init.then==='function'){await A.init;mark('initResolved');}
+      const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'M 31',fov:1.5,cooFrame:'ICRSd',projection:'TAN',showLayersControl:true,showCooGridControl:true,showZoomControl:true,showProjectionControl:true,showFullscreenControl:true,showSimbadPointerControl:true});
+      window.testAladin=aladin;mark('aladinCreated');
+      const observer=new MutationObserver(()=>{if(document.querySelector('#aladin canvas')){mark('canvasDetected');observer.disconnect();}});observer.observe(document.getElementById('aladin'),{childList:true,subtree:true});
+      setTimeout(()=>{const canvas=document.querySelectorAll('#aladin canvas').length;const controls=document.querySelectorAll('#aladin button,#aladin .aladin-btn').length;report.canvasCount=canvas;report.controlCount=controls;report.ok=canvas>0;mark('inspectionComplete');set(report.ok?`PASS: Local viewer launched — ${canvas} canvas, ${controls} controls.`:'PARTIAL: API loaded but no canvas detected. ',report.ok?'good':'bad');send();},6000);
+    }catch(error){report.ok=false;report.failure=error&&error.stack||String(error);report.errors.push({message:report.failure});set('FAIL: '+report.failure,'bad');send();}
+  }
+  const s=document.createElement('script');s.src=SCRIPT;s.async=true;s.onload=launch;s.onerror=()=>{report.ok=false;report.failure='Script download failed';mark('scriptFailed');set('FAIL: Could not download local UMD bundle.','bad');send();};document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
