@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Galaxy Viewer">
-<title>Galaxy Viewer 4L</title>
+<title>Galaxy Viewer 4M</title>
 <link rel="manifest" href="./manifest.webmanifest?v=0022">
 <link rel="icon" href="./icon.svg?v=0022" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../viewer/artwork/GV-splash-0002.png?v=0022">
@@ -41,24 +41,24 @@ body{font-family:"Roboto Mono",Consolas,monospace}
   flex:0 0 34px!important;
 }
 #aladin-cosmic-command-test button.gv-simbad-proxy img.gv-target-trademark{
-  width:34px!important;
-  height:34px!important;
-  min-width:34px!important;
-  min-height:34px!important;
-  max-width:34px!important;
-  max-height:34px!important;
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  min-height:32px!important;
+  max-width:32px!important;
+  max-height:32px!important;
 }
 </style>
 </head>
 <body>
-<div id="gv-loading">Loading Galaxy Viewer 4L…</div>
+<div id="gv-loading">Loading Galaxy Viewer 4M…</div>
 <script>
 (async()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load',async()=>{
       try{
         const registration=await navigator.serviceWorker.register(
-          './service-worker.js?maintenance=0021-refresh-4',
+          './service-worker.js?maintenance=0021-refresh-5',
           {updateViaCache:'none'}
         );
         await registration.update();
@@ -71,20 +71,20 @@ body{font-family:"Roboto Mono",Consolas,monospace}
 
   const loading=document.getElementById('gv-loading');
   try{
-    const response=await fetch('../viewer/GV-beta-0004L.py?v=8ae8991db0bd16aa6179b41612676fe1ded20dc9',{cache:'no-store'});
-    if(!response.ok)throw new Error(`GV-beta-0004L.py returned HTTP ${response.status}`);
+    const response=await fetch('../viewer/GV-beta-0004M.py?v=68f81eca897bc76c6eece145ca126c21b29983d3',{cache:'no-store'});
+    if(!response.ok)throw new Error(`GV-beta-0004M.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
     const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4L HTML and JavaScript blocks.');
+    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 4M HTML and JavaScript blocks.');
     loading.remove();
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const script=document.createElement('script');
     script.textContent=jsMatch[1];
     document.body.appendChild(script);
   }catch(error){
-    console.error('Galaxy Viewer 4L mobile launcher failure',error);
-    loading.textContent=`Galaxy Viewer 4L failed to load: ${error.message}`;
+    console.error('Galaxy Viewer 4M mobile launcher failure',error);
+    loading.textContent=`Galaxy Viewer 4M failed to load: ${error.message}`;
   }
 })();
 </script>
