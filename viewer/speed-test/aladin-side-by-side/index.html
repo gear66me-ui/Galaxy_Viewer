@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Galaxy Viewer — Aladin Side-by-Side Test</title>
+  <style>
+    :root{color-scheme:dark;--bg:#050816;--panel:#0d1428;--line:#2c3d69;--text:#eef5ff;--muted:#9dafcc;--good:#62e6a7;--bad:#ff7d91;--accent:#62d8ff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}main{width:min(1500px,100%);margin:auto;padding:16px}h1{margin:0 0 4px}.muted{color:var(--muted)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}button{padding:10px 14px;border-radius:9px;border:1px solid var(--accent);background:#112849;color:var(--text);font-weight:700}.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}.card h2{font-size:1rem;margin:0;padding:10px 12px;border-bottom:1px solid var(--line)}iframe{width:100%;height:488px;border:0;background:#000}.summary{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel)}table{width:100%;border-collapse:collapse}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:.9rem}.good{color:var(--good)}.bad{color:var(--bad)}code{overflow-wrap:anywhere}.status{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}@media(max-width:900px){.cards{grid-template-columns:1fr}iframe{height:500px}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Aladin Side-by-Side Diagnostic</h1>
+  <p class="muted">GitHub-hosted UMD clone versus official CDS 3.8.2. Both launch M31 with the same viewer options.</p>
+  <div class="toolbar"><button id="run" type="button">Run fresh comparison</button><button id="download" type="button" disabled>Download report</button></div>
+  <div id="status" class="status">Ready. Tap “Run fresh comparison.”</div>
+  <div class="cards">
+    <section class="card"><h2>Galaxy Viewer local host</h2><iframe id="local" title="GitHub-hosted Aladin"></iframe></section>
+    <section class="card"><h2>Official CDS 3.8.2</h2><iframe id="cds" title="CDS-hosted Aladin"></iframe></section>
+  </div>
+  <section class="summary">
+    <h2>Measured milestones</h2>
+    <table><thead><tr><th>Metric</th><th>Local GitHub</th><th>CDS</th><th>Faster</th></tr></thead><tbody id="rows"><tr><td colspan="4">No completed run.</td></tr></tbody></table>
+    <p class="muted">The JSON report includes all Resource Timing entries visible to each frame, errors, URLs, transfer sizes where the browser exposes them, and milestone timestamps.</p>
+    <div><strong>Report:</strong> <code id="filename">—</code></div>
+  </section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const frames={github:document.getElementById('local'),cds:document.getElementById('cds')};
+  const reports={github:null,cds:null};
+  const run=document.getElementById('run'),download=document.getElementById('download'),status=document.getElementById('status'),rows=document.getElementById('rows'),filename=document.getElementById('filename');
+  let latest=null,latestName=null,startedAt=null;
+  const metrics=[['Script loaded','scriptLoaded'],['API available','apiAvailable'],['A.init resolved','initResolved'],['A.aladin created','aladinCreated'],['Canvas detected','canvasDetected'],['Final inspection','inspectionComplete']];
+  const fmt=v=>Number.isFinite(v)?`${v.toFixed(1)} ms`:'—';
+  function render(){
+    rows.innerHTML='';
+    for(const [label,key] of metrics){const a=reports.github?.milestones?.[key],b=reports.cds?.milestones?.[key];let winner='—';if(Number.isFinite(a)&&Number.isFinite(b))winner=Math.abs(a-b)<1?'Tie':a<b?'Local':'CDS';const tr=document.createElement('tr');tr.innerHTML=`<td>${label}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${winner}</td>`;rows.appendChild(tr);}
+    if(reports.github&&reports.cds){
+      const finished=new Date();latest={schema:'galaxy-viewer-aladin-side-by-side',version:'v0001',startedAt,finishedAt:finished.toISOString(),pageUrl:location.href,userAgent:navigator.userAgent,local:reports.github,cds:reports.cds};latestName=`aladin-side-by-side-v0001-${finished.toISOString().replace(/\.\d{3}Z$/,'Z').replace(/:/g,'-')}.json`;filename.textContent=latestName;download.disabled=false;status.textContent=`Complete. Local: ${reports.github.ok?'PASS':'FAIL'}; CDS: ${reports.cds.ok?'PASS':'FAIL'}.`;
+    }
+  }
+  addEventListener('message',event=>{const data=event.data;if(!data||data.type!=='aladin-diagnostic'||!data.report)return;reports[data.report.source]=data.report;render();});
+  function start(){reports.github=null;reports.cds=null;latest=null;latestName=null;download.disabled=true;filename.textContent='—';rows.innerHTML='<tr><td colspan="4">Test running…</td></tr>';startedAt=new Date().toISOString();status.textContent='Running both viewers independently…';const stamp=Date.now();frames.github.src=`local.html?run=${stamp}`;frames.cds.src=`cds.html?run=${stamp}`;}
+  function save(){if(!latest)return;const blob=new Blob([JSON.stringify(latest,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=latestName;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  run.addEventListener('click',start);download.addEventListener('click',save);
+})();
+</script>
+</body>
+</html>
