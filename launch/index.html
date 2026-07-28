@@ -26,12 +26,18 @@ small{display:block;margin-top:18px;color:#a7b8c8;line-height:1.45}
 <main>
 <img src="../viewer/artwork/GV-splash-0002.png" alt="Galaxy Viewer">
 <h1>Galaxy Viewer</h1>
-<p>Choose how to launch Galaxy Viewer GV-beta-0004J.</p>
+<p>Launch the latest Galaxy Viewer release, GV-beta-0004J.</p>
 <div class="actions">
-<a class="primary" href="./4J/?v=a4e474c82611eef7b16d3b31eb2ab6b8c34be898" target="_blank" rel="noopener">Launch Galaxy Viewer App</a>
-<a class="secondary" href="./4J/?v=a4e474c82611eef7b16d3b31eb2ab6b8c34be898">Open in This Browser</a>
+<a id="launch-app" class="primary" href="https://gear66me-ui.github.io/Galaxy_Viewer/launch/4J/">Launch Galaxy Viewer App</a>
+<a class="secondary" href="https://gear66me-ui.github.io/Galaxy_Viewer/launch/4J/">Open in This Browser</a>
 </div>
-<small>The launcher routes to the browser build generated directly from GV-beta-0004J.py on the beta branch.</small>
+<small>This launcher always routes to the current public Galaxy Viewer release.</small>
 </main>
+<script>
+document.getElementById('launch-app').addEventListener('click',function(event){
+  event.preventDefault();
+  window.location.assign(this.href);
+});
+</script>
 </body>
 </html>
