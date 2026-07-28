@@ -8,7 +8,7 @@ The visible Galaxy Viewer release remains Mobile 0021. The maintenance suffix be
 only to force Chrome to install a fresh application cache without renumbering the release.
 
 Previous cache declaration retained for traceability:
-const CACHE_NAME = 'galaxy-viewer-mobile-0021-refresh-2';
+const CACHE_NAME = 'galaxy-viewer-mobile-0021-refresh-3';
 
 Replacement behavior:
 - create a fresh Mobile 0021 maintenance cache;
@@ -17,12 +17,12 @@ Replacement behavior:
 - claim open Galaxy Viewer clients;
 - use the network first and retain the cache only as an offline fallback.
 */
-const CACHE_NAME = 'galaxy-viewer-mobile-0021-refresh-3';
+const CACHE_NAME = 'galaxy-viewer-mobile-0021-refresh-4';
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.webmanifest',
-  '../viewer/artwork/icon.svg',
+  './manifest.webmanifest?v=829faf3594e85d4ff529d3c2b069a309d580b054',
+  '../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054',
   '../viewer/artwork/GV-splash-0003.svg'
 ];
 
