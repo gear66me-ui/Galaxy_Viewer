@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="96 96 320 320" role="img" aria-label="Galaxy Viewer target icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Galaxy Viewer target icon">
   <defs>
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="ring" x1="4.5" y1="10" x2="27.5" y2="22" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#45E7FF"/>
       <stop offset="0.52" stop-color="#4F9DFF"/>
       <stop offset="1" stop-color="#7575FF"/>
     </linearGradient>
   </defs>
-  <circle cx="256" cy="256" r="116" fill="#000000" stroke="#FF6B2D" stroke-width="14.3"/>
-  <ellipse cx="256" cy="256" rx="126" ry="46" fill="none" stroke="url(#ring)" stroke-width="19.8" transform="rotate(-18 256 256)"/>
-  <ellipse cx="256" cy="256" rx="62" ry="24" fill="none" stroke="#45E7FF" stroke-width="12.1" transform="rotate(-18 256 256)"/>
-  <circle cx="256" cy="256" r="18" fill="#7575FF"/>
-  <path d="M256 104v62M256 346v62M104 256h62M346 256h62" fill="none" stroke="#FFFFFF" stroke-width="13.2" stroke-linecap="round"/>
+  <circle cx="16" cy="16" r="9.5" fill="#000000" stroke="#FF6B2D" stroke-width="1.8"/>
+  <ellipse cx="16" cy="16" rx="11.5" ry="4.2" fill="none" stroke="url(#ring)" stroke-width="2.2" transform="rotate(-18 16 16)"/>
+  <ellipse cx="16" cy="16" rx="5.7" ry="2.2" fill="none" stroke="#45E7FF" stroke-width="1.6" transform="rotate(-18 16 16)"/>
+  <circle cx="16" cy="16" r="1.6" fill="#7575FF"/>
+  <path d="M16 2.5V7 M16 25V29.5 M2.5 16H7 M25 16H29.5" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
 </svg>
