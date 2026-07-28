@@ -16,7 +16,7 @@ img{display:block;width:min(100%,420px);max-height:48vh;object-fit:contain;margi
 h1{margin:0 0 10px;font-size:clamp(28px,7vw,44px)}
 p{margin:0 auto 22px;max-width:44ch;color:#d5eaff;line-height:1.5}
 .actions{display:grid;gap:12px}
-a{display:flex;min-height:56px;align-items:center;justify-content:center;padding:14px 18px;border-radius:14px;font-weight:750;text-decoration:none}
+a{display:flex;min-height:56px;align-items:center;justify-content:center;padding:14px 18px;border-radius:14px;font-weight:750;text-decoration:none;touch-action:manipulation}
 .primary{background:#45e7ff;color:#001019}
 .secondary{border:1px solid #75bfff;color:#dff7ff;background:rgba(45,120,255,.12)}
 small{display:block;margin-top:18px;color:#a7b8c8;line-height:1.45}
@@ -28,16 +28,10 @@ small{display:block;margin-top:18px;color:#a7b8c8;line-height:1.45}
 <h1>Galaxy Viewer</h1>
 <p>Launch the latest Galaxy Viewer release, GV-beta-0004J.</p>
 <div class="actions">
-<a id="launch-app" class="primary" href="https://gear66me-ui.github.io/Galaxy_Viewer/launch/4J/">Launch Galaxy Viewer App</a>
-<a class="secondary" href="https://gear66me-ui.github.io/Galaxy_Viewer/launch/4J/">Open in This Browser</a>
+<a class="primary" href="./4J/">Launch Galaxy Viewer App</a>
+<a class="secondary" href="./4J/">Open in This Browser</a>
 </div>
 <small>This launcher always routes to the current public Galaxy Viewer release.</small>
 </main>
-<script>
-document.getElementById('launch-app').addEventListener('click',function(event){
-  event.preventDefault();
-  window.location.assign(this.href);
-});
-</script>
 </body>
 </html>
