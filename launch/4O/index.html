@@ -24,7 +24,7 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
   const splashStarted=Date.now();
   const loading=document.getElementById('gv-loading');
   try{
-    const response=await fetch('../../viewer/GV-beta-0004O.py?v=b8274b7eea6fd1e381f1dcf84cf920f1588b3d57',{cache:'no-store'});
+    const response=await fetch('../../viewer/GV-beta-0004O.py?v=4O-001',{cache:'no-store'});
     if(!response.ok)throw new Error(`GV-beta-0004O.py returned HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
@@ -39,6 +39,10 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
     const applyVectorIcon=()=>{
       const icon=document.querySelector('button.gv-simbad-proxy img.gv-target-trademark');
       if(icon)icon.src=vectorIconUrl;
+    };
+    const applyReleaseLabel=()=>{
+      const label=document.querySelector('#gv-version-label');
+      if(label)label.textContent='Galaxy Viewer 4O';
     };
     const alignUpperLeftControls=()=>{
       const root=document.getElementById('aladin-cosmic-command-test');
@@ -55,10 +59,9 @@ body.gv-ready #gv-splash{opacity:0;pointer-events:none}
       const coordinateRect=coordinate.getBoundingClientRect();
       const delta=Math.round(coordinateRect.left-groupRect.left);
       group.style.setProperty('translate',delta+'px 0','important');
-      const versionLabel=root.querySelector('#gv-version-label');
-      if(versionLabel)versionLabel.textContent='Galaxy Viewer 4O';
     };
     [250,700,1400,2400].forEach(delay=>setTimeout(applyVectorIcon,delay));
+    [260,720,1420,2420].forEach(delay=>setTimeout(applyReleaseLabel,delay));
     [300,800,1500,2500].forEach(delay=>setTimeout(alignUpperLeftControls,delay));
     window.addEventListener('resize',alignUpperLeftControls);
     const splashDelay=Math.max(0,2200-(Date.now()-splashStarted));
