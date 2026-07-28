@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Galaxy Viewer — Choose How to Open</title>
+<link rel="icon" href="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054">
 <style>
 :root{color-scheme:dark}
 *{box-sizing:border-box}
@@ -14,7 +16,8 @@ main{width:min(100%,420px)}
 h1{margin:0 0 10px;font-size:clamp(28px,8vw,42px);line-height:1.05}
 p{margin:0 0 24px;color:#bfc7d5;font-size:16px}
 .choices{display:grid;gap:14px}
-a{display:flex;align-items:center;justify-content:center;min-height:58px;padding:14px 18px;border:1px solid #45e7ff;border-radius:12px;color:#fff;text-decoration:none;font-size:18px;font-weight:750;background:#07131b}
+a{display:flex;align-items:center;justify-content:center;gap:12px;min-height:58px;padding:14px 18px;border:1px solid #45e7ff;border-radius:12px;color:#fff;text-decoration:none;font-size:18px;font-weight:750;background:#07131b}
+a img{width:34px;height:34px;flex:0 0 34px;border-radius:8px}
 a:active{transform:scale(.99)}
 .secondary{border-color:#7575ff;background:#111127}
 small{display:block;margin-top:20px;color:#7d8796;line-height:1.4}
@@ -25,8 +28,8 @@ small{display:block;margin-top:20px;color:#7d8796;line-height:1.4}
 <h1>Galaxy Viewer</h1>
 <p>Pick how you want to open it.</p>
 <div class="choices">
-<a class="primary" id="gv-open-mobile" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/">Open Mobile App</a>
-<a class="secondary" href="./4N/">Open Web Browser</a>
+<a class="primary" id="gv-open-mobile" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/"><img src="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" alt="">Open Mobile App</a>
+<a class="secondary" href="./4N/"><img src="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" alt="">Open Web Browser</a>
 </div>
 <small>The mobile option attempts to open the installed Galaxy Viewer app on Android and falls back to the mobile website. The web option opens release 4N in your browser.</small>
 </main>
