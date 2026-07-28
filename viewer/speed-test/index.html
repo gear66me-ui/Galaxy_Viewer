@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galaxy Viewer — Aladin Speed Test</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050816;
+      --panel: #0d1428;
+      --panel-2: #121d37;
+      --line: #2c3d69;
+      --text: #eef5ff;
+      --muted: #9dafcc;
+      --accent: #62d8ff;
+      --good: #62e6a7;
+      --warn: #ffd36a;
+      --bad: #ff7d91;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #101b3d 0, var(--bg) 48%);
+      color: var(--text);
+    }
+    main { width: min(1120px, 100%); margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+    h2 { margin: 0 0 14px; font-size: 1.15rem; }
+    p { line-height: 1.5; }
+    .subtitle { color: var(--muted); margin: 0 0 20px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+    button {
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 11px 16px;
+      background: #112849;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: wait; }
+    button.secondary { border-color: var(--line); background: var(--panel); }
+    .status {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: rgba(13,20,40,.82);
+      margin-bottom: 18px;
+      min-height: 48px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+    .metric, section {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(13,20,40,.9);
+    }
+    .metric { padding: 14px; }
+    .metric span { display: block; color: var(--muted); font-size: .84rem; }
+    .metric strong { display: block; margin-top: 6px; font-size: 1.35rem; }
+    section { padding: 16px; margin-top: 16px; overflow: hidden; }
+    .endpoint { display: grid; grid-template-columns: 110px 1fr; gap: 8px; margin: 7px 0; font-size: .9rem; }
+    .endpoint code { overflow-wrap: anywhere; color: #cceeff; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { border-bottom: 1px solid var(--line); text-align: left; padding: 10px 8px; font-size: .9rem; }
+    th { color: var(--muted); font-weight: 600; }
+    .good { color: var(--good); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    .bar-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 10px; align-items: center; margin: 10px 0; }
+    .bar-track { height: 12px; border-radius: 999px; background: #080d1c; border: 1px solid var(--line); overflow: hidden; }
+    .bar { height: 100%; width: 0; background: var(--accent); transition: width .35s ease; }
+    .note { color: var(--muted); font-size: .88rem; }
+    .hidden { display: none; }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .endpoint { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 105px 1fr 70px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Galaxy Viewer Aladin Speed Test</h1>
+    <p class="subtitle">Diagnostic v0001 — GitHub-hosted clone versus official CDS Aladin 3.8.2</p>
+
+    <div class="endpoint"><strong>GitHub clone</strong><code id="github-url"></code></div>
+    <div class="endpoint"><strong>Official CDS</strong><code id="cds-url"></code></div>
+
+    <div class="toolbar">
+      <button id="run-all" type="button">Run complete test</button>
+      <button id="download-report" class="secondary" type="button" disabled>Download latest report</button>
+      <button id="clear-results" class="secondary" type="button">Clear display</button>
+    </div>
+
+    <div id="status" class="status" aria-live="polite">Ready. The complete test uses 20 worldwide TCP measurements and six local full-file downloads.</div>
+
+    <div class="grid">
+      <div class="metric"><span>Global locations completed</span><strong id="metric-locations">0 / 10</strong></div>
+      <div class="metric"><span>GitHub median global latency</span><strong id="metric-github-global">—</strong></div>
+      <div class="metric"><span>CDS median global latency</span><strong id="metric-cds-global">—</strong></div>
+      <div class="metric"><span>Local winner</span><strong id="metric-local-winner">—</strong></div>
+    </div>
+
+    <section>
+      <h2>Local full-file browser comparison</h2>
+      <p class="note">Three uncached downloads per endpoint from this browser and network. Cross-origin restrictions may prevent the CDS body from being read; failures are recorded honestly.</p>
+      <div class="bar-row"><span>GitHub median</span><div class="bar-track"><div id="github-bar" class="bar"></div></div><strong id="github-local">—</strong></div>
+      <div class="bar-row"><span>CDS median</span><div class="bar-track"><div id="cds-bar" class="bar"></div></div><strong id="cds-local">—</strong></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Run</th><th>Status</th><th>Bytes</th><th>Total</th><th>Throughput</th></tr></thead>
+          <tbody id="local-body"><tr><td colspan="6">No local test results yet.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Worldwide TCP/443 comparison</h2>
+      <p class="note">Globalping selects one probe per requested country. TCP latency checks reachability and connection delay; it is not a complete-file throughput measurement.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Requested location</th><th>Actual probe</th><th>GitHub</th><th>CDS</th><th>Difference</th><th>Winner</th></tr></thead>
+          <tbody id="global-body"><tr><td colspan="6">No worldwide test results yet.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Report information</h2>
+      <div class="endpoint"><strong>Report filename</strong><code id="report-name">Generated after a completed run</code></div>
+      <div class="endpoint"><strong>Measurement IDs</strong><code id="measurement-ids">—</code></div>
+      <p class="note">The JSON file downloads to your device. GitHub Pages cannot automatically commit it into the repository without authenticated write access.</p>
+    </section>
+  </main>
+  <script src="scripts/benchmark.js"></script>
+</body>
+</html>
