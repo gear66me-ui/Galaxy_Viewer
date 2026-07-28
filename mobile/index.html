@@ -41,12 +41,12 @@ body{font-family:"Roboto Mono",Consolas,monospace}
   flex:0 0 34px!important;
 }
 #aladin-cosmic-command-test button.gv-simbad-proxy img.gv-target-trademark{
-  width:32px!important;
-  height:32px!important;
-  min-width:32px!important;
-  min-height:32px!important;
-  max-width:32px!important;
-  max-height:32px!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  max-width:34px!important;
+  max-height:34px!important;
 }
 </style>
 </head>
@@ -58,7 +58,7 @@ body{font-family:"Roboto Mono",Consolas,monospace}
     window.addEventListener('load',async()=>{
       try{
         const registration=await navigator.serviceWorker.register(
-          './service-worker.js?maintenance=0021-refresh-3',
+          './service-worker.js?maintenance=0021-refresh-4',
           {updateViaCache:'none'}
         );
         await registration.update();
