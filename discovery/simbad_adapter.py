@@ -1,9 +1,9 @@
 """SIMBAD adapter for Galaxy Discovery Engine — Beta 0001.
 
 Uses the public SIMBAD TAP sync endpoint and Python's standard library only.
-It retrieves a candidate pool of galaxies with coordinates and, when available,
-angular dimensions and morphology. Results are randomized locally and normalized
-into GalaxyCandidate records from GV-galaxy-discovery-beta-0001.py.
+It retrieves a candidate pool of galaxies with coordinates, randomizes the
+results locally, and normalizes them into GalaxyCandidate records from
+GV-galaxy-discovery-beta-0001.py.
 """
 
 from __future__ import annotations
@@ -70,10 +70,7 @@ SELECT TOP {pool_size}
     main_id,
     ra,
     dec,
-    otype,
-    morph_type,
-    galdim_majaxis,
-    galdim_minaxis
+    otype
 FROM basic
 WHERE ra IS NOT NULL
   AND dec IS NOT NULL
@@ -133,10 +130,6 @@ def _normalize_rows(rows: Iterable[dict[str, str]]):
             continue
         seen.add(key)
 
-        major_axis = _optional_float(row.get("galdim_majaxis"))
-        minor_axis = _optional_float(row.get("galdim_minaxis"))
-        morphology = (row.get("morph_type") or "").strip() or None
-
         records.append(
             GalaxyCandidate(
                 primary_name=name,
@@ -144,10 +137,10 @@ def _normalize_rows(rows: Iterable[dict[str, str]]):
                 dec_deg=dec,
                 source="SIMBAD",
                 source_id=f"SIMBAD:{name}",
-                major_axis_arcmin=major_axis,
-                minor_axis_arcmin=minor_axis,
-                morphology=morphology,
-                preferred_fov_deg=estimate_initial_fov_deg(major_axis),
+                major_axis_arcmin=None,
+                minor_axis_arcmin=None,
+                morphology=None,
+                preferred_fov_deg=estimate_initial_fov_deg(None),
                 preferred_survey=None,
             )
         )
