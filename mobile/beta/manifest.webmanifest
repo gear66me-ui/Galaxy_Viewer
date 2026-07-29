@@ -1,9 +1,9 @@
 {
   "id": "/Galaxy_Viewer/mobile/beta/",
-  "name": "Galaxy Viewer Beta 5Q",
+  "name": "Galaxy Viewer Beta 5R",
   "short_name": "Galaxy Viewer Beta",
-  "description": "Galaxy Viewer mobile beta with four-decimal coordinates, intact 32px Target button, centered 32px circular comet orbit with a sparkling head and a tapered tail spanning about 30 percent of the orbit, active pan-lock status, 1000 galaxies, 250 spectacular targets, centered reticle, compact controls, and #B8B1F0 borders",
-  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5Q-circular-comet-001",
+  "description": "Galaxy Viewer mobile beta with four-decimal coordinates, intact 32px Target button, true circular particle comet orbit with one sparkling head and seven fading tail particles spanning about 29 percent of the orbit, active pan-lock status, 1000 galaxies, 250 spectacular targets, centered reticle, compact controls, and #B8B1F0 borders",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5R-true-circular-comet-001",
   "scope": "/Galaxy_Viewer/mobile/beta/",
   "display": "standalone",
   "launch_handler": {
@@ -14,7 +14,7 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5Q-circular-comet-001",
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5R-true-circular-comet-001",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
