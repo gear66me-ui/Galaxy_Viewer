@@ -2,7 +2,7 @@
    Inactive: preserves the original circular comet orbit.
    Active: keeps a smaller centered comet, gives the Target artwork a steady
    cyan neon glow, and pulses only the separate status box.
-   Either active box deactivates Target mode and restores the orbit. */
+   Target, status, Back, and Next all deactivate Target mode and restore orbit. */
 (() => {
   const ROOT_ID='aladin-cosmic-command-test';
   const STATUS_TEXT='Target active · Pan locked · Tap to exit';
@@ -56,6 +56,10 @@
     const status=root.querySelector('.gv-target-status');
     if(!proxy||!status)return false;
 
+    const deactivateTarget=()=>{
+      if(proxy.getAttribute('aria-pressed')==='true')proxy.click();
+    };
+
     if(status.textContent!==STATUS_TEXT)status.textContent=STATUS_TEXT;
     status.setAttribute('role','button');
     status.setAttribute('tabindex','0');
@@ -67,13 +71,20 @@
       const deactivate=event=>{
         event.preventDefault();
         event.stopPropagation();
-        if(proxy.getAttribute('aria-pressed')==='true')proxy.click();
+        deactivateTarget();
       };
       status.addEventListener('click',deactivate);
       status.addEventListener('keydown',event=>{
         if(event.key==='Enter'||event.key===' '||event.key==='Spacebar')deactivate(event);
       });
     }
+
+    ['gv-back-galaxy','gv-next-galaxy'].forEach(id=>{
+      const button=root.querySelector(`#${id}`);
+      if(!button||button.dataset.gv5uTargetReset==='true')return;
+      button.dataset.gv5uTargetReset='true';
+      button.addEventListener('click',deactivateTarget,{capture:true});
+    });
     return true;
   }
 
