@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
 <title>Galaxy Viewer 5P — Web Beta</title>
-<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5P-circular-comet-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5P-circular-comet-001">
+<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5P-contained-comet-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5P-contained-comet-001">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -24,11 +24,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../../viewer/artwork/icon_target_vector.svg?v=5P-circular-comet-001" alt="Galaxy Viewer trademark">
+  <img src="../../../viewer/artwork/icon_target_vector.svg?v=5P-contained-comet-001" alt="Galaxy Viewer trademark">
   <div class="gv-startup-message">Starting Galaxy Viewer Beta 5P…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=5P-circular-comet-001" alt="Galaxy Viewer splash artwork">
+  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=5P-contained-comet-001" alt="Galaxy Viewer splash artwork">
   <div class="gv-startup-message">Loading 1,000 galaxies · 250 spectacular…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -54,7 +54,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   });
   try{
     const viewerReady=(async()=>{
-      const response=await fetch('../../../viewer/GV-beta-0005P.py?v=5P-circular-comet-001',{cache:'no-store'});
+      const response=await fetch('../../../viewer/GV-beta-0005P.py?v=5P-contained-comet-001',{cache:'no-store'});
       if(!response.ok)throw new Error(`GV-beta-0005P.py returned HTTP ${response.status}`);
       const source=await response.text();
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
