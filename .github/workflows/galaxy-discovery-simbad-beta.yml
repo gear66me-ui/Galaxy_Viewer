@@ -4,14 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       galaxy_count:
-        description: Number of random SIMBAD galaxies to save
+        description: Number of filtered SIMBAD galaxies to save
         required: true
-        default: "10"
+        default: "100"
         type: choice
         options:
           - "10"
           - "25"
           - "50"
+          - "100"
+  push:
+    branches:
+      - beta
+    paths:
+      - discovery/simbad_adapter.py
 
 permissions:
   contents: write
@@ -39,7 +45,7 @@ jobs:
 
       - name: Fetch galaxies from SIMBAD
         env:
-          GALAXY_COUNT: ${{ inputs.galaxy_count }}
+          GALAXY_COUNT: ${{ github.event_name == 'workflow_dispatch' && inputs.galaxy_count || '100' }}
         run: |
           python - <<'PY'
           import importlib.util
@@ -59,16 +65,16 @@ jobs:
           count = int(os.environ["GALAXY_COUNT"])
           galaxies = module.fetch_random_galaxies(
               limit=count,
-              pool_size=max(500, count * 20),
+              pool_size=max(1000, count * 20),
           )
           foundation = module._load_foundation_module()
           foundation.save_catalog(galaxies)
-          print(f"Saved {len(galaxies)} SIMBAD galaxies to {foundation.CATALOG_PATH}")
+          print(f"Saved {len(galaxies)} filtered SIMBAD galaxies to {foundation.CATALOG_PATH}")
           PY
 
       - name: Validate generated catalog
         env:
-          GALAXY_COUNT: ${{ inputs.galaxy_count }}
+          GALAXY_COUNT: ${{ github.event_name == 'workflow_dispatch' && inputs.galaxy_count || '100' }}
         run: |
           python - <<'PY'
           import json
@@ -88,20 +94,23 @@ jobs:
               raise SystemExit(f"records length={len(records)} but expected {expected}")
 
           required = {"primary_name", "ra_deg", "dec_deg", "source", "preferred_fov_deg"}
+          forbidden_prefixes = ("3C ", "4C ", "PKS ", "QSO ")
           for index, record in enumerate(records, start=1):
               missing = required.difference(record)
               if missing:
                   raise SystemExit(f"Record {index} is missing: {sorted(missing)}")
               if record["source"] != "SIMBAD":
                   raise SystemExit(f"Record {index} has source={record['source']!r}")
+              if str(record["primary_name"]).upper().startswith(forbidden_prefixes):
+                  raise SystemExit(f"Record {index} has forbidden point-source catalog name")
               if not (-90.0 <= float(record["dec_deg"]) <= 90.0):
                   raise SystemExit(f"Record {index} has invalid Dec")
               if not (0.0 <= float(record["ra_deg"]) < 360.0):
                   raise SystemExit(f"Record {index} has invalid RA")
-              if float(record["preferred_fov_deg"]) <= 0:
+              if not (0.04 <= float(record["preferred_fov_deg"]) <= 1.0):
                   raise SystemExit(f"Record {index} has invalid FOV")
 
-          print(f"Validated {expected} SIMBAD galaxy records.")
+          print(f"Validated {expected} filtered SIMBAD galaxy records.")
           PY
 
       - name: Commit catalog update
@@ -114,5 +123,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add discovery/galaxy-catalog-beta.json
-          git commit -m "Update beta galaxy catalog from SIMBAD"
+          git commit -m "Update filtered 100-galaxy SIMBAD catalog"
           git push origin HEAD:beta
