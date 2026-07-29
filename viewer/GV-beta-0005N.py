@@ -3,7 +3,7 @@ from IPython.display import HTML, Javascript, display
 # GV-beta-0005N
 # Standalone Galaxy Viewer release based only on the final GV-beta-0005M.
 # Preserves the 1,000-record catalog, Spectacular Mode, centered reticle, safe FOV floor, navigation, splash structure, launcher artwork, compact controls, Target status message, and #B8B1F0 color.
-# Changes only the Target button from 36x36px to 32x32px and the Target icon from 34x34px to 30x30px.
+# Keeps the Target button at 32x32px and corrects the Target icon from 30x30px to 34x34px.
 
 display(HTML("""
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css" />
@@ -73,7 +73,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
     cursor:pointer!important;touch-action:manipulation!important;outline:none!important;box-shadow:0 0 10px rgba(184,177,240,.38)!important;pointer-events:auto!important;
 }
 #aladin-cosmic-command-test button.gv-target-proxy img{
-    display:block!important;width:30px!important;height:30px!important;object-fit:contain!important;
+    display:block!important;width:34px!important;height:34px!important;object-fit:contain!important;
     filter:none!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;
 }
 #aladin-cosmic-command-test .gv-target-status{
@@ -204,7 +204,7 @@ display(Javascript(r"""
 
             const centerReticle=document.createElement("img");
             centerReticle.id="gv-center-reticle";
-            centerReticle.src=reticleUrl+"?v=5N-target-30-001";
+            centerReticle.src=reticleUrl+"?v=5N-target-34-002";
             centerReticle.alt="";
             centerReticle.setAttribute("aria-hidden","true");
             root.appendChild(centerReticle);
@@ -237,7 +237,7 @@ display(Javascript(r"""
                 proxy.title="SIMBAD target";
                 proxy.setAttribute("aria-label","SIMBAD target");
                 proxy.setAttribute("aria-pressed","false");
-                proxy.innerHTML=`<img src="${targetIconUrl}?v=5N-target-30-001" alt="" aria-hidden="true" draggable="false">`;
+                proxy.innerHTML=`<img src="${targetIconUrl}?v=5N-target-34-002" alt="" aria-hidden="true" draggable="false">`;
                 proxy.addEventListener("click",event=>{
                     event.preventDefault();event.stopPropagation();
                     const active=proxy.getAttribute("aria-pressed")!=="true";
