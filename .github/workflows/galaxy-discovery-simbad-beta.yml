@@ -1,133 +1,19 @@
 name: AI Galaxy Discovery Engine Beta
 
 on:
-  workflow_dispatch:
-    inputs:
-      galaxy_count:
-        description: Number of random SIMBAD galaxies to save
-        required: true
-        default: "10"
-        type: choice
-        options:
-          - "10"
-          - "25"
-          - "50"
   push:
     branches:
       - beta
     paths:
-      - .github/workflows/galaxy-discovery-simbad-beta.yml
+      - discovery/random-viewer-build-trigger.txt
 
 permissions:
   contents: write
 
-concurrency:
-  group: galaxy-discovery-simbad-beta
-  cancel-in-progress: false
-
 jobs:
-  discover:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - name: Check out beta branch
-        uses: actions/checkout@v4
-        with:
-          ref: beta
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Fetch galaxies from SIMBAD
-        env:
-          GALAXY_COUNT: ${{ inputs.galaxy_count }}
-        run: |
-          python - <<'PY'
-          import importlib.util
-          import os
-          import sys
-          from pathlib import Path
-
-          adapter_path = Path("discovery/simbad_adapter.py")
-          spec = importlib.util.spec_from_file_location("gv_simbad_adapter", adapter_path)
-          if spec is None or spec.loader is None:
-              raise RuntimeError(f"Could not load {adapter_path}")
-
-          module = importlib.util.module_from_spec(spec)
-          sys.modules[spec.name] = module
-          spec.loader.exec_module(module)
-
-          count = int(os.environ["GALAXY_COUNT"])
-          galaxies = module.fetch_random_galaxies(
-              limit=count,
-              pool_size=max(500, count * 20),
-          )
-          foundation = module._load_foundation_module()
-          foundation.save_catalog(galaxies)
-          print(f"Saved {len(galaxies)} SIMBAD galaxies to {foundation.CATALOG_PATH}")
-          PY
-
-      - name: Validate generated catalog
-        env:
-          GALAXY_COUNT: ${{ inputs.galaxy_count }}
-        run: |
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          path = Path("discovery/galaxy-catalog-beta.json")
-          payload = json.loads(path.read_text(encoding="utf-8"))
-          expected = int(os.environ["GALAXY_COUNT"])
-          records = payload.get("records", [])
-
-          if payload.get("record_count") != expected:
-              raise SystemExit(
-                  f"record_count={payload.get('record_count')} but expected {expected}"
-              )
-          if len(records) != expected:
-              raise SystemExit(f"records length={len(records)} but expected {expected}")
-
-          required = {"primary_name", "ra_deg", "dec_deg", "source", "preferred_fov_deg"}
-          for index, record in enumerate(records, start=1):
-              missing = required.difference(record)
-              if missing:
-                  raise SystemExit(f"Record {index} is missing: {sorted(missing)}")
-              if record["source"] != "SIMBAD":
-                  raise SystemExit(f"Record {index} has source={record['source']!r}")
-              if not (-90.0 <= float(record["dec_deg"]) <= 90.0):
-                  raise SystemExit(f"Record {index} has invalid Dec")
-              if not (0.0 <= float(record["ra_deg"]) < 360.0):
-                  raise SystemExit(f"Record {index} has invalid RA")
-              if float(record["preferred_fov_deg"]) <= 0:
-                  raise SystemExit(f"Record {index} has invalid FOV")
-
-          print(f"Validated {expected} SIMBAD galaxy records.")
-          PY
-
-      - name: Commit catalog update
-        run: |
-          if git diff --quiet -- discovery/galaxy-catalog-beta.json; then
-            echo "Catalog did not change; nothing to commit."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add discovery/galaxy-catalog-beta.json
-          git commit -m "Update beta galaxy catalog from SIMBAD"
-          git push origin HEAD:beta
-
   build-random-viewer:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
       - name: Check out beta branch
         uses: actions/checkout@v4
@@ -140,23 +26,23 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          source = Path("viewer/GV-beta-0004N.py")
-          target = Path("viewer/GV-beta-0004P.py")
-          text = source.read_text(encoding="utf-8")
+          source = Path('viewer/GV-beta-0004N.py')
+          target = Path('viewer/GV-beta-0004P.py')
+          text = source.read_text(encoding='utf-8')
 
-          text = text.replace("# GV-beta-0004N", "# GV-beta-0004P", 1)
+          text = text.replace('# GV-beta-0004N', '# GV-beta-0004P', 1)
           text = text.replace(
-              "# Standalone Galaxy Viewer release based on the known-good GV-beta-0004A state.\n",
-              "# Standalone catalog-driven Galaxy Viewer release based on GV-beta-0004N.\n",
+              '# Standalone Galaxy Viewer release based on the known-good GV-beta-0004A state.\n',
+              '# Standalone catalog-driven Galaxy Viewer release based on GV-beta-0004N.\n',
               1,
           )
           text = text.replace(
-              "# Preserves the GV-beta-0004A visuals and behavior while separating notebook HTML\n# from executable JavaScript and loading the official Aladin Lite 3.8.2 browser bundle.\n",
-              "# Preserves GV-beta-0004N visuals, SIMBAD behavior, controls, and Aladin 3.8.2.\n# Adds only random navigation through the beta SIMBAD galaxy catalog.\n",
+              '# Preserves the GV-beta-0004A visuals and behavior while separating notebook HTML\n# from executable JavaScript and loading the official Aladin Lite 3.8.2 browser bundle.\n',
+              '# Preserves GV-beta-0004N visuals, SIMBAD behavior, controls, and Aladin 3.8.2.\n# Adds only random navigation through the beta SIMBAD galaxy catalog.\n',
               1,
           )
 
-          css_anchor = "#aladin-cosmic-command-test #gv-version-label{"
+          css_anchor = '#aladin-cosmic-command-test #gv-version-label{'
           css = '''#aladin-cosmic-command-test #gv-random-galaxy-panel{
     position:absolute!important;right:10px!important;bottom:28px!important;z-index:6100!important;
     display:flex!important;flex-direction:column!important;align-items:flex-end!important;gap:5px!important;
@@ -179,13 +65,12 @@ jobs:
 
 '''
           if css_anchor not in text:
-              raise SystemExit("CSS insertion anchor not found")
+              raise SystemExit('CSS insertion anchor not found')
           text = text.replace(css_anchor, css + css_anchor, 1)
-
-          text = text.replace("GV-beta-0004N STARTUP FAILURE", "GV-beta-0004P STARTUP FAILURE")
+          text = text.replace('GV-beta-0004N STARTUP FAILURE', 'GV-beta-0004P STARTUP FAILURE')
           text = text.replace('versionLabel.textContent="Galaxy Viewer 4N";', 'versionLabel.textContent="Galaxy Viewer 4P";', 1)
 
-          js_anchor = "            window.aladin_cosmic_command_test=aladin;\n"
+          js_anchor = '            window.aladin_cosmic_command_test=aladin;\n'
           js = '''            window.aladin_cosmic_command_test=aladin;
 
             const catalogUrl="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/discovery/galaxy-catalog-beta.json";
@@ -211,9 +96,7 @@ jobs:
             function openRandomGalaxy(){
                 if(!galaxyCatalog.length)return;
                 let nextIndex=Math.floor(Math.random()*galaxyCatalog.length);
-                if(galaxyCatalog.length>1&&nextIndex===currentGalaxyIndex){
-                    nextIndex=(nextIndex+1)%galaxyCatalog.length;
-                }
+                if(galaxyCatalog.length>1&&nextIndex===currentGalaxyIndex){nextIndex=(nextIndex+1)%galaxyCatalog.length;}
                 currentGalaxyIndex=nextIndex;
                 openCatalogGalaxy(galaxyCatalog[currentGalaxyIndex]);
             }
@@ -233,18 +116,18 @@ jobs:
                 });
 '''
           if js_anchor not in text:
-              raise SystemExit("JavaScript insertion anchor not found")
+              raise SystemExit('JavaScript insertion anchor not found')
           text = text.replace(js_anchor, js, 1)
-          text = text.replace("# GV-beta-0004N released", "# GV-beta-0004P released", 1)
+          text = text.replace('# GV-beta-0004N released', '# GV-beta-0004P released', 1)
 
-          if text.count("GV-beta-0004P") < 4:
-              raise SystemExit("Version replacement verification failed")
-          if "gv-next-galaxy" not in text or "galaxy-catalog-beta.json" not in text:
-              raise SystemExit("Catalog viewer insertion verification failed")
+          if text.count('GV-beta-0004P') < 4:
+              raise SystemExit('Version replacement verification failed')
+          if 'gv-next-galaxy' not in text or 'galaxy-catalog-beta.json' not in text:
+              raise SystemExit('Catalog viewer insertion verification failed')
 
-          target.write_text(text, encoding="utf-8")
-          compile(text, str(target), "exec")
-          print(f"Created {target} with {len(text.splitlines())} lines")
+          target.write_text(text, encoding='utf-8')
+          compile(text, str(target), 'exec')
+          print(f'Created {target} with {len(text.splitlines())} lines')
           PY
 
       - name: Commit viewer revision
