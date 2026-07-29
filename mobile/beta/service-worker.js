@@ -1,17 +1,16 @@
-const CACHE_NAME='galaxy-viewer-beta-5U-active-hierarchy-001';
+const CACHE_NAME='galaxy-viewer-beta-5V-standalone-001';
 const APP_SHELL=[
   './',
   './index.html',
-  './manifest.webmanifest?v=5U-active-hierarchy-001',
-  '../../viewer/artwork/icon_target_vector.svg?v=5U-active-hierarchy-001',
-  '../../viewer/artwork/icon_transparent.png?v=5U-active-hierarchy-001',
-  '../../viewer/artwork/GV-splash-0003.svg?v=5U-active-hierarchy-001',
-  '../../viewer/artwork/GV-reticle-0001.svg?v=5U-active-hierarchy-001',
-  '../../viewer/GV-beta-0005R.py?v=5U-active-hierarchy-001',
-  '../../viewer/GV-beta-0005R-comet-120.css?v=5U-active-hierarchy-001',
-  '../../viewer/GV-beta-0005U-active-state.js?v=5U-active-hierarchy-001',
-  '../../discovery/beautiful-galaxy-catalog-beta.json?v=5U-active-hierarchy-001',
-  '../../discovery/galaxy-catalog-beta.json?v=5U-active-hierarchy-001'
+  './manifest.webmanifest?v=5V-standalone-001',
+  '../../viewer/artwork/icon_target_vector.svg?v=5V-standalone-001',
+  '../../viewer/artwork/icon_transparent.png?v=5V-standalone-001',
+  '../../viewer/artwork/GV-splash-0003.svg?v=5V-standalone-001',
+  '../../viewer/artwork/GV-reticle-0001.svg?v=5V-standalone-001',
+  '../../viewer/GV-beta-0005V.py?v=5V-standalone-001',
+  '../../viewer/GV-beta-0005R-comet-120.css?v=5V-standalone-001',
+  '../../discovery/beautiful-galaxy-catalog-beta.json?v=5V-standalone-001',
+  '../../discovery/galaxy-catalog-beta.json?v=5V-standalone-001'
 ];
 
 self.addEventListener('install',event=>{
