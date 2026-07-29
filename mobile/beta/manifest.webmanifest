@@ -1,9 +1,9 @@
 {
   "id": "/Galaxy_Viewer/mobile/beta/",
-  "name": "Galaxy Viewer Beta 5E",
+  "name": "Galaxy Viewer Beta 5F",
   "short_name": "Galaxy Viewer Beta",
-  "description": "Galaxy Viewer curated-first beta mobile application",
-  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5E-iconfix-002",
+  "description": "Galaxy Viewer curated-first beta mobile application with centered vector reticle",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5F-reticle-001",
   "scope": "/Galaxy_Viewer/mobile/beta/",
   "display": "standalone",
   "launch_handler": {
@@ -14,7 +14,7 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5E-iconfix-002",
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5F-reticle-001",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
