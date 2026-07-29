@@ -12,6 +12,11 @@ on:
           - "10"
           - "25"
           - "50"
+  push:
+    branches:
+      - beta
+    paths:
+      - "discovery/simbad_adapter.py"
 
 permissions:
   contents: write
@@ -39,7 +44,7 @@ jobs:
 
       - name: Fetch galaxies from SIMBAD
         env:
-          GALAXY_COUNT: ${{ inputs.galaxy_count }}
+          GALAXY_COUNT: ${{ github.event.inputs.galaxy_count || '10' }}
         run: |
           python - <<'PY'
           import importlib.util
@@ -68,7 +73,7 @@ jobs:
 
       - name: Validate generated catalog
         env:
-          GALAXY_COUNT: ${{ inputs.galaxy_count }}
+          GALAXY_COUNT: ${{ github.event.inputs.galaxy_count || '10' }}
         run: |
           python - <<'PY'
           import json
