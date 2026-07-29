@@ -187,7 +187,7 @@ display(Javascript(r"""
 
             const versionLabel=document.createElement("div");
             versionLabel.id="gv-version-label";
-            versionLabel.textContent="Galaxy Viewer 5G Spectacular";
+            versionLabel.textContent="Galaxy Viewer 5G";
             root.appendChild(versionLabel);
 
             const panel=document.createElement("div");
