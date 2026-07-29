@@ -1,6 +1,6 @@
 /* Galaxy Viewer 5S — active Target status control only.
    Keeps the Target and status boxes visually independent.
-   Adds matching active neon glow and allows the active status box to deactivate Target mode. */
+   Adds matching pulsing neon glow and allows the active status box to deactivate Target mode. */
 (() => {
   const ROOT_ID='aladin-cosmic-command-test';
 
@@ -12,10 +12,24 @@
       const style=document.createElement('style');
       style.id='gv-5s-active-status-style';
       style.textContent=`
+@keyframes gv-5s-active-neon-pulse{
+  0%,100%{box-shadow:0 0 5px #FFFFFF,0 0 13px 4px rgba(98,216,255,.82)}
+  50%{box-shadow:0 0 2px rgba(255,255,255,.68),0 0 7px 2px rgba(98,216,255,.42)}
+}
+#${ROOT_ID} button.gv-target-proxy[aria-pressed="true"],
+#${ROOT_ID} .gv-target-status.gv-active{
+  animation:gv-5s-active-neon-pulse 2.4s ease-in-out infinite!important;
+}
 #${ROOT_ID} .gv-target-status.gv-active{
   pointer-events:auto!important;
   cursor:pointer!important;
-  box-shadow:0 0 5px #FFFFFF,0 0 13px 4px rgba(98,216,255,.82)!important;
+}
+@media (prefers-reduced-motion:reduce){
+  #${ROOT_ID} button.gv-target-proxy[aria-pressed="true"],
+  #${ROOT_ID} .gv-target-status.gv-active{
+    animation:none!important;
+    box-shadow:0 0 5px #FFFFFF,0 0 13px 4px rgba(98,216,255,.82)!important;
+  }
 }
 `;
       document.head.appendChild(style);
