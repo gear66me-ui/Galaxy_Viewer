@@ -3,7 +3,7 @@ from IPython.display import HTML, Javascript, display
 # GV-beta-0005P
 # Standalone Galaxy Viewer release based only on GV-beta-0005O.
 # Preserves the four-decimal coordinate display, 1,000-record catalog, Spectacular Mode, centered reticle, safe FOV floor, navigation, splash structure, launcher artwork, compact controls, Target status message, and #B8B1F0 color.
-# Corrects the unauthorized broken Target border and replaces the square spark track with a circular comet orbit around the Target symbol, fully inside the intact 32x32px button.
+# Changes only the Target comet containment: restores an unbroken 32x32px border and keeps the comet head and tapered fading tail inside the square on an inner track touching the reticle-cross tips.
 
 display(HTML("""
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css" />
@@ -76,27 +76,26 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
     display:block!important;width:34px!important;height:34px!important;object-fit:contain!important;
     filter:none!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;
 }
-#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet{
-    position:absolute!important;left:50%!important;top:50%!important;width:0!important;height:0!important;
-    animation:gv-target-comet-orbit 2.8s linear infinite!important;pointer-events:none!important;z-index:3!important;
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-spark{
+    position:absolute!important;left:0!important;top:0!important;width:3px!important;height:3px!important;border-radius:50%!important;
+    background:#FFFFFF!important;box-shadow:0 0 3px 1px #FFFFFF,0 0 6px 2px #62D8FF!important;
+    offset-path:path("M 6 6 H 26 V 26 H 6 Z")!important;offset-rotate:auto!important;animation:gv-target-comet-orbit 2.8s linear infinite!important;
+    pointer-events:none!important;z-index:3!important;
 }
-#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i{
-    position:absolute!important;left:-2px!important;top:-2px!important;width:4px!important;height:4px!important;border-radius:50%!important;
-    background:#FFFFFF!important;box-shadow:0 0 4px 1px #FFFFFF,0 0 7px 2px #62D8FF!important;
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-spark::after{
+    content:""!important;position:absolute!important;right:2px!important;top:.5px!important;width:7px!important;height:2px!important;border-radius:999px!important;
+    background:linear-gradient(90deg,rgba(98,216,255,0),rgba(98,216,255,.22),rgba(98,216,255,.62),rgba(255,255,255,.92))!important;
+    filter:blur(.35px)!important;pointer-events:none!important;
 }
-#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(1){transform:translateX(11px)!important;opacity:1!important}
-#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(2){transform:rotate(-12deg) translateX(10px) scale(.78)!important;opacity:.72!important}
-#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(3){transform:rotate(-24deg) translateX(9px) scale(.58)!important;opacity:.46!important}
-#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(4){transform:rotate(-36deg) translateX(8px) scale(.38)!important;opacity:.22!important}
 #aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"]{
     box-shadow:0 0 5px #FFFFFF,0 0 13px 4px rgba(98,216,255,.82)!important;
 }
-#aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"] .gv-target-comet{
+#aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"] .gv-target-spark{
     animation-play-state:paused!important;opacity:0!important;
 }
-@keyframes gv-target-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes gv-target-comet-orbit{from{offset-distance:0%}to{offset-distance:100%}}
 @media (prefers-reduced-motion:reduce){
-    #aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet{animation:none!important;transform:rotate(-35deg)!important}
+    #aladin-cosmic-command-test button.gv-target-proxy .gv-target-spark{animation:none!important;offset-distance:8%!important}
 }
 #aladin-cosmic-command-test .gv-target-status{
     display:none!important;visibility:hidden!important;opacity:0!important;align-items:center!important;justify-content:center!important;
@@ -166,14 +165,14 @@ display(Javascript(r"""
             primary_name:String(target.name),target_name:String(target.name),ra_deg:Number(target.ra_deg),dec_deg:Number(target.dec_deg),
             preferred_fov_deg:Number(target.fov)||0.18,morphology:String(target.object_type||"Galaxy"),source:"CURATED",
             source_id:"CURATED:"+String(index+1).padStart(4,"0"),spectacular:target.spectacular===true
-        })) : [];
+        })):[];
     }
 
     async function fetchDiscoveryRecords(){
         const response=await fetch(discoveryCatalogUrl+"?v="+Date.now(),{cache:"no-store"});
         if(!response.ok)throw new Error("Discovery catalog returned HTTP "+response.status);
         const payload=await response.json();
-        return Array.isArray(payload.records)?payload.records.filter(record=>record&&record.source==="SIMBAD").map(record=>({...record,spectacular:false})) : [];
+        return Array.isArray(payload.records)?payload.records.filter(record=>record&&record.source==="SIMBAD").map(record=>({...record,spectacular:false})):[];
     }
 
     function recordKey(record){return String(record?.source||"")+"|"+String(record?.source_id||record?.primary_name||"");}
@@ -226,7 +225,7 @@ display(Javascript(r"""
 
             const centerReticle=document.createElement("img");
             centerReticle.id="gv-center-reticle";
-            centerReticle.src=reticleUrl+"?v=5P-circular-comet-001";
+            centerReticle.src=reticleUrl+"?v=5P-contained-comet-001";
             centerReticle.alt="";
             centerReticle.setAttribute("aria-hidden","true");
             root.appendChild(centerReticle);
@@ -279,7 +278,7 @@ display(Javascript(r"""
                 proxy.title="SIMBAD target";
                 proxy.setAttribute("aria-label","SIMBAD target");
                 proxy.setAttribute("aria-pressed","false");
-                proxy.innerHTML=`<img src="${targetIconUrl}?v=5P-circular-comet-001" alt="" aria-hidden="true" draggable="false"><span class="gv-target-comet" aria-hidden="true"><i></i><i></i><i></i><i></i></span>`;
+                proxy.innerHTML=`<img src="${targetIconUrl}?v=5P-contained-comet-001" alt="" aria-hidden="true" draggable="false"><span class="gv-target-spark" aria-hidden="true"></span>`;
                 proxy.addEventListener("click",event=>{
                     event.preventDefault();event.stopPropagation();
                     const active=proxy.getAttribute("aria-pressed")!=="true";
