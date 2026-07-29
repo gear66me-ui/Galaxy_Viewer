@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer 5B Beta Preview</title>
+<link rel="icon" href="../../viewer/artwork/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon.svg">
+<style>
+html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
+body{font-family:"Roboto Mono",Consolas,monospace}
+#gv-loading{padding:18px;color:#62D8FF}
+#gv-splash{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}
+#gv-splash img{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+body.gv-ready #gv-splash{opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="gv-splash"><img src="../../viewer/artwork/GV-splash-0003.svg?v=5B-preview-001" alt="Galaxy Viewer launch artwork"></div>
+<div id="gv-loading">Loading Galaxy Viewer 5B Beta Preview…</div>
+<script>
+(async()=>{
+  const splashStarted=Date.now();
+  const loading=document.getElementById('gv-loading');
+  try{
+    const response=await fetch('../../viewer/GV-beta-0005B.py?v=c20de535',{cache:'no-store'});
+    if(!response.ok)throw new Error(`GV-beta-0005B.py returned HTTP ${response.status}`);
+    const source=await response.text();
+    const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+    const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
+    if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 5B HTML and JavaScript blocks.');
+    loading.remove();
+    document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
+    const script=document.createElement('script');
+    script.textContent=jsMatch[1];
+    document.body.appendChild(script);
+    const splashDelay=Math.max(0,2200-(Date.now()-splashStarted));
+    setTimeout(()=>document.body.classList.add('gv-ready'),splashDelay);
+  }catch(error){
+    console.error('Galaxy Viewer 5B beta preview launcher failure',error);
+    loading.textContent=`Galaxy Viewer 5B failed to load: ${error.message}`;
+  }
+})();
+</script>
+</body>
+</html>
