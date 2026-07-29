@@ -1,0 +1,11 @@
+/* Galaxy Viewer 5R — circular comet tail correction only.
+   Overrides the initial 105-degree particle spacing with a 120-degree
+   tapered trail that fades almost completely at its final particle. */
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(2){--gv-angle:-17deg;--gv-scale:.87;--gv-opacity:.82}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(3){--gv-angle:-34deg;--gv-scale:.73;--gv-opacity:.62}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(4){--gv-angle:-51deg;--gv-scale:.59;--gv-opacity:.44}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(5){--gv-angle:-69deg;--gv-scale:.47;--gv-opacity:.29}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(6){--gv-angle:-86deg;--gv-scale:.36;--gv-opacity:.17}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(7){--gv-angle:-103deg;--gv-scale:.27;--gv-opacity:.07}
+#aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(8){--gv-angle:-120deg;--gv-scale:.18;--gv-opacity:.012}
