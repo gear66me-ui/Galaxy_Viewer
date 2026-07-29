@@ -12,6 +12,11 @@ on:
           - "10"
           - "25"
           - "50"
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/galaxy-discovery-simbad-beta.yml
 
 permissions:
   contents: write
@@ -22,6 +27,7 @@ concurrency:
 
 jobs:
   discover:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -115,4 +121,136 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add discovery/galaxy-catalog-beta.json
           git commit -m "Update beta galaxy catalog from SIMBAD"
+          git push origin HEAD:beta
+
+  build-random-viewer:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out beta branch
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Create Galaxy Viewer 4P from 4N
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          source = Path("viewer/GV-beta-0004N.py")
+          target = Path("viewer/GV-beta-0004P.py")
+          text = source.read_text(encoding="utf-8")
+
+          text = text.replace("# GV-beta-0004N", "# GV-beta-0004P", 1)
+          text = text.replace(
+              "# Standalone Galaxy Viewer release based on the known-good GV-beta-0004A state.\n",
+              "# Standalone catalog-driven Galaxy Viewer release based on GV-beta-0004N.\n",
+              1,
+          )
+          text = text.replace(
+              "# Preserves the GV-beta-0004A visuals and behavior while separating notebook HTML\n# from executable JavaScript and loading the official Aladin Lite 3.8.2 browser bundle.\n",
+              "# Preserves GV-beta-0004N visuals, SIMBAD behavior, controls, and Aladin 3.8.2.\n# Adds only random navigation through the beta SIMBAD galaxy catalog.\n",
+              1,
+          )
+
+          css_anchor = "#aladin-cosmic-command-test #gv-version-label{"
+          css = '''#aladin-cosmic-command-test #gv-random-galaxy-panel{
+    position:absolute!important;right:10px!important;bottom:28px!important;z-index:6100!important;
+    display:flex!important;flex-direction:column!important;align-items:flex-end!important;gap:5px!important;
+    font-family:"Roboto Mono",Consolas,monospace!important;
+}
+#aladin-cosmic-command-test #gv-random-galaxy-name{
+    max-width:260px!important;padding:4px 8px!important;box-sizing:border-box!important;
+    border:1px solid rgba(98,216,255,.75)!important;border-radius:5px!important;
+    background:rgba(0,0,0,.78)!important;color:#62D8FF!important;
+    font-size:12px!important;font-weight:700!important;line-height:1.25!important;text-align:right!important;
+    text-shadow:0 0 6px rgba(98,216,255,.55)!important;
+}
+#aladin-cosmic-command-test #gv-next-galaxy{
+    appearance:none!important;-webkit-appearance:none!important;padding:7px 11px!important;
+    border:1px solid #FFFFFF!important;border-radius:6px!important;background:rgba(0,0,0,.82)!important;
+    color:#7DF4FF!important;font:700 13px/1.1 "Roboto Mono",Consolas,monospace!important;
+    cursor:pointer!important;touch-action:manipulation!important;box-shadow:0 0 8px rgba(125,244,255,.35)!important;
+}
+#aladin-cosmic-command-test #gv-next-galaxy:disabled{opacity:.55!important;cursor:default!important;}
+
+'''
+          if css_anchor not in text:
+              raise SystemExit("CSS insertion anchor not found")
+          text = text.replace(css_anchor, css + css_anchor, 1)
+
+          text = text.replace("GV-beta-0004N STARTUP FAILURE", "GV-beta-0004P STARTUP FAILURE")
+          text = text.replace('versionLabel.textContent="Galaxy Viewer 4N";', 'versionLabel.textContent="Galaxy Viewer 4P";', 1)
+
+          js_anchor = "            window.aladin_cosmic_command_test=aladin;\n"
+          js = '''            window.aladin_cosmic_command_test=aladin;
+
+            const catalogUrl="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/discovery/galaxy-catalog-beta.json";
+            let galaxyCatalog=[];
+            let currentGalaxyIndex=-1;
+
+            const randomPanel=document.createElement("div");
+            randomPanel.id="gv-random-galaxy-panel";
+            randomPanel.innerHTML='<div id="gv-random-galaxy-name" role="status" aria-live="polite">Loading galaxy catalog…</div><button id="gv-next-galaxy" type="button" disabled>Next Galaxy</button>';
+            root.appendChild(randomPanel);
+            const randomName=randomPanel.querySelector("#gv-random-galaxy-name");
+            const nextGalaxyButton=randomPanel.querySelector("#gv-next-galaxy");
+
+            function openCatalogGalaxy(record){
+                if(!record)return;
+                const ra=Number(record.ra_deg),dec=Number(record.dec_deg),fov=Number(record.preferred_fov_deg)||0.25;
+                if(!Number.isFinite(ra)||!Number.isFinite(dec))return;
+                aladin.gotoRaDec(ra,dec);
+                aladin.setFoV(Math.max(0.04,fov));
+                randomName.textContent=String(record.primary_name||"Unnamed SIMBAD galaxy").trim()+" · FOV "+Math.max(0.04,fov).toFixed(2)+"°";
+            }
+
+            function openRandomGalaxy(){
+                if(!galaxyCatalog.length)return;
+                let nextIndex=Math.floor(Math.random()*galaxyCatalog.length);
+                if(galaxyCatalog.length>1&&nextIndex===currentGalaxyIndex){
+                    nextIndex=(nextIndex+1)%galaxyCatalog.length;
+                }
+                currentGalaxyIndex=nextIndex;
+                openCatalogGalaxy(galaxyCatalog[currentGalaxyIndex]);
+            }
+
+            nextGalaxyButton.addEventListener("click",openRandomGalaxy);
+            fetch(catalogUrl+"?v="+Date.now(),{cache:"no-store"})
+                .then(response=>{if(!response.ok)throw new Error("HTTP "+response.status);return response.json();})
+                .then(payload=>{
+                    galaxyCatalog=Array.isArray(payload.records)?payload.records.filter(record=>record&&record.source==="SIMBAD"):[];
+                    if(!galaxyCatalog.length)throw new Error("Catalog contains no SIMBAD records");
+                    nextGalaxyButton.disabled=false;
+                    openRandomGalaxy();
+                })
+                .catch(error=>{
+                    randomName.textContent="Galaxy catalog unavailable";
+                    console.error("GV-beta-0004P CATALOG FAILURE:",error);
+                });
+'''
+          if js_anchor not in text:
+              raise SystemExit("JavaScript insertion anchor not found")
+          text = text.replace(js_anchor, js, 1)
+          text = text.replace("# GV-beta-0004N released", "# GV-beta-0004P released", 1)
+
+          if text.count("GV-beta-0004P") < 4:
+              raise SystemExit("Version replacement verification failed")
+          if "gv-next-galaxy" not in text or "galaxy-catalog-beta.json" not in text:
+              raise SystemExit("Catalog viewer insertion verification failed")
+
+          target.write_text(text, encoding="utf-8")
+          compile(text, str(target), "exec")
+          print(f"Created {target} with {len(text.splitlines())} lines")
+          PY
+
+      - name: Commit viewer revision
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/GV-beta-0004P.py
+          git commit -m "Add catalog-driven random Galaxy Viewer 4P"
           git push origin HEAD:beta
