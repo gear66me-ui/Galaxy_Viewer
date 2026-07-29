@@ -4,6 +4,8 @@ Uses the public SIMBAD TAP sync endpoint and Python's standard library only.
 It retrieves a candidate pool of galaxies with coordinates, randomizes the
 results locally, and normalizes them into GalaxyCandidate records from
 GV-galaxy-discovery-beta-0001.py.
+
+The beta workflow runs this adapter with a 10-galaxy default.
 """
 
 from __future__ import annotations
