@@ -1,4 +1,4 @@
-name: Galaxy Discovery — SIMBAD Beta
+name: AI Galaxy Discovery Engine Beta
 
 on:
   workflow_dispatch:
