@@ -1,1 +1,0 @@
-Run viewer/GV-beta-0004P.py build from viewer/GV-beta-0004N.py using the current 10-record SIMBAD catalog.
