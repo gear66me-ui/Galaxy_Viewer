@@ -1,15 +1,15 @@
-const CACHE_NAME='galaxy-viewer-beta-5P-contained-comet-001';
+const CACHE_NAME='galaxy-viewer-beta-5Q-circular-comet-001';
 const APP_SHELL=[
   './',
   './index.html',
-  './manifest.webmanifest?v=5P-contained-comet-001',
-  '../../viewer/artwork/icon_target_vector.svg?v=5P-contained-comet-001',
-  '../../viewer/artwork/icon_transparent.png?v=5P-contained-comet-001',
-  '../../viewer/artwork/GV-splash-0003.svg?v=5P-contained-comet-001',
-  '../../viewer/artwork/GV-reticle-0001.svg?v=5P-contained-comet-001',
-  '../../viewer/GV-beta-0005P.py?v=5P-contained-comet-001',
-  '../../discovery/beautiful-galaxy-catalog-beta.json?v=5P-contained-comet-001',
-  '../../discovery/galaxy-catalog-beta.json?v=5P-contained-comet-001'
+  './manifest.webmanifest?v=5Q-circular-comet-001',
+  '../../viewer/artwork/icon_target_vector.svg?v=5Q-circular-comet-001',
+  '../../viewer/artwork/icon_transparent.png?v=5Q-circular-comet-001',
+  '../../viewer/artwork/GV-splash-0003.svg?v=5Q-circular-comet-001',
+  '../../viewer/artwork/GV-reticle-0001.svg?v=5Q-circular-comet-001',
+  '../../viewer/GV-beta-0005Q.py?v=5Q-circular-comet-001',
+  '../../discovery/beautiful-galaxy-catalog-beta.json?v=5Q-circular-comet-001',
+  '../../discovery/galaxy-catalog-beta.json?v=5Q-circular-comet-001'
 ];
 
 self.addEventListener('install',event=>{
