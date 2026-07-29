@@ -1,11 +1,11 @@
-const CACHE_NAME='galaxy-viewer-beta-5A-pwa-001';
+const CACHE_NAME='galaxy-viewer-beta-5D-data-001';
 const APP_SHELL=[
   './',
   './index.html',
-  './manifest.webmanifest?v=5A-pwa-001',
-  '../../viewer/artwork/icon_target_vector.svg?v=5A-pwa-001',
-  '../../viewer/artwork/GV-splash-0003.svg?v=5A-pwa-001',
-  '../../viewer/GV-beta-0005A.py?v=5A-pwa-001'
+  './manifest.webmanifest?v=5D-data-001',
+  '../../viewer/artwork/icon_target_vector.svg?v=5D-data-001',
+  '../../viewer/artwork/GV-splash-0003.svg?v=5D-data-001',
+  '../../viewer/GV-beta-0005D.py?v=5D-data-001'
 ];
 
 self.addEventListener('install',event=>{
