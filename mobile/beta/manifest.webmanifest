@@ -1,9 +1,9 @@
 {
   "id": "/Galaxy_Viewer/mobile/beta/",
-  "name": "Galaxy Viewer Beta 5V",
+  "name": "Galaxy Viewer Beta 5W",
   "short_name": "Galaxy Viewer Beta",
-  "description": "Galaxy Viewer 5V standalone viewer with integrated active Target hierarchy, smaller centered active comet, steady neon Target artwork, separate three-second pulsing Tap-to-exit status box, Target reset on Back or Next navigation, circular comet orbit, 120-degree fading tail, four-decimal coordinates, and preserved viewer behavior",
-  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5V-standalone-001",
+  "description": "Galaxy Viewer 5W standalone viewer with an exact centered active comet head, dark central contrast, cloudy green neon Target annulus, separate three-second pulsing Tap-to-exit status box, Target reset on Back or Next navigation, circular comet orbit, 120-degree fading tail, four-decimal coordinates, and preserved viewer behavior",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5W-green-target-001",
   "scope": "/Galaxy_Viewer/mobile/beta/",
   "display": "standalone",
   "launch_handler": {
@@ -14,7 +14,7 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5V-standalone-001",
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5W-green-target-001",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
