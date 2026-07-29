@@ -1,0 +1,84 @@
+name: Build 1000 Galaxy Catalog
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/build-1000-galaxy-catalog.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out beta branch
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate SIMBAD-verified catalog
+        run: python discovery/outreach_galaxy_adapter.py
+
+      - name: Mark top 250 as spectacular and validate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('discovery/beautiful-galaxy-catalog-beta.json')
+          payload = json.loads(path.read_text(encoding='utf-8'))
+          targets = payload.get('targets', [])
+
+          if payload.get('record_count') != 1000 or len(targets) != 1000:
+              raise SystemExit(f"Expected exactly 1000 records; found metadata={payload.get('record_count')} actual={len(targets)}")
+
+          positions = {
+              (round(float(target['ra_deg']), 6), round(float(target['dec_deg']), 6))
+              for target in targets
+          }
+          if len(positions) != 1000:
+              raise SystemExit(f'Expected 1000 unique positions; found {len(positions)}')
+
+          for index, target in enumerate(targets):
+              target['spectacular'] = index < 250
+              target['spectacular_rank'] = index + 1 if index < 250 else None
+
+          payload['version'] = 'beta-0003-spectacular-250'
+          payload['spectacular_count'] = 250
+          payload['spectacular_policy'] = {
+              'method': 'top quality-ranked records',
+              'count': 250,
+              'ranking_inputs': ['angular size', 'bibliography references', 'outreach priority'],
+          }
+
+          if sum(bool(target.get('spectacular')) for target in targets) != 250:
+              raise SystemExit('Spectacular count validation failed')
+
+          path.write_text(
+              json.dumps(payload, separators=(',', ':'), ensure_ascii=False) + '\n',
+              encoding='utf-8',
+          )
+          print('Validated 1000 unique galaxies with 250 spectacular targets')
+          PY
+
+      - name: Commit generated catalog
+        run: |
+          if git diff --quiet -- discovery/beautiful-galaxy-catalog-beta.json; then
+            echo 'Catalog did not change'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add discovery/beautiful-galaxy-catalog-beta.json
+          git commit -m 'Generate 1000 galaxy catalog with 250 spectacular targets'
+          git push origin HEAD:beta
