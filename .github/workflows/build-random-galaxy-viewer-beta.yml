@@ -20,16 +20,16 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Create Galaxy Viewer 4O from 4N
+      - name: Create Galaxy Viewer 4P from 4N
         run: |
           python - <<'PY'
           from pathlib import Path
 
           source = Path('viewer/GV-beta-0004N.py')
-          target = Path('viewer/GV-beta-0004O.py')
+          target = Path('viewer/GV-beta-0004P.py')
           text = source.read_text(encoding='utf-8')
 
-          text = text.replace('# GV-beta-0004N', '# GV-beta-0004O', 1)
+          text = text.replace('# GV-beta-0004N', '# GV-beta-0004P', 1)
           text = text.replace(
               '# Standalone Galaxy Viewer release based on the known-good GV-beta-0004A state.\n',
               '# Standalone catalog-driven Galaxy Viewer release based on GV-beta-0004N.\n',
@@ -67,8 +67,8 @@ jobs:
               raise SystemExit('CSS insertion anchor not found')
           text = text.replace(css_anchor, css + css_anchor, 1)
 
-          text = text.replace('GV-beta-0004N STARTUP FAILURE', 'GV-beta-0004O STARTUP FAILURE')
-          text = text.replace('versionLabel.textContent="Galaxy Viewer 4N";', 'versionLabel.textContent="Galaxy Viewer 4O";', 1)
+          text = text.replace('GV-beta-0004N STARTUP FAILURE', 'GV-beta-0004P STARTUP FAILURE')
+          text = text.replace('versionLabel.textContent="Galaxy Viewer 4N";', 'versionLabel.textContent="Galaxy Viewer 4P";', 1)
 
           js_anchor = '''            window.aladin_cosmic_command_test=aladin;
 '''
@@ -115,15 +115,15 @@ jobs:
                 })
                 .catch(error=>{
                     randomName.textContent="Galaxy catalog unavailable";
-                    console.error("GV-beta-0004O CATALOG FAILURE:",error);
+                    console.error("GV-beta-0004P CATALOG FAILURE:",error);
                 });
 '''
           if js_anchor not in text:
               raise SystemExit('JavaScript insertion anchor not found')
           text = text.replace(js_anchor, js, 1)
-          text = text.replace('# GV-beta-0004N released', '# GV-beta-0004O released', 1)
+          text = text.replace('# GV-beta-0004N released', '# GV-beta-0004P released', 1)
 
-          if text.count('GV-beta-0004O') < 4:
+          if text.count('GV-beta-0004P') < 4:
               raise SystemExit('Version replacement verification failed')
           if 'gv-next-galaxy' not in text or 'galaxy-catalog-beta.json' not in text:
               raise SystemExit('Catalog viewer insertion verification failed')
@@ -137,6 +137,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add viewer/GV-beta-0004O.py
-          git commit -m "Add catalog-driven random Galaxy Viewer 4O"
+          git add viewer/GV-beta-0004P.py
+          git commit -m "Add catalog-driven random Galaxy Viewer 4P"
           git push origin HEAD:beta
