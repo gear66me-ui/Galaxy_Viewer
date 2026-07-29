@@ -1,14 +1,14 @@
-const CACHE_NAME='galaxy-viewer-beta-5G-spectacular-001';
+const CACHE_NAME='galaxy-viewer-beta-5H-1000-icrs-001';
 const APP_SHELL=[
   './',
   './index.html',
-  './manifest.webmanifest?v=5G-spectacular-001',
-  '../../viewer/artwork/icon_target_vector.svg?v=5G-spectacular-001',
-  '../../viewer/artwork/GV-splash-0003.svg?v=5G-spectacular-001',
-  '../../viewer/artwork/GV-reticle-0001.svg?v=5G-spectacular-001',
-  '../../viewer/GV-beta-0005G.py?v=5G-spectacular-001',
-  '../../discovery/beautiful-galaxy-catalog-beta.json?v=5E-beautiful-001',
-  '../../discovery/galaxy-catalog-beta.json?v=5E-beautiful-001'
+  './manifest.webmanifest?v=5H-1000-icrs-001',
+  '../../viewer/artwork/icon_target_vector.svg?v=5H-1000-icrs-001',
+  '../../viewer/artwork/GV-splash-0003.svg?v=5H-1000-icrs-001',
+  '../../viewer/artwork/GV-reticle-0001.svg?v=5H-1000-icrs-001',
+  '../../viewer/GV-beta-0005H.py?v=5H-1000-icrs-001',
+  '../../discovery/beautiful-galaxy-catalog-beta.json?v=5H-1000-icrs-001',
+  '../../discovery/galaxy-catalog-beta.json?v=5H-1000-icrs-001'
 ];
 
 self.addEventListener('install',event=>{
