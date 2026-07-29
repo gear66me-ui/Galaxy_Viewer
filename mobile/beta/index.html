@@ -7,11 +7,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Galaxy Viewer Beta 5S">
-<title>Galaxy Viewer 5S — Mobile App Beta</title>
-<link rel="manifest" href="./manifest.webmanifest?v=5S-active-status-neon-001">
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5S-active-status-neon-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5S-active-status-neon-001">
+<meta name="apple-mobile-web-app-title" content="Galaxy Viewer Beta 5T">
+<title>Galaxy Viewer 5T — Mobile App Beta</title>
+<link rel="manifest" href="./manifest.webmanifest?v=5T-cosmic-pulse-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5T-cosmic-pulse-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5T-cosmic-pulse-001">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -29,11 +29,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../viewer/artwork/icon_target_vector.svg?v=5S-active-status-neon-001" alt="Galaxy Viewer trademark">
-  <div class="gv-startup-message">Starting Galaxy Viewer Beta 5S…</div>
+  <img src="../../viewer/artwork/icon_target_vector.svg?v=5T-cosmic-pulse-001" alt="Galaxy Viewer trademark">
+  <div class="gv-startup-message">Starting Galaxy Viewer Beta 5T…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5S-active-status-neon-001" alt="Galaxy Viewer splash artwork">
+  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5T-cosmic-pulse-001" alt="Galaxy Viewer splash artwork">
   <div class="gv-startup-message">Loading 1,000 galaxies · 250 spectacular…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -50,7 +50,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 
   if('serviceWorker' in navigator){
     try{
-      const registration=await navigator.serviceWorker.register('./service-worker.js?v=5S-active-status-neon-001',{scope:'./',updateViaCache:'none'});
+      const registration=await navigator.serviceWorker.register('./service-worker.js?v=5T-cosmic-pulse-001',{scope:'./',updateViaCache:'none'});
       await registration.update();
       if(registration.waiting)registration.waiting.postMessage('SKIP_WAITING');
     }catch(error){
@@ -71,7 +71,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 
   try{
     const viewerReady=(async()=>{
-      const response=await fetch('../../viewer/GV-beta-0005R.py?v=5S-active-status-neon-001',{cache:'no-store'});
+      const response=await fetch('../../viewer/GV-beta-0005R.py?v=5T-cosmic-pulse-001',{cache:'no-store'});
       if(!response.ok)throw new Error(`GV-beta-0005R.py returned HTTP ${response.status}`);
       const source=await response.text();
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
@@ -80,14 +80,14 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
       document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
       const cometCss=document.createElement('link');
       cometCss.rel='stylesheet';
-      cometCss.href='../../viewer/GV-beta-0005R-comet-120.css?v=5S-active-status-neon-001';
+      cometCss.href='../../viewer/GV-beta-0005R-comet-120.css?v=5T-cosmic-pulse-001';
       document.head.appendChild(cometCss);
       const script=document.createElement('script');
       script.textContent=jsMatch[1];
       document.body.appendChild(script);
-      const statusControl=document.createElement('script');
-      statusControl.src='../../viewer/GV-beta-0005S-active-status.js?v=5S-active-status-neon-001';
-      document.body.appendChild(statusControl);
+      const pulseControl=document.createElement('script');
+      pulseControl.src='../../viewer/GV-beta-0005T-active-pulse.js?v=5T-cosmic-pulse-001';
+      document.body.appendChild(pulseControl);
       await waitForViewer();
     })();
 
@@ -98,8 +98,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('Galaxy Viewer 5S mobile beta startup failure',error);
-    showError(`Galaxy Viewer 5S mobile beta failed to load:\n${error.message}`);
+    console.error('Galaxy Viewer 5T mobile beta startup failure',error);
+    showError(`Galaxy Viewer 5T mobile beta failed to load:\n${error.message}`);
   }
 })();
 </script>
