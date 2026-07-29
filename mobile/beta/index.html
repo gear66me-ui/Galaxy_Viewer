@@ -7,11 +7,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Galaxy Viewer Beta 5E">
-<title>Galaxy Viewer 5E — Mobile App Beta</title>
-<link rel="manifest" href="./manifest.webmanifest?v=5E-iconfix-002">
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5E-iconfix-002" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5E-iconfix-002">
+<meta name="apple-mobile-web-app-title" content="Galaxy Viewer Beta 5F">
+<title>Galaxy Viewer 5F — Mobile App Beta</title>
+<link rel="manifest" href="./manifest.webmanifest?v=5F-reticle-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5F-reticle-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5F-reticle-001">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -29,12 +29,12 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../viewer/artwork/icon_target_vector.svg?v=5E-iconfix-002" alt="Galaxy Viewer trademark">
-  <div class="gv-startup-message">Starting Galaxy Viewer Beta Data 5E…</div>
+  <img src="../../viewer/artwork/icon_target_vector.svg?v=5F-reticle-001" alt="Galaxy Viewer trademark">
+  <div class="gv-startup-message">Starting Galaxy Viewer Beta Data 5F…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5E-iconfix-002" alt="Galaxy Viewer splash artwork">
-  <div class="gv-startup-message">Loading Galaxy Viewer Beta Data 5E…</div>
+  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5F-reticle-001" alt="Galaxy Viewer splash artwork">
+  <div class="gv-startup-message">Loading Galaxy Viewer Beta Data 5F…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
 <script>
@@ -50,7 +50,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 
   if('serviceWorker' in navigator){
     try{
-      const registration=await navigator.serviceWorker.register('./service-worker.js?v=5E-iconfix-002',{scope:'./',updateViaCache:'none'});
+      const registration=await navigator.serviceWorker.register('./service-worker.js?v=5F-reticle-001',{scope:'./',updateViaCache:'none'});
       await registration.update();
       if(registration.waiting)registration.waiting.postMessage('SKIP_WAITING');
     }catch(error){
@@ -71,12 +71,12 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 
   try{
     const viewerReady=(async()=>{
-      const response=await fetch('../../viewer/GV-beta-0005E.py?v=5E-beautiful-001',{cache:'no-store'});
-      if(!response.ok)throw new Error(`GV-beta-0005E.py returned HTTP ${response.status}`);
+      const response=await fetch('../../viewer/GV-beta-0005F.py?v=5F-reticle-001',{cache:'no-store'});
+      if(!response.ok)throw new Error(`GV-beta-0005F.py returned HTTP ${response.status}`);
       const source=await response.text();
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
       const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 5E HTML and JavaScript blocks.');
+      if(!htmlMatch||!jsMatch)throw new Error('Could not extract the 5F HTML and JavaScript blocks.');
       document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
       const script=document.createElement('script');
       script.textContent=jsMatch[1];
@@ -91,8 +91,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('Galaxy Viewer 5E mobile beta startup failure',error);
-    showError(`Galaxy Viewer 5E mobile beta failed to load:\n${error.message}`);
+    console.error('Galaxy Viewer 5F mobile beta startup failure',error);
+    showError(`Galaxy Viewer 5F mobile beta failed to load:\n${error.message}`);
   }
 })();
 </script>
