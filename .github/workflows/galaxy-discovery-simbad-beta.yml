@@ -13,11 +13,6 @@ on:
           - "25"
           - "50"
           - "100"
-  push:
-    branches:
-      - beta
-    paths:
-      - discovery/simbad_adapter.py
 
 permissions:
   contents: write
@@ -45,7 +40,7 @@ jobs:
 
       - name: Fetch galaxies from SIMBAD
         env:
-          GALAXY_COUNT: ${{ github.event_name == 'workflow_dispatch' && inputs.galaxy_count || '100' }}
+          GALAXY_COUNT: ${{ inputs.galaxy_count }}
         run: |
           python - <<'PY'
           import importlib.util
@@ -74,7 +69,7 @@ jobs:
 
       - name: Validate generated catalog
         env:
-          GALAXY_COUNT: ${{ github.event_name == 'workflow_dispatch' && inputs.galaxy_count || '100' }}
+          GALAXY_COUNT: ${{ inputs.galaxy_count }}
         run: |
           python - <<'PY'
           import json
@@ -123,5 +118,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add discovery/galaxy-catalog-beta.json
-          git commit -m "Update filtered 100-galaxy SIMBAD catalog"
+          git commit -m "Update filtered SIMBAD galaxy catalog"
           git push origin HEAD:beta
