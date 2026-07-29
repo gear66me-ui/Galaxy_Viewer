@@ -1,9 +1,9 @@
 {
   "id": "/Galaxy_Viewer/mobile/beta/",
-  "name": "Galaxy Viewer Beta 5N",
+  "name": "Galaxy Viewer Beta 5O",
   "short_name": "Galaxy Viewer Beta",
-  "description": "Galaxy Viewer mobile beta with 1000 galaxies, 250 spectacular targets, centered reticle, compact ICRSd and coordinate controls, 34px Target artwork in a 32px Target button, active pan-lock status, and #B8B1F0 control borders",
-  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5N-target-34-002",
+  "description": "Galaxy Viewer mobile beta with 1000 galaxies, 250 spectacular targets, centered reticle, four-decimal RA and Dec display, comet-like Target spark, active pan-lock status, compact controls, and #B8B1F0 control borders",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=5O-four-decimal-comet-001",
   "scope": "/Galaxy_Viewer/mobile/beta/",
   "display": "standalone",
   "launch_handler": {
@@ -14,7 +14,7 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5N-target-34-002",
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=5O-four-decimal-comet-001",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
