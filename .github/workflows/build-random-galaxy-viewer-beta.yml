@@ -5,7 +5,7 @@ on:
     branches:
       - beta
     paths:
-      - .github/workflows/build-random-galaxy-viewer-beta.yml
+      - discovery/random-viewer-build-trigger.txt
 
 permissions:
   contents: write
