@@ -3,7 +3,7 @@ from IPython.display import HTML, Javascript, display
 # GV-beta-0005H
 # Standalone Galaxy Viewer release based only on GV-beta-0005G.
 # Preserves the centered reticle, Spectacular Mode weighting, seven-selection guarantee, and Back/Next history.
-# Uses the 1,000-record catalog with 250 spectacular flags and adds a custom live ICRS coordinate menu.
+# Uses the 1,000-record catalog with 250 spectacular flags and the native Aladin coordinate-frame selector.
 
 display(HTML("""
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css" />
@@ -11,7 +11,6 @@ display(HTML("""
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test{width:100%;height:100vh;height:100dvh;position:relative!important}
 #aladin-cosmic-command-test button,
-#aladin-cosmic-command-test select,
 #aladin-cosmic-command-test input,
 #aladin-cosmic-command-test .aladin-location,
 #aladin-cosmic-command-test .aladin-coordinates,
@@ -19,7 +18,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test .aladin-copyright,
 #aladin-cosmic-command-test .aladin-fov,
 #aladin-cosmic-command-test .aladin-status-bar,
-#aladin-cosmic-command-test .aladin-cooFrame,
 #aladin-cosmic-command-test [class*="Control"],
 #aladin-cosmic-command-test [class*="control"],
 #aladin-cosmic-command-test [class*="reticle"]{
@@ -31,23 +29,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
     opacity:1!important;pointer-events:none!important;user-select:none!important;-webkit-user-drag:none!important;
     transform:translate(-50%,-50%)!important;
 }
-#aladin-cosmic-command-test #gv-icrs-menu{
+#aladin-cosmic-command-test .aladin-cooFrame{
     position:absolute!important;left:12px!important;top:12px!important;z-index:7120!important;
-    display:grid!important;grid-template-columns:auto auto!important;column-gap:8px!important;row-gap:2px!important;
-    min-width:205px!important;padding:7px 10px!important;box-sizing:border-box!important;
-    border:1px solid rgba(117,117,255,.92)!important;border-radius:6px!important;
-    background:linear-gradient(145deg,rgba(5,10,28,.94),rgba(0,0,0,.86))!important;
-    color:#BCEEFF!important;font:700 12px/1.25 "Roboto Mono",Consolas,monospace!important;
-    letter-spacing:.15px!important;box-shadow:0 0 12px rgba(117,117,255,.42)!important;
-    pointer-events:none!important;user-select:none!important;
+    display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+    min-width:108px!important;height:34px!important;padding:0 30px 0 10px!important;
+    border:1px solid #7575FF!important;border-radius:6px!important;
+    background-color:rgba(0,0,0,.86)!important;color:#BCEEFF!important;
+    font:700 12px/1.15 "Roboto Mono",Consolas,monospace!important;
+    box-shadow:0 0 10px rgba(117,117,255,.42)!important;
 }
-#aladin-cosmic-command-test #gv-icrs-menu .gv-icrs-title{
-    grid-column:1/-1!important;margin-bottom:2px!important;color:#7575FF!important;
-    font-size:11px!important;letter-spacing:.14em!important;text-transform:uppercase!important;
-    text-shadow:0 0 7px rgba(117,117,255,.72)!important;
-}
-#aladin-cosmic-command-test #gv-icrs-menu .gv-icrs-key{color:#62D8FF!important}
-#aladin-cosmic-command-test #gv-icrs-menu .gv-icrs-value{color:#FFFFFF!important;text-align:right!important;white-space:nowrap!important}
 #aladin-cosmic-command-test #gv-version-label{
     position:absolute!important;left:12px!important;bottom:12px!important;z-index:7100!important;
     display:block!important;visibility:visible!important;opacity:1!important;pointer-events:none!important;
@@ -158,22 +148,7 @@ display(Javascript(r"""
     }
 
     function fovFor(record){
-        return Math.min(1.5,Math.max(0.04,Number(record?.preferred_fov_deg)||0.18));
-    }
-
-    function pad2(value){return String(Math.floor(Math.abs(value))).padStart(2,"0");}
-    function formatRa(raDeg){
-        let hours=((raDeg%360)+360)%360/15;
-        const h=Math.floor(hours);hours=(hours-h)*60;
-        const m=Math.floor(hours);const s=(hours-m)*60;
-        return pad2(h)+"h "+pad2(m)+"m "+s.toFixed(2).padStart(5,"0")+"s";
-    }
-    function formatDec(decDeg){
-        const sign=decDeg<0?"−":"+";
-        let degrees=Math.abs(decDeg);
-        const d=Math.floor(degrees);degrees=(degrees-d)*60;
-        const m=Math.floor(degrees);const s=(degrees-m)*60;
-        return sign+pad2(d)+"° "+pad2(m)+"′ "+s.toFixed(1).padStart(4,"0")+"″";
+        return Math.min(1.5,Math.max(0.18,Number(record?.preferred_fov_deg)||0.18));
     }
 
     function startGalaxyViewer(){
@@ -204,35 +179,17 @@ display(Javascript(r"""
                 showGotoControl:false,showCooGridControl:false,showSettingsControl:false,
                 showSelectionModeControl:false,showColorPickerControl:false,showShareControl:false,
                 showSimbadPointerControl:false,showProjectionControl:false,showStatusBar:false,
-                showFrame:false,showFov:false,showCooLocation:false,showContextMenu:false,
+                showFrame:true,showFov:false,showCooLocation:false,showContextMenu:false,
                 showCatalog:false,showCooGrid:false
             });
             window.aladin_cosmic_command_test=aladin;
 
             const centerReticle=document.createElement("img");
             centerReticle.id="gv-center-reticle";
-            centerReticle.src=reticleUrl+"?v=5H-1000-icrs-001";
+            centerReticle.src=reticleUrl+"?v=5H-clean-002";
             centerReticle.alt="";
             centerReticle.setAttribute("aria-hidden","true");
             root.appendChild(centerReticle);
-
-            const coordinateMenu=document.createElement("div");
-            coordinateMenu.id="gv-icrs-menu";
-            coordinateMenu.innerHTML='<div class="gv-icrs-title">ICRS Center</div><div class="gv-icrs-key">RA</div><div id="gv-icrs-ra" class="gv-icrs-value">--h --m --.--s</div><div class="gv-icrs-key">DEC</div><div id="gv-icrs-dec" class="gv-icrs-value">--° --′ --.-″</div>';
-            root.appendChild(coordinateMenu);
-            const raValue=coordinateMenu.querySelector("#gv-icrs-ra");
-            const decValue=coordinateMenu.querySelector("#gv-icrs-dec");
-            const updateCoordinates=()=>{
-                try{
-                    const center=aladin.getRaDec();
-                    if(Array.isArray(center)&&Number.isFinite(center[0])&&Number.isFinite(center[1])){
-                        raValue.textContent=formatRa(center[0]);
-                        decValue.textContent=formatDec(center[1]);
-                    }
-                }catch(error){console.debug("GV-beta-0005H coordinate update unavailable",error);}
-            };
-            updateCoordinates();
-            window.setInterval(updateCoordinates,250);
 
             const versionLabel=document.createElement("div");
             versionLabel.id="gv-version-label";
@@ -285,7 +242,6 @@ display(Javascript(r"""
                     navigating=false;
                     backButton.disabled=historyPosition<=0;
                     nextButton.disabled=!(curatedRecords.length||discoveryRecords.length);
-                    updateCoordinates();
                 }
             }
 
