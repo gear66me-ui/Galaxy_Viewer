@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Galaxy Viewer — Beta 5Y</title>
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-protected-green-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-protected-green-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-vector-clean-cache-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-vector-clean-cache-001">
 <style>
 :root{color-scheme:dark}
 *{box-sizing:border-box}
@@ -26,14 +26,36 @@ small{display:block;margin-top:20px;color:#9898b0;line-height:1.4}
 </head>
 <body>
 <main>
-<div class="badge">Beta 5Y · Protected Target Island</div>
+<div class="badge">Beta 5Y · Vector Target · Clean Cache</div>
 <h1>Galaxy Viewer 5Y</h1>
-<p>5Y protects the complete central Target artwork, adds a bright cloudy green outer field, and locks the original comet head at the exact center.</p>
+<p>The vector Target now sits above the protected glowing green field. Beta startup and controls use a clean-cache development path.</p>
 <div class="choices">
-<a href="../../mobile/beta/?source=beta-5y-launcher&v=5Y-protected-green-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=5Y-protected-green-001" alt=""><span>Open Mobile App</span></a>
-<a href="./web/?v=5Y-protected-green-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=5Y-protected-green-001" alt=""><span>Open Web Browser</span></a>
+<a href="../../mobile/beta/?source=beta-5y-launcher&v=5Y-vector-clean-cache-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=5Y-vector-clean-cache-001" alt=""><span>Open Mobile App</span></a>
+<a href="./web/?v=5Y-vector-clean-cache-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=5Y-vector-clean-cache-001" alt=""><span>Open Web Browser</span></a>
 </div>
-<small>5Y preserves the circular comet, 120° fading tail, four-decimal coordinates, catalogs, navigation, reticle, splash sequence, and artwork.</small>
+<small>The beta launcher clears Cache Storage on page load and immediately before either launch button navigates.</small>
 </main>
+<script>
+(async()=>{
+  const clearBetaCaches=async()=>{
+    try{
+      if('caches' in window){
+        const keys=await caches.keys();
+        await Promise.all(keys.map(key=>caches.delete(key)));
+      }
+      navigator.serviceWorker?.controller?.postMessage('CLEAR_BETA_CACHES');
+    }catch(error){console.warn('Galaxy Viewer beta launcher cache clear failed',error);}
+  };
+  await clearBetaCaches();
+  document.querySelectorAll('a').forEach(link=>{
+    link.addEventListener('click',async event=>{
+      event.preventDefault();
+      const destination=link.href;
+      await clearBetaCaches();
+      location.href=destination;
+    });
+  });
+})();
+</script>
 </body>
 </html>
