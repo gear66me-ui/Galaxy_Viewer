@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>GALAXY VIEWER 6G — WEB BETA</title>
-<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6G-space-age-global-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6G-space-age-global-001">
+<title>GALAXY VIEWER 6H — WEB BETA</title>
+<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6H-space-age-global-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6H-space-age-global-001">
 <style>
-@font-face{font-family:"Space Age";src:url("../../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6G-space-age-global-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:"Space Age";src:url("../../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6H-space-age-global-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Space Age",sans-serif;text-transform:uppercase}
 .gv-startup-stage{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}
@@ -17,7 +17,7 @@ body{font-family:"Space Age",sans-serif;text-transform:uppercase}
 #gv-trademark-stage img{width:min(42vw,180px);height:min(42vw,180px)}
 #gv-splash-stage img{width:100%;height:100%;position:absolute;inset:0}
 .gv-startup-message{position:relative;z-index:2;margin-top:18px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,.72);color:#62D8FF;font-size:13px;font-weight:400;text-align:center}
-.gv-startup-message>span,#gv-loading-error>span{display:inline-block;transform:scaleY(1.3);transform-origin:center}
+.gv-startup-message>span,#gv-loading-error>span{display:inline-block;transform:scaleY(1.5);transform-origin:center}
 #gv-splash-stage .gv-startup-message{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;white-space:nowrap}
 body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 #gv-loading-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#ff7b8b;white-space:pre-wrap;font:400 14px/1.5 "Space Age",sans-serif;text-transform:uppercase}
@@ -26,11 +26,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../../viewer/artwork/icon_target_vector.svg?v=6G-space-age-global-001" alt="GALAXY VIEWER TRADEMARK">
-  <div class="gv-startup-message"><span>STARTING GALAXY VIEWER BETA 6G…</span></div>
+  <img src="../../../viewer/artwork/icon_target_vector.svg?v=6H-space-age-global-001" alt="GALAXY VIEWER TRADEMARK">
+  <div class="gv-startup-message"><span>STARTING GALAXY VIEWER BETA 6H…</span></div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=6G-space-age-global-001" alt="GALAXY VIEWER SPLASH ARTWORK">
+  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=6H-space-age-global-001" alt="GALAXY VIEWER SPLASH ARTWORK">
   <div class="gv-startup-message"><span>LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -52,9 +52,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
       }
     }catch(error){console.warn('GALAXY VIEWER WEB BETA CACHE CLEAR FAILED',error);}
   };
-
   await clearBetaCaches();
-
   const waitForViewer=()=>new Promise((resolve,reject)=>{
     const deadline=performance.now()+VIEWER_TIMEOUT_MS;
     const check=()=>{
@@ -65,15 +63,14 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     };
     check();
   });
-
   try{
     const viewerReady=(async()=>{
-      const response=await fetch('../../../viewer/GV-beta-0006G.py?v='+Date.now(),{cache:'no-store'});
-      if(!response.ok)throw new Error(`GV-BETA-0006G.PY RETURNED HTTP ${response.status}`);
+      const response=await fetch('../../../viewer/GV-beta-0006H.py?v='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw new Error(`GV-BETA-0006H.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
       const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch||!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6G STANDALONE VIEWER.');
+      if(!htmlMatch||!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6H STANDALONE VIEWER.');
       document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
       const cometCss=document.createElement('link');
       cometCss.rel='stylesheet';
@@ -91,8 +88,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('GALAXY VIEWER 6G WEB BETA STARTUP FAILURE',error);
-    showError(`GALAXY VIEWER 6G WEB BETA FAILED TO LOAD:\n${error.message}`);
+    console.error('GALAXY VIEWER 6H WEB BETA STARTUP FAILURE',error);
+    showError(`GALAXY VIEWER 6H WEB BETA FAILED TO LOAD:\n${error.message}`);
   }
 })();
 </script>
