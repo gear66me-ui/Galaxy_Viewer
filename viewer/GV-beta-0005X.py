@@ -1,8 +1,8 @@
 from IPython.display import HTML, Javascript, display
 
-# GV-beta-0005W
-# Standalone Galaxy Viewer release based only on final GV-beta-0005V.
-# Moves the active comet head to the exact Target center and adds a cloudy green neon annulus outside the dark central target circle.
+# GV-beta-0005X
+# Standalone Galaxy Viewer release based only on final GV-beta-0005W.
+# Replaces the masked active Target annulus with a full cloudy green neon interior while preserving the centered live dot and all approved behavior.
 # Preserves the four-decimal coordinate display, 1,000-record catalog, Spectacular Mode, centered reticle, safe FOV floor, navigation, artwork, compact controls, circular comet orbit, active status pulse, and #B8B1F0 color.
 
 display(HTML("""
@@ -73,7 +73,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
     cursor:pointer!important;touch-action:manipulation!important;outline:none!important;box-shadow:0 0 10px rgba(184,177,240,.38)!important;pointer-events:auto!important;
 }
 #aladin-cosmic-command-test button.gv-target-proxy::before{
-    content:"";position:absolute;inset:1px;z-index:2;border-radius:5px;pointer-events:none;opacity:0;
+    content:"";position:absolute;inset:1px;z-index:0;border-radius:5px;pointer-events:none;opacity:0;
 }
 #aladin-cosmic-command-test button.gv-target-proxy img{
     position:relative!important;z-index:1!important;display:block!important;width:34px!important;height:34px!important;object-fit:contain!important;
@@ -97,20 +97,18 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
 #aladin-cosmic-command-test button.gv-target-proxy .gv-target-comet i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
 #aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"]{
-    box-shadow:0 0 5px rgba(145,255,204,.8),0 0 15px 4px rgba(45,225,138,.55)!important;
+    background:linear-gradient(145deg,rgba(18,105,67,.96),rgba(24,151,91,.93) 47%,rgba(10,82,54,.97))!important;
+    box-shadow:0 0 6px rgba(160,255,210,.92),0 0 18px 5px rgba(45,225,138,.66)!important;
 }
 #aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"]::before{
     opacity:1;
     background:
-      radial-gradient(circle at 26% 28%,rgba(128,255,190,.42) 0 1px,rgba(58,230,143,.18) 3px,transparent 7px),
-      radial-gradient(circle at 76% 34%,rgba(99,255,174,.34) 0 1px,rgba(42,205,126,.16) 4px,transparent 8px),
-      radial-gradient(circle at 33% 78%,rgba(104,255,179,.30) 0 1px,rgba(34,187,112,.14) 4px,transparent 8px),
-      radial-gradient(circle at 74% 76%,rgba(141,255,199,.30) 0 1px,rgba(49,213,132,.15) 4px,transparent 8px),
-      radial-gradient(circle at center,transparent 0 9px,rgba(12,28,22,.88) 9.5px,rgba(39,217,128,.26) 11px,rgba(92,255,172,.40) 13px,rgba(34,172,105,.24) 15px,transparent 17px);
-    -webkit-mask:radial-gradient(circle at center,transparent 0 9px,#000 10px 100%);
-    mask:radial-gradient(circle at center,transparent 0 9px,#000 10px 100%);
-    mix-blend-mode:screen;
-    box-shadow:inset 0 0 7px rgba(92,255,172,.30),inset 0 0 2px rgba(211,255,232,.45);
+      radial-gradient(circle at 22% 22%,rgba(194,255,222,.38) 0 2px,rgba(88,255,169,.28) 5px,transparent 10px),
+      radial-gradient(circle at 78% 25%,rgba(148,255,198,.34) 0 2px,rgba(44,221,133,.24) 6px,transparent 12px),
+      radial-gradient(circle at 25% 78%,rgba(117,255,184,.30) 0 2px,rgba(30,192,112,.24) 7px,transparent 13px),
+      radial-gradient(circle at 78% 76%,rgba(180,255,215,.30) 0 2px,rgba(55,224,140,.23) 7px,transparent 13px),
+      radial-gradient(ellipse at center,rgba(18,70,47,.36) 0 22%,rgba(67,245,151,.34) 48%,rgba(26,179,105,.38) 72%,rgba(12,105,67,.56) 100%);
+    box-shadow:inset 0 0 9px rgba(117,255,185,.52),inset 0 0 3px rgba(223,255,237,.58);
 }
 #aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"] .gv-target-comet{
     animation:none!important;opacity:1!important;transform:none!important;
@@ -240,13 +238,13 @@ display(Javascript(r"""
     function fovFor(record){return Math.min(1.5,Math.max(0.18,Number(record?.preferred_fov_deg)||0.18));}
 
     function startGalaxyViewer(){
-        if(!window.A||!window.A.init){console.error("GV-beta-0005W STARTUP FAILURE: window.A was not created");return;}
+        if(!window.A||!window.A.init){console.error("GV-beta-0005X STARTUP FAILURE: window.A was not created");return;}
         window.A.init.then(async() => {
             const A=window.A;
             const root=document.getElementById("aladin-cosmic-command-test");
             let curatedRecords=[],discoveryRecords=[];
             try{[curatedRecords,discoveryRecords]=await Promise.all([fetchCuratedRecords(),fetchDiscoveryRecords()]);}
-            catch(error){console.error("GV-beta-0005W CATALOG FAILURE:",error);}
+            catch(error){console.error("GV-beta-0005X CATALOG FAILURE:",error);}
 
             let nonSpectacularRun=0;
             const firstRecord=chooseRecord(curatedRecords,discoveryRecords,null,nonSpectacularRun);
@@ -265,7 +263,7 @@ display(Javascript(r"""
 
             const centerReticle=document.createElement("img");
             centerReticle.id="gv-center-reticle";
-            centerReticle.src=reticleUrl+"?v=5W-green-target-001";
+            centerReticle.src=reticleUrl+"?v=5X-full-green-001";
             centerReticle.alt="";
             centerReticle.setAttribute("aria-hidden","true");
             root.appendChild(centerReticle);
@@ -321,7 +319,7 @@ display(Javascript(r"""
                 proxy.title="SIMBAD target";
                 proxy.setAttribute("aria-label","SIMBAD target");
                 proxy.setAttribute("aria-pressed","false");
-                proxy.innerHTML=`<img src="${targetIconUrl}?v=5W-green-target-001" alt="" aria-hidden="true" draggable="false"><span class="gv-target-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>`;
+                proxy.innerHTML=`<img src="${targetIconUrl}?v=5X-full-green-001" alt="" aria-hidden="true" draggable="false"><span class="gv-target-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>`;
                 proxy.addEventListener("click",event=>{
                     event.preventDefault();event.stopPropagation();
                     const active=proxy.getAttribute("aria-pressed")!=="true";
@@ -333,8 +331,8 @@ display(Javascript(r"""
                 return proxy;
             }
             function bindTargetStatus(proxy,status){
-                if(status.dataset.gv5wBound==="true")return;
-                status.dataset.gv5wBound="true";
+                if(status.dataset.gv5xBound==="true")return;
+                status.dataset.gv5xBound="true";
                 const deactivate=event=>{
                     event.preventDefault();event.stopPropagation();
                     if(proxy.getAttribute("aria-pressed")==="true")proxy.click();
@@ -371,7 +369,7 @@ display(Javascript(r"""
 
             const versionLabel=document.createElement("div");
             versionLabel.id="gv-version-label";
-            versionLabel.textContent="Galaxy Viewer 5W";
+            versionLabel.textContent="Galaxy Viewer 5X";
             const versionPalette=[["#FFD166","rgba(255,209,102,.58)"],["#FF7B8B","rgba(255,123,139,.58)"],["#55FF88","rgba(85,255,136,.52)"],["#45E7FF","rgba(69,231,255,.56)"],["#C98BFF","rgba(201,139,255,.58)"]];
             const versionColor=versionPalette[Math.floor(Math.random()*versionPalette.length)];
             versionLabel.style.setProperty("--gv-version-color",versionColor[0]);
@@ -402,7 +400,7 @@ display(Javascript(r"""
                     const category=record.spectacular?"Spectacular":(record.source==="CURATED"?"Beautiful":"Discovery");
                     const type=String(record.morphology||"Galaxy").trim();
                     nameLabel.textContent=String(record.primary_name||"Unnamed galaxy").trim()+" · "+category+" · "+type+" · FOV "+fov.toFixed(2)+"°";
-                }catch(error){nameLabel.textContent="Could not resolve "+String(record.primary_name||"galaxy");console.error("GV-beta-0005W TARGET FAILURE:",error);}
+                }catch(error){nameLabel.textContent="Could not resolve "+String(record.primary_name||"galaxy");console.error("GV-beta-0005X TARGET FAILURE:",error);}
                 finally{navigating=false;backButton.disabled=historyPosition<=0;nextButton.disabled=!(curatedRecords.length||discoveryRecords.length);}
             }
             async function openNextGalaxy(){
@@ -420,22 +418,22 @@ display(Javascript(r"""
             nextButton.addEventListener("click",()=>{deactivateTarget();openNextGalaxy();});
             if(firstRecord){history=[firstRecord];historyPosition=0;nonSpectacularRun=firstRecord.spectacular?0:1;await openGalaxy(firstRecord);}
             else nameLabel.textContent="Galaxy catalogs unavailable";
-        }).catch(error=>console.error("GV-beta-0005W STARTUP FAILURE:",error));
+        }).catch(error=>console.error("GV-beta-0005X STARTUP FAILURE:",error));
     }
 
     if(window.A&&window.A.init){startGalaxyViewer();return;}
     let loader=document.querySelector('script[data-gv-aladin="3.8.2"]');
     if(loader){
         loader.addEventListener("load",startGalaxyViewer,{once:true});
-        loader.addEventListener("error",()=>console.error("GV-beta-0005W STARTUP FAILURE: official Aladin 3.8.2 bundle failed to load"),{once:true});
+        loader.addEventListener("error",()=>console.error("GV-beta-0005X STARTUP FAILURE: official Aladin 3.8.2 bundle failed to load"),{once:true});
         return;
     }
     loader=document.createElement("script");
     loader.src=aladinBundleUrl;loader.charset="utf-8";loader.dataset.gvAladin="3.8.2";
     loader.addEventListener("load",startGalaxyViewer,{once:true});
-    loader.addEventListener("error",()=>console.error("GV-beta-0005W STARTUP FAILURE: official Aladin 3.8.2 bundle failed to load"),{once:true});
+    loader.addEventListener("error",()=>console.error("GV-beta-0005X STARTUP FAILURE: official Aladin 3.8.2 bundle failed to load"),{once:true});
     document.head.appendChild(loader);
 })();
 """))
 
-# GV-beta-0005W released
+# GV-beta-0005X released
