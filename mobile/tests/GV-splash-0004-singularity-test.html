@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:"Space Age",sans-serif;text-transform:uppercase}
 body{position:relative}
-#gv-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:#000;touch-action:none}
+#gv-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:#000;touch-action:none;transition:opacity .22s ease}
 #gv-status{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:5;transform:translateX(-50%) scaleY(1.25);transform-origin:center;padding:7px 11px;border:1px solid rgba(98,216,255,.65);border-radius:7px;background:rgba(0,0,0,.68);color:#dff8ff;font-size:11px;letter-spacing:.7px;text-align:center;white-space:nowrap;text-shadow:0 0 5px #62d8ff;box-shadow:0 0 12px rgba(98,216,255,.35);transition:opacity .25s ease}
 #gv-complete{position:fixed;inset:0;z-index:4;display:grid;place-items:center;background:#000;opacity:0;pointer-events:none;transition:opacity .28s ease}
 #gv-complete span{display:inline-block;transform:scaleY(1.35);color:#dff8ff;font-size:clamp(17px,4vw,28px);letter-spacing:1px;text-shadow:0 0 6px #62d8ff,0 0 18px rgba(98,216,255,.8)}
@@ -21,20 +21,22 @@ body.gv-finished #gv-complete{opacity:1}
 </style>
 </head>
 <body>
-<canvas id="gv-canvas" aria-label="Animated Galaxy Viewer splash collapsing into a rotating black-hole siphon"></canvas>
-<div id="gv-status">Neon pulse · vortex · singularity test</div>
+<canvas id="gv-canvas" aria-label="Animated Galaxy Viewer splash collapsing into a rotating black-hole siphon and pulsar cross"></canvas>
+<div id="gv-status">Event-horizon ring · vortex · pulsar test</div>
 <div id="gv-complete"><span>Galaxy Viewer Loaded</span></div>
 <div id="gv-error" role="alert"></div>
 <script>
 (()=>{
 'use strict';
 const CONFIG={
-  totalMs:6000,
-  pulseEnd:2600,
-  vortexStart:2400,
-  collapseStart:3900,
-  blipStart:5350,
-  finishAt:5850,
+  totalMs:6200,
+  ringStart:550,
+  spreadStart:1500,
+  vortexStart:2550,
+  collapseStart:3000,
+  dotStart:5100,
+  pulsarStart:5500,
+  finishAt:6100,
   centerX:.50,
   centerY:.50,
   maxDpr:1.6
@@ -69,10 +71,13 @@ function start(){
   uniform vec2 imageSize;
   uniform vec2 center;
   uniform float time;
+  uniform float ringSpin;
+  uniform float spread;
   uniform float vortex;
   uniform float collapse;
   uniform float pulse;
-  uniform float blip;
+  uniform float dotPhase;
+  uniform float pulsar;
   vec2 containUV(vec2 q){
     float screenAspect=resolution.x/resolution.y;
     float imageAspect=imageSize.x/imageSize.y;
@@ -86,10 +91,13 @@ function start(){
     q.x*=resolution.x/resolution.y;
     float r=length(q);
     float a=atan(q.y,q.x);
-    float edge=smoothstep(.02,.72,r);
     float inward=pow(max(0.,1.-r/.78),1.55);
-    float spin=vortex*(.40+4.8*inward*inward);
-    a-=spin;
+    float ringMask=exp(-pow((r-.105)/.032,2.));
+    float spreadingMask=pow(max(0.,1.-r/.58),2.0);
+    float localSpin=ringSpin*ringMask*(2.4+time*1.8);
+    float outwardSpin=spread*spreadingMask*(.35+2.7*inward);
+    float fullSpin=vortex*(.40+4.8*inward*inward);
+    a-=localSpin+outwardSpin+fullSpin;
     float drain=vortex*(.05+.24*inward)+collapse*(.34+.54*inward);
     float stretch=1.+vortex*1.15*inward+collapse*3.2*inward;
     float sourceR=(r+drain*inward)*stretch;
@@ -103,12 +111,20 @@ function start(){
     col*=neon;
     float throat=smoothstep(.16,.0,r)*(vortex*.45+collapse*.95);
     col*=1.-throat;
-    float ring=exp(-pow((r-(.105-.055*collapse))/.018,2.))*vortex;
-    col+=vec3(.15,.62,1.)*ring*(.35+collapse*.8);
-    float flash=exp(-r*r/(.0014+blip*.012))*blip;
-    col+=vec3(.65,.90,1.)*flash*2.5;
-    float fade=1.-smoothstep(.92,1.,collapse);
-    col*=fade;
+    float hotRing=exp(-pow((r-(.105-.055*collapse))/.016,2.))*(ringSpin*.28+vortex*.65);
+    col+=vec3(.22,.68,1.)*hotRing*(.32+collapse*.7);
+    float imageFade=1.-smoothstep(.76,.96,collapse);
+    col*=imageFade;
+    float dotCore=exp(-r*r/.000018)*dotPhase;
+    float dotHalo=exp(-r*r/.00022)*dotPhase*.48;
+    col+=vec3(.92,.98,1.)*dotCore*3.2+vec3(.22,.72,1.)*dotHalo;
+    float beamEnvelope=exp(-r*r/.017);
+    float horizontal=exp(-abs(q.y)/.0017)*beamEnvelope;
+    float vertical=exp(-abs(q.x)/.0017)*beamEnvelope;
+    float crossGlow=(horizontal+vertical)*pulsar;
+    col+=vec3(.70,.92,1.)*crossGlow*1.9;
+    float pulseCore=exp(-r*r/.000045)*pulsar;
+    col+=vec3(1.)*pulseCore*3.8;
     gl_FragColor=vec4(col,1.);
   }`;
   const shader=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;};
@@ -122,25 +138,35 @@ function start(){
   const position=gl.getAttribLocation(program,'p');gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
   const texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
   const loc=name=>gl.getUniformLocation(program,name);
-  const u={resolution:loc('resolution'),imageSize:loc('imageSize'),center:loc('center'),time:loc('time'),vortex:loc('vortex'),collapse:loc('collapse'),pulse:loc('pulse'),blip:loc('blip')};
+  const u={resolution:loc('resolution'),imageSize:loc('imageSize'),center:loc('center'),time:loc('time'),ringSpin:loc('ringSpin'),spread:loc('spread'),vortex:loc('vortex'),collapse:loc('collapse'),pulse:loc('pulse'),dotPhase:loc('dotPhase'),pulsar:loc('pulsar')};
   const resize=()=>{const dpr=Math.min(devicePixelRatio||1,CONFIG.maxDpr);canvas.width=Math.max(1,Math.round(innerWidth*dpr));canvas.height=Math.max(1,Math.round(innerHeight*dpr));gl.viewport(0,0,canvas.width,canvas.height);};
   addEventListener('resize',resize,{passive:true});resize();
   const started=performance.now();
   const frame=now=>{
     const ms=now-started;
     const seconds=ms/1000;
-    let vortex=reduced?0:smooth(CONFIG.vortexStart,CONFIG.collapseStart+500,ms);
-    let collapse=reduced?smooth(CONFIG.blipStart-250,CONFIG.finishAt,ms):smooth(CONFIG.collapseStart,CONFIG.finishAt,ms);
-    let blip=reduced?0:smooth(CONFIG.blipStart,CONFIG.blipStart+120,ms)*(1-smooth(CONFIG.blipStart+130,CONFIG.finishAt,ms));
-    const pulse=ms<CONFIG.pulseEnd?1:1-smooth(CONFIG.pulseEnd,CONFIG.collapseStart,ms);
+    const ringSpin=reduced?0:smooth(CONFIG.ringStart,CONFIG.spreadStart+300,ms);
+    const spread=reduced?0:smooth(CONFIG.spreadStart,CONFIG.vortexStart+350,ms);
+    const vortex=reduced?0:smooth(CONFIG.vortexStart,CONFIG.collapseStart+650,ms);
+    const collapse=reduced?smooth(CONFIG.dotStart-300,CONFIG.dotStart+120,ms):smooth(CONFIG.collapseStart,CONFIG.dotStart+120,ms);
+    const pulse=ms<CONFIG.spreadStart?1:1-smooth(CONFIG.spreadStart,CONFIG.collapseStart,ms);
+    const dotIn=smooth(CONFIG.dotStart-150,CONFIG.dotStart+80,ms);
+    const dotOut=1-smooth(CONFIG.pulsarStart+260,CONFIG.finishAt,ms);
+    const dotPhase=dotIn*dotOut;
+    const pulsarIn=smooth(CONFIG.pulsarStart,CONFIG.pulsarStart+70,ms);
+    const pulsarOut=1-smooth(CONFIG.pulsarStart+250,CONFIG.finishAt,ms);
+    const pulsar=reduced?0:pulsarIn*pulsarOut*(.72+.28*sin((ms-CONFIG.pulsarStart)*.035));
     gl.uniform2f(u.resolution,canvas.width,canvas.height);
     gl.uniform2f(u.imageSize,image.naturalWidth,image.naturalHeight);
     gl.uniform2f(u.center,CONFIG.centerX,CONFIG.centerY);
     gl.uniform1f(u.time,seconds);
+    gl.uniform1f(u.ringSpin,ringSpin);
+    gl.uniform1f(u.spread,spread);
     gl.uniform1f(u.vortex,vortex);
     gl.uniform1f(u.collapse,collapse);
     gl.uniform1f(u.pulse,pulse);
-    gl.uniform1f(u.blip,blip);
+    gl.uniform1f(u.dotPhase,dotPhase);
+    gl.uniform1f(u.pulsar,pulsar);
     gl.drawArrays(gl.TRIANGLES,0,6);
     if(ms<CONFIG.finishAt){requestAnimationFrame(frame);}else{
       document.body.classList.add('gv-finished');
