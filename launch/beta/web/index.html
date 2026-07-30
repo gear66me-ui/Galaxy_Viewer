@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>Galaxy Viewer 5Y — Web Beta</title>
-<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001">
+<title>Galaxy Viewer 5Z — Web Beta</title>
+<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5Z-rounded-tiles-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=5Z-rounded-tiles-001">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -24,11 +24,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001" alt="Galaxy Viewer trademark">
-  <div class="gv-startup-message">Starting Galaxy Viewer Beta 5Y…</div>
+  <img src="../../../viewer/artwork/icon_target_vector.svg?v=5Z-rounded-tiles-001" alt="Galaxy Viewer trademark">
+  <div class="gv-startup-message">Starting Galaxy Viewer Beta 5Z…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=5Y-target-banner-001" alt="Galaxy Viewer splash artwork">
+  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=5Z-rounded-tiles-001" alt="Galaxy Viewer splash artwork">
   <div class="gv-startup-message">Loading 1,000 galaxies · 250 spectacular…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -37,7 +37,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   const ICON_MS=1000;
   const SPLASH_MS=4000;
   const VIEWER_TIMEOUT_MS=20000;
-  const TARGET_ICON_URL='../../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001';
+  const TARGET_ICON_URL='../../../viewer/artwork/icon_target_vector.svg?v=5Z-rounded-tiles-001';
   const trademarkStage=document.getElementById('gv-trademark-stage');
   const splashStage=document.getElementById('gv-splash-stage');
   const errorBox=document.getElementById('gv-loading-error');
@@ -60,29 +60,38 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
       targetImage.src=TARGET_ICON_URL;
       targetImage.dataset.gvVectorInstalled='true';
     }
+    let tileStyle=document.getElementById('gv-5z-rounded-tiles-style');
+    if(!tileStyle){
+      tileStyle=document.createElement('style');
+      tileStyle.id='gv-5z-rounded-tiles-style';
+      tileStyle.textContent='#aladin-cosmic-command-test button.gv-target-proxy{border-radius:6px!important}#aladin-cosmic-command-test button.gv-target-proxy[aria-pressed="true"]::before{inset:0!important;border-radius:5px!important;background-size:110% 110%!important;background-position:center!important}#aladin-cosmic-command-test .gv-target-status{margin-left:3px!important;border-radius:6px!important}';
+      document.head.appendChild(tileStyle);
+    }
     targetImage.style.setProperty('width','32px','important');
     targetImage.style.setProperty('height','32px','important');
     targetImage.style.setProperty('object-fit','contain','important');
     targetImage.style.setProperty('filter','none','important');
-    proxy.style.setProperty('border-radius','6px 0 0 6px','important');
+    proxy.style.setProperty('border-radius','6px','important');
     const status=root.querySelector('.gv-target-status');
     if(status){
       status.innerHTML='<span>Tap Galaxy/Star</span><span>for Info</span>';
-      status.style.setProperty('margin-left','-1px','important');
-      status.style.setProperty('border-radius','0 6px 6px 0','important');
-      status.style.setProperty('width','96px','important');
-      status.style.setProperty('min-width','96px','important');
-      status.style.setProperty('max-width','96px','important');
+      status.style.setProperty('margin-left','3px','important');
+      status.style.setProperty('border-radius','6px','important');
+      status.style.setProperty('width','clamp(88px,25vw,104px)','important');
+      status.style.setProperty('min-width','88px','important');
+      status.style.setProperty('max-width','104px','important');
       status.style.setProperty('height','32px','important');
       status.style.setProperty('min-height','32px','important');
       status.style.setProperty('max-height','32px','important');
-      status.style.setProperty('padding','2px 7px','important');
-      status.style.setProperty('font-size','8px','important');
-      status.style.setProperty('line-height','1.12','important');
+      status.style.setProperty('padding','2px 6px','important');
+      status.style.setProperty('font-size','clamp(9px,2.3vw,10px)','important');
+      status.style.setProperty('line-height','1.05','important');
       status.style.setProperty('white-space','nowrap','important');
       status.style.setProperty('overflow','hidden','important');
       status.querySelectorAll('span').forEach(span=>span.style.setProperty('white-space','nowrap','important'));
     }
+    const versionLabel=root.querySelector('#gv-version-label');
+    if(versionLabel)versionLabel.textContent='Galaxy Viewer 5Z';
     const comet=proxy.querySelector('.gv-target-comet');
     if(comet){
       comet.style.setProperty('left','50%','important');
@@ -97,9 +106,6 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   };
 
   await clearBetaCaches();
-  document.addEventListener('click',event=>{
-    if(event.target.closest('button,a'))void clearBetaCaches();
-  },true);
 
   const waitForViewer=()=>new Promise((resolve,reject)=>{
     const deadline=performance.now()+VIEWER_TIMEOUT_MS;
@@ -118,7 +124,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
       const source=await response.text();
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
       const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch||!jsMatch)throw new Error('Could not extract the standalone 5Y HTML and JavaScript blocks.');
+      if(!htmlMatch||!jsMatch)throw new Error('Could not extract the verified 5Y viewer engine.');
       document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
       const cometCss=document.createElement('link');
       cometCss.rel='stylesheet';
@@ -141,8 +147,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('Galaxy Viewer 5Y web beta startup failure',error);
-    showError(`Galaxy Viewer 5Y web beta failed to load:\n${error.message}`);
+    console.error('Galaxy Viewer 5Z web beta startup failure',error);
+    showError(`Galaxy Viewer 5Z web beta failed to load:\n${error.message}`);
   }
 })();
 </script>
