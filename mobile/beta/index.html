@@ -9,9 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Galaxy Viewer Beta 5Y">
 <title>Galaxy Viewer 5Y — Mobile App Beta</title>
-<link rel="manifest" href="./manifest.webmanifest?v=5Y-tablet-startup-001">
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-tablet-startup-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-tablet-startup-001">
+<link rel="manifest" href="./manifest.webmanifest?v=5Y-target-banner-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -29,11 +29,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../viewer/artwork/icon_target_vector.svg?v=5Y-tablet-startup-001" alt="Galaxy Viewer trademark">
+  <img src="../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001" alt="Galaxy Viewer trademark">
   <div class="gv-startup-message">Starting Galaxy Viewer Beta 5Y…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5Y-tablet-startup-001" alt="Galaxy Viewer splash artwork">
+  <img src="../../viewer/artwork/GV-splash-0003.svg?v=5Y-target-banner-001" alt="Galaxy Viewer splash artwork">
   <div class="gv-startup-message">Loading 1,000 galaxies · 250 spectacular…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -42,7 +42,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   const ICON_MS=1000;
   const SPLASH_MS=4000;
   const VIEWER_TIMEOUT_MS=20000;
-  const TARGET_ICON_URL='../../viewer/artwork/icon_target_vector.svg?v=5Y-tablet-startup-001';
+  const TARGET_ICON_URL='../../viewer/artwork/icon_target_vector.svg?v=5Y-target-banner-001';
   const trademarkStage=document.getElementById('gv-trademark-stage');
   const splashStage=document.getElementById('gv-splash-stage');
   const errorBox=document.getElementById('gv-loading-error');
@@ -76,12 +76,21 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     proxy.style.setProperty('border-radius','6px 0 0 6px','important');
     const status=root.querySelector('.gv-target-status');
     if(status){
-      status.innerHTML='<span>Tap Galaxy/Star for Info</span><span>Pan Locked - Tap to Exit</span>';
+      status.innerHTML='<span>Tap Galaxy/Star</span><span>for Info</span>';
       status.style.setProperty('margin-left','-1px','important');
       status.style.setProperty('border-radius','0 6px 6px 0','important');
-      status.style.setProperty('width','144px','important');
-      status.style.setProperty('min-width','144px','important');
-      status.style.setProperty('max-width','144px','important');
+      status.style.setProperty('width','96px','important');
+      status.style.setProperty('min-width','96px','important');
+      status.style.setProperty('max-width','96px','important');
+      status.style.setProperty('height','32px','important');
+      status.style.setProperty('min-height','32px','important');
+      status.style.setProperty('max-height','32px','important');
+      status.style.setProperty('padding','2px 7px','important');
+      status.style.setProperty('font-size','8px','important');
+      status.style.setProperty('line-height','1.12','important');
+      status.style.setProperty('white-space','nowrap','important');
+      status.style.setProperty('overflow','hidden','important');
+      status.querySelectorAll('span').forEach(span=>span.style.setProperty('white-space','nowrap','important'));
     }
     const comet=proxy.querySelector('.gv-target-comet');
     if(comet){
