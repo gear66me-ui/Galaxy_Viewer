@@ -52,13 +52,34 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   };
   const installVectorTarget=()=>{
     const root=document.getElementById('aladin-cosmic-command-test');
-    const targetImage=root?.querySelector('button.gv-target-proxy img');
-    if(!targetImage)return false;
+    const proxy=root?.querySelector('button.gv-target-proxy');
+    const targetImage=proxy?.querySelector('img');
+    if(!proxy||!targetImage)return false;
     targetImage.src='../../../viewer/artwork/icon_target_vector.svg?v='+Date.now();
-    targetImage.style.width='32px';
-    targetImage.style.height='32px';
-    targetImage.style.objectFit='contain';
-    targetImage.style.filter='none';
+    targetImage.style.setProperty('width','32px','important');
+    targetImage.style.setProperty('height','32px','important');
+    targetImage.style.setProperty('object-fit','contain','important');
+    targetImage.style.setProperty('filter','none','important');
+    proxy.style.setProperty('border-radius','6px 0 0 6px','important');
+    const status=root.querySelector('.gv-target-status');
+    if(status){
+      status.innerHTML='<span>Tap Galaxy/Star for Info</span><span>Pan Locked - Tap to Exit</span>';
+      status.style.setProperty('margin-left','-1px','important');
+      status.style.setProperty('border-radius','0 6px 6px 0','important');
+      status.style.setProperty('width','144px','important');
+      status.style.setProperty('min-width','144px','important');
+      status.style.setProperty('max-width','144px','important');
+    }
+    const comet=proxy.querySelector('.gv-target-comet');
+    if(comet){
+      comet.style.setProperty('left','50%','important');
+      comet.style.setProperty('top','50%','important');
+    }
+    const centerGlow=comet?.querySelector('i:nth-child(1)');
+    if(centerGlow){
+      centerGlow.style.setProperty('left','-2px','important');
+      centerGlow.style.setProperty('top','-2px','important');
+    }
     return true;
   };
 
