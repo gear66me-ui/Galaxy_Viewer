@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>Galaxy Viewer 6C — Web Beta</title>
-<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6C-menu-frame-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6C-menu-frame-001">
+<title>Galaxy Viewer 6D — Web Beta</title>
+<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6D-font-bridge-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6D-font-bridge-001">
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Roboto Mono",Consolas,monospace}
@@ -24,11 +24,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../../viewer/artwork/icon_target_vector.svg?v=6C-menu-frame-001" alt="Galaxy Viewer trademark">
-  <div class="gv-startup-message">Starting Galaxy Viewer Beta 6C…</div>
+  <img src="../../../viewer/artwork/icon_target_vector.svg?v=6D-font-bridge-001" alt="Galaxy Viewer trademark">
+  <div class="gv-startup-message">Starting Galaxy Viewer Beta 6D…</div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=6C-menu-frame-001" alt="Galaxy Viewer splash artwork">
+  <img src="../../../viewer/artwork/GV-splash-0003.svg?v=6D-font-bridge-001" alt="Galaxy Viewer splash artwork">
   <div class="gv-startup-message">Loading 1,000 galaxies · 250 spectacular…</div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -66,13 +66,16 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 
   try{
     const viewerReady=(async()=>{
-      const response=await fetch('../../../viewer/GV-beta-0006C.py?v='+Date.now(),{cache:'no-store'});
-      if(!response.ok)throw new Error(`GV-beta-0006C.py returned HTTP ${response.status}`);
+      const response=await fetch('../../../viewer/GV-beta-0006D.py?v='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw new Error(`GV-beta-0006D.py returned HTTP ${response.status}`);
       const source=await response.text();
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
       const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch||!jsMatch)throw new Error('Could not extract the verified 6C standalone viewer.');
+      if(!htmlMatch||!jsMatch)throw new Error('Could not extract the verified 6D bridge viewer.');
       document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
+      const fontBridge=document.createElement('style');
+      fontBridge.textContent='#aladin-cosmic-command-test .gv-viewer-menu-label{font-family:"Arial Rounded MT Bold","Trebuchet MS","Segoe UI",sans-serif!important;font-weight:700!important;letter-spacing:.55px!important;text-shadow:0 0 2px rgba(234,248,255,.58)!important;}';
+      document.head.appendChild(fontBridge);
       const cometCss=document.createElement('link');
       cometCss.rel='stylesheet';
       cometCss.href='../../../viewer/GV-beta-0005R-comet-120.css?v='+Date.now();
@@ -81,6 +84,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
       script.textContent=jsMatch[1];
       document.body.appendChild(script);
       await waitForViewer();
+      const versionLabel=document.getElementById('gv-version-label');
+      if(versionLabel)versionLabel.textContent='Galaxy Viewer 6D';
     })();
     await sleep(ICON_MS);
     trademarkStage.hidden=true;
@@ -89,8 +94,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('Galaxy Viewer 6C web beta startup failure',error);
-    showError(`Galaxy Viewer 6C web beta failed to load:\n${error.message}`);
+    console.error('Galaxy Viewer 6D web beta startup failure',error);
+    showError(`Galaxy Viewer 6D web beta failed to load:\n${error.message}`);
   }
 })();
 </script>
