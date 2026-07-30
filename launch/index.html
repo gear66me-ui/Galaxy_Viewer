@@ -4,45 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>Galaxy Viewer — Choose How to Open</title>
-<link rel="icon" href="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054">
+<title>GALAXY VIEWER — 6I</title>
+<link rel="icon" href="../viewer/artwork/icon_target_vector.svg?v=6I-public-launch-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/icon_target_vector.svg?v=6I-public-launch-001">
 <style>
+@font-face{font-family:"Space Age";src:url("../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-public-launch-001") format("opentype");font-style:normal;font-weight:400;font-display:swap}
 :root{color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#000;color:#fff}
-body{min-height:100vh;display:grid;place-items:center;padding:24px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-align:center}
+body{min-height:100vh;display:grid;place-items:center;padding:24px;font-family:"Space Age",sans-serif;text-align:center;text-transform:uppercase}
 main{width:min(100%,420px)}
-h1{margin:0 0 10px;font-size:clamp(28px,8vw,42px);line-height:1.05}
-p{margin:0 0 24px;color:#bfc7d5;font-size:16px}
-.choices{display:grid;gap:14px}
-a{display:flex;align-items:center;justify-content:center;gap:12px;min-height:58px;padding:14px 18px;border:1px solid #45e7ff;border-radius:12px;color:#fff;text-decoration:none;font-size:18px;font-weight:750;background:#07131b}
-a img{width:34px;height:34px;flex:0 0 34px;border-radius:8px}
+.gv-glyph{display:inline-block;transform:scaleY(1.5);transform-origin:center}
+.badge{display:inline-block;margin-bottom:30px;padding:6px 10px;border:1px solid #7575ff;border-radius:999px;color:#f0edff;background:#111126;font-size:12px;letter-spacing:.08em;box-shadow:0 0 16px rgba(117,117,255,.28)}
+.choices{display:grid;gap:18px}
+a{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:14px;min-height:86px;padding:12px 18px;border:2px solid #7575ff;border-radius:12px;color:#fff;text-decoration:none;font-size:19px;background:#101024;box-shadow:0 0 18px rgba(117,117,255,.24)}
+a img{width:48px;height:48px;object-fit:contain}
+a .label{text-align:center}
 a:active{transform:scale(.99)}
-.secondary{border-color:#7575ff;background:#111127}
-small{display:block;margin-top:20px;color:#7d8796;line-height:1.4}
 </style>
 </head>
 <body>
 <main>
-<h1>Galaxy Viewer</h1>
-<p>Pick how you want to open it.</p>
+<div class="badge"><span class="gv-glyph">GALAXY VIEWER · 6I</span></div>
 <div class="choices">
-<a class="primary" id="gv-open-mobile" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/"><img src="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" alt="">Open Mobile App</a>
-<a class="secondary" href="./4O/"><img src="../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054" alt="">Open Web Browser</a>
+<a id="gv-open-app" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/?source=6i-app&v=6I-public-launch-001"><img src="../viewer/artwork/icon_target_vector.svg?v=6I-public-launch-001" alt=""><span class="label"><span class="gv-glyph">LAUNCH APP VERSION</span></span><span aria-hidden="true"></span></a>
+<a id="gv-open-web" href="./beta/web/?source=6i-web&v=6I-public-launch-001"><img src="../viewer/artwork/icon_target_vector.svg?v=6I-public-launch-001" alt=""><span class="label"><span class="gv-glyph">LAUNCH WEB VERSION</span></span><span aria-hidden="true"></span></a>
 </div>
-<small>The mobile option attempts to open the installed Galaxy Viewer app on Android and falls back to the mobile website. The web option opens release 4O in your browser.</small>
 </main>
 <script>
-(() => {
-  const mobileButton = document.getElementById('gv-open-mobile');
-  const mobileUrl = 'https://gear66me-ui.github.io/Galaxy_Viewer/mobile/';
-  const androidIntent = 'intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/#Intent;scheme=https;S.browser_fallback_url=https%3A%2F%2Fgear66me-ui.github.io%2FGalaxy_Viewer%2Fmobile%2F;end';
-
-  mobileButton.addEventListener('click', event => {
-    if (/Android/i.test(navigator.userAgent)) {
+(()=>{
+  const appButton=document.getElementById('gv-open-app');
+  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/?source=6i-app&v=6I-public-launch-001';
+  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/?source=6i-app&v=6I-public-launch-001#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
+  appButton.addEventListener('click',event=>{
+    if(/Android/i.test(navigator.userAgent)){
       event.preventDefault();
-      window.location.href = androidIntent;
+      window.location.href=intent;
     }
   });
 })();
