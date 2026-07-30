@@ -21,6 +21,8 @@ a{display:flex;align-items:center;justify-content:flex-start;gap:14px;min-height
 a img{width:48px;height:48px;object-fit:contain;flex:0 0 48px}
 a span{flex:1;text-align:center;padding-right:48px}
 a:active{transform:scale(.99)}
+#app-launch-status{display:none;margin:14px 0 0;padding:12px 14px;border:1px solid #7575ff;border-radius:10px;color:#e7e5ff;background:#111126;font-size:14px;line-height:1.45;text-align:left}
+#app-launch-status[data-visible="true"]{display:block}
 small{display:block;margin-top:20px;color:#9898b0;line-height:1.4}
 </style>
 </head>
@@ -30,9 +32,10 @@ small{display:block;margin-top:20px;color:#9898b0;line-height:1.4}
 <h1>Galaxy Viewer 6C</h1>
 <p>The hamburger now opens a five-row menu frame with equal label tiles, empty icon placeholders, temporary selection glow, and a mathematically centered active Target star.</p>
 <div class="choices">
-<a href="../../mobile/beta/?source=beta-6c-launcher&v=6C-menu-frame-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6C-menu-frame-001" alt=""><span>Open Mobile App</span></a>
+<a id="open-mobile-app" href="#" role="button"><img src="../../viewer/artwork/icon_target_vector.svg?v=6C-menu-frame-001" alt=""><span>Open Mobile App</span></a>
 <a href="./web/?v=6C-menu-frame-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6C-menu-frame-001" alt=""><span>Open Web Browser</span></a>
 </div>
+<p id="app-launch-status" role="status" aria-live="polite">Chrome cannot directly open this installed Galaxy Viewer PWA from the beta launcher on every Android device. Open Galaxy Viewer from its installed icon on your phone or tablet. Use <strong>Open Web Browser</strong> only when you want the browser version.</p>
 <small>6C is a complete standalone viewer release based on the verified GV-beta-0006B baseline.</small>
 </main>
 <script>
@@ -47,7 +50,17 @@ small{display:block;margin-top:20px;color:#9898b0;line-height:1.4}
     }catch(error){console.warn('Galaxy Viewer beta launcher cache clear failed',error);}
   };
   await clearBetaCaches();
-  document.querySelectorAll('a').forEach(link=>{
+
+  const appLink=document.getElementById('open-mobile-app');
+  const appStatus=document.getElementById('app-launch-status');
+  appLink.addEventListener('click',async event=>{
+    event.preventDefault();
+    await clearBetaCaches();
+    appStatus.dataset.visible='true';
+    appStatus.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+
+  document.querySelectorAll('.choices a:not(#open-mobile-app)').forEach(link=>{
     link.addEventListener('click',async event=>{
       event.preventDefault();
       const destination=link.href;
