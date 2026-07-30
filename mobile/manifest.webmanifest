@@ -1,9 +1,9 @@
 {
   "id": "/Galaxy_Viewer/mobile/",
-  "name": "Galaxy Viewer",
-  "short_name": "Galaxy Viewer",
-  "description": "Galaxy Viewer mobile astronomy app",
-  "start_url": "/Galaxy_Viewer/mobile/",
+  "name": "GALAXY VIEWER 6I",
+  "short_name": "GALAXY VIEWER",
+  "description": "GALAXY VIEWER 6I STANDALONE MOBILE ASTRONOMY VIEWER",
+  "start_url": "/Galaxy_Viewer/mobile/?source=pwa&v=6I-public-mobile-001",
   "scope": "/Galaxy_Viewer/mobile/",
   "display": "standalone",
   "launch_handler": {
@@ -14,10 +14,10 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "../viewer/artwork/icon.svg?v=829faf3594e85d4ff529d3c2b069a309d580b054",
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-001",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
