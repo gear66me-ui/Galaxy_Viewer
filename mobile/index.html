@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-title" content="GALAXY VIEWER 6I">
 <title>GALAXY VIEWER 6I</title>
 <link rel="manifest" href="./manifest.webmanifest?v=6I-public-mobile-001">
-<link rel="icon" href="../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-001">
+<link rel="icon" href="../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-002" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-002">
 <style>
-@font-face{font-family:"Space Age";src:url("../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-public-mobile-001") format("opentype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"Space Age";src:url("../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-public-mobile-002") format("opentype");font-style:normal;font-weight:400;font-display:swap}
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Space Age",sans-serif;text-transform:uppercase}
 .gv-startup-stage{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}
@@ -22,88 +22,85 @@ body{font-family:"Space Age",sans-serif;text-transform:uppercase}
 #gv-trademark-stage img{width:min(42vw,180px);height:min(42vw,180px)}
 #gv-splash-stage img{width:100%;height:100%;position:absolute;inset:0}
 .gv-startup-message{position:relative;z-index:2;margin-top:18px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,.72);color:#62D8FF;font-size:13px;text-align:center}
-.gv-startup-message>span,#gv-loading-error>span{display:inline-block;transform:scaleY(1.5);transform-origin:center}
+.gv-startup-message>span,#gv-loading-error>span,#gv-runtime-status>span{display:inline-block;transform:scaleY(1.5);transform-origin:center}
 #gv-splash-stage .gv-startup-message{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;white-space:nowrap}
 body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 #gv-loading-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#ff7b8b;white-space:pre-wrap;font:400 14px/1.5 "Space Age",sans-serif;text-transform:uppercase}
+#gv-runtime-status{display:none;position:fixed;left:50%;bottom:max(28px,env(safe-area-inset-bottom));z-index:2147483646;transform:translateX(-50%);padding:7px 11px;border-radius:6px;background:rgba(0,0,0,.78);color:#62D8FF;font-size:12px;white-space:nowrap;text-align:center}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important;min-height:100vh!important;min-height:100svh!important;min-height:100dvh!important}
 </style>
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-001" alt="GALAXY VIEWER TRADEMARK">
+  <img id="gv-trademark-image" src="../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-002" alt="GALAXY VIEWER TRADEMARK">
   <div class="gv-startup-message"><span>STARTING GALAXY VIEWER 6I…</span></div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../viewer/artwork/GV-splash-0003.svg?v=6I-public-mobile-001" alt="GALAXY VIEWER SPLASH ARTWORK">
+  <img id="gv-splash-image" src="../viewer/artwork/GV-splash-0003.svg?v=6I-public-mobile-002" alt="GALAXY VIEWER SPLASH ARTWORK">
   <div class="gv-startup-message"><span>LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
+<div id="gv-runtime-status" role="status"><span>LOADING SKY SURVEY…</span></div>
 <div id="gv-loading-error" role="alert"></div>
 <script>
 (async()=>{
   const ICON_MS=1000;
   const SPLASH_MS=5000;
-  const VIEWER_TIMEOUT_MS=30000;
+  const VIEWER_TIMEOUT_MS=20000;
   const trademarkStage=document.getElementById('gv-trademark-stage');
   const splashStage=document.getElementById('gv-splash-stage');
+  const trademarkImage=document.getElementById('gv-trademark-image');
+  const splashImage=document.getElementById('gv-splash-image');
+  const runtimeStatus=document.getElementById('gv-runtime-status');
   const errorBox=document.getElementById('gv-loading-error');
   const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-  const showError=message=>{trademarkStage.hidden=true;splashStage.hidden=true;errorBox.style.display='block';errorBox.innerHTML='<span>'+String(message).toUpperCase().replace(/[&<>]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]))+'</span>'};
+  const nextPaint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  const escapeHtml=value=>String(value).toUpperCase().replace(/[&<>]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]));
+  const showError=message=>{trademarkStage.hidden=true;splashStage.hidden=true;runtimeStatus.style.display='none';errorBox.style.display='block';errorBox.innerHTML='<span>'+escapeHtml(message)+'</span>'};
+  const waitForImage=async(image,label)=>{
+    if(!image.complete){
+      await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>reject(new Error(label+' IMAGE TIMED OUT.')),10000);
+        image.addEventListener('load',()=>{clearTimeout(timer);resolve();},{once:true});
+        image.addEventListener('error',()=>{clearTimeout(timer);reject(new Error(label+' IMAGE FAILED TO LOAD.'));},{once:true});
+      });
+    }
+    if(!image.naturalWidth)throw new Error(label+' IMAGE FAILED TO LOAD.');
+    if(image.decode)await image.decode().catch(()=>{});
+  };
 
   if('serviceWorker' in navigator){
-    window.addEventListener('load',async()=>{
-      try{
-        const registration=await navigator.serviceWorker.register('./service-worker.js?v=6I-public-mobile-001',{updateViaCache:'none'});
-        await registration.update();
-        if(registration.waiting)registration.waiting.postMessage('SKIP_WAITING');
-      }catch(error){console.warn('GALAXY VIEWER SERVICE WORKER REGISTRATION FAILED',error);}
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./service-worker.js?v=6I-public-mobile-002')
+        .then(registration=>{if(registration.waiting)registration.waiting.postMessage('SKIP_WAITING');})
+        .catch(error=>console.warn('GALAXY VIEWER SERVICE WORKER REGISTRATION FAILED',error));
     });
   }
 
-  const viewerReadiness=()=>{
+  const viewerState=()=>{
     const root=document.getElementById('aladin-cosmic-command-test');
     const canvas=root?.querySelector('canvas');
-    const rect=root?.getBoundingClientRect();
+    const rootRect=root?.getBoundingClientRect();
     const canvasRect=canvas?.getBoundingClientRect();
     const versionLabel=root?.querySelector('#gv-version-label');
-    const panel=root?.querySelector('#gv-random-galaxy-panel');
-    const nameLabel=root?.querySelector('#gv-random-galaxy-name');
-    const backButton=root?.querySelector('#gv-back-galaxy');
-    const nextButton=root?.querySelector('#gv-next-galaxy');
-    const nameText=String(nameLabel?.textContent||'').replace(/\s+/g,' ').trim();
-    const namedGalaxy=Boolean(nameText)&&!nameText.includes('1,000 GALAXIES')&&!nameText.includes('CATALOGS UNAVAILABLE');
     return {
-      ready:Boolean(
-        window.aladin_cosmic_command_test&&
-        root&&canvas&&
-        rect?.width>100&&rect?.height>100&&
-        canvasRect?.width>100&&canvasRect?.height>100&&
-        versionLabel&&panel&&backButton&&nextButton&&namedGalaxy
-      ),
-      details:{root:Boolean(root),canvas:Boolean(canvas),viewer:Boolean(window.aladin_cosmic_command_test),rootSize:rect?`${Math.round(rect.width)}X${Math.round(rect.height)}`:'0X0',canvasSize:canvasRect?`${Math.round(canvasRect.width)}X${Math.round(canvasRect.height)}`:'0X0',versionLabel:Boolean(versionLabel),panel:Boolean(panel),navigation:Boolean(backButton&&nextButton),galaxy:nameText||'MISSING'}
+      ready:Boolean(window.aladin_cosmic_command_test&&root&&canvas&&rootRect?.width>100&&rootRect?.height>100&&canvasRect?.width>100&&canvasRect?.height>100&&versionLabel),
+      details:{viewer:Boolean(window.aladin_cosmic_command_test),root:Boolean(root),canvas:Boolean(canvas),rootSize:rootRect?`${Math.round(rootRect.width)}X${Math.round(rootRect.height)}`:'0X0',canvasSize:canvasRect?`${Math.round(canvasRect.width)}X${Math.round(canvasRect.height)}`:'0X0',versionLabel:Boolean(versionLabel)}
     };
   };
 
   const waitForViewer=()=>new Promise((resolve,reject)=>{
     const deadline=performance.now()+VIEWER_TIMEOUT_MS;
     const check=()=>{
-      const state=viewerReadiness();
+      const state=viewerState();
       if(state.ready){resolve();return;}
-      if(performance.now()>=deadline){reject(new Error('VIEWER READINESS TIMED OUT: '+JSON.stringify(state.details)));return;}
-      setTimeout(check,150);
+      if(performance.now()>=deadline){reject(new Error('VIEWER INITIALIZATION TIMED OUT: '+JSON.stringify(state.details)));return;}
+      setTimeout(check,120);
     };
     check();
   });
 
-  const presentation=(async()=>{
-    await sleep(ICON_MS);
-    trademarkStage.hidden=true;
-    splashStage.hidden=false;
-    await sleep(SPLASH_MS);
-  })();
-
-  const viewerStartup=(async()=>{
-    const response=await fetch('../viewer/GV-beta-0006I.py?v=6I-public-mobile-001');
+  const loadViewer=async()=>{
+    const response=await fetch('../viewer/GV-beta-0006I.py?v=6I-public-mobile-002');
     if(!response.ok)throw new Error(`GV-BETA-0006I.PY RETURNED HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
@@ -112,21 +109,33 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const cometCss=document.createElement('link');
     cometCss.rel='stylesheet';
-    cometCss.href='../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-001';
+    cometCss.href='../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-002';
     document.head.appendChild(cometCss);
     const script=document.createElement('script');
     script.textContent=jsMatch[1];
     document.body.appendChild(script);
     await waitForViewer();
-  })();
+  };
+
+  const showPresentation=async()=>{
+    await Promise.all([waitForImage(trademarkImage,'TRADEMARK'),waitForImage(splashImage,'SPLASH')]);
+    await nextPaint();
+    await sleep(ICON_MS);
+    trademarkStage.hidden=true;
+    splashStage.hidden=false;
+    await nextPaint();
+    await sleep(SPLASH_MS);
+  };
 
   try{
-    await presentation;
-    await viewerStartup;
+    const viewerStartup=loadViewer();
+    const presentation=showPresentation();
+    await Promise.all([viewerStartup,presentation]);
+    runtimeStatus.style.display='block';
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
+    setTimeout(()=>{runtimeStatus.style.display='none';},8000);
   }catch(error){
-    await presentation.catch(()=>{});
     console.error('GALAXY VIEWER 6I MOBILE STARTUP FAILURE',error);
     showError(`GALAXY VIEWER 6I FAILED TO LOAD:\n${error.message}`);
   }
