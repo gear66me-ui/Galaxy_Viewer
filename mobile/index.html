@@ -41,9 +41,9 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 <div id="gv-loading-error" role="alert"></div>
 <script>
 (async()=>{
-  const MIN_SPLASH_MS=1000;
-  const VIEWER_TIMEOUT_MS=20000;
-  const started=performance.now();
+  const ICON_MS=1000;
+  const SPLASH_MS=5000;
+  const VIEWER_TIMEOUT_MS=30000;
   const trademarkStage=document.getElementById('gv-trademark-stage');
   const splashStage=document.getElementById('gv-splash-stage');
   const errorBox=document.getElementById('gv-loading-error');
@@ -60,43 +60,73 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     });
   }
 
+  const viewerReadiness=()=>{
+    const root=document.getElementById('aladin-cosmic-command-test');
+    const canvas=root?.querySelector('canvas');
+    const rect=root?.getBoundingClientRect();
+    const canvasRect=canvas?.getBoundingClientRect();
+    const versionLabel=root?.querySelector('#gv-version-label');
+    const panel=root?.querySelector('#gv-random-galaxy-panel');
+    const nameLabel=root?.querySelector('#gv-random-galaxy-name');
+    const backButton=root?.querySelector('#gv-back-galaxy');
+    const nextButton=root?.querySelector('#gv-next-galaxy');
+    const nameText=String(nameLabel?.textContent||'').replace(/\s+/g,' ').trim();
+    const namedGalaxy=Boolean(nameText)&&!nameText.includes('1,000 GALAXIES')&&!nameText.includes('CATALOGS UNAVAILABLE');
+    return {
+      ready:Boolean(
+        window.aladin_cosmic_command_test&&
+        root&&canvas&&
+        rect?.width>100&&rect?.height>100&&
+        canvasRect?.width>100&&canvasRect?.height>100&&
+        versionLabel&&panel&&backButton&&nextButton&&namedGalaxy
+      ),
+      details:{root:Boolean(root),canvas:Boolean(canvas),viewer:Boolean(window.aladin_cosmic_command_test),rootSize:rect?`${Math.round(rect.width)}X${Math.round(rect.height)}`:'0X0',canvasSize:canvasRect?`${Math.round(canvasRect.width)}X${Math.round(canvasRect.height)}`:'0X0',versionLabel:Boolean(versionLabel),panel:Boolean(panel),navigation:Boolean(backButton&&nextButton),galaxy:nameText||'MISSING'}
+    };
+  };
+
   const waitForViewer=()=>new Promise((resolve,reject)=>{
     const deadline=performance.now()+VIEWER_TIMEOUT_MS;
     const check=()=>{
-      const root=document.getElementById('aladin-cosmic-command-test');
-      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test){resolve();return;}
-      if(performance.now()>=deadline){reject(new Error('THE ALADIN VIEWER DID NOT CREATE A CANVAS WITHIN 20 SECONDS.'));return;}
-      setTimeout(check,100);
+      const state=viewerReadiness();
+      if(state.ready){resolve();return;}
+      if(performance.now()>=deadline){reject(new Error('VIEWER READINESS TIMED OUT: '+JSON.stringify(state.details)));return;}
+      setTimeout(check,150);
     };
     check();
   });
 
-  try{
-    const viewerReady=(async()=>{
-      const response=await fetch('../viewer/GV-beta-0006I.py?v=6I-public-mobile-001');
-      if(!response.ok)throw new Error(`GV-BETA-0006I.PY RETURNED HTTP ${response.status}`);
-      const source=await response.text();
-      const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
-      const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch||!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6I STANDALONE VIEWER.');
-      document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
-      const cometCss=document.createElement('link');
-      cometCss.rel='stylesheet';
-      cometCss.href='../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-001';
-      document.head.appendChild(cometCss);
-      const script=document.createElement('script');
-      script.textContent=jsMatch[1];
-      document.body.appendChild(script);
-      await waitForViewer();
-    })();
-
-    await sleep(350);
+  const presentation=(async()=>{
+    await sleep(ICON_MS);
     trademarkStage.hidden=true;
     splashStage.hidden=false;
-    await Promise.all([viewerReady,sleep(Math.max(0,MIN_SPLASH_MS-(performance.now()-started)))]);
+    await sleep(SPLASH_MS);
+  })();
+
+  const viewerStartup=(async()=>{
+    const response=await fetch('../viewer/GV-beta-0006I.py?v=6I-public-mobile-001');
+    if(!response.ok)throw new Error(`GV-BETA-0006I.PY RETURNED HTTP ${response.status}`);
+    const source=await response.text();
+    const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+    const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
+    if(!htmlMatch||!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6I STANDALONE VIEWER.');
+    document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
+    const cometCss=document.createElement('link');
+    cometCss.rel='stylesheet';
+    cometCss.href='../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-001';
+    document.head.appendChild(cometCss);
+    const script=document.createElement('script');
+    script.textContent=jsMatch[1];
+    document.body.appendChild(script);
+    await waitForViewer();
+  })();
+
+  try{
+    await presentation;
+    await viewerStartup;
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
+    await presentation.catch(()=>{});
     console.error('GALAXY VIEWER 6I MOBILE STARTUP FAILURE',error);
     showError(`GALAXY VIEWER 6I FAILED TO LOAD:\n${error.message}`);
   }
