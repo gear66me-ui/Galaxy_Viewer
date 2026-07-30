@@ -1,17 +1,18 @@
-const CACHE_NAME='galaxy-viewer-mobile-6i-public-002';
+const CACHE_NAME='galaxy-viewer-mobile-6i-public-001';
 const CACHE_PREFIX='galaxy-viewer-mobile-';
 const APP_SHELL=[
   './',
   './index.html',
   './manifest.webmanifest?v=6I-public-mobile-001',
-  '../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-002'
+  '../viewer/GV-beta-0006I.py?v=6I-public-mobile-001',
+  '../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-001',
+  '../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-001',
+  '../viewer/artwork/GV-splash-0003.svg?v=6I-public-mobile-001',
+  '../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-public-mobile-001'
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache=>cache.addAll(APP_SHELL))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
@@ -45,6 +46,7 @@ self.addEventListener('fetch',event=>{
   const request=event.request;
   const url=new URL(request.url);
   const sameOrigin=url.origin===self.location.origin;
+  const versioned=sameOrigin&&url.searchParams.get('v')==='6I-public-mobile-001';
 
   if(request.mode==='navigate'){
     event.respondWith(
@@ -55,13 +57,16 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  if(sameOrigin){
+  if(versioned){
     event.respondWith(
-      caches.match(request)
-        .then(cached=>cached||fetch(request).then(response=>cacheResponse(request,response)))
+      caches.match(request).then(cached=>cached||fetch(request).then(response=>cacheResponse(request,response)))
     );
     return;
   }
 
-  event.respondWith(fetch(request));
+  event.respondWith(
+    fetch(request)
+      .then(response=>cacheResponse(request,response))
+      .catch(()=>caches.match(request))
+  );
 });
