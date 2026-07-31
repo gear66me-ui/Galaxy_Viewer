@@ -1,10 +1,10 @@
 {
-  "id": "/Galaxy_Viewer/launch/beta/",
-  "name": "GALAXY VIEWER BETA 6I",
+  "id": "/Galaxy_Viewer/mobile/beta/",
+  "name": "GALAXY VIEWER BETA 6K",
   "short_name": "GALAXY VIEWER",
-  "description": "GALAXY VIEWER BETA 6I INSTALLATION LAUNCHER",
-  "start_url": "/Galaxy_Viewer/launch/beta/?source=pwa",
-  "scope": "/Galaxy_Viewer/launch/beta/",
+  "description": "GALAXY VIEWER BETA 6K STANDALONE MOBILE APPLICATION",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=6K-standalone-scope-001",
+  "scope": "/Galaxy_Viewer/",
   "display": "standalone",
   "launch_handler": {
     "client_mode": "navigate-existing"
@@ -14,16 +14,16 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-192.png",
+      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-192.png?v=6K-dark-001",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png",
+      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png?v=6K-dark-001",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
