@@ -105,7 +105,7 @@ if (__earlyDiag) {
     if(detail===undefined)return '';
     if(detail instanceof Error)return ` — ${detail.name}: ${detail.message}`;
     if(typeof detail==='string')return ` — ${detail}`;
-    try{return ` — ${JSON.stringify(detail)}";}catch(_){return ` — ${String(detail)}`;}
+    try{return ` — ${JSON.stringify(detail)}`;}catch(_){return ` — ${String(detail)}`;}
   };
   const appendDiagnostic=(label,detail)=>{
     if(!diagnosticMode)return;
