@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000">
+<title>Galaxy Viewer — Singularity 0005</title>
+<style>
+@font-face{font-family:"Space Age";src:url("../Fonts/Space%20Age/space%20age.otf") format("opentype");font-display:swap}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#sig{z-index:5;pointer-events:none}
+#laser{position:fixed;z-index:7;width:8px;height:8px;border-radius:50%;background:#fff;opacity:0;pointer-events:none;
+box-shadow:0 0 4px #fff,0 0 11px #9beaff,0 0 22px #17a9ff,0 0 36px #005cff}
+#laser:before{content:"";position:absolute;inset:-11px;border:1px solid rgba(146,235,255,.85);border-radius:50%}
+#black{position:fixed;inset:0;z-index:20;background:#000;opacity:0;pointer-events:none}
+</style>
+</head><body>
+<canvas id="scene"></canvas><canvas id="sig"></canvas><i id="laser"></i><div id="black"></div>
+<script>
+(()=>{'use strict';
+const CFG={etchStart:500,etchEnd:2000,siphonStart:2500,edgeEnd:3400,spreadEnd:5000,collapseEnd:6500,
+annulusEnd:7000,diskEnd:7300,pointEnd:7560,pulsarEnd:7860,fadeStart:7900,fadeEnd:8600,blackAt:8750,launchAt:9000,
+cx:.50,cy:.57,hr:.092,maxDpr:1.65};
+const src='Galaxy%20Splash%20Ibis.png',scene=document.getElementById('scene'),sig=document.getElementById('sig'),
+laser=document.getElementById('laser'),black=document.getElementById('black'),ctx=scene.getContext('2d'),sctx=sig.getContext('2d'),im=new Image();
+let fit={},dpr=1,start=0;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=(a,b,v)=>{let x=clamp((v-a)/(b-a),0,1);return x*x*(3-2*x)};
+im.onload=boot;im.src=src;
+function boot(){resize();addEventListener('resize',resize,{passive:true});start=performance.now();requestAnimationFrame(frame)}
+function resize(){dpr=Math.min(devicePixelRatio||1,CFG.maxDpr);scene.width=sig.width=Math.round(innerWidth*dpr);scene.height=sig.height=Math.round(innerHeight*dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0);sctx.setTransform(dpr,0,0,dpr,0,0);
+const ia=im.width/im.height,sa=innerWidth/innerHeight;let w,h,x,y;if(sa>ia){h=innerHeight;w=h*ia;x=(innerWidth-w)/2;y=0}else{w=innerWidth;h=w/ia;x=0;y=(innerHeight-h)/2}
+fit={x,y,w,h,cx:x+CFG.cx*w,cy:y+CFG.cy*h,hr:CFG.hr*w}}
+function drawBase(ms){
+ctx.clearRect(0,0,innerWidth,innerHeight);ctx.fillStyle='#000';ctx.fillRect(0,0,innerWidth,innerHeight);
+if(ms<CFG.siphonStart){ctx.drawImage(im,fit.x,fit.y,fit.w,fit.h);hideBakedName();return}
+const edge=smooth(CFG.siphonStart,CFG.edgeEnd,ms),spread=smooth(CFG.edgeEnd-250,CFG.spreadEnd,ms),collapse=smooth(CFG.spreadEnd-350,CFG.collapseEnd,ms);
+const rings=34,maxR=Math.hypot(innerWidth,innerHeight)*.74;
+for(let i=rings-1;i>=0;i--){const q=i/rings,r0=fit.hr+(maxR-fit.hr)*q,r1=fit.hr+(maxR-fit.hr)*((i+1)/rings);
+const local=clamp((spread-q*.76)/.24,0,1),inner=1-q,ang=-(edge*inner*1.25+local*(.18+inner*2.8)+collapse*(.15+inner*3.6));
+const sc=Math.max(.02,1-collapse*(.86+.12*inner)-local*.08*inner);
+ctx.save();ctx.beginPath();ctx.arc(fit.cx,fit.cy,r1,0,Math.PI*2);ctx.arc(fit.cx,fit.cy,r0,0,Math.PI*2,true);ctx.clip('evenodd');
+ctx.translate(fit.cx,fit.cy);ctx.rotate(ang);ctx.scale(sc,sc);ctx.translate(-fit.cx,-fit.cy);ctx.drawImage(im,fit.x,fit.y,fit.w,fit.h);ctx.restore()}
+hideBakedName();
+const ann=smooth(CFG.collapseEnd,CFG.annulusEnd,ms)*(1-smooth(CFG.annulusEnd,CFG.diskEnd,ms)),
+disk=smooth(CFG.annulusEnd,CFG.diskEnd,ms)*(1-smooth(CFG.diskEnd,CFG.pointEnd,ms)),
+point=smooth(CFG.diskEnd,CFG.pointEnd,ms)*(1-smooth(CFG.pointEnd,CFG.pulsarEnd,ms)),
+pulsar=smooth(CFG.pointEnd,CFG.pulsarEnd,ms)*(1-smooth(CFG.pulsarEnd,CFG.fadeStart,ms));
+if(ann>0){const r=fit.hr*.25*(1-.72*smooth(CFG.collapseEnd,CFG.annulusEnd,ms));ctx.save();ctx.strokeStyle=`rgba(72,177,255,${ann})`;
+ctx.lineWidth=Math.max(2,fit.hr*.07);ctx.shadowColor='#0c8fff';ctx.shadowBlur=24;ctx.beginPath();ctx.arc(fit.cx,fit.cy,r,0,Math.PI*2);ctx.stroke();ctx.restore()}
+if(disk>0){const r=fit.hr*.25*(1-.86*smooth(CFG.annulusEnd,CFG.diskEnd,ms));ctx.save();ctx.fillStyle=`rgba(28,125,255,${disk})`;
+ctx.shadowColor='#37b6ff';ctx.shadowBlur=28;ctx.beginPath();ctx.arc(fit.cx,fit.cy,r,0,Math.PI*2);ctx.fill();ctx.restore()}
+if(point>0||pulsar>0){ctx.save();ctx.translate(fit.cx,fit.cy);ctx.fillStyle=`rgba(255,255,255,${point+pulsar})`;ctx.shadowColor='#c6f7ff';ctx.shadowBlur=18;
+ctx.beginPath();ctx.arc(0,0,Math.max(1.3,3.2*point),0,Math.PI*2);ctx.fill();if(pulsar>0){let L=fit.hr*.22*pulsar;ctx.strokeStyle=`rgba(170,235,255,${pulsar})`;
+ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-L,0);ctx.lineTo(L,0);ctx.moveTo(0,-L*1.65);ctx.lineTo(0,L*1.65);ctx.stroke()}ctx.restore()}}
+function hideBakedName(){const x=fit.x+fit.w*.26,y=fit.y+fit.h*.905,w=fit.w*.49,h=fit.h*.055;
+ctx.save();ctx.fillStyle='#000';ctx.shadowColor='#000';ctx.shadowBlur=18;ctx.fillRect(x-12,y-8,w+24,h+16);ctx.restore()}
+function drawSignature(ms){
+sctx.clearRect(0,0,innerWidth,innerHeight);const x=fit.x+fit.w*.50,y=fit.y+fit.h*.925;
+const p=clamp((ms-CFG.etchStart)/(CFG.etchEnd-CFG.etchStart),0,1),fade=1-smooth(CFG.fadeStart,CFG.fadeEnd,ms);
+if(ms<CFG.etchStart)return;
+const text='BY GERMÁN ARCINIEGAS',font=Math.max(13,fit.w*.025);sctx.save();sctx.font=`${font}px "Space Age",sans-serif`;sctx.textAlign='center';sctx.textBaseline='middle';
+sctx.lineJoin='round';sctx.lineWidth=Math.max(1.1,font*.075);sctx.strokeStyle='#073b86';sctx.fillStyle='#eafcff';sctx.shadowColor='#087cff';sctx.shadowBlur=12;sctx.globalAlpha=fade;
+const m=sctx.measureText(text),tw=m.width,tx=x-tw/2;
+if(p<1){sctx.beginPath();const tracks=12;for(let i=0;i<tracks;i++){const t=clamp(p*tracks-i,0,1);if(t>0)sctx.rect(tx,y-font*.7+i*font*1.4/tracks,tw*t,font*1.5/tracks)}sctx.clip()}
+sctx.strokeText(text,x,y);sctx.fillText(text,x,y);sctx.restore();
+if(p>0&&p<1){const tracks=12,row=Math.min(tracks-1,Math.floor(p*tracks)),scan=(p*tracks)%1,lx=tx+tw*scan,ly=y-font*.65+(row+.5)*font*1.3/tracks;
+laser.style.opacity='1';laser.style.left=(lx-4)+'px';laser.style.top=(ly-4)+'px';sctx.save();sctx.globalCompositeOperation='lighter';
+for(let i=0;i<12;i++){let a=Math.random()*Math.PI*2,r=Math.random()*20;sctx.fillStyle=`rgba(130,225,255,${Math.random()*.85})`;sctx.fillRect(lx+Math.cos(a)*r,ly+Math.sin(a)*r,1.2,1.2)}sctx.restore()}
+else laser.style.opacity='0';
+if(ms>CFG.fadeStart&&ms<CFG.fadeEnd){const q=smooth(CFG.fadeStart,CFG.fadeEnd,ms);sctx.save();sctx.globalCompositeOperation='lighter';
+for(let i=0;i<70;i++){let px=tx+Math.random()*tw*q,py=y-font*.4+Math.random()*font+q*58*Math.random();sctx.fillStyle=`rgba(120,205,255,${(1-q)*Math.random()})`;sctx.fillRect(px,py,1.2,1.2)}sctx.restore()}}
+function frame(now){const ms=now-start;drawBase(ms);drawSignature(ms);black.style.opacity=String(smooth(CFG.blackAt,CFG.launchAt,ms));
+if(ms<CFG.launchAt)requestAnimationFrame(frame);else location.href='../../../mobile/beta/'}
+})();
+</script></body></html>
