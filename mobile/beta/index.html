@@ -95,7 +95,10 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
     console.error('GALAXY VIEWER 6I MOBILE BETA STARTUP FAILURE',error);
-    showError(`GALAXY VIEWER 6I MOBILE BETA FAILED TO LOAD:\n${error.message}`);
+    const fallback=new URL('../../launch/beta/web/',window.location.href);
+    fallback.searchParams.set('source','beta-6i-app-fallback');
+    fallback.searchParams.set('reason',String(error?.message||error).slice(0,180));
+    window.location.replace(fallback.href);
   }
 })();
 </script>
