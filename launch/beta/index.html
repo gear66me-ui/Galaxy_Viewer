@@ -27,23 +27,63 @@ a img,button img{width:48px;height:48px;object-fit:contain;flex:0 0 48px}
 a span,button span{flex:1;text-align:center;padding-right:48px}
 a:active,button:active{transform:scale(.99)}
 #gv-install-app{border-color:#62D8FF;box-shadow:0 0 20px rgba(98,216,255,.38)}
-#gv-install-app[hidden]{display:none}
+#gv-install-app[aria-disabled="true"]{opacity:.72}
+#gv-install-status{min-height:0;margin:0;color:#62D8FF;font:400 11px/1.5 "Space Age",sans-serif;text-transform:uppercase}
+#gv-install-status:empty{display:none}
 </style>
 </head>
 <body>
 <main>
 <div class="badge"><span class="gv-glyph">GALAXY VIEWER · BETA 6I</span></div>
 <div class="choices">
-<button id="gv-install-app" type="button" hidden><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span class="gv-glyph">INSTALL GALAXY VIEWER</span></span></button>
+<button id="gv-install-app" type="button" aria-disabled="true"><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span id="gv-install-label" class="gv-glyph">PREPARING INSTALL</span></span></button>
+<p id="gv-install-status" role="status" aria-live="polite"></p>
 <a id="gv-open-app" href="../../mobile/beta/?source=beta-6i-app&v=6I-coordinate-harmony-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span class="gv-glyph">LAUNCH APP</span></span></a>
 <a id="gv-open-diagnostics" href="../../mobile/beta/?diag=1"><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span class="gv-glyph">LAUNCH DIAGNOSTICS</span></span></a>
 </div>
 </main>
 <script>
+const installButton=document.getElementById('gv-install-app');
+const installLabel=document.getElementById('gv-install-label');
+const installStatus=document.getElementById('gv-install-status');
+let deferredInstallPrompt=null;
+
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  deferredInstallPrompt=event;
+  installButton.setAttribute('aria-disabled','false');
+  installLabel.textContent='INSTALL GALAXY VIEWER';
+  installStatus.textContent='';
+});
+
+window.addEventListener('appinstalled',()=>{
+  deferredInstallPrompt=null;
+  installButton.setAttribute('aria-disabled','true');
+  installLabel.textContent='GALAXY VIEWER INSTALLED';
+  installStatus.textContent='INSTALLATION COMPLETE';
+  console.log('GALAXY VIEWER INSTALLED');
+});
+
+installButton.addEventListener('click',async()=>{
+  if(!deferredInstallPrompt){
+    installStatus.textContent='PLEASE REMAIN ON THIS PAGE FOR 30 SECONDS, TAP THE PAGE ONCE, THEN CHECK AGAIN.';
+    return;
+  }
+  const promptEvent=deferredInstallPrompt;
+  deferredInstallPrompt=null;
+  installButton.setAttribute('aria-disabled','true');
+  installLabel.textContent='OPENING INSTALL';
+  installStatus.textContent='';
+  promptEvent.prompt();
+  const choice=await promptEvent.userChoice;
+  if(choice.outcome!=='accepted'){
+    installLabel.textContent='PREPARING INSTALL';
+    installStatus.textContent='INSTALLATION WAS NOT ACCEPTED. WAIT FOR CHROME TO OFFER INSTALL AGAIN.';
+  }
+});
+
 (async()=>{
-  const installButton=document.getElementById('gv-install-app');
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-  let deferredInstallPrompt=null;
 
   if(standalone){
     window.location.replace('../../mobile/beta/?source=pwa&v=6I-launcher-pwa-001');
@@ -58,30 +98,6 @@ a:active,button:active{transform:scale(.99)}
       console.error('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTRATION FAILED',error);
     }
   }
-
-  window.addEventListener('beforeinstallprompt',event=>{
-    event.preventDefault();
-    deferredInstallPrompt=event;
-    installButton.hidden=false;
-  });
-
-  installButton.addEventListener('click',async()=>{
-    if(!deferredInstallPrompt)return;
-    installButton.hidden=true;
-    deferredInstallPrompt.prompt();
-    try{
-      const choice=await deferredInstallPrompt.userChoice;
-      if(choice.outcome!=='accepted')installButton.hidden=false;
-    }finally{
-      deferredInstallPrompt=null;
-    }
-  });
-
-  window.addEventListener('appinstalled',()=>{
-    deferredInstallPrompt=null;
-    installButton.hidden=true;
-    console.log('GALAXY VIEWER INSTALLED');
-  });
 
   const clearBetaCaches=async()=>{
     try{
