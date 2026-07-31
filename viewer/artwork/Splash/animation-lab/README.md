@@ -2,17 +2,22 @@
 
 Frozen, self-contained archive of the original splash animation experiments.
 
-## Archived experiments
+## Launch files
 
-- `0001/GV-splash-animation-0001.html` — original siphon approach
-- `0002/GV-splash-animation-0002.html` — finite point and quick quasar cross
-- `0003/GV-splash-animation-0003.html` — continuous collapse and four-point pulsar
-- `0004/GV-splash-animation-0004.html` — 2.5-second opening hold
-- `0005/GV-splash-animation-0005.html` — blue-edge rounded singularity implosion
+- `mobile/tests/splash/GV-splash-animation-0001.html` — original siphon approach
+- `mobile/tests/splash/GV-splash-animation-0002.html` — finite point and quick quasar cross
+- `mobile/tests/splash/GV-splash-animation-0003.html` — continuous collapse and four-point pulsar
+- `mobile/tests/splash/GV-splash-animation-0004.html` — 2.5-second opening hold
+- `mobile/tests/splash/GV-splash-animation-0005.html` — blue-edge rounded singularity implosion
 
-## Shared assets
+## Self-contained assets
 
-- `assets/fonts/space age.otf`
-- `assets/images/GV-splash-0002.png`
+The directory layout intentionally mirrors the original relative paths:
+
+- `viewer/artwork/Fonts/Space Age/space age.otf`
+- `viewer/artwork/GV-splash-0002.png`
+- `viewer/artwork/splash/GV-splash-0004.png`
+
+The two archived PNG paths contain the same verified splash-image blob so the original primary/fallback loading logic works entirely inside this archive.
 
 The archived HTML files are frozen engineering references. Future development belongs in the Galaxy Viewer Singularity series.
