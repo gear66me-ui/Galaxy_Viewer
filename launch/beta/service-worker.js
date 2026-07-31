@@ -1,4 +1,4 @@
-const GV_LAUNCHER_SW_VERSION = 'galaxy-viewer-beta-launcher-6i-001';
+const GV_LAUNCHER_SW_VERSION = 'galaxy-viewer-beta-launcher-6m-001';
 
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
