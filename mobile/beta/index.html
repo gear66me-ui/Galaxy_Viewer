@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 6I">
 <title>GALAXY VIEWER 6I — MOBILE APP BETA</title>
-<link rel="manifest" href="./manifest.webmanifest?v=6I-coordinate-harmony-001">
+<link rel="manifest" href="./manifest.webmanifest?v=6I-pwa-install-001">
 <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001">
 <style>
@@ -35,6 +35,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 .gv-diag-controls button,.gv-diag-toggle{min-height:38px;border:1px solid #62D8FF;border-radius:6px;background:#101024;color:#fff;font:400 10px "Space Age",sans-serif;text-transform:uppercase}
 .gv-diag-toggle{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;padding:7px}
 .gv-diag-toggle input{width:18px;height:18px}
+#gv-install-app{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483646;transform:translateX(-50%);min-width:min(88vw,360px);min-height:54px;padding:10px 18px;border:2px solid #62D8FF;border-radius:10px;background:rgba(10,10,36,.96);color:#fff;box-shadow:0 0 18px rgba(98,216,255,.45);font:400 13px/1.2 "Space Age",sans-serif;text-transform:uppercase;letter-spacing:.04em}
+#gv-install-app[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -47,6 +49,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   <div class="gv-startup-message"><span>LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
+<button id="gv-install-app" type="button" hidden>INSTALL GALAXY VIEWER</button>
 <section id="gv-diagnostics" hidden aria-label="GALAXY VIEWER ENGINEERING DIAGNOSTICS">
   <div class="gv-diag-title">ENGINEERING DIAGNOSTICS</div>
   <div id="gv-diag-log" role="log" aria-live="polite"></div>
@@ -69,6 +72,40 @@ if (__earlyDiag) {
     log.textContent = "[EARLY] DIAGNOSTIC MODE ENTERED";
   }
 }
+</script>
+<script>
+(()=>{
+  const installButton=document.getElementById('gv-install-app');
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  let deferredInstallPrompt=null;
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).then(registration=>{
+        console.log('GALAXY VIEWER SERVICE WORKER REGISTERED',registration.scope);
+      }).catch(error=>{
+        console.error('GALAXY VIEWER SERVICE WORKER REGISTRATION FAILED',error);
+      });
+    });
+  }
+  if(!standalone){
+    window.addEventListener('beforeinstallprompt',event=>{
+      event.preventDefault();
+      deferredInstallPrompt=event;
+      installButton.hidden=false;
+    });
+    installButton.addEventListener('click',async()=>{
+      if(!deferredInstallPrompt)return;
+      installButton.hidden=true;
+      deferredInstallPrompt.prompt();
+      try{await deferredInstallPrompt.userChoice;}finally{deferredInstallPrompt=null;}
+    });
+    window.addEventListener('appinstalled',()=>{
+      deferredInstallPrompt=null;
+      installButton.hidden=true;
+      console.log('GALAXY VIEWER INSTALLED');
+    });
+  }
+})();
 </script>
 <script>
 (async()=>{
