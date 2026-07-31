@@ -1,4 +1,4 @@
-const CACHE_NAME='galaxy-viewer-beta-clean-slate';
+const CACHE_NAME='galaxy-viewer-beta-6m-clean-slate-001';
 
 const clearAllCaches=()=>caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key))));
 
