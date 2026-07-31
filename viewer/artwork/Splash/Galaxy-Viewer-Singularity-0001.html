@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer Singularity 0001</title>
+<style>
+@font-face{font-family:"Space Age";src:url("../Fonts/Space%20Age/space%20age.otf") format("opentype");font-display:swap}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:"Space Age",sans-serif;text-transform:uppercase}
+#stage{position:fixed;inset:0;overflow:hidden;background:#000}
+#poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;background:#000}
+#hole-cover,#hole-layer,#fx{position:absolute;pointer-events:none}
+#hole-cover{border-radius:50%;background:#000;opacity:0}
+#hole-layer{border-radius:50%;overflow:hidden;transform-origin:50% 50%;opacity:0}
+#hole-layer img{position:absolute;max-width:none;max-height:none}
+#fx{inset:0;width:100%;height:100%}
+#signature{position:absolute;left:50%;bottom:max(9vh,calc(env(safe-area-inset-bottom) + 38px));width:min(92vw,900px);transform:translateX(-50%);overflow:visible;filter:drop-shadow(0 0 5px #42bfff) drop-shadow(0 0 13px #087dff)}
+#signature text{font-family:"Space Age",sans-serif;font-size:72px;letter-spacing:2px;text-anchor:middle;paint-order:stroke fill;fill:#79ddff;stroke:#0750a7;stroke-width:2.1px;stroke-linejoin:round}
+#signature .engrave{fill:transparent;stroke:#bff5ff;stroke-width:2.8px;stroke-dasharray:1900;stroke-dashoffset:1900;animation:engrave 1s linear .12s forwards}
+#signature .metal{opacity:0;animation:metalIn .1s linear 1.03s forwards,pulse 1.8s ease-in-out 1.08s 3}
+#weld{opacity:0;filter:url(#hotGlow);animation:weldHead 1s linear .12s forwards}
+#launch-note{position:absolute;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);color:#9fe8ff;font:11px/1.2 "Space Age",sans-serif;letter-spacing:1px;text-shadow:0 0 7px #189cff;opacity:.65;white-space:nowrap}
+@keyframes engrave{to{stroke-dashoffset:0}}
+@keyframes metalIn{to{opacity:1}}
+@keyframes pulse{0%,100%{filter:brightness(1)}20%{filter:brightness(2.1)}48%{filter:brightness(1.2)}70%{filter:brightness(1.75)}}
+@keyframes weldHead{0%{opacity:1;transform:translate(58px,76px)}8%{transform:translate(115px,76px)}13%{opacity:.15}16%{opacity:1;transform:translate(148px,76px)}86%{opacity:1;transform:translate(842px,76px)}91%{opacity:.15}94%{opacity:1;transform:translate(58px,76px)}98%{opacity:1}100%{opacity:0;transform:translate(58px,76px)}}
+@media(max-width:560px){#signature{width:94vw;bottom:max(8vh,calc(env(safe-area-inset-bottom) + 28px))}#signature text{font-size:58px}}
+@media(prefers-reduced-motion:reduce){#signature .engrave{animation:none;stroke-dashoffset:0}#signature .metal{animation:none;opacity:1}#weld{display:none}}
+</style>
+</head>
+<body>
+<main id="stage" aria-label="Galaxy Viewer singularity splash animation">
+<img id="poster" src="Galaxy%20Splash%20Ibis.png" alt="Galaxy Viewer splash artwork">
+<div id="hole-cover"></div>
+<div id="hole-layer"><img id="hole-image" src="Galaxy%20Splash%20Ibis.png" alt=""></div>
+<canvas id="fx"></canvas>
+<svg id="signature" viewBox="0 0 900 110" role="img" aria-label="By Germán Arciniegas">
+<defs><filter id="hotGlow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<text class="metal" x="450" y="82">BY GERMÁN ARCINIEGAS</text>
+<text class="engrave" x="450" y="82">BY GERMÁN ARCINIEGAS</text>
+<g id="weld"><circle r="7" fill="#fff"/><circle r="18" fill="none" stroke="#53cfff" stroke-width="3" opacity=".8"/><path d="M-22 0H22M0-22V22" stroke="#bcefff" stroke-width="2" opacity=".7"/></g>
+</svg>
+<div id="launch-note">Galaxy Viewer · Singularity 0001</div>
+</main>
+<script>
+(()=>{
+'use strict';
+const poster=document.getElementById('poster');
+const hole=document.getElementById('hole-layer');
+const holeImg=document.getElementById('hole-image');
+const cover=document.getElementById('hole-cover');
+const canvas=document.getElementById('fx');
+const ctx=canvas.getContext('2d');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CONFIG={still:3000,spin:2100,collapse:1500,ring:950,quasar:900,finish:8650,cx:.7253,cy:.4688,radius:.145,launch:'../../../mobile/beta/'};
+let rect={x:0,y:0,w:0,h:0,cx:0,cy:0,r:0};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ease=v=>{v=clamp(v,0,1);return v*v*(3-2*v)};
+function layout(){
+ const iw=poster.naturalWidth||1034,ih=poster.naturalHeight||1536;
+ const s=Math.min(innerWidth/iw,innerHeight/ih),w=iw*s,h=ih*s,x=(innerWidth-w)/2,y=(innerHeight-h)/2;
+ const cx=x+w*CONFIG.cx,cy=y+h*CONFIG.cy,r=w*CONFIG.radius;
+ rect={x,y,w,h,cx,cy,r};
+ for(const el of [cover,hole]){el.style.left=(cx-r)+'px';el.style.top=(cy-r)+'px';el.style.width=el.style.height=(r*2)+'px';}
+ holeImg.style.width=w+'px';holeImg.style.height=h+'px';holeImg.style.left=-(cx-r-x)+'px';holeImg.style.top=-(cy-r-y)+'px';
+ const d=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(innerWidth*d);canvas.height=Math.round(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0);
+}
+function ring(r,alpha,width=3){ctx.beginPath();ctx.arc(rect.cx,rect.cy,r,0,Math.PI*2);ctx.strokeStyle=`rgba(74,196,255,${alpha})`;ctx.lineWidth=width;ctx.shadowBlur=22;ctx.shadowColor='#28aaff';ctx.stroke();ctx.shadowBlur=0}
+function frame(now){
+ const t=now-start;
+ ctx.clearRect(0,0,innerWidth,innerHeight);
+ if(t<CONFIG.still){hole.style.opacity='0';cover.style.opacity='0'}
+ else{
+  const p=ease((t-CONFIG.still)/CONFIG.spin),c=ease((t-CONFIG.still-CONFIG.spin)/CONFIG.collapse);
+  cover.style.opacity='1';hole.style.opacity=String(1-c);
+  const scale=1-.88*c;
+  hole.style.transform=`rotate(${p*980+c*820}deg) scale(${scale})`;
+  hole.style.filter=`brightness(${1+p*.28}) saturate(${1+p*.35})`;
+  const ringP=ease((t-CONFIG.still-CONFIG.spin-CONFIG.collapse)/CONFIG.ring);
+  if(ringP>0&&ringP<1.15){ring(rect.r*(.88-.84*ringP),1-ringP*.35,Math.max(2,7*(1-ringP)))}
+  const q=ease((t-CONFIG.still-CONFIG.spin-CONFIG.collapse-CONFIG.ring)/CONFIG.quasar);
+  if(q>0&&q<1){const pulse=.65+.35*Math.sin(q*Math.PI*8);ctx.save();ctx.translate(rect.cx,rect.cy);ctx.globalAlpha=1-q*.45;ctx.strokeStyle='#dffaff';ctx.shadowBlur=26;ctx.shadowColor='#49bfff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-rect.r*pulse,0);ctx.lineTo(rect.r*pulse,0);ctx.moveTo(0,-rect.r*pulse);ctx.lineTo(0,rect.r*pulse);ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,8*(1-q)+2,0,Math.PI*2);ctx.fill();ctx.restore()}
+ }
+ if(t<CONFIG.finish)requestAnimationFrame(frame);else{location.href=CONFIG.launch;}
+}
+let start=performance.now();
+poster.addEventListener('load',()=>{layout();start=performance.now();requestAnimationFrame(frame)},{once:true});
+addEventListener('resize',layout,{passive:true});
+if(poster.complete){layout();requestAnimationFrame(frame)}
+})();
+</script>
+</body>
+</html>
