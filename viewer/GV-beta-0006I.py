@@ -9,7 +9,7 @@ display(HTML("""
 <style>
 @font-face{
     font-family:"Space Age";
-    src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-coordinate-harmony-001") format("opentype");
+    src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Galactic/galactic.otf?v=6I-galactic-zero-001") format("opentype");
     font-style:normal;font-weight:400;font-display:block;
 }
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
