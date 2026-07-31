@@ -27,8 +27,7 @@ a:active{transform:scale(.99)}
 <main>
 <div class="badge"><span class="gv-glyph">GALAXY VIEWER · BETA 6I</span></div>
 <div class="choices">
-<a id="gv-open-app" href="../../mobile/beta/?source=beta-6i-app&v=6I-coordinate-harmony-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span class="gv-glyph">LAUNCH APP VERSION</span></span></a>
-<a id="gv-open-web" href="./web/?source=beta-6i-web&v=6I-coordinate-harmony-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span class="gv-glyph">LAUNCH WEB VERSION</span></span></a>
+<a id="gv-open-app" href="../../mobile/beta/?source=beta-6i-app&v=6I-coordinate-harmony-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6I-coordinate-harmony-001" alt=""><span><span class="gv-glyph">LAUNCH APP</span></span></a>
 </div>
 </main>
 <script>
@@ -44,12 +43,6 @@ a:active{transform:scale(.99)}
   };
   await clearBetaCaches();
   document.getElementById('gv-open-app').addEventListener('click',async event=>{
-    event.preventDefault();
-    const destination=event.currentTarget.href;
-    await clearBetaCaches();
-    window.location.assign(destination);
-  });
-  document.getElementById('gv-open-web').addEventListener('click',async event=>{
     event.preventDefault();
     const destination=event.currentTarget.href;
     await clearBetaCaches();
