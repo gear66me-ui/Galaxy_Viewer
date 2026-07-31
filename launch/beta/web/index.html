@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>GALAXY VIEWER 6M — WEB BETA</title>
-<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6M-coordinate-glyph-cells-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6M-coordinate-glyph-cells-001">
+<title>GALAXY VIEWER 6N — WEB BETA</title>
+<link rel="icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6N-uniform-glyph-spacing-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../viewer/artwork/icon_target_vector.svg?v=6N-uniform-glyph-spacing-001">
 <style>
-@font-face{font-family:"Space Age";src:url("../../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6M-coordinate-glyph-cells-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:"Space Age";src:url("../../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6N-uniform-glyph-spacing-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Space Age",sans-serif;text-transform:uppercase}
 .gv-startup-stage{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}
@@ -26,11 +26,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../../viewer/artwork/icon_target_vector.svg?v=6M-coordinate-glyph-cells-001" alt="GALAXY VIEWER TRADEMARK">
-  <div class="gv-startup-message"><span>STARTING GALAXY VIEWER BETA 6M…</span></div>
+  <img src="../../../viewer/artwork/icon_target_vector.svg?v=6N-uniform-glyph-spacing-001" alt="GALAXY VIEWER TRADEMARK">
+  <div class="gv-startup-message"><span>STARTING GALAXY VIEWER BETA 6N…</span></div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../../viewer/artwork/Splash/Galaxy%20Splash%20Ibis%20Galactic%20by%20GA.png?v=6M-coordinate-glyph-cells-001" alt="GALAXY VIEWER SPLASH ARTWORK">
+  <img src="../../../viewer/artwork/Splash/Galaxy%20Splash%20Ibis%20Galactic%20by%20GA.png?v=6N-uniform-glyph-spacing-001" alt="GALAXY VIEWER SPLASH ARTWORK">
   <div class="gv-startup-message"><span>LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -82,12 +82,12 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
   })();
 
   const viewerStartup=(async()=>{
-    const response=await fetch('../../../viewer/GV-beta-0006M.py?v=6M-coordinate-glyph-cells-001',{cache:'no-store'});
-    if(!response.ok)throw new Error(`GV-BETA-0006M.PY RETURNED HTTP ${response.status}`);
+    const response=await fetch('../../../viewer/GV-beta-0006N.py?v=6N-uniform-glyph-spacing-001',{cache:'no-store'});
+    if(!response.ok)throw new Error(`GV-BETA-0006N.PY RETURNED HTTP ${response.status}`);
     const source=await response.text();
     const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
     const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-    if(!htmlMatch||!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6M STANDALONE VIEWER.');
+    if(!htmlMatch||!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6N STANDALONE VIEWER.');
     document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
     const script=document.createElement('script');
     script.textContent=jsMatch[1];
@@ -102,8 +102,8 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
     await presentation.catch(()=>{});
-    console.error('GALAXY VIEWER 6M WEB BETA STARTUP FAILURE',error);
-    showError(`GALAXY VIEWER 6M WEB BETA FAILED TO LOAD:\n${error.message}`);
+    console.error('GALAXY VIEWER 6N WEB BETA STARTUP FAILURE',error);
+    showError(`GALAXY VIEWER 6N WEB BETA FAILED TO LOAD:\n${error.message}`);
   }
 })();
 </script>
