@@ -59,6 +59,17 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </section>
 <script>
 (async()=>{
+console.log("DIAG: JS ENTERED");
+
+const __earlyDiag = new URLSearchParams(window.location.search).get('diag') === '1';
+if (__earlyDiag) {
+  const panel = document.getElementById('gv-diagnostics');
+  const log = document.getElementById('gv-diag-log');
+  if (panel && log) {
+    panel.hidden = false;
+    log.textContent = "[EARLY] DIAGNOSTIC MODE ENTERED";
+  }
+}
   const ICON_MS=1000;
   const SPLASH_MS=4000;
   const VIEWER_TIMEOUT_MS=20000;
