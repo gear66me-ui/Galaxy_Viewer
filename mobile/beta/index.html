@@ -7,13 +7,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 6K">
-<title>GALAXY VIEWER 6K — MOBILE APP BETA</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 6L">
+<title>GALAXY VIEWER 6L — MOBILE APP BETA</title>
 <link rel="manifest" href="./manifest.webmanifest?v=6K-pwa-install-001">
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=6K-coordinate-harmony-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=6K-coordinate-harmony-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=6L-coordinate-harmony-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=6L-coordinate-harmony-001">
 <style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6K-coordinate-harmony-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6L-coordinate-harmony-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Space Age",sans-serif;text-transform:uppercase}
 .gv-startup-stage{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}
@@ -39,11 +39,11 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </head>
 <body>
 <div id="gv-trademark-stage" class="gv-startup-stage">
-  <img src="../../viewer/artwork/icon_target_vector.svg?v=6K-coordinate-harmony-001" alt="GALAXY VIEWER TRADEMARK">
-  <div class="gv-startup-message"><span>STARTING GALAXY VIEWER BETA 6K…</span></div>
+  <img src="../../viewer/artwork/icon_target_vector.svg?v=6L-coordinate-harmony-001" alt="GALAXY VIEWER TRADEMARK">
+  <div class="gv-startup-message"><span>STARTING GALAXY VIEWER BETA 6L…</span></div>
 </div>
 <div id="gv-splash-stage" class="gv-startup-stage" hidden>
-  <img src="../../viewer/artwork/GV-splash-0003.svg?v=6K-coordinate-harmony-001" alt="GALAXY VIEWER SPLASH ARTWORK">
+  <img src="../../viewer/artwork/GV-splash-0003.svg?v=6L-coordinate-harmony-001" alt="GALAXY VIEWER SPLASH ARTWORK">
   <div class="gv-startup-message"><span>LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
@@ -105,7 +105,7 @@ if (__earlyDiag) {
     if(detail===undefined)return '';
     if(detail instanceof Error)return ` — ${detail.name}: ${detail.message}`;
     if(typeof detail==='string')return ` — ${detail}`;
-    try{return ` — ${JSON.stringify(detail)}`;}catch(_){return ` — ${String(detail)}`;}
+    try{return ` — ${JSON.stringify(detail)}";}catch(_){return ` — ${String(detail)}`;}
   };
   const appendDiagnostic=(label,detail)=>{
     if(!diagnosticMode)return;
@@ -165,23 +165,19 @@ if (__earlyDiag) {
   try{
     const viewerReady=(async()=>{
       await checkpoint('FETCH STARTED');
-      const response=await fetch('../../viewer/GV-beta-0006K.py?v='+Date.now(),{cache:'no-store'});
+      const response=await fetch('../../viewer/GV-beta-0006L.py?v='+Date.now(),{cache:'no-store'});
       await checkpoint('HTTP RESPONSE RECEIVED',`HTTP ${response.status}`);
-      if(!response.ok)throw new Error(`GV-BETA-0006K.PY RETURNED HTTP ${response.status}`);
+      if(!response.ok)throw new Error(`GV-BETA-0006L.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
       await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
       const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6K STANDALONE VIEWER HTML.');
+      if(!htmlMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6L STANDALONE VIEWER HTML.');
       await checkpoint('HTML EXTRACTED');
       const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6K STANDALONE VIEWER JAVASCRIPT.');
+      if(!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 6L STANDALONE VIEWER JAVASCRIPT.');
       await checkpoint('JAVASCRIPT EXTRACTED');
       document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
       await checkpoint('HTML INSERTED');
-      const cometCss=document.createElement('link');
-      cometCss.rel='stylesheet';
-      cometCss.href='../../viewer/GV-beta-0005R-comet-120.css?v='+Date.now();
-      document.head.appendChild(cometCss);
       const script=document.createElement('script');
       script.textContent=jsMatch[1];
       document.body.appendChild(script);
@@ -199,13 +195,13 @@ if (__earlyDiag) {
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('GALAXY VIEWER 6K MOBILE BETA STARTUP FAILURE',error);
+    console.error('GALAXY VIEWER 6L MOBILE BETA STARTUP FAILURE',error);
     if(diagnosticMode){
       showError(error?.message||error);
       return;
     }
     const fallback=new URL('../../launch/beta/web/',window.location.href);
-    fallback.searchParams.set('source','beta-6k-app-fallback');
+    fallback.searchParams.set('source','beta-6l-app-fallback');
     fallback.searchParams.set('reason',String(error?.message||error).slice(0,180));
     window.location.replace(fallback.href);
   }
