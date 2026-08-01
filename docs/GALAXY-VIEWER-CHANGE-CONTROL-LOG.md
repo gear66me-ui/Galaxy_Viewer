@@ -371,3 +371,33 @@ Add GV-beta-0006Q coordinate scale 1.0 test
 `0006Q`, `ADD`, `BETA`, `COORDINATE`, `SCALE`, `TEST`, `VIEWER`
 
 ---
+## AUTO-b1ea5906add8 — Update beta mobile loader to 6Q
+
+**Recorded:** 2026-07-31T23:02:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b1ea5906add8fa92b2572dfe446c8b4f08b48025`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b1ea5906add8fa92b2572dfe446c8b4f08b48025)  
+**Parent/baseline:** `fcdf741064e01a97e2aaa375683dd41617dd5351`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/fcdf741064e01a97e2aaa375683dd41617dd5351...b1ea5906add8fa92b2572dfe446c8b4f08b48025)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta mobile loader to 6Q
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `16`, deletions: `16`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `UPDATE`
+
+---
