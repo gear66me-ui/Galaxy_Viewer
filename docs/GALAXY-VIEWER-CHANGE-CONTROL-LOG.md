@@ -1289,3 +1289,37 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `HTML`, `LAB`, `MOTION`, `PARTICLE`, `SPLASH`, `TESTS`, `VIEWER`
 
 ---
+## AUTO-dcabb3b37825 — Create GV beta 0006U coordinate fit correction
+
+**Recorded:** 2026-08-01T13:32:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dcabb3b378256bdfa651b0ffec63a6bde5e6e672`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dcabb3b378256bdfa651b0ffec63a6bde5e6e672)  
+**Parent/baseline:** `f895561620ff0b4c2251919218f2c247020166e0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f895561620ff0b4c2251919218f2c247020166e0...dcabb3b378256bdfa651b0ffec63a6bde5e6e672)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV beta 0006U coordinate fit correction
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006U.py` — additions: `173`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006U.py`**
+
+```text
+# USER INSTRUCTION: Restore the compact 36px top-row geometry, preserve Mollweide and four-decimal formatting, reduce coordinate numerals to 13px at scaleY(1.3), render GAL at 10px/scaleY(1.1), render lambda at 9px/scaleY(1.0), and preserve all existing digit, decimal, sign, menu, SIMBAD, catalog, and navigation behavior.
+```
+
+### Search tags
+
+`0006U`, `BETA`, `COORDINATE`, `CORRECTION`, `CREATE`, `FIT`, `VIEWER`
+
+---
