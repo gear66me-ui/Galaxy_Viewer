@@ -7,13 +7,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 6O">
-<title>GALAXY VIEWER — BETA 6O</title>
-<link rel="manifest" href="./manifest.webmanifest?v=6O-coordinate-clarity-aperture-001">
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=6O-coordinate-clarity-aperture-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/App%20Icons/GV-app-icon-192.png?v=6O-coordinate-clarity-aperture-001">
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 6P">
+<title>GALAXY VIEWER — BETA 6P</title>
+<link rel="manifest" href="./manifest.webmanifest?v=6P-coordinate-aperture-250-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=6P-coordinate-aperture-250-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/App%20Icons/GV-app-icon-192.png?v=6P-coordinate-aperture-250-001">
 <style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6O-coordinate-clarity-aperture-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6P-coordinate-aperture-250-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 :root{color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#000;color:#fff}
@@ -35,12 +35,12 @@ a:active,button:active{transform:scale(.99)}
 </head>
 <body>
 <main>
-<div class="badge"><span class="gv-glyph">GALAXY VIEWER · BETA 6O</span></div>
+<div class="badge"><span class="gv-glyph">GALAXY VIEWER · BETA 6P</span></div>
 <div class="choices">
-<button id="gv-install-app" type="button" aria-disabled="true"><img src="../../viewer/artwork/icon_target_vector.svg?v=6O-coordinate-clarity-aperture-001" alt=""><span><span id="gv-install-label" class="gv-glyph">PREPARING INSTALL</span></span></button>
+<button id="gv-install-app" type="button" aria-disabled="true"><img src="../../viewer/artwork/icon_target_vector.svg?v=6P-coordinate-aperture-250-001" alt=""><span><span id="gv-install-label" class="gv-glyph">PREPARING INSTALL</span></span></button>
 <p id="gv-install-status" role="status" aria-live="polite"></p>
-<a id="gv-open-app" href="../../mobile/beta/?source=beta-6o-app&v=6O-coordinate-clarity-aperture-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6O-coordinate-clarity-aperture-001" alt=""><span><span id="gv-open-app-label" class="gv-glyph">LAUNCH APP</span></span></a>
-<a id="gv-open-diagnostics" href="../../mobile/beta/?diag=1&v=6O-coordinate-clarity-aperture-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6O-coordinate-clarity-aperture-001" alt=""><span><span class="gv-glyph">LAUNCH DIAGNOSTICS</span></span></a>
+<a id="gv-open-app" href="../../mobile/beta/?source=beta-6p-app&v=6P-coordinate-aperture-250-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6P-coordinate-aperture-250-001" alt=""><span><span id="gv-open-app-label" class="gv-glyph">LAUNCH APP</span></span></a>
+<a id="gv-open-diagnostics" href="../../mobile/beta/?diag=1&v=6P-coordinate-aperture-250-001"><img src="../../viewer/artwork/icon_target_vector.svg?v=6P-coordinate-aperture-250-001" alt=""><span><span class="gv-glyph">LAUNCH DIAGNOSTICS</span></span></a>
 </div>
 </main>
 <script>
@@ -52,7 +52,7 @@ const openAppLabel=document.getElementById('gv-open-app-label');
 let deferredInstallPrompt=null;
 
 try{
-  if(localStorage.getItem('gv-beta-launch-failure')==='6O'){
+  if(localStorage.getItem('gv-beta-launch-failure')==='6P'){
     openApp.classList.add('gv-launch-failed');
     openAppLabel.textContent='APP FAILED TO LOAD';
   }
@@ -66,7 +66,7 @@ openApp.addEventListener('click',()=>{
 
 window.addEventListener('pageshow',()=>{
   try{
-    if(localStorage.getItem('gv-beta-launch-failure')==='6O'){
+    if(localStorage.getItem('gv-beta-launch-failure')==='6P'){
       openApp.classList.add('gv-launch-failed');
       openAppLabel.textContent='APP FAILED TO LOAD';
     }
@@ -111,13 +111,13 @@ installButton.addEventListener('click',async()=>{
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
 
   if(standalone){
-    window.location.replace('../../mobile/beta/?source=pwa&v=6O-coordinate-clarity-aperture-001');
+    window.location.replace('../../mobile/beta/?source=pwa&v=6P-coordinate-aperture-250-001');
     return;
   }
 
   if('serviceWorker' in navigator){
     try{
-      const registration=await navigator.serviceWorker.register('./service-worker.js?v=6O-coordinate-clarity-aperture-001',{scope:'./'});
+      const registration=await navigator.serviceWorker.register('./service-worker.js?v=6P-coordinate-aperture-250-001',{scope:'./'});
       console.log('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTERED',registration.scope);
     }catch(error){
       console.error('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTRATION FAILED',error);
