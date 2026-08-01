@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer — Particle Cyclone 0002</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dff7ff;font-family:system-ui,sans-serif}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:#000}.panel{position:fixed;left:10px;right:10px;bottom:10px;z-index:2;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 10px;border:1px solid rgba(98,216,255,.45);border-radius:10px;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);font-size:13px}.panel button,.panel select{border:1px solid rgba(98,216,255,.55);border-radius:8px;background:#07121a;color:#e9fbff;padding:7px 10px;font:inherit}.panel label{display:flex;align-items:center;gap:5px;white-space:nowrap}.status{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}.hint{position:fixed;top:10px;left:10px;right:10px;z-index:2;text-align:center;font-size:12px;color:#a7dceb;pointer-events:none;text-shadow:0 1px 4px #000}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Rectangular particle cyclone corner-collapse baseline"></canvas>
+<div class="hint">RECTANGULAR LATTICE · SIDES BOW FIRST · CORNERS ENTER LAST</div>
+<div class="panel">
+  <button id="restart" type="button">Restart</button>
+  <button id="pause" type="button">Pause</button>
+  <label>Speed
+    <select id="speed">
+      <option value="0.5">0.5×</option>
+      <option value="0.75">0.75×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.25">1.25×</option>
+      <option value="1.5">1.5×</option>
+      <option value="2">2×</option>
+    </select>
+  </label>
+  <label><input id="trails" type="checkbox" checked> Trails</label>
+  <label><input id="guides" type="checkbox" checked> Guides</label>
+  <span class="status" id="status">0.00 s · corners 4/4</span>
+</div>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false});
+const restartBtn=document.getElementById('restart'),pauseBtn=document.getElementById('pause'),speedSel=document.getElementById('speed'),trailsBox=document.getElementById('trails'),guidesBox=document.getElementById('guides'),status=document.getElementById('status');
+const TAU=Math.PI*2,PHI=1.61803398875;
+const cfg={cols:31,rows:45,trailLength:14,preOrbitTurns:2/3,propagationSeconds:1.45,totalSeconds:5.8,horizon:0.045,margin:0.035};
+let W=1,H=1,DPR=1,cx=0,cy=0,scale=1,maxR=1,particles=[],running=true,last=0,elapsed=0,speed=1,pulse=0,finished=false;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x)};
+function resize(){DPR=Math.min(devicePixelRatio||1,1.35);W=innerWidth;H=innerHeight;canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);cx=W/2;cy=H/2;scale=Math.min(W,H);maxR=Math.hypot((W/2-cfg.margin*W)/scale,(H/2-cfg.margin*H)/scale);}
+function reset(){particles=[];elapsed=0;pulse=0;finished=false;running=true;pauseBtn.textContent='Pause';for(let row=0;row<cfg.rows;row++){for(let col=0;col<cfg.cols;col++){const fx=cfg.margin+(1-2*cfg.margin)*(col/(cfg.cols-1));const fy=cfg.margin+(1-2*cfg.margin)*(row/(cfg.rows-1));const x0=(fx*W-cx)/scale,y0=(fy*H-cy)/scale;const r0=Math.hypot(x0,y0),a0=Math.atan2(y0,x0);const corner=(row===0||row===cfg.rows-1)&&(col===0||col===cfg.cols-1);const edge=row===0||row===cfg.rows-1||col===0||col===cfg.cols-1;const size=corner?2.8:edge?1.7:1.05;particles.push({x0,y0,r0,a0,r:r0,a:a0,alive:true,corner,edge,size,history:[]});}}last=performance.now();ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);}
+function activationFor(p,t){const distance=clamp(p.r0/maxR,0,1);const cornerPenalty=p.corner?.38:p.edge?.14:0;const delay=distance*cfg.propagationSeconds+cornerPenalty;return clamp((t-delay)/(cfg.totalSeconds-delay),0,1)}
+function updateParticle(p,t,dt){if(!p.alive)return;const local=activationFor(p,t);if(local<=0)return;const orbitPhase=smooth(local/.32);const pullPhase=clamp((local-.32)/.68,0,1);const pullCurve=Math.pow(pullPhase,PHI);const radiusNorm=clamp(p.r0/maxR,0,1);const angularWeight=.98-.68*radiusNorm;const totalTurns=cfg.preOrbitTurns*orbitPhase+1.65*smooth(pullPhase);p.a=p.a0+TAU*totalTurns*angularWeight;
+const targetR=p.r0*(1-.992*pullCurve);p.r=Math.min(p.r,targetR);
+if(pullPhase>0){const drain=(.085+.42*pullCurve)*(1.12-.28*radiusNorm)*dt;p.r=Math.max(0,p.r-drain);}
+if(p.r<=cfg.horizon){p.r=0;p.alive=false;return;}
+const x=cx+Math.cos(p.a)*p.r*scale,y=cy+Math.sin(p.a)*p.r*scale;p.history.push({x,y});if(p.history.length>cfg.trailLength)p.history.shift();}
+function drawGuides(){if(!guidesBox.checked)return;ctx.save();ctx.strokeStyle='rgba(98,216,255,.13)';ctx.lineWidth=1;ctx.strokeRect(cfg.margin*W,cfg.margin*H,(1-2*cfg.margin)*W,(1-2*cfg.margin)*H);for(const rr of [.12,.25,.40,.58,maxR]){ctx.beginPath();ctx.arc(cx,cy,rr*scale,0,TAU);ctx.stroke()}ctx.strokeStyle='rgba(255,150,70,.48)';ctx.beginPath();ctx.arc(cx,cy,cfg.horizon*scale,0,TAU);ctx.stroke();ctx.restore();}
+function drawParticle(p,t){if(!p.alive)return;const x=cx+Math.cos(p.a)*p.r*scale,y=cy+Math.sin(p.a)*p.r*scale;const local=activationFor(p,t),pullPhase=clamp((local-.32)/.68,0,1),glow=smooth(pullPhase);if(trailsBox.checked&&p.history.length>1){ctx.save();ctx.lineCap='round';for(let j=1;j<p.history.length;j++){const q0=p.history[j-1],q1=p.history[j],f=j/(p.history.length-1);ctx.strokeStyle=`rgba(${135+Math.round(95*f)},${195+Math.round(55*f)},255,${.018+.24*f*glow})`;ctx.lineWidth=.35+p.size*.50*f;ctx.beginPath();ctx.moveTo(q0.x,q0.y);ctx.lineTo(q1.x,q1.y);ctx.stroke()}ctx.restore()}
+ctx.save();if(p.corner){ctx.fillStyle=`rgba(255,184,90,${.86+.12*glow})`}else if(p.edge){ctx.fillStyle=`rgba(170,225,255,${.76+.20*glow})`}else{ctx.fillStyle=`rgba(242,253,255,${.68+.28*glow})`}ctx.beginPath();ctx.arc(x,y,p.size*(.72+.28*glow),0,TAU);ctx.fill();ctx.restore();}
+function drawPulse(){if(!finished)return;pulse+=.05*speed;const e=Math.min(1,pulse),r=(5+50*e)*scale/600,fade=1-e;ctx.save();ctx.strokeStyle=`rgba(150,225,255,${fade})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);ctx.stroke();ctx.fillStyle=`rgba(255,255,255,${fade})`;ctx.fillRect(cx-1,cy-r,2,r*2);ctx.fillRect(cx-r,cy-1,r*2,2);ctx.restore();}
+function render(){ctx.fillStyle=trailsBox.checked?'rgba(0,0,0,.24)':'#000';ctx.fillRect(0,0,W,H);drawGuides();for(const p of particles)drawParticle(p,elapsed);ctx.fillStyle='#000';ctx.beginPath();ctx.arc(cx,cy,cfg.horizon*scale*.90,0,TAU);ctx.fill();ctx.strokeStyle='rgba(255,125,45,.78)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,cfg.horizon*scale,0,TAU);ctx.stroke();drawPulse();}
+function frame(now){if(!last)last=now;const dt=Math.min(.033,(now-last)/1000)*speed;last=now;if(running&&!finished){elapsed+=dt;for(const p of particles)updateParticle(p,elapsed,dt);if(particles.every(p=>!p.alive)||elapsed>=cfg.totalSeconds){for(const p of particles)p.alive=false;finished=true;}}
+render();const cornerAlive=particles.filter(p=>p.corner&&p.alive).length;const probe=particles[Math.floor(particles.length/2)+1],turns=probe?Math.max(0,(probe.a-probe.a0)/TAU):0;status.textContent=`${elapsed.toFixed(2)} s · ${turns.toFixed(2)} turns · corners ${cornerAlive}/4`;requestAnimationFrame(frame)}
+restartBtn.addEventListener('click',reset);pauseBtn.addEventListener('click',()=>{running=!running;pauseBtn.textContent=running?'Pause':'Play';last=performance.now()});speedSel.addEventListener('change',()=>{speed=Number(speedSel.value)||1});trailsBox.addEventListener('change',()=>{ctx.fillStyle='#000';ctx.fillRect(0,0,W,H)});addEventListener('resize',()=>{resize();reset()},{passive:true});resize();reset();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
