@@ -831,3 +831,37 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006S`, `0006SPY`, `ARTWORK`, `BETA`, `DELETE`, `VIEWER`, `VIEWERARTWORKGV`
 
 ---
+## AUTO-3483997265ff — Add files via upload
+
+**Recorded:** 2026-08-01T00:59:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`3483997265ff001ee81b57f16ea456025163d08b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/3483997265ff001ee81b57f16ea456025163d08b)  
+**Parent/baseline:** `9d3028b1d6990032501ebea78b3a52aa12ae20d1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9d3028b1d6990032501ebea78b3a52aa12ae20d1...3483997265ff001ee81b57f16ea456025163d08b)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add files via upload
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006S.py` — additions: `171`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006S.py`**
+
+```text
+# USER INSTRUCTION: Change only the coordinate glyph vertical scale from scaleY(1.0) to scaleY(1.5); preserve the Space Age Regular OTF, 25px aperture, no-glow rendering, spacing, and all other behavior.
+```
+
+### Search tags
+
+`0006S`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
+
+---
