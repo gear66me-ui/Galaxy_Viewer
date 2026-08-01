@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-30f12b032cf8 — Update beta launcher service worker to 6W
+
+**Recorded:** 2026-08-01T15:02:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`30f12b032cf841b9da3e0796917fe7190b5d0589`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/30f12b032cf841b9da3e0796917fe7190b5d0589)  
+**Parent/baseline:** `3ea92e41f602c3719fdb29ca2a35064867da81ba`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3ea92e41f602c3719fdb29ca2a35064867da81ba...30f12b032cf841b9da3e0796917fe7190b5d0589)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher service worker to 6W
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/service-worker.js` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `LAUNCH`, `LAUNCHER`, `SERVICE`, `UPDATE`, `WORKER`
+
+---
 ## AUTO-3ea92e41f602 — Update beta launcher manifest to 6W
 
 **Recorded:** 2026-08-01T15:02:02-05:00  
