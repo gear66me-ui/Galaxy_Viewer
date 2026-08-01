@@ -1567,3 +1567,33 @@ Create GV beta 0006V coordinate, hamburger, and resume recovery
 `0006V`, `AND`, `BETA`, `COORDINATE`, `CREATE`, `HAMBURGER`, `RECOVERY`, `RESUME`, `VIEWER`
 
 ---
+## AUTO-41f65ceab9e4 — Update mobile beta manifest to 6V
+
+**Recorded:** 2026-08-01T14:23:01-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`41f65ceab9e4e5bd435562740cd3b304c0f3bc0b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/41f65ceab9e4e5bd435562740cd3b304c0f3bc0b)  
+**Parent/baseline:** `acabe1455fec5c4b41093c292163503b8496c0e2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/acabe1455fec5c4b41093c292163503b8496c0e2...41f65ceab9e4e5bd435562740cd3b304c0f3bc0b)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta manifest to 6V
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
+
+---
