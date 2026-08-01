@@ -127,3 +127,33 @@ Add automatic Galaxy Viewer change control workflow
 `ADD`, `AUTOMATIC`, `CHANGE`, `CONTROL`, `GALAXY`, `GITHUB`, `LOG`, `VIEWER`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+## AUTO-277059952e93 — Add cinematic five-rotation siphon in Singularity 0021
+
+**Recorded:** 2026-07-31T21:48:47-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`277059952e934201b972a5cf9e11223cf733955e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/277059952e934201b972a5cf9e11223cf733955e)  
+**Parent/baseline:** `cfb749a6d7f4626154a82949eb58d9c9deddfac0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/cfb749a6d7f4626154a82949eb58d9c9deddfac0...277059952e934201b972a5cf9e11223cf733955e)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add cinematic five-rotation siphon in Singularity 0021
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0021.html` — additions: `21`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0021`, `ADD`, `ARTWORK`, `CINEMATIC`, `FIVE`, `GALAXY`, `HTML`, `ROTATION`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
+
+---
