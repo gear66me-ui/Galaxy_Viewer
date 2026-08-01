@@ -1353,3 +1353,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
 
 ---
+## AUTO-2817ced37a66 — Update mobile beta manifest to 6U
+
+**Recorded:** 2026-08-01T13:33:02-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2817ced37a6662b4fb180e0b57b3fd8331f1bfd6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2817ced37a6662b4fb180e0b57b3fd8331f1bfd6)  
+**Parent/baseline:** `3189fca9e02cec41c27a33d39688a6d2b2d05e3f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3189fca9e02cec41c27a33d39688a6d2b2d05e3f...2817ced37a6662b4fb180e0b57b3fd8331f1bfd6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta manifest to 6U
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
+
+---
