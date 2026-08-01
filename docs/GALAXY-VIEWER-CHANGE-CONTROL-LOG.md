@@ -737,3 +737,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0027`, `ADD`, `ARTWORK`, `CLOUDY`, `CYCLONE`, `EXPONENTIAL`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+## AUTO-24d9d4914303 — Add reference-driven golden-ratio cyclone in Singularity 0028
+
+**Recorded:** 2026-08-01T00:38:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`24d9d4914303493690432d29b00cf3d493e7f5e1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/24d9d4914303493690432d29b00cf3d493e7f5e1)  
+**Parent/baseline:** `48d4c60e6757b50c0c32641f009044498ff88d44`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/48d4c60e6757b50c0c32641f009044498ff88d44...24d9d4914303493690432d29b00cf3d493e7f5e1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add reference-driven golden-ratio cyclone in Singularity 0028
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0028.html` — additions: `22`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0028`, `ADD`, `ARTWORK`, `CYCLONE`, `DRIVEN`, `GALAXY`, `GOLDEN`, `HTML`, `RATIO`, `REFERENCE`, `SINGULARITY`, `SPLASH`, `VIEWER`
+
+---
