@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-fa4083d3b875 — Add white-core banner engraving and pulsar singularity test
+
+**Recorded:** 2026-08-01T18:11:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fa4083d3b875783fc544820f0ee37bd12ae3e637`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fa4083d3b875783fc544820f0ee37bd12ae3e637)  
+**Parent/baseline:** `a6061bcaa7426e6c62b78ea6adb847a9f3fb937e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a6061bcaa7426e6c62b78ea6adb847a9f3fb937e...fa4083d3b875783fc544820f0ee37bd12ae3e637)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add white-core banner engraving and pulsar singularity test
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0007.html` — additions: `48`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `AND`, `ANIMATION`, `ARTWORK`, `BANNER`, `CORE`, `CYCLONE`, `ENGRAVING`, `HTML`, `LAB`, `PARTICLE`, `PULSAR`, `SINGULARITY`, `SPLASH`, `TEST`, `TESTS`, `VIEWER`, `WHITE`
+
+---
 ## AUTO-116335f60c59 — Refine Glyph-9 lab color presets
 
 **Recorded:** 2026-08-01T17:54:37-05:00  
