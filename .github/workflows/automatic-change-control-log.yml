@@ -1,0 +1,211 @@
+name: Automatic Change Control Log
+
+on:
+  push:
+    branches:
+      - beta
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-viewer-change-control-beta
+  cancel-in-progress: false
+
+jobs:
+  record-change:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch exact pushed revision
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Append deterministic change record
+        env:
+          REPOSITORY: ${{ github.repository }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
+          COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+        run: |
+          python3 <<'PY'
+          import os
+          import pathlib
+          import subprocess
+          from datetime import datetime, timezone
+
+          log_path = pathlib.Path("docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md")
+          log_path.parent.mkdir(parents=True, exist_ok=True)
+
+          commit_sha = os.environ["COMMIT_SHA"]
+          before_sha = os.environ.get("BEFORE_SHA", "")
+          zero_sha = "0" * 40
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          if not before_sha or before_sha == zero_sha:
+              try:
+                  before_sha = git("rev-parse", f"{commit_sha}^")
+              except subprocess.CalledProcessError:
+                  before_sha = commit_sha
+
+          name_status = git("diff", "--name-status", "-M", before_sha, commit_sha)
+          numstat = git("diff", "--numstat", "-M", before_sha, commit_sha)
+
+          stats = {}
+          for line in numstat.splitlines():
+              parts = line.split("\t", 2)
+              if len(parts) == 3:
+                  added, deleted, path = parts
+                  stats[path] = (added, deleted)
+
+          changed = []
+          for line in name_status.splitlines():
+              parts = line.split("\t")
+              if not parts:
+                  continue
+              code = parts[0]
+              if code.startswith("R") and len(parts) >= 3:
+                  old_path, new_path = parts[1], parts[2]
+                  added, deleted = stats.get(new_path, ("?", "?"))
+                  changed.append(("RENAMED", f"{old_path} → {new_path}", new_path, added, deleted))
+              elif len(parts) >= 2:
+                  path = parts[1]
+                  label = {
+                      "A": "ADDED",
+                      "M": "MODIFIED",
+                      "D": "DELETED",
+                      "C": "COPIED",
+                      "T": "TYPE CHANGED",
+                      "U": "UNMERGED",
+                  }.get(code[0], code)
+                  added, deleted = stats.get(path, ("?", "?"))
+                  changed.append((label, path, path, added, deleted))
+
+          marker_terms = (
+              "GALAXY VIEWER CHANGE ORDER",
+              "CHANGE ORDER:",
+              "USER INSTRUCTION:",
+              "AUTHORIZED CHANGES:",
+              "PRESERVED BEHAVIOR:",
+              "PURPOSE:",
+          )
+          text_suffixes = {
+              ".py", ".html", ".htm", ".js", ".css", ".md", ".txt",
+              ".yml", ".yaml", ".json", ".xml", ".svg", ".toml", ".ini"
+          }
+
+          extracted = []
+          for status, display_path, actual_path, _, _ in changed:
+              path = pathlib.Path(actual_path)
+              if status == "DELETED" or path.suffix.lower() not in text_suffixes or not path.is_file():
+                  continue
+              try:
+                  lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+              except OSError:
+                  continue
+              matches = []
+              for line in lines:
+                  stripped = line.strip()
+                  if any(term in stripped.upper() for term in marker_terms):
+                      matches.append(stripped[:500])
+                  if len(matches) >= 20:
+                      break
+              if matches:
+                  extracted.append((actual_path, matches))
+
+          keywords = set()
+          for _, display_path, _, _, _ in changed:
+              normalized = display_path.replace("→", " ").replace("/", " ").replace("-", " ").replace("_", " ").replace(".", " ")
+              for token in normalized.upper().split():
+                  if len(token) >= 3 and not token.isdigit():
+                      keywords.add(token)
+          for token in os.environ.get("COMMIT_MESSAGE", "").upper().replace("-", " ").replace("_", " ").split():
+              cleaned = "".join(ch for ch in token if ch.isalnum())
+              if len(cleaned) >= 3:
+                  keywords.add(cleaned)
+
+          timestamp = os.environ.get("COMMIT_TIMESTAMP") or datetime.now(timezone.utc).isoformat()
+          author = os.environ.get("COMMIT_AUTHOR") or "Not recorded"
+          message = os.environ.get("COMMIT_MESSAGE") or "No commit message recorded"
+          commit_url = os.environ.get("COMMIT_URL") or f"https://github.com/{os.environ['REPOSITORY']}/commit/{commit_sha}"
+          compare_url = f"https://github.com/{os.environ['REPOSITORY']}/compare/{before_sha}...{commit_sha}"
+          scope_flag = "MULTI-FILE CHANGE — REVIEW SCOPE" if len(changed) > 1 else "SINGLE-FILE CHANGE"
+
+          entry = []
+          entry.append(f"## AUTO-{commit_sha[:12]} — {message.splitlines()[0]}")
+          entry.append("")
+          entry.append(f"**Recorded:** {timestamp}  ")
+          entry.append(f"**Repository:** `{os.environ['REPOSITORY']}`  ")
+          entry.append(f"**Branch:** `{os.environ['BRANCH_NAME']}`  ")
+          entry.append(f"**Source commit:** [`{commit_sha}`]({commit_url})  ")
+          entry.append(f"**Parent/baseline:** `{before_sha}`  ")
+          entry.append(f"**Comparison:** [View exact diff]({compare_url})  ")
+          entry.append(f"**Author:** {author}  ")
+          entry.append(f"**Scope flag:** **{scope_flag}**")
+          entry.append("")
+          entry.append("### Commit message")
+          entry.append("")
+          entry.append("```text")
+          entry.extend(message.splitlines())
+          entry.append("```")
+          entry.append("")
+          entry.append("### Changed paths")
+          entry.append("")
+          if changed:
+              for status, display_path, _, added, deleted in changed:
+                  entry.append(f"- **{status}:** `{display_path}` — additions: `{added}`, deletions: `{deleted}`")
+          else:
+              entry.append("- No changed paths were detected.")
+          entry.append("")
+          entry.append("### Recorded instruction evidence")
+          entry.append("")
+          if extracted:
+              for path, lines in extracted:
+                  entry.append(f"**`{path}`**")
+                  entry.append("")
+                  entry.append("```text")
+                  entry.extend(lines)
+                  entry.append("```")
+                  entry.append("")
+          else:
+              entry.append("Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.")
+              entry.append("")
+          entry.append("### Search tags")
+          entry.append("")
+          entry.append(", ".join(f"`{word}`" for word in sorted(keywords)[:50]) or "`UNTAGGED`")
+          entry.append("")
+          entry.append("---")
+          entry.append("")
+
+          with log_path.open("a", encoding="utf-8", newline="\n") as handle:
+              handle.write("\n".join(entry))
+          PY
+
+      - name: Commit only the updated log
+        run: |
+          if git diff --quiet -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md; then
+            echo "No log change detected."
+            exit 0
+          fi
+
+          changed_paths="$(git diff --name-only)"
+          if [ "$changed_paths" != "docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md" ]; then
+            echo "Unexpected workflow modification detected:"
+            printf '%s\n' "$changed_paths"
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md
+          git commit -m "Log change ${{ github.sha }}"
+          git push origin HEAD:beta
