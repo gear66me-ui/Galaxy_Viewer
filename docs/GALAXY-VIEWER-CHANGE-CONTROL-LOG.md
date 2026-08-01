@@ -1413,3 +1413,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+## AUTO-5db4bb1940b2 — Update mobile beta service worker to 6U
+
+**Recorded:** 2026-08-01T13:33:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5db4bb1940b26aa49c3377855cd95e4300c1814f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5db4bb1940b26aa49c3377855cd95e4300c1814f)  
+**Parent/baseline:** `477a99f807227e9031be04e43b86afe7c8f19f45`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/477a99f807227e9031be04e43b86afe7c8f19f45...5db4bb1940b26aa49c3377855cd95e4300c1814f)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta service worker to 6U
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/service-worker.js` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
+
+---
