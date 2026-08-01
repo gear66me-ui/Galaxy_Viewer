@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-f8f51ac29295 — Add tangential corner-release cyclone baseline
+
+**Recorded:** 2026-08-01T17:16:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f8f51ac29295eb44e6a44f41e9d8f4a1d7937d33`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f8f51ac29295eb44e6a44f41e9d8f4a1d7937d33)  
+**Parent/baseline:** `a4b119de5a0cba94984965b640d4b854343ab8f4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a4b119de5a0cba94984965b640d4b854343ab8f4...f8f51ac29295eb44e6a44f41e9d8f4a1d7937d33)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add tangential corner-release cyclone baseline
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0005.html` — additions: `51`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CORNER`, `CYCLONE`, `HTML`, `LAB`, `PARTICLE`, `RELEASE`, `SPLASH`, `TANGENTIAL`, `TESTS`, `VIEWER`
+
+---
 ## AUTO-ff00b1557ab6 — Add Gaussian-masked drape cyclone particle baseline
 
 **Recorded:** 2026-08-01T16:55:11-05:00  
