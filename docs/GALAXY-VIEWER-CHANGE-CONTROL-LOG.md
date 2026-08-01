@@ -1139,3 +1139,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+## AUTO-2a5119b7db2e — Update mobile beta service worker cache to 6T
+
+**Recorded:** 2026-08-01T01:38:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2a5119b7db2e48c0ab1d663e9055ed82bc94f7ea`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2a5119b7db2e48c0ab1d663e9055ed82bc94f7ea)  
+**Parent/baseline:** `bbda7dd7f3e80a83b2fffab162b454542e43b1e2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bbda7dd7f3e80a83b2fffab162b454542e43b1e2...2a5119b7db2e48c0ab1d663e9055ed82bc94f7ea)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta service worker cache to 6T
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/service-worker.js` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `CACHE`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
+
+---
