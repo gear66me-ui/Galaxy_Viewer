@@ -431,3 +431,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+## AUTO-170810fd1071 — Add delayed cyclonic cloud siphon in Singularity 0025
+
+**Recorded:** 2026-07-31T23:12:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`170810fd1071247ebf852691c2747b4895d63b52`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/170810fd1071247ebf852691c2747b4895d63b52)  
+**Parent/baseline:** `908978621fcd7940c7ac07ad23d8fa83ab8b2705`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/908978621fcd7940c7ac07ad23d8fa83ab8b2705...170810fd1071247ebf852691c2747b4895d63b52)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add delayed cyclonic cloud siphon in Singularity 0025
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0025.html` — additions: `22`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0025`, `ADD`, `ARTWORK`, `CLOUD`, `CYCLONIC`, `DELAYED`, `GALAXY`, `HTML`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
+
+---
