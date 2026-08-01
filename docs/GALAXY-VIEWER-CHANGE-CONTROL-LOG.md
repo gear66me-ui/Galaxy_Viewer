@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-3ea92e41f602 — Update beta launcher manifest to 6W
+
+**Recorded:** 2026-08-01T15:02:02-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`3ea92e41f602c3719fdb29ca2a35064867da81ba`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/3ea92e41f602c3719fdb29ca2a35064867da81ba)  
+**Parent/baseline:** `d1ed138f8b7b669f7737026c4628e7769878df56`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d1ed138f8b7b669f7737026c4628e7769878df56...3ea92e41f602c3719fdb29ca2a35064867da81ba)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher manifest to 6W
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
+
+---
 ## AUTO-aae68fe8e2d3 — Add rectangular corner-collapse particle baseline
 
 **Recorded:** 2026-08-01T14:57:54-05:00  
