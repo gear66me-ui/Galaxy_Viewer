@@ -865,3 +865,33 @@ Add files via upload
 `0006S`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+## AUTO-57ccb0139d2c — Update beta launcher manifest to 6S
+
+**Recorded:** 2026-08-01T01:02:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`57ccb0139d2c8d9391ad31621b1979521763d180`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/57ccb0139d2c8d9391ad31621b1979521763d180)  
+**Parent/baseline:** `57745b3a5fa968fb52167903c53ce7b8509a4a9a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/57745b3a5fa968fb52167903c53ce7b8509a4a9a...57ccb0139d2c8d9391ad31621b1979521763d180)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher manifest to 6S
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
+
+---
