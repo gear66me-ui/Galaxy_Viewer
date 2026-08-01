@@ -217,3 +217,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006P`, `ADD`, `APERTURE`, `BETA`, `COORDINATE`, `TEST`, `VIEWER`
 
 ---
+## AUTO-1c7cd5779f90 — Point beta mobile loader to GV-beta-0006P
+
+**Recorded:** 2026-07-31T22:36:13-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1c7cd5779f90562fb7244859fe35ee1ca7e134bf`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1c7cd5779f90562fb7244859fe35ee1ca7e134bf)  
+**Parent/baseline:** `da465e0ecd5399791a3dcaa2909ca9f5024aab6e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/da465e0ecd5399791a3dcaa2909ca9f5024aab6e...1c7cd5779f90562fb7244859fe35ee1ca7e134bf)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Point beta mobile loader to GV-beta-0006P
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `17`, deletions: `17`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0006P`, `BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `POINT`
+
+---
