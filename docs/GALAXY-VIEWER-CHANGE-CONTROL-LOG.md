@@ -1323,3 +1323,33 @@ Create GV beta 0006U coordinate fit correction
 `0006U`, `BETA`, `COORDINATE`, `CORRECTION`, `CREATE`, `FIT`, `VIEWER`
 
 ---
+## AUTO-f0345ad5233d — Update beta launcher manifest to 6U
+
+**Recorded:** 2026-08-01T13:32:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f0345ad5233da1d675c41ab07c02654edffeee39`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f0345ad5233da1d675c41ab07c02654edffeee39)  
+**Parent/baseline:** `dcabb3b378256bdfa651b0ffec63a6bde5e6e672`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dcabb3b378256bdfa651b0ffec63a6bde5e6e672...f0345ad5233da1d675c41ab07c02654edffeee39)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher manifest to 6U
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
+
+---
