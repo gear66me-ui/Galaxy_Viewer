@@ -1533,3 +1533,37 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `MOBILE`, `RUNTIME`, `UPDATE`
 
 ---
+## AUTO-ff44b806b932 — Create GV beta 0006V coordinate, hamburger, and resume recovery
+
+**Recorded:** 2026-08-01T14:22:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ff44b806b9321415d22deb45fd20b1826b6362b7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ff44b806b9321415d22deb45fd20b1826b6362b7)  
+**Parent/baseline:** `24c4959c166f8c81e3fabb9e0578b0434a3217b3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/24c4959c166f8c81e3fabb9e0578b0434a3217b3...ff44b806b9321415d22deb45fd20b1826b6362b7)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV beta 0006V coordinate, hamburger, and resume recovery
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006V.py` — additions: `179`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006V.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 6U behavior; use 15px coordinate text at scaleY(1.2) in #66A1FF without glow, center GAL in a fixed aperture, rebuild the hamburger as one mathematically centered stack with three identical bars, and recover the Aladin canvas after Android app resume without changing launcher behavior.
+```
+
+### Search tags
+
+`0006V`, `AND`, `BETA`, `COORDINATE`, `CREATE`, `HAMBURGER`, `RECOVERY`, `RESUME`, `VIEWER`
+
+---
