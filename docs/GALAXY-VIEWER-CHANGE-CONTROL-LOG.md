@@ -1015,3 +1015,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AND`, `BETA`, `DUPLICATE`, `GALAXY`, `HTML`, `ICON`, `INDEX`, `LOAD`, `MOBILE`, `REMOVE`, `STARTUP`, `VIEWER`
 
 ---
+## AUTO-2d7e402692f8 — Add smooth zero-residue cyclone test in Singularity 0029
+
+**Recorded:** 2026-08-01T01:33:20-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2d7e402692f8cc4e2c428e97e39307ac9e668cfe`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2d7e402692f8cc4e2c428e97e39307ac9e668cfe)  
+**Parent/baseline:** `ad876e03639fd10941ebe1a1dfa98efe8071e7f8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ad876e03639fd10941ebe1a1dfa98efe8071e7f8...2d7e402692f8cc4e2c428e97e39307ac9e668cfe)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add smooth zero-residue cyclone test in Singularity 0029
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0029.html` — additions: `22`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0029`, `ADD`, `ARTWORK`, `CYCLONE`, `GALAXY`, `HTML`, `RESIDUE`, `SINGULARITY`, `SMOOTH`, `SPLASH`, `TEST`, `VIEWER`, `ZERO`
+
+---
