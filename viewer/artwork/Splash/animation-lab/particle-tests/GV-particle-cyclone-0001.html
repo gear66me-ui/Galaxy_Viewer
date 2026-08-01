@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer — Particle Cyclone 0001</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dff7ff;font-family:system-ui,sans-serif}canvas{position:fixed;inset:0;width:100%;height:100%;display:block;background:#000}.panel{position:fixed;left:10px;right:10px;bottom:10px;z-index:2;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 10px;border:1px solid rgba(98,216,255,.45);border-radius:10px;background:rgba(0,0,0,.70);backdrop-filter:blur(6px);font-size:13px}.panel button,.panel select{border:1px solid rgba(98,216,255,.55);border-radius:8px;background:#07121a;color:#e9fbff;padding:7px 10px;font:inherit}.panel label{display:flex;align-items:center;gap:5px;white-space:nowrap}.status{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}.hint{position:fixed;top:10px;left:10px;right:10px;z-index:2;text-align:center;font-size:12px;color:#a7dceb;pointer-events:none;text-shadow:0 1px 4px #000}.hidden{display:none}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="Particle cyclone motion baseline"></canvas>
+<div class="hint">DOTS → COMETS → CLOUDY DEBRIS · FIXED CENTER · NO CANVAS ROTATION</div>
+<div class="panel">
+  <button id="restart" type="button">Restart</button>
+  <button id="pause" type="button">Pause</button>
+  <label>Speed
+    <select id="speed">
+      <option value="0.5">0.5×</option>
+      <option value="0.75">0.75×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.25">1.25×</option>
+      <option value="1.5">1.5×</option>
+    </select>
+  </label>
+  <label><input id="trails" type="checkbox" checked> Trails</label>
+  <label><input id="guides" type="checkbox" checked> Guides</label>
+  <span class="status" id="status">0.00 s · 0.00 turns</span>
+</div>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false});
+const restartBtn=document.getElementById('restart'),pauseBtn=document.getElementById('pause'),speedSel=document.getElementById('speed'),trailsBox=document.getElementById('trails'),guidesBox=document.getElementById('guides'),status=document.getElementById('status');
+const TAU=Math.PI*2,PHI=1.61803398875;
+const cfg={particleCount:620,trailLength:18,preOrbitTurns:2/3,propagationSeconds:2.2,pullSeconds:5.4,totalSeconds:9.2,horizon:0.048,innerRadius:0.09,outerRadius:0.68};
+let W=1,H=1,DPR=1,cx=0,cy=0,scale=1,particles=[],running=true,last=0,elapsed=0,speed=1,pulse=0,finished=false;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x)};
+function resize(){DPR=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);cx=W/2;cy=H/2;scale=Math.min(W,H);}
+function seeded(i){let x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+function reset(){particles=[];elapsed=0;pulse=0;finished=false;running=true;pauseBtn.textContent='Pause';for(let i=0;i<cfg.particleCount;i++){const u=(i+.5)/cfg.particleCount;const band=i%9;const jitter=(seeded(i)-.5)*.018;const r0=cfg.innerRadius+(cfg.outerRadius-cfg.innerRadius)*Math.pow(u,.72)+jitter;const a0=TAU*seeded(i+900)+band*.043;const size=.65+1.9*seeded(i+1200);particles.push({r0,a0,r:r0,a:a0,alive:true,size,band,history:[],activated:false,activationTurn:0});}last=performance.now();}
+function activationFor(p,t){const normalized=(p.r0-cfg.innerRadius)/(cfg.outerRadius-cfg.innerRadius);const activationDelay=normalized*cfg.propagationSeconds;return clamp((t-activationDelay)/(cfg.totalSeconds-activationDelay),0,1)}
+function updateParticle(p,t,dt){if(!p.alive)return;const local=activationFor(p,t);if(local<=0)return;const orbitPhase=smooth(local/.34);const pullPhase=clamp((local-.34)/.66,0,1);const pullCurve=Math.pow(pullPhase,PHI);const radiusNorm=clamp((p.r0-cfg.innerRadius)/(cfg.outerRadius-cfg.innerRadius),0,1);const angularWeight=.95-.58*radiusNorm;const totalTurns=cfg.preOrbitTurns*orbitPhase+2.15*smooth(pullPhase);p.a=p.a0+TAU*totalTurns*angularWeight;
+const inwardFraction=.985*pullCurve*(.62+.38*radiusNorm);const targetR=p.r0*(1-inwardFraction);p.r=Math.min(p.r,targetR);
+if(pullPhase>0){const monotonicDrain=(.035+.20*pullCurve)*(1.15-.45*radiusNorm)*dt;p.r=Math.max(0,p.r-monotonicDrain);}
+if(p.r<=cfg.horizon){p.r=0;p.alive=false;return;}
+const x=cx+Math.cos(p.a)*p.r*scale,y=cy+Math.sin(p.a)*p.r*scale;p.history.push({x,y});if(p.history.length>cfg.trailLength)p.history.shift();}
+function drawGuides(){if(!guidesBox.checked)return;ctx.save();ctx.strokeStyle='rgba(98,216,255,.16)';ctx.lineWidth=1;for(const rr of [cfg.innerRadius,.20,.34,.48,.62]){ctx.beginPath();ctx.arc(cx,cy,rr*scale,0,TAU);ctx.stroke()}ctx.strokeStyle='rgba(255,150,70,.45)';ctx.beginPath();ctx.arc(cx,cy,cfg.horizon*scale,0,TAU);ctx.stroke();ctx.restore();}
+function drawParticle(p,t){if(!p.alive)return;const x=cx+Math.cos(p.a)*p.r*scale,y=cy+Math.sin(p.a)*p.r*scale;const local=activationFor(p,t),pullPhase=clamp((local-.34)/.66,0,1);const speedGlow=smooth(pullPhase);if(trailsBox.checked&&p.history.length>1){ctx.save();ctx.lineCap='round';for(let j=1;j<p.history.length;j++){const q0=p.history[j-1],q1=p.history[j],f=j/(p.history.length-1);ctx.strokeStyle=`rgba(${130+Math.round(100*f)},${190+Math.round(55*f)},255,${.015+.20*f*speedGlow})`;ctx.lineWidth=.45+p.size*.55*f;ctx.beginPath();ctx.moveTo(q0.x,q0.y);ctx.lineTo(q1.x,q1.y);ctx.stroke()}ctx.restore()}
+const halo=2.5+p.size*2.2*speedGlow;ctx.save();ctx.fillStyle=`rgba(110,205,255,${.18+.22*speedGlow})`;ctx.beginPath();ctx.arc(x,y,halo,0,TAU);ctx.fill();ctx.fillStyle=`rgba(245,253,255,${.78+.20*speedGlow})`;ctx.beginPath();ctx.arc(x,y,p.size*(.72+.32*speedGlow),0,TAU);ctx.fill();ctx.restore();}
+function drawPulse(){if(!finished)return;pulse+=.035*speed;const e=Math.min(1,pulse),r=(6+52*e)*scale/600,fade=1-e;ctx.save();ctx.strokeStyle=`rgba(150,225,255,${fade})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,r,0,TAU);ctx.stroke();ctx.fillStyle=`rgba(255,255,255,${fade})`;ctx.fillRect(cx-1,cy-r*.9,2,r*1.8);ctx.fillRect(cx-r*.9,cy-1,r*1.8,2);ctx.restore();}
+function render(){ctx.fillStyle=trailsBox.checked?'rgba(0,0,0,.20)':'#000';ctx.fillRect(0,0,W,H);drawGuides();for(const p of particles)drawParticle(p,elapsed);ctx.fillStyle='#000';ctx.beginPath();ctx.arc(cx,cy,cfg.horizon*scale*.90,0,TAU);ctx.fill();ctx.strokeStyle='rgba(255,125,45,.75)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,cfg.horizon*scale,0,TAU);ctx.stroke();drawPulse();}
+function frame(now){if(!last)last=now;const dt=Math.min(.033,(now-last)/1000)*speed;last=now;if(running&&!finished){elapsed+=dt;for(const p of particles)updateParticle(p,elapsed,dt);if(particles.every(p=>!p.alive)||elapsed>=cfg.totalSeconds){for(const p of particles)p.alive=false;finished=true;}}
+render();const centerProbe=particles.find(p=>p.band===0)||particles[0];const turns=centerProbe?Math.max(0,(centerProbe.a-centerProbe.a0)/TAU):0;status.textContent=`${elapsed.toFixed(2)} s · ${turns.toFixed(2)} turns`;requestAnimationFrame(frame)}
+restartBtn.addEventListener('click',reset);pauseBtn.addEventListener('click',()=>{running=!running;pauseBtn.textContent=running?'Pause':'Play';last=performance.now()});speedSel.addEventListener('change',()=>{speed=Number(speedSel.value)||1});trailsBox.addEventListener('change',()=>{ctx.fillStyle='#000';ctx.fillRect(0,0,W,H)});addEventListener('resize',resize,{passive:true});resize();reset();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
