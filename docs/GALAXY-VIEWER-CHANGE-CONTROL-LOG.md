@@ -1045,3 +1045,37 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0029`, `ADD`, `ARTWORK`, `CYCLONE`, `GALAXY`, `HTML`, `RESIDUE`, `SINGULARITY`, `SMOOTH`, `SPLASH`, `TEST`, `VIEWER`, `ZERO`
 
 ---
+## AUTO-efef85b11dfa — Create GV beta 0006T with taller coordinates and Mollweide projection
+
+**Recorded:** 2026-08-01T01:37:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`efef85b11dfa7b74427f791c0060d4328fc11894`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/efef85b11dfa7b74427f791c0060d4328fc11894)  
+**Parent/baseline:** `01d2606d3bf81490f0ef3fa60f51fd27dcade092`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/01d2606d3bf81490f0ef3fa60f51fd27dcade092...efef85b11dfa7b74427f791c0060d4328fc11894)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV beta 0006T with taller coordinates and Mollweide projection
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006T.py` — additions: `171`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006T.py`**
+
+```text
+# USER INSTRUCTION: Preserve the Space Age Regular OTF and all approved 6R behavior; increase only the coordinate glyph vertical scale to 1.5, enlarge the top coordinate-control row to 42px for clearance, preserve the compact hamburger bars/menu tiles, and use Mollweide as the default projection.
+```
+
+### Search tags
+
+`0006T`, `AND`, `BETA`, `COORDINATES`, `CREATE`, `MOLLWEIDE`, `PROJECTION`, `TALLER`, `VIEWER`, `WITH`
+
+---
