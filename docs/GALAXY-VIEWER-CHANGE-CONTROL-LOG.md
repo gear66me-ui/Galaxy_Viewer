@@ -1259,3 +1259,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `MAIN`, `UPDATE`, `VIEWER`
 
 ---
+## AUTO-9d46824d451d — Add particle cyclone motion baseline
+
+**Recorded:** 2026-08-01T02:11:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9d46824d451d16b538ce2f4038d961e7c827dc83`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9d46824d451d16b538ce2f4038d961e7c827dc83)  
+**Parent/baseline:** `22b0ac5d2eaa3be59324423d9a0b138b4b345911`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/22b0ac5d2eaa3be59324423d9a0b138b4b345911...9d46824d451d16b538ce2f4038d961e7c827dc83)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add particle cyclone motion baseline
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0001.html` — additions: `60`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `HTML`, `LAB`, `MOTION`, `PARTICLE`, `SPLASH`, `TESTS`, `VIEWER`
+
+---
