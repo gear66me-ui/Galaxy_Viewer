@@ -895,3 +895,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
 
 ---
+## AUTO-afbe4c05e212 — Update mobile beta manifest to 6S
+
+**Recorded:** 2026-08-01T01:03:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`afbe4c05e212f270f4d97ec6964a4949c0dbe074`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/afbe4c05e212f270f4d97ec6964a4949c0dbe074)  
+**Parent/baseline:** `21df747c1dc550c5d3dca2350e4f7d055a490250`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/21df747c1dc550c5d3dca2350e4f7d055a490250...afbe4c05e212f270f4d97ec6964a4949c0dbe074)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta manifest to 6S
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
+
+---
