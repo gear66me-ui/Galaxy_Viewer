@@ -24,7 +24,7 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Append deterministic change record
+      - name: Insert deterministic change record newest first
         env:
           REPOSITORY: ${{ github.repository }}
           BRANCH_NAME: ${{ github.ref_name }}
@@ -38,6 +38,7 @@ jobs:
           python3 <<'PY'
           import os
           import pathlib
+          import re
           import subprocess
           from datetime import datetime, timezone
 
@@ -185,9 +186,33 @@ jobs:
           entry.append("")
           entry.append("---")
           entry.append("")
+          new_entry = "\n".join(entry).rstrip() + "\n"
 
-          with log_path.open("a", encoding="utf-8", newline="\n") as handle:
-              handle.write("\n".join(entry))
+          existing = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
+          existing = existing.replace(
+              "1. New entries are appended chronologically at the bottom.",
+              "1. Automated entries are listed in reverse chronological order, newest first."
+          )
+
+          first_auto = re.search(r"(?m)^## AUTO-", existing)
+          if first_auto:
+              fixed_header = existing[:first_auto.start()].rstrip()
+              automated_text = existing[first_auto.start():].strip()
+              automated_entries = [block.strip() for block in re.split(r"(?m)(?=^## AUTO-)", automated_text) if block.strip()]
+          else:
+              fixed_header = existing.rstrip()
+              automated_entries = []
+
+          def recorded_timestamp(block):
+              match = re.search(r"(?m)^\*\*Recorded:\*\*\s+(.+?)\s{2}$", block)
+              return match.group(1).strip() if match else ""
+
+          automated_entries = [block for block in automated_entries if not block.startswith(f"## AUTO-{commit_sha[:12]} ")]
+          automated_entries.append(new_entry.strip())
+          automated_entries.sort(key=recorded_timestamp, reverse=True)
+
+          output = fixed_header + "\n" + "\n".join(automated_entries).rstrip() + "\n"
+          log_path.write_text(output, encoding="utf-8", newline="\n")
           PY
 
       - name: Commit only the updated log
