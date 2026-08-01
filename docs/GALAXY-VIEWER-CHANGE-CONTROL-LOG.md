@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-116335f60c59 — Refine Glyph-9 lab color presets
+
+**Recorded:** 2026-08-01T17:54:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`116335f60c59a5b57b031a305b5c4c3c1e189b53`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/116335f60c59a5b57b031a305b5c4c3c1e189b53)  
+**Parent/baseline:** `bfc72d29deacb9b97cebe1fb00b6bb8fa7b094ba`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bfc72d29deacb9b97cebe1fb00b6bb8fa7b094ba...116335f60c59a5b57b031a305b5c4c3c1e189b53)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Refine Glyph-9 lab color presets
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/tests/GV-coordinate-glyph9-lab-0001.html` — additions: `19`, deletions: `13`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`COLOR`, `COORDINATE`, `GLYPH`, `GLYPH9`, `HTML`, `LAB`, `PRESETS`, `REFINE`, `TESTS`, `VIEWER`
+
+---
 ## AUTO-bbd341d118db — Add image-embedded counterclockwise cyclone launch test
 
 **Recorded:** 2026-08-01T17:44:08-05:00  
