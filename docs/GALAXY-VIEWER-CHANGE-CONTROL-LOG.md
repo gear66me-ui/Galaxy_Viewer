@@ -1383,3 +1383,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+## AUTO-60c7aceb55b1 — Update beta launcher service worker to 6U
+
+**Recorded:** 2026-08-01T13:33:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`60c7aceb55b1d16fb2f1f20441824602566273d0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/60c7aceb55b1d16fb2f1f20441824602566273d0)  
+**Parent/baseline:** `1b8563b5296131ca16d4ae250ca3450a237d9e0e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1b8563b5296131ca16d4ae250ca3450a237d9e0e...60c7aceb55b1d16fb2f1f20441824602566273d0)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher service worker to 6U
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/service-worker.js` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `LAUNCH`, `LAUNCHER`, `SERVICE`, `UPDATE`, `WORKER`
+
+---
