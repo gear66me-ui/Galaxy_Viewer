@@ -1503,3 +1503,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+## AUTO-8b01c9623dc7 — Update mobile beta runtime to 6U
+
+**Recorded:** 2026-08-01T13:35:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8b01c9623dc744e28c5a3394098ffa4cf473ee2e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8b01c9623dc744e28c5a3394098ffa4cf473ee2e)  
+**Parent/baseline:** `b80222c3dc3639df3d180d67f79b59c275ebbac1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b80222c3dc3639df3d180d67f79b59c275ebbac1...8b01c9623dc744e28c5a3394098ffa4cf473ee2e)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta runtime to 6U
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `HTML`, `INDEX`, `MOBILE`, `RUNTIME`, `UPDATE`
+
+---
