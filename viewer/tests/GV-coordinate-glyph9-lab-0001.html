@@ -11,10 +11,10 @@
   font-style:normal;font-weight:400;font-display:block
 }
 :root{
-  --coord:#1705b5;
-  --sx:1;
-  --sy:1.30;
-  --spacing:0px;
+  --coord:#66a1ff;
+  --sx:1.20;
+  --sy:1.70;
+  --spacing:0.55px;
   --coord-width:298px;
 }
 *{box-sizing:border-box}
@@ -59,6 +59,8 @@ input[type=range]{width:100%}
 #color{width:100%;height:28px;border:0;padding:0;background:transparent}
 .swatches{display:flex;gap:5px}
 .swatch{width:26px;height:26px;min-height:0;padding:0;border:1px solid #d7f4ff;border-radius:5px}
+.swatch.active{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 2px var(--coord)}
+#hexColor{font:10px/1.2 monospace;color:#7df4ff;text-align:center}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
 button{min-height:34px;border:1px solid #62d8ff;border-radius:7px;background:#111a29;color:#fff;text-transform:uppercase;font-size:11px}
 .pad-section{display:grid;grid-template-columns:150px 1fr;gap:9px;align-items:center;border:1px solid #263746;border-radius:10px;background:#090e15;padding:8px}
@@ -109,18 +111,18 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
 </div>
 
 <section class="controls">
-  <div class="control"><label for="sx">Width</label><input id="sx" type="range" min=".70" max="1.35" step=".01" value="1"><output id="sxOut">1.00×</output></div>
-  <div class="control"><label for="sy">Height</label><input id="sy" type="range" min=".85" max="1.70" step=".01" value="1.30"><output id="syOut">1.30×</output></div>
-  <div class="control"><label for="spacing">Spacing</label><input id="spacing" type="range" min="-1" max="2.5" step=".05" value="0"><output id="spacingOut">0.00</output></div>
+  <div class="control"><label for="sx">Width</label><input id="sx" type="range" min=".70" max="1.35" step=".01" value="1.20"><output id="sxOut">1.20×</output></div>
+  <div class="control"><label for="sy">Height</label><input id="sy" type="range" min=".85" max="1.70" step=".01" value="1.70"><output id="syOut">1.70×</output></div>
+  <div class="control"><label for="spacing">Spacing</label><input id="spacing" type="range" min="-1" max="2.5" step=".05" value=".55"><output id="spacingOut">0.55</output></div>
   <div class="color-row">
     <label for="color">Color</label>
     <div class="swatches">
       <button class="swatch" data-color="#1705b5" style="background:#1705b5" aria-label="Deep blue"></button>
-      <button class="swatch" data-color="#66a1ff" style="background:#66a1ff" aria-label="Soft blue"></button>
+      <button class="swatch active" data-color="#66a1ff" style="background:#66a1ff" aria-label="Soft blue"></button>
       <button class="swatch" data-color="#ffd166" style="background:#ffd166" aria-label="Amber"></button>
       <button class="swatch" data-color="#d7f3ff" style="background:#d7f3ff" aria-label="Icy white"></button>
     </div>
-    <input id="color" type="color" value="#1705b5" aria-label="Custom font color">
+    <div><input id="color" type="color" value="#66a1ff" aria-label="Custom font color"><div id="hexColor">#66A1FF</div></div>
   </div>
   <div class="actions"><button id="reset">Reset</button><button id="copy">Copy Settings</button></div>
   <div id="notice"></div>
@@ -141,7 +143,7 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   "use strict";
   const root=document.documentElement;
   const $=id=>document.getElementById(id);
-  const state={sx:1,sy:1.30,spacing:0,color:"#1705b5",lon:-139.9995,lat:-59.9599};
+  const state={sx:1.20,sy:1.70,spacing:0.55,color:"#66a1ff",lon:-139.9995,lat:-59.9599};
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const format=v=>(v<0?"-":"")+Math.abs(v).toFixed(4);
 
@@ -156,13 +158,17 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
     $("lon").textContent=format(state.lon);
     $("lat").textContent=format(state.lat);
     $("color").value=state.color;
+    $("hexColor").textContent=state.color.toUpperCase();
+    document.querySelectorAll(".swatch").forEach(b=>b.classList.toggle("active",b.dataset.color.toLowerCase()===state.color.toLowerCase()));
   }
 
   $("sx").addEventListener("input",e=>{state.sx=Number(e.target.value);render()});
   $("sy").addEventListener("input",e=>{state.sy=Number(e.target.value);render()});
   $("spacing").addEventListener("input",e=>{state.spacing=Number(e.target.value);render()});
-  $("color").addEventListener("input",e=>{state.color=e.target.value;render()});
-  document.querySelectorAll(".swatch").forEach(b=>b.addEventListener("click",()=>{state.color=b.dataset.color;render()}));
+  const applyCustomColor=e=>{state.color=e.target.value;render()};
+  $("color").addEventListener("input",applyCustomColor);
+  $("color").addEventListener("change",applyCustomColor);
+  document.querySelectorAll(".swatch").forEach(b=>b.addEventListener("click",()=>{state.color=b.dataset.color;$("color").value=state.color;render()}));
 
   const pad=$("pad"),handle=$("handle");
   function setFromPointer(e){
@@ -181,7 +187,7 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   pad.addEventListener("pointercancel",e=>{if(pad.hasPointerCapture(e.pointerId))pad.releasePointerCapture(e.pointerId)});
 
   $("reset").addEventListener("click",()=>{
-    Object.assign(state,{sx:1,sy:1.30,spacing:0,color:"#1705b5",lon:-139.9995,lat:-59.9599});
+    Object.assign(state,{sx:1.20,sy:1.70,spacing:0.55,color:"#66a1ff",lon:-139.9995,lat:-59.9599});
     $("sx").value=state.sx;$("sy").value=state.sy;$("spacing").value=state.spacing;
     handle.style.left="50%";handle.style.top="50%";render();
   });
