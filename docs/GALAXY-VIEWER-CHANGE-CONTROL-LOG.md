@@ -647,3 +647,33 @@ Add GV-beta-0006R Space Age Regular font test
 `0006R`, `ADD`, `AGE`, `BETA`, `FONT`, `REGULAR`, `SPACE`, `TEST`, `VIEWER`
 
 ---
+## AUTO-ac08a76970fe — Update beta mobile loader to 6R
+
+**Recorded:** 2026-08-01T00:03:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ac08a76970fea0f7e848bcce7920fd4a47bca9d0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ac08a76970fea0f7e848bcce7920fd4a47bca9d0)  
+**Parent/baseline:** `f6b0ea5112f8087e596b3942d05d318efbf9f2bc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f6b0ea5112f8087e596b3942d05d318efbf9f2bc...ac08a76970fea0f7e848bcce7920fd4a47bca9d0)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta mobile loader to 6R
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `16`, deletions: `16`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `UPDATE`
+
+---
