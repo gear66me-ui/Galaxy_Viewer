@@ -677,3 +677,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `UPDATE`
 
 ---
+## AUTO-66ccd6756198 — Update beta launcher to 6R
+
+**Recorded:** 2026-08-01T00:04:00-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`66ccd6756198e21481fd24b4a857b5581fbc95d7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/66ccd6756198e21481fd24b4a857b5581fbc95d7)  
+**Parent/baseline:** `0594d94f4a6f3d946b3665472ce18b4e9332d079`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0594d94f4a6f3d946b3665472ce18b4e9332d079...66ccd6756198e21481fd24b4a857b5581fbc95d7)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher to 6R
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
+
+---
