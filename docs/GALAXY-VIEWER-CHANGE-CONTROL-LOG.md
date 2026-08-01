@@ -247,3 +247,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006P`, `BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `POINT`
 
 ---
+## AUTO-c529bd57b8f9 — Update beta launcher to 6P
+
+**Recorded:** 2026-07-31T22:36:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c529bd57b8f94b964cfd4b0fbd41ed6384e3cd8b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c529bd57b8f94b964cfd4b0fbd41ed6384e3cd8b)  
+**Parent/baseline:** `f49073d1ccfeff365014d1c8496b257d14815a26`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f49073d1ccfeff365014d1c8496b257d14815a26...c529bd57b8f94b964cfd4b0fbd41ed6384e3cd8b)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher to 6P
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/index.html` — additions: `15`, deletions: `15`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
+
+---
