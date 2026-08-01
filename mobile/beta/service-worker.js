@@ -1,4 +1,4 @@
-const CACHE_NAME='galaxy-viewer-beta-6v-resume-hamburger-coordinate-001';
+const CACHE_NAME='galaxy-viewer-beta-6w-metallic-resume-001';
 
 const clearAllCaches=()=>caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key))));
 
