@@ -337,3 +337,37 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0024`, `ADD`, `ARTWORK`, `BLANKET`, `CENTER`, `FIRST`, `GALAXY`, `HTML`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
 
 ---
+## AUTO-07c2ade6d367 — Add GV-beta-0006Q coordinate scale 1.0 test
+
+**Recorded:** 2026-07-31T23:02:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`07c2ade6d367b8aabf715322fe5afa9cad613970`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/07c2ade6d367b8aabf715322fe5afa9cad613970)  
+**Parent/baseline:** `bcb658e18b9be08f512c84b1c83b05ac2aa96961`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bcb658e18b9be08f512c84b1c83b05ac2aa96961...07c2ade6d367b8aabf715322fe5afa9cad613970)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add GV-beta-0006Q coordinate scale 1.0 test
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006Q.py` — additions: `171`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006Q.py`**
+
+```text
+# USER INSTRUCTION: Change only the coordinate glyph vertical scale from 1.4 to 1.0; preserve the 25px aperture, no-glow rendering, spacing, and all other behavior.
+```
+
+### Search tags
+
+`0006Q`, `ADD`, `BETA`, `COORDINATE`, `SCALE`, `TEST`, `VIEWER`
+
+---
