@@ -1229,3 +1229,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `MOBILE`, `RUNTIME`, `UPDATE`
 
 ---
+## AUTO-8dc075907a85 — Update main launcher to Galaxy Viewer 6T
+
+**Recorded:** 2026-08-01T01:40:49-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8dc075907a85d9fa368fbf9d07ec951b2c90c5b8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8dc075907a85d9fa368fbf9d07ec951b2c90c5b8)  
+**Parent/baseline:** `f463c63af44afb9b5812759b9c9cbc5a6aa487b3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f463c63af44afb9b5812759b9c9cbc5a6aa487b3...8dc075907a85d9fa368fbf9d07ec951b2c90c5b8)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update main launcher to Galaxy Viewer 6T
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/index.html` — additions: `9`, deletions: `9`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `MAIN`, `UPDATE`, `VIEWER`
+
+---
