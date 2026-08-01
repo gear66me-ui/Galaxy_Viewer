@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-bbd341d118db — Add image-embedded counterclockwise cyclone launch test
+
+**Recorded:** 2026-08-01T17:44:08-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`bbd341d118dbda029b95b82f69ff77bdf1bcf7d4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/bbd341d118dbda029b95b82f69ff77bdf1bcf7d4)  
+**Parent/baseline:** `e7205e2ab4c7669f2f0376fc9e2b89ad06e21e1e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e7205e2ab4c7669f2f0376fc9e2b89ad06e21e1e...bbd341d118dbda029b95b82f69ff77bdf1bcf7d4)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add image-embedded counterclockwise cyclone launch test
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0006.html` — additions: `44`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ANIMATION`, `ARTWORK`, `COUNTERCLOCKWISE`, `CYCLONE`, `EMBEDDED`, `HTML`, `IMAGE`, `LAB`, `LAUNCH`, `PARTICLE`, `SPLASH`, `TEST`, `TESTS`, `VIEWER`
+
+---
 ## AUTO-aeb69aec2c84 — Add responsive GV-9 coordinate glyph lab
 
 **Recorded:** 2026-08-01T17:38:32-05:00  
