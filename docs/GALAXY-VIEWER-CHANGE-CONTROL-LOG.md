@@ -88,3 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-2e22a6c3c6dd — Add automatic Galaxy Viewer change control workflow
+
+**Recorded:** 2026-07-31T21:47:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2e22a6c3c6dd65475bb6865a0957dcc0d7aae895`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2e22a6c3c6dd65475bb6865a0957dcc0d7aae895)  
+**Parent/baseline:** `dfe6ab3383483027465b36d0e570b06905f31b3f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dfe6ab3383483027465b36d0e570b06905f31b3f...2e22a6c3c6dd65475bb6865a0957dcc0d7aae895)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add automatic Galaxy Viewer change control workflow
+```
+
+### Changed paths
+
+- **ADDED:** `.github/workflows/automatic-change-control-log.yml` — additions: `211`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+"GALAXY VIEWER CHANGE ORDER",
+"CHANGE ORDER:",
+"USER INSTRUCTION:",
+"AUTHORIZED CHANGES:",
+"PRESERVED BEHAVIOR:",
+"PURPOSE:",
+```
+
+### Search tags
+
+`ADD`, `AUTOMATIC`, `CHANGE`, `CONTROL`, `GALAXY`, `GITHUB`, `LOG`, `VIEWER`, `WORKFLOW`, `WORKFLOWS`, `YML`
+
+---
