@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-aae68fe8e2d3 — Add rectangular corner-collapse particle baseline
+
+**Recorded:** 2026-08-01T14:57:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`aae68fe8e2d32344f73ed56df0704b6ddc49058c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/aae68fe8e2d32344f73ed56df0704b6ddc49058c)  
+**Parent/baseline:** `0b0661c0916d1a6ba7df0b45ed8856bed9a45ef4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0b0661c0916d1a6ba7df0b45ed8856bed9a45ef4...aae68fe8e2d32344f73ed56df0704b6ddc49058c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add rectangular corner-collapse particle baseline
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0002.html` — additions: `60`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `COLLAPSE`, `CORNER`, `CYCLONE`, `HTML`, `LAB`, `PARTICLE`, `RECTANGULAR`, `SPLASH`, `TESTS`, `VIEWER`
+
+---
 ## AUTO-3f626feb7b0a — Show newest change-control records first
 
 **Recorded:** 2026-08-01T14:36:00-05:00  
