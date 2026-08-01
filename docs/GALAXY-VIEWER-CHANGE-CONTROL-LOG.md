@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-6aeb1402bdd4 — Add five-second viscous particle cyclone baseline
+
+**Recorded:** 2026-08-01T15:36:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6aeb1402bdd40cd075cf785c6e4baed5dfdb11bb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6aeb1402bdd40cd075cf785c6e4baed5dfdb11bb)  
+**Parent/baseline:** `18c3f4c0b0b1f27ea0e93bd81c9e3f6555634417`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/18c3f4c0b0b1f27ea0e93bd81c9e3f6555634417...6aeb1402bdd40cd075cf785c6e4baed5dfdb11bb)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add five-second viscous particle cyclone baseline
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0003.html` — additions: `61`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `FIVE`, `HTML`, `LAB`, `PARTICLE`, `SECOND`, `SPLASH`, `TESTS`, `VIEWER`, `VISCOUS`
+
+---
 ## AUTO-6b8e6808ca4e — Update beta launcher to 6W artistic tile layout
 
 **Recorded:** 2026-08-01T15:02:58-05:00  
