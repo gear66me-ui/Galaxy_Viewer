@@ -11,7 +11,8 @@
   font-style:normal;font-weight:400;font-display:block
 }
 :root{
-  --coord:#66a1ff;
+  --coord:#72a7e8;
+  --font-size:13px;
   --sx:1.20;
   --sy:1.70;
   --spacing:0.55px;
@@ -45,22 +46,26 @@ h1{margin:2px 0 7px;text-align:center;font:400 15px/1.2 "Space Age GV-9",sans-se
   transform-origin:center;
   white-space:nowrap
 }
-.coord-text{font-size:13px;line-height:24px}
-.gal{font-size:11px;margin-right:5px}
+.coord-text{font-size:var(--font-size);line-height:24px}
+.gal{font-size:calc(var(--font-size) * .846);margin-right:5px}
 .lambda{font-family:Arial,sans-serif;font-size:10px;margin:0 4px;display:inline-block;transform:scaleY(calc(1 / var(--sy)))}
 .checkpoint-shell{height:34px;border:1px solid #243648;border-radius:8px;background:#080d14;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:7px}
-.checkpoint{font-size:12px}
+.checkpoint{font-size:calc(var(--font-size) * .923)}
+.color-panel{border:1px solid #263746;border-radius:10px;background:#090e15;padding:8px;margin-bottom:7px}
+.color-panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:11px;text-transform:uppercase}
+#hexColor{font:11px/1.2 monospace;color:#7df4ff}
+#svField{position:relative;width:100%;height:150px;border:1px solid #526f88;border-radius:8px;touch-action:none;overflow:hidden;background-color:hsl(214,100%,50%)}
+#svField:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#fff,rgba(255,255,255,0))}
+#svField:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000,rgba(0,0,0,0))}
+#svHandle{position:absolute;left:65%;top:9%;width:18px;height:18px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #000;transform:translate(-50%,-50%);pointer-events:none;z-index:2}
+#hueBar{position:relative;width:100%;height:24px;margin-top:7px;border:1px solid #526f88;border-radius:7px;touch-action:none;background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+#hueHandle{position:absolute;left:59.4%;top:50%;width:12px;height:30px;border:2px solid #fff;border-radius:5px;box-shadow:0 0 0 1px #000;transform:translate(-50%,-50%);pointer-events:none}
+.current-strip{height:18px;margin-top:7px;border:1px solid #526f88;border-radius:6px;background:var(--coord)}
 .controls{border:1px solid #263746;border-radius:10px;background:#090e15;padding:8px;margin-bottom:7px}
 .control{display:grid;grid-template-columns:68px 1fr 45px;gap:7px;align-items:center;min-height:32px}
 .control label{font-size:11px;text-transform:uppercase}
 .control output{text-align:right;font-size:10px;color:#7df4ff}
 input[type=range]{width:100%}
-.color-row{display:grid;grid-template-columns:68px 1fr 45px;gap:7px;align-items:center;min-height:34px}
-#color{width:100%;height:28px;border:0;padding:0;background:transparent}
-.swatches{display:flex;gap:5px}
-.swatch{width:26px;height:26px;min-height:0;padding:0;border:1px solid #d7f4ff;border-radius:5px}
-.swatch.active{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 2px var(--coord)}
-#hexColor{font:10px/1.2 monospace;color:#7df4ff;text-align:center}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
 button{min-height:34px;border:1px solid #62d8ff;border-radius:7px;background:#111a29;color:#fff;text-transform:uppercase;font-size:11px}
 .pad-section{display:grid;grid-template-columns:150px 1fr;gap:9px;align-items:center;border:1px solid #263746;border-radius:10px;background:#090e15;padding:8px}
@@ -76,14 +81,14 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   :root{--coord-width:228px}
   body{padding:8px}
   .lab{width:304px}
-  .coord-text{font-size:10.5px}
-  .gal{font-size:9px;margin-right:3px}
+  .coord-text{font-size:calc(var(--font-size) * .808)}
+  .gal{font-size:calc(var(--font-size) * .692);margin-right:3px}
   .lambda{margin:0 2px;font-size:9px}
-  .checkpoint{font-size:9.5px}
+  .checkpoint{font-size:calc(var(--font-size) * .731)}
+  #svField{height:132px}
   .pad-section{grid-template-columns:132px 1fr;gap:7px}
   #pad{width:132px;height:132px}
   .control{grid-template-columns:60px 1fr 40px}
-  .color-row{grid-template-columns:60px 1fr 40px}
 }
 @media(min-width:391px){
   .lab{width:374px}
@@ -106,24 +111,22 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   </div>
 </section>
 
+<section class="color-panel" aria-label="Live color selector">
+  <div class="color-panel-title"><span>Live color field</span><span id="hexColor">#72A7E8</span></div>
+  <div id="svField" role="application" aria-label="Saturation and brightness color field"><span id="svHandle"></span></div>
+  <div id="hueBar" role="application" aria-label="Hue selector"><span id="hueHandle"></span></div>
+  <div class="current-strip" aria-hidden="true"></div>
+</section>
+
 <div class="checkpoint-shell">
   <div class="checkpoint">5 9&nbsp;&nbsp;55 59 95 99&nbsp;&nbsp;-139.9995&nbsp;&nbsp;-59.9599</div>
 </div>
 
 <section class="controls">
+  <div class="control"><label for="fontSize">Size</label><input id="fontSize" type="range" min="9" max="18" step=".1" value="13"><output id="fontSizeOut">13.0px</output></div>
   <div class="control"><label for="sx">Width</label><input id="sx" type="range" min=".70" max="1.35" step=".01" value="1.20"><output id="sxOut">1.20×</output></div>
   <div class="control"><label for="sy">Height</label><input id="sy" type="range" min=".85" max="1.70" step=".01" value="1.70"><output id="syOut">1.70×</output></div>
   <div class="control"><label for="spacing">Spacing</label><input id="spacing" type="range" min="-1" max="2.5" step=".05" value=".55"><output id="spacingOut">0.55</output></div>
-  <div class="color-row">
-    <label for="color">Color</label>
-    <div class="swatches">
-      <button class="swatch" data-color="#1705b5" style="background:#1705b5" aria-label="Deep blue"></button>
-      <button class="swatch active" data-color="#66a1ff" style="background:#66a1ff" aria-label="Soft blue"></button>
-      <button class="swatch" data-color="#ffd166" style="background:#ffd166" aria-label="Amber"></button>
-      <button class="swatch" data-color="#d7f3ff" style="background:#d7f3ff" aria-label="Icy white"></button>
-    </div>
-    <div><input id="color" type="color" value="#66a1ff" aria-label="Custom font color"><div id="hexColor">#66A1FF</div></div>
-  </div>
   <div class="actions"><button id="reset">Reset</button><button id="copy">Copy Settings</button></div>
   <div id="notice"></div>
 </section>
@@ -143,32 +146,65 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   "use strict";
   const root=document.documentElement;
   const $=id=>document.getElementById(id);
-  const state={sx:1.20,sy:1.70,spacing:0.55,color:"#66a1ff",lon:-139.9995,lat:-59.9599};
+  const defaults={fontSize:13,sx:1.20,sy:1.70,spacing:0.55,h:214,s:.50,v:.91,lon:-139.9995,lat:-59.9599};
+  const state={...defaults};
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const format=v=>(v<0?"-":"")+Math.abs(v).toFixed(4);
 
+  function hsvToRgb(h,s,v){
+    const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;
+    let r=0,g=0,b=0;
+    if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}
+    else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}
+    return [r,g,b].map(n=>Math.round((n+m)*255));
+  }
+  function rgbToHex([r,g,b]){
+    return "#"+[r,g,b].map(n=>n.toString(16).padStart(2,"0")).join("");
+  }
+  function colorHex(){return rgbToHex(hsvToRgb(state.h,state.s,state.v))}
+
   function render(){
+    const color=colorHex();
+    root.style.setProperty("--font-size",state.fontSize+"px");
     root.style.setProperty("--sx",state.sx);
     root.style.setProperty("--sy",state.sy);
     root.style.setProperty("--spacing",state.spacing+"px");
-    root.style.setProperty("--coord",state.color);
+    root.style.setProperty("--coord",color);
+    $("fontSizeOut").textContent=state.fontSize.toFixed(1)+"px";
     $("sxOut").textContent=state.sx.toFixed(2)+"×";
     $("syOut").textContent=state.sy.toFixed(2)+"×";
     $("spacingOut").textContent=state.spacing.toFixed(2);
     $("lon").textContent=format(state.lon);
     $("lat").textContent=format(state.lat);
-    $("color").value=state.color;
-    $("hexColor").textContent=state.color.toUpperCase();
-    document.querySelectorAll(".swatch").forEach(b=>b.classList.toggle("active",b.dataset.color.toLowerCase()===state.color.toLowerCase()));
+    $("hexColor").textContent=color.toUpperCase();
+    $("svField").style.backgroundColor="hsl("+state.h+",100%,50%)";
+    $("svHandle").style.left=(state.s*100)+"%";
+    $("svHandle").style.top=((1-state.v)*100)+"%";
+    $("hueHandle").style.left=(state.h/360*100)+"%";
   }
 
+  $("fontSize").addEventListener("input",e=>{state.fontSize=Number(e.target.value);render()});
   $("sx").addEventListener("input",e=>{state.sx=Number(e.target.value);render()});
   $("sy").addEventListener("input",e=>{state.sy=Number(e.target.value);render()});
   $("spacing").addEventListener("input",e=>{state.spacing=Number(e.target.value);render()});
-  const applyCustomColor=e=>{state.color=e.target.value;render()};
-  $("color").addEventListener("input",applyCustomColor);
-  $("color").addEventListener("change",applyCustomColor);
-  document.querySelectorAll(".swatch").forEach(b=>b.addEventListener("click",()=>{state.color=b.dataset.color;$("color").value=state.color;render()}));
+
+  function bindDrag(el,apply){
+    el.addEventListener("pointerdown",e=>{el.setPointerCapture(e.pointerId);apply(e)});
+    el.addEventListener("pointermove",e=>{if(el.hasPointerCapture(e.pointerId))apply(e)});
+    el.addEventListener("pointerup",e=>{if(el.hasPointerCapture(e.pointerId))el.releasePointerCapture(e.pointerId)});
+    el.addEventListener("pointercancel",e=>{if(el.hasPointerCapture(e.pointerId))el.releasePointerCapture(e.pointerId)});
+  }
+  bindDrag($("svField"),e=>{
+    const r=$("svField").getBoundingClientRect();
+    state.s=clamp((e.clientX-r.left)/r.width,0,1);
+    state.v=1-clamp((e.clientY-r.top)/r.height,0,1);
+    render();
+  });
+  bindDrag($("hueBar"),e=>{
+    const r=$("hueBar").getBoundingClientRect();
+    state.h=clamp((e.clientX-r.left)/r.width,0,1)*360;
+    render();
+  });
 
   const pad=$("pad"),handle=$("handle");
   function setFromPointer(e){
@@ -181,25 +217,28 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
     handle.style.top=(y/r.height*100)+"%";
     render();
   }
-  pad.addEventListener("pointerdown",e=>{pad.setPointerCapture(e.pointerId);setFromPointer(e)});
-  pad.addEventListener("pointermove",e=>{if(pad.hasPointerCapture(e.pointerId))setFromPointer(e)});
-  pad.addEventListener("pointerup",e=>{if(pad.hasPointerCapture(e.pointerId))pad.releasePointerCapture(e.pointerId)});
-  pad.addEventListener("pointercancel",e=>{if(pad.hasPointerCapture(e.pointerId))pad.releasePointerCapture(e.pointerId)});
+  bindDrag(pad,setFromPointer);
 
   $("reset").addEventListener("click",()=>{
-    Object.assign(state,{sx:1.20,sy:1.70,spacing:0.55,color:"#66a1ff",lon:-139.9995,lat:-59.9599});
-    $("sx").value=state.sx;$("sy").value=state.sy;$("spacing").value=state.spacing;
-    handle.style.left="50%";handle.style.top="50%";render();
+    Object.assign(state,defaults);
+    $("fontSize").value=state.fontSize;
+    $("sx").value=state.sx;
+    $("sy").value=state.sy;
+    $("spacing").value=state.spacing;
+    handle.style.left="50%";
+    handle.style.top="50%";
+    render();
   });
 
   $("copy").addEventListener("click",async()=>{
     const text=[
       "GALAXY VIEWER GLYPH-9 LAB SETTINGS",
       "Font: viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9.otf",
+      "Character size: "+state.fontSize.toFixed(1)+"px",
       "Character width: scaleX("+state.sx.toFixed(2)+")",
       "Character height: scaleY("+state.sy.toFixed(2)+")",
       "Character spacing: "+state.spacing.toFixed(2)+"px",
-      "Color: "+state.color.toUpperCase(),
+      "Color: "+colorHex().toUpperCase(),
       "Longitude: "+format(state.lon),
       "Latitude: "+format(state.lat),
       "Responsive test widths: 390px and 320px"
