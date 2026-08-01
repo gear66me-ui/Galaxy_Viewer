@@ -985,3 +985,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MOBILE`, `SERVICE`, `UPDATE`, `VERSION`, `WORKER`
 
 ---
+## AUTO-8c38f9730129 — Load Galaxy Viewer beta 6S and remove duplicate startup icon
+
+**Recorded:** 2026-08-01T01:06:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8c38f9730129f73069beedba84642e6b74ea586e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8c38f9730129f73069beedba84642e6b74ea586e)  
+**Parent/baseline:** `9831b86ff0e78cd76e7f62cef5db669a1c6df13a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9831b86ff0e78cd76e7f62cef5db669a1c6df13a...8c38f9730129f73069beedba84642e6b74ea586e)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Load Galaxy Viewer beta 6S and remove duplicate startup icon
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `16`, deletions: `26`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`AND`, `BETA`, `DUPLICATE`, `GALAXY`, `HTML`, `ICON`, `INDEX`, `LOAD`, `MOBILE`, `REMOVE`, `STARTUP`, `VIEWER`
+
+---
