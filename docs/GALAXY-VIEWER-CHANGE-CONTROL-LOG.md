@@ -1597,3 +1597,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+## AUTO-461f9765133d — Update mobile beta service worker to 6V
+
+**Recorded:** 2026-08-01T14:23:15-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`461f9765133de50b1cd18fa3d909db250621a0c7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/461f9765133de50b1cd18fa3d909db250621a0c7)  
+**Parent/baseline:** `0cfa35c5184dfb30ceb5b829e02b5673c3c7c8cb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0cfa35c5184dfb30ceb5b829e02b5673c3c7c8cb...461f9765133de50b1cd18fa3d909db250621a0c7)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update mobile beta service worker to 6V
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/service-worker.js` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
+
+---
