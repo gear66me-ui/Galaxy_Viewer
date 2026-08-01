@@ -1079,3 +1079,33 @@ Create GV beta 0006T with taller coordinates and Mollweide projection
 `0006T`, `AND`, `BETA`, `COORDINATES`, `CREATE`, `MOLLWEIDE`, `PROJECTION`, `TALLER`, `VIEWER`, `WITH`
 
 ---
+## AUTO-b166d9ff64ac — Update beta launcher manifest to 6T
+
+**Recorded:** 2026-08-01T01:38:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b166d9ff64ac8a98eed48dd26127b837ce53769b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b166d9ff64ac8a98eed48dd26127b837ce53769b)  
+**Parent/baseline:** `0e5a824436efbf7aab7b21f7d0236907ec5d6348`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0e5a824436efbf7aab7b21f7d0236907ec5d6348...b166d9ff64ac8a98eed48dd26127b837ce53769b)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher manifest to 6T
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
+
+---
