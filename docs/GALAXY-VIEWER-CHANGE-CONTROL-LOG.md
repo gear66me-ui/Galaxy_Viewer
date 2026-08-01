@@ -157,3 +157,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0021`, `ADD`, `ARTWORK`, `CINEMATIC`, `FIVE`, `GALAXY`, `HTML`, `ROTATION`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
 
 ---
+## AUTO-dff01b914ca1 — Add reliable bounded splash startup in Singularity 0022
+
+**Recorded:** 2026-07-31T22:23:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dff01b914ca1e41e4592e140f7e6f6f7fafc79b1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dff01b914ca1e41e4592e140f7e6f6f7fafc79b1)  
+**Parent/baseline:** `1365174e5581d904430edd72dc169426c12c7958`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1365174e5581d904430edd72dc169426c12c7958...dff01b914ca1e41e4592e140f7e6f6f7fafc79b1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add reliable bounded splash startup in Singularity 0022
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0022.html` — additions: `22`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0022`, `ADD`, `ARTWORK`, `BOUNDED`, `GALAXY`, `HTML`, `RELIABLE`, `SINGULARITY`, `SPLASH`, `STARTUP`, `VIEWER`
+
+---
