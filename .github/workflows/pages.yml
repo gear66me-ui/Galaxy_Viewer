@@ -1,6 +1,6 @@
 name: Deploy GitHub Pages
 
-# Publication refresh: redeploy the complete beta branch, including new splash animation files.
+# Publication refresh: redeploy the complete beta branch, including Galaxy Viewer Singularity 0019.
 on:
   push:
     branches:
