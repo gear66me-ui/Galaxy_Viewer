@@ -1,5 +1,6 @@
 name: Deploy GitHub Pages
 
+# Publication refresh: redeploy the complete beta branch, including new splash animation files.
 on:
   push:
     branches:
