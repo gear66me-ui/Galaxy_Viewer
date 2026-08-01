@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Galaxy Viewer Coordinate Style Lab 0001</title>
+<style>
+@font-face{
+  font-family:"Space Age";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf?v=coordinate-lab-0001") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+:root{
+  --coord-color:#1705B5;
+  --coord-font-size:15px;
+  --coord-scale-x:1;
+  --coord-scale-y:1.3;
+  --coord-letter-spacing:0px;
+  --coord-x:0px;
+  --coord-y:0px;
+  --coord-tile-width:288px;
+  --gal-size:12.5px;
+  --gal-x:0px;
+  --gal-y:0px;
+  --gal-aperture:34px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#05070b;color:#eef8ff}
+body{padding:14px;font-family:Arial,sans-serif}
+button,input{font:inherit}
+.lab{width:min(100%,760px);margin:0 auto}
+h1{margin:4px 0 12px;font:400 18px/1.2 "Space Age",sans-serif;text-align:center;color:#d7f3ff;text-transform:uppercase}
+.preview-shell{padding:16px 10px 20px;border:1px solid #263746;border-radius:12px;background:linear-gradient(180deg,#0b1119,#05070b);overflow:auto}
+.preview-row{display:grid;grid-template-columns:36px var(--coord-tile-width) 36px;gap:2px;align-items:center;width:max-content;margin:0 auto}
+.tile{height:36px;border:1px solid #D7F4FF;border-radius:6px;background:rgba(0,0,0,.88);box-shadow:0 0 10px rgba(98,216,255,.30);overflow:hidden}
+.menu-tile,.target-tile{position:relative;width:36px}
+.menu-stack{position:absolute;left:50%;top:50%;width:18px;height:16px;transform:translate(-50%,-50%)}
+.menu-stack i{position:absolute;left:0;width:18px;height:2px;border-radius:2px;background:#D7F3FF}
+.menu-stack i:nth-child(1){top:0}.menu-stack i:nth-child(2){top:7px}.menu-stack i:nth-child(3){top:14px}
+.target-tile img{display:block;width:34px;height:34px;margin:0 auto;object-fit:contain}
+.coordinate-tile{position:relative;width:var(--coord-tile-width)}
+.safe-area{position:absolute;inset:3px;border:1px dashed rgba(255,255,255,.22);border-radius:3px;pointer-events:none}
+.coordinate-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform:translate(var(--coord-x),var(--coord-y));transform-origin:center;white-space:nowrap}
+.coordinate-reading{display:grid;grid-template-columns:var(--gal-aperture) auto auto auto;align-items:center;column-gap:6px;color:var(--coord-color);font:400 var(--coord-font-size)/25px "Space Age",sans-serif;letter-spacing:var(--coord-letter-spacing);transform-origin:center;white-space:nowrap}
+.gal-aperture{width:var(--gal-aperture);display:flex;align-items:center;justify-content:center;transform:translate(var(--gal-x),var(--gal-y));font-size:var(--gal-size)}
+.gal-text{display:inline-block;transform:scaleX(var(--coord-scale-x)) scaleY(1.1);transform-origin:center}
+.axis,.lambda{display:inline-block;transform:scaleX(var(--coord-scale-x)) scaleY(var(--coord-scale-y));transform-origin:center}
+.lambda{font-size:9px;transform:scaleX(1) scaleY(1)}
+.terminal{outline:1px solid rgba(255,209,102,.85);outline-offset:1px;border-radius:2px}
+.status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:12px}
+.metric{padding:8px;border:1px solid #25384a;border-radius:7px;background:#090e15;font-size:12px}
+.metric strong{display:block;color:#7df4ff;font-size:10px;text-transform:uppercase}
+#clip-status.ok{color:#8ef0b5}#clip-status.bad{color:#ff8f8f}
+.panel{margin-top:12px;padding:12px;border:1px solid #263746;border-radius:12px;background:#0a0e14}
+.panel h2{margin:0 0 10px;font:400 14px "Space Age",sans-serif;color:#d7f3ff;text-transform:uppercase}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.control{padding:9px;border:1px solid #233344;border-radius:8px;background:#090d13}
+.control label{display:flex;justify-content:space-between;gap:8px;margin-bottom:7px;font-size:12px;color:#d7e9f5}
+.control output{color:#7df4ff}
+.control input[type="range"]{width:100%}
+.color-grid{display:grid;grid-template-columns:80px 1fr;gap:10px;align-items:center}
+#color-picker{width:80px;height:58px;border:0;background:transparent;padding:0}
+.color-values{display:grid;grid-template-columns:1fr repeat(3,70px);gap:7px}
+.color-values input,.text-inputs input{width:100%;min-height:40px;border:1px solid #35495d;border-radius:6px;background:#05080d;color:#fff;padding:8px;text-transform:uppercase}
+.text-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pad-wrap{display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:center}
+#xy-pad{position:relative;width:220px;height:150px;border:1px solid #46627a;border-radius:10px;background:linear-gradient(90deg,transparent 49.5%,rgba(98,216,255,.25) 50%,transparent 50.5%),linear-gradient(0deg,transparent 49.5%,rgba(98,216,255,.25) 50%,transparent 50.5%),#060a10;touch-action:none}
+#xy-handle{position:absolute;width:22px;height:22px;border:2px solid #fff;border-radius:50%;background:#1705B5;box-shadow:0 0 8px rgba(98,216,255,.6);transform:translate(-50%,-50%);left:50%;top:50%;pointer-events:none}
+.pad-readout{font:400 13px/1.5 "Space Age",sans-serif;color:#d7f3ff}
+.presets,.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+button{min-height:40px;padding:8px 11px;border:1px solid #62d8ff;border-radius:7px;background:#101827;color:#fff;text-transform:uppercase}
+button:active{transform:scale(.98)}
+textarea{width:100%;min-height:180px;margin-top:10px;border:1px solid #35495d;border-radius:8px;background:#05080d;color:#d7f3ff;padding:10px;font:12px/1.45 monospace;resize:vertical}
+.copy-note{min-height:18px;margin-top:6px;color:#8ef0b5;font-size:12px}
+@media(max-width:640px){.controls,.status-grid,.text-inputs{grid-template-columns:1fr}.color-grid,.pad-wrap{grid-template-columns:1fr}.color-values{grid-template-columns:1fr 1fr}.preview-shell{padding-left:4px;padding-right:4px}}
+</style>
+</head>
+<body>
+<main class="lab">
+<h1>Galaxy Viewer Coordinate Style &amp; Clipping Lab 0001</h1>
+<section class="preview-shell">
+  <div class="preview-row" id="preview-row">
+    <div class="tile menu-tile" aria-label="Hamburger preview"><span class="menu-stack"><i></i><i></i><i></i></span></div>
+    <div class="tile coordinate-tile" id="coordinate-tile">
+      <span class="safe-area" aria-hidden="true"></span>
+      <div class="coordinate-stage" id="coordinate-stage">
+        <div class="coordinate-reading" id="coordinate-reading">
+          <span class="gal-aperture" id="gal-aperture"><span class="gal-text">GAL</span></span>
+          <span class="axis" id="longitude-view"></span>
+          <span class="lambda">λ</span>
+          <span class="axis" id="latitude-view"></span>
+        </div>
+      </div>
+    </div>
+    <div class="tile target-tile"><img src="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/icon_target_vector.svg?v=coordinate-lab-0001" alt="Target preview"></div>
+  </div>
+  <div class="status-grid">
+    <div class="metric"><strong>Clipping</strong><span id="clip-status">MEASURING</span></div>
+    <div class="metric"><strong>Rendered Width</strong><span id="rendered-width">—</span></div>
+    <div class="metric"><strong>Tile Width</strong><span id="tile-width-readout">—</span></div>
+    <div class="metric"><strong>Left Clearance</strong><span id="left-clearance">—</span></div>
+    <div class="metric"><strong>Right Clearance</strong><span id="right-clearance">—</span></div>
+    <div class="metric"><strong>Vertical Clearance</strong><span id="vertical-clearance">—</span></div>
+  </div>
+</section>
+
+<section class="panel">
+<h2>Color</h2>
+<div class="color-grid">
+  <input id="color-picker" type="color" value="#1705b5" aria-label="Coordinate color">
+  <div class="color-values">
+    <input id="hex" value="#1705B5" aria-label="Hex color">
+    <input id="red" type="number" min="0" max="255" value="23" aria-label="Red">
+    <input id="green" type="number" min="0" max="255" value="5" aria-label="Green">
+    <input id="blue" type="number" min="0" max="255" value="181" aria-label="Blue">
+  </div>
+</div>
+<div class="presets">
+  <button data-color="#1705B5">6W Blue</button>
+  <button data-color="#66A1FF">Soft Blue</button>
+  <button data-color="#FFD166">Amber</button>
+  <button data-color="#D7F3FF">Icy White</button>
+</div>
+</section>
+
+<section class="panel">
+<h2>Typography</h2>
+<div class="controls">
+  <div class="control"><label>Font size <output id="font-size-out"></output></label><input id="font-size" type="range" min="10" max="22" step="0.1" value="15"></div>
+  <div class="control"><label>Character width / scaleX <output id="scale-x-out"></output></label><input id="scale-x" type="range" min="0.60" max="1.50" step="0.01" value="1"></div>
+  <div class="control"><label>Character height / scaleY <output id="scale-y-out"></output></label><input id="scale-y" type="range" min="0.80" max="1.80" step="0.01" value="1.30"></div>
+  <div class="control"><label>Letter spacing <output id="letter-spacing-out"></output></label><input id="letter-spacing" type="range" min="-1" max="3" step="0.05" value="0"></div>
+  <div class="control"><label>Coordinate tile width <output id="tile-width-out"></output></label><input id="tile-width" type="range" min="220" max="420" step="1" value="288"></div>
+  <div class="control"><label>GAL font size <output id="gal-size-out"></output></label><input id="gal-size" type="range" min="8" max="18" step="0.1" value="12.5"></div>
+  <div class="control"><label>GAL aperture width <output id="gal-aperture-out"></output></label><input id="gal-aperture-width" type="range" min="24" max="48" step="1" value="34"></div>
+  <div class="control"><label>GAL X offset <output id="gal-x-out"></output></label><input id="gal-x" type="range" min="-12" max="18" step="0.5" value="0"></div>
+  <div class="control"><label>GAL Y offset <output id="gal-y-out"></output></label><input id="gal-y" type="range" min="-8" max="8" step="0.5" value="0"></div>
+</div>
+<div class="presets">
+  <button data-width="240">Narrow Phone</button>
+  <button data-width="288">Standard Phone</button>
+  <button data-width="340">Wide Phone</button>
+  <button data-width="400">Tablet</button>
+</div>
+</section>
+
+<section class="panel">
+<h2>Coordinate Position Pad</h2>
+<div class="pad-wrap">
+  <div id="xy-pad" role="application" aria-label="Coordinate X Y movement pad"><span id="xy-handle"></span></div>
+  <div>
+    <div class="pad-readout">X: <span id="x-readout">0.0px</span><br>Y: <span id="y-readout">0.0px</span></div>
+    <div class="controls" style="margin-top:8px">
+      <div class="control"><label>X offset <output id="coord-x-out"></output></label><input id="coord-x" type="range" min="-30" max="30" step="0.5" value="0"></div>
+      <div class="control"><label>Y offset <output id="coord-y-out"></output></label><input id="coord-y" type="range" min="-12" max="12" step="0.5" value="0"></div>
+    </div>
+    <div class="actions"><button id="center-pad">Center X/Y</button></div>
+  </div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Worst-Case Coordinate Test</h2>
+<div class="text-inputs">
+  <input id="longitude" value="-999.9995" inputmode="decimal" aria-label="Longitude stress test">
+  <input id="latitude" value="-999.9995" inputmode="decimal" aria-label="Latitude stress test">
+</div>
+<div class="actions">
+  <button id="load-worst">Load Worst-Case Test</button>
+  <button id="load-realistic">Load Realistic Test</button>
+</div>
+</section>
+
+<section class="panel">
+<h2>Copy Results</h2>
+<div class="actions">
+  <button id="copy-instructions">Copy Instructions</button>
+  <button id="copy-css">Copy CSS</button>
+  <button id="reset">Reset to 6W</button>
+</div>
+<textarea id="instructions" readonly></textarea>
+<div class="copy-note" id="copy-note"></div>
+</section>
+</main>
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  const root=document.documentElement;
+  const state={color:'#1705B5',fontSize:15,scaleX:1,scaleY:1.3,letterSpacing:0,tileWidth:288,coordX:0,coordY:0,galSize:12.5,galAperture:34,galX:0,galY:0,longitude:'-999.9995',latitude:'-999.9995'};
+  const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
+  const fmt=(n,d=2)=>Number(n).toFixed(d);
+  function normalizeHex(value){let v=String(value).trim().replace(/^#/,'');if(v.length===3)v=v.split('').map(c=>c+c).join('');if(!/^[0-9a-fA-F]{6}$/.test(v))return null;return '#'+v.toUpperCase()}
+  function hexToRgb(hex){const h=normalizeHex(hex);if(!h)return null;return {r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)}}
+  function rgbToHex(r,g,b){return '#'+[r,g,b].map(v=>clamp(Math.round(Number(v)||0),0,255).toString(16).padStart(2,'0')).join('').toUpperCase()}
+  function terminalMarkup(value){const text=String(value);if(!text)return '';return text.slice(0,-1)+'<span class="terminal">'+text.slice(-1)+'</span>'}
+  function validCoordinate(value){return /^-?\d{1,3}\.\d{4}$/.test(String(value).trim())}
+  function updatePreview(){
+    root.style.setProperty('--coord-color',state.color);
+    root.style.setProperty('--coord-font-size',state.fontSize+'px');
+    root.style.setProperty('--coord-scale-x',state.scaleX);
+    root.style.setProperty('--coord-scale-y',state.scaleY);
+    root.style.setProperty('--coord-letter-spacing',state.letterSpacing+'px');
+    root.style.setProperty('--coord-tile-width',state.tileWidth+'px');
+    root.style.setProperty('--coord-x',state.coordX+'px');
+    root.style.setProperty('--coord-y',state.coordY+'px');
+    root.style.setProperty('--gal-size',state.galSize+'px');
+    root.style.setProperty('--gal-aperture',state.galAperture+'px');
+    root.style.setProperty('--gal-x',state.galX+'px');
+    root.style.setProperty('--gal-y',state.galY+'px');
+    $('longitude-view').innerHTML=terminalMarkup(state.longitude);
+    $('latitude-view').innerHTML=terminalMarkup(state.latitude);
+    updateOutputs();
+    requestAnimationFrame(measure);
+  }
+  function updateOutputs(){
+    $('font-size-out').textContent=fmt(state.fontSize,1)+'px';
+    $('scale-x-out').textContent=fmt(state.scaleX,2);
+    $('scale-y-out').textContent=fmt(state.scaleY,2);
+    $('letter-spacing-out').textContent=fmt(state.letterSpacing,2)+'px';
+    $('tile-width-out').textContent=state.tileWidth+'px';
+    $('gal-size-out').textContent=fmt(state.galSize,1)+'px';
+    $('gal-aperture-out').textContent=state.galAperture+'px';
+    $('gal-x-out').textContent=fmt(state.galX,1)+'px';
+    $('gal-y-out').textContent=fmt(state.galY,1)+'px';
+    $('coord-x-out').textContent=fmt(state.coordX,1)+'px';
+    $('coord-y-out').textContent=fmt(state.coordY,1)+'px';
+    $('x-readout').textContent=fmt(state.coordX,1)+'px';
+    $('y-readout').textContent=fmt(state.coordY,1)+'px';
+    const px=(state.coordX+30)/60*100,py=(state.coordY+12)/24*100;
+    $('xy-handle').style.left=px+'%';$('xy-handle').style.top=py+'%';$('xy-handle').style.background=state.color;
+  }
+  function measure(){
+    const tile=$('coordinate-tile').getBoundingClientRect();
+    const reading=$('coordinate-reading').getBoundingClientRect();
+    const safe={left:tile.left+3,right:tile.right-3,top:tile.top+3,bottom:tile.bottom-3};
+    const left=reading.left-safe.left,right=safe.right-reading.right,top=reading.top-safe.top,bottom=safe.bottom-reading.bottom;
+    const clipped=left<0||right<0||top<0||bottom<0;
+    const status=$('clip-status');status.textContent=clipped?'CLIPPING DETECTED':'NO CLIPPING DETECTED';status.className=clipped?'bad':'ok';
+    $('rendered-width').textContent=fmt(reading.width,1)+'px';
+    $('tile-width-readout').textContent=fmt(tile.width,1)+'px';
+    $('left-clearance').textContent=fmt(left,1)+'px';
+    $('right-clearance').textContent=fmt(right,1)+'px';
+    $('vertical-clearance').textContent='T '+fmt(top,1)+' / B '+fmt(bottom,1)+'px';
+    buildInstructions({clipped,readingWidth:reading.width,tileWidth:tile.width,left,right,top,bottom});
+  }
+  function buildInstructions(m){
+    const validity=validCoordinate(state.longitude)&&validCoordinate(state.latitude)?'VALID -XXX.XXXX FORMAT':'FORMAT WARNING';
+    $('instructions').value=`GALAXY VIEWER COORDINATE STYLE SETTINGS\n\nCoordinate color: ${state.color}\nCoordinate font size: ${fmt(state.fontSize,1)}px\nCoordinate character width: scaleX(${fmt(state.scaleX,2)})\nCoordinate character height: scaleY(${fmt(state.scaleY,2)})\nCoordinate letter spacing: ${fmt(state.letterSpacing,2)}px\nCoordinate X offset: ${fmt(state.coordX,1)}px\nCoordinate Y offset: ${fmt(state.coordY,1)}px\nCoordinate tile width tested: ${state.tileWidth}px\n\nGAL font size: ${fmt(state.galSize,1)}px\nGAL aperture width: ${state.galAperture}px\nGAL X offset: ${fmt(state.galX,1)}px\nGAL Y offset: ${fmt(state.galY,1)}px\n\nTest longitude: ${state.longitude}\nTest latitude: ${state.latitude}\nCoordinate format: ${validity}\n\nMeasured rendered width: ${fmt(m.readingWidth,1)}px\nMeasured tile width: ${fmt(m.tileWidth,1)}px\nLeft clearance: ${fmt(m.left,1)}px\nRight clearance: ${fmt(m.right,1)}px\nTop clearance: ${fmt(m.top,1)}px\nBottom clearance: ${fmt(m.bottom,1)}px\nClipping result: ${m.clipped?'CLIPPING DETECTED':'NO CLIPPING DETECTED'}\n\nApply these exact settings to the next standalone Galaxy Viewer release.\nPreserve four decimal places, current hamburger geometry, Target tile, Mollweide projection, SIMBAD behavior, catalogs, navigation, and all unrelated behavior.\nDo not add text shadow, filter, or coordinate glow.`;
+  }
+  function bindRange(id,key){$(id).addEventListener('input',e=>{state[key]=Number(e.target.value);updatePreview()})}
+  bindRange('font-size','fontSize');bindRange('scale-x','scaleX');bindRange('scale-y','scaleY');bindRange('letter-spacing','letterSpacing');bindRange('tile-width','tileWidth');bindRange('gal-size','galSize');bindRange('gal-aperture-width','galAperture');bindRange('gal-x','galX');bindRange('gal-y','galY');bindRange('coord-x','coordX');bindRange('coord-y','coordY');
+  function setColor(hex){const h=normalizeHex(hex);if(!h)return;state.color=h;const rgb=hexToRgb(h);$('color-picker').value=h.toLowerCase();$('hex').value=h;$('red').value=rgb.r;$('green').value=rgb.g;$('blue').value=rgb.b;updatePreview()}
+  $('color-picker').addEventListener('input',e=>setColor(e.target.value));$('hex').addEventListener('change',e=>setColor(e.target.value));
+  ['red','green','blue'].forEach(id=>$(id).addEventListener('change',()=>setColor(rgbToHex($('red').value,$('green').value,$('blue').value))));
+  document.querySelectorAll('[data-color]').forEach(button=>button.addEventListener('click',()=>setColor(button.dataset.color)));
+  document.querySelectorAll('[data-width]').forEach(button=>button.addEventListener('click',()=>{$('tile-width').value=button.dataset.width;state.tileWidth=Number(button.dataset.width);updatePreview()}));
+  function setCoord(axis,value){state[axis]=value;$(axis==='coordX'?'coord-x':'coord-y').value=value;updatePreview()}
+  const pad=$('xy-pad');function movePad(event){const r=pad.getBoundingClientRect();const x=clamp(event.clientX-r.left,0,r.width),y=clamp(event.clientY-r.top,0,r.height);setCoord('coordX',Math.round((x/r.width*60-30)*2)/2);setCoord('coordY',Math.round((y/r.height*24-12)*2)/2)}
+  pad.addEventListener('pointerdown',e=>{pad.setPointerCapture(e.pointerId);movePad(e)});pad.addEventListener('pointermove',e=>{if(pad.hasPointerCapture(e.pointerId))movePad(e)});
+  $('center-pad').addEventListener('click',()=>{setCoord('coordX',0);setCoord('coordY',0)});
+  function loadCoordinates(lon,lat){state.longitude=lon;state.latitude=lat;$('longitude').value=lon;$('latitude').value=lat;updatePreview()}
+  $('longitude').addEventListener('input',e=>{state.longitude=e.target.value.trim();updatePreview()});$('latitude').addEventListener('input',e=>{state.latitude=e.target.value.trim();updatePreview()});
+  $('load-worst').addEventListener('click',()=>loadCoordinates('-999.9995','-999.9995'));
+  $('load-realistic').addEventListener('click',()=>loadCoordinates('62.5883','-32.8573'));
+  async function copyText(text,label){try{await navigator.clipboard.writeText(text);$('copy-note').textContent=label+' COPIED'}catch(_){$('instructions').focus();$('instructions').select();document.execCommand('copy');$('copy-note').textContent=label+' COPIED USING FALLBACK'}setTimeout(()=>$('copy-note').textContent='',2400)}
+  $('copy-instructions').addEventListener('click',()=>copyText($('instructions').value,'INSTRUCTIONS'));
+  $('copy-css').addEventListener('click',()=>copyText(`color: ${state.color};\nfont-size: ${fmt(state.fontSize,1)}px;\ntransform: translate(${fmt(state.coordX,1)}px, ${fmt(state.coordY,1)}px) scaleX(${fmt(state.scaleX,2)}) scaleY(${fmt(state.scaleY,2)});\nletter-spacing: ${fmt(state.letterSpacing,2)}px;\n\n/* GAL */\nfont-size: ${fmt(state.galSize,1)}px;\nwidth: ${state.galAperture}px;\ntransform: translate(${fmt(state.galX,1)}px, ${fmt(state.galY,1)}px) scaleX(${fmt(state.scaleX,2)}) scaleY(1.10);`,'CSS'));
+  function reset(){Object.assign(state,{color:'#1705B5',fontSize:15,scaleX:1,scaleY:1.3,letterSpacing:0,tileWidth:288,coordX:0,coordY:0,galSize:12.5,galAperture:34,galX:0,galY:0,longitude:'-999.9995',latitude:'-999.9995'});const values={'font-size':15,'scale-x':1,'scale-y':1.3,'letter-spacing':0,'tile-width':288,'coord-x':0,'coord-y':0,'gal-size':12.5,'gal-aperture-width':34,'gal-x':0,'gal-y':0,'longitude':'-999.9995','latitude':'-999.9995'};Object.entries(values).forEach(([id,v])=>$(id).value=v);setColor('#1705B5');updatePreview()}
+  $('reset').addEventListener('click',reset);
+  window.addEventListener('resize',()=>requestAnimationFrame(measure));
+  reset();
+})();
+</script>
+</body>
+</html>
