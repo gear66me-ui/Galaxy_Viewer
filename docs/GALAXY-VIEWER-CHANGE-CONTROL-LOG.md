@@ -1169,3 +1169,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `CACHE`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+## AUTO-6a0f0c5136ab — Update beta launcher to 6T
+
+**Recorded:** 2026-08-01T01:39:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6a0f0c5136abdfbe59991dccfa7414d9dcf58f91`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6a0f0c5136abdfbe59991dccfa7414d9dcf58f91)  
+**Parent/baseline:** `96feadb92464a5d8b37e815c63c60387469456be`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/96feadb92464a5d8b37e815c63c60387469456be...6a0f0c5136abdfbe59991dccfa7414d9dcf58f91)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher to 6T
+```
+
+### Changed paths
+
+- **MODIFIED:** `launch/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
+
+---
