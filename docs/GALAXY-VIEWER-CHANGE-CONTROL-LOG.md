@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-ff00b1557ab6 — Add Gaussian-masked drape cyclone particle baseline
+
+**Recorded:** 2026-08-01T16:55:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ff00b1557ab6cbfef19e322023c5544c7e3e871b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ff00b1557ab6cbfef19e322023c5544c7e3e871b)  
+**Parent/baseline:** `a62e1eee9a4bc264477199f95ea7f6840ed144ba`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a62e1eee9a4bc264477199f95ea7f6840ed144ba...ff00b1557ab6cbfef19e322023c5544c7e3e871b)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add Gaussian-masked drape cyclone particle baseline
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/animation-lab/particle-tests/GV-particle-cyclone-0004.html` — additions: `50`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `DRAPE`, `GAUSSIAN`, `HTML`, `LAB`, `MASKED`, `PARTICLE`, `SPLASH`, `TESTS`, `VIEWER`
+
+---
 ## AUTO-142d50d1bc53 — Add Galaxy Viewer coordinate style and clipping lab
 
 **Recorded:** 2026-08-01T15:36:47-05:00  
