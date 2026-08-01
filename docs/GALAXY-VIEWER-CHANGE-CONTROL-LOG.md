@@ -613,3 +613,37 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+## AUTO-5a8c0d66a30c — Add GV-beta-0006R Space Age Regular font test
+
+**Recorded:** 2026-08-01T00:02:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5a8c0d66a30c57fc3c2848965b528e57c369eca0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5a8c0d66a30c57fc3c2848965b528e57c369eca0)  
+**Parent/baseline:** `dd46704273abc3a1bcfe02f7b3da6d471d449dfd`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dd46704273abc3a1bcfe02f7b3da6d471d449dfd...5a8c0d66a30c57fc3c2848965b528e57c369eca0)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add GV-beta-0006R Space Age Regular font test
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006R.py` — additions: `171`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006R.py`**
+
+```text
+# USER INSTRUCTION: Change only the loaded viewer font from Galactic OTF to the newly committed Space Age Regular OTF; preserve scaleY(1.0), the 25px aperture, no-glow rendering, spacing, and all other behavior.
+```
+
+### Search tags
+
+`0006R`, `ADD`, `AGE`, `BETA`, `FONT`, `REGULAR`, `SPACE`, `TEST`, `VIEWER`
+
+---
