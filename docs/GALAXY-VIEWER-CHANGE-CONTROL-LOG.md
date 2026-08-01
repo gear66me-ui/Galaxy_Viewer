@@ -307,3 +307,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0023`, `ADD`, `ARTWORK`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+## AUTO-c094f933423d — Add center-first blanket siphon in Singularity 0024
+
+**Recorded:** 2026-07-31T22:52:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c094f933423d8ba23f536bb80a9a780e772e1b00`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c094f933423d8ba23f536bb80a9a780e772e1b00)  
+**Parent/baseline:** `eccd3b06a07d70f6bf18a2901070cbd4c10330b6`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/eccd3b06a07d70f6bf18a2901070cbd4c10330b6...c094f933423d8ba23f536bb80a9a780e772e1b00)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add center-first blanket siphon in Singularity 0024
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0024.html` — additions: `22`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0024`, `ADD`, `ARTWORK`, `BLANKET`, `CENTER`, `FIRST`, `GALAXY`, `HTML`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
+
+---
