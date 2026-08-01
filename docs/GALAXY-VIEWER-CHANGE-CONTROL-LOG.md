@@ -187,3 +187,33 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0022`, `ADD`, `ARTWORK`, `BOUNDED`, `GALAXY`, `HTML`, `RELIABLE`, `SINGULARITY`, `SPLASH`, `STARTUP`, `VIEWER`
 
 ---
+## AUTO-a99821843800 — Add GV-beta-0006P coordinate aperture test
+
+**Recorded:** 2026-07-31T22:35:22-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a99821843800218a428d7696e9dded1bc4de4908`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a99821843800218a428d7696e9dded1bc4de4908)  
+**Parent/baseline:** `99f64c95d5b0e4d0627085e02f1347203423658c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/99f64c95d5b0e4d0627085e02f1347203423658c...a99821843800218a428d7696e9dded1bc4de4908)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add GV-beta-0006P coordinate aperture test
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006P.py` — additions: `171`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0006P`, `ADD`, `APERTURE`, `BETA`, `COORDINATE`, `TEST`, `VIEWER`
+
+---
