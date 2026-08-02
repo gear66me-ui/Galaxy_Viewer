@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-c5b6fd5f1ffb — Add Singularity 0036 with tight GALAXY-style signature glow
+
+**Recorded:** 2026-08-01T22:24:25-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c5b6fd5f1ffb1e9dd64fe2935da52c58d03c8f08`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c5b6fd5f1ffb1e9dd64fe2935da52c58d03c8f08)  
+**Parent/baseline:** `d7a396e86959d0d7336fed9a7467281a2c98a325`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d7a396e86959d0d7336fed9a7467281a2c98a325...c5b6fd5f1ffb1e9dd64fe2935da52c58d03c8f08)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add Singularity 0036 with tight GALAXY-style signature glow
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0036.html` — additions: `23`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0036`, `ADD`, `ARTWORK`, `GALAXY`, `GLOW`, `HTML`, `SIGNATURE`, `SINGULARITY`, `SPLASH`, `STYLE`, `TIGHT`, `VIEWER`, `WITH`
+
+---
 ## AUTO-934220b8b7bb — Add files via upload
 
 **Recorded:** 2026-08-01T22:17:48-05:00  
