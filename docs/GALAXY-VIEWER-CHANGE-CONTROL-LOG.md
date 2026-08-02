@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-f9e395c7da36 — Update beta manifest to Galaxy Viewer 6Y
+
+**Recorded:** 2026-08-01T21:07:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f9e395c7da3699e6b5c32c3fa05784be0a68759d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f9e395c7da3699e6b5c32c3fa05784be0a68759d)  
+**Parent/baseline:** `51af962676325cfd0508bc0fb926e97e856b79e2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/51af962676325cfd0508bc0fb926e97e856b79e2...f9e395c7da3699e6b5c32c3fa05784be0a68759d)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta manifest to Galaxy Viewer 6Y
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `GALAXY`, `MANIFEST`, `MOBILE`, `UPDATE`, `VIEWER`, `WEBMANIFEST`
+
+---
 ## AUTO-766034d8bd00 — Create GV-beta-0006Y with 20 percent larger coordinate glyphs
 
 **Recorded:** 2026-08-01T21:06:41-05:00  
