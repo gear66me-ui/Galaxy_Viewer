@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-a1eb6b6a4ee1 — Add files via upload
+
+**Recorded:** 2026-08-01T23:14:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a1eb6b6a4ee119cb627d9b711f9c83a7905c42ed`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a1eb6b6a4ee119cb627d9b711f9c83a7905c42ed)  
+**Parent/baseline:** `47a93a888c4c4ebf22396a83a923190ce12879a6`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/47a93a888c4c4ebf22396a83a923190ce12879a6...a1eb6b6a4ee119cb627d9b711f9c83a7905c42ed)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add files via upload
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007A.py` — additions: `187`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007A.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 6Z behavior; reduce only the digit-1 coordinate cell width by exactly 20 percent from .539em to .431em; preserve every other glyph, spacing value, font setting, color, and unrelated viewer behavior.
+```
+
+### Search tags
+
+`0007A`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
+
+---
 ## AUTO-bcda4b73b132 — Fix 0037 poster loading fallback
 
 **Recorded:** 2026-08-01T22:58:44-05:00  
