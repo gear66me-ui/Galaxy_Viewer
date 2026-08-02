@@ -6,6 +6,13 @@ on:
     branches:
       - beta
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Automatic Change Control Log
+    types:
+      - completed
+    branches:
+      - beta
 
 permissions:
   contents: read
@@ -18,6 +25,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -25,6 +33,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 1
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
