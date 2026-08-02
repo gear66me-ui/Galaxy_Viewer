@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e5e723cfded4 — Update beta launcher to GV-beta-0006X
+
+**Recorded:** 2026-08-01T20:51:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e5e723cfded4359f859283741b350f7c14f827c9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e5e723cfded4359f859283741b350f7c14f827c9)  
+**Parent/baseline:** `c7509921212aebd3e4893f59761f84d031ae8b88`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c7509921212aebd3e4893f59761f84d031ae8b88...e5e723cfded4359f859283741b350f7c14f827c9)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta launcher to GV-beta-0006X
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0006X`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `UPDATE`
+
+---
 ## AUTO-4882fb697c01 — Create GV-beta-0006X with custom coordinate digits font
 
 **Recorded:** 2026-08-01T20:51:09-05:00  
