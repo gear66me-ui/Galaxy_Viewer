@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-4238e305486c — Add compensated delta X and delta Y to Lab 0003
+
+**Recorded:** 2026-08-01T21:50:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4238e305486cf6568a2c10bdc4cb2ec2ed739b6d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4238e305486cf6568a2c10bdc4cb2ec2ed739b6d)  
+**Parent/baseline:** `0b15b064008788e34ca458879b5a8840c9d04e92`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0b15b064008788e34ca458879b5a8840c9d04e92...4238e305486cf6568a2c10bdc4cb2ec2ed739b6d)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add compensated delta X and delta Y to Lab 0003
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/GV-coordinate-spacing-lab-0003.html` — additions: `20`, deletions: `7`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0003`, `ADD`, `AND`, `ARTWORK`, `COMPENSATED`, `COORDINATE`, `DELTA`, `FONTLAB`, `FONTS`, `HTML`, `LAB`, `SPACING`, `VIEWER`
+
+---
 ## AUTO-124a9e5f2530 — Expand Lab 0003 font size and XY spacing controls
 
 **Recorded:** 2026-08-01T21:43:37-05:00  
