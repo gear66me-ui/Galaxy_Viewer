@@ -1,9 +1,9 @@
 {
   "id": "/Galaxy_Viewer/mobile/beta/",
-  "name": "GALAXY VIEWER BETA 6W",
+  "name": "GALAXY VIEWER BETA 6X",
   "short_name": "GALAXY VIEWER BETA",
-  "description": "GALAXY VIEWER 6W STANDALONE BETA WITH GUARDED RESUME RECOVERY",
-  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=6W-metallic-resume-001",
+  "description": "GALAXY VIEWER 6X STANDALONE BETA WITH CUSTOM COORDINATE DIGITS",
+  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=6X-coordinate-font-001",
   "scope": "/Galaxy_Viewer/mobile/beta/",
   "display": "standalone",
   "launch_handler": {
@@ -14,13 +14,13 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-192.png?v=6W-metallic-resume-001",
+      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-192.png?v=6X-coordinate-font-001",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png?v=6W-metallic-resume-001",
+      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png?v=6X-coordinate-font-001",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
