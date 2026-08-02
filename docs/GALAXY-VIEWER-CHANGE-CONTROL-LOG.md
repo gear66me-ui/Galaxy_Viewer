@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e32a980ecab1 — Update beta manifest to Galaxy Viewer 6X
+
+**Recorded:** 2026-08-01T20:51:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e32a980ecab191a50a2c8ae46882c2e339daa43c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e32a980ecab191a50a2c8ae46882c2e339daa43c)  
+**Parent/baseline:** `e5e723cfded4359f859283741b350f7c14f827c9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e5e723cfded4359f859283741b350f7c14f827c9...e32a980ecab191a50a2c8ae46882c2e339daa43c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Update beta manifest to Galaxy Viewer 6X
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/manifest.webmanifest` — additions: `5`, deletions: `5`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `GALAXY`, `MANIFEST`, `MOBILE`, `UPDATE`, `VIEWER`, `WEBMANIFEST`
+
+---
 ## AUTO-e5e723cfded4 — Update beta launcher to GV-beta-0006X
 
 **Recorded:** 2026-08-01T20:51:40-05:00  
