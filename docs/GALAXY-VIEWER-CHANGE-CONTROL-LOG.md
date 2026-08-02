@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-75c2c6459a63 — Point beta launcher to GV-beta-0006Z
+
+**Recorded:** 2026-08-01T22:56:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`75c2c6459a638c16b18a5917b45c998089a5833d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/75c2c6459a638c16b18a5917b45c998089a5833d)  
+**Parent/baseline:** `1c6042a6d78f9b88616a11cd0fc8c537878d8e43`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1c6042a6d78f9b88616a11cd0fc8c537878d8e43...75c2c6459a638c16b18a5917b45c998089a5833d)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Point beta launcher to GV-beta-0006Z
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0006Z`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
+
+---
 ## AUTO-86ad00618656 — Add files via upload
 
 **Recorded:** 2026-08-01T22:55:24-05:00  
