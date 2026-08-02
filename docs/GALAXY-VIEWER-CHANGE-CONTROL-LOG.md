@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-a0c835d769d2 — Create 0040 diagnostic copy with device info and refresh controls
+
+**Recorded:** 2026-08-02T13:51:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a0c835d769d262325903ad2cdf1bdbf872e5ba67`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a0c835d769d262325903ad2cdf1bdbf872e5ba67)  
+**Parent/baseline:** `b43c80515fc64ef86556b347a70b33f18316fffe`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b43c80515fc64ef86556b347a70b33f18316fffe...a0c835d769d262325903ad2cdf1bdbf872e5ba67)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create 0040 diagnostic copy with device info and refresh controls
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0040-Diagnostic.html` — additions: `72`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0040`, `AND`, `ARTWORK`, `CONTROLS`, `COPY`, `CREATE`, `DEVICE`, `DIAGNOSTIC`, `GALAXY`, `HTML`, `INFO`, `REFRESH`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
+
+---
 ## AUTO-cfefdd27b32b — Create coordinate anchor lab 0002
 
 **Recorded:** 2026-08-02T13:49:24-05:00  
