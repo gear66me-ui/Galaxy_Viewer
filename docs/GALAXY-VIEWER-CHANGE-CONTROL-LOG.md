@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-f5581077fa7b — Repair 7E lambda and add GAL ICRS ICRSd frame cycle
+
+**Recorded:** 2026-08-02T18:33:22-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f5581077fa7b0781d4b495b0ad39daba2962913b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f5581077fa7b0781d4b495b0ad39daba2962913b)  
+**Parent/baseline:** `8298aeb26642929ae99ce49229b8b32d0d130940`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8298aeb26642929ae99ce49229b8b32d0d130940...f5581077fa7b0781d4b495b0ad39daba2962913b)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Repair 7E lambda and add GAL ICRS ICRSd frame cycle
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0007E.py` — additions: `10`, deletions: `7`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007E.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; enlarge and center only the coordinate display, preserve the fixed 9px uppercase lambda and #72A7E8 color, reserve fixed coordinate geometry, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007E`, `ADD`, `AND`, `BETA`, `CYCLE`, `FRAME`, `GAL`, `ICRS`, `ICRSD`, `LAMBDA`, `REPAIR`, `VIEWER`
+
+---
 ## AUTO-7166acf648c3 — Create standalone splash singularity 0043 with delayed fine cross
 
 **Recorded:** 2026-08-02T17:48:31-05:00  
