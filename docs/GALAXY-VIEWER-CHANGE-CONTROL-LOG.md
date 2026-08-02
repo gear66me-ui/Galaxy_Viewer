@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-22b3b45c163e — Fix GV-9A reference font path in coordinate digits test
+
+**Recorded:** 2026-08-01T20:42:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`22b3b45c163e1f98547461e981ed9bb2e12d3f47`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/22b3b45c163e1f98547461e981ed9bb2e12d3f47)  
+**Parent/baseline:** `9e17deb2e5ff9ce8053223dda142ac07bb0f1c83`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9e17deb2e5ff9ce8053223dda142ac07bb0f1c83...22b3b45c163e1f98547461e981ed9bb2e12d3f47)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Fix GV-9A reference font path in coordinate digits test
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/GV-coordinate-digits-test-0001.html` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ARTWORK`, `COORDINATE`, `DIGITS`, `FIX`, `FONT`, `FONTLAB`, `FONTS`, `HTML`, `PATH`, `REFERENCE`, `TEST`, `VIEWER`
+
+---
 ## AUTO-358b88f674b6 — Add files via upload
 
 **Recorded:** 2026-08-01T20:38:28-05:00  
