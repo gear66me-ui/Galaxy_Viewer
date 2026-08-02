@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-4882fb697c01 — Create GV-beta-0006X with custom coordinate digits font
+
+**Recorded:** 2026-08-01T20:51:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4882fb697c011015a7001866d1e7b651f5941367`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4882fb697c011015a7001866d1e7b651f5941367)  
+**Parent/baseline:** `0b02a570eddcfac7e7dade8df137eb9fa973f791`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0b02a570eddcfac7e7dade8df137eb9fa973f791...4882fb697c011015a7001866d1e7b651f5941367)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0006X with custom coordinate digits font
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006X.py` — additions: `187`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006X.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 6W behavior and change only the coordinate-box numeric glyphs to GV-Coordinate-Digits-0001.otf without changing unrelated viewer behavior.
+```
+
+### Search tags
+
+`0006X`, `BETA`, `COORDINATE`, `CREATE`, `CUSTOM`, `DIGITS`, `FONT`, `VIEWER`, `WITH`
+
+---
 ## AUTO-a3f57791ef52 — Add Singularity 0032 with exact 0018 engraving and ending
 
 **Recorded:** 2026-08-01T20:47:20-05:00  
