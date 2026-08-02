@@ -1,0 +1,48 @@
+name: Build Coordinate Font 0002
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - viewer/artwork/Fonts/FontLab/build-coordinate-font-0002.py
+
+permissions:
+  contents: write
+
+jobs:
+  build-coordinate-font:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install FontForge
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fontforge python3-fontforge
+
+      - name: Build compensated coordinate font
+        run: |
+          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0002.py
+
+      - name: Verify generated OTF
+        run: |
+          test -s viewer/artwork/Fonts/FontLab/GV-Coordinate-Digits-0002.otf
+          fontforge -lang=py -c 'import fontforge; f=fontforge.open("viewer/artwork/Fonts/FontLab/GV-Coordinate-Digits-0002.otf"); print("glyphs", len(f)); f.close()'
+
+      - name: Commit generated binary font
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- viewer/artwork/Fonts/FontLab/GV-Coordinate-Digits-0002.otf
+          if git diff --cached --quiet; then
+            echo "Generated font is unchanged."
+          else
+            git commit -m "Build compensated coordinate font 0002"
+            git push origin beta
+          fi
