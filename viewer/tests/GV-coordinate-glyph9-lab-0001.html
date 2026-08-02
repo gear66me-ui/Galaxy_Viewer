@@ -7,7 +7,7 @@
 <style>
 @font-face{
   font-family:"Space Age GV-9";
-  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9.otf?v=glyph9-lab-0001") format("opentype");
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf?v=glyph9A-hex-input-0001") format("opentype");
   font-style:normal;font-weight:400;font-display:block
 }
 :root{
@@ -53,7 +53,8 @@ h1{margin:2px 0 7px;text-align:center;font:400 15px/1.2 "Space Age GV-9",sans-se
 .checkpoint{font-size:calc(var(--font-size) * .923)}
 .color-panel{border:1px solid #263746;border-radius:10px;background:#090e15;padding:8px;margin-bottom:7px}
 .color-panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:11px;text-transform:uppercase}
-#hexColor{font:11px/1.2 monospace;color:#7df4ff}
+#hexColor{width:92px;height:28px;border:1px solid #526f88;border-radius:5px;background:#050a11;color:#7df4ff;padding:4px 6px;text-align:center;font:11px/1.2 monospace;text-transform:uppercase}
+#hexColor.invalid{border-color:#ff7f7f;color:#ffb2b2}
 #svField{position:relative;width:100%;height:150px;border:1px solid #526f88;border-radius:8px;touch-action:none;overflow:hidden;background-color:hsl(214,100%,50%)}
 #svField:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#fff,rgba(255,255,255,0))}
 #svField:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000,rgba(0,0,0,0))}
@@ -112,7 +113,7 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
 </section>
 
 <section class="color-panel" aria-label="Live color selector">
-  <div class="color-panel-title"><span>Live color field</span><span id="hexColor">#72A7E8</span></div>
+  <div class="color-panel-title"><label for="hexColor">Live color field</label><input id="hexColor" type="text" value="#72A7E8" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="characters" inputmode="text" aria-label="Hexadecimal color value"></div>
   <div id="svField" role="application" aria-label="Saturation and brightness color field"><span id="svHandle"></span></div>
   <div id="hueBar" role="application" aria-label="Hue selector"><span id="hueHandle"></span></div>
   <div class="current-strip" aria-hidden="true"></div>
@@ -162,6 +163,25 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
     return "#"+[r,g,b].map(n=>n.toString(16).padStart(2,"0")).join("");
   }
   function colorHex(){return rgbToHex(hsvToRgb(state.h,state.s,state.v))}
+  function normalizeHex(value){
+    const raw=value.trim().replace(/^#/,"");
+    if(/^[0-9a-fA-F]{3}$/.test(raw))return "#"+raw.split("").map(c=>c+c).join("").toUpperCase();
+    if(/^[0-9a-fA-F]{6}$/.test(raw))return "#"+raw.toUpperCase();
+    return null;
+  }
+  function hexToHsv(hex){
+    const n=parseInt(hex.slice(1),16);
+    const r=((n>>16)&255)/255,g=((n>>8)&255)/255,b=(n&255)/255;
+    const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+    let h=0;
+    if(d){
+      if(max===r)h=60*(((g-b)/d)%6);
+      else if(max===g)h=60*((b-r)/d+2);
+      else h=60*((r-g)/d+4);
+    }
+    if(h<0)h+=360;
+    return {h,s:max===0?0:d/max,v:max};
+  }
 
   function render(){
     const color=colorHex();
@@ -176,7 +196,8 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
     $("spacingOut").textContent=state.spacing.toFixed(2);
     $("lon").textContent=format(state.lon);
     $("lat").textContent=format(state.lat);
-    $("hexColor").textContent=color.toUpperCase();
+    $("hexColor").value=color.toUpperCase();
+    $("hexColor").classList.remove("invalid");
     $("svField").style.backgroundColor="hsl("+state.h+",100%,50%)";
     $("svHandle").style.left=(state.s*100)+"%";
     $("svHandle").style.top=((1-state.v)*100)+"%";
@@ -187,6 +208,18 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   $("sx").addEventListener("input",e=>{state.sx=Number(e.target.value);render()});
   $("sy").addEventListener("input",e=>{state.sy=Number(e.target.value);render()});
   $("spacing").addEventListener("input",e=>{state.spacing=Number(e.target.value);render()});
+  $("hexColor").addEventListener("input",e=>{
+    const normalized=normalizeHex(e.target.value);
+    if(!normalized){e.target.classList.add("invalid");return}
+    const hsv=hexToHsv(normalized);
+    Object.assign(state,hsv);
+    render();
+  });
+  $("hexColor").addEventListener("blur",e=>{
+    const normalized=normalizeHex(e.target.value);
+    if(!normalized){e.target.value=colorHex().toUpperCase();e.target.classList.remove("invalid");return}
+    e.target.value=normalized;
+  });
 
   function bindDrag(el,apply){
     el.addEventListener("pointerdown",e=>{el.setPointerCapture(e.pointerId);apply(e)});
@@ -233,7 +266,7 @@ linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,25
   $("copy").addEventListener("click",async()=>{
     const text=[
       "GALAXY VIEWER GLYPH-9 LAB SETTINGS",
-      "Font: viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9.otf",
+      "Font: viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf",
       "Character size: "+state.fontSize.toFixed(1)+"px",
       "Character width: scaleX("+state.sx.toFixed(2)+")",
       "Character height: scaleY("+state.sy.toFixed(2)+")",
