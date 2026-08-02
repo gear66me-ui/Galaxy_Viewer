@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-bcda4b73b132 — Fix 0037 poster loading fallback
+
+**Recorded:** 2026-08-01T22:58:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`bcda4b73b1322c5ce0ed828ca2d2471873d5b1da`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/bcda4b73b1322c5ce0ed828ca2d2471873d5b1da)  
+**Parent/baseline:** `070db2b2de7ac535b6751cc89c827c954ea699dc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/070db2b2de7ac535b6751cc89c827c954ea699dc...bcda4b73b1322c5ce0ed828ca2d2471873d5b1da)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Fix 0037 poster loading fallback
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0037.html` — additions: `3`, deletions: `2`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0037`, `ARTWORK`, `FALLBACK`, `FIX`, `GALAXY`, `HTML`, `LOADING`, `POSTER`, `SINGULARITY`, `SPLASH`, `VIEWER`
+
+---
 ## AUTO-75c2c6459a63 — Point beta launcher to GV-beta-0006Z
 
 **Recorded:** 2026-08-01T22:56:48-05:00  
