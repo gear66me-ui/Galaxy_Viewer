@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-530597c46b38 — Create GV-beta-0007E from verified 7C coordinate baseline
+
+**Recorded:** 2026-08-02T17:25:27-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`530597c46b388761235eba56ac84bc0714c82a20`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/530597c46b388761235eba56ac84bc0714c82a20)  
+**Parent/baseline:** `cc49c80c9b3b348c2f2ec5841cf06a170617c2ae`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/cc49c80c9b3b348c2f2ec5841cf06a170617c2ae...530597c46b388761235eba56ac84bc0714c82a20)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0007E from verified 7C coordinate baseline
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007E.py` — additions: `180`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007E.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; enlarge and center only the coordinate display, preserve the fixed 9px uppercase lambda and #72A7E8 color, reserve fixed coordinate geometry, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007E`, `BASELINE`, `BETA`, `COORDINATE`, `CREATE`, `FROM`, `VERIFIED`, `VIEWER`
+
+---
 ## AUTO-003de498f936 — Connector diagnostic test for case 12082774
 
 **Recorded:** 2026-08-02T17:16:04-05:00  
