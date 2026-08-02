@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-0ea8877c535a — Add Singularity 0035 pause inspection control
+
+**Recorded:** 2026-08-01T21:58:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0ea8877c535ac945f6266822495cab5c28246adc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0ea8877c535ac945f6266822495cab5c28246adc)  
+**Parent/baseline:** `68fef18c42d864b16eeff028e3c0a9547b0efbfa`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/68fef18c42d864b16eeff028e3c0a9547b0efbfa...0ea8877c535ac945f6266822495cab5c28246adc)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add Singularity 0035 pause inspection control
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0035.html` — additions: `23`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0035`, `ADD`, `ARTWORK`, `CONTROL`, `GALAXY`, `HTML`, `INSPECTION`, `PAUSE`, `SINGULARITY`, `SPLASH`, `VIEWER`
+
+---
 ## AUTO-4238e305486c — Add compensated delta X and delta Y to Lab 0003
 
 **Recorded:** 2026-08-01T21:50:37-05:00  
