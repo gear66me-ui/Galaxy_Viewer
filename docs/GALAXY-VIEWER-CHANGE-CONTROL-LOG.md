@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-0fe14e5e936d — Point mobile beta launcher to GV-beta-0007E
+
+**Recorded:** 2026-08-02T17:26:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0fe14e5e936d6ffc2e91d891e911d682805a5903`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0fe14e5e936d6ffc2e91d891e911d682805a5903)  
+**Parent/baseline:** `b13b893fd03c7f61fd86e9d00e476b9dd8bd9ae3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b13b893fd03c7f61fd86e9d00e476b9dd8bd9ae3...0fe14e5e936d6ffc2e91d891e911d682805a5903)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Point mobile beta launcher to GV-beta-0007E
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007E`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
+
+---
 ## AUTO-530597c46b38 — Create GV-beta-0007E from verified 7C coordinate baseline
 
 **Recorded:** 2026-08-02T17:25:27-05:00  
