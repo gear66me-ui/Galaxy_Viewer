@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-837ca6336499 — Restore approved coordinate color in GV-beta-0006X
+
+**Recorded:** 2026-08-01T20:57:33-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`837ca6336499f4d8476a96da7f4cc972b45bd175`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/837ca6336499f4d8476a96da7f4cc972b45bd175)  
+**Parent/baseline:** `b6c9f804373b9387c8061452a4a17f799d81f351`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b6c9f804373b9387c8061452a4a17f799d81f351...837ca6336499f4d8476a96da7f4cc972b45bd175)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Restore approved coordinate color in GV-beta-0006X
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0006X.py` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006X.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 6W behavior and change only the coordinate-box numeric glyphs to GV-Coordinate-Digits-0001.otf without changing unrelated viewer behavior.
+```
+
+### Search tags
+
+`0006X`, `APPROVED`, `BETA`, `COLOR`, `COORDINATE`, `RESTORE`, `VIEWER`
+
+---
 ## AUTO-e32a980ecab1 — Update beta manifest to Galaxy Viewer 6X
 
 **Recorded:** 2026-08-01T20:51:48-05:00  
