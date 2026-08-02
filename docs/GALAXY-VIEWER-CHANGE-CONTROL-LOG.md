@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-2a827e739561 — Create GV-beta-0007D live coordinate correction
+
+**Recorded:** 2026-08-02T16:04:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2a827e73956164a021e3ce0ae191f0022cc61cb6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2a827e73956164a021e3ce0ae191f0022cc61cb6)  
+**Parent/baseline:** `00c9c277f6b13d6f88c651fc9625615c537f3e8f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/00c9c277f6b13d6f88c651fc9625615c537f3e8f...2a827e73956164a021e3ce0ae191f0022cc61cb6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0007D live coordinate correction
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007D.py` — additions: `183`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007D.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; change only the live coordinate presentation by increasing coordinate numbers from 15px to 22.5px, shifting the complete longitude-lambda-latitude assembly left by 51 CSS pixels, fixing uppercase Lambda at 9px as the symmetry point, reserving equal maximum-width -180.0000 geometry with fixed decimal and four fractional positions and an adjacent negative sign, preserving #72A7E8 in normal and focused states, and making coordinate values itali
+```
+
+### Search tags
+
+`0007D`, `BETA`, `COORDINATE`, `CORRECTION`, `CREATE`, `LIVE`, `VIEWER`
+
+---
 ## AUTO-57002ae85e4b — Create final raw centered singularity 0041
 
 **Recorded:** 2026-08-02T15:59:17-05:00  
