@@ -11,7 +11,7 @@
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#eef8ff}
 body{font-family:Arial,sans-serif;padding:8px}button,input,textarea{font:inherit}.lab{width:390px;max-width:100%;margin:0 auto}
 h1{margin:2px 0 8px;text-align:center;font-size:15px}.panel{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:8px;margin-bottom:8px}
-.label{font-size:10px;text-transform:uppercase;color:#a9bfd1;margin:0 0 5px}.banner{height:36px;width:366px;max-width:100%;margin:0 auto 8px;border:1px solid #d7f4ff;border-radius:6px;background:#000;box-shadow:0 0 8px rgba(98,216,255,.28);overflow:hidden;position:relative}
+.label{font-size:10px;text-transform:uppercase;color:#a9bfd1;margin:0 0 5px}.viewer-row{display:grid;grid-template-columns:36px 260px 36px;column-gap:2px;width:336px;max-width:100%;margin:0 auto 8px;align-items:center}.blank-tile,.banner{height:36px;border:1px solid #d7f4ff;border-radius:6px;background:#000;box-shadow:0 0 8px rgba(98,216,255,.28)}.blank-tile{width:36px}.banner{width:260px;overflow:hidden;position:relative}
 .coord{position:absolute;inset:0;display:grid;grid-template-columns:34px minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:6px;padding:0 2px 0 4px;color:var(--ink);white-space:nowrap;overflow:visible;font:400 18px/30px "Space Age",sans-serif}
 .frame{justify-self:stretch;display:inline-flex;align-items:center;justify-content:center;width:34px;min-width:34px;max-width:34px;column-gap:.8px;font-size:12.5px}.frame span{display:inline-flex;transform:scaleY(1.1);transform-origin:center}
 .axis{min-width:0;display:inline-flex;align-items:center}.longitude{justify-self:end}.latitude{justify-self:start}.divider{justify-self:center;font-size:9px}.divider span{display:inline-flex}
@@ -19,7 +19,7 @@ h1{margin:2px 0 8px;text-align:center;font-size:15px}.panel{border:1px solid var
 .control{display:grid;grid-template-columns:105px 1fr 60px;gap:7px;align-items:center;min-height:35px}.control label{font-size:11px;text-transform:uppercase}.control output{text-align:right;font:10px monospace;color:#7df4ff}input[type=range]{width:100%}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}button{min-height:36px;border:1px solid #62d8ff;border-radius:7px;background:#111a29;color:#fff;text-transform:uppercase;font-size:11px}
 textarea{width:100%;height:180px;border:1px solid #526f88;border-radius:7px;background:#050a11;color:#dff7ff;padding:8px;font:11px/1.4 monospace;resize:vertical}.note{font-size:10px;line-height:1.35;color:#9eb3c5;margin-top:6px}.status{min-height:14px;text-align:center;font:10px monospace;color:#8ef0b5;margin:5px 0}
-@media(max-width:350px){.lab{width:304px}.banner{width:288px}.control{grid-template-columns:92px 1fr 52px}}
+@media(max-width:350px){.lab{width:304px}.viewer-row{width:304px;grid-template-columns:20px 260px 20px}.blank-tile{width:20px}.control{grid-template-columns:92px 1fr 52px}}
 </style>
 </head>
 <body>
@@ -27,9 +27,9 @@ textarea{width:100%;height:180px;border:1px solid #526f88;border-radius:7px;back
 <h1>Galaxy Viewer Coordinate Spacing Lab 0003</h1>
 <section class="panel">
   <div class="label">Top reference — exact 6Y settings</div>
-  <div class="banner"><div id="reference" class="coord"></div></div>
+  <div class="viewer-row"><div class="blank-tile" aria-hidden="true"></div><div class="banner"><div id="reference" class="coord"></div></div><div class="blank-tile" aria-hidden="true"></div></div>
   <div class="label">Adjustable test — height only + reduced spacing</div>
-  <div class="banner"><div id="test" class="coord"></div></div>
+  <div class="viewer-row"><div class="blank-tile" aria-hidden="true"></div><div class="banner"><div id="test" class="coord"></div></div><div class="blank-tile" aria-hidden="true"></div></div>
 </section>
 <section class="panel">
   <div class="control"><label for="height">Height</label><input id="height" type="range" min="0.90" max="1.55" step="0.01" value="1.00"><output id="heightOut">1.00×</output></div>
