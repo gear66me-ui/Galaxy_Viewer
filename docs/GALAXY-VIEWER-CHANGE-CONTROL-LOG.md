@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-68246ed46eaa — Create Lab 0004 with 50 percent coordinate enlargement and 51px correction
+
+**Recorded:** 2026-08-02T15:43:49-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`68246ed46eaad047cfb30a336404d414c79db071`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/68246ed46eaad047cfb30a336404d414c79db071)  
+**Parent/baseline:** `6b43afa33a2de7961a03c53d5eebf6df859e1148`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6b43afa33a2de7961a03c53d5eebf6df859e1148...68246ed46eaad047cfb30a336404d414c79db071)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create Lab 0004 with 50 percent coordinate enlargement and 51px correction
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/tests/GV-coordinate-glyph9-lab-0004.html` — additions: `355`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0004`, `51PX`, `AND`, `COORDINATE`, `CORRECTION`, `CREATE`, `ENLARGEMENT`, `GLYPH9`, `HTML`, `LAB`, `PERCENT`, `TESTS`, `VIEWER`, `WITH`
+
+---
 ## AUTO-cb639aaa22be — Create standalone 0040 horizontal-center crop test
 
 **Recorded:** 2026-08-02T15:42:53-05:00  
