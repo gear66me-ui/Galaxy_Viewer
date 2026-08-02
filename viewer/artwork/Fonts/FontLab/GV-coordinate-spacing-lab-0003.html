@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Galaxy Viewer Coordinate Spacing Lab 0003</title>
+<style>
+@font-face{font-family:"Space Age";src:url("../Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf?v=spacing-lab-0003") format("opentype");font-display:block}
+@font-face{font-family:"GV Coordinate Digits";src:url("./GV-Coordinate-Digits-0001.otf?v=spacing-lab-0003") format("opentype");font-display:block}
+:root{--ink:#2D72C2;--bg:#03060b;--panel:#090e15;--line:#263746}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#eef8ff}
+body{font-family:Arial,sans-serif;padding:8px}button,input,textarea{font:inherit}.lab{width:390px;max-width:100%;margin:0 auto}
+h1{margin:2px 0 8px;text-align:center;font-size:15px}.panel{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:8px;margin-bottom:8px}
+.label{font-size:10px;text-transform:uppercase;color:#a9bfd1;margin:0 0 5px}.banner{height:36px;width:366px;max-width:100%;margin:0 auto 8px;border:1px solid #d7f4ff;border-radius:6px;background:#000;box-shadow:0 0 8px rgba(98,216,255,.28);overflow:hidden;position:relative}
+.coord{position:absolute;inset:0;display:grid;grid-template-columns:34px minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:6px;padding:0 2px 0 4px;color:var(--ink);white-space:nowrap;overflow:visible;font:400 18px/30px "Space Age",sans-serif}
+.frame{justify-self:stretch;display:inline-flex;align-items:center;justify-content:center;width:34px;min-width:34px;max-width:34px;column-gap:.8px;font-size:12.5px}.frame span{display:inline-flex;transform:scaleY(1.1);transform-origin:center}
+.axis{min-width:0;display:inline-flex;align-items:center}.longitude{justify-self:end}.latitude{justify-self:start}.divider{justify-self:center;font-size:9px}.divider span{display:inline-flex}
+.glyph{display:inline-flex;align-items:center;justify-content:center;font-family:"GV Coordinate Digits",sans-serif;height:30px;line-height:30px;overflow:visible}.digit{width:.864em;min-width:.864em;max-width:.864em;flex:0 0 .864em}.one{width:.696em;min-width:.696em;max-width:.696em;flex:0 0 .696em}.symbol{width:.36em;min-width:.36em;max-width:.36em;flex:0 0 .36em}.sign{width:.744em;min-width:.744em;max-width:.744em;flex:0 0 .744em}
+.control{display:grid;grid-template-columns:105px 1fr 60px;gap:7px;align-items:center;min-height:35px}.control label{font-size:11px;text-transform:uppercase}.control output{text-align:right;font:10px monospace;color:#7df4ff}input[type=range]{width:100%}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}button{min-height:36px;border:1px solid #62d8ff;border-radius:7px;background:#111a29;color:#fff;text-transform:uppercase;font-size:11px}
+textarea{width:100%;height:180px;border:1px solid #526f88;border-radius:7px;background:#050a11;color:#dff7ff;padding:8px;font:11px/1.4 monospace;resize:vertical}.note{font-size:10px;line-height:1.35;color:#9eb3c5;margin-top:6px}.status{min-height:14px;text-align:center;font:10px monospace;color:#8ef0b5;margin:5px 0}
+@media(max-width:350px){.lab{width:304px}.banner{width:288px}.control{grid-template-columns:92px 1fr 52px}}
+</style>
+</head>
+<body>
+<main class="lab">
+<h1>Galaxy Viewer Coordinate Spacing Lab 0003</h1>
+<section class="panel">
+  <div class="label">Top reference — exact 6Y settings</div>
+  <div class="banner"><div id="reference" class="coord"></div></div>
+  <div class="label">Adjustable test — height only + reduced spacing</div>
+  <div class="banner"><div id="test" class="coord"></div></div>
+</section>
+<section class="panel">
+  <div class="control"><label for="height">Height</label><input id="height" type="range" min="0.90" max="1.55" step="0.01" value="1.00"><output id="heightOut">1.00×</output></div>
+  <div class="control"><label for="spacing">Character gap</label><input id="spacing" type="range" min="-1.5" max="1.5" step="0.05" value="1.10"><output id="spacingOut">1.10px</output></div>
+  <div class="control"><label for="galGap">GAL shift</label><input id="galGap" type="range" min="0" max="18" step="0.5" value="6"><output id="galGapOut">6.0px</output></div>
+  <div class="control"><label for="cellScale">Cell width</label><input id="cellScale" type="range" min="0.78" max="1.20" step="0.01" value="1.00"><output id="cellScaleOut">1.00×</output></div>
+  <div class="note">Height changes only the glyph height. Character gap changes spacing between coordinate characters. Cell width starts at the corrected 6X horizontal values, while the font remains 18px.</div>
+  <div class="actions"><button id="reset" type="button">Reset Test</button><button id="compact" type="button">Compact Start</button></div>
+</section>
+<section class="panel"><div class="label">Copy this definition and send it back to ChatGPT</div><textarea id="definition" readonly></textarea><button id="copyDefinition" type="button">Copy Definition</button><div id="notice" class="status"></div></section>
+</main>
+<script>
+(()=>{"use strict";
+const $=id=>document.getElementById(id);
+const sequence={frame:"GAL",longitude:"353.7217",latitude:"18.2269"};
+const state={height:1,spacing:1.10,galGap:6,cellScale:1};
+const settings={reference:{digit:.864,one:.696,symbol:.36,sign:.744,gap:1.32,pad:.06,galShift:.72},test:{digit:.72,one:.58,symbol:.30,sign:.62,pad:.05}};
+function makeGlyph(char,mode){const span=document.createElement("span");span.className="glyph";if(/\d/.test(char)){span.classList.add("digit");if(char==="1")span.classList.add("one")}else if(char==="+"||char==="-")span.classList.add("sign");else span.classList.add("symbol");span.textContent=char;if(mode==="reference"){span.style.paddingLeft=settings.reference.pad+"em";span.style.paddingRight=settings.reference.pad+"em"}else{span.style.paddingLeft=settings.test.pad+"em";span.style.paddingRight=settings.test.pad+"em"}return span}
+function fillAxis(node,text,mode){node.replaceChildren(...Array.from(text,ch=>makeGlyph(ch,mode)))}
+function build(id,mode){const root=$(id);root.innerHTML='<span class="frame"></span><span class="axis longitude"></span><span class="divider"><span>λ</span></span><span class="axis latitude"></span>';const frame=root.querySelector(".frame");for(const ch of sequence.frame){const s=document.createElement("span");s.textContent=ch;frame.appendChild(s)}fillAxis(root.querySelector(".longitude"),sequence.longitude,mode);fillAxis(root.querySelector(".latitude"),sequence.latitude,mode)}
+function setCells(root,vals,scale=1){root.querySelectorAll(".digit").forEach(n=>{const v=vals.digit*scale;n.style.width=n.style.minWidth=n.style.maxWidth=v+"em";n.style.flex="0 0 "+v+"em"});root.querySelectorAll(".one").forEach(n=>{const v=vals.one*scale;n.style.width=n.style.minWidth=n.style.maxWidth=v+"em";n.style.flex="0 0 "+v+"em"});root.querySelectorAll(".symbol").forEach(n=>{const v=vals.symbol*scale;n.style.width=n.style.minWidth=n.style.maxWidth=v+"em";n.style.flex="0 0 "+v+"em"});root.querySelectorAll(".sign").forEach(n=>{const v=vals.sign*scale;n.style.width=n.style.minWidth=n.style.maxWidth=v+"em";n.style.flex="0 0 "+v+"em"})}
+function definition(){return ["GALAXY VIEWER COORDINATE SPACING TEST","lab=GV-coordinate-spacing-lab-0003","source_font=GV-Coordinate-Digits-0001.otf","sequence=GAL 353.7217 λ 18.2269","font_size_px=18","height_factor="+state.height.toFixed(2),"character_gap_px="+state.spacing.toFixed(2),"gal_shift_px="+state.galGap.toFixed(1),"cell_scale="+state.cellScale.toFixed(2),"digit_cell_em="+(settings.test.digit*state.cellScale).toFixed(3),"one_cell_em="+(settings.test.one*state.cellScale).toFixed(3),"decimal_cell_em="+(settings.test.symbol*state.cellScale).toFixed(3),"sign_cell_em="+(settings.test.sign*state.cellScale).toFixed(3),"color=#2D72C2","instruction=Keep width and stroke weight unchanged; adjust only height and horizontal spacing."].join("\n")}
+function render(){const ref=$("reference"),test=$("test");setCells(ref,settings.reference,1);ref.querySelectorAll(".axis").forEach(n=>n.style.columnGap=settings.reference.gap+"px");ref.querySelector(".frame").style.transform="translateX(.72em)";
+setCells(test,settings.test,state.cellScale);test.querySelectorAll(".axis").forEach(n=>n.style.columnGap=state.spacing+"px");test.querySelector(".frame").style.transform=`translateX(${state.galGap}px)`;test.querySelectorAll(".glyph").forEach(n=>{n.style.transform=`scaleY(${state.height})`;n.style.transformOrigin="center"});
+$("heightOut").textContent=state.height.toFixed(2)+"×";$("spacingOut").textContent=state.spacing.toFixed(2)+"px";$("galGapOut").textContent=state.galGap.toFixed(1)+"px";$("cellScaleOut").textContent=state.cellScale.toFixed(2)+"×";$("definition").value=definition()}
+["height","spacing","galGap","cellScale"].forEach(k=>$(k).addEventListener("input",e=>{state[k]=Number(e.target.value);render()}));
+$("reset").onclick=()=>{Object.assign(state,{height:1,spacing:1.10,galGap:6,cellScale:1});for(const k of Object.keys(state))$(k).value=state[k];render();$("notice").textContent="RESET TO CORRECTED START"};
+$("compact").onclick=()=>{Object.assign(state,{height:1.18,spacing:0.25,galGap:7,cellScale:.94});for(const k of Object.keys(state))$(k).value=state[k];render();$("notice").textContent="COMPACT START APPLIED"};
+$("copyDefinition").onclick=async()=>{try{await navigator.clipboard.writeText(definition());$("notice").textContent="DEFINITION COPIED"}catch{const t=$("definition");t.focus();t.select();document.execCommand("copy");$("notice").textContent="DEFINITION COPIED"}};
+build("reference","reference");build("test","test");document.fonts.ready.then(render);render();})();
+</script>
+</body>
+</html>
