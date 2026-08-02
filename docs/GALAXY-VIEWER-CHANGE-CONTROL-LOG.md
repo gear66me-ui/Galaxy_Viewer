@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-5b4f18c995b5 — Use Aladin native frame formats with centered lambda and frame pulse
+
+**Recorded:** 2026-08-02T18:52:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5b4f18c995b53dddb55cd7fabd252e5559040321`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5b4f18c995b53dddb55cd7fabd252e5559040321)  
+**Parent/baseline:** `fda858787aa340e2bdfedd18810218f14e725ed0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/fda858787aa340e2bdfedd18810218f14e725ed0...5b4f18c995b53dddb55cd7fabd252e5559040321)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Use Aladin native frame formats with centered lambda and frame pulse
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0007E.py` — additions: `15`, deletions: `15`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007E.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; enlarge and center only the coordinate display, preserve the fixed 9px uppercase lambda and #72A7E8 color, reserve fixed coordinate geometry, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007E`, `ALADIN`, `AND`, `BETA`, `CENTERED`, `FORMATS`, `FRAME`, `LAMBDA`, `NATIVE`, `PULSE`, `USE`, `VIEWER`, `WITH`
+
+---
 ## AUTO-f5581077fa7b — Repair 7E lambda and add GAL ICRS ICRSd frame cycle
 
 **Recorded:** 2026-08-02T18:33:22-05:00  
