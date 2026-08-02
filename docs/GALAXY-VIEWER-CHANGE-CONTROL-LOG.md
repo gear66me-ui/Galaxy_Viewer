@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e4ea405ad854 — Move 7E left coordinate 25px right
+
+**Recorded:** 2026-08-02T17:33:38-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e4ea405ad854426867e1a9f0829f23e26f8cf9f9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e4ea405ad854426867e1a9f0829f23e26f8cf9f9)  
+**Parent/baseline:** `d6f3884cc425a349f9fca0f61f6fef5c76bc3a31`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d6f3884cc425a349f9fca0f61f6fef5c76bc3a31...e4ea405ad854426867e1a9f0829f23e26f8cf9f9)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Move 7E left coordinate 25px right
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0007E.py` — additions: `2`, deletions: `2`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007E.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; enlarge and center only the coordinate display, preserve the fixed 9px uppercase lambda and #72A7E8 color, reserve fixed coordinate geometry, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007E`, `25PX`, `BETA`, `COORDINATE`, `LEFT`, `MOVE`, `RIGHT`, `VIEWER`
+
+---
 ## AUTO-0fe14e5e936d — Point mobile beta launcher to GV-beta-0007E
 
 **Recorded:** 2026-08-02T17:26:06-05:00  
