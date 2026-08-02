@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-124a9e5f2530 — Expand Lab 0003 font size and XY spacing controls
+
+**Recorded:** 2026-08-01T21:43:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`124a9e5f2530e346a43fba6459d5700a4ef2563f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/124a9e5f2530e346a43fba6459d5700a4ef2563f)  
+**Parent/baseline:** `5e6f38083ca25076397d20c1ba748f85eb043071`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5e6f38083ca25076397d20c1ba748f85eb043071...124a9e5f2530e346a43fba6459d5700a4ef2563f)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Expand Lab 0003 font size and XY spacing controls
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/GV-coordinate-spacing-lab-0003.html` — additions: `22`, deletions: `20`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0003`, `AND`, `ARTWORK`, `CONTROLS`, `COORDINATE`, `EXPAND`, `FONT`, `FONTLAB`, `FONTS`, `HTML`, `LAB`, `SIZE`, `SPACING`, `VIEWER`
+
+---
 ## AUTO-b6311ef10e5a — Add Singularity 0034 with final-message styled engraving
 
 **Recorded:** 2026-08-01T21:38:52-05:00  
