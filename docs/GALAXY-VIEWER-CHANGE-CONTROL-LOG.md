@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-a100d0b55959 — Create GV-beta-0007B natural OTF coordinate spacing reset
+
+**Recorded:** 2026-08-02T01:21:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a100d0b5595904ebfc43119f729b276b75a8f660`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a100d0b5595904ebfc43119f729b276b75a8f660)  
+**Parent/baseline:** `014f755058ec1578f1c0a521bbcff825ac1a11a9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/014f755058ec1578f1c0a521bbcff825ac1a11a9...a100d0b5595904ebfc43119f729b276b75a8f660)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0007B natural OTF coordinate spacing reset
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007B.py` — additions: `179`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007B.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 6Z behavior; reset coordinate typography to natural OTF spacing at 15px with zero letter spacing; remove coordinate digit cells, special digit-1 width, decimal/sign widths, glyph padding, and flex character gap; preserve every other font, color, layout, and unrelated viewer behavior.
+```
+
+### Search tags
+
+`0007B`, `BETA`, `COORDINATE`, `CREATE`, `NATURAL`, `OTF`, `RESET`, `SPACING`, `VIEWER`
+
+---
 ## AUTO-2186737387fa — Make Pages deploy latest beta after change-control log
 
 **Recorded:** 2026-08-01T23:38:57-05:00  
