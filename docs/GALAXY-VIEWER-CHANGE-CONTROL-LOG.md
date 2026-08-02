@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-dfe7897e5a3c — Point beta launcher to GV-beta-0007D
+
+**Recorded:** 2026-08-02T16:06:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dfe7897e5a3cf6db268e5beedf8b178cd73c40f1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dfe7897e5a3cf6db268e5beedf8b178cd73c40f1)  
+**Parent/baseline:** `ac8b944fe6ac0e59c14760b092f9015966a23d5d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ac8b944fe6ac0e59c14760b092f9015966a23d5d...dfe7897e5a3cf6db268e5beedf8b178cd73c40f1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Point beta launcher to GV-beta-0007D
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `14`, deletions: `14`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007D`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
+
+---
 ## AUTO-2a827e739561 — Create GV-beta-0007D live coordinate correction
 
 **Recorded:** 2026-08-02T16:04:45-05:00  
