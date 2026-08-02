@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-62e981d56255 — Add Singularity 0031 with Galaxy-matched name banner
+
+**Recorded:** 2026-08-01T19:54:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`62e981d56255552a30f37ab4b21030eac4b890f4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/62e981d56255552a30f37ab4b21030eac4b890f4)  
+**Parent/baseline:** `6ebd2f5d68f02e3c03c68219a3990f60c54eacf0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6ebd2f5d68f02e3c03c68219a3990f60c54eacf0...62e981d56255552a30f37ab4b21030eac4b890f4)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add Singularity 0031 with Galaxy-matched name banner
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0031.html` — additions: `20`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0031`, `ADD`, `ARTWORK`, `BANNER`, `GALAXY`, `HTML`, `MATCHED`, `NAME`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
+
+---
 ## AUTO-a8f2802cb4f6 — Create versioned Glyph-9A lab with hex color entry
 
 **Recorded:** 2026-08-01T19:48:35-05:00  
