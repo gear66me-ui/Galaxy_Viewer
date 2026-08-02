@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Galaxy Viewer Symmetric Coordinate Lab 0003</title>
+<style>
+@font-face{
+  font-family:"Space Age GV-9";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf?v=symmetric-coordinate-lab-0003") format("opentype");
+  font-style:normal;font-weight:400;font-display:block
+}
+:root{
+  --coord:#72a7e8;
+  --coord-size:13px;
+  --coord-sx:1.20;
+  --coord-sy:1.70;
+  --coord-spacing:0.55px;
+  --coord-gap:8px;
+  --coord-shift-x:0px;
+  --gal-size:11px;
+  --gal-sx:1.20;
+  --gal-sy:1.70;
+  --gal-spacing:0.55px;
+  --gal-shift-x:0px;
+  --gal-shift-y:0px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#03060b;color:#eef8ff}
+body{font-family:Arial,sans-serif;padding:8px;overflow-x:hidden}
+button,input{font:inherit}
+.lab{width:350px;max-width:100%;margin:0 auto}
+h1{margin:2px 0 7px;text-align:center;font:400 14px/1.2 "Space Age GV-9",sans-serif;letter-spacing:.5px}
+.preview-panel,.color-panel,.controls,.pad-section{border:1px solid #263746;border-radius:10px;background:#090e15;padding:8px;margin-bottom:7px}
+.preview-label{margin:0 0 5px;font-size:10px;text-transform:uppercase;color:#a9bfd1}
+.banner{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;gap:2px;width:100%}
+.tile{height:36px;border:1px solid #d7f4ff;border-radius:6px;background:#000;box-shadow:0 0 8px rgba(98,216,255,.28);overflow:hidden}
+.menu,.target{position:relative;width:32px}
+.menu span,.menu:before,.menu:after{content:"";position:absolute;left:7px;width:18px;height:2px;border-radius:2px;background:#d7f3ff}
+.menu:before{top:9px}.menu span{top:16px}.menu:after{top:23px}
+.target:before,.target:after{content:"";position:absolute;inset:6px;border:2px solid #d7f3ff;border-radius:50%}
+.target:after{inset:13px;border-width:1px}
+.target i:before,.target i:after{content:"";position:absolute;background:#d7f3ff}
+.target i:before{left:15px;top:3px;width:2px;height:30px}
+.target i:after{left:3px;top:17px;width:26px;height:2px}
+.coord-tile{position:relative;min-width:0}
+.original-stage,.anchored-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.original-text{color:#72a7e8;font:400 13px/24px "Space Age GV-9",sans-serif;letter-spacing:.55px;transform:scaleX(1.20) scaleY(1.70);transform-origin:center;white-space:nowrap}
+.original-gal{font-size:11px;margin-right:5px}
+.original-lambda{font-family:Arial,sans-serif;font-size:10px;margin:0 4px;display:inline-block;transform:scaleY(calc(1 / 1.70))}
+.anchored-stage{overflow:visible}
+.gal-anchor{position:absolute;left:8px;top:50%;transform:translate(var(--gal-shift-x),var(--gal-shift-y));z-index:2;pointer-events:none}
+.anchored-gal{display:block;color:var(--coord);font:400 var(--gal-size)/20px "Space Age GV-9",sans-serif;letter-spacing:var(--gal-spacing);transform:translateY(-50%) scaleX(var(--gal-sx)) scaleY(var(--gal-sy));transform-origin:left center;white-space:nowrap}
+.coordinate-row{display:grid;grid-template-columns:max-content 13px max-content;column-gap:var(--coord-gap);align-items:center;justify-content:center;color:var(--coord);white-space:nowrap;transform:translateX(var(--coord-shift-x));transform-origin:center}
+.coord-block{display:grid;grid-template-columns:repeat(4,.72em) .28em repeat(4,.72em);column-gap:var(--coord-spacing);align-items:center;justify-items:center;font:400 var(--coord-size)/20px "Space Age GV-9",sans-serif;transform:scaleX(var(--coord-sx)) scaleY(var(--coord-sy));transform-origin:center;white-space:nowrap}
+.slot{display:flex;align-items:center;justify-content:center;width:100%;height:20px;line-height:20px;overflow:visible}
+.slot.blank{visibility:hidden}
+.fixed-lambda{display:flex;align-items:center;justify-content:center;width:13px;height:20px;color:var(--coord);font:400 9px/20px Arial,sans-serif;transform:none;text-align:center}
+.color-panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:11px;text-transform:uppercase}
+#hexColor{width:92px;height:28px;border:1px solid #526f88;border-radius:5px;background:#050a11;color:#7df4ff;padding:4px 6px;text-align:center;font:11px/1.2 monospace;text-transform:uppercase}
+#hexColor.invalid{border-color:#ff7f7f;color:#ffb2b2}
+#svField{position:relative;width:100%;height:132px;border:1px solid #526f88;border-radius:8px;touch-action:none;overflow:hidden;background-color:hsl(214,100%,50%)}
+#svField:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#fff,rgba(255,255,255,0))}
+#svField:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000,rgba(0,0,0,0))}
+#svHandle{position:absolute;left:50%;top:9%;width:18px;height:18px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #000;transform:translate(-50%,-50%);pointer-events:none;z-index:2}
+#hueBar{position:relative;width:100%;height:24px;margin-top:7px;border:1px solid #526f88;border-radius:7px;touch-action:none;background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+#hueHandle{position:absolute;left:59.4%;top:50%;width:12px;height:30px;border:2px solid #fff;border-radius:5px;box-shadow:0 0 0 1px #000;transform:translate(-50%,-50%);pointer-events:none}
+.current-strip{height:18px;margin-top:7px;border:1px solid #526f88;border-radius:6px;background:var(--coord)}
+.control-group{border:1px solid #1d2c3a;border-radius:8px;padding:6px;margin-bottom:7px}
+.control-group-title{margin:0 0 4px;color:#7df4ff;font:400 11px/1.2 "Space Age GV-9",sans-serif;letter-spacing:.45px;text-transform:uppercase}
+.control{display:grid;grid-template-columns:66px 1fr 48px;gap:7px;align-items:center;min-height:32px}
+.control label{font-size:10px;text-transform:uppercase}
+.control output{text-align:right;font-size:10px;color:#7df4ff}
+input[type=range]{width:100%}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+button{min-height:34px;border:1px solid #62d8ff;border-radius:7px;background:#111a29;color:#fff;text-transform:uppercase;font-size:11px}
+.pad-section{display:grid;grid-template-columns:132px 1fr;gap:8px;align-items:center;margin-bottom:0}
+#pad{position:relative;width:132px;height:132px;border:1px solid #526f88;border-radius:9px;touch-action:none;background:
+linear-gradient(90deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,255,.24) 50.4%,transparent 50.6%),
+linear-gradient(0deg,transparent 49.4%,rgba(98,216,255,.24) 49.6%,rgba(98,216,255,.24) 50.4%,transparent 50.6%),#050a11}
+#handle{position:absolute;left:50%;top:50%;width:18px;height:18px;border:2px solid #fff;border-radius:50%;background:var(--coord);transform:translate(-50%,-50%);pointer-events:none}
+.pad-copy{font-size:10px;line-height:1.45;color:#d7e9f5}
+.pad-copy strong{display:block;font:400 11px/1.25 "Space Age GV-9",sans-serif;color:#7df4ff;margin-bottom:5px}
+.pad-copy small{display:block;margin-top:6px;color:#95aabd}
+#notice{min-height:14px;margin-top:5px;text-align:center;font-size:10px;color:#8ef0b5}
+@media(max-width:350px){
+  body{padding:6px}
+  .lab{width:100%}
+  .preview-panel,.color-panel,.controls,.pad-section{padding:7px}
+  .banner{grid-template-columns:30px minmax(0,1fr) 30px}
+  .menu,.target{width:30px}
+  .gal-anchor{left:5px}
+  .control{grid-template-columns:58px 1fr 44px;gap:5px}
+  .pad-section{grid-template-columns:120px 1fr;gap:7px}
+  #pad{width:120px;height:120px}
+}
+</style>
+</head>
+<body>
+<main class="lab">
+<h1>Galaxy Viewer Symmetric Coordinate Lab</h1>
+
+<section class="preview-panel" aria-label="Original coordinate preview">
+  <div class="preview-label">Original — unchanged reference</div>
+  <div class="banner">
+    <div class="tile menu"><span></span></div>
+    <div class="tile coord-tile">
+      <div class="original-stage">
+        <div class="original-text"><span class="original-gal">GAL</span><span>-139.9995</span><span class="original-lambda">λ</span><span>-59.9599</span></div>
+      </div>
+    </div>
+    <div class="tile target"><i></i></div>
+  </div>
+</section>
+
+<section class="preview-panel" aria-label="Anchored coordinate preview">
+  <div class="preview-label">Anchored test</div>
+  <div class="banner">
+    <div class="tile menu"><span></span></div>
+    <div class="tile coord-tile">
+      <div class="anchored-stage">
+        <div class="gal-anchor"><span class="anchored-gal">GAL</span></div>
+        <div class="coordinate-row">
+          <span id="lonBlock" class="coord-block" aria-label="Longitude"></span>
+          <span class="fixed-lambda" aria-hidden="true">Λ</span>
+          <span id="latBlock" class="coord-block" aria-label="Latitude"></span>
+        </div>
+      </div>
+    </div>
+    <div class="tile target"><i></i></div>
+  </div>
+</section>
+
+<section class="color-panel" aria-label="Live color selector">
+  <div class="color-panel-title"><label for="hexColor">Live color field</label><input id="hexColor" type="text" value="#72A7E8" maxlength="7" spellcheck="false" autocomplete="off" autocapitalize="characters" inputmode="text" aria-label="Hexadecimal color value"></div>
+  <div id="svField" role="application" aria-label="Saturation and brightness color field"><span id="svHandle"></span></div>
+  <div id="hueBar" role="application" aria-label="Hue selector"><span id="hueHandle"></span></div>
+  <div class="current-strip" aria-hidden="true"></div>
+</section>
+
+<section class="controls" aria-label="Independent coordinate and GAL controls">
+  <div class="control-group">
+    <div class="control-group-title">Coordinates</div>
+    <div class="control"><label for="coordSize">Size</label><input id="coordSize" type="range" min="9" max="18" step=".1" value="13"><output id="coordSizeOut">13.0px</output></div>
+    <div class="control"><label for="coordSx">Stretch X</label><input id="coordSx" type="range" min=".70" max="1.35" step=".01" value="1.20"><output id="coordSxOut">1.20×</output></div>
+    <div class="control"><label for="coordSy">Stretch Y</label><input id="coordSy" type="range" min=".85" max="2.20" step=".01" value="1.70"><output id="coordSyOut">1.70×</output></div>
+    <div class="control"><label for="coordSpacing">Spacing</label><input id="coordSpacing" type="range" min="-1" max="2.5" step=".05" value=".55"><output id="coordSpacingOut">0.55</output></div>
+    <div class="control"><label for="coordGap">Λ Gap</label><input id="coordGap" type="range" min="0" max="20" step=".5" value="8"><output id="coordGapOut">8.0px</output></div>
+    <div class="control"><label for="coordShiftX">Shift X</label><input id="coordShiftX" type="range" min="-60" max="60" step="1" value="0"><output id="coordShiftXOut">0px</output></div>
+  </div>
+  <div class="control-group">
+    <div class="control-group-title">GAL</div>
+    <div class="control"><label for="galSize">Size</label><input id="galSize" type="range" min="7" max="18" step=".1" value="11"><output id="galSizeOut">11.0px</output></div>
+    <div class="control"><label for="galSx">Stretch X</label><input id="galSx" type="range" min=".70" max="1.50" step=".01" value="1.20"><output id="galSxOut">1.20×</output></div>
+    <div class="control"><label for="galSy">Stretch Y</label><input id="galSy" type="range" min=".70" max="2.20" step=".01" value="1.70"><output id="galSyOut">1.70×</output></div>
+    <div class="control"><label for="galSpacing">Spacing</label><input id="galSpacing" type="range" min="-1" max="2.5" step=".05" value=".55"><output id="galSpacingOut">0.55</output></div>
+    <div class="control"><label for="galShiftX">Shift X</label><input id="galShiftX" type="range" min="-60" max="60" step="1" value="0"><output id="galShiftXOut">0px</output></div>
+    <div class="control"><label for="galShiftY">Shift Y</label><input id="galShiftY" type="range" min="-30" max="30" step="1" value="0"><output id="galShiftYOut">0px</output></div>
+  </div>
+  <div class="actions"><button id="reset" type="button">Reset</button><button id="copy" type="button">Copy Settings</button></div>
+  <div id="notice"></div>
+</section>
+
+<section class="pad-section">
+  <div id="pad" role="application" aria-label="Drag to change both coordinate test values from negative 180 to positive 180"><span id="handle"></span></div>
+  <div class="pad-copy">
+    <strong>NUMBER SCAN PAD</strong>
+    Horizontal controls the left coordinate. Vertical controls the right coordinate. Both use fixed decimal anchors and four decimal places.
+    <small>Both ranges: −180.0000 to +180.0000</small>
+  </div>
+</section>
+</main>
+
+<script>
+(()=>{
+  "use strict";
+  const root=document.documentElement;
+  const $=id=>document.getElementById(id);
+  const defaults={coordSize:13,coordSx:1.20,coordSy:1.70,coordSpacing:0.55,coordGap:8,coordShiftX:0,galSize:11,galSx:1.20,galSy:1.70,galSpacing:0.55,galShiftX:0,galShiftY:0,h:214,s:.50,v:.91,lon:-139.9995,lat:-59.9599};
+  const state={...defaults};
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const format=v=>(v<0?"-":"")+Math.abs(v).toFixed(4);
+
+  function hsvToRgb(h,s,v){
+    const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;
+    let r=0,g=0,b=0;
+    if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}
+    else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}
+    return [r,g,b].map(n=>Math.round((n+m)*255));
+  }
+  function rgbToHex([r,g,b]){return "#"+[r,g,b].map(n=>n.toString(16).padStart(2,"0")).join("")}
+  function colorHex(){return rgbToHex(hsvToRgb(state.h,state.s,state.v))}
+  function normalizeHex(value){
+    const raw=value.trim().replace(/^#/,"");
+    if(/^[0-9a-fA-F]{3}$/.test(raw))return "#"+raw.split("").map(c=>c+c).join("").toUpperCase();
+    if(/^[0-9a-fA-F]{6}$/.test(raw))return "#"+raw.toUpperCase();
+    return null;
+  }
+  function hexToHsv(hex){
+    const n=parseInt(hex.slice(1),16);
+    const r=((n>>16)&255)/255,g=((n>>8)&255)/255,b=(n&255)/255;
+    const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+    let h=0;
+    if(d){
+      if(max===r)h=60*(((g-b)/d)%6);
+      else if(max===g)h=60*((b-r)/d+2);
+      else h=60*((r-g)/d+4);
+    }
+    if(h<0)h+=360;
+    return {h,s:max===0?0:d/max,v:max};
+  }
+
+  function fixedParts(value){
+    const bounded=clamp(Number(value)||0,-180,180);
+    const absolute=Math.abs(bounded).toFixed(4);
+    const [integer,fraction]=absolute.split(".");
+    const prefix=Array(4).fill(" ");
+    const digits=integer.slice(-3).split("");
+    const digitStart=4-digits.length;
+    digits.forEach((digit,index)=>{prefix[digitStart+index]=digit});
+    if(bounded<0)prefix[digitStart-1]="-";
+    return [...prefix,".",...fraction.split("")];
+  }
+
+  function renderFixedBlock(container,value){
+    const parts=fixedParts(value);
+    container.replaceChildren(...parts.map(character=>{
+      const slot=document.createElement("span");
+      slot.className="slot"+(character===" "||character===""?" blank":"");
+      slot.textContent=character||"−";
+      return slot;
+    }));
+    container.setAttribute("aria-label",format(value));
+  }
+
+  function render(){
+    const color=colorHex();
+    root.style.setProperty("--coord-size",state.coordSize+"px");
+    root.style.setProperty("--coord-sx",state.coordSx);
+    root.style.setProperty("--coord-sy",state.coordSy);
+    root.style.setProperty("--coord-spacing",state.coordSpacing+"px");
+    root.style.setProperty("--coord-gap",state.coordGap+"px");
+    root.style.setProperty("--coord-shift-x",state.coordShiftX+"px");
+    root.style.setProperty("--gal-size",state.galSize+"px");
+    root.style.setProperty("--gal-sx",state.galSx);
+    root.style.setProperty("--gal-sy",state.galSy);
+    root.style.setProperty("--gal-spacing",state.galSpacing+"px");
+    root.style.setProperty("--gal-shift-x",state.galShiftX+"px");
+    root.style.setProperty("--gal-shift-y",state.galShiftY+"px");
+    root.style.setProperty("--coord",color);
+    $("coordSizeOut").textContent=state.coordSize.toFixed(1)+"px";
+    $("coordSxOut").textContent=state.coordSx.toFixed(2)+"×";
+    $("coordSyOut").textContent=state.coordSy.toFixed(2)+"×";
+    $("coordSpacingOut").textContent=state.coordSpacing.toFixed(2);
+    $("coordGapOut").textContent=state.coordGap.toFixed(1)+"px";
+    $("coordShiftXOut").textContent=state.coordShiftX.toFixed(0)+"px";
+    $("galSizeOut").textContent=state.galSize.toFixed(1)+"px";
+    $("galSxOut").textContent=state.galSx.toFixed(2)+"×";
+    $("galSyOut").textContent=state.galSy.toFixed(2)+"×";
+    $("galSpacingOut").textContent=state.galSpacing.toFixed(2);
+    $("galShiftXOut").textContent=state.galShiftX.toFixed(0)+"px";
+    $("galShiftYOut").textContent=state.galShiftY.toFixed(0)+"px";
+    renderFixedBlock($("lonBlock"),state.lon);
+    renderFixedBlock($("latBlock"),state.lat);
+    $("hexColor").value=color.toUpperCase();
+    $("hexColor").classList.remove("invalid");
+    $("svField").style.backgroundColor="hsl("+state.h+",100%,50%)";
+    $("svHandle").style.left=(state.s*100)+"%";
+    $("svHandle").style.top=((1-state.v)*100)+"%";
+    $("hueHandle").style.left=(state.h/360*100)+"%";
+    $("handle").style.left=((state.lon+180)/360*100)+"%";
+    $("handle").style.top=((180-state.lat)/360*100)+"%";
+  }
+
+  [["coordSize","coordSize"],["coordSx","coordSx"],["coordSy","coordSy"],["coordSpacing","coordSpacing"],["coordGap","coordGap"],["coordShiftX","coordShiftX"],["galSize","galSize"],["galSx","galSx"],["galSy","galSy"],["galSpacing","galSpacing"],["galShiftX","galShiftX"],["galShiftY","galShiftY"]].forEach(([id,key])=>{
+    $(id).addEventListener("input",event=>{state[key]=Number(event.target.value);render()});
+  });
+  $("hexColor").addEventListener("input",event=>{
+    const normalized=normalizeHex(event.target.value);
+    if(!normalized){event.target.classList.add("invalid");return}
+    Object.assign(state,hexToHsv(normalized));
+    render();
+  });
+  $("hexColor").addEventListener("blur",event=>{
+    const normalized=normalizeHex(event.target.value);
+    if(!normalized){event.target.value=colorHex().toUpperCase();event.target.classList.remove("invalid");return}
+    event.target.value=normalized;
+  });
+
+  function bindDrag(element,apply){
+    element.addEventListener("pointerdown",event=>{element.setPointerCapture(event.pointerId);apply(event)});
+    element.addEventListener("pointermove",event=>{if(element.hasPointerCapture(event.pointerId))apply(event)});
+    element.addEventListener("pointerup",event=>{if(element.hasPointerCapture(event.pointerId))element.releasePointerCapture(event.pointerId)});
+    element.addEventListener("pointercancel",event=>{if(element.hasPointerCapture(event.pointerId))element.releasePointerCapture(event.pointerId)});
+  }
+  bindDrag($("svField"),event=>{
+    const rectangle=$("svField").getBoundingClientRect();
+    state.s=clamp((event.clientX-rectangle.left)/rectangle.width,0,1);
+    state.v=1-clamp((event.clientY-rectangle.top)/rectangle.height,0,1);
+    render();
+  });
+  bindDrag($("hueBar"),event=>{
+    const rectangle=$("hueBar").getBoundingClientRect();
+    state.h=clamp((event.clientX-rectangle.left)/rectangle.width,0,1)*360;
+    render();
+  });
+  bindDrag($("pad"),event=>{
+    const rectangle=$("pad").getBoundingClientRect();
+    const x=clamp(event.clientX-rectangle.left,0,rectangle.width);
+    const y=clamp(event.clientY-rectangle.top,0,rectangle.height);
+    state.lon=(x/rectangle.width)*360-180;
+    state.lat=180-(y/rectangle.height)*360;
+    render();
+  });
+
+  $("reset").addEventListener("click",()=>{
+    Object.assign(state,defaults);
+    ["coordSize","coordSx","coordSy","coordSpacing","coordGap","coordShiftX","galSize","galSx","galSy","galSpacing","galShiftX","galShiftY"].forEach(id=>{$(id).value=state[id]});
+    render();
+  });
+
+  $("copy").addEventListener("click",async()=>{
+    const text=[
+      "GALAXY VIEWER SYMMETRIC COORDINATE LAB SETTINGS",
+      "lab=GV-coordinate-glyph9-lab-0003",
+      "source_font=Space Age GV-9A.otf",
+      "architecture=4 fixed pre-decimal positions with a dynamic adjacent sign + fixed decimal anchor + 4 fractional slots",
+      "symmetry=uppercase Λ vertex is the fixed internal center between equal maximum-width coordinate blocks",
+      "coordinate_size_px="+state.coordSize.toFixed(1),
+      "coordinate_stretch_x="+state.coordSx.toFixed(2),
+      "coordinate_stretch_y="+state.coordSy.toFixed(2),
+      "coordinate_spacing_px="+state.coordSpacing.toFixed(2),
+      "coordinate_lambda_gap_px="+state.coordGap.toFixed(1),
+      "coordinate_shift_x_px="+state.coordShiftX.toFixed(0),
+      "gal_size_px="+state.galSize.toFixed(1),
+      "gal_stretch_x="+state.galSx.toFixed(2),
+      "gal_stretch_y="+state.galSy.toFixed(2),
+      "gal_spacing_px="+state.galSpacing.toFixed(2),
+      "gal_shift_x_px="+state.galShiftX.toFixed(0),
+      "gal_shift_y_px="+state.galShiftY.toFixed(0),
+      "color="+colorHex().toUpperCase(),
+      "divider=Λ at 9px, fixed and centered",
+      "longitude="+format(state.lon),
+      "latitude_test="+format(state.lat),
+      "pad_ranges=−180.0000 to +180.0000 on both axes"
+    ].join("\n");
+    try{await navigator.clipboard.writeText(text);$("notice").textContent="SETTINGS COPIED"}
+    catch(_){$("notice").textContent="COPY BLOCKED — SELECT FROM BROWSER"}
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
