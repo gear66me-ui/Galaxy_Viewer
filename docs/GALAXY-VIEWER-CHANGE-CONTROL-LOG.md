@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-4346c6874ba2 — Correct diagnostic detector source to exact 0040 baseline
+
+**Recorded:** 2026-08-02T13:58:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4346c6874ba23f65a93532e2735ae0efa812d6ca`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4346c6874ba23f65a93532e2735ae0efa812d6ca)  
+**Parent/baseline:** `577d562acbc9c27e3d139a5d42a5f44fd51e29eb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/577d562acbc9c27e3d139a5d42a5f44fd51e29eb...4346c6874ba23f65a93532e2735ae0efa812d6ca)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Correct diagnostic detector source to exact 0040 baseline
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0040-Diagnostic.html` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0040`, `ARTWORK`, `BASELINE`, `CORRECT`, `DETECTOR`, `DIAGNOSTIC`, `EXACT`, `GALAXY`, `HTML`, `SINGULARITY`, `SOURCE`, `SPLASH`, `VIEWER`
+
+---
 ## AUTO-a0c835d769d2 — Create 0040 diagnostic copy with device info and refresh controls
 
 **Recorded:** 2026-08-02T13:51:26-05:00  
