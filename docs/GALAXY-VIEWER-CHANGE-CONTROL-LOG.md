@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-766034d8bd00 — Create GV-beta-0006Y with 20 percent larger coordinate glyphs
+
+**Recorded:** 2026-08-01T21:06:41-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`766034d8bd009a8fcdf45e58c672d1358747061c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/766034d8bd009a8fcdf45e58c672d1358747061c)  
+**Parent/baseline:** `1a1cbd93359bfd7bea107bdfddbdb72b07fd9cbb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1a1cbd93359bfd7bea107bdfddbdb72b07fd9cbb...766034d8bd009a8fcdf45e58c672d1358747061c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0006Y with 20 percent larger coordinate glyphs
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0006Y.py` — additions: `187`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0006Y.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 6X behavior; enlarge the custom coordinate digits, decimal points, signs, spacing, and line weight uniformly by exactly 20 percent; move the GAL frame label approximately one character space right; preserve #2D72C2; and do not change unrelated viewer behavior.
+```
+
+### Search tags
+
+`0006Y`, `BETA`, `COORDINATE`, `CREATE`, `GLYPHS`, `LARGER`, `PERCENT`, `VIEWER`, `WITH`
+
+---
 ## AUTO-837ca6336499 — Restore approved coordinate color in GV-beta-0006X
 
 **Recorded:** 2026-08-01T20:57:33-05:00  
