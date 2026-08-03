@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e98f68a774a8 — Create GV-beta-0007F with ICRSd display capitalization
+
+**Recorded:** 2026-08-02T19:08:21-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e98f68a774a84b8e5a316cbc0c0553ecc76ef57d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e98f68a774a84b8e5a316cbc0c0553ecc76ef57d)  
+**Parent/baseline:** `5221220b5d358e9029d5672fa62801a852e9c80c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5221220b5d358e9029d5672fa62801a852e9c80c...e98f68a774a84b8e5a316cbc0c0553ecc76ef57d)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0007F with ICRSd display capitalization
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007F.py` — additions: `184`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007F.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; enlarge and center only the coordinate display, preserve the fixed 9px uppercase lambda and #72A7E8 color, reserve fixed coordinate geometry, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007F`, `BETA`, `CAPITALIZATION`, `CREATE`, `DISPLAY`, `ICRSD`, `VIEWER`, `WITH`
+
+---
 ## AUTO-946eda4cd077 — Limit all coordinate decimals to four places
 
 **Recorded:** 2026-08-02T19:08:10-05:00  
