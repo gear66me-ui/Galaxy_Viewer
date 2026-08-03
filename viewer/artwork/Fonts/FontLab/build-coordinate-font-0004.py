@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Build coordinate font 0004 and viewer 7K from exact O3/7J baselines."""
 
+# Build trigger: execute the installed O4 / 7K workflow.
+
 from pathlib import Path
 import sys
 import fontforge
@@ -65,7 +67,7 @@ def build_font():
             original = expected_shapes[ord(char)]
             if abs((current["bbox"][2] - current["bbox"][0]) - (original["bbox"][2] - original["bbox"][0])) > 0.001:
                 raise RuntimeError(f"Outline width changed for {char!r}")
-            if current["bbox"][1:] [0] != original["bbox"][1:] [0] or current["bbox"][3] != original["bbox"][3]:
+            if current["bbox"][1] != original["bbox"][1] or current["bbox"][3] != original["bbox"][3]:
                 raise RuntimeError(f"Vertical bounds changed for {char!r}")
 
         OUTPUT_FONT.parent.mkdir(parents=True, exist_ok=True)
