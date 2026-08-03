@@ -7,230 +7,51 @@
 <style>
 @font-face{font-family:"Space Age";src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf?v=6R-space-age-regular-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 @font-face{font-family:"GV Coordinate Digits";src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0002.otf?v=6Z-coordinate-digits-0002") format("opentype");font-style:normal;font-weight:400;font-display:block}
-:root{color-scheme:dark;font-family:"Space Age",sans-serif;background:#05070c;color:#d7f4ff}
-*{box-sizing:border-box}
-body{margin:0;padding:14px;background:#05070c;overflow-x:hidden}
-main{max-width:760px;margin:0 auto}
-h1{font-size:16px;font-weight:400;text-align:center;margin:0 0 12px;color:#72a7e8}
-.preview-card{background:#0a0e18;border:1px solid #27344b;border-radius:10px;padding:12px;margin-bottom:12px;overflow-x:auto}
-.preview-title{font-size:11px;margin-bottom:8px;color:#9fb8d8}
-.coordinate-shell{position:relative;height:36px;background:rgba(0,0,0,.86);border:1px solid #d7f4ff;border-radius:6px;box-shadow:0 0 10px rgba(98,216,255,.44);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
-.coordinate-shell.natural{width:281px}
-.big-wrap{width:562px;height:72px;transform-origin:left top}
-.coordinate-shell.big{width:281px;transform:scale(2);transform-origin:left top}
-.item{position:absolute;top:0;height:36px;display:flex;align-items:center;white-space:pre;color:#72a7e8;cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent}
-.item:active{cursor:grabbing}
-.selector{font-family:"Space Age",sans-serif;font-size:12.5px;line-height:30px;transform-origin:left center}
-.divider{width:1px;background:#72a7e8;height:24px;top:6px}
-.axis{font-family:"GV Coordinate Digits",sans-serif;font-size:22.5px;line-height:30px;letter-spacing:0}
-.lambda{font:400 9px/30px Arial,sans-serif;width:5px;justify-content:center}
-.controls{display:grid;gap:10px}
-.panel{background:#0a0e18;border:1px solid #27344b;border-radius:10px;padding:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.row:last-child{margin-bottom:0}
-label{font-size:10px;color:#9fb8d8;display:flex;flex-direction:column;gap:5px}
-select,input,button{font:400 14px "Space Age",sans-serif;color:#d7f4ff;background:#11192a;border:1px solid #516787;border-radius:7px;min-height:44px;padding:8px}
-input[type=range]{padding:0;width:100%}
-.pad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,54px);justify-content:center;gap:7px}
-.pad button{font-size:22px;padding:0}
-.pad .blank{visibility:hidden}
-.values{font:13px/1.6 monospace;white-space:pre-wrap;color:#b9d6ff}
-.small{font-size:10px;color:#8297b5;margin-top:8px;text-align:center}
-@media(max-width:620px){body{padding:8px}.preview-card{padding:8px}.panel{padding:10px}.row{grid-template-columns:1fr}.big-wrap{margin-right:8px}}
+*{box-sizing:border-box}html,body{margin:0;background:#05070c;color:#d7f4ff;font-family:"Space Age",sans-serif}body{padding:10px;overflow-x:hidden}main{max-width:760px;margin:auto}h1{font:400 15px/1.2 "Space Age";text-align:center;color:#72a7e8;margin:2px 0 10px}.row{margin:0 0 14px}.label{font-size:10px;color:#9fb8d8;margin:0 0 6px}.scroll{overflow-x:auto;padding:7px;background:#0a0e18;border:1px solid #27344b;border-radius:9px}.scale-holder{width:562px;height:72px}.scale-holder>.coordinate-box{transform:scale(2);transform-origin:left top}
+.coordinate-box{position:relative;width:281px;height:36px;overflow:hidden;border:1px solid #D7F4FF;border-radius:6px;background:rgba(0,0,0,.86);box-shadow:0 0 10px rgba(98,216,255,.44);pointer-events:none;user-select:none;-webkit-user-select:none}
+.gv-coordinate-display{position:absolute;inset:0;z-index:2;display:grid;grid-template-columns:58px minmax(0,1fr) 9px minmax(0,1fr);align-items:center;column-gap:4px;padding:0 4px;box-sizing:border-box;overflow:hidden;color:#72A7E8;font:400 22.5px/30px "Space Age",sans-serif;letter-spacing:0;white-space:nowrap;transform:none;--gv-coordinate-fit:1}
+.gv-coordinate-frame-label{position:relative;grid-column:1;justify-self:start;z-index:4;display:inline-flex;align-items:center;justify-content:flex-start;width:52px;min-width:52px;max-width:52px;column-gap:.8px;font-size:12.5px;overflow:hidden;transform-origin:left center}
+.gv-coordinate-frame-label .gv-coordinate-glyph{transform:scaleY(1.1)}
+.gv-coordinate-axis{position:relative;z-index:1;display:block;min-width:0;overflow:hidden;font-family:"GV Coordinate Digits",sans-serif;font-variant-numeric:normal;font-feature-settings:normal;letter-spacing:0;white-space:pre;transform:scaleX(var(--gv-coordinate-fit))}
+.gv-coordinate-longitude{grid-column:2;justify-self:stretch;text-align:right;transform-origin:right center}
+.gv-coordinate-divider{position:relative;z-index:3;grid-column:3;justify-self:center;display:inline-flex;align-items:center;justify-content:center;width:9px;min-width:9px;max-width:9px;height:30px;line-height:30px;overflow:hidden;background:rgba(0,0,0,.86);font:400 9px/30px Arial,sans-serif}
+.gv-coordinate-divider .gv-coordinate-glyph{transform:none}
+.gv-coordinate-latitude{grid-column:4;justify-self:stretch;text-align:left;transform-origin:left center}
+.gv-coordinate-glyph{display:inline-flex;align-items:center;justify-content:center;height:30px;line-height:30px;transform:scaleY(1.15);transform-origin:center;overflow:visible}
+.adjustable{pointer-events:auto;touch-action:none}.adjustable [data-part]{pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;cursor:grab}.adjustable [data-part]:active{cursor:grabbing}
+.controls{display:grid;gap:9px;background:#0a0e18;border:1px solid #27344b;border-radius:9px;padding:10px}.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}label{font-size:10px;color:#9fb8d8;display:flex;flex-direction:column;gap:5px}select,input,button{min-height:44px;border:1px solid #516787;border-radius:7px;background:#11192a;color:#d7f4ff;font:400 13px "Space Age",sans-serif;padding:8px}input[type=range]{padding:0;width:100%}.pad{display:grid;grid-template-columns:repeat(3,62px);grid-template-rows:repeat(3,50px);gap:6px;justify-content:center}.pad button{font-size:20px;padding:0}.blank{visibility:hidden}.readout{font:12px/1.55 monospace;color:#b9d6ff;white-space:pre-wrap}.note{font-size:9px;color:#8297b5;text-align:center}@media(max-width:620px){body{padding:7px}.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main>
 <h1>COORDINATE BOX LAB 0001</h1>
-
-<section class="preview-card">
-<div class="preview-title">2× INSPECTION — TAP OR DRAG ANY VISIBLE ELEMENT</div>
-<div class="big-wrap"><div class="coordinate-shell big" id="bigPreview"></div></div>
-</section>
-
-<section class="preview-card">
-<div class="preview-title">NATURAL SIZE — 281 PX INNER WIDTH</div>
-<div class="coordinate-shell natural" id="naturalPreview"></div>
-</section>
-
+<section class="row"><div class="label">CURRENT 7E — UNTOUCHED REFERENCE</div><div class="scroll"><div class="coordinate-box" id="reference"></div></div></section>
+<section class="row"><div class="label">CURRENT 7E — EXACT 2× MAGNIFICATION</div><div class="scroll"><div class="scale-holder"><div class="coordinate-box" id="magnified"></div></div></div></section>
+<section class="row"><div class="label">ADJUSTABLE COPY — TAP OR DRAG A FIELD</div><div class="scroll"><div class="coordinate-box adjustable" id="adjustable"></div></div></section>
 <section class="controls">
-<div class="panel">
-<div class="row">
-<label>COORDINATE SYSTEM
-<select id="frameMode"><option value="ICRSD">ICRSD</option><option value="GAL">GAL</option></select>
-</label>
-<label>SELECTED ELEMENT
-<select id="selectedItem"><option value="selector">COORDINATE SYSTEM</option><option value="divider">VERTICAL DIVIDER</option><option value="x">X VALUE</option><option value="lambda">INVERTED V</option><option value="y">Y VALUE</option></select>
-</label>
-</div>
-<div class="row">
-<label>X TEST VALUE
-<input id="xValue" type="range" min="0" max="3599999" step="1" value="3599999">
-</label>
-<label>Y TEST VALUE
-<input id="yValue" type="range" min="-900000" max="900000" step="1" value="-900000">
-</label>
-</div>
-</div>
-
-<div class="panel">
-<div class="pad">
-<button class="blank" tabindex="-1"></button><button data-move="up">▲</button><button class="blank" tabindex="-1"></button>
-<button data-move="left">◀</button><button id="stepButton">1 PX</button><button data-move="right">▶</button>
-<button class="blank" tabindex="-1"></button><button data-move="down">▼</button><button class="blank" tabindex="-1"></button>
-</div>
-<div class="small">DIVIDER MOVES LEFT/RIGHT ONLY. DRAGGING WORKS ON THE 2× PREVIEW.</div>
-</div>
-
-<div class="panel" id="scalePanel">
-<div class="row">
-<label>SELECTOR SCALE X <span id="scaleXReadout">1.00</span>
-<input id="scaleX" type="range" min="0.70" max="1.30" step="0.01" value="1.00">
-</label>
-<label>SELECTOR SCALE Y <span id="scaleYReadout">1.00</span>
-<input id="scaleY" type="range" min="0.70" max="1.60" step="0.01" value="1.00">
-</label>
-</div>
-</div>
-
-<div class="panel">
-<div class="values" id="values"></div>
-<button id="resetButton" type="button">RESET DEFAULTS</button>
-</div>
+<div class="two"><label>COORDINATE SYSTEM<select id="frame"><option>ICRSD</option><option>GAL</option></select></label><label>SELECTED FIELD<select id="selected"><option value="frame">COORDINATE SYSTEM</option><option value="x">X VALUE</option><option value="lambda">INVERTED V</option><option value="y">Y VALUE</option></select></label></div>
+<div class="two"><label>X TEST VALUE<input id="xValue" type="range" min="0" max="3599999" step="1" value="3599999"></label><label>Y TEST VALUE<input id="yValue" type="range" min="-900000" max="900000" step="1" value="-900000"></label></div>
+<div class="pad"><button class="blank"></button><button data-dir="up">▲</button><button class="blank"></button><button data-dir="left">◀</button><button id="step">1 PX</button><button data-dir="right">▶</button><button class="blank"></button><button data-dir="down">▼</button><button class="blank"></button></div>
+<div class="two"><label>SELECTOR SCALE X <span id="sxText">1.00</span><input id="sx" type="range" min="0.70" max="1.30" step="0.01" value="1"></label><label>SELECTOR SCALE Y <span id="syText">1.00</span><input id="sy" type="range" min="0.70" max="1.60" step="0.01" value="1"></label></div>
+<div class="readout" id="readout"></div><button id="reset">RESET ADJUSTABLE COPY TO EXACT 7E</button><div class="note">REFERENCE ROWS NEVER CHANGE. NO SELECTION BOXES OR EDITING OUTLINES ARE SHOWN.</div>
 </section>
 </main>
-
 <script>
-(() => {
-  const defaults={
-    selector:{x:6.50,y:0,scaleX:1,scaleY:1},
-    divider:{x:50.50,y:6},
-    x:{x:56.62,y:0},
-    lambda:{x:163.43,y:0},
-    y:{x:176.36,y:0}
-  };
-  let state=JSON.parse(JSON.stringify(defaults));
-  let selected='selector';
-  let step=1;
-  const previews=[document.getElementById('bigPreview'),document.getElementById('naturalPreview')];
-  const selectedItem=document.getElementById('selectedItem');
-  const frameMode=document.getElementById('frameMode');
-  const xValue=document.getElementById('xValue');
-  const yValue=document.getElementById('yValue');
-  const scaleX=document.getElementById('scaleX');
-  const scaleY=document.getElementById('scaleY');
-  const scaleXReadout=document.getElementById('scaleXReadout');
-  const scaleYReadout=document.getElementById('scaleYReadout');
-  const values=document.getElementById('values');
-  const stepButton=document.getElementById('stepButton');
-
-  function formatX(){return (Number(xValue.value)/10000).toFixed(4)}
-  function formatY(){return (Number(yValue.value)/10000).toFixed(4)}
-
-  function buildPreview(preview){
-    preview.innerHTML='';
-    const items=[
-      ['selector','selector',frameMode.value],
-      ['divider','divider',''],
-      ['x','axis',formatX()],
-      ['lambda','lambda','Λ'],
-      ['y','axis',formatY()]
-    ];
-    for(const [key,className,text] of items){
-      const element=document.createElement('div');
-      element.className=`item ${className}`;
-      element.dataset.item=key;
-      element.textContent=text;
-      preview.appendChild(element);
-      element.addEventListener('pointerdown',beginDrag);
-      element.addEventListener('click',()=>select(key));
-    }
-  }
-
-  function applyPreview(preview){
-    for(const element of preview.querySelectorAll('.item')){
-      const key=element.dataset.item;
-      const item=state[key];
-      element.style.left=item.x+'px';
-      element.style.top=item.y+'px';
-      if(key==='selector')element.style.transform=`scale(${item.scaleX},${item.scaleY})`;
-    }
-    preview.querySelector('.selector').textContent=frameMode.value;
-    preview.querySelector('[data-item="x"]').textContent=formatX();
-    preview.querySelector('[data-item="y"]').textContent=formatY();
-  }
-
-  function render(){
-    for(const preview of previews){if(!preview.children.length)buildPreview(preview);applyPreview(preview)}
-    scaleX.value=state.selector.scaleX;
-    scaleY.value=state.selector.scaleY;
-    scaleXReadout.textContent=state.selector.scaleX.toFixed(2);
-    scaleYReadout.textContent=state.selector.scaleY.toFixed(2);
-    document.getElementById('scalePanel').style.opacity=selected==='selector'?'1':'.38';
-    values.textContent=
-`SELECTED: ${selected.toUpperCase()}
-FRAME: ${frameMode.value}
-SELECTOR  X ${state.selector.x.toFixed(2)}  Y ${state.selector.y.toFixed(2)}  SCALE X ${state.selector.scaleX.toFixed(2)}  SCALE Y ${state.selector.scaleY.toFixed(2)}
-DIVIDER   X ${state.divider.x.toFixed(2)}
-X VALUE   X ${state.x.x.toFixed(2)}  Y ${state.x.y.toFixed(2)}  TEXT ${formatX()}
-INVERTED V X ${state.lambda.x.toFixed(2)}  Y ${state.lambda.y.toFixed(2)}
-Y VALUE   X ${state.y.x.toFixed(2)}  Y ${state.y.y.toFixed(2)}  TEXT ${formatY()}
-RIGHT SPACE: ${(281-state.y.x).toFixed(2)} PX`;
-  }
-
-  function select(key){selected=key;selectedItem.value=key;render()}
-
-  function move(dx,dy){
-    if(selected==='divider')dy=0;
-    state[selected].x=Number((state[selected].x+dx).toFixed(2));
-    state[selected].y=Number(((state[selected].y||0)+dy).toFixed(2));
-    render();
-  }
-
-  let drag=null;
-  function beginDrag(event){
-    event.preventDefault();
-    const key=event.currentTarget.dataset.item;
-    select(key);
-    const scale=event.currentTarget.closest('.big')?2:1;
-    drag={key,startX:event.clientX,startY:event.clientY,baseX:state[key].x,baseY:state[key].y||0,scale};
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.currentTarget.addEventListener('pointermove',dragMove);
-    event.currentTarget.addEventListener('pointerup',endDrag,{once:true});
-    event.currentTarget.addEventListener('pointercancel',endDrag,{once:true});
-  }
-
-  function dragMove(event){
-    if(!drag)return;
-    const dx=(event.clientX-drag.startX)/drag.scale;
-    const dy=drag.key==='divider'?0:(event.clientY-drag.startY)/drag.scale;
-    state[drag.key].x=Number((drag.baseX+dx).toFixed(2));
-    state[drag.key].y=Number((drag.baseY+dy).toFixed(2));
-    render();
-  }
-
-  function endDrag(event){
-    event.currentTarget.removeEventListener('pointermove',dragMove);
-    drag=null;
-  }
-
-  document.querySelectorAll('[data-move]').forEach(button=>button.addEventListener('click',()=>{
-    const direction=button.dataset.move;
-    if(direction==='left')move(-step,0);
-    if(direction==='right')move(step,0);
-    if(direction==='up')move(0,-step);
-    if(direction==='down')move(0,step);
-  }));
-
-  stepButton.addEventListener('click',()=>{step=step===1?.25:step===.25?.1:1;stepButton.textContent=step+' PX'});
-  selectedItem.addEventListener('change',()=>select(selectedItem.value));
-  frameMode.addEventListener('change',render);
-  xValue.addEventListener('input',render);
-  yValue.addEventListener('input',render);
-  scaleX.addEventListener('input',()=>{if(selected!=='selector')select('selector');state.selector.scaleX=Number(scaleX.value);render()});
-  scaleY.addEventListener('input',()=>{if(selected!=='selector')select('selector');state.selector.scaleY=Number(scaleY.value);render()});
-  document.getElementById('resetButton').addEventListener('click',()=>{state=JSON.parse(JSON.stringify(defaults));frameMode.value='ICRSD';xValue.value='3599999';yValue.value='-900000';select('selector')});
-  render();
+(()=>{
+const exact={frame:{x:0,y:0,sx:1,sy:1},x:{x:0,y:0},lambda:{x:0,y:0},y:{x:0,y:0}};let state=JSON.parse(JSON.stringify(exact)),selected='frame',step=1,drag=null;
+const frame=document.getElementById('frame'),selectedEl=document.getElementById('selected'),xValue=document.getElementById('xValue'),yValue=document.getElementById('yValue'),sx=document.getElementById('sx'),sy=document.getElementById('sy'),readout=document.getElementById('readout');
+function fx(){return (Number(xValue.value)/10000).toFixed(4)}function fy(){return (Number(yValue.value)/10000).toFixed(4)}
+function glyphs(text){return [...text].map(c=>`<span class="gv-coordinate-glyph">${c}</span>`).join('')}
+function markup(editable=false){return `<span class="gv-coordinate-display"><span class="gv-coordinate-frame-label" ${editable?'data-part="frame"':''}>${glyphs(frame.value)}</span><span class="gv-coordinate-axis gv-coordinate-longitude" ${editable?'data-part="x"':''}>${fx()}</span><span class="gv-coordinate-divider" ${editable?'data-part="lambda"':''}><span class="gv-coordinate-glyph">Λ</span></span><span class="gv-coordinate-axis gv-coordinate-latitude" ${editable?'data-part="y"':''}>${fy()}</span></span>`}
+function build(){reference.innerHTML=markup();magnified.innerHTML=markup();adjustable.innerHTML=markup(true);adjustable.querySelectorAll('[data-part]').forEach(el=>{el.addEventListener('pointerdown',startDrag);el.addEventListener('click',()=>choose(el.dataset.part))})}
+function apply(){for(const key of ['frame','x','lambda','y']){const el=adjustable.querySelector(`[data-part="${key}"]`),s=state[key];el.style.translate=`${s.x}px ${s.y}px`;if(key==='frame')el.style.transform=`scale(${s.sx},${s.sy})`}sx.value=state.frame.sx;sy.value=state.frame.sy;sxText.textContent=state.frame.sx.toFixed(2);syText.textContent=state.frame.sy.toFixed(2);readout.textContent=`SELECTED ${selected.toUpperCase()}\nFRAME X ${state.frame.x.toFixed(2)} Y ${state.frame.y.toFixed(2)} SCALE X ${state.frame.sx.toFixed(2)} SCALE Y ${state.frame.sy.toFixed(2)}\nX VALUE X ${state.x.x.toFixed(2)} Y ${state.x.y.toFixed(2)}\nINVERTED V X ${state.lambda.x.toFixed(2)} Y ${state.lambda.y.toFixed(2)}\nY VALUE X ${state.y.x.toFixed(2)} Y ${state.y.y.toFixed(2)}`}
+function render(){build();apply()}
+function choose(key){selected=key;selectedEl.value=key;apply()}
+function move(dx,dy){state[selected].x=+(state[selected].x+dx).toFixed(2);state[selected].y=+(state[selected].y+dy).toFixed(2);apply()}
+function startDrag(e){e.preventDefault();const key=e.currentTarget.dataset.part;choose(key);drag={key,x:e.clientX,y:e.clientY,bx:state[key].x,by:state[key].y};e.currentTarget.setPointerCapture(e.pointerId);e.currentTarget.addEventListener('pointermove',dragMove);e.currentTarget.addEventListener('pointerup',dragEnd,{once:true});e.currentTarget.addEventListener('pointercancel',dragEnd,{once:true})}
+function dragMove(e){if(!drag)return;state[drag.key].x=+(drag.bx+e.clientX-drag.x).toFixed(2);state[drag.key].y=+(drag.by+e.clientY-drag.y).toFixed(2);apply()}
+function dragEnd(e){e.currentTarget.removeEventListener('pointermove',dragMove);drag=null}
+document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{const d=b.dataset.dir;if(d==='left')move(-step,0);if(d==='right')move(step,0);if(d==='up')move(0,-step);if(d==='down')move(0,step)});step.onclick=()=>{step=step===1?.25:step===.25?.1:1;document.getElementById('step').textContent=step+' PX'};selectedEl.onchange=()=>choose(selectedEl.value);frame.onchange=render;xValue.oninput=render;yValue.oninput=render;sx.oninput=()=>{choose('frame');state.frame.sx=+sx.value;apply()};sy.oninput=()=>{choose('frame');state.frame.sy=+sy.value;apply()};reset.onclick=()=>{state=JSON.parse(JSON.stringify(exact));frame.value='ICRSD';xValue.value=3599999;yValue.value=-900000;choose('frame');render()};render();
 })();
 </script>
 </body>
