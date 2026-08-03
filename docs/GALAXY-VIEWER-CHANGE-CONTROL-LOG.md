@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-00a3a1235a3d — Add files via upload
+
+**Recorded:** 2026-08-03T17:13:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`00a3a1235a3defc8b1b0387294e3d14315da8889`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/00a3a1235a3defc8b1b0387294e3d14315da8889)  
+**Parent/baseline:** `138fedd512e9da49a8a1b646cde142c5a9e8c48f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/138fedd512e9da49a8a1b646cde142c5a9e8c48f...00a3a1235a3defc8b1b0387294e3d14315da8889)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add files via upload
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007M.py` — additions: `267`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007M.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7K behavior and coordinate character definitions; add only two maximum-width coordinate test buttons for ICRSD and GAL screenshot auditing.
+```
+
+### Search tags
+
+`0007M`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
+
+---
 ## AUTO-d911fb02d306 — Launch corrected GV-beta-0007L-fixed from public beta app
 
 **Recorded:** 2026-08-03T17:08:03-05:00  
