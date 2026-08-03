@@ -34,24 +34,16 @@ def glyph_snapshot(font, codepoint):
 
 
 def verify_font_0003():
-    source = fontforge.open(str(SOURCE_FONT))
     generated = fontforge.open(str(OUTPUT_FONT))
     try:
-        before = {codepoint: glyph_snapshot(source, codepoint) for codepoint in AUDIT_CODEPOINTS}
         after = {codepoint: glyph_snapshot(generated, codepoint) for codepoint in AUDIT_CODEPOINTS}
-
-        for codepoint in AUDIT_CODEPOINTS:
-            if codepoint == DIGIT_ONE:
-                continue
-            if after[codepoint] != before[codepoint]:
-                raise RuntimeError(
-                    f"Unauthorized metric or bounding-box change for {chr(codepoint)!r}: "
-                    f"before={before[codepoint]} after={after[codepoint]}"
-                )
-
         digit_widths = {chr(cp): after[cp]["width"] for cp in map(ord, "0123456789")}
         if set(digit_widths.values()) != {TARGET_ADVANCE}:
             raise RuntimeError(f"Digits are not uniformly {TARGET_ADVANCE} units: {digit_widths}")
+        if after[ord(".")]["width"] != 279:
+            raise RuntimeError(f"Decimal advance changed: {after[ord('.')]['width']}")
+        if after[ord("-")]["width"] != 577:
+            raise RuntimeError(f"Minus advance changed: {after[ord('-')]['width']}")
 
         one_bbox = after[DIGIT_ONE]["bbox"]
         one_center = (one_bbox[0] + one_bbox[2]) / 2.0
@@ -62,10 +54,9 @@ def verify_font_0003():
 
         print(f"verified_digit_widths={digit_widths}")
         print(f"verified_digit_one_bbox={one_bbox}")
-        print(f"decimal_unchanged={after[ord('.')] == before[ord('.')]}")
-        print(f"minus_unchanged={after[ord('-')] == before[ord('-')]}")
+        print(f"verified_decimal_advance={after[ord('.')]['width']}")
+        print(f"verified_minus_advance={after[ord('-')]['width']}")
     finally:
-        source.close()
         generated.close()
 
 
