@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Flow Field Demonstration</title>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    touch-action: none;
+  }
+</style>
+</head>
+
+<body>
+<canvas
+  id="field"
+  aria-label="Procedural monochrome flow-field demonstration">
+</canvas>
+
+<script>
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('field');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  const CYCLE_MS = 8200;
+  const PAUSE_MS = 550;
+  const MAX_DPR = 1.5;
+
+  const COLS = 34;
+  const ROWS = 58;
+  const CROSS_EVERY = 17;
+
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+  let start = performance.now();
+  let particles = [];
+
+  const clamp = (value, minimum, maximum) =>
+    Math.max(minimum, Math.min(maximum, value));
+
+  const smooth = (startValue, endValue, value) => {
+    const x = clamp(
+      (value - startValue) / (endValue - startValue),
+      0,
+      1
+    );
+
+    return x * x * (3 - 2 * x);
+  };
+
+  function rebuild() {
+    dpr = Math.min(
+      window.devicePixelRatio || 1,
+      MAX_DPR
+    );
+
+    width = window.innerWidth;
+    height = window.innerHeight;
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+
+    ctx.setTransform(
+      dpr,
+      0,
+      0,
+      dpr,
+      0,
+      0
+    );
+
+    particles = [];
+
+    for (let row = 0; row < ROWS; row++) {
+      for (let column = 0; column < COLS; column++) {
+        const u = (column + 0.5) / COLS;
+        const v = (row + 0.5) / ROWS;
+
+        const jitterX =
+          (((row * 37 + column * 17) % 11) - 5)
+          / COLS
+          * 0.17;
+
+        const jitterY =
+          (((row * 19 + column * 29) % 13) - 6)
+          / ROWS
+          * 0.17;
+
+        particles.push({
+          u: clamp(u + jitterX, 0.01, 0.99),
+          v: clamp(v + jitterY, 0.01, 0.99),
+
+          cross:
+            ((row * COLS + column) % CROSS_EVERY)
+            === 0,
+
+          phase:
+            ((row * 13 + column * 7) % 31)
+            / 31
+        });
+      }
+    }
+  }
+
+  function transformPoint(particle, time) {
+    const aspect = width / height;
+
+    let x =
+      (particle.u - 0.5)
+      * aspect;
+
+    let y =
+      particle.v - 0.5;
+
+    const originalRadius =
+      Math.hypot(x, y);
+
+    const originalAngle =
+      Math.atan2(y, x);
+
+    const normalizedRadius =
+      clamp(
+        originalRadius / 0.72,
+        0,
+        1
+      );
+
+    const globalFlow =
+      smooth(
+        0.08,
+        0.79,
+        time
+      );
+
+    const finalCollapse =
+      smooth(
+        0.72,
+        0.94,
+        time
+      );
+
+    const releaseThreshold =
+      0.18
+      + 0.46
+      * normalizedRadius;
+
+    const radialRelease =
+      smooth(
+        releaseThreshold,
+        1.0,
+        globalFlow
+      );
+
+    const centralRegion =
+      1
+      - smooth(
+          0.0,
+          0.19,
+          normalizedRadius
+        );
+
+    const centerJoin =
+      smooth(
+        0.54,
+        0.70,
+        time
+      );
+
+    const participation =
+      Math.max(
+        radialRelease,
+        centralRegion * centerJoin
+      );
+
+    const centralTurns =
+      0.12
+      + 2.15
+      * globalFlow
+      * Math.exp(
+          -Math.pow(
+            originalRadius / 0.24,
+            2
+          )
+        );
+
+    const releasedTurns =
+      1.25
+      * Math.pow(
+          radialRelease,
+          1.18
+        )
+      * globalFlow
+      * (
+          0.45
+          + 0.55
+          * normalizedRadius
+        );
+
+    const angle =
+      originalAngle
+      - Math.PI
+      * 2
+      * (
+          centralTurns
+          + releasedTurns
+        )
+      * participation;
+
+    const inwardScale =
+      1
+      - (
+          0.74
+          * Math.pow(
+              participation,
+              1.38
+            )
+          * (
+              0.72
+              + 0.28
+              * normalizedRadius
+            )
+        );
+
+    const collapseScale =
+      Math.max(
+        0.006,
+        inwardScale
+        * (
+            1
+            - 0.994
+            * Math.pow(
+                finalCollapse,
+                4.8
+              )
+          )
+      );
+
+    const radius =
+      originalRadius
+      * collapseScale;
+
+    x =
+      Math.cos(angle)
+      * radius;
+
+    y =
+      Math.sin(angle)
+      * radius;
+
+    return {
+      x:
+        width * 0.5
+        + (x / aspect) * width,
+
+      y:
+        height * 0.5
+        + y * height,
+
+      radius,
+
+      alpha:
+        clamp(
+          1
+          - smooth(
+              0.90,
+              0.985,
+              time
+            ),
+          0,
+          1
+        )
+    };
+  }
+
+  function drawMarker(
+    x,
+    y,
+    isCross,
+    alpha,
+    pulse
+  ) {
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = '#ffffff';
+    ctx.fillStyle = '#ffffff';
+    ctx.lineWidth = 1;
+
+    if (isCross) {
+      const size =
+        2.7
+        + pulse * 1.2;
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x - size,
+        y
+      );
+
+      ctx.lineTo(
+        x + size,
+        y
+      );
+
+      ctx.moveTo(
+        x,
+        y - size
+      );
+
+      ctx.lineTo(
+        x,
+        y + size
+      );
+
+      ctx.stroke();
+    } else {
+      const radius =
+        0.85
+        + pulse * 0.5;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+    }
+  }
+
+  function frame(now) {
+    const elapsed =
+      (now - start)
+      % (
+          CYCLE_MS
+          + PAUSE_MS
+        );
+
+    const active =
+      elapsed < CYCLE_MS;
+
+    const time =
+      active
+        ? elapsed / CYCLE_MS
+        : 1;
+
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000000';
+
+    ctx.fillRect(
+      0,
+      0,
+      width,
+      height
+    );
+
+    if (active) {
+      for (const particle of particles) {
+        const point =
+          transformPoint(
+            particle,
+            time
+          );
+
+        const pulse =
+          0.5
+          + 0.5
+          * Math.sin(
+              (
+                time * 9
+                + particle.phase
+              )
+              * Math.PI
+              * 2
+            );
+
+        const centerFade =
+          clamp(
+            point.radius / 0.015,
+            0,
+            1
+          );
+
+        drawMarker(
+          point.x,
+          point.y,
+          particle.cross,
+          point.alpha * centerFade,
+          pulse
+        );
+      }
+
+      const singularityPulse =
+        smooth(
+          0.90,
+          0.94,
+          time
+        )
+        * (
+            1
+            - smooth(
+                0.94,
+                0.985,
+                time
+              )
+          );
+
+      if (singularityPulse > 0) {
+        ctx.globalAlpha =
+          singularityPulse;
+
+        ctx.fillStyle =
+          '#ffffff';
+
+        ctx.beginPath();
+
+        ctx.arc(
+          width * 0.5,
+          height * 0.5,
+          1.5
+          + 7
+          * singularityPulse,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.fill();
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener(
+    'resize',
+    rebuild,
+    { passive: true }
+  );
+
+  rebuild();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
