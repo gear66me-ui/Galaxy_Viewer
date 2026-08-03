@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-1e45803ae897 — Replace coordinate lab with exact 7E reference and adjustable copy
+
+**Recorded:** 2026-08-03T15:11:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1e45803ae8972ba3194dee978ebf3e8eabe29cfb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1e45803ae8972ba3194dee978ebf3e8eabe29cfb)  
+**Parent/baseline:** `1070cccc887a0cf785271e38b65e42f945191b93`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1070cccc887a0cf785271e38b65e42f945191b93...1e45803ae8972ba3194dee978ebf3e8eabe29cfb)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Replace coordinate lab with exact 7E reference and adjustable copy
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/coordinate-box/GV-coordinate-box-lab-0001.html` — additions: `37`, deletions: `216`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADJUSTABLE`, `AND`, `BOX`, `COORDINATE`, `COPY`, `EXACT`, `HTML`, `LAB`, `REFERENCE`, `REPLACE`, `VIEWER`, `WITH`
+
+---
 ## AUTO-f6f48e32917e — Add standalone coordinate box laboratory 0001
 
 **Recorded:** 2026-08-03T14:51:17-05:00  
