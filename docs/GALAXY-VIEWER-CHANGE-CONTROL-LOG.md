@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-2f040e086386 — Release 7F with two decimal coordinate frames and slower pulse
+
+**Recorded:** 2026-08-02T20:10:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2f040e0863869c8529547e51fffe7e08e47fc05f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2f040e0863869c8529547e51fffe7e08e47fc05f)  
+**Parent/baseline:** `9a4fc15d66a7b01b8c066c8e7b19aa56a73eec51`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9a4fc15d66a7b01b8c066c8e7b19aa56a73eec51...2f040e0863869c8529547e51fffe7e08e47fc05f)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Release 7F with two decimal coordinate frames and slower pulse
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0007F.py` — additions: `18`, deletions: `16`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007F.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7E behavior; retain only ICRSd and Galactic coordinate frames, use fixed decimal coordinate geometry at four decimal places, preserve the fixed uppercase lambda and #72A7E8 color, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007F`, `AND`, `BETA`, `COORDINATE`, `DECIMAL`, `FRAMES`, `PULSE`, `RELEASE`, `SLOWER`, `TWO`, `VIEWER`, `WITH`
+
+---
 ## AUTO-634b369a3d45 — Create standalone splash 0045 with four-point laser convergence finale
 
 **Recorded:** 2026-08-02T19:36:55-05:00  
