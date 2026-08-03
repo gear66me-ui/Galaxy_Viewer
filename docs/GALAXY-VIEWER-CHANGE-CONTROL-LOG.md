@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-946eda4cd077 — Limit all coordinate decimals to four places
+
+**Recorded:** 2026-08-02T19:08:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`946eda4cd07762ca1b15c9d51009c7e6993e7fb6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/946eda4cd07762ca1b15c9d51009c7e6993e7fb6)  
+**Parent/baseline:** `2a7a74eed4f1b9745e843769cc8401418118e813`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2a7a74eed4f1b9745e843769cc8401418118e813...946eda4cd07762ca1b15c9d51009c7e6993e7fb6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Limit all coordinate decimals to four places
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0007E.py` — additions: `2`, deletions: `1`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007E.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7C behavior; enlarge and center only the coordinate display, preserve the fixed 9px uppercase lambda and #72A7E8 color, reserve fixed coordinate geometry, and disable coordinate touch/focus/edit behavior.
+```
+
+### Search tags
+
+`0007E`, `ALL`, `BETA`, `COORDINATE`, `DECIMALS`, `FOUR`, `LIMIT`, `PLACES`, `VIEWER`
+
+---
 ## AUTO-0c7c0b7ab6a3 — Create standalone splash 0044 with enlarged spaced engraving
 
 **Recorded:** 2026-08-02T19:03:35-05:00  
