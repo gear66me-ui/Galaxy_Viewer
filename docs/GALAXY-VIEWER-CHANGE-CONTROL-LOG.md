@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-b6687c119b42 — Allow serialized outline rounding in 7J build
+
+**Recorded:** 2026-08-03T01:53:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b6687c119b42204768618cc1b4e5de0bb25649a6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b6687c119b42204768618cc1b4e5de0bb25649a6)  
+**Parent/baseline:** `28eb794f0c4d6eaeca7ef24f29db686eedebdbcc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/28eb794f0c4d6eaeca7ef24f29db686eedebdbcc...b6687c119b42204768618cc1b4e5de0bb25649a6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Allow serialized outline rounding in 7J build
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py` — additions: `1`, deletions: `8`
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py`**
+
+```text
+Authorized changes:
+"# GV-beta-0007I\n# Standalone Galaxy Viewer release created from the exact verified GV-beta-0007H baseline.\n# USER INSTRUCTION: Preserve all approved 7H behavior; reduce the frame-label region to 52 pixels, floor-align the 60 percent final D, and stabilize equal X/lambda/Y geometry.",
+"# GV-beta-0007J\n# Standalone Galaxy Viewer release created from the exact verified GV-beta-0007I baseline.\n# USER INSTRUCTION: Preserve all approved 7I behavior; use coordinate font 0003, equalize digit 1 width, anchor both decimal points, and remove value-driven horizontal scaling.",
+```
+
+### Search tags
+
+`ALLOW`, `ARTWORK`, `BUILD`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `OUTLINE`, `ROUNDING`, `SERIALIZED`, `VIEWER`
+
+---
 ## AUTO-6e1f3d333f68 — Use binary metric verification for viewer 7J build
 
 **Recorded:** 2026-08-03T01:51:03-05:00  
