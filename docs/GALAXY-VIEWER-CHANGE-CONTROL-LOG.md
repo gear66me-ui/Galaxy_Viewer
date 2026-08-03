@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-c884f7eaab8d — Add minus-only coordinate grid lab 0004
+
+**Recorded:** 2026-08-03T18:55:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c884f7eaab8d202e3cc5e88b72f81c0ab3d26fd3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c884f7eaab8d202e3cc5e88b72f81c0ab3d26fd3)  
+**Parent/baseline:** `d0b24b047b75e9ab9e4c96c03a52c05266e0cc0b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d0b24b047b75e9ab9e4c96c03a52c05266e0cc0b...c884f7eaab8d202e3cc5e88b72f81c0ab3d26fd3)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add minus-only coordinate grid lab 0004
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Coordinate-Grid/GV-Coordinate-Grid-0004.html` — additions: `457`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0004`, `ADD`, `ARTWORK`, `COORDINATE`, `GRID`, `HTML`, `LAB`, `MINUS`, `ONLY`, `VIEWER`
+
+---
 ## AUTO-d25573b39233 — Add fixed-pixel coordinate grid lab 0003
 
 **Recorded:** 2026-08-03T18:44:28-05:00  
