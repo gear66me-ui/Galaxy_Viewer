@@ -88,6 +88,41 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-833494345a6a — Create centered coordinate font 0004 builder
+
+**Recorded:** 2026-08-03T12:54:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`833494345a6a265825db808959984fd7848ca42e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/833494345a6a265825db808959984fd7848ca42e)  
+**Parent/baseline:** `5423ba4f21d7b631c32e525b478d6290280f73f9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5423ba4f21d7b631c32e525b478d6290280f73f9...833494345a6a265825db808959984fd7848ca42e)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create centered coordinate font 0004 builder
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Fonts/FontLab/build-coordinate-font-0004.py` — additions: `178`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Fonts/FontLab/build-coordinate-font-0004.py`**
+
+```text
+"# GV-beta-0007J\n# Standalone Galaxy Viewer release created from the exact verified GV-beta-0007I baseline.\n# USER INSTRUCTION: Preserve all approved 7I behavior; use coordinate font 0003, equalize digit 1 width, anchor both decimal points, and remove value-driven horizontal scaling.",
+"# GV-beta-0007K\n# Standalone Galaxy Viewer release created from the exact verified GV-beta-0007J baseline.\n# USER INSTRUCTION: Preserve all approved 7J behavior; use centered coordinate font 0004 and explicitly apply it to every numeric child span.",
+```
+
+### Search tags
+
+`0004`, `ARTWORK`, `BUILD`, `BUILDER`, `CENTERED`, `COORDINATE`, `CREATE`, `FONT`, `FONTLAB`, `FONTS`, `VIEWER`
+
+---
 ## AUTO-47cf6fdf497e — Create splash 0051 with velocity-matched three-turn target cyclone
 
 **Recorded:** 2026-08-03T12:32:03-05:00  
