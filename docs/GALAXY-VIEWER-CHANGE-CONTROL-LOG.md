@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-62232ef2e5bf — Create 7G with centered frame label and fixed four-decimal coordinates
+
+**Recorded:** 2026-08-02T20:27:02-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`62232ef2e5bfc1948ab9de4d7bdcf6bcc49a63da`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/62232ef2e5bfc1948ab9de4d7bdcf6bcc49a63da)  
+**Parent/baseline:** `58c4d848f32af6ef5e7ff47c379763575d77386a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/58c4d848f32af6ef5e7ff47c379763575d77386a...62232ef2e5bfc1948ab9de4d7bdcf6bcc49a63da)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create 7G with centered frame label and fixed four-decimal coordinates
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007G.py` — additions: `186`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007G.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7F behavior; center the ICRSd/GAL frame label within its fixed region, place the half-height separator at that region edge, center lambda in the remaining coordinate region, and display exactly four decimal places.
+```
+
+### Search tags
+
+`0007G`, `AND`, `BETA`, `CENTERED`, `COORDINATES`, `CREATE`, `DECIMAL`, `FIXED`, `FOUR`, `FRAME`, `LABEL`, `VIEWER`, `WITH`
+
+---
 ## AUTO-f8117efd0dae — Create splash 0046 with refined name spacing
 
 **Recorded:** 2026-08-02T20:12:53-05:00  
