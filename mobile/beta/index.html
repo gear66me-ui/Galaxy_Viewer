@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 7K">
-<title>GALAXY VIEWER 7K — MOBILE APP BETA</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 7L">
+<title>GALAXY VIEWER 7L — MOBILE APP BETA</title>
 <link rel="manifest" href="./manifest.webmanifest?v=7K-centered-coordinate-digits-001">
 <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001">
@@ -39,7 +39,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 <body>
 <div id="gv-splash-stage" class="gv-startup-stage">
   <img src="../../viewer/artwork/Splash/Galaxy%20Splash%20Ibis%20Galactic%20by%20GA.png?v=7K-centered-coordinate-digits-001" alt="GALAXY VIEWER SPLASH ARTWORK">
-  <div class="gv-startup-message"><span>GALAXY VIEWER BETA 7K · LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
+  <div class="gv-startup-message"><span>GALAXY VIEWER BETA 7L · LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
 <section id="gv-diagnostics" hidden aria-label="GALAXY VIEWER ENGINEERING DIAGNOSTICS">
@@ -158,22 +158,24 @@ if (__earlyDiag) {
   try{
     const viewerReady=(async()=>{
       await checkpoint('FETCH STARTED');
-      const response=await fetch('../../viewer/GV-beta-0007K.py?v='+Date.now(),{cache:'no-store'});
+      const response=await fetch('../../viewer/GV-beta-0007L.py?v=eb3563f1ff5f0bc232faa537d4b5e3ae44652c05',{cache:'no-store'});
       await checkpoint('HTTP RESPONSE RECEIVED',`HTTP ${response.status}`);
-      if(!response.ok)throw new Error(`GV-BETA-0007K.PY RETURNED HTTP ${response.status}`);
+      if(!response.ok)throw new Error(`GV-BETA-0007L.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
       await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
-      const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
-      if(!htmlMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 7K STANDALONE VIEWER HTML.');
+      const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
+      if(!htmlMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7L STANDALONE VIEWER HTML.');
       await checkpoint('HTML EXTRACTED');
-      const jsMatch=source.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
-      if(!jsMatch)throw new Error('COULD NOT EXTRACT THE VERIFIED 7K STANDALONE VIEWER JAVASCRIPT.');
+      const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
+      if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7L STANDALONE VIEWER JAVASCRIPT.');
       await checkpoint('JAVASCRIPT EXTRACTED');
-      document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
+      htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
       await checkpoint('HTML INSERTED');
-      const script=document.createElement('script');
-      script.textContent=jsMatch[1];
-      document.body.appendChild(script);
+      jsMatches.forEach(match=>{
+        const script=document.createElement('script');
+        script.textContent=match[1];
+        document.body.appendChild(script);
+      });
       await checkpoint('JAVASCRIPT INJECTED');
       await checkpoint('ALADIN INITIALIZATION');
       await checkpoint('WAITING FOR CANVAS');
@@ -186,8 +188,8 @@ if (__earlyDiag) {
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('GALAXY VIEWER 7K MOBILE BETA STARTUP FAILURE',error);
-    try{localStorage.setItem('gv-beta-launch-failure','7K');}catch(_){ }
+    console.error('GALAXY VIEWER 7L MOBILE BETA STARTUP FAILURE',error);
+    try{localStorage.setItem('gv-beta-launch-failure','7L');}catch(_){ }
     appendDiagnostic('APP FAILED TO LOAD',error);
     showError('APP FAILED TO LOAD');
     return;
