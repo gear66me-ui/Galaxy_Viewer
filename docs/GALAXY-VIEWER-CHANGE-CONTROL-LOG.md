@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-2dea41d67f69 — Generate viewer 7J from exact 7I baseline
+
+**Recorded:** 2026-08-03T01:49:21-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2dea41d67f69e6f8080cc69c07cd16f5ed781574`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2dea41d67f69e6f8080cc69c07cd16f5ed781574)  
+**Parent/baseline:** `7259535ed746e048e7fab0d1eaca182aecb950ce`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7259535ed746e048e7fab0d1eaca182aecb950ce...2dea41d67f69e6f8080cc69c07cd16f5ed781574)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Generate viewer 7J from exact 7I baseline
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py` — additions: `145`, deletions: `67`
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py`**
+
+```text
+Authorized changes:
+"# GV-beta-0007I\n# Standalone Galaxy Viewer release created from the exact verified GV-beta-0007H baseline.\n# USER INSTRUCTION: Preserve all approved 7H behavior; reduce the frame-label region to 52 pixels, floor-align the 60 percent final D, and stabilize equal X/lambda/Y geometry.",
+"# GV-beta-0007J\n# Standalone Galaxy Viewer release created from the exact verified GV-beta-0007I baseline.\n# USER INSTRUCTION: Preserve all approved 7I behavior; use coordinate font 0003, equalize digit 1 width, anchor both decimal points, and remove value-driven horizontal scaling.",
+```
+
+### Search tags
+
+`ARTWORK`, `BASELINE`, `BUILD`, `COORDINATE`, `EXACT`, `FONT`, `FONTLAB`, `FONTS`, `FROM`, `GENERATE`, `VIEWER`
+
+---
 ## AUTO-15c10aabd6e5 — Extend coordinate font 0003 workflow for 7J
 
 **Recorded:** 2026-08-03T01:48:22-05:00  
