@@ -123,3 +123,5 @@ if __name__ == "__main__":
     except Exception as error:
         print(f"ERROR: {error}", file=sys.stderr)
         raise
+
+# Workflow trigger: build coordinate font 0003 from the verified 0002 source.
