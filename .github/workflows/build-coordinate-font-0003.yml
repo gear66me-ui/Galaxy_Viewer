@@ -1,4 +1,4 @@
-name: Build Coordinate Font 0003
+name: Build Coordinate Font 0003 And Viewer 7J
 
 on:
   workflow_dispatch:
@@ -7,13 +7,12 @@ on:
       - beta
     paths:
       - viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
-      - .github/workflows/build-coordinate-font-0003.yml
 
 permissions:
   contents: write
 
 jobs:
-  build-coordinate-font-0003:
+  build-coordinate-font-0003-and-viewer-7j:
     runs-on: ubuntu-latest
     steps:
       - name: Check out beta
@@ -27,12 +26,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y fontforge python3-fontforge
 
-      - name: Confirm protected source font
+      - name: Confirm protected baselines
         run: |
           test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0002.otf"
-          test ! -e "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
+          test -s viewer/GV-beta-0007I.py
+          test ! -e viewer/GV-beta-0007J.py
 
-      - name: Build coordinate font 0003
+      - name: Build coordinate font 0003 and viewer 7J
         run: |
           /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
 
@@ -41,14 +41,26 @@ jobs:
           test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
           fontforge -lang=py -c 'import fontforge; f=fontforge.open("viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"); widths={chr(c):int(round(f[c].width)) for c in range(ord("0"),ord("9")+1)}; print("glyphs",len(f)); print("digit_widths",widths); assert set(widths.values())=={670}; assert int(round(f[ord(".")].width))==279; assert int(round(f[ord("-")].width))==577; f.close()'
 
-      - name: Commit generated binary font
+      - name: Verify generated viewer 7J
+        run: |
+          test -s viewer/GV-beta-0007J.py
+          grep -F 'GV-Coordinate-Digits-0003.otf' viewer/GV-beta-0007J.py
+          grep -F 'gv-coordinate-integer' viewer/GV-beta-0007J.py
+          grep -F 'gv-coordinate-decimal' viewer/GV-beta-0007J.py
+          grep -F 'gv-coordinate-fraction' viewer/GV-beta-0007J.py
+          grep -F 'versionLabel.textContent="V-7J"' viewer/GV-beta-0007J.py
+          ! grep -F 'available/needed' viewer/GV-beta-0007J.py
+
+      - name: Commit generated release files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
+          git add -- \
+            "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf" \
+            viewer/GV-beta-0007J.py
           if git diff --cached --quiet; then
-            echo "Generated font is unchanged."
+            echo "Generated release files are unchanged."
           else
-            git commit -m "Build coordinate font 0003"
+            git commit -m "Build coordinate font 0003 and viewer 7J"
             git push origin beta
           fi
