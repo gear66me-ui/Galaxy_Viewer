@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-868dc356bb19 — Create 7H with compact frame label and 60 percent final D
+
+**Recorded:** 2026-08-02T20:56:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`868dc356bb19ddafb720ddfb45132f468c65fb45`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/868dc356bb19ddafb720ddfb45132f468c65fb45)  
+**Parent/baseline:** `40180e4415742f54483b7bdef2d2f4cab3677992`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/40180e4415742f54483b7bdef2d2f4cab3677992...868dc356bb19ddafb720ddfb45132f468c65fb45)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create 7H with compact frame label and 60 percent final D
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007H.py` — additions: `187`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007H.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7G behavior; tighten the frame-label region, render only the final D in ICRSD at 60 percent, and add equal X/Y clipping safety insets.
+```
+
+### Search tags
+
+`0007H`, `AND`, `BETA`, `COMPACT`, `CREATE`, `FINAL`, `FRAME`, `LABEL`, `PERCENT`, `VIEWER`, `WITH`
+
+---
 ## AUTO-7d712074410d — Create experimental splash 0047 with elastic reticle funnel
 
 **Recorded:** 2026-08-02T20:32:25-05:00  
