@@ -34,15 +34,43 @@ jobs:
           test ! -e viewer/GV-beta-0007J.py
 
       - name: Build coordinate font 0003 and viewer 7J
+        id: build
         run: |
-          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
+          set +e
+          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py > /tmp/gv-7j-build.log 2>&1
+          status=$?
+          cat /tmp/gv-7j-build.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Record exact build failure
+        if: steps.build.outputs.status != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin beta
+          {
+            echo
+            echo "# 7J_BUILD_FAILURE_BEGIN"
+            sed 's/^/# /' /tmp/gv-7j-build.log
+            echo "# 7J_BUILD_FAILURE_END"
+          } >> viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
+          git add -- viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
+          git commit -m "[skip ci] Record exact 7J build failure"
+          git push origin beta
+
+      - name: Stop after recorded failure
+        if: steps.build.outputs.status != '0'
+        run: exit 1
 
       - name: Verify generated OTF
+        if: steps.build.outputs.status == '0'
         run: |
           test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
           fontforge -lang=py -c 'import fontforge; f=fontforge.open("viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"); widths={chr(c):int(round(f[c].width)) for c in range(ord("0"),ord("9")+1)}; print("glyphs",len(f)); print("digit_widths",widths); assert set(widths.values())=={670}; assert int(round(f[ord(".")].width))==279; assert int(round(f[ord("-")].width))==577; f.close()'
 
       - name: Verify generated viewer 7J
+        if: steps.build.outputs.status == '0'
         run: |
           test -s viewer/GV-beta-0007J.py
           grep -F 'GV-Coordinate-Digits-0003.otf' viewer/GV-beta-0007J.py
@@ -53,6 +81,7 @@ jobs:
           ! grep -F 'available/needed' viewer/GV-beta-0007J.py
 
       - name: Commit generated release files
+        if: steps.build.outputs.status == '0'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
