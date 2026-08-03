@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-8cfeb87e0023 — Remove failed GV-beta-0007L test launcher
+
+**Recorded:** 2026-08-03T15:58:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8cfeb87e002347b2dddd7c8db536b351cc269a50`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8cfeb87e002347b2dddd7c8db536b351cc269a50)  
+**Parent/baseline:** `c1a9b09786797420ad4c7bfe78b0c258707ef701`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c1a9b09786797420ad4c7bfe78b0c258707ef701...8cfeb87e002347b2dddd7c8db536b351cc269a50)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Remove failed GV-beta-0007L test launcher
+```
+
+### Changed paths
+
+- **DELETED:** `mobile/test/GV-beta-0007L.html` — additions: `0`, deletions: `48`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007L`, `BETA`, `FAILED`, `HTML`, `LAUNCHER`, `MOBILE`, `REMOVE`, `TEST`
+
+---
 ## AUTO-f656903cb42e — Create direct Android launcher for GV-beta-0007L
 
 **Recorded:** 2026-08-03T15:55:22-05:00  
