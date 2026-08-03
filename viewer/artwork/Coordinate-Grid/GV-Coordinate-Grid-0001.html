@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Coordinate Grid 0001</title>
+<style>
+@font-face{
+  font-family:"Space Age";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf?v=6R-space-age-regular-001") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+@font-face{
+  font-family:"GV Coordinate Digits";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0004.otf?v=7K-centered-coordinate-digits-0004") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+:root{
+  /* Exact authorized 290 px field structure. */
+  --field-frame:54px;
+  --field-separator:6px;
+  --field-x:100px;
+  --field-x-space:10px;
+  --field-lambda:9px;
+  --field-lambda-space:11px;
+  --field-y:93px;
+  --field-right-space:7px;
+
+  /* Independent content offsets; all begin at exact center. */
+  --frame-offset-x:0px;
+  --separator-offset-x:0px;
+  --x-offset-x:0px;
+  --lambda-offset-x:0px;
+  --y-offset-x:0px;
+
+  --tile-width:290px;
+  --tile-height:36px;
+  --tile-border:#D7F4FF;
+  --coordinate-color:#72A7E8;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  min-width:100%;
+  min-height:100%;
+  background:#000;
+  color:#fff;
+  font-family:"Space Age",sans-serif;
+}
+body{
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+.gv-coordinate-lab{
+  display:grid;
+  gap:18px;
+  justify-items:center;
+}
+.gv-coordinate-tile{
+  position:relative;
+  width:var(--tile-width);
+  min-width:var(--tile-width);
+  max-width:var(--tile-width);
+  height:var(--tile-height);
+  min-height:var(--tile-height);
+  max-height:var(--tile-height);
+  display:grid;
+  grid-template-columns:
+    var(--field-frame)
+    var(--field-separator)
+    var(--field-x)
+    var(--field-x-space)
+    var(--field-lambda)
+    var(--field-lambda-space)
+    var(--field-y)
+    var(--field-right-space);
+  align-items:center;
+  overflow:visible;
+  background:rgba(0,0,0,.86);
+  border-radius:6px;
+  box-shadow:inset 0 0 0 1px var(--tile-border),0 0 10px rgba(98,216,255,.44);
+  color:var(--coordinate-color);
+}
+.gv-field{
+  position:relative;
+  height:36px;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:visible;
+}
+/* Faint diagnostic boundaries. The inset outer border remains #D7F4FF. */
+.gv-field:nth-child(1){box-shadow:inset -1px 0 rgba(255,91,91,.40)}
+.gv-field:nth-child(2){box-shadow:inset -1px 0 rgba(255,190,80,.40)}
+.gv-field:nth-child(3){box-shadow:inset -1px 0 rgba(255,238,88,.40)}
+.gv-field:nth-child(4){box-shadow:inset -1px 0 rgba(100,255,133,.40)}
+.gv-field:nth-child(5){box-shadow:inset -1px 0 rgba(74,225,255,.40)}
+.gv-field:nth-child(6){box-shadow:inset -1px 0 rgba(105,132,255,.40)}
+.gv-field:nth-child(7){box-shadow:inset -1px 0 rgba(194,103,255,.40)}
+.gv-field:nth-child(8){box-shadow:none}
+.gv-frame-label{
+  display:inline-flex;
+  align-items:baseline;
+  justify-content:center;
+  column-gap:.8px;
+  font:400 12.5px/1 "Space Age",sans-serif;
+  white-space:nowrap;
+  transform:translateX(var(--frame-offset-x));
+  transform-origin:center;
+  text-transform:none;
+}
+.gv-frame-glyph{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transform:scaleY(1.1);
+  transform-origin:center;
+}
+.gv-frame-small-d{
+  font-size:60%;
+  line-height:1;
+  align-self:baseline;
+  transform:scaleY(1.1);
+  transform-origin:left bottom;
+}
+.gv-short-separator{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:1px;
+  height:15px;
+  background:rgba(114,167,232,.58);
+  transform:translate(calc(-50% + var(--separator-offset-x)),-50%);
+}
+.gv-coordinate-axis{
+  position:relative;
+  display:grid;
+  grid-template-columns:2.01em .279em 2.68em;
+  align-items:center;
+  width:4.969em;
+  min-width:4.969em;
+  max-width:4.969em;
+  height:30px;
+  overflow:visible;
+  font:400 20px/30px "GV Coordinate Digits",sans-serif;
+  font-variant-numeric:normal;
+  font-feature-settings:normal;
+  letter-spacing:0;
+  white-space:nowrap;
+}
+.gv-coordinate-axis-x{transform:translateX(var(--x-offset-x))}
+.gv-coordinate-axis-y{transform:translateX(var(--y-offset-x))}
+.gv-coordinate-integer{
+  grid-column:1;
+  display:block;
+  min-width:0;
+  text-align:right;
+  white-space:nowrap;
+}
+.gv-coordinate-decimal{
+  grid-column:2;
+  display:block;
+  width:.279em;
+  text-align:center;
+  white-space:nowrap;
+}
+.gv-coordinate-fraction{
+  grid-column:3;
+  display:grid;
+  grid-template-columns:repeat(4,.670em);
+  width:2.68em;
+  text-align:left;
+  white-space:nowrap;
+}
+.gv-coordinate-glyph{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:30px;
+  line-height:30px;
+  transform:scaleY(1.15);
+  transform-origin:center;
+  overflow:visible;
+}
+.gv-lambda-anchor{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:9px;
+  height:30px;
+  transform:translate(calc(-50% + var(--lambda-offset-x)),-50%);
+  font:400 9px/30px Arial,sans-serif;
+}
+.gv-lambda-anchor .gv-lambda{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  line-height:30px;
+}
+.gv-note{
+  max-width:520px;
+  color:#D7F4FF;
+  font:400 10px/1.5 "Space Age",sans-serif;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+<main class="gv-coordinate-lab">
+  <div class="gv-coordinate-tile" role="img" aria-label="290 pixel ICRSD coordinate field grid">
+    <div class="gv-field">
+      <span class="gv-frame-label" aria-hidden="true">
+        <span class="gv-frame-glyph">I</span><span class="gv-frame-glyph">C</span><span class="gv-frame-glyph">R</span><span class="gv-frame-glyph">S</span><span class="gv-frame-glyph gv-frame-small-d">D</span>
+      </span>
+    </div>
+    <div class="gv-field"><span class="gv-short-separator" aria-hidden="true"></span></div>
+    <div class="gv-field">
+      <span class="gv-coordinate-axis gv-coordinate-axis-x" aria-hidden="true">
+        <span class="gv-coordinate-integer"><span class="gv-coordinate-glyph">3</span><span class="gv-coordinate-glyph">5</span><span class="gv-coordinate-glyph">9</span></span>
+        <span class="gv-coordinate-decimal"><span class="gv-coordinate-glyph">.</span></span>
+        <span class="gv-coordinate-fraction"><span class="gv-coordinate-glyph">9</span><span class="gv-coordinate-glyph">9</span><span class="gv-coordinate-glyph">9</span><span class="gv-coordinate-glyph">9</span></span>
+      </span>
+    </div>
+    <div class="gv-field"></div>
+    <div class="gv-field"><span class="gv-lambda-anchor" aria-hidden="true"><span class="gv-lambda">Λ</span></span></div>
+    <div class="gv-field"></div>
+    <div class="gv-field">
+      <span class="gv-coordinate-axis gv-coordinate-axis-y" aria-hidden="true">
+        <span class="gv-coordinate-integer"><span class="gv-coordinate-glyph">-</span><span class="gv-coordinate-glyph">9</span><span class="gv-coordinate-glyph">0</span></span>
+        <span class="gv-coordinate-decimal"><span class="gv-coordinate-glyph">.</span></span>
+        <span class="gv-coordinate-fraction"><span class="gv-coordinate-glyph">0</span><span class="gv-coordinate-glyph">0</span><span class="gv-coordinate-glyph">0</span><span class="gv-coordinate-glyph">0</span></span>
+      </span>
+    </div>
+    <div class="gv-field"></div>
+  </div>
+  <div class="gv-note">54 + 6 + 100 + 10 + 9 + 11 + 93 + 7 = 290 PX · DECIMAL POINTS ARE FIXED ANCHORS</div>
+</main>
+</body>
+</html>
