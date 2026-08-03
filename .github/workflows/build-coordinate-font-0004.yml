@@ -1,0 +1,75 @@
+name: Build Coordinate Font 0004 And Viewer 7K
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - viewer/artwork/Fonts/FontLab/build-coordinate-font-0004.py
+      - .github/workflows/build-coordinate-font-0004.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-coordinate-font-0004-and-viewer-7k:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install FontForge
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fontforge python3-fontforge
+
+      - name: Confirm protected baselines and empty destinations
+        run: |
+          test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
+          test -s viewer/GV-beta-0007J.py
+          test ! -e "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0004.otf"
+          test ! -e viewer/GV-beta-0007K.py
+
+      - name: Build and verify O4 and 7K
+        run: |
+          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0004.py | tee /tmp/gv-7k-build.log
+
+      - name: Verify generated font independently
+        run: |
+          test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0004.otf"
+          fontforge -lang=py -c '
+          import fontforge
+          f=fontforge.open("viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0004.otf")
+          for c in "0123456789":
+              g=f[ord(c)]; b=g.boundingBox(); e=((b[0]+b[2])/2.0)-(g.width/2.0)
+              print(c, "width", g.width, "bbox", b, "center_error", e)
+              assert int(round(g.width))==670 and abs(e)<=0.5
+          g=f[ord(".")]; b=g.boundingBox(); e=((b[0]+b[2])/2.0)-(g.width/2.0)
+          print(".", "width", g.width, "bbox", b, "center_error", e)
+          assert int(round(g.width))==279 and abs(e)<=0.5
+          assert int(round(f[ord("-")].width))==577
+          f.close()'
+
+      - name: Verify generated viewer 7K
+        run: |
+          test -s viewer/GV-beta-0007K.py
+          grep -F 'GV-Coordinate-Digits-0004.otf?v=7K-centered-coordinate-digits-0004' viewer/GV-beta-0007K.py
+          test "$(grep -o 'font-family:\"GV Coordinate Digits\",sans-serif!important' viewer/GV-beta-0007K.py | wc -l)" -ge 4
+          grep -F 'versionLabel.textContent="V-7K"' viewer/GV-beta-0007K.py
+          ! grep -F 'GV-Coordinate-Digits-0003.otf?v=7J-coordinate-digits-0003' viewer/GV-beta-0007K.py
+          ! grep -F 'available/needed' viewer/GV-beta-0007K.py
+
+      - name: Commit generated release files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin beta
+          git add -- \
+            "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0004.otf" \
+            viewer/GV-beta-0007K.py
+          git commit -m "Build centered coordinate font 0004 and viewer 7K"
+          git push origin beta
