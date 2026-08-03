@@ -55,6 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin beta
           git add -- \
             "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf" \
             viewer/GV-beta-0007J.py
