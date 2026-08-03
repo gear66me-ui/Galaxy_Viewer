@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-6671bf1285fd — Launch GV-beta-0007M from public beta app
+
+**Recorded:** 2026-08-03T17:14:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6671bf1285fd082afda337103bf8b1b989df811e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6671bf1285fd082afda337103bf8b1b989df811e)  
+**Parent/baseline:** `c7bdfe8817c648a4842045774756e48bd9cc1fd0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c7bdfe8817c648a4842045774756e48bd9cc1fd0...6671bf1285fd082afda337103bf8b1b989df811e)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Launch GV-beta-0007M from public beta app
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007M`, `APP`, `BETA`, `FROM`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `PUBLIC`
+
+---
 ## AUTO-00a3a1235a3d — Add files via upload
 
 **Recorded:** 2026-08-03T17:13:14-05:00  
