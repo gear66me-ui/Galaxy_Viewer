@@ -1,0 +1,54 @@
+name: Build Coordinate Font 0003
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
+      - .github/workflows/build-coordinate-font-0003.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-coordinate-font-0003:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install FontForge
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fontforge python3-fontforge
+
+      - name: Confirm protected source font
+        run: |
+          test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0002.otf"
+          test ! -e "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
+
+      - name: Build coordinate font 0003
+        run: |
+          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0003.py
+
+      - name: Verify generated OTF
+        run: |
+          test -s "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
+          fontforge -lang=py -c 'import fontforge; f=fontforge.open("viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"); widths={chr(c):int(round(f[c].width)) for c in range(ord("0"),ord("9")+1)}; print("glyphs",len(f)); print("digit_widths",widths); assert set(widths.values())=={670}; assert int(round(f[ord(".")].width))==279; assert int(round(f[ord("-")].width))==577; f.close()'
+
+      - name: Commit generated binary font
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0003.otf"
+          if git diff --cached --quiet; then
+            echo "Generated font is unchanged."
+          else
+            git commit -m "Build coordinate font 0003"
+            git push origin beta
+          fi
