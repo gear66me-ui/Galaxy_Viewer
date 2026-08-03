@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-9b0c771bf02c — Create standalone CFD flow-field demonstration
+
+**Recorded:** 2026-08-03T17:22:19-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9b0c771bf02c91ce329f5f2d26f837be56642033`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9b0c771bf02c91ce329f5f2d26f837be56642033)  
+**Parent/baseline:** `2f336c6cc031d42316040fe3f8c6492256503a47`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2f336c6cc031d42316040fe3f8c6492256503a47...9b0c771bf02c91ce329f5f2d26f837be56642033)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create standalone CFD flow-field demonstration
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Splash/Galaxy-Viewer-CFD-Flow-Field-Demonstration-0001.html` — additions: `468`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ARTWORK`, `CFD`, `CREATE`, `DEMONSTRATION`, `FIELD`, `FLOW`, `GALAXY`, `HTML`, `SPLASH`, `STANDALONE`, `VIEWER`
+
+---
 ## AUTO-6671bf1285fd — Launch GV-beta-0007M from public beta app
 
 **Recorded:** 2026-08-03T17:14:42-05:00  
