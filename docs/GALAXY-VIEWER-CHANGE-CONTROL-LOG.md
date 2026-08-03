@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-d1809346fcf8 — Create 7I with compact stable X lambda Y geometry
+
+**Recorded:** 2026-08-03T00:27:20-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d1809346fcf8e3b445640404e4a27be7d19f5ca6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d1809346fcf8e3b445640404e4a27be7d19f5ca6)  
+**Parent/baseline:** `38ed715d093eefb4a584b3d45c15cff081a6ff80`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/38ed715d093eefb4a584b3d45c15cff081a6ff80...d1809346fcf8e3b445640404e4a27be7d19f5ca6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create 7I with compact stable X lambda Y geometry
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007I.py` — additions: `187`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007I.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7H behavior; reduce the frame-label region to 52 pixels, floor-align the 60 percent final D, and stabilize equal X/lambda/Y geometry.
+```
+
+### Search tags
+
+`0007I`, `BETA`, `COMPACT`, `CREATE`, `GEOMETRY`, `LAMBDA`, `STABLE`, `VIEWER`, `WITH`
+
+---
 ## AUTO-f4e5b77e9f05 — Create original target frame inspection lab 0048
 
 **Recorded:** 2026-08-02T20:57:13-05:00  
