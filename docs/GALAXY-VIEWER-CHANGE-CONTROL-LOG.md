@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-ee547ec0bcec — Restore runnable 7L launcher with all test scripts
+
+**Recorded:** 2026-08-03T16:14:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ee547ec0bcec2a7ecfd8d15337f491ff2cbb2bf7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ee547ec0bcec2a7ecfd8d15337f491ff2cbb2bf7)  
+**Parent/baseline:** `01149bfacb59238d00a6e11bcb4e81ae3fe2446a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/01149bfacb59238d00a6e11bcb4e81ae3fe2446a...ee547ec0bcec2a7ecfd8d15337f491ff2cbb2bf7)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Restore runnable 7L launcher with all test scripts
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/test/GV-beta-0007L.html` — additions: `50`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007L`, `ALL`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `RESTORE`, `RUNNABLE`, `SCRIPTS`, `TEST`, `WITH`
+
+---
 ## AUTO-8cfeb87e0023 — Remove failed GV-beta-0007L test launcher
 
 **Recorded:** 2026-08-03T15:58:39-05:00  
