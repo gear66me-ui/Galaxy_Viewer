@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-5f30b16ce194 — Launch Galaxy Viewer beta 7F with larger version marquee
+
+**Recorded:** 2026-08-02T20:11:13-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5f30b16ce194d9541daab442ab0637698a0a88ec`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5f30b16ce194d9541daab442ab0637698a0a88ec)  
+**Parent/baseline:** `14182e16966335d4df77d73b581fbcb20665c30e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/14182e16966335d4df77d73b581fbcb20665c30e...5f30b16ce194d9541daab442ab0637698a0a88ec)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Launch Galaxy Viewer beta 7F with larger version marquee
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `16`, deletions: `16`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `GALAXY`, `HTML`, `INDEX`, `LARGER`, `LAUNCH`, `MARQUEE`, `MOBILE`, `VERSION`, `VIEWER`, `WITH`
+
+---
 ## AUTO-2f040e086386 — Release 7F with two decimal coordinate frames and slower pulse
 
 **Recorded:** 2026-08-02T20:10:40-05:00  
