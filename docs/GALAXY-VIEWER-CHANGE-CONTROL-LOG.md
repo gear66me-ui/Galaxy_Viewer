@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-de0eebd53a58 — Add files via upload
+
+**Recorded:** 2026-08-03T17:01:56-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`de0eebd53a58828ca24ffbee0c3aedf04af90624`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/de0eebd53a58828ca24ffbee0c3aedf04af90624)  
+**Parent/baseline:** `480bec95870c5485eb39da1aec550b2ed26ae848`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/480bec95870c5485eb39da1aec550b2ed26ae848...de0eebd53a58828ca24ffbee0c3aedf04af90624)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add files via upload
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007L-fixed.py` — additions: `255`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007L-fixed.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7K behavior and coordinate character definitions; add only two maximum-width coordinate test buttons for ICRSD and GAL screenshot auditing.
+```
+
+### Search tags
+
+`0007L`, `ADD`, `BETA`, `FILES`, `FIXED`, `UPLOAD`, `VIA`, `VIEWER`
+
+---
 ## AUTO-7832c0c28816 — Create splash 0055 with corrected pre-message convergence timing
 
 **Recorded:** 2026-08-03T16:23:27-05:00  
