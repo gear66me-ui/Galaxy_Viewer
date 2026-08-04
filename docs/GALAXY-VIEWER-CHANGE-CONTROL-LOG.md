@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-6e9dad54c83a — Add 290px coordinate grid lab 0005 for 390px layouts
+
+**Recorded:** 2026-08-03T19:28:13-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6e9dad54c83a3525882a2444261c0889ef7a8864`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6e9dad54c83a3525882a2444261c0889ef7a8864)  
+**Parent/baseline:** `99db7613c751c72d10cfbbf178854c6c0b0082f8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/99db7613c751c72d10cfbbf178854c6c0b0082f8...6e9dad54c83a3525882a2444261c0889ef7a8864)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add 290px coordinate grid lab 0005 for 390px layouts
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Coordinate-Grid/GV-Coordinate-Grid-0005.html` — additions: `458`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0005`, `290PX`, `390PX`, `ADD`, `ARTWORK`, `COORDINATE`, `FOR`, `GRID`, `HTML`, `LAB`, `LAYOUTS`, `VIEWER`
+
+---
 ## AUTO-c884f7eaab8d — Add minus-only coordinate grid lab 0004
 
 **Recorded:** 2026-08-03T18:55:06-05:00  
