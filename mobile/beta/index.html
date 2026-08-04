@@ -158,7 +158,7 @@ if (__earlyDiag) {
   try{
     const viewerReady=(async()=>{
       await checkpoint('FETCH STARTED');
-      const response=await fetch('../../viewer/GV-beta-0007N.py?v=f5307df5517277ffee7a4d8452292cab17649fbf',{cache:'no-store'});
+      const response=await fetch('../../viewer/GV-beta-0007O.py?v=267335fe64de791b17dc22ad0e4b63f8370d1b24',{cache:'no-store'});
       await checkpoint('HTTP RESPONSE RECEIVED',`HTTP ${response.status}`);
       if(!response.ok)throw new Error(`GV-BETA-0007L.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
