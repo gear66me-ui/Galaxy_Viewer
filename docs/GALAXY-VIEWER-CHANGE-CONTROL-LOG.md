@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-78e12a6a965e — Point beta launcher to GV-beta-0007O
+
+**Recorded:** 2026-08-04T00:53:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`78e12a6a965ef279008d795e3a804bf440281274`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/78e12a6a965ef279008d795e3a804bf440281274)  
+**Parent/baseline:** `875f6e4d430a38b572e797305c32ca3a36205f40`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/875f6e4d430a38b572e797305c32ca3a36205f40...78e12a6a965ef279008d795e3a804bf440281274)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Point beta launcher to GV-beta-0007O
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007O`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
+
+---
 ## AUTO-ad808d0d6252 — Create 7O with hardened coordinate module 0002
 
 **Recorded:** 2026-08-04T00:52:50-05:00  
