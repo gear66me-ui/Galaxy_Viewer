@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-ad808d0d6252 — Create 7O with hardened coordinate module 0002
+
+**Recorded:** 2026-08-04T00:52:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ad808d0d6252a56c9a1d3f8520df9e27f9bcd015`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ad808d0d6252a56c9a1d3f8520df9e27f9bcd015)  
+**Parent/baseline:** `7404a2c91cda63f7ccbaaa054a1e042704277284`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7404a2c91cda63f7ccbaaa054a1e042704277284...ad808d0d6252a56c9a1d3f8520df9e27f9bcd015)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create 7O with hardened coordinate module 0002
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007O.py` — additions: `201`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007O.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7N viewer behavior; use the hardened external coordinate overlay module 0002 only.
+```
+
+### Search tags
+
+`0002`, `0007O`, `BETA`, `COORDINATE`, `CREATE`, `HARDENED`, `MODULE`, `VIEWER`, `WITH`
+
+---
 ## AUTO-06cc382f23fb — Add hardened coordinate overlay module 0002
 
 **Recorded:** 2026-08-03T22:30:44-05:00  
