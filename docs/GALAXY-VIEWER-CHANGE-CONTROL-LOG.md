@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-5c86c79b7868 — Add standalone coordinate overlay module 0001
+
+**Recorded:** 2026-08-03T21:41:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5c86c79b7868ad4ad8f74c6615e6654a843f41d1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5c86c79b7868ad4ad8f74c6615e6654a843f41d1)  
+**Parent/baseline:** `a3a98a1b8b0686e8632c381fe6f8e8ddd9a3fd86`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a3a98a1b8b0686e8632c381fe6f8e8ddd9a3fd86...5c86c79b7868ad4ad8f74c6615e6654a843f41d1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add standalone coordinate overlay module 0001
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/modules/gv-coordinate-overlay-0001.js` — additions: `96`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0001`, `ADD`, `COORDINATE`, `MODULE`, `MODULES`, `OVERLAY`, `STANDALONE`, `VIEWER`
+
+---
 ## AUTO-32e737f4bdda — Add GAL and grid toggles to coordinate lab 0007
 
 **Recorded:** 2026-08-03T20:33:23-05:00  
