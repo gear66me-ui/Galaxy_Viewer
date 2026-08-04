@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-def498ec5395 — Point beta launcher to GV-beta-0007N
+
+**Recorded:** 2026-08-03T22:11:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`def498ec53954f852b233e0ac3f788ec1b9ad714`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/def498ec53954f852b233e0ac3f788ec1b9ad714)  
+**Parent/baseline:** `6df6154f9105add2474f9714a8c9c22731ed1d04`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6df6154f9105add2474f9714a8c9c22731ed1d04...def498ec53954f852b233e0ac3f788ec1b9ad714)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Point beta launcher to GV-beta-0007N
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/index.html` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007N`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
+
+---
 ## AUTO-218d8f90822c — Create 7N with external coordinate overlay module
 
 **Recorded:** 2026-08-03T22:03:53-05:00  
