@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-218d8f90822c — Create 7N with external coordinate overlay module
+
+**Recorded:** 2026-08-03T22:03:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`218d8f90822c1ced15a9d290d0341662937f325c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/218d8f90822c1ced15a9d290d0341662937f325c)  
+**Parent/baseline:** `7d79bbe0a4930f1acff1809c2f3c5eebb0a3e48a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7d79bbe0a4930f1acff1809c2f3c5eebb0a3e48a...218d8f90822c1ced15a9d290d0341662937f325c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create 7N with external coordinate overlay module
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007N.py` — additions: `194`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007N.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved 7M viewer behavior; replace the internal coordinate presentation with the external standalone coordinate overlay module only.
+```
+
+### Search tags
+
+`0007N`, `BETA`, `COORDINATE`, `CREATE`, `EXTERNAL`, `MODULE`, `OVERLAY`, `VIEWER`, `WITH`
+
+---
 ## AUTO-d12a0b9f8c65 — Add standalone coordinate module test page 0001
 
 **Recorded:** 2026-08-03T21:42:09-05:00  
