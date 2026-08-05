@@ -7,6 +7,7 @@ on:
       - beta
     paths:
       - viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py
+      - .github/workflows/build-coordinate-font-0005.yml
 
 permissions:
   contents: write
