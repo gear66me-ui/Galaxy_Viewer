@@ -5,15 +5,13 @@ on:
   push:
     branches:
       - beta
-    paths:
-      - viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py
-      - .github/workflows/build-coordinate-font-0005.yml
 
 permissions:
   contents: write
 
 jobs:
   build-coordinate-font:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Check out beta
