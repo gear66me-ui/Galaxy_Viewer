@@ -78,7 +78,6 @@ def build():
         baseline_zero_width = float(baseline[ZERO].width)
         source_zero_signature = outline_signature(source[ZERO])
 
-        # Copy only the authoritative source zero into the 0004 baseline.
         source.selection.none()
         source.selection.select(ZERO)
         source.copy()
@@ -89,7 +88,6 @@ def build():
         fit_source_zero_to_baseline(baseline[ZERO], type("Box", (), {"boundingBox": lambda self: baseline_zero_bbox})())
         baseline[ZERO].width = baseline_zero_width
 
-        # Re-center the visible zero in the existing advance cell.
         x0, _, x1, _ = baseline[ZERO].boundingBox()
         shift = (TARGET_ADVANCE / 2.0) - ((x0 + x1) / 2.0)
         baseline[ZERO].transform(psMat.translate(shift, 0))
@@ -120,7 +118,6 @@ def build():
         source.close()
         baseline.close()
 
-    # Reopen and verify all non-zero glyphs remain identical to 0004.
     baseline = fontforge.open(str(BASELINE_FONT))
     generated = fontforge.open(str(OUTPUT_FONT))
     try:
@@ -139,3 +136,5 @@ def build():
 
 if __name__ == "__main__":
     build()
+
+# Explicit workflow trigger: 2026-08-05
