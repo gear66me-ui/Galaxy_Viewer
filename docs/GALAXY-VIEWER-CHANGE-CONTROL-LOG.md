@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e946ef4a5a84 — Create GV-beta-0007P without coordinate strip
+
+**Recorded:** 2026-08-04T22:25:56-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e946ef4a5a8485cea340ff5d6a9596aa0c2132c1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e946ef4a5a8485cea340ff5d6a9596aa0c2132c1)  
+**Parent/baseline:** `664b3df9ff7f00638df14035acff9ab06c914d6e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/664b3df9ff7f00638df14035acff9ab06c914d6e...e946ef4a5a8485cea340ff5d6a9596aa0c2132c1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0007P without coordinate strip
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007P.py` — additions: `147`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007P.py`**
+
+```text
+# USER INSTRUCTION: Preserve all approved viewer behavior while removing the coordinate strip completely.
+```
+
+### Search tags
+
+`0007P`, `BETA`, `COORDINATE`, `CREATE`, `STRIP`, `VIEWER`, `WITHOUT`
+
+---
 ## AUTO-cf113b887be4 — Create 0057 target capture motion refinement
 
 **Recorded:** 2026-08-04T01:33:21-05:00  
