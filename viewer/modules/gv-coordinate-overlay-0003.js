@@ -17,7 +17,7 @@
 
   function clamp(v,min,max){return Math.max(min,Math.min(max,Number(v)))}
   function formatLongitude(v){const [integer,fraction]=clamp(v,0,359.9999).toFixed(4).split('.');return {integer,fraction}}
-  function formatLatitude(v){const n=clamp(v,-90,90),[integer,fraction]=Math.abs(n).toFixed(4).split('.');return {sign:n<0?'-':'',integer,fraction}}
+  function formatLatitude(v){const n=clamp(v,-90,90),[integer,fraction]=Math.abs(n).toFixed(4).split('.');return {sign:n<0?'-':'',integer:integer.padStart(2,'0'),fraction}}
   function createMeasureCanvas(){const c=document.createElement('canvas');c.width=1024;c.height=256;c.hidden=true;return c}
   function scan(ctx,canvas,text,font,size){
     const S=4,W=1024,H=256;canvas.width=W;canvas.height=H;ctx.clearRect(0,0,W,H);
