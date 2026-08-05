@@ -1,0 +1,59 @@
+Program root: /usr
+Aacute's SEAC-like endchar operator is deprecated for Type2
+Acircumflex's SEAC-like endchar operator is deprecated for Type2
+Adieresis's SEAC-like endchar operator is deprecated for Type2
+Agrave's SEAC-like endchar operator is deprecated for Type2
+Atilde's SEAC-like endchar operator is deprecated for Type2
+Eacute's SEAC-like endchar operator is deprecated for Type2
+Ecircumflex's SEAC-like endchar operator is deprecated for Type2
+Edieresis's SEAC-like endchar operator is deprecated for Type2
+Egrave's SEAC-like endchar operator is deprecated for Type2
+Iacute's SEAC-like endchar operator is deprecated for Type2
+Icircumflex's SEAC-like endchar operator is deprecated for Type2
+Igrave's SEAC-like endchar operator is deprecated for Type2
+Ntilde's SEAC-like endchar operator is deprecated for Type2
+Oacute's SEAC-like endchar operator is deprecated for Type2
+Ocircumflex's SEAC-like endchar operator is deprecated for Type2
+Odieresis's SEAC-like endchar operator is deprecated for Type2
+Ograve's SEAC-like endchar operator is deprecated for Type2
+Otilde's SEAC-like endchar operator is deprecated for Type2
+Uacute's SEAC-like endchar operator is deprecated for Type2
+Ucircumflex's SEAC-like endchar operator is deprecated for Type2
+Udieresis's SEAC-like endchar operator is deprecated for Type2
+Ugrave's SEAC-like endchar operator is deprecated for Type2
+Yacute's SEAC-like endchar operator is deprecated for Type2
+Ydieresis's SEAC-like endchar operator is deprecated for Type2
+aacute's SEAC-like endchar operator is deprecated for Type2
+acircumflex's SEAC-like endchar operator is deprecated for Type2
+adieresis's SEAC-like endchar operator is deprecated for Type2
+agrave's SEAC-like endchar operator is deprecated for Type2
+atilde's SEAC-like endchar operator is deprecated for Type2
+eacute's SEAC-like endchar operator is deprecated for Type2
+ecircumflex's SEAC-like endchar operator is deprecated for Type2
+edieresis's SEAC-like endchar operator is deprecated for Type2
+egrave's SEAC-like endchar operator is deprecated for Type2
+iacute's SEAC-like endchar operator is deprecated for Type2
+icircumflex's SEAC-like endchar operator is deprecated for Type2
+idieresis's SEAC-like endchar operator is deprecated for Type2
+igrave's SEAC-like endchar operator is deprecated for Type2
+ntilde's SEAC-like endchar operator is deprecated for Type2
+oacute's SEAC-like endchar operator is deprecated for Type2
+ocircumflex's SEAC-like endchar operator is deprecated for Type2
+odieresis's SEAC-like endchar operator is deprecated for Type2
+ograve's SEAC-like endchar operator is deprecated for Type2
+otilde's SEAC-like endchar operator is deprecated for Type2
+uacute's SEAC-like endchar operator is deprecated for Type2
+ucircumflex's SEAC-like endchar operator is deprecated for Type2
+udieresis's SEAC-like endchar operator is deprecated for Type2
+ugrave's SEAC-like endchar operator is deprecated for Type2
+yacute's SEAC-like endchar operator is deprecated for Type2
+ydieresis's SEAC-like endchar operator is deprecated for Type2
+In SpaceAge, in glyph nine, 'CFF ' advance width (1804) and
+  'hmtx' width (882) do not match. (Subsequent mismatches will not be reported)
+Traceback (most recent call last):
+  File "/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py", line 138, in <module>
+    build()
+  File "/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py", line 89, in build
+    baseline[ZERO].width = baseline_zero_width
+    ^^^^^^^^^^^^^^^^^^^^
+TypeError: 'float' object cannot be interpreted as an integer
