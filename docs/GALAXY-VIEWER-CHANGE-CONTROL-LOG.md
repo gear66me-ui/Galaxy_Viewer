@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-58dbf03b62b0 — Make coordinate font 0005 workflow run on beta pushes
+
+**Recorded:** 2026-08-05T12:59:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`58dbf03b62b00ef17fb90869d10c07b2d0440276`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/58dbf03b62b00ef17fb90869d10c07b2d0440276)  
+**Parent/baseline:** `e4e054f420aee68e90c59feb76df63e0ef3f951b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e4e054f420aee68e90c59feb76df63e0ef3f951b...58dbf03b62b00ef17fb90869d10c07b2d0440276)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Make coordinate font 0005 workflow run on beta pushes
+```
+
+### Changed paths
+
+- **MODIFIED:** `.github/workflows/build-coordinate-font-0005.yml` — additions: `1`, deletions: `3`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0005`, `BETA`, `BUILD`, `COORDINATE`, `FONT`, `GITHUB`, `MAKE`, `PUSHES`, `RUN`, `WORKFLOW`, `WORKFLOWS`, `YML`
+
+---
 ## AUTO-e50ff691c1a6 — Fix coordinate font 0005 FontForge width type
 
 **Recorded:** 2026-08-05T12:54:55-05:00  
