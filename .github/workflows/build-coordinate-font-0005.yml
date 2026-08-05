@@ -27,18 +27,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y fontforge python3-fontforge
 
-      - name: Build and verify coordinate font 0005
+      - name: Build and capture audit
+        id: build
+        continue-on-error: true
         run: |
-          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py
+          set -o pipefail
+          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py 2>&1 | tee viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.log
 
-      - name: Commit generated font
+      - name: Commit font or diagnostic log
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"
+          git add -- "viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.log"
+          if test -f "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"; then
+            git add -- "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"
+          fi
           if git diff --cached --quiet; then
-            echo "Generated font is unchanged."
+            echo "No generated output changed."
           else
-            git commit -m "Build coordinate font 0005 with restored slashed zero"
+            git commit -m "Record coordinate font 0005 build result"
             git push origin beta
           fi
+
+      - name: Fail if build failed
+        if: steps.build.outcome == 'failure'
+        run: exit 1
