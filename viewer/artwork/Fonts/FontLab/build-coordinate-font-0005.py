@@ -75,7 +75,7 @@ def build():
     try:
         before = encoded_signatures(baseline)
         baseline_zero_bbox = tuple(float(v) for v in baseline[ZERO].boundingBox())
-        baseline_zero_width = float(baseline[ZERO].width)
+        baseline_zero_width = int(round(baseline[ZERO].width))
         source_zero_signature = outline_signature(source[ZERO])
 
         source.selection.none()
@@ -137,4 +137,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# Explicit workflow trigger: 2026-08-05
+# Explicit workflow trigger: integer-width correction
