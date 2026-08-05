@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-fb4bbbd6dd76 — Trigger forensic coordinate font 0005 build
+
+**Recorded:** 2026-08-05T00:04:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fb4bbbd6dd76aa9bb31ef60f003df66087452bbc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fb4bbbd6dd76aa9bb31ef60f003df66087452bbc)  
+**Parent/baseline:** `9814e2318173c23b64db8502dcc85b0764ba2b4b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9814e2318173c23b64db8502dcc85b0764ba2b4b...fb4bbbd6dd76aa9bb31ef60f003df66087452bbc)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Trigger forensic coordinate font 0005 build
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py` — additions: `2`, deletions: `3`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0005`, `ARTWORK`, `BUILD`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `FORENSIC`, `TRIGGER`, `VIEWER`
+
+---
 ## AUTO-3447aedfc55d — Capture coordinate font 0005 build diagnostics
 
 **Recorded:** 2026-08-05T00:03:23-05:00  
