@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e50ff691c1a6 — Fix coordinate font 0005 FontForge width type
+
+**Recorded:** 2026-08-05T12:54:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e50ff691c1a69d99d040b6cfbe716106255bef54`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e50ff691c1a69d99d040b6cfbe716106255bef54)  
+**Parent/baseline:** `2aa2f0a076f949c5ef3444ae8cf5d2b5b8dd37f1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2aa2f0a076f949c5ef3444ae8cf5d2b5b8dd37f1...e50ff691c1a69d99d040b6cfbe716106255bef54)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Fix coordinate font 0005 FontForge width type
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py` — additions: `2`, deletions: `2`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0005`, `ARTWORK`, `BUILD`, `COORDINATE`, `FIX`, `FONT`, `FONTFORGE`, `FONTLAB`, `FONTS`, `TYPE`, `VIEWER`, `WIDTH`
+
+---
 ## AUTO-fb4bbbd6dd76 — Trigger forensic coordinate font 0005 build
 
 **Recorded:** 2026-08-05T00:04:39-05:00  
