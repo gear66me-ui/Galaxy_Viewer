@@ -88,6 +88,40 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-fc0204d40196 — Create GV-beta-0007Q independent coordinate overlay build
+
+**Recorded:** 2026-08-04T22:52:15-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fc0204d40196ab28ab562b28b139f9e0f5357198`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fc0204d40196ab28ab562b28b139f9e0f5357198)  
+**Parent/baseline:** `23d4080642a4214cc304d6b784b94049ffce7fda`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/23d4080642a4214cc304d6b784b94049ffce7fda...fc0204d40196ab28ab562b28b139f9e0f5357198)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Create GV-beta-0007Q independent coordinate overlay build
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007Q.py` — additions: `88`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007Q.py`**
+
+```text
+# USER INSTRUCTION: Add the approved coordinate box without restoring the removed native-coordinate machinery.
+```
+
+### Search tags
+
+`0007Q`, `BETA`, `BUILD`, `COORDINATE`, `CREATE`, `INDEPENDENT`, `OVERLAY`, `VIEWER`
+
+---
 ## AUTO-14f8b2d8deab — Update Galaxy-Viewer-Singularity-0057.html
 
 **Recorded:** 2026-08-04T22:47:38-05:00  
