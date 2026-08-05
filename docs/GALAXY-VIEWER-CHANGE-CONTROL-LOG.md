@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-0630e56e6580 — Repair 0057 target capture shader compatibility
+
+**Recorded:** 2026-08-04T22:53:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0630e56e658038e70fb8a18d82dd21e1b8e4a46c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0630e56e658038e70fb8a18d82dd21e1b8e4a46c)  
+**Parent/baseline:** `3dd01486422be0816bcc718fa772d5f2ac8e6caf`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3dd01486422be0816bcc718fa772d5f2ac8e6caf...0630e56e658038e70fb8a18d82dd21e1b8e4a46c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Repair 0057 target capture shader compatibility
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0057.html` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0057`, `ARTWORK`, `CAPTURE`, `COMPATIBILITY`, `GALAXY`, `HTML`, `REPAIR`, `SHADER`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`
+
+---
 ## AUTO-4061d702e6a0 — Add GV-beta-0007Q inspection launcher
 
 **Recorded:** 2026-08-04T22:52:48-05:00  
