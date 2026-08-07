@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-0483ffce8f09 — Coordinate overlay: use slashed-zero font 0005
+
+**Recorded:** 2026-08-07T17:19:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0483ffce8f094673a56e3e0cb511d7e23473d27c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0483ffce8f094673a56e3e0cb511d7e23473d27c)  
+**Parent/baseline:** `c25ebaced0cfbcdf21ead53f68d3c69a0d3d74b1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c25ebaced0cfbcdf21ead53f68d3c69a0d3d74b1...0483ffce8f094673a56e3e0cb511d7e23473d27c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Coordinate overlay: use slashed-zero font 0005
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/modules/gv-coordinate-overlay-0003.js` — additions: `1`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0005`, `COORDINATE`, `FONT`, `MODULES`, `OVERLAY`, `SLASHED`, `USE`, `VIEWER`, `ZERO`
+
+---
 ## AUTO-341ad4621b0c — Add files via upload
 
 **Recorded:** 2026-08-07T17:17:08-05:00  
