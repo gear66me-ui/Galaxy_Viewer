@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007X
+PURPOSE: Dedicated launcher for validating strong inset tile glow plus synchronized Projection/Mollweide icon-stroke glow and right-shifted Mollweide artwork.
+AUTHORIZED CHANGES: mobile/beta/7X.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007X.py.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>GALAXY VIEWER 7X — INNER TILE GLOW VALIDATION</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#62D8FF}
+#gv-loading{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#000;font:16px Arial,sans-serif;letter-spacing:1px}
+body.gv-ready #gv-loading{display:none}
+#gv-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
+#aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100dvh!important}
+</style>
+</head>
+<body>
+<div id="gv-loading">GALAXY VIEWER 7X · LOADING…</div>
+<div id="gv-error"></div>
+<script>
+(async()=>{
+  const errorBox=document.getElementById('gv-error');
+  const showError=error=>{document.getElementById('gv-loading').style.display='none';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
+  try{
+    const response=await fetch('../../viewer/GV-beta-0007X.py?v=6401bf8015b75a631822cfeba40cde6e7261bc67',{cache:'no-store'});
+    if(!response.ok)throw new Error('GV-BETA-0007X.PY RETURNED HTTP '+response.status);
+    const source=await response.text();
+    const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
+    const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
+    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT GV-BETA-0007X');
+    htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
+    jsMatches.forEach(match=>{const script=document.createElement('script');script.textContent=match[1];document.body.appendChild(script)});
+    const deadline=performance.now()+20000;
+    await new Promise((resolve,reject)=>{const check=()=>{const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test){resolve();return}if(performance.now()>deadline){reject(new Error('VIEWER STARTUP TIMEOUT'));return}setTimeout(check,100)};check()});
+    document.body.classList.add('gv-ready');
+  }catch(error){console.error(error);showError(error)}
+})();
+</script>
+</body>
+</html>
