@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-2de5d6549047 — ECO 7Y: record approved projection and Mollweide icon integration
+
+**Recorded:** 2026-08-08T16:49:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2de5d6549047fa5ef27f745e654e6fbd5a5d20a9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2de5d6549047fa5ef27f745e654e6fbd5a5d20a9)  
+**Parent/baseline:** `7d85ed4f88df55e8c766dbce930d937590b92fca`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7d85ed4f88df55e8c766dbce930d937590b92fca...2de5d6549047fa5ef27f745e654e6fbd5a5d20a9)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+ECO 7Y: record approved projection and Mollweide icon integration
+```
+
+### Changed paths
+
+- **ADDED:** `docs/engineering-change-orders/GV-ECO-0007Y.md` — additions: `149`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007Y`, `AND`, `APPROVED`, `CHANGE`, `DOCS`, `ECO`, `ENGINEERING`, `ICON`, `INTEGRATION`, `MOLLWEIDE`, `ORDERS`, `PROJECTION`, `RECORD`
+
+---
 ## AUTO-e5f38f19a5cd — GV 7Y: point launcher to corrected approved 0003 integration
 
 **Recorded:** 2026-08-08T16:49:05-05:00  
