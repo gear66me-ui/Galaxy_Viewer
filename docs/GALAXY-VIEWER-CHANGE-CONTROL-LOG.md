@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-d826f1fe0c3c — Add 7U Mollweide refinement launcher
+
+**Recorded:** 2026-08-08T14:38:01-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d826f1fe0c3c967d182bfb14a599bd32f8a9b4c2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d826f1fe0c3c967d182bfb14a599bd32f8a9b4c2)  
+**Parent/baseline:** `d1e57226d0e4ef833b42c9e454438dbcfdffe04e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d1e57226d0e4ef833b42c9e454438dbcfdffe04e...d826f1fe0c3c967d182bfb14a599bd32f8a9b4c2)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add 7U Mollweide refinement launcher
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/7U.html` — additions: `39`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `MOLLWEIDE`, `REFINEMENT`
+
+---
 ## AUTO-d744d522c3a9 — 7U: refine Mollweide projection tile geometry and synchronized glow
 
 **Recorded:** 2026-08-08T14:37:48-05:00  
