@@ -88,6 +88,43 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-42436071547e — ECO: constrain Mollweide glow to tile interior only
+
+**Recorded:** 2026-08-08T15:37:41-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`42436071547e65e890f4ac96b205b4b684d4e40e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/42436071547e65e890f4ac96b205b4b684d4e40e)  
+**Parent/baseline:** `a18626e5be3c62f50717490c15df1bf119870856`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a18626e5be3c62f50717490c15df1bf119870856...42436071547e65e890f4ac96b205b4b684d4e40e)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+ECO: constrain Mollweide glow to tile interior only
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/mollweide-icon-0001.html` — additions: `53`, deletions: `24`
+
+### Recorded instruction evidence
+
+**`mobile/beta/mollweide-icon-0001.html`**
+
+```text
+GALAXY VIEWER CHANGE ORDER
+USER INSTRUCTION: Keep the Mollweide icon pulse slow and tense; glow the INSIDE of the square tile only, not the outside border. Keep the icon geometry glowing in sync with the tile interior. This timing is the reference rhythm for future menu icons so they can chime in unison.
+AUTHORIZED CHANGES: mobile/beta/mollweide-icon-0001.html only.
+PRESERVED BEHAVIOR: Mollweide SVG geometry and standalone prototype structure.
+```
+
+### Search tags
+
+`BETA`, `CONSTRAIN`, `ECO`, `GLOW`, `HTML`, `ICON`, `INTERIOR`, `MOBILE`, `MOLLWEIDE`, `ONLY`, `TILE`
+
+---
 ## AUTO-315315cef6de — Refine Mollweide icon pulse and tile glow
 
 **Recorded:** 2026-08-08T15:29:31-05:00  
