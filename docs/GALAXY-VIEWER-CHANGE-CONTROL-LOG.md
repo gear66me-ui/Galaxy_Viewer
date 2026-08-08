@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ba95dd0e6232 — GV 7AA: add launcher for measured Mollweide centering and shared glow
+
+**Recorded:** 2026-08-08T17:29:04-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ba95dd0e62322c2b16938422332c5c2db1dba7b2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ba95dd0e62322c2b16938422332c5c2db1dba7b2)  
+**Parent/baseline:** `3000a41687ab55ef75b7b421f6c4bd91d329b23a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3000a41687ab55ef75b7b421f6c4bd91d329b23a...ba95dd0e62322c2b16938422332c5c2db1dba7b2)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AA: add launcher for measured Mollweide centering and shared glow
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/7AA.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `15527cd76e2920165e67c67660569eddb05485a088857b197aede4fc74de9397`
+- Bytes: `0` → `2859`
+- Lines: `0` → `45`
+- Characters: `0` → `2852`
+- Inserted lines: `45`
+- Deleted lines: `0`
+- Inserted characters: `2852`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 45 - 0 = 45` — **PASS**
+- Character balance: `0 + 2852 - 0 = 2852` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/7AA.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AA
+PURPOSE: Dedicated launcher for validating measured Mollweide centering and identical explicit interior/icon glow.
+AUTHORIZED CHANGES: mobile/beta/7AA.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007AA.py. Splash animation is not loaded by this launcher.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-f7143014f4b6 — GV 7AA: center Mollweide by measured bounds and unify explicit inner glow
 
 **Recorded:** 2026-08-08T17:28:49-05:00  
