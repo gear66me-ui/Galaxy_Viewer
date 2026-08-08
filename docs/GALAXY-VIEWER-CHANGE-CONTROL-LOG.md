@@ -88,6 +88,41 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-74e533db85b5 — GV 7Z: unify Projection and Mollweide glow behavior
+
+**Recorded:** 2026-08-08T16:54:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`74e533db85b5cea06f58b069b9911fb880a6ecdc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/74e533db85b5cea06f58b069b9911fb880a6ecdc)  
+**Parent/baseline:** `b2b8d5ef84e1ee2927d3c99edd93a8dd3de12aea`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b2b8d5ef84e1ee2927d3c99edd93a8dd3de12aea...74e533db85b5cea06f58b069b9911fb880a6ecdc)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7Z: unify Projection and Mollweide glow behavior
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007Z.py` — additions: `163`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007Z.py`**
+
+```text
+# AUTHORIZED CHANGES: viewer/GV-beta-0007Z.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: GV-beta-0007Y baseline behavior except the two authorized glow corrections above.
+```
+
+### Search tags
+
+`0007Z`, `AND`, `BEHAVIOR`, `BETA`, `GLOW`, `MOLLWEIDE`, `PROJECTION`, `UNIFY`, `VIEWER`
+
+---
 ## AUTO-2de5d6549047 — ECO 7Y: record approved projection and Mollweide icon integration
 
 **Recorded:** 2026-08-08T16:49:45-05:00  
