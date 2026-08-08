@@ -88,6 +88,41 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-088517c4bc08 — GV 7Y: install approved projection and Mollweide icon glow prototypes
+
+**Recorded:** 2026-08-08T16:47:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`088517c4bc085613b713b21b1b839a6404c9bf7a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/088517c4bc085613b713b21b1b839a6404c9bf7a)  
+**Parent/baseline:** `a4534ee8f30e4c4395689f98ffcf739597af58a9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a4534ee8f30e4c4395689f98ffcf739597af58a9...088517c4bc085613b713b21b1b839a6404c9bf7a)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7Y: install approved projection and Mollweide icon glow prototypes
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007Y.py` — additions: `151`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007Y.py`**
+
+```text
+# AUTHORIZED CHANGES: viewer/GV-beta-0007Y.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: Hamburger, target/SIMBAD, Aladin initialization, coordinate overlay/font, galaxy navigation, all unrelated menu rows, previous releases.
+```
+
+### Search tags
+
+`0007Y`, `AND`, `APPROVED`, `BETA`, `GLOW`, `ICON`, `INSTALL`, `MOLLWEIDE`, `PROJECTION`, `PROTOTYPES`, `VIEWER`
+
+---
 ## AUTO-9b6a2c8d7875 — Refine Mollweide icon geometry prototype
 
 **Recorded:** 2026-08-08T16:41:20-05:00  
