@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c90501671318 — ECO 7AD: document symmetric dual-column menu and projection dimming
+
+**Recorded:** 2026-08-08T18:46:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c90501671318428bd4314b54a05eb51cd47609a6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c90501671318428bd4314b54a05eb51cd47609a6)  
+**Parent/baseline:** `8ff9d6852d2e68d0685f6f8171fbd7768ef48969`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8ff9d6852d2e68d0685f6f8171fbd7768ef48969...c90501671318428bd4314b54a05eb51cd47609a6)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO 7AD: document symmetric dual-column menu and projection dimming
+```
+
+### Complete changed-path accounting
+
+#### `docs/engineering-change-orders/GV-ECO-0007AD.md`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `117c1a4a9eb1ce462bf5783b81eb5de21e9547d611bda8db667a79547a947e40`
+- Bytes: `0` → `13847`
+- Lines: `0` → `356`
+- Characters: `0` → `13809`
+- Inserted lines: `356`
+- Deleted lines: `0`
+- Inserted characters: `13809`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 356 - 0 = 356` — **PASS**
+- Character balance: `0 + 13809 - 0 = 13809` — **PASS**
+
+### Recorded instruction evidence
+
+**`docs/engineering-change-orders/GV-ECO-0007AD.md`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AD
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c1adb9e4b9f0 — GV 7AD: add symmetric menu launcher
 
 **Recorded:** 2026-08-08T18:45:39-05:00  
