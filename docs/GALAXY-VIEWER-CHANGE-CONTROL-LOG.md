@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-46c44c31bc4f — GV 7Y: add launcher for approved icon integration
+
+**Recorded:** 2026-08-08T16:47:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`46c44c31bc4f7046999347e9cc6a154acb2bcfc1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/46c44c31bc4f7046999347e9cc6a154acb2bcfc1)  
+**Parent/baseline:** `d3178efd7bc0ae64f16d27b4d4774c4ee29e29c2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d3178efd7bc0ae64f16d27b4d4774c4ee29e29c2...46c44c31bc4f7046999347e9cc6a154acb2bcfc1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7Y: add launcher for approved icon integration
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/7Y.html` — additions: `45`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`mobile/beta/7Y.html`**
+
+```text
+PURPOSE: Dedicated launcher for validating approved Projection glow and Mollweide glow 0003 integration.
+AUTHORIZED CHANGES: mobile/beta/7Y.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007Y.py.
+```
+
+### Search tags
+
+`ADD`, `APPROVED`, `BETA`, `FOR`, `HTML`, `ICON`, `INTEGRATION`, `LAUNCHER`, `MOBILE`
+
+---
 ## AUTO-088517c4bc08 — GV 7Y: install approved projection and Mollweide icon glow prototypes
 
 **Recorded:** 2026-08-08T16:47:43-05:00  
