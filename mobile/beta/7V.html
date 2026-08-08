@@ -27,7 +27,7 @@ body.gv-ready #gv-loading{display:none}
   const errorBox=document.getElementById('gv-error');
   const showError=error=>{document.getElementById('gv-loading').style.display='none';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
   try{
-    const response=await fetch('../../viewer/GV-beta-0007V.py?v=874d5fdb9b38437b11cd96c87cb01df276e53448',{cache:'no-store'});
+    const response=await fetch('../../viewer/GV-beta-0007V.py?v=62a051508e503179dbb52c4b0746b300f9d4643c',{cache:'no-store'});
     if(!response.ok)throw new Error('GV-BETA-0007V.PY RETURNED HTTP '+response.status);
     const source=await response.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
