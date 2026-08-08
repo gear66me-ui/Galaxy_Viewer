@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a626848a4f56 — GV 7AC: add five-row Projection submenu launcher
+
+**Recorded:** 2026-08-08T18:07:21-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a626848a4f56a2e7efb3b465e6a41484bfba1ee0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a626848a4f56a2e7efb3b465e6a41484bfba1ee0)  
+**Parent/baseline:** `e80c7054458805acdc52735cc31e57a2f32dc14b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e80c7054458805acdc52735cc31e57a2f32dc14b...a626848a4f56a2e7efb3b465e6a41484bfba1ee0)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AC: add five-row Projection submenu launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/7AC.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b57b7d5c337941dc1ad14e7c9c609d042c24fbfc65363602d033db0b571c1e4a`
+- Bytes: `0` → `2804`
+- Lines: `0` → `45`
+- Characters: `0` → `2797`
+- Inserted lines: `45`
+- Deleted lines: `0`
+- Inserted characters: `2797`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 45 - 0 = 45` — **PASS**
+- Character balance: `0 + 2797 - 0 = 2797` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/7AC.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AC
+PURPOSE: Dedicated launcher for validating the five-row Projection submenu expansion.
+AUTHORIZED CHANGES: mobile/beta/7AC.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007AC.py. Splash animation is not loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4202e1d53fad — GV 7AC: expand Projection submenu to five rows
 
 **Recorded:** 2026-08-08T18:06:47-05:00  
