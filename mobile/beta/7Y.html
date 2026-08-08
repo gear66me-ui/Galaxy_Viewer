@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007Y
-PURPOSE: Dedicated launcher for validating approved Projection glow and Mollweide glow 0003 integration.
+PURPOSE: Dedicated launcher for validating approved Projection glow and exact Mollweide glow 0003 integration.
 AUTHORIZED CHANGES: mobile/beta/7Y.html only.
 PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007Y.py.
 -->
@@ -27,7 +27,7 @@ body.gv-ready #gv-loading{display:none}
   const errorBox=document.getElementById('gv-error');
   const showError=error=>{document.getElementById('gv-loading').style.display='none';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
   try{
-    const response=await fetch('../../viewer/GV-beta-0007Y.py?v=088517c4bc085613b713b21b1b839a6404c9bf7a',{cache:'no-store'});
+    const response=await fetch('../../viewer/GV-beta-0007Y.py?v=5591d7f1b4669a1c569780efc2e4d11fb56cdce6',{cache:'no-store'});
     if(!response.ok)throw new Error('GV-BETA-0007Y.PY RETURNED HTTP '+response.status);
     const source=await response.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
