@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6ec3cd2f1f32 — 0057: rebuild cleanly from 0056 with authorized target capture only
+
+**Recorded:** 2026-08-08T17:54:47-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6ec3cd2f1f324b8abc58a0d3b5752a7f91b68629`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6ec3cd2f1f324b8abc58a0d3b5752a7f91b68629)  
+**Parent/baseline:** `dbda3074c33f82ad6276767c93990ef92fe51587`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dbda3074c33f82ad6276767c93990ef92fe51587...6ec3cd2f1f324b8abc58a0d3b5752a7f91b68629)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+0057: rebuild cleanly from 0056 with authorized target capture only
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0057.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `acc7ed68a82c804d980250077e1372e6875bd0ab307429effcd003c0d02aa98c`
+- SHA-256 after: `7c4093572a92c873878f7c380fae8cebe047d7999ede8978653337946ae94148`
+- Bytes: `17426` → `17426`
+- Lines: `31` → `26`
+- Characters: `17423` → `17423`
+- Inserted lines: `1`
+- Deleted lines: `6`
+- Inserted characters: `5`
+- Deleted characters: `5`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `31 + 1 - 6 = 26` — **PASS**
+- Character balance: `17423 + 5 - 5 = 17423` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-727ee40323c4 — ECO 7AB: document measured centering and Web Animations inner glow fix
 
 **Recorded:** 2026-08-08T17:37:52-05:00  
