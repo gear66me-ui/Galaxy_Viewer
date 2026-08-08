@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e5f38f19a5cd — GV 7Y: point launcher to corrected approved 0003 integration
+
+**Recorded:** 2026-08-08T16:49:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e5f38f19a5cd49bb94ce8c4c9ca32dfad4f45685`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e5f38f19a5cd49bb94ce8c4c9ca32dfad4f45685)  
+**Parent/baseline:** `82cfcc5f1065bad5eb4ef0c777bc58e875a5e89a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/82cfcc5f1065bad5eb4ef0c777bc58e875a5e89a...e5f38f19a5cd49bb94ce8c4c9ca32dfad4f45685)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7Y: point launcher to corrected approved 0003 integration
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/7Y.html` — additions: `2`, deletions: `2`
+
+### Recorded instruction evidence
+
+**`mobile/beta/7Y.html`**
+
+```text
+PURPOSE: Dedicated launcher for validating approved Projection glow and exact Mollweide glow 0003 integration.
+AUTHORIZED CHANGES: mobile/beta/7Y.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007Y.py.
+```
+
+### Search tags
+
+`0003`, `APPROVED`, `BETA`, `CORRECTED`, `HTML`, `INTEGRATION`, `LAUNCHER`, `MOBILE`, `POINT`
+
+---
 ## AUTO-5591d7f1b466 — GV 7Y: correct Mollweide geometry to exact approved 0003 prototype
 
 **Recorded:** 2026-08-08T16:48:45-05:00  
