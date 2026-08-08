@@ -88,6 +88,43 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-63b5d793a890 — Add 7V projection pulse validation launcher
+
+**Recorded:** 2026-08-08T15:40:19-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`63b5d793a890e2b22313b1fb80043557a45d2c88`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/63b5d793a890e2b22313b1fb80043557a45d2c88)  
+**Parent/baseline:** `e7df2eddccd0814c12bbbdc4bb25a5162ca87efc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e7df2eddccd0814c12bbbdc4bb25a5162ca87efc...63b5d793a890e2b22313b1fb80043557a45d2c88)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add 7V projection pulse validation launcher
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/7V.html` — additions: `45`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`mobile/beta/7V.html`**
+
+```text
+GALAXY VIEWER CHANGE ORDER
+PURPOSE: Launcher for GV-beta-0007V projection/Mollweide synchronized interior-pulse validation.
+AUTHORIZED CHANGES: mobile/beta/7V.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007V.py.
+```
+
+### Search tags
+
+`ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `PROJECTION`, `PULSE`, `VALIDATION`
+
+---
 ## AUTO-e33bb575b009 — GV 7V: synchronize Projection and Mollweide interior pulse
 
 **Recorded:** 2026-08-08T15:40:05-05:00  
