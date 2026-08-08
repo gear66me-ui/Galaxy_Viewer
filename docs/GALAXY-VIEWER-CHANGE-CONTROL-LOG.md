@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-77f53bed25d8 — GV 7AB: enforce measured Mollweide centering and shared inner glow
+
+**Recorded:** 2026-08-08T17:36:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`77f53bed25d8e4245cd0998ae3e0d1ce5f923d96`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/77f53bed25d8e4245cd0998ae3e0d1ce5f923d96)  
+**Parent/baseline:** `a9f3d55b1a1a7b64c645ee5a9b3fcd6f9a92ce29`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a9f3d55b1a1a7b64c645ee5a9b3fcd6f9a92ce29...77f53bed25d8e4245cd0998ae3e0d1ce5f923d96)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AB: enforce measured Mollweide centering and shared inner glow
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AB.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `f44c4aad4937a853a113e4a21a1872cddf9e9289b42b582dcb6a723fc0fc3002`
+- Bytes: `0` → `10895`
+- Lines: `0` → `206`
+- Characters: `0` → `10893`
+- Inserted lines: `206`
+- Deleted lines: `0`
+- Inserted characters: `10893`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 206 - 0 = 206` — **PASS**
+- Character balance: `0 + 10893 - 0 = 10893` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AB.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AB
+# USER REQUEST:
+# AUTHORIZED CHANGES: viewer/GV-beta-0007AB.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: GV-beta-0007AA baseline except measured post-baseline Mollweide centering and synchronized Web Animations glow.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b000eff10245 — 0057: isolate target from early vortex rotation
 
 **Recorded:** 2026-08-08T17:30:14-05:00  
