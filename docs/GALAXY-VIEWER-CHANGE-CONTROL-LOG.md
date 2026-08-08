@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-103cdd8d19cd — GV-ECO-0007W: add dedicated validation launcher
+
+**Recorded:** 2026-08-08T15:57:49-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`103cdd8d19cd9011cdab8b09ecde9ef2771ee945`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/103cdd8d19cd9011cdab8b09ecde9ef2771ee945)  
+**Parent/baseline:** `41a16c9c6d7383679b2bb76e70dce48353b26d17`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/41a16c9c6d7383679b2bb76e70dce48353b26d17...103cdd8d19cd9011cdab8b09ecde9ef2771ee945)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV-ECO-0007W: add dedicated validation launcher
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/7W.html` — additions: `45`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`mobile/beta/7W.html`**
+
+```text
+PURPOSE: Dedicated launcher for validating Mollweide tile adjacency and synchronized Projection/Mollweide interior-edge + icon glow.
+AUTHORIZED CHANGES: mobile/beta/7W.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007W.py.
+```
+
+### Search tags
+
+`0007W`, `ADD`, `BETA`, `DEDICATED`, `ECO`, `HTML`, `LAUNCHER`, `MOBILE`, `VALIDATION`
+
+---
 ## AUTO-97bb6d8adb46 — GV-ECO-0007W: align Mollweide tile and synchronize inner-edge/icon glow
 
 **Recorded:** 2026-08-08T15:57:34-05:00  
