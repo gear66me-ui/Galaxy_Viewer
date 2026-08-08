@@ -88,6 +88,43 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-e33bb575b009 — GV 7V: synchronize Projection and Mollweide interior pulse
+
+**Recorded:** 2026-08-08T15:40:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e33bb575b0098b8368a9f0096b5f425545202974`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e33bb575b0098b8368a9f0096b5f425545202974)  
+**Parent/baseline:** `99837a1e12691383d2eeccc804c967a27d20d224`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/99837a1e12691383d2eeccc804c967a27d20d224...e33bb575b0098b8368a9f0096b5f425545202974)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7V: synchronize Projection and Mollweide interior pulse
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007V.py` — additions: `120`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007V.py`**
+
+```text
+# GALAXY VIEWER CHANGE ORDER
+# USER INSTRUCTION: Projection tile and Mollweide tile must glow INSIDE only, never by an animated outer halo. Both tile interiors and both icons must pulse in exact unison: same start, same end, same cycle, same phase. Mollweide preview must use a more authentic pointed all-sky ellipse instead of a rounded watermelon shape.
+# AUTHORIZED CHANGES: Create standalone viewer/GV-beta-0007V.py from GV-beta-0007U.py behavior. Projection/Mollweide pulse and Mollweide preview geometry only.
+# PRESERVED BEHAVIOR: Hamburger, target/SIMBAD, Aladin initialization, coordinate overlay/font, galaxy navigation, all unrelated menu rows and behavior.
+```
+
+### Search tags
+
+`0007V`, `AND`, `BETA`, `INTERIOR`, `MOLLWEIDE`, `PROJECTION`, `PULSE`, `SYNCHRONIZE`, `VIEWER`
+
+---
 ## AUTO-42436071547e — ECO: constrain Mollweide glow to tile interior only
 
 **Recorded:** 2026-08-08T15:37:41-05:00  
