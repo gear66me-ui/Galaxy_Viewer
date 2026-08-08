@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-012721c34180 — 0058: anchor tip-first radial swirl capture at frame 284
+
+**Recorded:** 2026-08-08T18:18:46-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`012721c34180bc72b4ddebdee0ae898c98ae8a46`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/012721c34180bc72b4ddebdee0ae898c98ae8a46)  
+**Parent/baseline:** `09d6e51a7cda9948eb519e187325f319eeb46e6c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/09d6e51a7cda9948eb519e187325f319eeb46e6c...012721c34180bc72b4ddebdee0ae898c98ae8a46)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+0058: anchor tip-first radial swirl capture at frame 284
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `674e2ac1514f67c60825bf80fbfccc2c30fb45895caeabd0b8b53da9652e96e4`
+- Bytes: `0` → `17490`
+- Lines: `0` → `26`
+- Characters: `0` → `17487`
+- Inserted lines: `26`
+- Deleted lines: `0`
+- Inserted characters: `17487`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 26 - 0 = 26` — **PASS**
+- Character balance: `0 + 17487 - 0 = 17487` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-328666593dc4 — ECO 7AC: document five-row Projection submenu expansion
 
 **Recorded:** 2026-08-08T18:08:39-05:00  
