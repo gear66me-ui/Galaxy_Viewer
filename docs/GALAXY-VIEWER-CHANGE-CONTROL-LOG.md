@@ -88,6 +88,41 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-97bb6d8adb46 — GV-ECO-0007W: align Mollweide tile and synchronize inner-edge/icon glow
+
+**Recorded:** 2026-08-08T15:57:34-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`97bb6d8adb46ebd1c1113a85af1f5ba68d1401b7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/97bb6d8adb46ebd1c1113a85af1f5ba68d1401b7)  
+**Parent/baseline:** `6da9e6f0b98afea35dfdaf4a892b6a36b835506d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6da9e6f0b98afea35dfdaf4a892b6a36b835506d...97bb6d8adb46ebd1c1113a85af1f5ba68d1401b7)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV-ECO-0007W: align Mollweide tile and synchronize inner-edge/icon glow
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007W.py` — additions: `198`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007W.py`**
+
+```text
+# AUTHORIZED CHANGES: viewer/GV-beta-0007W.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: Hamburger, target/SIMBAD, Aladin initialization, coordinate overlay/font, galaxy navigation, all unrelated menu rows, previous releases.
+```
+
+### Search tags
+
+`0007W`, `ALIGN`, `AND`, `BETA`, `ECO`, `EDGEICON`, `GLOW`, `INNER`, `MOLLWEIDE`, `SYNCHRONIZE`, `TILE`, `VIEWER`
+
+---
 ## AUTO-ef5097a766b3 — ECO 7V: validate synchronized interior projection pulse
 
 **Recorded:** 2026-08-08T15:44:00-05:00  
