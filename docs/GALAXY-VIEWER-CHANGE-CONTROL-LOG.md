@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-262dc0cc9f3c — 0057A: add development playback inspector
+
+**Recorded:** 2026-08-08T18:04:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`262dc0cc9f3c6bef3002a0f4c25eeb9def6989f1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/262dc0cc9f3c6bef3002a0f4c25eeb9def6989f1)  
+**Parent/baseline:** `da865285e42724099753fd28255f7ff38a800977`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/da865285e42724099753fd28255f7ff38a800977...262dc0cc9f3c6bef3002a0f4c25eeb9def6989f1)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+0057A: add development playback inspector
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0057A.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `5c216cae6720a537f1a20ff2aa9ee725e2974c22e5ea2919d37cff68b47fd45e`
+- Bytes: `0` → `20826`
+- Lines: `0` → `32`
+- Characters: `0` → `20810`
+- Inserted lines: `32`
+- Deleted lines: `0`
+- Inserted characters: `20810`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 32 - 0 = 32` — **PASS**
+- Character balance: `0 + 20810 - 0 = 20810` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6ec3cd2f1f32 — 0057: rebuild cleanly from 0056 with authorized target capture only
 
 **Recorded:** 2026-08-08T17:54:47-05:00  
