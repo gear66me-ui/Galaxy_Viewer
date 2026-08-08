@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-972168abd693 — Add standalone layers menu icon prototype
+
+**Recorded:** 2026-08-07T19:40:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`972168abd693872ff4430ecf7a14d31405b1c730`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/972168abd693872ff4430ecf7a14d31405b1c730)  
+**Parent/baseline:** `a13292a4910b15b06f5b32fa49a60a1b132cfbb1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a13292a4910b15b06f5b32fa49a60a1b132cfbb1...972168abd693872ff4430ecf7a14d31405b1c730)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add standalone layers menu icon prototype
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Menu-Icons/GV-menu-layers-0001.html` — additions: `1`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ARTWORK`, `HTML`, `ICON`, `ICONS`, `LAYERS`, `MENU`, `PROTOTYPE`, `STANDALONE`, `VIEWER`
+
+---
 ## AUTO-7ff2c60a1101 — Add standalone projection menu icon prototype
 
 **Recorded:** 2026-08-07T19:39:55-05:00  
