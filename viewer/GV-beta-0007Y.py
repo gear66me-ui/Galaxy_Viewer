@@ -5,7 +5,7 @@ from IPython.display import HTML, Javascript, display
 # USER REQUEST:
 # 1. Install the approved standalone Projection glow prototype and approved Mollweide glow 0003 prototype into the viewer.
 # 2. Keep Projection icon geometry unchanged.
-# 3. Replace viewer Mollweide icon geometry with the approved rounded-ellipse 0003 geometry: denser wireframe, purple grid stopping short of cyan boundary, 20% smaller, centered.
+# 3. Replace viewer Mollweide icon geometry with the exact approved rounded-ellipse 0003 geometry: denser wireframe, purple grid stopping short of cyan boundary, 20% smaller, centered.
 # 4. Both Projection and Mollweide square tiles use the same visible inside-edge inset glow; both SVG drawings glow on the same synchronized 6.4s cycle.
 # 5. Preserve the current Projection/Mollweide submenu layout and every unrelated viewer behavior.
 # AUTHORIZED CHANGES: viewer/GV-beta-0007Y.py and its dedicated launcher/ECO record only.
@@ -83,8 +83,8 @@ display(Javascript(r"""
   const response=await fetch(BASE_URL,{cache:"no-store"});
   if(!response.ok)throw new Error("GV-BETA-0007X RETURNED HTTP "+response.status);
   const source=await response.text();
-  const htmlMatches=[...source.matchAll(/display\\(HTML\\(\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/g)];
-  const jsMatches=[...source.matchAll(/display\\(Javascript\\(r\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/g)];
+  const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
+  const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
   if(!htmlMatches.length||!jsMatches.length)throw new Error("GV-BETA-0007Y COULD NOT EXTRACT 7X BASELINE");
   htmlMatches.forEach(match=>document.body.insertAdjacentHTML("beforeend",match[1]));
   jsMatches.forEach(match=>{const script=document.createElement("script");script.textContent=match[1];document.body.appendChild(script)});
@@ -93,7 +93,7 @@ display(Javascript(r"""
   const versionLabel=await waitFor(()=>root.querySelector("#gv-version-label"));
   versionLabel.textContent="V-7Y";
 
-  const approvedMollweide=`<svg viewBox="0 0 64 64" aria-hidden="true"><ellipse class="gv-mol-outline" cx="32" cy="32" rx="25" ry="17"/><path class="gv-mol-grid" d="M12 32H52"/><path class="gv-mol-grid" d="M13.5 25.5C21 22 43 22 50.5 25.5M13.5 38.5C21 42 43 42 50.5 38.5"/><path class="gv-mol-grid" d="M18 18.5C22.5 24 22.5 40 18 45.5M24.5 16.5C28 23 28 41 24.5 47.5M32 15V49M39.5 16.5C36 23 36 41 39.5 47.5M46 18.5C41.5 24 41.5 40 46 45.5"/></svg>`;
+  const approvedMollweide=`<svg viewBox="0 0 64 64" aria-hidden="true"><ellipse class="gv-mol-outline" cx="32" cy="32" rx="25.5" ry="16.5"/><path class="gv-mol-grid" d="M11 32H53"/><path class="gv-mol-grid" d="M12.5 25.2C21.5 21.8 42.5 21.8 51.5 25.2"/><path class="gv-mol-grid" d="M12.5 38.8C21.5 42.2 42.5 42.2 51.5 38.8"/><path class="gv-mol-grid" d="M32 17.5V46.5"/><path class="gv-mol-grid" d="M25 18.4C20.5 23.8 20.5 40.2 25 45.6"/><path class="gv-mol-grid" d="M39 18.4C43.5 23.8 43.5 40.2 39 45.6"/><path class="gv-mol-grid" d="M18.5 20.3C13.7 26 13.7 38 18.5 43.7"/><path class="gv-mol-grid" d="M45.5 20.3C50.3 26 50.3 38 45.5 43.7"/></svg>`;
 
   function synchronize(){
     const projection=root.querySelector(".gv-viewer-menu-icon.gv-projection-icon");
@@ -122,6 +122,7 @@ display(Javascript(r"""
     if(!projection||!mollweide||!pSvg||!mSvg)return false;
     const p=getComputedStyle(projection),m=getComputedStyle(mollweide),pBefore=getComputedStyle(projection,"::before"),mBefore=getComputedStyle(mollweide,"::before"),ps=getComputedStyle(pSvg),ms=getComputedStyle(mSvg);
     const tile=mollweide.getBoundingClientRect(),svg=mSvg.getBoundingClientRect();
+    const exactGeometry=mSvg.innerHTML.includes('rx="25.5" ry="16.5"')&&mSvg.innerHTML.includes('M11 32H53')&&mSvg.innerHTML.includes('M45.5 20.3C50.3 26 50.3 38 45.5 43.7');
     const checks={
       projectionTileAnimation:p.animationName==="none",
       mollweideTileAnimation:m.animationName==="none",
@@ -133,10 +134,11 @@ display(Javascript(r"""
       sameStrokeDuration:ps.animationDuration===ms.animationDuration&&ps.animationDuration==="6.4s",
       mollweideWidth:Math.round(svg.width)===24,
       mollweideHeight:Math.round(svg.height)===24,
-      mollweideCentered:Math.abs((tile.left+tile.width/2)-(svg.left+svg.width/2))<1.1&&Math.abs((tile.top+tile.height/2)-(svg.top+svg.height/2))<1.1
+      mollweideCentered:Math.abs((tile.left+tile.width/2)-(svg.left+svg.width/2))<1.1&&Math.abs((tile.top+tile.height/2)-(svg.top+svg.height/2))<1.1,
+      exactApproved0003Geometry:exactGeometry
     };
     const passed=Object.values(checks).every(Boolean);
-    window.GV7Y_VALIDATION={passed,checks,cycle:"6.4s",phase:"simultaneous-class-activation",mollweidePrototype:"0003"};
+    window.GV7Y_VALIDATION={passed,checks,cycle:"6.4s",phase:"simultaneous-class-activation",mollweidePrototype:"0003-exact"};
     if(!passed)throw new Error("GV-BETA-0007Y CONTRACT FAILED "+JSON.stringify(window.GV7Y_VALIDATION));
     return true;
   }
