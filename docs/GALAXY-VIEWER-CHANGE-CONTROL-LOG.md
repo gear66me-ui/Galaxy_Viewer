@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-19f5a381314e — GV 7AD: symmetric dual-column menu and projection-mode dimming
+
+**Recorded:** 2026-08-08T18:45:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`19f5a381314e1ebb336f7d25c4df9fdb54163301`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/19f5a381314e1ebb336f7d25c4df9fdb54163301)  
+**Parent/baseline:** `b18c38d508998957d9fbaa20c6c78236f7140214`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b18c38d508998957d9fbaa20c6c78236f7140214...19f5a381314e1ebb336f7d25c4df9fdb54163301)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AD: symmetric dual-column menu and projection-mode dimming
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AD.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b622c1f6f1979b2944a3732c83dcc228adbc3eaf37644eb6f47d8a80cf377b05`
+- Bytes: `0` → `13309`
+- Lines: `0` → `216`
+- Characters: `0` → `13307`
+- Inserted lines: `216`
+- Deleted lines: `0`
+- Inserted characters: `13307`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 216 - 0 = 216` — **PASS**
+- Character balance: `0 + 13307 - 0 = 13307` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AD.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AD
+# PURPOSE: Make the left main menu and right Projection submenu mathematically symmetric and dim inactive left rows while Projection mode is open.
+# USER REQUEST:
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AD.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: GV-beta-0007AC baseline except the authorized symmetric menu geometry, label sizing/spacing, Projection-mode dimming, and V-7AD version label.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-012721c34180 — 0058: anchor tip-first radial swirl capture at frame 284
 
 **Recorded:** 2026-08-08T18:18:46-05:00  
