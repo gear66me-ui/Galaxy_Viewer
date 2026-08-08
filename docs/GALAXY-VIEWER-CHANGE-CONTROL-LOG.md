@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c1adb9e4b9f0 — GV 7AD: add symmetric menu launcher
+
+**Recorded:** 2026-08-08T18:45:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c1adb9e4b9f0634eaf67dc5b99eb87876ad37ea8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c1adb9e4b9f0634eaf67dc5b99eb87876ad37ea8)  
+**Parent/baseline:** `662eab17bb69f4c9a4aac0f4f6a83bd6d89041c5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/662eab17bb69f4c9a4aac0f4f6a83bd6d89041c5...c1adb9e4b9f0634eaf67dc5b99eb87876ad37ea8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AD: add symmetric menu launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/7AD.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `421eca78c2a5e8888aeb8d2e6a8ad13e5e936cbb5be579d656a69d96d8da2437`
+- Bytes: `0` → `2846`
+- Lines: `0` → `45`
+- Characters: `0` → `2839`
+- Inserted lines: `45`
+- Deleted lines: `0`
+- Inserted characters: `2839`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 45 - 0 = 45` — **PASS**
+- Character balance: `0 + 2839 - 0 = 2839` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/7AD.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AD
+PURPOSE: Dedicated launcher for validating mathematically symmetric dual-column menu geometry and Projection-mode dimming.
+AUTHORIZED CHANGES: mobile/beta/7AD.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007AD.py. Splash animation is not loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-19f5a381314e — GV 7AD: symmetric dual-column menu and projection-mode dimming
 
 **Recorded:** 2026-08-08T18:45:05-05:00  
