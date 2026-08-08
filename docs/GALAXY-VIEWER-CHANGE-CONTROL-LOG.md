@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-4fcbabc3ffa7 — GV 7Z: add disciplined shared-glow launcher
+
+**Recorded:** 2026-08-08T16:54:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4fcbabc3ffa70ad84ef152ed08c2339fdb6986d6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4fcbabc3ffa70ad84ef152ed08c2339fdb6986d6)  
+**Parent/baseline:** `2adec5ee532090d85af11c917f5cb0e637e66665`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2adec5ee532090d85af11c917f5cb0e637e66665...4fcbabc3ffa70ad84ef152ed08c2339fdb6986d6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7Z: add disciplined shared-glow launcher
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/7Z.html` — additions: `45`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`mobile/beta/7Z.html`**
+
+```text
+PURPOSE: Dedicated launcher for validating disciplined identical Projection/Mollweide glow behavior.
+AUTHORIZED CHANGES: mobile/beta/7Z.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007Z.py.
+```
+
+### Search tags
+
+`ADD`, `BETA`, `DISCIPLINED`, `GLOW`, `HTML`, `LAUNCHER`, `MOBILE`, `SHARED`
+
+---
 ## AUTO-74e533db85b5 — GV 7Z: unify Projection and Mollweide glow behavior
 
 **Recorded:** 2026-08-08T16:54:45-05:00  
