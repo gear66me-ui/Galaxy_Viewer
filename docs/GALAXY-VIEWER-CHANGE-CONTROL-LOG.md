@@ -88,6 +88,42 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-ddfff2374ad8 — GV 7X: add validation launcher
+
+**Recorded:** 2026-08-08T16:16:52-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ddfff2374ad8bb5a0aed50f6250b702b673682c9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ddfff2374ad8bb5a0aed50f6250b702b673682c9)  
+**Parent/baseline:** `b23a1db3aea5f83fd566b53aae6e6e685210a3ec`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b23a1db3aea5f83fd566b53aae6e6e685210a3ec...ddfff2374ad8bb5a0aed50f6250b702b673682c9)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7X: add validation launcher
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/7X.html` — additions: `45`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`mobile/beta/7X.html`**
+
+```text
+PURPOSE: Dedicated launcher for validating strong inset tile glow plus synchronized Projection/Mollweide icon-stroke glow and right-shifted Mollweide artwork.
+AUTHORIZED CHANGES: mobile/beta/7X.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007X.py.
+```
+
+### Search tags
+
+`ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `VALIDATION`
+
+---
 ## AUTO-6401bf8015b7 — GV 7X: strengthen inner tile glow and shift Mollweide icon right
 
 **Recorded:** 2026-08-08T16:16:39-05:00  
