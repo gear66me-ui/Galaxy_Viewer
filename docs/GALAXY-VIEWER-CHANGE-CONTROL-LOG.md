@@ -88,6 +88,41 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-5591d7f1b466 — GV 7Y: correct Mollweide geometry to exact approved 0003 prototype
+
+**Recorded:** 2026-08-08T16:48:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5591d7f1b4669a1c569780efc2e4d11fb56cdce6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5591d7f1b4669a1c569780efc2e4d11fb56cdce6)  
+**Parent/baseline:** `9fd4707495dcf2727917f71a81d1da2352943a21`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9fd4707495dcf2727917f71a81d1da2352943a21...5591d7f1b4669a1c569780efc2e4d11fb56cdce6)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7Y: correct Mollweide geometry to exact approved 0003 prototype
+```
+
+### Changed paths
+
+- **MODIFIED:** `viewer/GV-beta-0007Y.py` — additions: `8`, deletions: `6`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007Y.py`**
+
+```text
+# AUTHORIZED CHANGES: viewer/GV-beta-0007Y.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: Hamburger, target/SIMBAD, Aladin initialization, coordinate overlay/font, galaxy navigation, all unrelated menu rows, previous releases.
+```
+
+### Search tags
+
+`0003`, `0007Y`, `APPROVED`, `BETA`, `CORRECT`, `EXACT`, `GEOMETRY`, `MOLLWEIDE`, `PROTOTYPE`, `VIEWER`
+
+---
 ## AUTO-46c44c31bc4f — GV 7Y: add launcher for approved icon integration
 
 **Recorded:** 2026-08-08T16:47:58-05:00  
