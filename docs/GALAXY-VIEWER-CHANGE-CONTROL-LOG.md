@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-6a8f5f09afb4 — ECO 7X: document inner tile glow and Mollweide alignment proof
+
+**Recorded:** 2026-08-08T16:17:22-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6a8f5f09afb437f2b3722edadcb1d8083d54be7f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6a8f5f09afb437f2b3722edadcb1d8083d54be7f)  
+**Parent/baseline:** `4320748824b28ab410613fa70193c4e09560999f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4320748824b28ab410613fa70193c4e09560999f...6a8f5f09afb437f2b3722edadcb1d8083d54be7f)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+ECO 7X: document inner tile glow and Mollweide alignment proof
+```
+
+### Changed paths
+
+- **ADDED:** `docs/engineering-change-orders/GV-ECO-0007X.md` — additions: `170`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007X`, `ALIGNMENT`, `AND`, `CHANGE`, `DOCS`, `DOCUMENT`, `ECO`, `ENGINEERING`, `GLOW`, `INNER`, `MOLLWEIDE`, `ORDERS`, `PROOF`, `TILE`
+
+---
 ## AUTO-ddfff2374ad8 — GV 7X: add validation launcher
 
 **Recorded:** 2026-08-08T16:16:52-05:00  
