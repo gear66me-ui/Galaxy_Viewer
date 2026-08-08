@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-f7143014f4b6 — GV 7AA: center Mollweide by measured bounds and unify explicit inner glow
+
+**Recorded:** 2026-08-08T17:28:49-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f7143014f4b6f56668dbcf0665d6bf845890be29`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f7143014f4b6f56668dbcf0665d6bf845890be29)  
+**Parent/baseline:** `1018e00b033f494d03197951df3111cfe361a4b0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1018e00b033f494d03197951df3111cfe361a4b0...f7143014f4b6f56668dbcf0665d6bf845890be29)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AA: center Mollweide by measured bounds and unify explicit inner glow
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AA.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `da1e5390202fbfe96006a889405ae7a7cb41934d923cd7bbdfbd56bfd1de54ed`
+- Bytes: `0` → `10753`
+- Lines: `0` → `219`
+- Characters: `0` → `10751`
+- Inserted lines: `219`
+- Deleted lines: `0`
+- Inserted characters: `10751`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 219 - 0 = 219` — **PASS**
+- Character balance: `0 + 10751 - 0 = 10751` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AA.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AA
+# USER REQUEST:
+# AUTHORIZED CHANGES: viewer/GV-beta-0007AA.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: GV-beta-0007Z baseline behavior except the two authorized corrections: measured Mollweide centering and explicit synchronized interior glow.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cede2c2cd7fd — Fix 0057 boot syntax and delay target rotation
 
 **Recorded:** 2026-08-08T17:21:36-05:00  
