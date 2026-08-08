@@ -1,51 +1,80 @@
 <!doctype html>
+<!--
+GALAXY VIEWER CHANGE ORDER
+USER INSTRUCTION: Keep the Mollweide icon pulse slow and tense; glow the INSIDE of the square tile only, not the outside border. Keep the icon geometry glowing in sync with the tile interior. This timing is the reference rhythm for future menu icons so they can chime in unison.
+AUTHORIZED CHANGES: mobile/beta/mollweide-icon-0001.html only.
+PRESERVED BEHAVIOR: Mollweide SVG geometry and standalone prototype structure.
+-->
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GV Mollweide Icon 0001</title>
 <style>
-:root{--cyan:#8feaff;--violet:#9d7cff;--cycle:5.2s}
+:root{--cyan:#8feaff;--violet:#9d7cff;--cycle:6.4s}
 *{box-sizing:border-box}
 html,body{margin:0;background:#000;width:100%;height:100%}
 body{display:grid;place-items:center}
 .cell{
-  width:64px;height:64px;border:1px solid #324754;border-radius:7px;
-  display:grid;place-items:center;
-  background:radial-gradient(ellipse at center,rgba(35,80,110,.10),rgba(0,0,0,.95) 72%);
-  box-shadow:0 0 7px rgba(98,216,255,.16),inset 0 0 4px rgba(98,216,255,.06);
-  animation:tilePulse var(--cycle) cubic-bezier(.45,0,.2,1) infinite;
+  position:relative;
+  width:64px;
+  height:64px;
+  border:1px solid #324754;
+  border-radius:7px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:#020408;
+  box-shadow:none;
+}
+.cell::before{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:5px;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,rgba(79,166,255,.06) 0%,rgba(38,56,88,.035) 42%,rgba(0,0,0,0) 76%);
+  box-shadow:inset 0 0 8px rgba(98,216,255,.025),inset 0 0 2px rgba(157,124,255,.02);
+  animation:tileInteriorPulse var(--cycle) cubic-bezier(.42,0,.18,1) infinite;
 }
 svg{
-  width:48px;height:48px;overflow:visible;
-  animation:iconPulse var(--cycle) cubic-bezier(.45,0,.2,1) infinite;
+  position:relative;
+  z-index:1;
+  width:48px;
+  height:48px;
+  overflow:visible;
+  animation:iconPulse var(--cycle) cubic-bezier(.42,0,.18,1) infinite;
 }
 .outline,.grid{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .outline{stroke:var(--cyan);stroke-width:1.8}
 .grid{stroke:var(--violet);stroke-width:1.25;opacity:.98}
-@keyframes tilePulse{
+@keyframes tileInteriorPulse{
   0%,100%{
-    background:radial-gradient(ellipse at center,rgba(28,54,74,.08),rgba(0,0,0,.96) 74%);
-    box-shadow:0 0 6px rgba(98,216,255,.12),inset 0 0 4px rgba(98,216,255,.05);
+    opacity:.48;
+    background:radial-gradient(ellipse at 50% 50%,rgba(79,166,255,.035) 0%,rgba(26,34,54,.025) 42%,rgba(0,0,0,0) 76%);
+    box-shadow:inset 0 0 7px rgba(98,216,255,.02),inset 0 0 2px rgba(157,124,255,.015);
   }
-  18%{
-    background:radial-gradient(ellipse at center,rgba(42,93,128,.14),rgba(3,5,12,.95) 72%);
-    box-shadow:0 0 8px rgba(98,216,255,.22),inset 0 0 6px rgba(98,216,255,.10);
+  24%{
+    opacity:.68;
+    background:radial-gradient(ellipse at 50% 50%,rgba(79,166,255,.09) 0%,rgba(42,58,92,.055) 46%,rgba(0,0,0,0) 77%);
+    box-shadow:inset 0 0 10px rgba(98,216,255,.07),inset 0 0 5px rgba(157,124,255,.045);
   }
-  50%{
-    background:radial-gradient(ellipse at center,rgba(79,166,255,.28),rgba(26,20,58,.96) 72%);
-    box-shadow:0 0 6px rgba(240,237,255,.86),0 0 16px rgba(98,216,255,.76),inset 0 0 13px rgba(157,124,255,.34);
+  52%{
+    opacity:1;
+    background:radial-gradient(ellipse at 50% 50%,rgba(96,191,255,.28) 0%,rgba(61,76,138,.18) 36%,rgba(38,25,78,.12) 58%,rgba(0,0,0,0) 80%);
+    box-shadow:inset 0 0 18px rgba(98,216,255,.30),inset 0 0 9px rgba(157,124,255,.22),inset 0 0 3px rgba(255,255,255,.13);
   }
-  72%{
-    background:radial-gradient(ellipse at center,rgba(42,93,128,.14),rgba(3,5,12,.95) 72%);
-    box-shadow:0 0 8px rgba(98,216,255,.22),inset 0 0 6px rgba(98,216,255,.10);
+  76%{
+    opacity:.70;
+    background:radial-gradient(ellipse at 50% 50%,rgba(79,166,255,.10) 0%,rgba(42,58,92,.06) 46%,rgba(0,0,0,0) 77%);
+    box-shadow:inset 0 0 10px rgba(98,216,255,.075),inset 0 0 5px rgba(157,124,255,.05);
   }
 }
 @keyframes iconPulse{
-  0%,100%{opacity:.54;filter:drop-shadow(0 0 1px rgba(143,234,255,.18))}
-  18%{opacity:.68;filter:drop-shadow(0 0 2px rgba(143,234,255,.30))}
-  50%{opacity:1;filter:drop-shadow(0 0 4px rgba(143,234,255,.98)) drop-shadow(0 0 10px rgba(79,166,255,.75)) drop-shadow(0 0 15px rgba(157,124,255,.62))}
-  72%{opacity:.68;filter:drop-shadow(0 0 2px rgba(143,234,255,.30))}
+  0%,100%{opacity:.54;filter:drop-shadow(0 0 1px rgba(143,234,255,.16))}
+  24%{opacity:.68;filter:drop-shadow(0 0 2px rgba(143,234,255,.28))}
+  52%{opacity:1;filter:drop-shadow(0 0 4px rgba(143,234,255,.98)) drop-shadow(0 0 9px rgba(79,166,255,.76)) drop-shadow(0 0 14px rgba(157,124,255,.58))}
+  76%{opacity:.68;filter:drop-shadow(0 0 2px rgba(143,234,255,.30))}
 }
 </style>
 </head>
