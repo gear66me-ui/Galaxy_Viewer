@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-892ca9d758aa — Add Mollweide projection preview and synchronized glow
+
+**Recorded:** 2026-08-08T14:29:17-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`892ca9d758aa46f621ca00917d357a88cef0fcb1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/892ca9d758aa46f621ca00917d357a88cef0fcb1)  
+**Parent/baseline:** `84e4891f0c31630a962b5fec5e047607d63a766b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/84e4891f0c31630a962b5fec5e047607d63a766b...892ca9d758aa46f621ca00917d357a88cef0fcb1)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add Mollweide projection preview and synchronized glow
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007T.py` — additions: `113`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007T`, `ADD`, `AND`, `BETA`, `GLOW`, `MOLLWEIDE`, `PREVIEW`, `PROJECTION`, `SYNCHRONIZED`, `VIEWER`
+
+---
 ## AUTO-0218e02ae0d9 — Add 7S Projection activation launcher
 
 **Recorded:** 2026-08-08T13:44:42-05:00  
