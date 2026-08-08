@@ -15,6 +15,7 @@ display(HTML("""
   overflow:hidden!important;
   background:#020408!important;
   box-shadow:0 0 10px rgba(98,216,255,.38)!important;
+  animation:none!important;
 }
 #aladin-cosmic-command-test .gv-viewer-menu-icon.gv-projection-icon::before,
 #aladin-cosmic-command-test .gv-projection-option-icon::before{
@@ -32,6 +33,7 @@ display(HTML("""
 #aladin-cosmic-command-test .gv-projection-option-icon svg{
   position:relative!important;
   z-index:1!important;
+  animation:none!important;
 }
 #aladin-cosmic-command-test .gv-viewer-menu-icon.gv-projection-icon.gv-pulse-synced::before,
 #aladin-cosmic-command-test .gv-projection-option-icon.gv-pulse-synced::before{
