@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-4202e1d53fad — GV 7AC: expand Projection submenu to five rows
+
+**Recorded:** 2026-08-08T18:06:47-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4202e1d53fad061fad21ffec80cecff3fda2efdd`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4202e1d53fad061fad21ffec80cecff3fda2efdd)  
+**Parent/baseline:** `0d608e78b9d5efe257a4cbb2b4a1133d09a8865f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0d608e78b9d5efe257a4cbb2b4a1133d09a8865f...4202e1d53fad061fad21ffec80cecff3fda2efdd)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AC: expand Projection submenu to five rows
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AC.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `3eb140e1376d69748c5f9579783e092fa20fcfd17f78d7b94c1ac0089e89475c`
+- Bytes: `0` → `7511`
+- Lines: `0` → `140`
+- Characters: `0` → `7509`
+- Inserted lines: `140`
+- Deleted lines: `0`
+- Inserted characters: `7509`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 140 - 0 = 140` — **PASS**
+- Character balance: `0 + 7509 - 0 = 7509` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AC.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AC
+# PURPOSE: Expand only the Projection submenu from one Mollweide row to five labeled projection rows while preserving 7AB behavior.
+# USER REQUEST:
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AC.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: GV-beta-0007AB baseline except the authorized Projection submenu expansion and V-7AC version label.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-262dc0cc9f3c — 0057A: add development playback inspector
 
 **Recorded:** 2026-08-08T18:04:10-05:00  
