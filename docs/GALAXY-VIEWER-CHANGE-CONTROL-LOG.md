@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-727ee40323c4 — ECO 7AB: document measured centering and Web Animations inner glow fix
+
+**Recorded:** 2026-08-08T17:37:52-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`727ee40323c4c0c97626e39a444fabe0a421000b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/727ee40323c4c0c97626e39a444fabe0a421000b)  
+**Parent/baseline:** `56f2db507ab9f20f6091e9d997b20f51ab7e16f5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/56f2db507ab9f20f6091e9d997b20f51ab7e16f5...727ee40323c4c0c97626e39a444fabe0a421000b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO 7AB: document measured centering and Web Animations inner glow fix
+```
+
+### Complete changed-path accounting
+
+#### `docs/engineering-change-orders/GV-ECO-0007AB.md`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `3d6882e13d9fa335d93ed5fb458109a099739060b9a2053cd5a9a2568abf9a81`
+- Bytes: `0` → `7854`
+- Lines: `0` → `202`
+- Characters: `0` → `7833`
+- Inserted lines: `202`
+- Deleted lines: `0`
+- Inserted characters: `7833`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 202 - 0 = 202` — **PASS**
+- Character balance: `0 + 7833 - 0 = 7833` — **PASS**
+
+### Recorded instruction evidence
+
+**`docs/engineering-change-orders/GV-ECO-0007AB.md`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AB
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0394c1384990 — GV 7AB: add corrected icon launcher
 
 **Recorded:** 2026-08-08T17:36:54-05:00  
