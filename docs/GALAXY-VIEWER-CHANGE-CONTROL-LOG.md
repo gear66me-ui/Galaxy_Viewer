@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-aed0f5753dbd — ECO 7AA: document measured centering and synchronized explicit inner glow
+
+**Recorded:** 2026-08-08T17:29:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`aed0f5753dbdbbe75bedc51bf3d2758bc6a8efd5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/aed0f5753dbdbbe75bedc51bf3d2758bc6a8efd5)  
+**Parent/baseline:** `49d87792b0824434889f3191377d9d09e4bd8b9e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/49d87792b0824434889f3191377d9d09e4bd8b9e...aed0f5753dbdbbe75bedc51bf3d2758bc6a8efd5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO 7AA: document measured centering and synchronized explicit inner glow
+```
+
+### Complete changed-path accounting
+
+#### `docs/engineering-change-orders/GV-ECO-0007AA.md`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `051bb5705e9db17d08b362bcfc7c94b19758614ae79aa8b65c4a59232d12044b`
+- Bytes: `0` → `6795`
+- Lines: `0` → `200`
+- Characters: `0` → `6773`
+- Inserted lines: `200`
+- Deleted lines: `0`
+- Inserted characters: `6773`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 200 - 0 = 200` — **PASS**
+- Character balance: `0 + 6773 - 0 = 6773` — **PASS**
+
+### Recorded instruction evidence
+
+**`docs/engineering-change-orders/GV-ECO-0007AA.md`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AA
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ba95dd0e6232 — GV 7AA: add launcher for measured Mollweide centering and shared glow
 
 **Recorded:** 2026-08-08T17:29:04-05:00  
