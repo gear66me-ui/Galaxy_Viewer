@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-937c1e4f14ca — ECO 7Z: document disciplined shared Projection/Mollweide glow correction
+
+**Recorded:** 2026-08-08T16:55:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`937c1e4f14ca3905b9d92e025a332f0b84827d8a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/937c1e4f14ca3905b9d92e025a332f0b84827d8a)  
+**Parent/baseline:** `146dbc1ed1b09efd88f84197e188673efa1813fb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/146dbc1ed1b09efd88f84197e188673efa1813fb...937c1e4f14ca3905b9d92e025a332f0b84827d8a)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+ECO 7Z: document disciplined shared Projection/Mollweide glow correction
+```
+
+### Changed paths
+
+- **ADDED:** `docs/engineering-change-orders/GV-ECO-0007Z.md` — additions: `139`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`0007Z`, `CHANGE`, `CORRECTION`, `DISCIPLINED`, `DOCS`, `DOCUMENT`, `ECO`, `ENGINEERING`, `GLOW`, `ORDERS`, `PROJECTIONMOLLWEIDE`, `SHARED`
+
+---
 ## AUTO-4fcbabc3ffa7 — GV 7Z: add disciplined shared-glow launcher
 
 **Recorded:** 2026-08-08T16:54:57-05:00  
