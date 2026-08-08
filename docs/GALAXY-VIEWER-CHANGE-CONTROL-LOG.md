@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-cdf2ca032d89 — Prototype Mollweide icon 20 percent smaller centered with inner-tile glow
+
+**Recorded:** 2026-08-08T16:37:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`cdf2ca032d8953707870e670d97e67a359a1c249`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/cdf2ca032d8953707870e670d97e67a359a1c249)  
+**Parent/baseline:** `85796e268bfdb34edaeff72f32ad38245bf7d6de`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/85796e268bfdb34edaeff72f32ad38245bf7d6de...cdf2ca032d8953707870e670d97e67a359a1c249)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Prototype Mollweide icon 20 percent smaller centered with inner-tile glow
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/mollweide-icon-glow-0002.html` — additions: `42`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`BETA`, `CENTERED`, `GLOW`, `HTML`, `ICON`, `INNER`, `MOBILE`, `MOLLWEIDE`, `PERCENT`, `PROTOTYPE`, `SMALLER`, `TILE`, `WITH`
+
+---
 ## AUTO-7371e149da76 — Prototype Projection icon with visible inner-tile glow
 
 **Recorded:** 2026-08-08T16:36:54-05:00  
