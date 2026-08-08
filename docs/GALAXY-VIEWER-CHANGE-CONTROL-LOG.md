@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b000eff10245 — 0057: isolate target from early vortex rotation
+
+**Recorded:** 2026-08-08T17:30:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b000eff102450e1c9970151c9703f63dfcc77eab`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b000eff102450e1c9970151c9703f63dfcc77eab)  
+**Parent/baseline:** `a27579e435b5354e08cdb7c3fda21fbf4e37f38a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a27579e435b5354e08cdb7c3fda21fbf4e37f38a...b000eff102450e1c9970151c9703f63dfcc77eab)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+0057: isolate target from early vortex rotation
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0057.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `b7aa37d847a1a802980ab786961b68546ec54f8f2ea318f45db2b67de6bbf63a`
+- SHA-256 after: `acc7ed68a82c804d980250077e1372e6875bd0ab307429effcd003c0d02aa98c`
+- Bytes: `17357` → `17426`
+- Lines: `31` → `31`
+- Characters: `17354` → `17423`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `69`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `31 + 1 - 1 = 31` — **PASS**
+- Character balance: `17354 + 69 - 0 = 17423` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-aed0f5753dbd — ECO 7AA: document measured centering and synchronized explicit inner glow
 
 **Recorded:** 2026-08-08T17:29:51-05:00  
