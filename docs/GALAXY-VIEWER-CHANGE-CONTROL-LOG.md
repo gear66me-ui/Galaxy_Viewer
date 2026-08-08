@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-328666593dc4 — ECO 7AC: document five-row Projection submenu expansion
+
+**Recorded:** 2026-08-08T18:08:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`328666593dc4431f58adf7b6a3c2918704af67a9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/328666593dc4431f58adf7b6a3c2918704af67a9)  
+**Parent/baseline:** `e9e275638cf1040a4ba92bab8e7962ca0eba6afb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e9e275638cf1040a4ba92bab8e7962ca0eba6afb...328666593dc4431f58adf7b6a3c2918704af67a9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO 7AC: document five-row Projection submenu expansion
+```
+
+### Complete changed-path accounting
+
+#### `docs/engineering-change-orders/GV-ECO-0007AC.md`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `56e368b456e68852990ba1c801ed5fbd443f4d36bf2717a95e641778cfef1ab1`
+- Bytes: `0` → `9442`
+- Lines: `0` → `283`
+- Characters: `0` → `9405`
+- Inserted lines: `283`
+- Deleted lines: `0`
+- Inserted characters: `9405`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 283 - 0 = 283` — **PASS**
+- Character balance: `0 + 9405 - 0 = 9405` — **PASS**
+
+### Recorded instruction evidence
+
+**`docs/engineering-change-orders/GV-ECO-0007AC.md`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AC
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a626848a4f56 — GV 7AC: add five-row Projection submenu launcher
 
 **Recorded:** 2026-08-08T18:07:21-05:00  
