@@ -93,6 +93,22 @@ display(Javascript(r"""
 
   const pointedMollweide=`<svg viewBox="0 0 64 64" aria-hidden="true"><path class="gv-mol-outline" d="M6 32C10 19 19.5 13.5 32 13.5C44.5 13.5 54 19 58 32C54 45 44.5 50.5 32 50.5C19.5 50.5 10 45 6 32Z"/><path class="gv-mol-grid" d="M6 32H58"/><path class="gv-mol-grid" d="M8.5 25.5C20 21.2 44 21.2 55.5 25.5M8.5 38.5C20 42.8 44 42.8 55.5 38.5"/><path class="gv-mol-grid" d="M32 13.5V50.5"/><path class="gv-mol-grid" d="M32 13.5C23.5 20 22 44 32 50.5M32 13.5C40.5 20 42 44 32 50.5"/><path class="gv-mol-grid" d="M32 13.5C16.5 21 14 43 32 50.5M32 13.5C47.5 21 50 43 32 50.5"/></svg>`;
 
+  function validatePulseContract(projection,mollweide){
+    const projectionTile=getComputedStyle(projection),mollweideTile=getComputedStyle(mollweide);
+    const projectionInterior=getComputedStyle(projection,"::before"),mollweideInterior=getComputedStyle(mollweide,"::before");
+    const projectionSvg=getComputedStyle(projection.querySelector("svg")),mollweideSvg=getComputedStyle(mollweide.querySelector("svg"));
+    const failures=[];
+    if(projectionTile.animationName!=="none"||mollweideTile.animationName!=="none")failures.push("tile element animation must be none");
+    if(projectionInterior.animationName!=="gv-projection-interior-pulse"||mollweideInterior.animationName!=="gv-projection-interior-pulse")failures.push("interior animation name mismatch");
+    if(projectionInterior.animationDuration!==mollweideInterior.animationDuration||projectionInterior.animationDuration!=="6.4s")failures.push("interior duration mismatch");
+    if(projectionSvg.animationName!=="gv-projection-icon-pulse"||mollweideSvg.animationName!=="gv-projection-icon-pulse")failures.push("icon animation name mismatch");
+    if(projectionSvg.animationDuration!==mollweideSvg.animationDuration||projectionSvg.animationDuration!=="6.4s")failures.push("icon duration mismatch");
+    if(failures.length)throw new Error("GV-BETA-0007V PULSE CONTRACT FAILED: "+failures.join("; "));
+    window.GV7V_VALIDATION={passed:true,cycle:"6.4s",tileAnimation:"none",interiorAnimation:"gv-projection-interior-pulse",iconAnimation:"gv-projection-icon-pulse",phaseReset:"simultaneous-class-activation",mollweideGeometry:"pointed-all-sky"};
+    console.info("GV-BETA-0007V PULSE CONTRACT PASS",window.GV7V_VALIDATION);
+    return true;
+  }
+
   function synchronizePulse(){
     const projection=root.querySelector(".gv-viewer-menu-icon.gv-projection-icon");
     const mollweide=root.querySelector(".gv-projection-option-icon");
@@ -100,6 +116,7 @@ display(Javascript(r"""
     [projection,mollweide].forEach(el=>el.classList.remove("gv-pulse-synced"));
     void root.offsetWidth;
     [projection,mollweide].forEach(el=>el.classList.add("gv-pulse-synced"));
+    requestAnimationFrame(()=>validatePulseContract(projection,mollweide));
     return true;
   }
 
