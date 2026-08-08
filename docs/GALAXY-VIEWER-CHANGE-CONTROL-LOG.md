@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-7ff2c60a1101 — Add standalone projection menu icon prototype
+
+**Recorded:** 2026-08-07T19:39:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7ff2c60a1101ca82d9043322aea65b1673e4e63c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7ff2c60a1101ca82d9043322aea65b1673e4e63c)  
+**Parent/baseline:** `a85e408895cfd5a6a2ff7d9a1be9a5475da9e8d3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a85e408895cfd5a6a2ff7d9a1be9a5475da9e8d3...7ff2c60a1101ca82d9043322aea65b1673e4e63c)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add standalone projection menu icon prototype
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/artwork/Menu-Icons/GV-menu-projection-0001.html` — additions: `1`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `ARTWORK`, `HTML`, `ICON`, `ICONS`, `MENU`, `PROJECTION`, `PROTOTYPE`, `STANDALONE`, `VIEWER`
+
+---
 ## AUTO-0483ffce8f09 — Coordinate overlay: use slashed-zero font 0005
 
 **Recorded:** 2026-08-07T17:19:03-05:00  
