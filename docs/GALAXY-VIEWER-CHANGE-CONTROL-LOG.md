@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-315315cef6de — Refine Mollweide icon pulse and tile glow
+
+**Recorded:** 2026-08-08T15:29:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`315315cef6de04382c9cb0d75d376d19f73bcb16`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/315315cef6de04382c9cb0d75d376d19f73bcb16)  
+**Parent/baseline:** `c167c19ffba9f0a6676fe931974c474bd728fe6a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c167c19ffba9f0a6676fe931974c474bd728fe6a...315315cef6de04382c9cb0d75d376d19f73bcb16)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Refine Mollweide icon pulse and tile glow
+```
+
+### Changed paths
+
+- **MODIFIED:** `mobile/beta/mollweide-icon-0001.html` — additions: `69`, deletions: `1`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`AND`, `BETA`, `GLOW`, `HTML`, `ICON`, `MOBILE`, `MOLLWEIDE`, `PULSE`, `REFINE`, `TILE`
+
+---
 ## AUTO-9c008f8acb8b — Add standalone Mollweide icon preview under live beta path
 
 **Recorded:** 2026-08-08T15:21:52-05:00  
