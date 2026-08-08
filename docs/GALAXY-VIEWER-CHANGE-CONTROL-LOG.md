@@ -88,6 +88,36 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-9c008f8acb8b — Add standalone Mollweide icon preview under live beta path
+
+**Recorded:** 2026-08-08T15:21:52-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9c008f8acb8be40575e98425b24b7ba5d8d824d3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9c008f8acb8be40575e98425b24b7ba5d8d824d3)  
+**Parent/baseline:** `6e81084e90605995626d7ad7ae51dc58ed61d1c8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6e81084e90605995626d7ad7ae51dc58ed61d1c8...9c008f8acb8be40575e98425b24b7ba5d8d824d3)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+Add standalone Mollweide icon preview under live beta path
+```
+
+### Changed paths
+
+- **ADDED:** `mobile/beta/mollweide-icon-0001.html` — additions: `1`, deletions: `0`
+
+### Recorded instruction evidence
+
+Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.
+
+### Search tags
+
+`ADD`, `BETA`, `HTML`, `ICON`, `LIVE`, `MOBILE`, `MOLLWEIDE`, `PATH`, `PREVIEW`, `STANDALONE`, `UNDER`
+
+---
 ## AUTO-b82420ecd552 — Add symmetric Mollweide icon prototype 0001
 
 **Recorded:** 2026-08-08T15:20:36-05:00  
