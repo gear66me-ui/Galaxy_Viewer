@@ -88,6 +88,41 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+## AUTO-6401bf8015b7 — GV 7X: strengthen inner tile glow and shift Mollweide icon right
+
+**Recorded:** 2026-08-08T16:16:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6401bf8015b75a631822cfeba40cde6e7261bc67`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6401bf8015b75a631822cfeba40cde6e7261bc67)  
+**Parent/baseline:** `366d48564a3ae8f364b20d63002a4338b83e162d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/366d48564a3ae8f364b20d63002a4338b83e162d...6401bf8015b75a631822cfeba40cde6e7261bc67)  
+**Author:** German Arciniegas  
+**Scope flag:** **SINGLE-FILE CHANGE**
+
+### Commit message
+
+```text
+GV 7X: strengthen inner tile glow and shift Mollweide icon right
+```
+
+### Changed paths
+
+- **ADDED:** `viewer/GV-beta-0007X.py` — additions: `181`, deletions: `0`
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007X.py`**
+
+```text
+# AUTHORIZED CHANGES: viewer/GV-beta-0007X.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: GV-beta-0007W baseline behavior except the authorized tile-inner-glow strength and Mollweide icon horizontal alignment.
+```
+
+### Search tags
+
+`0007X`, `AND`, `BETA`, `GLOW`, `ICON`, `INNER`, `MOLLWEIDE`, `RIGHT`, `SHIFT`, `STRENGTHEN`, `TILE`, `VIEWER`
+
+---
 ## AUTO-6a999fd35387 — GV-ECO-0007W: record request implementation and validation proof
 
 **Recorded:** 2026-08-08T15:58:30-05:00  
