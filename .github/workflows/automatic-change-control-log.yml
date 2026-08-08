@@ -24,7 +24,7 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Insert deterministic change record newest first
+      - name: Forensic account every changed file
         env:
           REPOSITORY: ${{ github.repository }}
           BRANCH_NAME: ${{ github.ref_name }}
@@ -36,186 +36,257 @@ jobs:
           COMMIT_URL: ${{ github.event.head_commit.url }}
         run: |
           python3 <<'PY'
+          import difflib
+          import hashlib
           import os
           import pathlib
           import re
           import subprocess
+          import sys
           from datetime import datetime, timezone
 
-          log_path = pathlib.Path("docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md")
+          log_path = pathlib.Path('docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md')
           log_path.parent.mkdir(parents=True, exist_ok=True)
+          commit_sha = os.environ['COMMIT_SHA']
+          before_sha = os.environ.get('BEFORE_SHA', '')
+          zero_sha = '0' * 40
 
-          commit_sha = os.environ["COMMIT_SHA"]
-          before_sha = os.environ.get("BEFORE_SHA", "")
-          zero_sha = "0" * 40
+          def git_text(*args):
+              return subprocess.check_output(['git', *args], text=True).rstrip('\n')
 
-          def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
+          def git_bytes(*args):
+              return subprocess.check_output(['git', *args])
 
           if not before_sha or before_sha == zero_sha:
               try:
-                  before_sha = git("rev-parse", f"{commit_sha}^")
+                  before_sha = git_text('rev-parse', f'{commit_sha}^')
               except subprocess.CalledProcessError:
                   before_sha = commit_sha
 
-          name_status = git("diff", "--name-status", "-M", before_sha, commit_sha)
-          numstat = git("diff", "--numstat", "-M", before_sha, commit_sha)
+          def blob_at(ref, path):
+              if not path:
+                  return b''
+              try:
+                  return git_bytes('show', f'{ref}:{path}')
+              except subprocess.CalledProcessError:
+                  return b''
 
-          stats = {}
-          for line in numstat.splitlines():
-              parts = line.split("\t", 2)
-              if len(parts) == 3:
-                  added, deleted, path = parts
-                  stats[path] = (added, deleted)
+          def sha256(data):
+              return hashlib.sha256(data).hexdigest()
 
+          def utf8_text(data):
+              if b'\x00' in data:
+                  return None
+              try:
+                  return data.decode('utf-8')
+              except UnicodeDecodeError:
+                  return None
+
+          def audit_text(old_text, new_text):
+              old_lines = old_text.splitlines(keepends=True)
+              new_lines = new_text.splitlines(keepends=True)
+              matcher = difflib.SequenceMatcher(a=old_lines, b=new_lines, autojunk=False)
+              inserted_lines = deleted_lines = inserted_blocks = deleted_blocks = changed_blocks = 0
+              for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+                  if tag == 'equal':
+                      continue
+                  changed_blocks += 1
+                  if tag in ('insert', 'replace'):
+                      inserted_lines += j2 - j1
+                      inserted_blocks += 1
+                  if tag in ('delete', 'replace'):
+                      deleted_lines += i2 - i1
+                      deleted_blocks += 1
+              chars = difflib.SequenceMatcher(a=old_text, b=new_text, autojunk=False)
+              inserted_chars = deleted_chars = 0
+              for tag, i1, i2, j1, j2 in chars.get_opcodes():
+                  if tag in ('insert', 'replace'):
+                      inserted_chars += j2 - j1
+                  if tag in ('delete', 'replace'):
+                      deleted_chars += i2 - i1
+              return {
+                  'old_lines': len(old_text.splitlines()),
+                  'new_lines': len(new_text.splitlines()),
+                  'old_chars': len(old_text),
+                  'new_chars': len(new_text),
+                  'inserted_lines': inserted_lines,
+                  'deleted_lines': deleted_lines,
+                  'inserted_chars': inserted_chars,
+                  'deleted_chars': deleted_chars,
+                  'inserted_blocks': inserted_blocks,
+                  'deleted_blocks': deleted_blocks,
+                  'changed_blocks': changed_blocks,
+              }
+
+          def hunk_count(old_path, new_path):
+              path = new_path or old_path
+              if not path:
+                  return 0
+              try:
+                  patch = git_text('diff', '--no-ext-diff', '--unified=0', before_sha, commit_sha, '--', path)
+              except subprocess.CalledProcessError:
+                  return 0
+              return sum(1 for line in patch.splitlines() if line.startswith('@@'))
+
+          name_status = git_text('diff', '--name-status', '-M', before_sha, commit_sha)
           changed = []
-          for line in name_status.splitlines():
-              parts = line.split("\t")
+          for raw in name_status.splitlines():
+              parts = raw.split('\t')
               if not parts:
                   continue
               code = parts[0]
-              if code.startswith("R") and len(parts) >= 3:
-                  old_path, new_path = parts[1], parts[2]
-                  added, deleted = stats.get(new_path, ("?", "?"))
-                  changed.append(("RENAMED", f"{old_path} → {new_path}", new_path, added, deleted))
+              kind = code[0]
+              if kind == 'R' and len(parts) >= 3:
+                  changed.append((f'RENAMED {code[1:]}%', parts[1], parts[2]))
+              elif kind == 'C' and len(parts) >= 3:
+                  changed.append((f'COPIED {code[1:]}%', parts[1], parts[2]))
               elif len(parts) >= 2:
+                  status = {'A':'ADDED','M':'MODIFIED','D':'DELETED','T':'TYPE CHANGED','U':'UNMERGED'}.get(kind, code)
                   path = parts[1]
-                  label = {
-                      "A": "ADDED",
-                      "M": "MODIFIED",
-                      "D": "DELETED",
-                      "C": "COPIED",
-                      "T": "TYPE CHANGED",
-                      "U": "UNMERGED",
-                  }.get(code[0], code)
-                  added, deleted = stats.get(path, ("?", "?"))
-                  changed.append((label, path, path, added, deleted))
+                  changed.append((status, path if kind == 'D' else None, path if kind != 'D' else None))
 
           marker_terms = (
-              "GALAXY VIEWER CHANGE ORDER",
-              "CHANGE ORDER:",
-              "USER INSTRUCTION:",
-              "AUTHORIZED CHANGES:",
-              "PRESERVED BEHAVIOR:",
-              "PURPOSE:",
+              'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+              'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+              'PRESERVED BEHAVIOR:', 'PURPOSE:'
           )
-          text_suffixes = {
-              ".py", ".html", ".htm", ".js", ".css", ".md", ".txt",
-              ".yml", ".yaml", ".json", ".xml", ".svg", ".toml", ".ini"
-          }
 
-          extracted = []
-          for status, display_path, actual_path, _, _ in changed:
-              path = pathlib.Path(actual_path)
-              if status == "DELETED" or path.suffix.lower() not in text_suffixes or not path.is_file():
-                  continue
-              try:
-                  lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-              except OSError:
-                  continue
-              matches = []
-              for line in lines:
-                  stripped = line.strip()
-                  if any(term in stripped.upper() for term in marker_terms):
-                      matches.append(stripped[:500])
-                  if len(matches) >= 20:
-                      break
-              if matches:
-                  extracted.append((actual_path, matches))
+          audits = []
+          failures = []
+          evidence = []
 
-          keywords = set()
-          for _, display_path, _, _, _ in changed:
-              normalized = display_path.replace("→", " ").replace("/", " ").replace("-", " ").replace("_", " ").replace(".", " ")
-              for token in normalized.upper().split():
-                  if len(token) >= 3 and not token.isdigit():
-                      keywords.add(token)
-          for token in os.environ.get("COMMIT_MESSAGE", "").upper().replace("-", " ").replace("_", " ").split():
-              cleaned = "".join(ch for ch in token if ch.isalnum())
-              if len(cleaned) >= 3:
-                  keywords.add(cleaned)
+          for status, old_path, new_path in changed:
+              display_path = f'{old_path} → {new_path}' if old_path and new_path and old_path != new_path else (new_path or old_path)
+              old_data = b'' if status == 'ADDED' else blob_at(before_sha, old_path or new_path)
+              new_data = b'' if status == 'DELETED' else blob_at(commit_sha, new_path or old_path)
+              old_text = utf8_text(old_data)
+              new_text = utf8_text(new_data)
+              text_mode = old_text is not None and new_text is not None
+              item = {
+                  'status': status,
+                  'path': display_path,
+                  'old_bytes': len(old_data),
+                  'new_bytes': len(new_data),
+                  'old_sha': sha256(old_data),
+                  'new_sha': sha256(new_data),
+                  'text': text_mode,
+              }
+              if text_mode:
+                  delta = audit_text(old_text, new_text)
+                  item.update(delta)
+                  item['hunks'] = hunk_count(old_path, new_path)
+                  item['line_ok'] = delta['old_lines'] + delta['inserted_lines'] - delta['deleted_lines'] == delta['new_lines']
+                  item['char_ok'] = delta['old_chars'] + delta['inserted_chars'] - delta['deleted_chars'] == delta['new_chars']
+                  if not (item['line_ok'] and item['char_ok']):
+                      failures.append(display_path)
+                  if new_text:
+                      matches = []
+                      for line in new_text.splitlines():
+                          stripped = line.strip()
+                          if any(term in stripped.upper() for term in marker_terms):
+                              matches.append(stripped[:500])
+                          if len(matches) >= 30:
+                              break
+                      if matches:
+                          evidence.append((display_path, matches))
+              audits.append(item)
 
-          timestamp = os.environ.get("COMMIT_TIMESTAMP") or datetime.now(timezone.utc).isoformat()
-          author = os.environ.get("COMMIT_AUTHOR") or "Not recorded"
-          message = os.environ.get("COMMIT_MESSAGE") or "No commit message recorded"
-          commit_url = os.environ.get("COMMIT_URL") or f"https://github.com/{os.environ['REPOSITORY']}/commit/{commit_sha}"
+          timestamp = os.environ.get('COMMIT_TIMESTAMP') or datetime.now(timezone.utc).isoformat()
+          author = os.environ.get('COMMIT_AUTHOR') or 'Not recorded'
+          message = os.environ.get('COMMIT_MESSAGE') or 'No commit message recorded'
+          commit_url = os.environ.get('COMMIT_URL') or f"https://github.com/{os.environ['REPOSITORY']}/commit/{commit_sha}"
           compare_url = f"https://github.com/{os.environ['REPOSITORY']}/compare/{before_sha}...{commit_sha}"
-          scope_flag = "MULTI-FILE CHANGE — REVIEW SCOPE" if len(changed) > 1 else "SINGLE-FILE CHANGE"
+          overall = 'PASS' if not failures else 'FAIL'
 
-          entry = []
-          entry.append(f"## AUTO-{commit_sha[:12]} — {message.splitlines()[0]}")
-          entry.append("")
-          entry.append(f"**Recorded:** {timestamp}  ")
-          entry.append(f"**Repository:** `{os.environ['REPOSITORY']}`  ")
-          entry.append(f"**Branch:** `{os.environ['BRANCH_NAME']}`  ")
-          entry.append(f"**Source commit:** [`{commit_sha}`]({commit_url})  ")
-          entry.append(f"**Parent/baseline:** `{before_sha}`  ")
-          entry.append(f"**Comparison:** [View exact diff]({compare_url})  ")
-          entry.append(f"**Author:** {author}  ")
-          entry.append(f"**Scope flag:** **{scope_flag}**")
-          entry.append("")
-          entry.append("### Commit message")
-          entry.append("")
-          entry.append("```text")
-          entry.extend(message.splitlines())
-          entry.append("```")
-          entry.append("")
-          entry.append("### Changed paths")
-          entry.append("")
-          if changed:
-              for status, display_path, _, added, deleted in changed:
-                  entry.append(f"- **{status}:** `{display_path}` — additions: `{added}`, deletions: `{deleted}`")
+          entry = [
+              f'## AUTO-{commit_sha[:12]} — {message.splitlines()[0]}', '',
+              f'**Recorded:** {timestamp}  ',
+              f"**Repository:** `{os.environ['REPOSITORY']}`  ",
+              f"**Branch:** `{os.environ['BRANCH_NAME']}`  ",
+              f'**Source commit:** [`{commit_sha}`]({commit_url})  ',
+              f'**Parent/baseline:** `{before_sha}`  ',
+              f'**Comparison:** [View exact diff]({compare_url})  ',
+              f'**Author:** {author}  ',
+              f'**Changed-path count:** `{len(audits)}`  ',
+              f'**Forensic reconciliation:** **{overall}**', '',
+              '### Commit message', '', '```text', *message.splitlines(), '```', '',
+              '### Complete changed-path accounting', ''
+          ]
+
+          if not audits:
+              entry.append('- No changed paths detected.')
+
+          for a in audits:
+              entry.extend([
+                  f"#### `{a['path']}`", '',
+                  f"- Status: **{a['status']}**",
+                  f"- SHA-256 before: `{a['old_sha']}`",
+                  f"- SHA-256 after: `{a['new_sha']}`",
+                  f"- Bytes: `{a['old_bytes']}` → `{a['new_bytes']}`",
+              ])
+              if a['text']:
+                  entry.extend([
+                      f"- Lines: `{a['old_lines']}` → `{a['new_lines']}`",
+                      f"- Characters: `{a['old_chars']}` → `{a['new_chars']}`",
+                      f"- Inserted lines: `{a['inserted_lines']}`",
+                      f"- Deleted lines: `{a['deleted_lines']}`",
+                      f"- Inserted characters: `{a['inserted_chars']}`",
+                      f"- Deleted characters: `{a['deleted_chars']}`",
+                      f"- Unified diff hunks: `{a['hunks']}`",
+                      f"- Inserted blocks: `{a['inserted_blocks']}`",
+                      f"- Deleted blocks: `{a['deleted_blocks']}`",
+                      f"- Changed blocks: `{a['changed_blocks']}`",
+                      f"- Line balance: `{a['old_lines']} + {a['inserted_lines']} - {a['deleted_lines']} = {a['new_lines']}` — **{'PASS' if a['line_ok'] else 'FAIL'}**",
+                      f"- Character balance: `{a['old_chars']} + {a['inserted_chars']} - {a['deleted_chars']} = {a['new_chars']}` — **{'PASS' if a['char_ok'] else 'FAIL'}**",
+                  ])
+              else:
+                  entry.append('- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.')
+              entry.append('')
+
+          entry.extend(['### Recorded instruction evidence', ''])
+          if evidence:
+              for path, lines in evidence:
+                  entry.extend([f'**`{path}`**', '', '```text', *lines, '```', ''])
           else:
-              entry.append("- No changed paths were detected.")
-          entry.append("")
-          entry.append("### Recorded instruction evidence")
-          entry.append("")
-          if extracted:
-              for path, lines in extracted:
-                  entry.append(f"**`{path}`**")
-                  entry.append("")
-                  entry.append("```text")
-                  entry.extend(lines)
-                  entry.append("```")
-                  entry.append("")
-          else:
-              entry.append("Reason or user instruction not found in supported source comments. Refer to the commit message and exact diff; no intent has been invented.")
-              entry.append("")
-          entry.append("### Search tags")
-          entry.append("")
-          entry.append(", ".join(f"`{word}`" for word in sorted(keywords)[:50]) or "`UNTAGGED`")
-          entry.append("")
-          entry.append("---")
-          entry.append("")
-          new_entry = "\n".join(entry).rstrip() + "\n"
+              entry.extend(['No supported change-order marker was found in the changed text files.', 'The commit message and exact diff remain authoritative; intent has not been invented.', ''])
 
-          existing = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
-          existing = existing.replace(
-              "1. New entries are appended chronologically at the bottom.",
-              "1. Automated entries are listed in reverse chronological order, newest first."
-          )
+          entry.extend([
+              '### Audit rule', '',
+              'Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.',
+              'A reconciliation failure fails this workflow before the automated log commit is created.', '', '---', ''
+          ])
 
-          first_auto = re.search(r"(?m)^## AUTO-", existing)
+          new_entry = '\n'.join(entry).rstrip() + '\n'
+          existing = log_path.read_text(encoding='utf-8') if log_path.exists() else ''
+          first_auto = re.search(r'(?m)^## AUTO-', existing)
           if first_auto:
               fixed_header = existing[:first_auto.start()].rstrip()
               automated_text = existing[first_auto.start():].strip()
-              automated_entries = [block.strip() for block in re.split(r"(?m)(?=^## AUTO-)", automated_text) if block.strip()]
+              automated_entries = [b.strip() for b in re.split(r'(?m)(?=^## AUTO-)', automated_text) if b.strip()]
           else:
               fixed_header = existing.rstrip()
               automated_entries = []
+          automated_entries = [b for b in automated_entries if not b.startswith(f'## AUTO-{commit_sha[:12]} ')]
+          automated_entries.insert(0, new_entry.strip())
+          log_path.write_text(fixed_header + '\n\n' + '\n\n'.join(automated_entries).rstrip() + '\n', encoding='utf-8', newline='\n')
 
-          def recorded_timestamp(block):
-              match = re.search(r"(?m)^\*\*Recorded:\*\*\s+(.+?)\s{2}$", block)
-              return match.group(1).strip() if match else ""
+          summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
+          if summary_path:
+              with open(summary_path, 'a', encoding='utf-8') as summary:
+                  summary.write('# Galaxy Viewer forensic change audit\n\n')
+                  summary.write(f'- Commit: `{commit_sha}`\n- Baseline: `{before_sha}`\n- Changed paths: `{len(audits)}`\n- Reconciliation: **{overall}**\n\n')
+                  for a in audits:
+                      summary.write(f"## `{a['path']}`\n- Status: {a['status']}\n- Bytes: {a['old_bytes']} → {a['new_bytes']}\n")
+                      if a['text']:
+                          summary.write(f"- Lines: {a['old_lines']} → {a['new_lines']}\n- Characters: {a['old_chars']} → {a['new_chars']}\n- Blocks +/−: {a['inserted_blocks']}/{a['deleted_blocks']}\n- Balance: {'PASS' if a['line_ok'] and a['char_ok'] else 'FAIL'}\n")
+                      summary.write('\n')
 
-          automated_entries = [block for block in automated_entries if not block.startswith(f"## AUTO-{commit_sha[:12]} ")]
-          automated_entries.append(new_entry.strip())
-          automated_entries.sort(key=recorded_timestamp, reverse=True)
-
-          output = fixed_header + "\n" + "\n".join(automated_entries).rstrip() + "\n"
-          log_path.write_text(output, encoding="utf-8", newline="\n")
+          if failures:
+              print('FORENSIC RECONCILIATION FAILURE: ' + ', '.join(failures), file=sys.stderr)
+              sys.exit(1)
           PY
 
-      - name: Commit only the updated log
+      - name: Commit only the forensic log
         run: |
           if git diff --quiet -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md; then
             echo "No log change detected."
@@ -224,7 +295,7 @@ jobs:
 
           changed_paths="$(git diff --name-only)"
           if [ "$changed_paths" != "docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md" ]; then
-            echo "Unexpected workflow modification detected:"
+            echo "Unexpected workflow-side modification detected:"
             printf '%s\n' "$changed_paths"
             exit 1
           fi
@@ -232,5 +303,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md
-          git commit -m "Log change ${{ github.sha }}"
+          git commit -m "Forensic log for ${{ github.sha }}"
           git push origin HEAD:beta
