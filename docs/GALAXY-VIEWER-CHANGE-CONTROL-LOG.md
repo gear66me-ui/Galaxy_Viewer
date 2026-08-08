@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0394c1384990 — GV 7AB: add corrected icon launcher
+
+**Recorded:** 2026-08-08T17:36:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0394c13849901fe2567a5292d6583fb81f3d0072`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0394c13849901fe2567a5292d6583fb81f3d0072)  
+**Parent/baseline:** `1abfb0eed90dcf814d327149feae1fcecf3c3493`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1abfb0eed90dcf814d327149feae1fcecf3c3493...0394c13849901fe2567a5292d6583fb81f3d0072)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AB: add corrected icon launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/7AB.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `cf3ff42e7742748f5ab33e3c828116bb1d8fb34ec3eab35019f054d8e7a389a6`
+- Bytes: `0` → `2836`
+- Lines: `0` → `45`
+- Characters: `0` → `2829`
+- Inserted lines: `45`
+- Deleted lines: `0`
+- Inserted characters: `2829`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 45 - 0 = 45` — **PASS**
+- Character balance: `0 + 2829 - 0 = 2829` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/7AB.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AB
+PURPOSE: Dedicated launcher for final measured Mollweide centering and synchronized interior icon glow correction.
+AUTHORIZED CHANGES: mobile/beta/7AB.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads GV-beta-0007AB.py. Splash animation is not loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-77f53bed25d8 — GV 7AB: enforce measured Mollweide centering and shared inner glow
 
 **Recorded:** 2026-08-08T17:36:40-05:00  
