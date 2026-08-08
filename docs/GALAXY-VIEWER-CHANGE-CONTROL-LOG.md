@@ -88,6 +88,63 @@ Every pre-existing repository path and all repository settings.
 `CHANGE-CONTROL`, `AUDIT`, `REGRESSION`, `AUTHORIZATION`, `BETA`, `WORKFLOW`
 
 ---
+
+## AUTO-fc84467b1b87 — change-control: require complete per-file forensic accounting
+
+**Recorded:** 2026-08-08T17:04:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fc84467b1b8731434baab2aacd3aee991dafc926`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fc84467b1b8731434baab2aacd3aee991dafc926)  
+**Parent/baseline:** `b55b527faecfcd5b1cbebf32ef69621e0e725191`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b55b527faecfcd5b1cbebf32ef69621e0e725191...fc84467b1b8731434baab2aacd3aee991dafc926)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+change-control: require complete per-file forensic accounting
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `c7b8c16ca18b73f7f3571f55912afeda53aa2eeeb46512b99851963716140c01`
+- SHA-256 after: `8be09dba1936750417088b011d886dbb53364b509ad58069f6621d000488dc72`
+- Bytes: `9954` → `14501`
+- Lines: `236` → `307`
+- Characters: `9944` → `14479`
+- Inserted lines: `217`
+- Deleted lines: `146`
+- Inserted characters: `8296`
+- Deleted characters: `3761`
+- Unified diff hunks: `27`
+- Inserted blocks: `24`
+- Deleted blocks: `18`
+- Changed blocks: `24`
+- Line balance: `236 + 217 - 146 = 307` — **PASS**
+- Character balance: `9944 + 8296 - 3761 = 14479` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-937c1e4f14ca — ECO 7Z: document disciplined shared Projection/Mollweide glow correction
 
 **Recorded:** 2026-08-08T16:55:42-05:00  
@@ -118,6 +175,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007Z`, `CHANGE`, `CORRECTION`, `DISCIPLINED`, `DOCS`, `DOCUMENT`, `ECO`, `ENGINEERING`, `GLOW`, `ORDERS`, `PROJECTIONMOLLWEIDE`, `SHARED`
 
 ---
+
 ## AUTO-4fcbabc3ffa7 — GV 7Z: add disciplined shared-glow launcher
 
 **Recorded:** 2026-08-08T16:54:57-05:00  
@@ -154,6 +212,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `ADD`, `BETA`, `DISCIPLINED`, `GLOW`, `HTML`, `LAUNCHER`, `MOBILE`, `SHARED`
 
 ---
+
 ## AUTO-74e533db85b5 — GV 7Z: unify Projection and Mollweide glow behavior
 
 **Recorded:** 2026-08-08T16:54:45-05:00  
@@ -189,6 +248,7 @@ GV 7Z: unify Projection and Mollweide glow behavior
 `0007Z`, `AND`, `BEHAVIOR`, `BETA`, `GLOW`, `MOLLWEIDE`, `PROJECTION`, `UNIFY`, `VIEWER`
 
 ---
+
 ## AUTO-2de5d6549047 — ECO 7Y: record approved projection and Mollweide icon integration
 
 **Recorded:** 2026-08-08T16:49:45-05:00  
@@ -219,6 +279,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007Y`, `AND`, `APPROVED`, `CHANGE`, `DOCS`, `ECO`, `ENGINEERING`, `ICON`, `INTEGRATION`, `MOLLWEIDE`, `ORDERS`, `PROJECTION`, `RECORD`
 
 ---
+
 ## AUTO-e5f38f19a5cd — GV 7Y: point launcher to corrected approved 0003 integration
 
 **Recorded:** 2026-08-08T16:49:05-05:00  
@@ -255,6 +316,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `0003`, `APPROVED`, `BETA`, `CORRECTED`, `HTML`, `INTEGRATION`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-5591d7f1b466 — GV 7Y: correct Mollweide geometry to exact approved 0003 prototype
 
 **Recorded:** 2026-08-08T16:48:45-05:00  
@@ -290,6 +352,7 @@ GV 7Y: correct Mollweide geometry to exact approved 0003 prototype
 `0003`, `0007Y`, `APPROVED`, `BETA`, `CORRECT`, `EXACT`, `GEOMETRY`, `MOLLWEIDE`, `PROTOTYPE`, `VIEWER`
 
 ---
+
 ## AUTO-46c44c31bc4f — GV 7Y: add launcher for approved icon integration
 
 **Recorded:** 2026-08-08T16:47:58-05:00  
@@ -326,6 +389,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `ADD`, `APPROVED`, `BETA`, `FOR`, `HTML`, `ICON`, `INTEGRATION`, `LAUNCHER`, `MOBILE`
 
 ---
+
 ## AUTO-088517c4bc08 — GV 7Y: install approved projection and Mollweide icon glow prototypes
 
 **Recorded:** 2026-08-08T16:47:43-05:00  
@@ -361,6 +425,7 @@ GV 7Y: install approved projection and Mollweide icon glow prototypes
 `0007Y`, `AND`, `APPROVED`, `BETA`, `GLOW`, `ICON`, `INSTALL`, `MOLLWEIDE`, `PROJECTION`, `PROTOTYPES`, `VIEWER`
 
 ---
+
 ## AUTO-9b6a2c8d7875 — Refine Mollweide icon geometry prototype
 
 **Recorded:** 2026-08-08T16:41:20-05:00  
@@ -391,6 +456,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GEOMETRY`, `GLOW`, `HTML`, `ICON`, `MOBILE`, `MOLLWEIDE`, `PROTOTYPE`, `REFINE`
 
 ---
+
 ## AUTO-cdf2ca032d89 — Prototype Mollweide icon 20 percent smaller centered with inner-tile glow
 
 **Recorded:** 2026-08-08T16:37:09-05:00  
@@ -421,6 +487,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `CENTERED`, `GLOW`, `HTML`, `ICON`, `INNER`, `MOBILE`, `MOLLWEIDE`, `PERCENT`, `PROTOTYPE`, `SMALLER`, `TILE`, `WITH`
 
 ---
+
 ## AUTO-7371e149da76 — Prototype Projection icon with visible inner-tile glow
 
 **Recorded:** 2026-08-08T16:36:54-05:00  
@@ -451,6 +518,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GLOW`, `HTML`, `ICON`, `INNER`, `MOBILE`, `PROJECTION`, `PROTOTYPE`, `TILE`, `VISIBLE`, `WITH`
 
 ---
+
 ## AUTO-6a8f5f09afb4 — ECO 7X: document inner tile glow and Mollweide alignment proof
 
 **Recorded:** 2026-08-08T16:17:22-05:00  
@@ -481,6 +549,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007X`, `ALIGNMENT`, `AND`, `CHANGE`, `DOCS`, `DOCUMENT`, `ECO`, `ENGINEERING`, `GLOW`, `INNER`, `MOLLWEIDE`, `ORDERS`, `PROOF`, `TILE`
 
 ---
+
 ## AUTO-ddfff2374ad8 — GV 7X: add validation launcher
 
 **Recorded:** 2026-08-08T16:16:52-05:00  
@@ -517,6 +586,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `VALIDATION`
 
 ---
+
 ## AUTO-6401bf8015b7 — GV 7X: strengthen inner tile glow and shift Mollweide icon right
 
 **Recorded:** 2026-08-08T16:16:39-05:00  
@@ -552,6 +622,7 @@ GV 7X: strengthen inner tile glow and shift Mollweide icon right
 `0007X`, `AND`, `BETA`, `GLOW`, `ICON`, `INNER`, `MOLLWEIDE`, `RIGHT`, `SHIFT`, `STRENGTHEN`, `TILE`, `VIEWER`
 
 ---
+
 ## AUTO-6a999fd35387 — GV-ECO-0007W: record request implementation and validation proof
 
 **Recorded:** 2026-08-08T15:58:30-05:00  
@@ -582,6 +653,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007W`, `AND`, `CHANGE`, `DOCS`, `ECO`, `ENGINEERING`, `IMPLEMENTATION`, `ORDERS`, `PROOF`, `RECORD`, `REQUEST`, `VALIDATION`
 
 ---
+
 ## AUTO-103cdd8d19cd — GV-ECO-0007W: add dedicated validation launcher
 
 **Recorded:** 2026-08-08T15:57:49-05:00  
@@ -618,6 +690,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `0007W`, `ADD`, `BETA`, `DEDICATED`, `ECO`, `HTML`, `LAUNCHER`, `MOBILE`, `VALIDATION`
 
 ---
+
 ## AUTO-97bb6d8adb46 — GV-ECO-0007W: align Mollweide tile and synchronize inner-edge/icon glow
 
 **Recorded:** 2026-08-08T15:57:34-05:00  
@@ -653,6 +726,7 @@ GV-ECO-0007W: align Mollweide tile and synchronize inner-edge/icon glow
 `0007W`, `ALIGN`, `AND`, `BETA`, `ECO`, `EDGEICON`, `GLOW`, `INNER`, `MOLLWEIDE`, `SYNCHRONIZE`, `TILE`, `VIEWER`
 
 ---
+
 ## AUTO-ef5097a766b3 — ECO 7V: validate synchronized interior projection pulse
 
 **Recorded:** 2026-08-08T15:44:00-05:00  
@@ -683,6 +757,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007V`, `CHANGE`, `DOCS`, `ECO`, `ENGINEERING`, `INTERIOR`, `ORDERS`, `PROJECTION`, `PULSE`, `SYNCHRONIZED`, `VALIDATE`
 
 ---
+
 ## AUTO-44d20e7f1f21 — Point 7V launcher at runtime-validated viewer revision
 
 **Recorded:** 2026-08-08T15:42:00-05:00  
@@ -720,6 +795,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `POINT`, `REVISION`, `RUNTIME`, `VALIDATED`, `VIEWER`
 
 ---
+
 ## AUTO-62a051508e50 — GV 7V: add synchronized pulse runtime contract
 
 **Recorded:** 2026-08-08T15:41:47-05:00  
@@ -757,6 +833,7 @@ GV 7V: add synchronized pulse runtime contract
 `0007V`, `ADD`, `BETA`, `CONTRACT`, `PULSE`, `RUNTIME`, `SYNCHRONIZED`, `VIEWER`
 
 ---
+
 ## AUTO-451888c93696 — Point 7V launcher at validated viewer revision
 
 **Recorded:** 2026-08-08T15:41:09-05:00  
@@ -794,6 +871,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `POINT`, `REVISION`, `VALIDATED`, `VIEWER`
 
 ---
+
 ## AUTO-874d5fdb9b38 — GV 7V: block inherited outer pulse before validation
 
 **Recorded:** 2026-08-08T15:40:54-05:00  
@@ -831,6 +909,7 @@ GV 7V: block inherited outer pulse before validation
 `0007V`, `BEFORE`, `BETA`, `BLOCK`, `INHERITED`, `OUTER`, `PULSE`, `VALIDATION`, `VIEWER`
 
 ---
+
 ## AUTO-63b5d793a890 — Add 7V projection pulse validation launcher
 
 **Recorded:** 2026-08-08T15:40:19-05:00  
@@ -868,6 +947,7 @@ PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loa
 `ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `PROJECTION`, `PULSE`, `VALIDATION`
 
 ---
+
 ## AUTO-e33bb575b009 — GV 7V: synchronize Projection and Mollweide interior pulse
 
 **Recorded:** 2026-08-08T15:40:05-05:00  
@@ -905,6 +985,7 @@ GV 7V: synchronize Projection and Mollweide interior pulse
 `0007V`, `AND`, `BETA`, `INTERIOR`, `MOLLWEIDE`, `PROJECTION`, `PULSE`, `SYNCHRONIZE`, `VIEWER`
 
 ---
+
 ## AUTO-42436071547e — ECO: constrain Mollweide glow to tile interior only
 
 **Recorded:** 2026-08-08T15:37:41-05:00  
@@ -942,6 +1023,7 @@ PRESERVED BEHAVIOR: Mollweide SVG geometry and standalone prototype structure.
 `BETA`, `CONSTRAIN`, `ECO`, `GLOW`, `HTML`, `ICON`, `INTERIOR`, `MOBILE`, `MOLLWEIDE`, `ONLY`, `TILE`
 
 ---
+
 ## AUTO-315315cef6de — Refine Mollweide icon pulse and tile glow
 
 **Recorded:** 2026-08-08T15:29:31-05:00  
@@ -972,6 +1054,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AND`, `BETA`, `GLOW`, `HTML`, `ICON`, `MOBILE`, `MOLLWEIDE`, `PULSE`, `REFINE`, `TILE`
 
 ---
+
 ## AUTO-9c008f8acb8b — Add standalone Mollweide icon preview under live beta path
 
 **Recorded:** 2026-08-08T15:21:52-05:00  
@@ -1002,6 +1085,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `BETA`, `HTML`, `ICON`, `LIVE`, `MOBILE`, `MOLLWEIDE`, `PATH`, `PREVIEW`, `STANDALONE`, `UNDER`
 
 ---
+
 ## AUTO-b82420ecd552 — Add symmetric Mollweide icon prototype 0001
 
 **Recorded:** 2026-08-08T15:20:36-05:00  
@@ -1032,6 +1116,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0001`, `ADD`, `ARTWORK`, `HTML`, `ICON`, `ICONS`, `MENU`, `MOLLWEIDE`, `PROTOTYPE`, `SYMMETRIC`, `VIEWER`
 
 ---
+
 ## AUTO-d826f1fe0c3c — Add 7U Mollweide refinement launcher
 
 **Recorded:** 2026-08-08T14:38:01-05:00  
@@ -1062,6 +1147,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `MOLLWEIDE`, `REFINEMENT`
 
 ---
+
 ## AUTO-d744d522c3a9 — 7U: refine Mollweide projection tile geometry and synchronized glow
 
 **Recorded:** 2026-08-08T14:37:48-05:00  
@@ -1092,6 +1178,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007U`, `AND`, `BETA`, `GEOMETRY`, `GLOW`, `MOLLWEIDE`, `PROJECTION`, `REFINE`, `SYNCHRONIZED`, `TILE`, `VIEWER`
 
 ---
+
 ## AUTO-416aaa917cf3 — Add Galaxy Viewer 7T test launcher
 
 **Recorded:** 2026-08-08T14:29:29-05:00  
@@ -1122,6 +1209,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `BETA`, `GALAXY`, `HTML`, `LAUNCHER`, `MOBILE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-892ca9d758aa — Add Mollweide projection preview and synchronized glow
 
 **Recorded:** 2026-08-08T14:29:17-05:00  
@@ -1152,6 +1240,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007T`, `ADD`, `AND`, `BETA`, `GLOW`, `MOLLWEIDE`, `PREVIEW`, `PROJECTION`, `SYNCHRONIZED`, `VIEWER`
 
 ---
+
 ## AUTO-0218e02ae0d9 — Add 7S Projection activation launcher
 
 **Recorded:** 2026-08-08T13:44:42-05:00  
@@ -1182,6 +1271,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ACTIVATION`, `ADD`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `PROJECTION`
 
 ---
+
 ## AUTO-6d43c7a590ce — 7S: activate Projection menu with approved icon
 
 **Recorded:** 2026-08-08T13:44:28-05:00  
@@ -1212,6 +1302,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007S`, `ACTIVATE`, `APPROVED`, `BETA`, `ICON`, `MENU`, `PROJECTION`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-91b679a1678c — Refine projection icon with complete sphere and stretched projection grid
 
 **Recorded:** 2026-08-07T19:49:50-05:00  
@@ -1242,6 +1333,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AND`, `ARTWORK`, `COMPLETE`, `GRID`, `HTML`, `ICON`, `ICONS`, `MENU`, `PROJECTION`, `REFINE`, `SPHERE`, `STRETCHED`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-8e0486c225da — Add standalone reticle menu icon prototype
 
 **Recorded:** 2026-08-07T19:40:41-05:00  
@@ -1272,6 +1364,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ARTWORK`, `HTML`, `ICON`, `ICONS`, `MENU`, `PROTOTYPE`, `RETICLE`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-972168abd693 — Add standalone layers menu icon prototype
 
 **Recorded:** 2026-08-07T19:40:06-05:00  
@@ -1302,6 +1395,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ARTWORK`, `HTML`, `ICON`, `ICONS`, `LAYERS`, `MENU`, `PROTOTYPE`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-7ff2c60a1101 — Add standalone projection menu icon prototype
 
 **Recorded:** 2026-08-07T19:39:55-05:00  
@@ -1332,6 +1426,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ARTWORK`, `HTML`, `ICON`, `ICONS`, `MENU`, `PROJECTION`, `PROTOTYPE`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-0483ffce8f09 — Coordinate overlay: use slashed-zero font 0005
 
 **Recorded:** 2026-08-07T17:19:03-05:00  
@@ -1362,6 +1457,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `COORDINATE`, `FONT`, `MODULES`, `OVERLAY`, `SLASHED`, `USE`, `VIEWER`, `ZERO`
 
 ---
+
 ## AUTO-341ad4621b0c — Add files via upload
 
 **Recorded:** 2026-08-07T17:17:08-05:00  
@@ -1392,6 +1488,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `COORDINATE`, `DIGITS`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-58dbf03b62b0 — Make coordinate font 0005 workflow run on beta pushes
 
 **Recorded:** 2026-08-05T12:59:58-05:00  
@@ -1422,6 +1519,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `BETA`, `BUILD`, `COORDINATE`, `FONT`, `GITHUB`, `MAKE`, `PUSHES`, `RUN`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-e50ff691c1a6 — Fix coordinate font 0005 FontForge width type
 
 **Recorded:** 2026-08-05T12:54:55-05:00  
@@ -1452,6 +1550,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `ARTWORK`, `BUILD`, `COORDINATE`, `FIX`, `FONT`, `FONTFORGE`, `FONTLAB`, `FONTS`, `TYPE`, `VIEWER`, `WIDTH`
 
 ---
+
 ## AUTO-fb4bbbd6dd76 — Trigger forensic coordinate font 0005 build
 
 **Recorded:** 2026-08-05T00:04:39-05:00  
@@ -1482,6 +1581,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `ARTWORK`, `BUILD`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `FORENSIC`, `TRIGGER`, `VIEWER`
 
 ---
+
 ## AUTO-3447aedfc55d — Capture coordinate font 0005 build diagnostics
 
 **Recorded:** 2026-08-05T00:03:23-05:00  
@@ -1512,6 +1612,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `BUILD`, `CAPTURE`, `COORDINATE`, `DIAGNOSTICS`, `FONT`, `GITHUB`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-256c1786e7f9 — Trigger coordinate font 0005 build
 
 **Recorded:** 2026-08-05T00:01:51-05:00  
@@ -1542,6 +1643,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `BUILD`, `COORDINATE`, `FONT`, `GITHUB`, `TRIGGER`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-a65f2b41b4a9 — Add forensic builder for coordinate font 0005
 
 **Recorded:** 2026-08-04T23:56:59-05:00  
@@ -1572,6 +1674,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `ADD`, `ARTWORK`, `BUILD`, `BUILDER`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `FOR`, `FORENSIC`, `VIEWER`
 
 ---
+
 ## AUTO-46f61d2d4635 — Add workflow for coordinate font 0005
 
 **Recorded:** 2026-08-04T23:56:32-05:00  
@@ -1602,6 +1705,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `ADD`, `BUILD`, `COORDINATE`, `FONT`, `FOR`, `GITHUB`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-e58d7b246d48 — Pad latitude coordinate with leading zero
 
 **Recorded:** 2026-08-04T23:18:43-05:00  
@@ -1632,6 +1736,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `COORDINATE`, `LATITUDE`, `LEADING`, `MODULES`, `OVERLAY`, `PAD`, `VIEWER`, `WITH`, `ZERO`
 
 ---
+
 ## AUTO-2715624d8829 — Add 7R corrected coordinate inspection launcher
 
 **Recorded:** 2026-08-04T23:01:41-05:00  
@@ -1662,6 +1767,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `BETA`, `COORDINATE`, `CORRECTED`, `HTML`, `INSPECTION`, `LAUNCHER`, `MOBILE`
 
 ---
+
 ## AUTO-5490575d580a — Create 7R live coordinate and font correction build
 
 **Recorded:** 2026-08-04T23:01:19-05:00  
@@ -1692,6 +1798,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007R`, `AND`, `BETA`, `BUILD`, `COORDINATE`, `CORRECTION`, `CREATE`, `FONT`, `LIVE`, `VIEWER`
 
 ---
+
 ## AUTO-1a97323cd510 — Create coordinate overlay module 0003 with reliable font loading
 
 **Recorded:** 2026-08-04T23:00:27-05:00  
@@ -1722,6 +1829,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `COORDINATE`, `CREATE`, `FONT`, `LOADING`, `MODULE`, `MODULES`, `OVERLAY`, `RELIABLE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-0630e56e6580 — Repair 0057 target capture shader compatibility
 
 **Recorded:** 2026-08-04T22:53:43-05:00  
@@ -1752,6 +1860,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0057`, `ARTWORK`, `CAPTURE`, `COMPATIBILITY`, `GALAXY`, `HTML`, `REPAIR`, `SHADER`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`
 
 ---
+
 ## AUTO-4061d702e6a0 — Add GV-beta-0007Q inspection launcher
 
 **Recorded:** 2026-08-04T22:52:48-05:00  
@@ -1782,6 +1891,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007Q`, `ADD`, `BETA`, `HTML`, `INSPECTION`, `LAUNCHER`, `MOBILE`
 
 ---
+
 ## AUTO-fc0204d40196 — Create GV-beta-0007Q independent coordinate overlay build
 
 **Recorded:** 2026-08-04T22:52:15-05:00  
@@ -1816,6 +1926,7 @@ Create GV-beta-0007Q independent coordinate overlay build
 `0007Q`, `BETA`, `BUILD`, `COORDINATE`, `CREATE`, `INDEPENDENT`, `OVERLAY`, `VIEWER`
 
 ---
+
 ## AUTO-14f8b2d8deab — Update Galaxy-Viewer-Singularity-0057.html
 
 **Recorded:** 2026-08-04T22:47:38-05:00  
@@ -1846,6 +1957,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0057HTML`, `ARTWORK`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `UPDATE`, `VIEWER`
 
 ---
+
 ## AUTO-7b746786bae0 — Point beta launcher to GV-beta-0007P
 
 **Recorded:** 2026-08-04T22:44:58-05:00  
@@ -1876,6 +1988,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007P`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-e946ef4a5a84 — Create GV-beta-0007P without coordinate strip
 
 **Recorded:** 2026-08-04T22:25:56-05:00  
@@ -1910,6 +2023,7 @@ Create GV-beta-0007P without coordinate strip
 `0007P`, `BETA`, `COORDINATE`, `CREATE`, `STRIP`, `VIEWER`, `WITHOUT`
 
 ---
+
 ## AUTO-cf113b887be4 — Create 0057 target capture motion refinement
 
 **Recorded:** 2026-08-04T01:33:21-05:00  
@@ -1940,6 +2054,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0057`, `ARTWORK`, `CAPTURE`, `CREATE`, `GALAXY`, `HTML`, `MOTION`, `REFINEMENT`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`
 
 ---
+
 ## AUTO-78e12a6a965e — Point beta launcher to GV-beta-0007O
 
 **Recorded:** 2026-08-04T00:53:59-05:00  
@@ -1970,6 +2085,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007O`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-ad808d0d6252 — Create 7O with hardened coordinate module 0002
 
 **Recorded:** 2026-08-04T00:52:50-05:00  
@@ -2004,6 +2120,7 @@ Create 7O with hardened coordinate module 0002
 `0002`, `0007O`, `BETA`, `COORDINATE`, `CREATE`, `HARDENED`, `MODULE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-06cc382f23fb — Add hardened coordinate overlay module 0002
 
 **Recorded:** 2026-08-03T22:30:44-05:00  
@@ -2034,6 +2151,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0002`, `ADD`, `COORDINATE`, `HARDENED`, `MODULE`, `MODULES`, `OVERLAY`, `VIEWER`
 
 ---
+
 ## AUTO-c76e3939053b — Create splash 0056 with 12 percent larger credit
 
 **Recorded:** 2026-08-03T22:14:38-05:00  
@@ -2064,6 +2182,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0056`, `ARTWORK`, `CREATE`, `CREDIT`, `GALAXY`, `HTML`, `LARGER`, `PERCENT`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-def498ec5395 — Point beta launcher to GV-beta-0007N
 
 **Recorded:** 2026-08-03T22:11:26-05:00  
@@ -2094,6 +2213,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007N`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-218d8f90822c — Create 7N with external coordinate overlay module
 
 **Recorded:** 2026-08-03T22:03:53-05:00  
@@ -2128,6 +2248,7 @@ Create 7N with external coordinate overlay module
 `0007N`, `BETA`, `COORDINATE`, `CREATE`, `EXTERNAL`, `MODULE`, `OVERLAY`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-d12a0b9f8c65 — Add standalone coordinate module test page 0001
 
 **Recorded:** 2026-08-03T21:42:09-05:00  
@@ -2158,6 +2279,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0001`, `ADD`, `ARTWORK`, `COORDINATE`, `GRID`, `HTML`, `MODULE`, `PAGE`, `STANDALONE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-5c86c79b7868 — Add standalone coordinate overlay module 0001
 
 **Recorded:** 2026-08-03T21:41:44-05:00  
@@ -2188,6 +2310,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0001`, `ADD`, `COORDINATE`, `MODULE`, `MODULES`, `OVERLAY`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-32e737f4bdda — Add GAL and grid toggles to coordinate lab 0007
 
 **Recorded:** 2026-08-03T20:33:23-05:00  
@@ -2218,6 +2341,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007`, `ADD`, `AND`, `ARTWORK`, `COORDINATE`, `GAL`, `GRID`, `HTML`, `LAB`, `TOGGLES`, `VIEWER`
 
 ---
+
 ## AUTO-0479a82c4e6d — Add independently shiftable coordinate grid lab 0006
 
 **Recorded:** 2026-08-03T20:13:45-05:00  
@@ -2248,6 +2372,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006`, `ADD`, `ARTWORK`, `COORDINATE`, `GRID`, `HTML`, `INDEPENDENTLY`, `LAB`, `SHIFTABLE`, `VIEWER`
 
 ---
+
 ## AUTO-6e9dad54c83a — Add 290px coordinate grid lab 0005 for 390px layouts
 
 **Recorded:** 2026-08-03T19:28:13-05:00  
@@ -2278,6 +2403,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0005`, `290PX`, `390PX`, `ADD`, `ARTWORK`, `COORDINATE`, `FOR`, `GRID`, `HTML`, `LAB`, `LAYOUTS`, `VIEWER`
 
 ---
+
 ## AUTO-c884f7eaab8d — Add minus-only coordinate grid lab 0004
 
 **Recorded:** 2026-08-03T18:55:06-05:00  
@@ -2308,6 +2434,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0004`, `ADD`, `ARTWORK`, `COORDINATE`, `GRID`, `HTML`, `LAB`, `MINUS`, `ONLY`, `VIEWER`
 
 ---
+
 ## AUTO-d25573b39233 — Add fixed-pixel coordinate grid lab 0003
 
 **Recorded:** 2026-08-03T18:44:28-05:00  
@@ -2338,6 +2465,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `ADD`, `ARTWORK`, `COORDINATE`, `FIXED`, `GRID`, `HTML`, `LAB`, `PIXEL`, `VIEWER`
 
 ---
+
 ## AUTO-a36b336c1924 — Add measured maximum-width coordinate grid 0002
 
 **Recorded:** 2026-08-03T18:03:31-05:00  
@@ -2368,6 +2496,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0002`, `ADD`, `ARTWORK`, `COORDINATE`, `GRID`, `HTML`, `MAXIMUM`, `MEASURED`, `VIEWER`, `WIDTH`
 
 ---
+
 ## AUTO-d28f9b6303cc — Add standalone 290px coordinate grid inspection widget
 
 **Recorded:** 2026-08-03T17:44:29-05:00  
@@ -2398,6 +2527,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `290PX`, `ADD`, `ARTWORK`, `COORDINATE`, `GRID`, `HTML`, `INSPECTION`, `STANDALONE`, `VIEWER`, `WIDGET`
 
 ---
+
 ## AUTO-9b0c771bf02c — Create standalone CFD flow-field demonstration
 
 **Recorded:** 2026-08-03T17:22:19-05:00  
@@ -2428,6 +2558,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ARTWORK`, `CFD`, `CREATE`, `DEMONSTRATION`, `FIELD`, `FLOW`, `GALAXY`, `HTML`, `SPLASH`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-6671bf1285fd — Launch GV-beta-0007M from public beta app
 
 **Recorded:** 2026-08-03T17:14:42-05:00  
@@ -2458,6 +2589,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007M`, `APP`, `BETA`, `FROM`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `PUBLIC`
 
 ---
+
 ## AUTO-00a3a1235a3d — Add files via upload
 
 **Recorded:** 2026-08-03T17:13:14-05:00  
@@ -2492,6 +2624,7 @@ Add files via upload
 `0007M`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-d911fb02d306 — Launch corrected GV-beta-0007L-fixed from public beta app
 
 **Recorded:** 2026-08-03T17:08:03-05:00  
@@ -2522,6 +2655,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007L`, `APP`, `BETA`, `CORRECTED`, `FIXED`, `FROM`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `PUBLIC`
 
 ---
+
 ## AUTO-de0eebd53a58 — Add files via upload
 
 **Recorded:** 2026-08-03T17:01:56-05:00  
@@ -2556,6 +2690,7 @@ Add files via upload
 `0007L`, `ADD`, `BETA`, `FILES`, `FIXED`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-7832c0c28816 — Create splash 0055 with corrected pre-message convergence timing
 
 **Recorded:** 2026-08-03T16:23:27-05:00  
@@ -2586,6 +2721,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0055`, `ARTWORK`, `CONVERGENCE`, `CORRECTED`, `CREATE`, `GALAXY`, `HTML`, `MESSAGE`, `PRE`, `SINGULARITY`, `SPLASH`, `TIMING`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-3fc302e9a48c — Launch GV-beta-0007L from public beta app
 
 **Recorded:** 2026-08-03T16:21:52-05:00  
@@ -2616,6 +2752,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007L`, `APP`, `BETA`, `FROM`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `PUBLIC`
 
 ---
+
 ## AUTO-ee547ec0bcec — Restore runnable 7L launcher with all test scripts
 
 **Recorded:** 2026-08-03T16:14:11-05:00  
@@ -2646,6 +2783,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007L`, `ALL`, `BETA`, `HTML`, `LAUNCHER`, `MOBILE`, `RESTORE`, `RUNNABLE`, `SCRIPTS`, `TEST`, `WITH`
 
 ---
+
 ## AUTO-8cfeb87e0023 — Remove failed GV-beta-0007L test launcher
 
 **Recorded:** 2026-08-03T15:58:39-05:00  
@@ -2676,6 +2814,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007L`, `BETA`, `FAILED`, `HTML`, `LAUNCHER`, `MOBILE`, `REMOVE`, `TEST`
 
 ---
+
 ## AUTO-f656903cb42e — Create direct Android launcher for GV-beta-0007L
 
 **Recorded:** 2026-08-03T15:55:22-05:00  
@@ -2706,6 +2845,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007L`, `ANDROID`, `BETA`, `CREATE`, `DIRECT`, `FOR`, `HTML`, `LAUNCHER`, `MOBILE`, `TEST`
 
 ---
+
 ## AUTO-0c54a53a6809 — Create 7L maximum coordinate test buttons
 
 **Recorded:** 2026-08-03T15:51:35-05:00  
@@ -2740,6 +2880,7 @@ Create 7L maximum coordinate test buttons
 `0007L`, `BETA`, `BUTTONS`, `COORDINATE`, `CREATE`, `MAXIMUM`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-843ad98688ac — Create splash 0054 with pre-message four-point convergence
 
 **Recorded:** 2026-08-03T15:37:39-05:00  
@@ -2770,6 +2911,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0054`, `ARTWORK`, `CONVERGENCE`, `CREATE`, `FOUR`, `GALAXY`, `HTML`, `MESSAGE`, `POINT`, `PRE`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-1e45803ae897 — Replace coordinate lab with exact 7E reference and adjustable copy
 
 **Recorded:** 2026-08-03T15:11:26-05:00  
@@ -2800,6 +2942,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADJUSTABLE`, `AND`, `BOX`, `COORDINATE`, `COPY`, `EXACT`, `HTML`, `LAB`, `REFERENCE`, `REPLACE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-f6f48e32917e — Add standalone coordinate box laboratory 0001
 
 **Recorded:** 2026-08-03T14:51:17-05:00  
@@ -2830,6 +2973,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0001`, `ADD`, `BOX`, `COORDINATE`, `HTML`, `LAB`, `LABORATORY`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-83fa12dc8180 — Create splash 0053 with 20 percent smaller credit
 
 **Recorded:** 2026-08-03T14:31:20-05:00  
@@ -2860,6 +3004,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0053`, `ARTWORK`, `CREATE`, `CREDIT`, `GALAXY`, `HTML`, `PERCENT`, `SINGULARITY`, `SMALLER`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-7f1aa03471c0 — Create splash 0052 with continuous cyclone target join
 
 **Recorded:** 2026-08-03T13:10:11-05:00  
@@ -2890,6 +3035,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0052`, `ARTWORK`, `CONTINUOUS`, `CREATE`, `CYCLONE`, `GALAXY`, `HTML`, `JOIN`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-13be7b21bb87 — Launch Galaxy Viewer beta 7K
 
 **Recorded:** 2026-08-03T12:57:48-05:00  
@@ -2920,6 +3066,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `VIEWER`
 
 ---
+
 ## AUTO-40539ac4c7c1 — Trigger centered coordinate font 0004 build
 
 **Recorded:** 2026-08-03T12:56:29-05:00  
@@ -2955,6 +3102,7 @@ Trigger centered coordinate font 0004 build
 `0004`, `ARTWORK`, `BUILD`, `CENTERED`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `TRIGGER`, `VIEWER`
 
 ---
+
 ## AUTO-2bf3b27ad0d7 — Create coordinate font 0004 and viewer 7K workflow
 
 **Recorded:** 2026-08-03T12:55:26-05:00  
@@ -2985,6 +3133,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0004`, `AND`, `BUILD`, `COORDINATE`, `CREATE`, `FONT`, `GITHUB`, `VIEWER`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-833494345a6a — Create centered coordinate font 0004 builder
 
 **Recorded:** 2026-08-03T12:54:57-05:00  
@@ -3020,6 +3169,7 @@ Create centered coordinate font 0004 builder
 `0004`, `ARTWORK`, `BUILD`, `BUILDER`, `CENTERED`, `COORDINATE`, `CREATE`, `FONT`, `FONTLAB`, `FONTS`, `VIEWER`
 
 ---
+
 ## AUTO-47cf6fdf497e — Create splash 0051 with velocity-matched three-turn target cyclone
 
 **Recorded:** 2026-08-03T12:32:03-05:00  
@@ -3050,6 +3200,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0051`, `ARTWORK`, `CREATE`, `CYCLONE`, `GALAXY`, `HTML`, `MATCHED`, `SINGULARITY`, `SPLASH`, `TARGET`, `THREE`, `TURN`, `VELOCITY`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-1a7784d6f40e — Create splash 0050 with continuous shrinking target cyclone
 
 **Recorded:** 2026-08-03T12:09:16-05:00  
@@ -3080,6 +3231,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0050`, `ARTWORK`, `CONTINUOUS`, `CREATE`, `CYCLONE`, `GALAXY`, `HTML`, `SHRINKING`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-f025e60000f7 — Launch Galaxy Viewer beta 7J
 
 **Recorded:** 2026-08-03T01:58:42-05:00  
@@ -3110,6 +3262,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `VIEWER`
 
 ---
+
 ## AUTO-49a449b65c4c — Capture exact viewer 7J build failure
 
 **Recorded:** 2026-08-03T01:56:49-05:00  
@@ -3140,6 +3293,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BUILD`, `CAPTURE`, `COORDINATE`, `EXACT`, `FAILURE`, `FONT`, `GITHUB`, `VIEWER`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-2e22ce17f236 — Trigger rebased viewer 7J build
 
 **Recorded:** 2026-08-03T01:55:21-05:00  
@@ -3170,6 +3324,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BUILD`, `COORDINATE`, `FONT`, `GITHUB`, `REBASED`, `TRIGGER`, `VIEWER`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-83a908e69abc — Rebase before committing viewer 7J
 
 **Recorded:** 2026-08-03T01:54:53-05:00  
@@ -3200,6 +3355,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BEFORE`, `BUILD`, `COMMITTING`, `COORDINATE`, `FONT`, `GITHUB`, `REBASE`, `VIEWER`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-225ac808a449 — Fix viewer 7J verification pattern
 
 **Recorded:** 2026-08-03T01:54:02-05:00  
@@ -3230,6 +3386,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `FIX`, `PATTERN`, `VERIFICATION`, `VIEWER`
 
 ---
+
 ## AUTO-b6687c119b42 — Allow serialized outline rounding in 7J build
 
 **Recorded:** 2026-08-03T01:53:06-05:00  
@@ -3266,6 +3423,7 @@ Authorized changes:
 `ALLOW`, `ARTWORK`, `BUILD`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `OUTLINE`, `ROUNDING`, `SERIALIZED`, `VIEWER`
 
 ---
+
 ## AUTO-6e1f3d333f68 — Use binary metric verification for viewer 7J build
 
 **Recorded:** 2026-08-03T01:51:03-05:00  
@@ -3302,6 +3460,7 @@ Authorized changes:
 `ARTWORK`, `BINARY`, `BUILD`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `FOR`, `METRIC`, `USE`, `VERIFICATION`, `VIEWER`
 
 ---
+
 ## AUTO-2dea41d67f69 — Generate viewer 7J from exact 7I baseline
 
 **Recorded:** 2026-08-03T01:49:21-05:00  
@@ -3338,6 +3497,7 @@ Authorized changes:
 `ARTWORK`, `BASELINE`, `BUILD`, `COORDINATE`, `EXACT`, `FONT`, `FONTLAB`, `FONTS`, `FROM`, `GENERATE`, `VIEWER`
 
 ---
+
 ## AUTO-15c10aabd6e5 — Extend coordinate font 0003 workflow for 7J
 
 **Recorded:** 2026-08-03T01:48:22-05:00  
@@ -3368,6 +3528,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `BUILD`, `COORDINATE`, `EXTEND`, `FONT`, `FOR`, `GITHUB`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-8627f3a5f54e — Trigger coordinate font 0003 build
 
 **Recorded:** 2026-08-03T01:45:46-05:00  
@@ -3398,6 +3559,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `ARTWORK`, `BUILD`, `COORDINATE`, `FONT`, `FONTLAB`, `FONTS`, `TRIGGER`, `VIEWER`
 
 ---
+
 ## AUTO-d7816ac61ecf — Add coordinate font 0003 build workflow
 
 **Recorded:** 2026-08-03T01:44:50-05:00  
@@ -3428,6 +3590,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `ADD`, `BUILD`, `COORDINATE`, `FONT`, `GITHUB`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-33ec18c11189 — Create splash 0049 with cyclone-to-zero and delayed target release
 
 **Recorded:** 2026-08-03T01:33:49-05:00  
@@ -3458,6 +3621,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0049`, `AND`, `ARTWORK`, `CREATE`, `CYCLONE`, `DELAYED`, `GALAXY`, `HTML`, `RELEASE`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`, `WITH`, `ZERO`
 
 ---
+
 ## AUTO-d240fbb814a6 — Launch Galaxy Viewer beta 7I
 
 **Recorded:** 2026-08-03T00:28:10-05:00  
@@ -3488,6 +3652,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `VIEWER`
 
 ---
+
 ## AUTO-d1809346fcf8 — Create 7I with compact stable X lambda Y geometry
 
 **Recorded:** 2026-08-03T00:27:20-05:00  
@@ -3522,6 +3687,7 @@ Create 7I with compact stable X lambda Y geometry
 `0007I`, `BETA`, `COMPACT`, `CREATE`, `GEOMETRY`, `LAMBDA`, `STABLE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-f4e5b77e9f05 — Create original target frame inspection lab 0048
 
 **Recorded:** 2026-08-02T20:57:13-05:00  
@@ -3552,6 +3718,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0048`, `ARTWORK`, `CREATE`, `FRAME`, `GALAXY`, `HTML`, `INSPECTION`, `LAB`, `ORIGINAL`, `SINGULARITY`, `SPLASH`, `TARGET`, `VIEWER`
 
 ---
+
 ## AUTO-798967f4dc9b — Launch Galaxy Viewer beta 7H
 
 **Recorded:** 2026-08-02T20:56:58-05:00  
@@ -3582,6 +3749,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `VIEWER`
 
 ---
+
 ## AUTO-868dc356bb19 — Create 7H with compact frame label and 60 percent final D
 
 **Recorded:** 2026-08-02T20:56:14-05:00  
@@ -3616,6 +3784,7 @@ Create 7H with compact frame label and 60 percent final D
 `0007H`, `AND`, `BETA`, `COMPACT`, `CREATE`, `FINAL`, `FRAME`, `LABEL`, `PERCENT`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-7d712074410d — Create experimental splash 0047 with elastic reticle funnel
 
 **Recorded:** 2026-08-02T20:32:25-05:00  
@@ -3646,6 +3815,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0047`, `ARTWORK`, `CREATE`, `ELASTIC`, `EXPERIMENTAL`, `FUNNEL`, `GALAXY`, `HTML`, `RETICLE`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-b9680fc3249a — Launch Galaxy Viewer beta 7G
 
 **Recorded:** 2026-08-02T20:27:44-05:00  
@@ -3676,6 +3846,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `MOBILE`, `VIEWER`
 
 ---
+
 ## AUTO-62232ef2e5bf — Create 7G with centered frame label and fixed four-decimal coordinates
 
 **Recorded:** 2026-08-02T20:27:02-05:00  
@@ -3710,6 +3881,7 @@ Create 7G with centered frame label and fixed four-decimal coordinates
 `0007G`, `AND`, `BETA`, `CENTERED`, `COORDINATES`, `CREATE`, `DECIMAL`, `FIXED`, `FOUR`, `FRAME`, `LABEL`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-f8117efd0dae — Create splash 0046 with refined name spacing
 
 **Recorded:** 2026-08-02T20:12:53-05:00  
@@ -3740,6 +3912,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0046`, `ARTWORK`, `CREATE`, `GALAXY`, `HTML`, `NAME`, `REFINED`, `SINGULARITY`, `SPACING`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-5f30b16ce194 — Launch Galaxy Viewer beta 7F with larger version marquee
 
 **Recorded:** 2026-08-02T20:11:13-05:00  
@@ -3770,6 +3943,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `HTML`, `INDEX`, `LARGER`, `LAUNCH`, `MARQUEE`, `MOBILE`, `VERSION`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-2f040e086386 — Release 7F with two decimal coordinate frames and slower pulse
 
 **Recorded:** 2026-08-02T20:10:40-05:00  
@@ -3804,6 +3978,7 @@ Release 7F with two decimal coordinate frames and slower pulse
 `0007F`, `AND`, `BETA`, `COORDINATE`, `DECIMAL`, `FRAMES`, `PULSE`, `RELEASE`, `SLOWER`, `TWO`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-634b369a3d45 — Create standalone splash 0045 with four-point laser convergence finale
 
 **Recorded:** 2026-08-02T19:36:55-05:00  
@@ -3834,6 +4009,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0045`, `ARTWORK`, `CONVERGENCE`, `CREATE`, `FINALE`, `FOUR`, `GALAXY`, `HTML`, `LASER`, `POINT`, `SINGULARITY`, `SPLASH`, `STANDALONE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-e98f68a774a8 — Create GV-beta-0007F with ICRSd display capitalization
 
 **Recorded:** 2026-08-02T19:08:21-05:00  
@@ -3868,6 +4044,7 @@ Create GV-beta-0007F with ICRSd display capitalization
 `0007F`, `BETA`, `CAPITALIZATION`, `CREATE`, `DISPLAY`, `ICRSD`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-946eda4cd077 — Limit all coordinate decimals to four places
 
 **Recorded:** 2026-08-02T19:08:10-05:00  
@@ -3902,6 +4079,7 @@ Limit all coordinate decimals to four places
 `0007E`, `ALL`, `BETA`, `COORDINATE`, `DECIMALS`, `FOUR`, `LIMIT`, `PLACES`, `VIEWER`
 
 ---
+
 ## AUTO-0c7c0b7ab6a3 — Create standalone splash 0044 with enlarged spaced engraving
 
 **Recorded:** 2026-08-02T19:03:35-05:00  
@@ -3932,6 +4110,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0044`, `ARTWORK`, `CREATE`, `ENGRAVING`, `ENLARGED`, `GALAXY`, `HTML`, `SINGULARITY`, `SPACED`, `SPLASH`, `STANDALONE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-9016e7c4a044 — Contain native coordinate frames and preserve centered lambda
 
 **Recorded:** 2026-08-02T19:02:59-05:00  
@@ -3966,6 +4145,7 @@ Contain native coordinate frames and preserve centered lambda
 `0007E`, `AND`, `BETA`, `CENTERED`, `CONTAIN`, `COORDINATE`, `FRAMES`, `LAMBDA`, `NATIVE`, `PRESERVE`, `VIEWER`
 
 ---
+
 ## AUTO-5b4f18c995b5 — Use Aladin native frame formats with centered lambda and frame pulse
 
 **Recorded:** 2026-08-02T18:52:10-05:00  
@@ -4000,6 +4180,7 @@ Use Aladin native frame formats with centered lambda and frame pulse
 `0007E`, `ALADIN`, `AND`, `BETA`, `CENTERED`, `FORMATS`, `FRAME`, `LAMBDA`, `NATIVE`, `PULSE`, `USE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-f5581077fa7b — Repair 7E lambda and add GAL ICRS ICRSd frame cycle
 
 **Recorded:** 2026-08-02T18:33:22-05:00  
@@ -4034,6 +4215,7 @@ Repair 7E lambda and add GAL ICRS ICRSd frame cycle
 `0007E`, `ADD`, `AND`, `BETA`, `CYCLE`, `FRAME`, `GAL`, `ICRS`, `ICRSD`, `LAMBDA`, `REPAIR`, `VIEWER`
 
 ---
+
 ## AUTO-7166acf648c3 — Create standalone splash singularity 0043 with delayed fine cross
 
 **Recorded:** 2026-08-02T17:48:31-05:00  
@@ -4064,6 +4246,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0043`, `ARTWORK`, `CREATE`, `CROSS`, `DELAYED`, `FINE`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `STANDALONE`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-e4ea405ad854 — Move 7E left coordinate 25px right
 
 **Recorded:** 2026-08-02T17:33:38-05:00  
@@ -4098,6 +4281,7 @@ Move 7E left coordinate 25px right
 `0007E`, `25PX`, `BETA`, `COORDINATE`, `LEFT`, `MOVE`, `RIGHT`, `VIEWER`
 
 ---
+
 ## AUTO-0fe14e5e936d — Point mobile beta launcher to GV-beta-0007E
 
 **Recorded:** 2026-08-02T17:26:06-05:00  
@@ -4128,6 +4312,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007E`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-530597c46b38 — Create GV-beta-0007E from verified 7C coordinate baseline
 
 **Recorded:** 2026-08-02T17:25:27-05:00  
@@ -4162,6 +4347,7 @@ Create GV-beta-0007E from verified 7C coordinate baseline
 `0007E`, `BASELINE`, `BETA`, `COORDINATE`, `CREATE`, `FROM`, `VERIFIED`, `VIEWER`
 
 ---
+
 ## AUTO-003de498f936 — Connector diagnostic test for case 12082774
 
 **Recorded:** 2026-08-02T17:16:04-05:00  
@@ -4192,6 +4378,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `12082774`, `CASE`, `CONNECTOR`, `DIAGNOSTIC`, `FOR`, `TEST`, `TXT`
 
 ---
+
 ## AUTO-dd9fed4fd8db — Create 0042 with full-screen singularity flash
 
 **Recorded:** 2026-08-02T17:07:34-05:00  
@@ -4222,6 +4409,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0042`, `ARTWORK`, `CREATE`, `FLASH`, `FULL`, `GALAXY`, `HTML`, `SCREEN`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-dfe7897e5a3c — Point beta launcher to GV-beta-0007D
 
 **Recorded:** 2026-08-02T16:06:03-05:00  
@@ -4252,6 +4440,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007D`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-2a827e739561 — Create GV-beta-0007D live coordinate correction
 
 **Recorded:** 2026-08-02T16:04:45-05:00  
@@ -4286,6 +4475,7 @@ Create GV-beta-0007D live coordinate correction
 `0007D`, `BETA`, `COORDINATE`, `CORRECTION`, `CREATE`, `LIVE`, `VIEWER`
 
 ---
+
 ## AUTO-57002ae85e4b — Create final raw centered singularity 0041
 
 **Recorded:** 2026-08-02T15:59:17-05:00  
@@ -4316,6 +4506,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0041`, `ARTWORK`, `CENTERED`, `CREATE`, `FINAL`, `GALAXY`, `HTML`, `RAW`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-68246ed46eaa — Create Lab 0004 with 50 percent coordinate enlargement and 51px correction
 
 **Recorded:** 2026-08-02T15:43:49-05:00  
@@ -4346,6 +4537,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0004`, `51PX`, `AND`, `COORDINATE`, `CORRECTION`, `CREATE`, `ENLARGEMENT`, `GLYPH9`, `HTML`, `LAB`, `PERCENT`, `TESTS`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-cb639aaa22be — Create standalone 0040 horizontal-center crop test
 
 **Recorded:** 2026-08-02T15:42:53-05:00  
@@ -4376,6 +4568,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0040`, `ARTWORK`, `CENTER`, `CREATE`, `CROP`, `GALAXY`, `HORIZONTAL`, `HTML`, `SINGULARITY`, `SPLASH`, `STANDALONE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-3cd6c1d17fcd — Create symmetric coordinate and GAL lab 0003
 
 **Recorded:** 2026-08-02T14:41:48-05:00  
@@ -4406,6 +4599,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `AND`, `COORDINATE`, `CREATE`, `GAL`, `GLYPH9`, `HTML`, `LAB`, `SYMMETRIC`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-4346c6874ba2 — Correct diagnostic detector source to exact 0040 baseline
 
 **Recorded:** 2026-08-02T13:58:03-05:00  
@@ -4436,6 +4630,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0040`, `ARTWORK`, `BASELINE`, `CORRECT`, `DETECTOR`, `DIAGNOSTIC`, `EXACT`, `GALAXY`, `HTML`, `SINGULARITY`, `SOURCE`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-a0c835d769d2 — Create 0040 diagnostic copy with device info and refresh controls
 
 **Recorded:** 2026-08-02T13:51:26-05:00  
@@ -4466,6 +4661,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0040`, `AND`, `ARTWORK`, `CONTROLS`, `COPY`, `CREATE`, `DEVICE`, `DIAGNOSTIC`, `GALAXY`, `HTML`, `INFO`, `REFRESH`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-cfefdd27b32b — Create coordinate anchor lab 0002
 
 **Recorded:** 2026-08-02T13:49:24-05:00  
@@ -4496,6 +4692,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0002`, `ANCHOR`, `COORDINATE`, `CREATE`, `GLYPH9`, `HTML`, `LAB`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-a513a77261da — Create standalone bare cyclone engine diagnostic
 
 **Recorded:** 2026-08-02T13:29:39-05:00  
@@ -4526,6 +4723,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ARTWORK`, `BARE`, `CREATE`, `CYCLONE`, `DIAGNOSTIC`, `ENGINE`, `GALAXY`, `HTML`, `SPLASH`, `STANDALONE`, `VIEWER`
 
 ---
+
 ## AUTO-a4bc4267eb9e — Create Singularity 0040 with blue-point center correction
 
 **Recorded:** 2026-08-02T12:58:51-05:00  
@@ -4556,6 +4754,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0040`, `ARTWORK`, `BLUE`, `CENTER`, `CORRECTION`, `CREATE`, `GALAXY`, `HTML`, `POINT`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-50eaa2c3fce5 — Point beta launcher to GV-beta-0007C
 
 **Recorded:** 2026-08-02T12:56:55-05:00  
@@ -4586,6 +4785,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007C`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-d5451d96e7fc — Create GV-beta-0007C with approved coordinate blue and centered lambda divider
 
 **Recorded:** 2026-08-02T12:55:29-05:00  
@@ -4620,6 +4820,7 @@ Create GV-beta-0007C with approved coordinate blue and centered lambda divider
 `0007C`, `AND`, `APPROVED`, `BETA`, `BLUE`, `CENTERED`, `COORDINATE`, `CREATE`, `DIVIDER`, `LAMBDA`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-804abe33631d — Create concentric continuous Singularity 0039
 
 **Recorded:** 2026-08-02T01:24:36-05:00  
@@ -4650,6 +4851,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0039`, `ARTWORK`, `CONCENTRIC`, `CONTINUOUS`, `CREATE`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-a100d0b55959 — Create GV-beta-0007B natural OTF coordinate spacing reset
 
 **Recorded:** 2026-08-02T01:21:39-05:00  
@@ -4684,6 +4886,7 @@ Create GV-beta-0007B natural OTF coordinate spacing reset
 `0007B`, `BETA`, `COORDINATE`, `CREATE`, `NATURAL`, `OTF`, `RESET`, `SPACING`, `VIEWER`
 
 ---
+
 ## AUTO-2186737387fa — Make Pages deploy latest beta after change-control log
 
 **Recorded:** 2026-08-01T23:38:57-05:00  
@@ -4714,6 +4917,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AFTER`, `BETA`, `CHANGE`, `CONTROL`, `DEPLOY`, `GITHUB`, `LATEST`, `LOG`, `MAKE`, `PAGES`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-33c77a217b01 — Create exact typography homogeneity build 0038
 
 **Recorded:** 2026-08-01T23:21:29-05:00  
@@ -4744,6 +4948,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0038`, `ARTWORK`, `BUILD`, `CREATE`, `EXACT`, `GALAXY`, `HOMOGENEITY`, `HTML`, `SINGULARITY`, `SPLASH`, `TYPOGRAPHY`, `VIEWER`
 
 ---
+
 ## AUTO-cd64282a048b — Update beta launcher to GV-beta-0007A
 
 **Recorded:** 2026-08-01T23:18:27-05:00  
@@ -4774,6 +4979,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007A`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `UPDATE`
 
 ---
+
 ## AUTO-a1eb6b6a4ee1 — Add files via upload
 
 **Recorded:** 2026-08-01T23:14:10-05:00  
@@ -4808,6 +5014,7 @@ Add files via upload
 `0007A`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-bcda4b73b132 — Fix 0037 poster loading fallback
 
 **Recorded:** 2026-08-01T22:58:44-05:00  
@@ -4838,6 +5045,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0037`, `ARTWORK`, `FALLBACK`, `FIX`, `GALAXY`, `HTML`, `LOADING`, `POSTER`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-75c2c6459a63 — Point beta launcher to GV-beta-0006Z
 
 **Recorded:** 2026-08-01T22:56:48-05:00  
@@ -4868,6 +5076,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006Z`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-86ad00618656 — Add files via upload
 
 **Recorded:** 2026-08-01T22:55:24-05:00  
@@ -4902,6 +5111,7 @@ Add files via upload
 `0006Z`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-0bdce4d8a44e — Create splash typography inspection build 0037
 
 **Recorded:** 2026-08-01T22:41:02-05:00  
@@ -4932,6 +5142,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0037`, `ARTWORK`, `BUILD`, `CREATE`, `GALAXY`, `HTML`, `INSPECTION`, `SINGULARITY`, `SPLASH`, `TYPOGRAPHY`, `VIEWER`
 
 ---
+
 ## AUTO-c5b6fd5f1ffb — Add Singularity 0036 with tight GALAXY-style signature glow
 
 **Recorded:** 2026-08-01T22:24:25-05:00  
@@ -4962,6 +5173,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0036`, `ADD`, `ARTWORK`, `GALAXY`, `GLOW`, `HTML`, `SIGNATURE`, `SINGULARITY`, `SPLASH`, `STYLE`, `TIGHT`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-934220b8b7bb — Add files via upload
 
 **Recorded:** 2026-08-01T22:17:48-05:00  
@@ -4992,6 +5204,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `COORDINATE`, `DIGITS`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-c379755673cf — Add workflow for coordinate font 0002
 
 **Recorded:** 2026-08-01T22:12:04-05:00  
@@ -5022,6 +5235,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0002`, `ADD`, `BUILD`, `COORDINATE`, `FONT`, `FOR`, `GITHUB`, `WORKFLOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-0ea8877c535a — Add Singularity 0035 pause inspection control
 
 **Recorded:** 2026-08-01T21:58:31-05:00  
@@ -5052,6 +5266,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0035`, `ADD`, `ARTWORK`, `CONTROL`, `GALAXY`, `HTML`, `INSPECTION`, `PAUSE`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-4238e305486c — Add compensated delta X and delta Y to Lab 0003
 
 **Recorded:** 2026-08-01T21:50:37-05:00  
@@ -5082,6 +5297,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `ADD`, `AND`, `ARTWORK`, `COMPENSATED`, `COORDINATE`, `DELTA`, `FONTLAB`, `FONTS`, `HTML`, `LAB`, `SPACING`, `VIEWER`
 
 ---
+
 ## AUTO-124a9e5f2530 — Expand Lab 0003 font size and XY spacing controls
 
 **Recorded:** 2026-08-01T21:43:37-05:00  
@@ -5112,6 +5328,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `AND`, `ARTWORK`, `CONTROLS`, `COORDINATE`, `EXPAND`, `FONT`, `FONTLAB`, `FONTS`, `HTML`, `LAB`, `SIZE`, `SPACING`, `VIEWER`
 
 ---
+
 ## AUTO-b6311ef10e5a — Add Singularity 0034 with final-message styled engraving
 
 **Recorded:** 2026-08-01T21:38:52-05:00  
@@ -5142,6 +5359,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0034`, `ADD`, `ARTWORK`, `ENGRAVING`, `FINAL`, `GALAXY`, `HTML`, `MESSAGE`, `SINGULARITY`, `SPLASH`, `STYLED`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-c9cd4a9a9f41 — Fix Lab 0003 to exact 260px coordinate tile
 
 **Recorded:** 2026-08-01T21:33:15-05:00  
@@ -5172,6 +5390,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `260PX`, `ARTWORK`, `COORDINATE`, `EXACT`, `FIX`, `FONTLAB`, `FONTS`, `HTML`, `LAB`, `SPACING`, `TILE`, `VIEWER`
 
 ---
+
 ## AUTO-559052f28a84 — Add Singularity 0033 with exact 0018 sequence and Cyclone 0007 middle
 
 **Recorded:** 2026-08-01T21:23:51-05:00  
@@ -5202,6 +5421,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0007`, `0018`, `0033`, `ADD`, `AND`, `ARTWORK`, `CYCLONE`, `EXACT`, `GALAXY`, `HTML`, `MIDDLE`, `SEQUENCE`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-28df7b3ecf02 — Create coordinate spacing lab 0003 from 6Y settings
 
 **Recorded:** 2026-08-01T21:22:01-05:00  
@@ -5232,6 +5452,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0003`, `ARTWORK`, `COORDINATE`, `CREATE`, `FONTLAB`, `FONTS`, `FROM`, `HTML`, `LAB`, `SETTINGS`, `SPACING`, `VIEWER`
 
 ---
+
 ## AUTO-f9e395c7da36 — Update beta manifest to Galaxy Viewer 6Y
 
 **Recorded:** 2026-08-01T21:07:24-05:00  
@@ -5262,6 +5483,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `MANIFEST`, `MOBILE`, `UPDATE`, `VIEWER`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-766034d8bd00 — Create GV-beta-0006Y with 20 percent larger coordinate glyphs
 
 **Recorded:** 2026-08-01T21:06:41-05:00  
@@ -5296,6 +5518,7 @@ Create GV-beta-0006Y with 20 percent larger coordinate glyphs
 `0006Y`, `BETA`, `COORDINATE`, `CREATE`, `GLYPHS`, `LARGER`, `PERCENT`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-837ca6336499 — Restore approved coordinate color in GV-beta-0006X
 
 **Recorded:** 2026-08-01T20:57:33-05:00  
@@ -5330,6 +5553,7 @@ Restore approved coordinate color in GV-beta-0006X
 `0006X`, `APPROVED`, `BETA`, `COLOR`, `COORDINATE`, `RESTORE`, `VIEWER`
 
 ---
+
 ## AUTO-e32a980ecab1 — Update beta manifest to Galaxy Viewer 6X
 
 **Recorded:** 2026-08-01T20:51:48-05:00  
@@ -5360,6 +5584,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `GALAXY`, `MANIFEST`, `MOBILE`, `UPDATE`, `VIEWER`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-e5e723cfded4 — Update beta launcher to GV-beta-0006X
 
 **Recorded:** 2026-08-01T20:51:40-05:00  
@@ -5390,6 +5615,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006X`, `BETA`, `HTML`, `INDEX`, `LAUNCHER`, `MOBILE`, `UPDATE`
 
 ---
+
 ## AUTO-4882fb697c01 — Create GV-beta-0006X with custom coordinate digits font
 
 **Recorded:** 2026-08-01T20:51:09-05:00  
@@ -5424,6 +5650,7 @@ Create GV-beta-0006X with custom coordinate digits font
 `0006X`, `BETA`, `COORDINATE`, `CREATE`, `CUSTOM`, `DIGITS`, `FONT`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-a3f57791ef52 — Add Singularity 0032 with exact 0018 engraving and ending
 
 **Recorded:** 2026-08-01T20:47:20-05:00  
@@ -5454,6 +5681,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0018`, `0032`, `ADD`, `AND`, `ARTWORK`, `ENDING`, `ENGRAVING`, `EXACT`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-22b3b45c163e — Fix GV-9A reference font path in coordinate digits test
 
 **Recorded:** 2026-08-01T20:42:39-05:00  
@@ -5484,6 +5712,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ARTWORK`, `COORDINATE`, `DIGITS`, `FIX`, `FONT`, `FONTLAB`, `FONTS`, `HTML`, `PATH`, `REFERENCE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-358b88f674b6 — Add files via upload
 
 **Recorded:** 2026-08-01T20:38:28-05:00  
@@ -5515,6 +5744,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ARTWORK`, `COORDINATE`, `DIGITS`, `FILES`, `FONTLAB`, `FONTS`, `HTML`, `OTF`, `TEST`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-f1b3faea8e0f — Create compensated GV-9A font lab 0002
 
 **Recorded:** 2026-08-01T20:29:40-05:00  
@@ -5545,6 +5775,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0002`, `ARTWORK`, `COMPENSATED`, `CREATE`, `FONT`, `FONTLAB`, `FONTS`, `GENERATOR`, `HTML`, `LAB`, `VIEWER`
 
 ---
+
 ## AUTO-05346ee50b0c — Create parametric font generator lab 0001
 
 **Recorded:** 2026-08-01T20:22:27-05:00  
@@ -5575,6 +5806,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0001`, `ARTWORK`, `CREATE`, `FONT`, `FONTLAB`, `FONTS`, `GENERATOR`, `HTML`, `LAB`, `PARAMETRIC`, `VIEWER`
 
 ---
+
 ## AUTO-62e981d56255 — Add Singularity 0031 with Galaxy-matched name banner
 
 **Recorded:** 2026-08-01T19:54:57-05:00  
@@ -5605,6 +5837,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0031`, `ADD`, `ARTWORK`, `BANNER`, `GALAXY`, `HTML`, `MATCHED`, `NAME`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-a8f2802cb4f6 — Create versioned Glyph-9A lab with hex color entry
 
 **Recorded:** 2026-08-01T19:48:35-05:00  
@@ -5635,6 +5868,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `COLOR`, `COORDINATE`, `CREATE`, `ENTRY`, `GLYPH`, `GLYPH9`, `HEX`, `HTML`, `LAB`, `TESTS`, `VERSIONED`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-a86d6ad04ee6 — Add Singularity 0030 with 0018 sequence and localized cyclone
 
 **Recorded:** 2026-08-01T19:44:44-05:00  
@@ -5665,6 +5899,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0018`, `0030`, `ADD`, `AND`, `ARTWORK`, `CYCLONE`, `GALAXY`, `HTML`, `LOCALIZED`, `SEQUENCE`, `SINGULARITY`, `SPLASH`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-558b3ebb45c7 — Load GV-9A font and add hex color input
 
 **Recorded:** 2026-08-01T19:39:50-05:00  
@@ -5695,6 +5930,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AND`, `COLOR`, `COORDINATE`, `FONT`, `GLYPH9`, `HEX`, `HTML`, `INPUT`, `LAB`, `LOAD`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-7d0c625d7768 — Add files via upload
 
 **Recorded:** 2026-08-01T19:35:31-05:00  
@@ -5725,6 +5961,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-68d969a0869e — Add live color field to Glyph-9 lab
 
 **Recorded:** 2026-08-01T18:38:23-05:00  
@@ -5755,6 +5992,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `COLOR`, `COORDINATE`, `FIELD`, `GLYPH`, `GLYPH9`, `HTML`, `LAB`, `LIVE`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-60734949bc66 — Add files via upload
 
 **Recorded:** 2026-08-01T18:32:19-05:00  
@@ -5785,6 +6023,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-fa4083d3b875 — Add white-core banner engraving and pulsar singularity test
 
 **Recorded:** 2026-08-01T18:11:53-05:00  
@@ -5815,6 +6054,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AND`, `ANIMATION`, `ARTWORK`, `BANNER`, `CORE`, `CYCLONE`, `ENGRAVING`, `HTML`, `LAB`, `PARTICLE`, `PULSAR`, `SINGULARITY`, `SPLASH`, `TEST`, `TESTS`, `VIEWER`, `WHITE`
 
 ---
+
 ## AUTO-116335f60c59 — Refine Glyph-9 lab color presets
 
 **Recorded:** 2026-08-01T17:54:37-05:00  
@@ -5845,6 +6085,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `COLOR`, `COORDINATE`, `GLYPH`, `GLYPH9`, `HTML`, `LAB`, `PRESETS`, `REFINE`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-bbd341d118db — Add image-embedded counterclockwise cyclone launch test
 
 **Recorded:** 2026-08-01T17:44:08-05:00  
@@ -5875,6 +6116,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `COUNTERCLOCKWISE`, `CYCLONE`, `EMBEDDED`, `HTML`, `IMAGE`, `LAB`, `LAUNCH`, `PARTICLE`, `SPLASH`, `TEST`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-aeb69aec2c84 — Add responsive GV-9 coordinate glyph lab
 
 **Recorded:** 2026-08-01T17:38:32-05:00  
@@ -5905,6 +6147,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `COORDINATE`, `GLYPH`, `GLYPH9`, `HTML`, `LAB`, `RESPONSIVE`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-07f7fa9d710b — Add files via upload
 
 **Recorded:** 2026-08-01T17:34:01-05:00  
@@ -5935,6 +6178,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-84ab4436e1d4 — Create readme.txt
 
 **Recorded:** 2026-08-01T17:33:25-05:00  
@@ -5965,6 +6209,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AGE`, `ARTWORK`, `CREATE`, `FONTS`, `README`, `READMETXT`, `REGULAR`, `SPACE`, `TXT`, `VIEWER`
 
 ---
+
 ## AUTO-f8f51ac29295 — Add tangential corner-release cyclone baseline
 
 **Recorded:** 2026-08-01T17:16:48-05:00  
@@ -5995,6 +6240,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CORNER`, `CYCLONE`, `HTML`, `LAB`, `PARTICLE`, `RELEASE`, `SPLASH`, `TANGENTIAL`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-ff00b1557ab6 — Add Gaussian-masked drape cyclone particle baseline
 
 **Recorded:** 2026-08-01T16:55:11-05:00  
@@ -6025,6 +6271,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `DRAPE`, `GAUSSIAN`, `HTML`, `LAB`, `MASKED`, `PARTICLE`, `SPLASH`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-142d50d1bc53 — Add Galaxy Viewer coordinate style and clipping lab
 
 **Recorded:** 2026-08-01T15:36:47-05:00  
@@ -6055,6 +6302,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AND`, `CLIPPING`, `COORDINATE`, `GALAXY`, `HTML`, `LAB`, `STYLE`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-6aeb1402bdd4 — Add five-second viscous particle cyclone baseline
 
 **Recorded:** 2026-08-01T15:36:42-05:00  
@@ -6085,6 +6333,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `FIVE`, `HTML`, `LAB`, `PARTICLE`, `SECOND`, `SPLASH`, `TESTS`, `VIEWER`, `VISCOUS`
 
 ---
+
 ## AUTO-6b8e6808ca4e — Update beta launcher to 6W artistic tile layout
 
 **Recorded:** 2026-08-01T15:02:58-05:00  
@@ -6115,6 +6364,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ARTISTIC`, `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `LAYOUT`, `TILE`, `UPDATE`
 
 ---
+
 ## AUTO-8189df27ab6c — Update public launcher to 6W artistic tile layout
 
 **Recorded:** 2026-08-01T15:02:27-05:00  
@@ -6145,6 +6395,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ARTISTIC`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `LAYOUT`, `PUBLIC`, `TILE`, `UPDATE`
 
 ---
+
 ## AUTO-30f12b032cf8 — Update beta launcher service worker to 6W
 
 **Recorded:** 2026-08-01T15:02:11-05:00  
@@ -6175,6 +6426,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+
 ## AUTO-3ea92e41f602 — Update beta launcher manifest to 6W
 
 **Recorded:** 2026-08-01T15:02:02-05:00  
@@ -6205,6 +6457,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-aae68fe8e2d3 — Add rectangular corner-collapse particle baseline
 
 **Recorded:** 2026-08-01T14:57:54-05:00  
@@ -6235,6 +6488,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `COLLAPSE`, `CORNER`, `CYCLONE`, `HTML`, `LAB`, `PARTICLE`, `RECTANGULAR`, `SPLASH`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-3f626feb7b0a — Show newest change-control records first
 
 **Recorded:** 2026-08-01T14:36:00-05:00  
@@ -6274,6 +6528,7 @@ Show newest change-control records first
 `AUTOMATIC`, `CHANGE`, `CONTROL`, `FIRST`, `GITHUB`, `LOG`, `NEWEST`, `RECORDS`, `SHOW`, `WORKFLOWS`, `YML`
 
 ---
+
 ## AUTO-475cfcd4dd45 — Update mobile beta runtime to GV 6V
 
 **Recorded:** 2026-08-01T14:23:55-05:00  
@@ -6304,6 +6559,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `MOBILE`, `RUNTIME`, `UPDATE`
 
 ---
+
 ## AUTO-461f9765133d — Update mobile beta service worker to 6V
 
 **Recorded:** 2026-08-01T14:23:15-05:00  
@@ -6334,6 +6590,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+
 ## AUTO-41f65ceab9e4 — Update mobile beta manifest to 6V
 
 **Recorded:** 2026-08-01T14:23:01-05:00  
@@ -6364,6 +6621,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-ff44b806b932 — Create GV beta 0006V coordinate, hamburger, and resume recovery
 
 **Recorded:** 2026-08-01T14:22:31-05:00  
@@ -6398,6 +6656,7 @@ Create GV beta 0006V coordinate, hamburger, and resume recovery
 `0006V`, `AND`, `BETA`, `COORDINATE`, `CREATE`, `HAMBURGER`, `RECOVERY`, `RESUME`, `VIEWER`
 
 ---
+
 ## AUTO-8b01c9623dc7 — Update mobile beta runtime to 6U
 
 **Recorded:** 2026-08-01T13:35:11-05:00  
@@ -6428,6 +6687,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `MOBILE`, `RUNTIME`, `UPDATE`
 
 ---
+
 ## AUTO-6d06062ffa7f — Update beta launcher to 6U
 
 **Recorded:** 2026-08-01T13:34:29-05:00  
@@ -6458,6 +6718,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+
 ## AUTO-53311a6e403d — Update public launcher to 6U
 
 **Recorded:** 2026-08-01T13:34:02-05:00  
@@ -6488,6 +6749,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `PUBLIC`, `UPDATE`
 
 ---
+
 ## AUTO-5db4bb1940b2 — Update mobile beta service worker to 6U
 
 **Recorded:** 2026-08-01T13:33:44-05:00  
@@ -6518,6 +6780,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+
 ## AUTO-60c7aceb55b1 — Update beta launcher service worker to 6U
 
 **Recorded:** 2026-08-01T13:33:31-05:00  
@@ -6548,6 +6811,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+
 ## AUTO-2817ced37a66 — Update mobile beta manifest to 6U
 
 **Recorded:** 2026-08-01T13:33:02-05:00  
@@ -6578,6 +6842,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-f0345ad5233d — Update beta launcher manifest to 6U
 
 **Recorded:** 2026-08-01T13:32:48-05:00  
@@ -6608,6 +6873,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-dcabb3b37825 — Create GV beta 0006U coordinate fit correction
 
 **Recorded:** 2026-08-01T13:32:28-05:00  
@@ -6642,6 +6908,7 @@ Create GV beta 0006U coordinate fit correction
 `0006U`, `BETA`, `COORDINATE`, `CORRECTION`, `CREATE`, `FIT`, `VIEWER`
 
 ---
+
 ## AUTO-9d46824d451d — Add particle cyclone motion baseline
 
 **Recorded:** 2026-08-01T02:11:58-05:00  
@@ -6672,6 +6939,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `ANIMATION`, `ARTWORK`, `BASELINE`, `CYCLONE`, `HTML`, `LAB`, `MOTION`, `PARTICLE`, `SPLASH`, `TESTS`, `VIEWER`
 
 ---
+
 ## AUTO-8dc075907a85 — Update main launcher to Galaxy Viewer 6T
 
 **Recorded:** 2026-08-01T01:40:49-05:00  
@@ -6702,6 +6970,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `GALAXY`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `MAIN`, `UPDATE`, `VIEWER`
 
 ---
+
 ## AUTO-f463c63af44a — Update mobile beta runtime to 6T
 
 **Recorded:** 2026-08-01T01:40:19-05:00  
@@ -6732,6 +7001,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `MOBILE`, `RUNTIME`, `UPDATE`
 
 ---
+
 ## AUTO-6a0f0c5136ab — Update beta launcher to 6T
 
 **Recorded:** 2026-08-01T01:39:28-05:00  
@@ -6762,6 +7032,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+
 ## AUTO-2a5119b7db2e — Update mobile beta service worker cache to 6T
 
 **Recorded:** 2026-08-01T01:38:48-05:00  
@@ -6792,6 +7063,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `CACHE`, `MOBILE`, `SERVICE`, `UPDATE`, `WORKER`
 
 ---
+
 ## AUTO-c2f2e2ef8b82 — Update mobile beta manifest to 6T
 
 **Recorded:** 2026-08-01T01:38:22-05:00  
@@ -6822,6 +7094,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-b166d9ff64ac — Update beta launcher manifest to 6T
 
 **Recorded:** 2026-08-01T01:38:06-05:00  
@@ -6852,6 +7125,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-efef85b11dfa — Create GV beta 0006T with taller coordinates and Mollweide projection
 
 **Recorded:** 2026-08-01T01:37:31-05:00  
@@ -6886,6 +7160,7 @@ Create GV beta 0006T with taller coordinates and Mollweide projection
 `0006T`, `AND`, `BETA`, `COORDINATES`, `CREATE`, `MOLLWEIDE`, `PROJECTION`, `TALLER`, `VIEWER`, `WITH`
 
 ---
+
 ## AUTO-2d7e402692f8 — Add smooth zero-residue cyclone test in Singularity 0029
 
 **Recorded:** 2026-08-01T01:33:20-05:00  
@@ -6916,6 +7191,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0029`, `ADD`, `ARTWORK`, `CYCLONE`, `GALAXY`, `HTML`, `RESIDUE`, `SINGULARITY`, `SMOOTH`, `SPLASH`, `TEST`, `VIEWER`, `ZERO`
 
 ---
+
 ## AUTO-8c38f9730129 — Load Galaxy Viewer beta 6S and remove duplicate startup icon
 
 **Recorded:** 2026-08-01T01:06:14-05:00  
@@ -6946,6 +7222,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AND`, `BETA`, `DUPLICATE`, `GALAXY`, `HTML`, `ICON`, `INDEX`, `LOAD`, `MOBILE`, `REMOVE`, `STARTUP`, `VIEWER`
 
 ---
+
 ## AUTO-1d4e1d19e78e — Update mobile beta service worker version to 6S
 
 **Recorded:** 2026-08-01T01:04:13-05:00  
@@ -6976,6 +7253,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MOBILE`, `SERVICE`, `UPDATE`, `VERSION`, `WORKER`
 
 ---
+
 ## AUTO-9e476c4d92fb — Update beta launcher service worker version to 6S
 
 **Recorded:** 2026-08-01T01:03:41-05:00  
@@ -7006,6 +7284,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `SERVICE`, `UPDATE`, `VERSION`, `WORKER`
 
 ---
+
 ## AUTO-afbe4c05e212 — Update mobile beta manifest to 6S
 
 **Recorded:** 2026-08-01T01:03:12-05:00  
@@ -7036,6 +7315,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `MANIFEST`, `MOBILE`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-57ccb0139d2c — Update beta launcher manifest to 6S
 
 **Recorded:** 2026-08-01T01:02:43-05:00  
@@ -7066,6 +7346,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `LAUNCH`, `LAUNCHER`, `MANIFEST`, `UPDATE`, `WEBMANIFEST`
 
 ---
+
 ## AUTO-3483997265ff — Add files via upload
 
 **Recorded:** 2026-08-01T00:59:12-05:00  
@@ -7100,6 +7381,7 @@ Add files via upload
 `0006S`, `ADD`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-e2d8533626a2 — Delete viewer/artwork/GV-beta-0006S.py
 
 **Recorded:** 2026-08-01T00:58:37-05:00  
@@ -7130,6 +7412,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006S`, `0006SPY`, `ARTWORK`, `BETA`, `DELETE`, `VIEWER`, `VIEWERARTWORKGV`
 
 ---
+
 ## AUTO-63774059aa42 — Add files via upload
 
 **Recorded:** 2026-08-01T00:48:14-05:00  
@@ -7164,6 +7447,7 @@ Add files via upload
 `0006S`, `ADD`, `ARTWORK`, `BETA`, `FILES`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-24d9d4914303 — Add reference-driven golden-ratio cyclone in Singularity 0028
 
 **Recorded:** 2026-08-01T00:38:37-05:00  
@@ -7194,6 +7478,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0028`, `ADD`, `ARTWORK`, `CYCLONE`, `DRIVEN`, `GALAXY`, `GOLDEN`, `HTML`, `RATIO`, `REFERENCE`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-32cb48103fb7 — Add exponential cloudy cyclone in Singularity 0027
 
 **Recorded:** 2026-08-01T00:17:51-05:00  
@@ -7224,6 +7509,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0027`, `ADD`, `ARTWORK`, `CLOUDY`, `CYCLONE`, `EXPONENTIAL`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-66ccd6756198 — Update beta launcher to 6R
 
 **Recorded:** 2026-08-01T00:04:00-05:00  
@@ -7254,6 +7540,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+
 ## AUTO-ac08a76970fe — Update beta mobile loader to 6R
 
 **Recorded:** 2026-08-01T00:03:31-05:00  
@@ -7284,6 +7571,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `UPDATE`
 
 ---
+
 ## AUTO-5a8c0d66a30c — Add GV-beta-0006R Space Age Regular font test
 
 **Recorded:** 2026-08-01T00:02:43-05:00  
@@ -7318,6 +7606,7 @@ Add GV-beta-0006R Space Age Regular font test
 `0006R`, `ADD`, `AGE`, `BETA`, `FONT`, `REGULAR`, `SPACE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-1ce0ff4f3d8b — Add files via upload
 
 **Recorded:** 2026-07-31T23:55:59-05:00  
@@ -7348,6 +7637,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `FILES`, `FONTS`, `OTF`, `REGULAR`, `SPACE`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-8821da36165f — Create Readme.md
 
 **Recorded:** 2026-07-31T23:55:27-05:00  
@@ -7378,6 +7668,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AGE`, `ARTWORK`, `CREATE`, `FONTS`, `README`, `READMEMD`, `REGULAR`, `SPACE`, `VIEWER`
 
 ---
+
 ## AUTO-4295bb76b8ee — Add cloudy staged cyclone in Singularity 0026
 
 **Recorded:** 2026-07-31T23:50:21-05:00  
@@ -7408,6 +7699,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0026`, `ADD`, `ARTWORK`, `CLOUDY`, `CYCLONE`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `STAGED`, `VIEWER`
 
 ---
+
 ## AUTO-6386c081bb8c — Add files via upload
 
 **Recorded:** 2026-07-31T23:39:20-05:00  
@@ -7440,6 +7732,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `ADD`, `AGE`, `ARTWORK`, `FILES`, `FONTS`, `OTF`, `SPACE`, `TTF`, `TXT`, `UPLOAD`, `VIA`, `VIEWER`
 
 ---
+
 ## AUTO-ff5c9a74d620 — Create README.md
 
 **Recorded:** 2026-07-31T23:21:38-05:00  
@@ -7470,6 +7763,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `AGE`, `ARTWORK`, `CREATE`, `FONTS`, `README`, `READMEMD`, `SPACE`, `VIEWER`
 
 ---
+
 ## AUTO-170810fd1071 — Add delayed cyclonic cloud siphon in Singularity 0025
 
 **Recorded:** 2026-07-31T23:12:55-05:00  
@@ -7500,6 +7794,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0025`, `ADD`, `ARTWORK`, `CLOUD`, `CYCLONIC`, `DELAYED`, `GALAXY`, `HTML`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-2b23da4dc683 — Update beta launcher to 6Q
 
 **Recorded:** 2026-07-31T23:03:24-05:00  
@@ -7530,6 +7825,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+
 ## AUTO-b1ea5906add8 — Update beta mobile loader to 6Q
 
 **Recorded:** 2026-07-31T23:02:54-05:00  
@@ -7560,6 +7856,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `UPDATE`
 
 ---
+
 ## AUTO-07c2ade6d367 — Add GV-beta-0006Q coordinate scale 1.0 test
 
 **Recorded:** 2026-07-31T23:02:14-05:00  
@@ -7594,6 +7891,7 @@ Add GV-beta-0006Q coordinate scale 1.0 test
 `0006Q`, `ADD`, `BETA`, `COORDINATE`, `SCALE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-c094f933423d — Add center-first blanket siphon in Singularity 0024
 
 **Recorded:** 2026-07-31T22:52:51-05:00  
@@ -7624,6 +7922,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0024`, `ADD`, `ARTWORK`, `BLANKET`, `CENTER`, `FIRST`, `GALAXY`, `HTML`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-4f23f6a7f492 — Add Galaxy Viewer Singularity 0023
 
 **Recorded:** 2026-07-31T22:37:58-05:00  
@@ -7654,6 +7953,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0023`, `ADD`, `ARTWORK`, `GALAXY`, `HTML`, `SINGULARITY`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-c529bd57b8f9 — Update beta launcher to 6P
 
 **Recorded:** 2026-07-31T22:36:54-05:00  
@@ -7684,6 +7984,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `BETA`, `HTML`, `INDEX`, `LAUNCH`, `LAUNCHER`, `UPDATE`
 
 ---
+
 ## AUTO-1c7cd5779f90 — Point beta mobile loader to GV-beta-0006P
 
 **Recorded:** 2026-07-31T22:36:13-05:00  
@@ -7714,6 +8015,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006P`, `BETA`, `HTML`, `INDEX`, `LOADER`, `MOBILE`, `POINT`
 
 ---
+
 ## AUTO-a99821843800 — Add GV-beta-0006P coordinate aperture test
 
 **Recorded:** 2026-07-31T22:35:22-05:00  
@@ -7744,6 +8046,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0006P`, `ADD`, `APERTURE`, `BETA`, `COORDINATE`, `TEST`, `VIEWER`
 
 ---
+
 ## AUTO-dff01b914ca1 — Add reliable bounded splash startup in Singularity 0022
 
 **Recorded:** 2026-07-31T22:23:59-05:00  
@@ -7774,6 +8077,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0022`, `ADD`, `ARTWORK`, `BOUNDED`, `GALAXY`, `HTML`, `RELIABLE`, `SINGULARITY`, `SPLASH`, `STARTUP`, `VIEWER`
 
 ---
+
 ## AUTO-277059952e93 — Add cinematic five-rotation siphon in Singularity 0021
 
 **Recorded:** 2026-07-31T21:48:47-05:00  
@@ -7804,6 +8108,7 @@ Reason or user instruction not found in supported source comments. Refer to the 
 `0021`, `ADD`, `ARTWORK`, `CINEMATIC`, `FIVE`, `GALAXY`, `HTML`, `ROTATION`, `SINGULARITY`, `SIPHON`, `SPLASH`, `VIEWER`
 
 ---
+
 ## AUTO-2e22a6c3c6dd — Add automatic Galaxy Viewer change control workflow
 
 **Recorded:** 2026-07-31T21:47:44-05:00  
