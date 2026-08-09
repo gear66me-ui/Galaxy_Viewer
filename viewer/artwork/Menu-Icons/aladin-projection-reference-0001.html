@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aladin Projection Reference</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#101216;color:#eef2f7;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}body{padding:18px}.wrap{max-width:980px;margin:0 auto}h1{font-size:20px;margin:0 0 6px}.sub{font-size:12px;color:#aeb7c4;margin-bottom:16px}.stock{display:flex;gap:14px;align-items:center;padding:12px;border:1px solid #303640;border-radius:12px;background:#171a20;margin-bottom:16px}.stock svg{width:74px;height:74px;background:#fff;border-radius:8px;padding:9px;flex:none}.stock b{display:block;font-size:14px;margin-bottom:4px}.stock span{font-size:12px;color:#aeb7c4;line-height:1.4}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{background:#171a20;border:1px solid #303640;border-radius:12px;overflow:hidden}.head{padding:10px 12px 8px}.name{font-size:14px;font-weight:750;letter-spacing:.04em}.code{font-size:11px;color:#9da8b7;margin-top:2px}.plot{background:#f7f7f5;aspect-ratio:1.55/1;display:block;width:100%}.note{padding:8px 12px 11px;color:#aeb7c4;font-size:11px;line-height:1.35}.same{color:#ffd27a}.foot{margin-top:14px;font-size:11px;line-height:1.45;color:#8f99a7}@media(max-width:640px){body{padding:12px}.grid{grid-template-columns:1fr}.stock svg{width:62px;height:62px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>ALADIN PROJECTION REFERENCE</h1>
+<div class="sub">Visual geometry reconstructed from the CDS/Aladin clone stored in Galaxy Viewer. No Galaxy Viewer styling applied.</div>
+
+<div class="stock">
+<svg viewBox="0 0 32 32" aria-label="Aladin stock Projection control icon">
+  <g fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="4" width="24" height="24"/>
+    <path d="M4 25l4.9-4c3.1-2.5 7.3-3 11-1.4 2 .9 4.2 1.1 6.4.7L28 20"/>
+    <path d="M4 13l7-3.2c2.6-1.2 5.5-1.3 8.1-.3l2.1.8c1.2.4 2.5.7 3.7.7H28"/>
+    <path d="M24 4l-.8 1.2C18.7 11.9 17.9 20.5 21 28"/>
+    <path d="M14 4c-4.8 7.3-4.8 16.7 0 24"/>
+  </g>
+</svg>
+<div><b>Aladin stock Projection control icon</b><span>This is the single projection-control SVG shipped in the clone. The individual projection modes below are mathematical projection definitions rather than separate stock icon files.</span></div>
+</div>
+
+<div class="grid">
+  <section class="card"><div class="head"><div class="name">MOLLWEIDE</div><div class="code">MOL · active in clone</div></div><svg id="mol" class="plot" viewBox="-1.12 -1.08 2.24 2.16"></svg><div class="note">Aladin MOL geometry.</div></section>
+  <section class="card"><div class="head"><div class="name">SPHERICAL</div><div class="code">SIN · Aladin label: “Spheric”</div></div><svg id="spheric" class="plot" viewBox="-1.12 -1.08 2.24 2.16"></svg><div class="note same">The clone labels SIN as “Spheric”; the shader identifies the same SIN geometry as Orthographic.</div></section>
+  <section class="card"><div class="head"><div class="name">ORTHO</div><div class="code">SIN · Orthographic</div></div><svg id="ortho" class="plot" viewBox="-1.12 -1.08 2.24 2.16"></svg><div class="note same">Same Aladin SIN projection as the “Spheric” entry above — shown twice so the naming overlap is visually obvious.</div></section>
+  <section class="card"><div class="head"><div class="name">TANGENTIAL</div><div class="code">TAN · Gnomonic · active in clone</div></div><svg id="tan" class="plot" viewBox="-1.12 -1.08 2.24 2.16"></svg><div class="note">Aladin TAN / gnomonic geometry, viewport-clipped like an actual viewer.</div></section>
+  <section class="card"><div class="head"><div class="name">SINUSOIDAL</div><div class="code">SFL · Sanson–Flamsteed · listed but inactive in clone</div></div><svg id="sfl" class="plot" viewBox="-1.12 -1.08 2.24 2.16"></svg><div class="note">SFL is named in the clone’s projection table comments but is not included in the active GLSL dispatcher.</div></section>
+</div>
+<div class="foot">Reference only. The page does not modify or invoke Galaxy Viewer, and it does not imply that Aladin ships five separate projection icon SVGs.</div>
+</div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const DEG=Math.PI/180;
+function el(n,a={}){const e=document.createElementNS(NS,n);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e}
+function setup(svg){svg.appendChild(el('rect',{x:-1.12,y:-1.08,width:2.24,height:2.16,fill:'#f7f7f5'}));}
+function path(svg,pts,major=false){if(pts.length<2)return;let d='';let open=false;for(const p of pts){if(!p||!Number.isFinite(p[0])||!Number.isFinite(p[1])||Math.abs(p[0])>1.25||Math.abs(p[1])>1.2){open=false;continue}d+=(open?'L':'M')+p[0].toFixed(4)+' '+(-p[1]).toFixed(4)+' ';open=true}if(d)svg.appendChild(el('path',{d,fill:'none',stroke:major?'#111':'#6f747b','stroke-width':major?'.016':'.009','vector-effect':'non-scaling-stroke'}));}
+function sampleLine(fn,a,b,steps=240){const out=[];for(let i=0;i<=steps;i++){const t=a+(b-a)*i/steps;out.push(fn(t))}return out}
+function xyz(lon,lat){const L=lon*DEG,B=lat*DEG,c=Math.cos(B);return [c*Math.sin(L),Math.sin(B),c*Math.cos(L)]}
+function mol(lon,lat){const p=xyz(lon,lat);let x=2*Math.asin(Math.max(-1,Math.min(1,p[1])));const target=Math.PI*p[1];for(let i=0;i<40;i++){const f=x+Math.sin(x)-target,df=1+Math.cos(x);if(Math.abs(f)<1e-10||Math.abs(df)<1e-9)break;x-=f/df}const g=.5*x;return [Math.atan2(-p[0],p[2])*Math.cos(g)/Math.PI,Math.sin(g)]}
+function sinProj(lon,lat){const p=xyz(lon,lat);if(p[2]<0)return null;return[-p[0],p[1]]}
+function tanProj(lon,lat){const p=xyz(lon,lat);if(p[2]<=.15)return null;return[-p[0]/(p[2]*Math.PI),p[1]/(p[2]*Math.PI)]}
+function sfl(lon,lat){const L=lon*DEG,B=lat*DEG;return[(L/Math.PI)*Math.cos(B),B/(Math.PI/2)]}
+function draw(svg,proj,lonRange=[-180,180],latRange=[-90,90]){setup(svg);for(let lat=-60;lat<=60;lat+=30)path(svg,sampleLine(lon=>proj(lon,lat),lonRange[0],lonRange[1]),lat===0);for(let lon=-150;lon<=150;lon+=30)path(svg,sampleLine(lat=>proj(lon,lat),latRange[0],latRange[1]),lon===0);}
+function drawOrtho(svg){setup(svg);svg.appendChild(el('circle',{cx:0,cy:0,r:1,fill:'none',stroke:'#111','stroke-width':'.016','vector-effect':'non-scaling-stroke'}));for(let lat=-60;lat<=60;lat+=30)path(svg,sampleLine(lon=>sinProj(lon,lat),-90,90),lat===0);for(let lon=-60;lon<=60;lon+=30)path(svg,sampleLine(lat=>sinProj(lon,lat),-90,90),lon===0);}
+draw(document.getElementById('mol'),mol);
+drawOrtho(document.getElementById('spheric'));
+drawOrtho(document.getElementById('ortho'));
+draw(document.getElementById('tan'),tanProj,[-80,80],[-80,80]);
+draw(document.getElementById('sfl'),sfl);
+</script>
+</body>
+</html>
