@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-fdb3a299945c — Splash 0058F: compact controls-only player
+
+**Recorded:** 2026-08-09T14:20:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fdb3a299945c50325f867ebe9cbfd9e0f42b97bb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fdb3a299945c50325f867ebe9cbfd9e0f42b97bb)  
+**Parent/baseline:** `b8a644452bb83d59b611dee3bb62a1a82caba5b8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b8a644452bb83d59b611dee3bb62a1a82caba5b8...fdb3a299945c50325f867ebe9cbfd9e0f42b97bb)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Splash 0058F: compact controls-only player
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058F.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6eca83e71033329aa72f739eeb387e5467db2f715969628c3c21b0b0fe857eae`
+- SHA-256 after: `8c22147cbc4bab343566f43ecf6e75362a090070d69f148050bf1b5e4e471910`
+- Bytes: `28230` → `26808`
+- Lines: `41` → `41`
+- Characters: `28214` → `26793`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `6`
+- Deleted characters: `1427`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `41 + 2 - 2 = 41` — **PASS**
+- Character balance: `28214 + 6 - 1427 = 26793` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d627b8e5415d — GV 7AJ: point mobile beta launcher to current viewer
 
 **Recorded:** 2026-08-09T14:20:05-05:00  
