@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6829783c65ee — Target Cyclone 0002: sharpen spiral pixel drag
+
+**Recorded:** 2026-08-09T14:35:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6829783c65ee652dcc666388e610d210d702e557`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6829783c65ee652dcc666388e610d210d702e557)  
+**Parent/baseline:** `b841d545e16fdb1566598584efc63eb2c547bf99`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b841d545e16fdb1566598584efc63eb2c547bf99...6829783c65ee652dcc666388e610d210d702e557)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Target Cyclone 0002: sharpen spiral pixel drag
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Target-Cyclone-0002.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `081f28ae80dde6f275fa9152ebdd7bd33d0f6382fecfd5edff9ffe43eadd1ed8`
+- Bytes: `0` → `9767`
+- Lines: `0` → `208`
+- Characters: `0` → `9765`
+- Inserted lines: `208`
+- Deleted lines: `0`
+- Inserted characters: `9765`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 208 - 0 = 208` — **PASS**
+- Character balance: `0 + 9765 - 0 = 9765` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-bae794773f0e — GV 7AK: restrict glow to icon graphics only
 
 **Recorded:** 2026-08-09T14:34:57-05:00  
