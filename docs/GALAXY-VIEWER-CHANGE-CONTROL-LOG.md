@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0ffe653226be — GV 7AF: add projection icon launcher
+
+**Recorded:** 2026-08-08T22:09:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0ffe653226bee74f54c5f9ceeed164884fd04910`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0ffe653226bee74f54c5f9ceeed164884fd04910)  
+**Parent/baseline:** `03555e0b12738c9c6581ffe40cdd2a21f70fade7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/03555e0b12738c9c6581ffe40cdd2a21f70fade7...0ffe653226bee74f54c5f9ceeed164884fd04910)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AF: add projection icon launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/7AF.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `ece4998e68ec1808b145295ef46b206298c26a107e5f4782d2e35efb85eec5f7`
+- Bytes: `0` → `2877`
+- Lines: `0` → `45`
+- Characters: `0` → `2870`
+- Inserted lines: `45`
+- Deleted lines: `0`
+- Inserted characters: `2870`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 45 - 0 = 45` — **PASS**
+- Character balance: `0 + 2870 - 0 = 2870` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/7AF.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AF
+PURPOSE: Dedicated launcher for the 7AF Projection submenu icon population release.
+AUTHORIZED CHANGES: mobile/beta/7AF.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads the exact reviewed GV-beta-0007AF.py commit. Splash animation is not loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-19673a709293 — GV 7AF: populate projection submenu icons
 
 **Recorded:** 2026-08-08T22:08:26-05:00  
