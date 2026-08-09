@@ -1,5 +1,228 @@
 name: Automatic Change Control Log
 
+# ================================================================
+# GALAXY VIEWER — MANDATORY RUNTIME AND VISUAL VERIFICATION POLICY
+# ================================================================
+#
+# This policy is a standing requirement for every future Galaxy Viewer
+# Engineering Change Order.
+#
+# IMPLEMENTATION IS NOT VERIFICATION.
+#
+# A source-code change is not considered successful merely because:
+#
+# - the requested lines were changed;
+# - formulas appear correct;
+# - telemetry values change;
+# - JavaScript parses;
+# - GLSL source appears valid;
+# - a commit succeeded;
+# - a blob SHA matches;
+# - a static/source comparison passes.
+#
+# Every Engineering Change Order must verify BOTH:
+#
+# 1. IMPLEMENTATION:
+#    The authorized source changes were made exactly and no unauthorized
+#    content changed.
+#
+# 2. BEHAVIOR:
+#    The resulting artifact actually performs the requested behavior.
+#
+#
+# ------------------------------------------------
+# MANDATORY HTML RUNTIME TEST
+# ------------------------------------------------
+#
+# After every authorized HTML creation or modification, ChatGPT MUST:
+#
+# 1. Fetch the committed HTML back from the repository.
+#
+# 2. Verify that the fetched bytes are the exact bytes intended for
+#    testing.
+#
+# 3. Run/open that exact HTML.
+#
+# 4. Load the actual production assets referenced by that HTML.
+#
+# 5. Verify that JavaScript/runtime initialization succeeds.
+#
+# 6. Check for visible/runtime errors.
+#
+# 7. Exercise the relevant controls, timing, states and interactions
+#    required by the ECO.
+#
+# 8. Observe the actual rendered result.
+#
+# 9. Compare the observed result directly against every behavioral
+#    acceptance criterion in the ECO.
+#
+# 10. Record which criteria visibly passed and which visibly failed.
+#
+#
+# ------------------------------------------------
+# MANDATORY VISUAL TEST
+# ------------------------------------------------
+#
+# Any requirement describing appearance, movement, animation, timing,
+# geometry, positioning, deformation, rotation, smear, fade, color,
+# size, alignment, visibility or interaction requires actual visual
+# observation.
+#
+# Source inspection alone MUST NOT be classified as a visual PASS.
+#
+# Mathematical calculations alone MUST NOT be classified as a visual
+# PASS.
+#
+# Telemetry alone MUST NOT be classified as a visual PASS.
+#
+# Multiple shader/history samples alone MUST NOT be classified as proof
+# that a visible smear exists.
+#
+# A changing rotation variable alone MUST NOT be classified as proof
+# that an object visibly rotates.
+#
+# The behavior itself must be visible in the rendered artifact.
+#
+#
+# ------------------------------------------------
+# ANIMATION-SPECIFIC TESTING
+# ------------------------------------------------
+#
+# For animation changes, ChatGPT MUST inspect the actual requested
+# timeline.
+#
+# If an ECO specifies frames, times or milestones, those exact regions
+# must be inspected.
+#
+# Example:
+#
+# If the ECO requires behavior between frames 314 and 330, ChatGPT must
+# actually inspect frames 314 through 330, or their exact corresponding
+# times, in the rendered artifact.
+#
+# It is insufficient to calculate what should occur at those frames.
+#
+# Frame controls supplied for inspection must be exercised when they are
+# relevant to acceptance testing.
+#
+#
+# ------------------------------------------------
+# LIVE-SITE VERIFICATION
+# ------------------------------------------------
+#
+# When the artifact is served through GitHub Pages and live-site testing
+# is technically possible, ChatGPT MUST open the actual GitHub Pages
+# artifact after the repository write.
+#
+# Use a cache-busting query based on the exact verified commit SHA when
+# appropriate so stale content is not mistaken for the current release.
+#
+# The committed/fetch-back repository artifact and the artifact being
+# visually tested must represent the same release.
+#
+#
+# ------------------------------------------------
+# ACTUAL ASSETS REQUIRED
+# ------------------------------------------------
+#
+# Visual acceptance testing must use the actual production assets.
+#
+# A synthetic image, mock target, simplified drawing or reconstructed
+# scene may be used only as a diagnostic aid.
+#
+# It MUST NOT substitute for testing the real HTML with its real assets.
+#
+#
+# ------------------------------------------------
+# FAILURE / UNAVAILABLE-TEST RULE
+# ------------------------------------------------
+#
+# If ChatGPT cannot run, open, render or visually inspect the actual
+# artifact:
+#
+# - do not claim visual success;
+# - do not claim runtime success;
+# - do not claim the behavioral requirement passed;
+# - do not call the ECO fully complete;
+# - explicitly state what could not be tested;
+# - classify affected requirements as UNVERIFIED,
+#   REQUIRES VISUAL TESTING, or REQUIRES LIVE-SITE TESTING.
+#
+# A lower level of evidence must never be promoted into a higher level
+# of verification.
+#
+#
+# ------------------------------------------------
+# OBSERVED FAILURE RULE
+# ------------------------------------------------
+#
+# If actual runtime or visual behavior does not satisfy an authorized
+# acceptance criterion, classify that requirement as FAIL.
+#
+# A mathematically plausible implementation does not override an
+# observed visual failure.
+#
+# Do not silently repair a failed test.
+#
+# Any additional repository modification requires authorization under
+# the controlled Engineering Change Order process.
+#
+#
+# ------------------------------------------------
+# COMPLETION GATE
+# ------------------------------------------------
+#
+# Before calling any ECO complete, ChatGPT must ask internally:
+#
+# A. Did I verify the exact committed/fetch-back source?
+#
+# B. Did I run the actual executable artifact where the request requires
+#    runtime behavior?
+#
+# C. Did I use the real production assets?
+#
+# D. Did I inspect the exact relevant frames/states/interactions?
+#
+# E. Did I visually observe every visual acceptance requirement?
+#
+# F. Did I check for runtime errors?
+#
+# G. Does the observed behavior actually match the user's request?
+#
+# H. Am I clearly distinguishing source, syntax, runtime, visual,
+#    live-site and device testing?
+#
+# If any required answer is NO, the ECO may not be reported as a full
+# PASS.
+#
+#
+# ------------------------------------------------
+# REQUIRED COMPLETION REPORT LANGUAGE
+# ------------------------------------------------
+#
+# Every completion report must separately identify:
+#
+# - SOURCE INSPECTION
+# - EXACT TEXT/BLOB COMPARISON
+# - SYNTAX VALIDATION
+# - RUNTIME TESTING
+# - VISUAL TESTING
+# - LIVE-SITE TESTING
+# - PHYSICAL-DEVICE TESTING
+#
+# Only testing actually performed may receive PASS.
+#
+# CORE RULE:
+#
+# DO NOT VERIFY ONLY THAT THE CODE CHANGED.
+# VERIFY THAT THE RESULT ACTUALLY WORKS.
+#
+# ================================================================
+# END MANDATORY RUNTIME AND VISUAL VERIFICATION POLICY
+# ================================================================
+
+
 on:
   push:
     branches:
