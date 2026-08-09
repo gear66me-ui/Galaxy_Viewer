@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-bae794773f0e — GV 7AK: restrict glow to icon graphics only
+
+**Recorded:** 2026-08-09T14:34:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`bae794773f0edb8838a110fc8a0a20b715c760aa`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/bae794773f0edb8838a110fc8a0a20b715c760aa)  
+**Parent/baseline:** `3f52f773fed480246a59230aa9e142342c80807a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3f52f773fed480246a59230aa9e142342c80807a...bae794773f0edb8838a110fc8a0a20b715c760aa)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AK: restrict glow to icon graphics only
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AK.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b970baa44d55b3c28c7cbd20c7fedce8b6116a22d98de48fb658c3e21b2d9c47`
+- Bytes: `0` → `46150`
+- Lines: `0` → `741`
+- Characters: `0` → `46147`
+- Inserted lines: `741`
+- Deleted lines: `0`
+- Inserted characters: `46147`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 741 - 0 = 741` — **PASS**
+- Character balance: `0 + 46147 - 0 = 46147` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AK.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AK
+# PURPOSE: Preserve 7AJ exactly except remove all animated glow from long label tiles and square icon tile surfaces so only actual icon graphics glow on the existing 3000 ms cycle.
+# USER REQUEST: Long rectangular tiles must not glow, square tile backgrounds must not glow, only actual icon graphics may glow, hamburger remains non-glowing, and coordinate glow remains exactly as 7AJ.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AK.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: 7AJ geometry, Projection/Mollweide SVG geometry, coordinate glow/calculations/switching, target/SIMBAD, Aladin, navigation, controls, splash behavior, typography, dimming, actions, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-db6bd0b9704d — Galaxy Viewer workflow: require launcher updates for current beta releases
 
 **Recorded:** 2026-08-09T14:21:47-05:00  
