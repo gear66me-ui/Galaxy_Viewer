@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a7482279eb8f — Target Cyclone: spin and shrink with 0058E collapse
+
+**Recorded:** 2026-08-09T13:52:13-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a7482279eb8f010a7a94fc9598f993bb5d7843a1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a7482279eb8f010a7a94fc9598f993bb5d7843a1)  
+**Parent/baseline:** `889b2983969dfd3796ed54833fc63b0f4e1df128`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/889b2983969dfd3796ed54833fc63b0f4e1df128...a7482279eb8f010a7a94fc9598f993bb5d7843a1)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Target Cyclone: spin and shrink with 0058E collapse
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Target-Cyclone.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `9f0c36f47d2921bbea5c4486372e658ddf2e6580d753a3e79fd543fc1701349e`
+- SHA-256 after: `9ee10b0f1ac92d1ea3b47f584fda0ec29e39e21070ae2665cb9fe7f545682ff4`
+- Bytes: `8786` → `9502`
+- Lines: `185` → `196`
+- Characters: `8784` → `9500`
+- Inserted lines: `35`
+- Deleted lines: `24`
+- Inserted characters: `1233`
+- Deleted characters: `517`
+- Unified diff hunks: `16`
+- Inserted blocks: `16`
+- Deleted blocks: `12`
+- Changed blocks: `16`
+- Line balance: `185 + 35 - 24 = 196` — **PASS**
+- Character balance: `8784 + 1233 - 517 = 9500` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-fa89117945f2 — GV 7AI: allow JavaScript-only viewer wrapper in mobile launcher
 
 **Recorded:** 2026-08-09T13:50:21-05:00  
