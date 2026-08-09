@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b00f89261a31 — GV 7AG: center projection icons and synchronize glow
+
+**Recorded:** 2026-08-08T22:55:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b00f89261a3155ab7c08de395694a6a3bf1cc2c9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b00f89261a3155ab7c08de395694a6a3bf1cc2c9)  
+**Parent/baseline:** `3c1e6fd2a56632f2487414b76a286f3d2ebba176`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3c1e6fd2a56632f2487414b76a286f3d2ebba176...b00f89261a3155ab7c08de395694a6a3bf1cc2c9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AG: center projection icons and synchronize glow
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AG.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9b5a6a22709bd7ca121b462547109c16ebf8c5664ad841a6c612168bf0d04bc3`
+- Bytes: `0` → `31918`
+- Lines: `0` → `500`
+- Characters: `0` → `31916`
+- Inserted lines: `500`
+- Deleted lines: `0`
+- Inserted characters: `31916`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 500 - 0 = 500` — **PASS**
+- Character balance: `0 + 31916 - 0 = 31916` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AG.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AG
+# PURPOSE: Center the four populated Projection icons, synchronize the complete Projection pulse on one authoritative clock, and add persistent ICRSD/GAL interaction glow.
+# USER REQUEST: Preserve GV-beta-0007AF exactly except V-7AG identity, measured icon centering, synchronized Projection pulse, coordinate-frame glow, and corresponding runtime validation.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AG.py and its dedicated launcher only.
+# PRESERVED BEHAVIOR: 7AF geometry, Projection/Mollweide SVG geometry, labels, typography, dimming, coordinate calculations/switching, hamburger, target/SIMBAD, Aladin, navigation, controls, splash absence, fonts, colors except authorized glow, actions, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6fc6aded604b — Add mandatory runtime and visual verification policy
 
 **Recorded:** 2026-08-08T22:53:57-05:00  
