@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-948e070cab81 — GV 7AI: restore glow hierarchy and synchronize 1s pulse
+
+**Recorded:** 2026-08-09T13:04:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`948e070cab81f94f614c41c90948866e0531a513`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/948e070cab81f94f614c41c90948866e0531a513)  
+**Parent/baseline:** `862662eb41ec7281019e97eb75355368cb48f83d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/862662eb41ec7281019e97eb75355368cb48f83d...948e070cab81f94f614c41c90948866e0531a513)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AI: restore glow hierarchy and synchronize 1s pulse
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AI.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `326cbe7b9d285e2d94bc8301f10919da19bc8b0adbcb55697997e4a332f6d72b`
+- Bytes: `0` → `43966`
+- Lines: `0` → `725`
+- Characters: `0` → `43963`
+- Inserted lines: `725`
+- Deleted lines: `0`
+- Inserted characters: `43963`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 725 - 0 = 725` — **PASS**
+- Character balance: `0 + 43963 - 0 = 43963` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AI.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AI
+# PURPOSE: Preserve 7AG geometry while synchronizing brighter tile/icon/hamburger/coordinate neon on one 1000 ms clock and matching Projection submenu title height.
+# USER REQUEST: Preserve GV-beta-0007AG exactly except V-7AI identity, 1000 ms synchronized glow, stronger authorized tile/icon/neon intensity, right-title visual size matching, and ORTHO validation.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AI.py and its dedicated launcher/PWA release chain only.
+# PRESERVED BEHAVIOR: 7AG geometry, Projection/Mollweide SVG geometry, coordinate calculations/switching, target/SIMBAD, Aladin, navigation, controls, splash behavior, fonts except authorized launcher typography, actions, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-1d0f87a0bd80 — Add exact 0057 vortex target cyclone lab
 
 **Recorded:** 2026-08-09T12:35:39-05:00  
