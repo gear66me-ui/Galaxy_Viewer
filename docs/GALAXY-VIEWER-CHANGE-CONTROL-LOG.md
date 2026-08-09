@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c27c0c322d38 — GV 7AL: correct launcher diagnostic formatting regression
+
+**Recorded:** 2026-08-09T15:16:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c27c0c322d38fd0e93b5a7a256862f1f399f51dc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c27c0c322d38fd0e93b5a7a256862f1f399f51dc)  
+**Parent/baseline:** `e6cca630e49ac4b28c6b5b4d45a1be42ea8b02b1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e6cca630e49ac4b28c6b5b4d45a1be42ea8b02b1...c27c0c322d38fd0e93b5a7a256862f1f399f51dc)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AL: correct launcher diagnostic formatting regression
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ccfd669f20e17737550f1daa9fa9b6677160f488a9d712190b3a0af2f01237ad`
+- SHA-256 after: `4eaf8aae11cc3e63aaf495e0e4cd4f2d6531ef63678e0b0edb225328efc5af82`
+- Bytes: `11386` → `11386`
+- Lines: `199` → `199`
+- Characters: `11372` → `11372`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `1`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `199 + 1 - 1 = 199` — **PASS**
+- Character balance: `11372 + 1 - 1 = 11372` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-94a1cea8fc19 — GV 7AL: point mobile beta launcher to current viewer
 
 **Recorded:** 2026-08-09T15:09:42-05:00  
