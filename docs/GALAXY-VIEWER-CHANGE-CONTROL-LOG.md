@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-dee4d48c5da4 — GV 7AI: update install PWA manifest identity
+
+**Recorded:** 2026-08-09T13:10:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dee4d48c5da4e140d5196e9d575b14709ee3ab86`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dee4d48c5da4e140d5196e9d575b14709ee3ab86)  
+**Parent/baseline:** `e38c0611b9ee9cfec295d5640bc77067089c1b13`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e38c0611b9ee9cfec295d5640bc77067089c1b13...dee4d48c5da4e140d5196e9d575b14709ee3ab86)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AI: update install PWA manifest identity
+```
+
+### Complete changed-path accounting
+
+#### `launch/beta/manifest.webmanifest`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e3a1bf4c6c359c9535386c1486c4be58c77ad9d47f91e58a3756e21656c5c1a7`
+- SHA-256 after: `5263af1570fc10831c14677d9299fb7825d29d2274289ba741e56d016e5ec358`
+- Bytes: `883` → `876`
+- Lines: `29` → `29`
+- Characters: `883` → `876`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `39`
+- Deleted characters: `46`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `29 + 5 - 5 = 29` — **PASS**
+- Character balance: `883 + 39 - 46 = 876` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-456576a96b24 — GV 7AI: update install shell to current beta
 
 **Recorded:** 2026-08-09T13:09:54-05:00  
