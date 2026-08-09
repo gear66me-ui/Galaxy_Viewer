@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b758af6ae657 — 0058C: add target vortex smear capture
+
+**Recorded:** 2026-08-08T20:08:15-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b758af6ae65758bfb1b6b1c027da9abd9d2548fb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b758af6ae65758bfb1b6b1c027da9abd9d2548fb)  
+**Parent/baseline:** `4d285f4c44fea64c4cf447ba1f67e1461244f0a1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4d285f4c44fea64c4cf447ba1f67e1461244f0a1...b758af6ae65758bfb1b6b1c027da9abd9d2548fb)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+0058C: add target vortex smear capture
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058C.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `bd894d09534ada603392b0ed753b5475174f928df88ca7d0ef818114c7ffbfb3`
+- Bytes: `0` → `23815`
+- Lines: `0` → `33`
+- Characters: `0` → `23785`
+- Inserted lines: `33`
+- Deleted lines: `0`
+- Inserted characters: `23785`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 33 - 0 = 33` — **PASS**
+- Character balance: `0 + 23785 - 0 = 23785` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-16383778fa9a — ECO 7AE: document projection label typography fix
 
 **Recorded:** 2026-08-08T20:03:22-05:00  
