@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6e411eb01415 — GV 7AH: synchronize faster global glow and coordinate neon
+
+**Recorded:** 2026-08-08T23:25:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6e411eb01415d2fa77addcc17aa54b36e056fa70`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6e411eb01415d2fa77addcc17aa54b36e056fa70)  
+**Parent/baseline:** `28360a90003935f65984f8e2087f7ac7be47630e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/28360a90003935f65984f8e2087f7ac7be47630e...6e411eb01415d2fa77addcc17aa54b36e056fa70)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AH: synchronize faster global glow and coordinate neon
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AH.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `0c64e69724eaa90ea407dfde6a4dbab1eb5017e8ef5f8712c61bff27357ba60d`
+- Bytes: `0` → `48393`
+- Lines: `0` → `767`
+- Characters: `0` → `48391`
+- Inserted lines: `767`
+- Deleted lines: `0`
+- Inserted characters: `48391`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 767 - 0 = 767` — **PASS**
+- Character balance: `0 + 48391 - 0 = 48391` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AH.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AH
+# PURPOSE: Reduce the synchronized interaction-glow cycle from 6400 ms to 4480 ms, synchronize Projection/hamburger/menu/coordinate attention glows on one clock, and add ICRSD/GAL neon underglow.
+# USER REQUEST: Preserve GV-beta-0007AG exactly except V-7AH identity, the authorized 30% shorter glow cycle, synchronized hamburger/menu attention glow, ICRSD/GAL neon underglow, and corresponding runtime validation.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AH.py and its dedicated launcher only.
+# PRESERVED BEHAVIOR: 7AG geometry, icon centering/SVG geometry, labels, typography, Projection-mode dimming, coordinate calculations/switching, hamburger actions, target/SIMBAD, Aladin, navigation, controls, splash absence, fonts, projection actions, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e5b5264a0644 — GV 7AG: add centered projection and glow launcher
 
 **Recorded:** 2026-08-08T22:56:30-05:00  
