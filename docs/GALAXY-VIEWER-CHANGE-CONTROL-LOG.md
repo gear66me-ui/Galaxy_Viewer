@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-19673a709293 — GV 7AF: populate projection submenu icons
+
+**Recorded:** 2026-08-08T22:08:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`19673a709293c8bc088fa93c812ca2d2dfca4580`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/19673a709293c8bc088fa93c812ca2d2dfca4580)  
+**Parent/baseline:** `6678cb71a7c4e1c305e4152a44c111e0520743ce`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6678cb71a7c4e1c305e4152a44c111e0520743ce...19673a709293c8bc088fa93c812ca2d2dfca4580)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AF: populate projection submenu icons
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AF.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `ced237e5c9c6baa057a92b1458c8be4b2999bad6e368beaedd6b50d3374a8726`
+- Bytes: `0` → `16820`
+- Lines: `0` → `220`
+- Characters: `0` → `16818`
+- Inserted lines: `220`
+- Deleted lines: `0`
+- Inserted characters: `16818`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 220 - 0 = 220` — **PASS**
+- Character balance: `0 + 16818 - 0 = 16818` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AF.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AF
+# PURPOSE: Populate only the four previously empty Projection submenu icon tiles with the approved Galaxy Viewer SVG artwork.
+# USER REQUEST: Preserve GV-beta-0007AE behavior exactly except V-7AF identity, four approved icon insertions, and corresponding runtime validation.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AF.py and its dedicated launcher only.
+# PRESERVED BEHAVIOR: 7AE geometry, Projection/Mollweide artwork and glow, labels, typography, dimming, coordinates, hamburger, target/SIMBAD, Aladin, navigation, controls, splash absence, fonts, colors, actions, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-17bf048f0c97 — Add Aladin vs Galaxy Viewer projection icon lab
 
 **Recorded:** 2026-08-08T21:46:03-05:00  
