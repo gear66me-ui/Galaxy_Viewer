@@ -218,6 +218,30 @@ name: Automatic Change Control Log
 # DO NOT VERIFY ONLY THAT THE CODE CHANGED.
 # VERIFY THAT THE RESULT ACTUALLY WORKS.
 #
+#
+# ------------------------------------------------
+# MANDATORY CURRENT-BETA LAUNCHER UPDATE
+# ------------------------------------------------
+#
+# Every Viewer release/update intended to become the current beta MUST
+# include updating the current app launcher in the same authorized ECO.
+#
+# `mobile/beta/index.html` is part of that release ECO by default and
+# must point to the newly approved Viewer release, unless the user
+# explicitly states that the build is inspection-only, experimental,
+# standalone-only, or must not become the current beta.
+#
+# The launcher must be fetch-back verified and, when technically possible,
+# live-tested against the exact newly approved Viewer release.
+#
+# Do not silently modify manifests, service workers, install launchers,
+# PWA files, or other delivery paths. If any of those are actually
+# necessary to make the current release launch correctly, name each path
+# in the ECO and obtain authorization before modifying it.
+#
+# A Viewer release intended to become current beta is not complete while
+# the current app launcher still points to the previous Viewer release.
+#
 # ================================================================
 # END MANDATORY RUNTIME AND VISUAL VERIFICATION POLICY
 # ================================================================
