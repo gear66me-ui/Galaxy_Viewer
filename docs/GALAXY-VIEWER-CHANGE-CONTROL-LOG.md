@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-034636e26ba0 — 0058E: add crosshair tip smear micro-lab
+
+**Recorded:** 2026-08-08T22:09:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`034636e26ba00a607ecf8ecd14455b2ef47d9add`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/034636e26ba00a607ecf8ecd14455b2ef47d9add)  
+**Parent/baseline:** `97ac810f9a55c1f2dede66d195ef7fd8a3c81cd5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/97ac810f9a55c1f2dede66d195ef7fd8a3c81cd5...034636e26ba00a607ecf8ecd14455b2ef47d9add)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+0058E: add crosshair tip smear micro-lab
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058E.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `e5bb0ee437dc755ba2d152416ea6fc3b839b0f032954091f3e4763b98d3bb468`
+- Bytes: `0` → `27593`
+- Lines: `0` → `40`
+- Characters: `0` → `27577`
+- Inserted lines: `40`
+- Deleted lines: `0`
+- Inserted characters: `27577`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 40 - 0 = 40` — **PASS**
+- Character balance: `0 + 27577 - 0 = 27577` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0ffe653226be — GV 7AF: add projection icon launcher
 
 **Recorded:** 2026-08-08T22:09:24-05:00  
