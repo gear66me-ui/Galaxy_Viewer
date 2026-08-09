@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-21d7d3958524 — Fix Aladin projection reference rendering
+
+**Recorded:** 2026-08-08T21:05:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`21d7d3958524af83790e1c62b7d4beb17431a114`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/21d7d3958524af83790e1c62b7d4beb17431a114)  
+**Parent/baseline:** `45563b878a9df0f86bfc60eb6b4eddd60942ebb8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/45563b878a9df0f86bfc60eb6b4eddd60942ebb8...21d7d3958524af83790e1c62b7d4beb17431a114)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix Aladin projection reference rendering
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Menu-Icons/aladin-projection-reference-0002.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `53bc0685c3532da451786032f9c9d94382cba27017a0422b3ecf2b1cc402b9a1`
+- Bytes: `0` → `6715`
+- Lines: `0` → `59`
+- Characters: `0` → `6690`
+- Inserted lines: `59`
+- Deleted lines: `0`
+- Inserted characters: `6690`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 59 - 0 = 59` — **PASS**
+- Character balance: `0 + 6690 - 0 = 6690` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-fe7012a89627 — Add Aladin projection reference viewer
 
 **Recorded:** 2026-08-08T20:55:42-05:00  
