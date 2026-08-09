@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-fddc7eb3c21e — GV 7AK: point mobile beta launcher to current viewer
+
+**Recorded:** 2026-08-09T14:36:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fddc7eb3c21e426c476873c363f48e0d4e6649a5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fddc7eb3c21e426c476873c363f48e0d4e6649a5)  
+**Parent/baseline:** `2f5e9716ffbe21adf1feccb5367c97a71c7e48c2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2f5e9716ffbe21adf1feccb5367c97a71c7e48c2...fddc7eb3c21e426c476873c363f48e0d4e6649a5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AK: point mobile beta launcher to current viewer
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `1eb07f7e92cf348a82a96d1291b36d1f76ed2738f16ac5e791764dd98458d8fd`
+- SHA-256 after: `9a121f319209981042e579703eea0210a94fd3eb9fe24c6a7e246d78f240d441`
+- Bytes: `11386` → `11386`
+- Lines: `199` → `199`
+- Characters: `11372` → `11372`
+- Inserted lines: `10`
+- Deleted lines: `10`
+- Inserted characters: `40`
+- Deleted characters: `40`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `7`
+- Changed blocks: `7`
+- Line balance: `199 + 10 - 10 = 199` — **PASS**
+- Character balance: `11372 + 40 - 40 = 11372` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6829783c65ee — Target Cyclone 0002: sharpen spiral pixel drag
 
 **Recorded:** 2026-08-09T14:35:54-05:00  
