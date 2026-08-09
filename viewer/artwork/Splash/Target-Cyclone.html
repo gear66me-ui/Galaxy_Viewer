@@ -30,16 +30,25 @@ const SOURCE_CROP_TOP=.02427;
 const SOURCE_CROP_SCALE=.95146;
 const TARGET_DIAMETER_SOURCE=91.8;
 const TARGET_RADIUS_SOURCE=TARGET_DIAMETER_SOURCE/2;
+const COLLAPSE_DURATION_MS=6046-2500;
 const MAX_DPR=1.35;
 const source=document.getElementById('source');
 const cyclone=document.getElementById('cyclone');
 const target=document.getElementById('target');
 const error=document.getElementById('error');
 const tg=target.getContext('2d');
-let gl,program,uniforms={},dpr=1,fit={},targetSprite=null,start=0,raf=0;
+let gl,program,uniforms={},dpr=1,fit={},targetSprite=null,start=0,raf=0,motion={flow:0,collapse:0,scale:1,angle:0};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a),0,1);return x*x*(3-2*x);};
 function fail(message){cancelAnimationFrame(raf);error.style.display='block';error.textContent='Target Cyclone: '+message;}
 function sourcePxToShaderR(px){return px*(fit.w/source.naturalWidth/SOURCE_CROP_SCALE)/innerHeight;}
+function motionState(elapsedMs){
+  const x=clamp(elapsedMs/COLLAPSE_DURATION_MS,0,1),e=x*x*(3-2*x),flow=.75*e+.25*x,collapse=Math.pow(flow,1.14);
+  const r=sourcePxToShaderR(TARGET_RADIUS_SOURCE),rn=clamp(r/.92,0,1),mask=Math.exp(-Math.pow(r/.235,2)),release=smooth(.15+.43*rn,1,flow);
+  const pull=Math.pow(release,1.61803399),finalPull=Math.pow(collapse,6),primary=pull*(.70+.30*rn),convergence=1-(1-primary)*(1-finalPull),scale=.00001+.99999*(1-convergence);
+  const localTurns=2.10*flow*mask,releasedTurns=1.45*Math.pow(release,1.18)*flow*(.45+.55*rn),angle=-6.28318531*(localTurns+releasedTurns);
+  return{flow,collapse,scale,angle};
+}
 function buildTargetSprite(){
   const side=184,c=document.createElement('canvas');
   c.width=side;c.height=side;
@@ -80,8 +89,12 @@ function drawTarget(){
   tg.clearRect(0,0,innerWidth,innerHeight);
   if(!targetSprite||!source.naturalWidth)return;
   const scale=fit.w/source.naturalWidth/SOURCE_CROP_SCALE;
-  const side=TARGET_DIAMETER_SOURCE*scale;
-  tg.drawImage(targetSprite,fit.cx-side/2,fit.cy-side/2,side,side);
+  const side=TARGET_DIAMETER_SOURCE*scale*motion.scale;
+  tg.save();
+  tg.translate(fit.cx,fit.cy);
+  tg.rotate(motion.angle);
+  tg.drawImage(targetSprite,-side/2,-side/2,side,side);
+  tg.restore();
 }
 function compile(type,text){
   const shader=gl.createShader(type);gl.shaderSource(shader,text);gl.compileShader(shader);
@@ -96,27 +109,27 @@ function initGL(){
 varying vec2 uv;
 uniform sampler2D tex;
 uniform vec2 res,imgSz,ctr;
-uniform float H,t,targetCutR;
+uniform float H,flow,collapse;
 vec2 fitBase(vec2 q){float sa=res.x/res.y,ia=imgSz.x/imgSz.y;vec2 z=q;if(sa>ia){float s=ia/sa;z.x=(z.x-.5)/s+.5;}else{float s=sa/ia;z.y=(z.y-.5)/s+.5;}return z;}
 vec2 cropSource(vec2 z){return vec2(.04854,.02427)+z*.95146;}
 void main(){
   float asp=res.x/res.y;
   vec2 q=uv-ctr;q.x*=asp;
   float r=length(q),a=atan(q.y,q.x);
-  float edge=1.-smoothstep(H*.965,H,r);
-  if(edge<=0.){gl_FragColor=vec4(0.);return;}
-  float rn=clamp(r/max(H,.00001),0.,1.);
-  float flow=smoothstep(0.,2.2,t);
-  float mask=exp(-pow(r/max(H*1.35,.00001),2.));
+  float influence=exp(-pow(r/max(H*.58,.00001),6.));
+  float rn=clamp(r/.92,0.,1.);
+  float mask=exp(-pow(r/.235,2.));
   float release=smoothstep(.15+.43*rn,1.,flow);
   float pull=pow(release,1.61803399);
+  float finalPull=pow(collapse,6.);
   float primary=pull*(.70+.30*rn);
-  float radial=1.-.18*primary;
+  float convergence=1.-(1.-primary)*(1.-finalPull);
+  float rawRadial=1.-convergence;
+  float radial=.00001+.99999*rawRadial;
   float localTurns=2.10*flow*mask;
   float releasedTurns=1.45*pow(release,1.18)*flow*(.45+.55*rn);
-  float continuingTurns=t*.115*(1.-.55*rn);
-  float sourceAngle=a-6.28318531*((localTurns+releasedTurns)*.48+continuingTurns);
-  float sourceRadius=r/max(radial,.00001);
+  float sourceAngle=a-6.28318531*(localTurns+releasedTurns);
+  float sourceRadius=r/radial;
   vec2 src=vec2(cos(sourceAngle),sin(sourceAngle))*sourceRadius;
   vec2 srcOpp=-src;
   src.x/=asp;srcOpp.x/=asp;
@@ -126,13 +139,9 @@ void main(){
   float okOpp=step(0.,oppositeBase.x)*step(oppositeBase.x,1.)*step(0.,oppositeBase.y)*step(oppositeBase.y,1.);
   vec3 primaryCol=texture2D(tex,clamp(warped,0.,1.)).rgb*ok;
   vec3 oppositeCol=texture2D(tex,clamp(opposite,0.,1.)).rgb*okOpp;
-  float keepSource=step(targetCutR,sourceRadius);
-  primaryCol*=keepSource;oppositeCol*=keepSource;
-  float balance=smoothstep(.10,.82,flow)*smoothstep(.28,.92,rn);
+  float balance=smoothstep(.08,.88,flow)*smoothstep(H*.55,H*1.45,r);
   vec3 col=mix(primaryCol,(primaryCol+oppositeCol)*.5,balance);
-  float vignette=smoothstep(0.,.18,rn)*(1.-smoothstep(.82,1.,rn)*.18);
-  col*=.76+.24*vignette;
-  gl_FragColor=vec4(col,edge);
+  gl_FragColor=vec4(col,influence);
 }`;
   program=gl.createProgram();
   gl.attachShader(program,compile(gl.VERTEX_SHADER,vs));
@@ -151,20 +160,22 @@ void main(){
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source);
   const L=n=>gl.getUniformLocation(program,n);
-  uniforms={res:L('res'),imgSz:L('imgSz'),ctr:L('ctr'),H:L('H'),t:L('t'),targetCutR:L('targetCutR')};
+  uniforms={res:L('res'),imgSz:L('imgSz'),ctr:L('ctr'),H:L('H'),flow:L('flow'),collapse:L('collapse')};
   gl.clearColor(0,0,0,0);
 }
 function frame(now){
-  const seconds=(now-start)/1000;
+  const elapsed=now-start;
+  motion=motionState(elapsed);
+  drawTarget();
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.uniform2f(uniforms.res,cyclone.width,cyclone.height);
   gl.uniform2f(uniforms.imgSz,source.naturalWidth,source.naturalHeight);
   gl.uniform2f(uniforms.ctr,fit.cx/innerWidth,1-fit.cy/innerHeight);
   gl.uniform1f(uniforms.H,fit.hr/innerHeight);
-  gl.uniform1f(uniforms.t,seconds);
-  gl.uniform1f(uniforms.targetCutR,sourcePxToShaderR(TARGET_RADIUS_SOURCE));
+  gl.uniform1f(uniforms.flow,motion.flow);
+  gl.uniform1f(uniforms.collapse,motion.collapse);
   gl.drawArrays(gl.TRIANGLES,0,6);
-  raf=requestAnimationFrame(frame);
+  if(elapsed<COLLAPSE_DURATION_MS)raf=requestAnimationFrame(frame);
 }
 async function boot(){
   try{
