@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000">
+<title>Galaxy Viewer — Target Cyclone 0003</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+#source{display:none}
+#target{position:fixed;inset:0;width:100%;height:100%;display:block;background:#000}
+</style>
+</head>
+<body>
+<img id="source" crossorigin="anonymous" src="Galaxy%20Splash%20Ibis%20NO%20NAME.png" alt="">
+<canvas id="target"></canvas>
+<script>
+(()=>{'use strict';
+const RETICLE_CENTER_X=.52427;
+const RETICLE_CENTER_Y=.58329;
+const SOURCE_CROP_LEFT=.04854;
+const SOURCE_CROP_TOP=.02427;
+const SOURCE_CROP_SCALE=.95146;
+const TARGET_DIAMETER_SOURCE=91.8;
+const TARGET_RADIUS_SOURCE=TARGET_DIAMETER_SOURCE/2;
+const SPRITE_SIDE=184;
+const HOLD_MS=300;
+const COLLAPSE_DURATION_MS=6046-2500;
+const MAX_DPR=1.35;
+const source=document.getElementById('source');
+const target=document.getElementById('target');
+const tg=target.getContext('2d');
+const work=document.createElement('canvas');
+work.width=work.height=SPRITE_SIDE;
+const wg=work.getContext('2d',{willReadFrequently:true});
+let dpr=1,fit={},targetSprite=null,targetPixels=[],finalPoint=[255,255,255,255],start=0,raf=0,stopped=false;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a),0,1);return x*x*(3-2*x);};
+function sourcePxToShaderR(px){return px*(fit.w/source.naturalWidth/SOURCE_CROP_SCALE)/innerHeight;}
+function buildTargetSprite(){
+  const c=document.createElement('canvas');c.width=c.height=SPRITE_SIDE;
+  const x=c.getContext('2d',{willReadFrequently:true});
+  const cx=RETICLE_CENTER_X*source.naturalWidth,cy=RETICLE_CENTER_Y*source.naturalHeight;
+  x.drawImage(source,cx-TARGET_RADIUS_SOURCE,cy-TARGET_RADIUS_SOURCE,TARGET_DIAMETER_SOURCE,TARGET_DIAMETER_SOURCE,0,0,SPRITE_SIDE,SPRITE_SIDE);
+  const im=x.getImageData(0,0,SPRITE_SIDE,SPRITE_SIDE),d=im.data,mid=SPRITE_SIDE/2,sourcePerPixel=TARGET_DIAMETER_SOURCE/SPRITE_SIDE;
+  let best=-1;
+  targetPixels=[];
+  for(let py=0;py<SPRITE_SIDE;py++)for(let px=0;px<SPRITE_SIDE;px++){
+    const i=(py*SPRITE_SIDE+px)*4,dx=px+.5-mid,dy=py+.5-mid,r=Math.hypot(dx,dy),sourceR=r*sourcePerPixel,m=Math.max(d[i],d[i+1],d[i+2]);
+    if(sourceR>TARGET_RADIUS_SOURCE||m<=8){d[i+3]=0;continue;}
+    const keep=clamp((m-8)/24,0,1);d[i+3]=Math.round(d[i+3]*keep);
+    if(d[i+3]){
+      targetPixels.push({dx,dy,r,a:Math.atan2(dy,dx),sr:sourceR,red:d[i],green:d[i+1],blue:d[i+2],alpha:d[i+3]});
+      const score=(d[i]+d[i+1]+d[i+2])*d[i+3];
+      if(score>best){best=score;finalPoint=[d[i],d[i+1],d[i+2],d[i+3]];}
+    }
+  }
+  x.clearRect(0,0,SPRITE_SIDE,SPRITE_SIDE);x.putImageData(im,0,0);targetSprite=c;
+}
+function resize(){
+  dpr=Math.min(devicePixelRatio||1,MAX_DPR);
+  target.width=Math.round(innerWidth*dpr);target.height=Math.round(innerHeight*dpr);
+  tg.setTransform(dpr,0,0,dpr,0,0);
+  const ia=source.naturalWidth/source.naturalHeight,sa=innerWidth/innerHeight;
+  let w,h,x,y;
+  if(sa>ia){h=innerHeight;w=h*ia;x=(innerWidth-w)/2;y=0;}
+  else{w=innerWidth;h=w/ia;x=0;y=(innerHeight-h)/2;}
+  fit={x,y,w,h,cx:x+((RETICLE_CENTER_X-SOURCE_CROP_LEFT)/SOURCE_CROP_SCALE)*w,cy:y+((RETICLE_CENTER_Y-SOURCE_CROP_TOP)/SOURCE_CROP_SCALE)*h};
+  if(stopped)drawPoint();else drawIntact();
+}
+function clearVisible(){tg.clearRect(0,0,innerWidth,innerHeight);tg.fillStyle='#000';tg.fillRect(0,0,innerWidth,innerHeight);}
+function drawIntact(){
+  clearVisible();
+  if(!targetSprite||!source.naturalWidth)return;
+  const side=TARGET_DIAMETER_SOURCE*(fit.w/source.naturalWidth/SOURCE_CROP_SCALE);
+  tg.drawImage(targetSprite,fit.cx-side/2,fit.cy-side/2,side,side);
+}
+function putPixel(out,x,y,p,weight){
+  const ix=Math.round(x),iy=Math.round(y);
+  if(ix<0||iy<0||ix>=SPRITE_SIDE||iy>=SPRITE_SIDE)return;
+  const i=(iy*SPRITE_SIDE+ix)*4,a=p.alpha*weight;
+  if(a<=out[i+3])return;
+  out[i]=p.red;out[i+1]=p.green;out[i+2]=p.blue;out[i+3]=Math.min(255,Math.round(a));
+}
+function renderWarp(elapsed){
+  const x=clamp((elapsed-HOLD_MS)/COLLAPSE_DURATION_MS,0,1),e=x*x*(3-2*x),flow=.75*e+.25*x,collapse=Math.pow(flow,1.14);
+  if(x<=0){drawIntact();return false;}
+  if(x>=1){drawPoint();return true;}
+  const im=wg.createImageData(SPRITE_SIDE,SPRITE_SIDE),out=im.data,mid=SPRITE_SIDE/2,maxR=SPRITE_SIDE/2;
+  for(const p of targetPixels){
+    const rn=clamp(p.r/maxR,0,1),shaderR=sourcePxToShaderR(p.sr),shaderRn=clamp(shaderR/.92,0,1),mask=Math.exp(-Math.pow(shaderR/.235,2));
+    const capture=smooth(.08+.50*(1-rn),.96,flow),release=smooth(.15+.43*shaderRn,1,flow);
+    const pull=Math.pow(release,1.61803399),finalPull=Math.pow(collapse,6)*capture,primary=pull*(.70+.30*shaderRn)*capture;
+    const convergence=1-(1-primary)*(1-finalPull),radial=.00001+.99999*(1-convergence);
+    const localTurns=2.10*flow*mask,releasedTurns=1.45*Math.pow(release,1.18)*flow*(.45+.55*shaderRn);
+    const spiralGain=.22+2.70*Math.pow(rn,1.55),turns=(localTurns+releasedTurns)*capture*spiralGain;
+    const angle=p.a-6.28318531*turns,outR=p.r*radial;
+    const smearStrength=capture*Math.pow(rn,1.8),trail=6.28318531*turns*.18*smearStrength,samples=1+Math.floor(5*smearStrength);
+    for(let s=0;s<samples;s++){
+      const t=samples===1?0:s/(samples-1),aa=angle+trail*t,rr=outR*(1+.10*t*smearStrength),weight=1-.68*t;
+      putPixel(out,mid+Math.cos(aa)*rr,mid+Math.sin(aa)*rr,p,weight);
+    }
+  }
+  wg.putImageData(im,0,0);
+  clearVisible();
+  const side=TARGET_DIAMETER_SOURCE*(fit.w/source.naturalWidth/SOURCE_CROP_SCALE);
+  tg.drawImage(work,fit.cx-side/2,fit.cy-side/2,side,side);
+  return false;
+}
+function drawPoint(){
+  stopped=true;clearVisible();
+  tg.fillStyle=`rgba(${finalPoint[0]},${finalPoint[1]},${finalPoint[2]},${finalPoint[3]/255})`;
+  tg.fillRect(Math.round(fit.cx),Math.round(fit.cy),1,1);
+}
+function frame(now){
+  const done=renderWarp(now-start);
+  if(!done)raf=requestAnimationFrame(frame);
+}
+async function boot(){
+  try{
+    if(source.decode)await source.decode();
+    buildTargetSprite();resize();addEventListener('resize',resize,{passive:true});
+    drawIntact();start=performance.now();raf=requestAnimationFrame(frame);
+    window.__targetCyclone={center:{normalizedX:RETICLE_CENTER_X,normalizedY:RETICLE_CENTER_Y},targetDiameterSourcePx:TARGET_DIAMETER_SOURCE,targetOnly:true,holdMs:HOLD_MS,collapseDurationMs:COLLAPSE_DURATION_MS};
+  }catch(e){console.error(e);clearVisible();}
+}
+if(source.complete&&source.naturalWidth)boot();else{source.onload=boot;source.onerror=()=>{console.error('Target artwork failed to load');clearVisible();};}
+})();
+</script>
+</body>
+</html>
