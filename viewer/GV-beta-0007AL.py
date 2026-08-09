@@ -739,3 +739,371 @@ display(Javascript(r"""
 """))
 
 # GV-beta-0007AK staged
+
+# GV-beta-0007AL
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AL
+# PURPOSE: Restore static inner neon to square icon targets, keep long labels and square surfaces non-pulsing, wire all projection actions, hold the selected icon in a steady bright state, fade the complete menus after selection, and reopen projection selection from the existing target icon.
+# USER REQUEST: Preserve the static inner target glow, animate only selectable icon graphics on the 3000 ms cycle, make selected projection icons steady-bright, execute MOLLWEIDE/SPHERICAL/ORTHO/TANGENTIAL/SINUSOIDAL actions, fade the menus after selection, and use the target icon to reopen projection selection.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AL.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: GV-beta-0007AK.py remains frozen; preserve coordinate glow, icon/menu geometry, typography, dimming, Aladin/SIMBAD behavior outside the authorized target-reopen state, coordinate calculations, splash behavior, and all unrelated behavior.
+
+display(Javascript(r"""
+(async()=>{
+  const VERSION="7AL";
+  const CYCLE=3000;
+  const EASING="cubic-bezier(.42,0,.18,1)";
+  const MENU_FADE_MS=1000;
+  const LABELS=["MOLLWEIDE","SPHERICAL","ORTHO","TANGENTIAL","SINUSOIDAL"];
+  const PROJECTION_CODES={MOLLWEIDE:"MOL",SPHERICAL:"SIN",ORTHO:"SIN",TANGENTIAL:"TAN",SINUSOIDAL:"SFL"};
+  const STATIC_INSET={
+    backgroundColor:"rgba(5,18,32,.10)",
+    boxShadow:"inset 0 0 0 1px rgba(143,234,255,.28), inset 0 0 6px rgba(98,216,255,.18), inset 0 0 10px rgba(157,124,255,.10)"
+  };
+  const ICON_FRAMES=[
+    {offset:0,opacity:.82,filter:"brightness(1.08) saturate(1.06) drop-shadow(0 0 2px rgba(143,234,255,.42)) drop-shadow(0 0 5px rgba(79,166,255,.22))"},
+    {offset:.24,opacity:.94,filter:"brightness(1.22) saturate(1.12) drop-shadow(0 0 3px rgba(224,252,255,.72)) drop-shadow(0 0 7px rgba(98,216,255,.68)) drop-shadow(0 0 11px rgba(157,124,255,.34))"},
+    {offset:.52,opacity:1,filter:"brightness(1.48) saturate(1.18) drop-shadow(0 0 5px rgba(255,255,255,1)) drop-shadow(0 0 10px rgba(143,234,255,1)) drop-shadow(0 0 16px rgba(79,166,255,.98)) drop-shadow(0 0 22px rgba(157,124,255,.72))"},
+    {offset:.76,opacity:.94,filter:"brightness(1.24) saturate(1.12) drop-shadow(0 0 3px rgba(224,252,255,.76)) drop-shadow(0 0 7px rgba(98,216,255,.70)) drop-shadow(0 0 11px rgba(157,124,255,.36))"},
+    {offset:1,opacity:.82,filter:"brightness(1.08) saturate(1.06) drop-shadow(0 0 2px rgba(143,234,255,.42)) drop-shadow(0 0 5px rgba(79,166,255,.22))"}
+  ];
+  const SELECTED_FRAME=ICON_FRAMES[2];
+  const waitFor=(test,timeout=20000)=>new Promise((resolve,reject)=>{const end=performance.now()+timeout;const tick=()=>{let value=null;try{value=test()}catch(_){ }if(value){resolve(value);return}if(performance.now()>end){reject(new Error("GV-BETA-0007AL STARTUP TIMEOUT"));return}setTimeout(tick,50)};tick()});
+  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  const nextPaint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  const afterInheritedPulse=fn=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(fn)));
+
+  const root=await waitFor(()=>document.getElementById("aladin-cosmic-command-test"));
+  const aladin=await waitFor(()=>window.aladin_cosmic_command_test);
+  await waitFor(()=>window.GV7AK_VALIDATION&&window.GV7AK_VALIDATION.pending===false);
+  const versionLabel=await waitFor(()=>root.querySelector("#gv-version-label"));
+  versionLabel.textContent="V-7AL";
+
+  let selectedProjection=null;
+  let menusDismissed=false;
+  let fadeInProgress=false;
+  let stateObserver=null;
+  const ownedIconAnimations=new WeakMap();
+  const interaction=window.GV7AL_INTERACTION={
+    selectedProjection:null,selectedCode:null,lastProjectionBefore:null,lastProjectionAfter:null,
+    setProjectionCalled:false,setProjectionSucceeded:false,selectedSteady:false,
+    fadeStarted:false,fadeCompleted:false,menusHidden:false,reopenCount:0,reopened:false,lastError:null
+  };
+
+  function collect(){
+    const leftMenu=root.querySelector(".gv-viewer-menu");
+    const leftRows=[...leftMenu?.querySelectorAll(":scope > .gv-viewer-menu-row")||[]];
+    const rightMenu=root.querySelector(".gv-projection-submenu");
+    const rightRows=[...rightMenu?.querySelectorAll(":scope > .gv-projection-option-row")||[]];
+    const leftLabels=leftRows.map(row=>row.querySelector(".gv-viewer-menu-label"));
+    const leftIcons=leftRows.map(row=>row.querySelector(".gv-viewer-menu-icon"));
+    const rightLabels=rightRows.map(row=>row.querySelector(".gv-projection-option-label"));
+    const rightIcons=rightRows.map(row=>row.querySelector(".gv-projection-option-icon"));
+    const menuButton=root.querySelector("button.gv-menu-proxy");
+    const targetButton=root.querySelector("button.gv-target-proxy");
+    return {leftMenu,leftRows,rightMenu,rightRows,leftLabels,leftIcons,rightLabels,rightIcons,menuButton,targetButton};
+  }
+
+  function cancelOwnedIcon(svg){
+    const owned=ownedIconAnimations.get(svg);
+    if(owned){try{owned.cancel()}catch(_){ }ownedIconAnimations.delete(svg)}
+  }
+
+  function cancelGraphicAnimations(svg){
+    if(!svg)return;
+    cancelOwnedIcon(svg);
+    svg.getAnimations().forEach(animation=>{try{animation.cancel()}catch(_){ }});
+    svg.style.setProperty("animation","none","important");
+  }
+
+  function ensureStaticInset(tile){
+    if(!tile)return null;
+    tile.getAnimations().forEach(animation=>{try{animation.cancel()}catch(_){ }});
+    tile.style.setProperty("animation","none","important");
+    tile.style.setProperty("position","relative","important");
+    tile.style.setProperty("isolation","isolate","important");
+    let layer=tile.querySelector(":scope > .gv-7ab-inset, :scope > .gv-7al-static-inset");
+    if(!layer){
+      layer=document.createElement("span");
+      layer.className="gv-7al-static-inset gv-7ai-tile-glow";
+      layer.setAttribute("aria-hidden","true");
+      tile.insertBefore(layer,tile.firstChild);
+    }
+    layer.getAnimations().forEach(animation=>{try{animation.cancel()}catch(_){ }});
+    layer.style.setProperty("display","block","important");
+    layer.style.setProperty("position","absolute","important");
+    layer.style.setProperty("inset","2px","important");
+    layer.style.setProperty("border-radius","6px","important");
+    layer.style.setProperty("pointer-events","none","important");
+    layer.style.setProperty("z-index","0","important");
+    layer.style.setProperty("animation","none","important");
+    layer.style.setProperty("opacity","1","important");
+    layer.style.setProperty("background",STATIC_INSET.backgroundColor,"important");
+    layer.style.setProperty("box-shadow",STATIC_INSET.boxShadow,"important");
+    layer.dataset.gv7alStaticInset="true";
+    [...tile.children].filter(child=>child!==layer&&!child.classList.contains("gv-7ai-tile-glow")).forEach(child=>{
+      child.style?.setProperty?.("position","relative","important");
+      child.style?.setProperty?.("z-index","2","important");
+    });
+    return layer;
+  }
+
+  function makeLongLabelStatic(label){
+    if(!label)return;
+    label.getAnimations({subtree:true}).forEach(animation=>{try{animation.cancel()}catch(_){ }});
+    label.style.setProperty("animation","none","important");
+    label.style.setProperty("box-shadow","none","important");
+    const layers=label.querySelectorAll(":scope > .gv-7ai-tile-glow, :scope > .gv-7ab-inset, :scope > .gv-7al-static-inset");
+    layers.forEach(layer=>{
+      layer.getAnimations().forEach(animation=>{try{animation.cancel()}catch(_){ }});
+      layer.style.setProperty("display","none","important");
+    });
+  }
+
+  function sharedStart(){
+    return window.GV7AK_COORDINATE_GLOW?.startTime??document.timeline.currentTime??performance.now();
+  }
+
+  function startBreathing(svg){
+    if(!svg)return null;
+    cancelGraphicAnimations(svg);
+    svg.style.removeProperty("opacity");
+    svg.style.removeProperty("filter");
+    svg.style.setProperty("position","relative","important");
+    svg.style.setProperty("z-index","2","important");
+    const animation=svg.animate(ICON_FRAMES,{duration:CYCLE,iterations:Infinity,easing:EASING,fill:"both"});
+    animation.startTime=sharedStart();
+    ownedIconAnimations.set(svg,animation);
+    return animation;
+  }
+
+  function makeSelectedSteady(svg){
+    if(!svg)return false;
+    cancelGraphicAnimations(svg);
+    svg.style.setProperty("opacity",String(SELECTED_FRAME.opacity),"important");
+    svg.style.setProperty("filter",SELECTED_FRAME.filter,"important");
+    svg.style.setProperty("position","relative","important");
+    svg.style.setProperty("z-index","2","important");
+    return svg.getAnimations().filter(animation=>animation.playState==="running").length===0;
+  }
+
+  function reapplyVisualState(){
+    const c=collect();
+    [...c.leftLabels,...c.rightLabels].filter(Boolean).forEach(makeLongLabelStatic);
+    [...c.leftIcons,...c.rightIcons].filter(Boolean).forEach(ensureStaticInset);
+    const hamburgerGlow=c.menuButton?.querySelector(":scope > .gv-7ai-tile-glow");
+    if(hamburgerGlow){
+      hamburgerGlow.getAnimations().forEach(animation=>{try{animation.cancel()}catch(_){ }});
+      hamburgerGlow.style.setProperty("opacity","0","important");
+    }
+    c.menuButton?.getAnimations({subtree:true}).forEach(animation=>{try{animation.cancel()}catch(_){ }});
+    c.menuButton?.style.setProperty("animation","none","important");
+    const stack=c.menuButton?.querySelector(".gv-menu-stack");
+    if(stack){stack.getAnimations({subtree:true}).forEach(animation=>{try{animation.cancel()}catch(_){ }});stack.style.setProperty("animation","none","important")}
+
+    c.rightIcons.forEach((tile,index)=>{
+      const svg=tile?.querySelector("svg");
+      if(!svg)return;
+      if(selectedProjection===LABELS[index])makeSelectedSteady(svg);
+      else startBreathing(svg);
+      tile?.setAttribute("aria-checked",selectedProjection===LABELS[index]?"true":"false");
+      c.rightLabels[index]?.setAttribute("aria-checked",selectedProjection===LABELS[index]?"true":"false");
+    });
+    const projectionSvg=c.leftIcons[0]?.querySelector("svg");
+    if(projectionSvg)startBreathing(projectionSvg);
+  }
+
+  function restoreFadeStyle(element){
+    if(!element)return;
+    element.style.removeProperty("transition");
+    element.style.removeProperty("opacity");
+    element.style.removeProperty("visibility");
+    element.style.removeProperty("pointer-events");
+  }
+
+  async function fadeMenus(){
+    if(fadeInProgress)return;
+    const c=collect();
+    if(!c.leftMenu||!c.rightMenu||!c.menuButton)return;
+    fadeInProgress=true;
+    interaction.fadeStarted=true;
+    interaction.fadeCompleted=false;
+    interaction.menusHidden=false;
+    const elements=[c.leftMenu,c.rightMenu,c.menuButton];
+    elements.forEach(element=>{
+      element.style.setProperty("transition",`opacity ${MENU_FADE_MS}ms ease`,"important");
+      element.style.setProperty("opacity","1","important");
+      element.style.setProperty("visibility","visible","important");
+      element.style.setProperty("pointer-events","none","important");
+    });
+    void c.leftMenu.offsetWidth;
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+    elements.forEach(element=>element.style.setProperty("opacity","0","important"));
+    await sleep(MENU_FADE_MS+40);
+    c.rightMenu.classList.remove("gv-open");
+    c.leftMenu.classList.remove("gv-open");
+    c.leftRows[0]?.classList.remove("gv-selected");
+    root.classList.remove("gv-7ad-projection-mode");
+    c.menuButton.setAttribute("aria-expanded","false");
+    c.menuButton.style.setProperty("visibility","hidden","important");
+    c.menuButton.style.setProperty("opacity","0","important");
+    c.menuButton.style.setProperty("pointer-events","none","important");
+    c.leftMenu.style.setProperty("visibility","hidden","important");
+    c.leftMenu.style.setProperty("pointer-events","none","important");
+    c.rightMenu.style.setProperty("visibility","hidden","important");
+    c.rightMenu.style.setProperty("pointer-events","none","important");
+    menusDismissed=true;
+    fadeInProgress=false;
+    interaction.fadeCompleted=true;
+    interaction.menusHidden=true;
+    afterInheritedPulse(reapplyVisualState);
+  }
+
+  async function activateProjection(name,event){
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    event?.stopImmediatePropagation?.();
+    if(fadeInProgress)return;
+    const code=PROJECTION_CODES[name];
+    interaction.lastError=null;
+    interaction.selectedProjection=name;
+    interaction.selectedCode=code;
+    interaction.lastProjectionBefore=typeof aladin.getProjectionName==="function"?aladin.getProjectionName():null;
+    interaction.setProjectionCalled=false;
+    interaction.setProjectionSucceeded=false;
+    try{
+      if(typeof aladin.setProjection!=="function")throw new Error("ALADIN SETPROJECTION IS UNAVAILABLE");
+      interaction.setProjectionCalled=true;
+      await Promise.resolve(aladin.setProjection(code));
+      if(typeof aladin.getProjectionName!=="function")throw new Error("ALADIN GETPROJECTIONNAME IS UNAVAILABLE");
+      await waitFor(()=>aladin.getProjectionName()===code,1500);
+      interaction.lastProjectionAfter=aladin.getProjectionName();
+      interaction.setProjectionSucceeded=interaction.lastProjectionAfter===code;
+      if(!interaction.setProjectionSucceeded)throw new Error(`PROJECTION ${name} DID NOT BECOME ${code}`);
+      selectedProjection=name;
+      const c=collect();
+      interaction.selectedSteady=makeSelectedSteady(c.rightIcons[LABELS.indexOf(name)]?.querySelector("svg"));
+      await nextPaint();
+      await fadeMenus();
+    }catch(error){
+      interaction.lastError=String(error?.message||error);
+      interaction.setProjectionSucceeded=false;
+      console.error("GV-BETA-0007AL PROJECTION ACTION FAILURE",name,code,error);
+      afterInheritedPulse(reapplyVisualState);
+    }
+  }
+
+  function bindProjectionActions(){
+    const c=collect();
+    if(c.rightRows.length!==LABELS.length)return false;
+    c.rightRows.forEach((row,index)=>{
+      const name=LABELS[index];
+      row.dataset.gv7alProjection=name;
+      const controls=[c.rightLabels[index],c.rightIcons[index]].filter(Boolean);
+      controls.forEach(control=>{
+        if(control.dataset.gv7alBound==="true")return;
+        control.dataset.gv7alBound="true";
+        control.setAttribute("role","menuitemradio");
+        control.addEventListener("click",event=>activateProjection(name,event),true);
+      });
+    });
+    return true;
+  }
+
+  function reopenProjectionMenus(event){
+    if(!menusDismissed||fadeInProgress)return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    const c=collect();
+    [c.leftMenu,c.rightMenu,c.menuButton].forEach(restoreFadeStyle);
+    c.menuButton.style.setProperty("display","flex","important");
+    c.menuButton.style.setProperty("visibility","visible","important");
+    c.menuButton.style.setProperty("opacity","1","important");
+    c.menuButton.style.setProperty("pointer-events","auto","important");
+    c.leftMenu.classList.add("gv-open");
+    c.rightMenu.classList.add("gv-open");
+    c.leftRows[0]?.classList.add("gv-selected");
+    root.classList.add("gv-7ad-projection-mode");
+    c.menuButton.setAttribute("aria-expanded","true");
+    c.leftLabels[0]?.setAttribute("aria-expanded","true");
+    c.leftIcons[0]?.setAttribute("aria-expanded","true");
+    menusDismissed=false;
+    interaction.reopenCount+=1;
+    interaction.reopened=true;
+    interaction.menusHidden=false;
+    afterInheritedPulse(reapplyVisualState);
+  }
+
+  function bindTargetReopen(){
+    const target=collect().targetButton;
+    if(!target||target.dataset.gv7alReopenBound==="true")return false;
+    target.dataset.gv7alReopenBound="true";
+    target.addEventListener("click",reopenProjectionMenus,true);
+    return true;
+  }
+
+  function snapshotGeometry(c){
+    const rect=element=>{const r=element.getBoundingClientRect();return [r.left,r.top,r.width,r.height]};
+    return {
+      leftLabels:c.leftLabels.filter(Boolean).map(rect),leftIcons:c.leftIcons.filter(Boolean).map(rect),
+      rightLabels:c.rightLabels.filter(Boolean).map(rect),rightIcons:c.rightIcons.filter(Boolean).map(rect)
+    };
+  }
+
+  const beforeGeometry=snapshotGeometry(collect());
+  bindProjectionActions();
+  bindTargetReopen();
+  reapplyVisualState();
+  await nextPaint();
+  const c=collect();
+  const afterGeometry=snapshotGeometry(c);
+  const sameGeometry=JSON.stringify(beforeGeometry)===JSON.stringify(afterGeometry);
+  const allLabels=[...c.leftLabels,...c.rightLabels].filter(Boolean);
+  const allIconTiles=[...c.leftIcons,...c.rightIcons].filter(Boolean);
+  const projectionGraphics=[c.leftIcons[0]?.querySelector("svg"),...c.rightIcons.map(tile=>tile?.querySelector("svg"))].filter(Boolean);
+  const staticInsets=allIconTiles.map(tile=>tile.querySelector(":scope > .gv-7ab-inset, :scope > .gv-7al-static-inset"));
+  const mappingsExact=LABELS.every(name=>PROJECTION_CODES[name]===({MOLLWEIDE:"MOL",SPHERICAL:"SIN",ORTHO:"SIN",TANGENTIAL:"TAN",SINUSOIDAL:"SFL"})[name]);
+  const checks={
+    versionLabel:versionLabel.textContent==="V-7AL",
+    cycleIs3000:CYCLE===3000,
+    mappingsExact,
+    projectionButtonsBound:c.rightRows.length===5&&c.rightRows.every((row,index)=>c.rightLabels[index]?.dataset.gv7alBound==="true"&&c.rightIcons[index]?.dataset.gv7alBound==="true"),
+    targetReopenBound:c.targetButton?.dataset.gv7alReopenBound==="true",
+    staticInsetEverySquare:staticInsets.length===allIconTiles.length&&staticInsets.every(Boolean),
+    staticInsetsNotAnimated:staticInsets.every(layer=>layer.getAnimations().filter(animation=>animation.playState==="running").length===0),
+    staticInsetStyleApplied:staticInsets.every(layer=>layer.dataset.gv7alStaticInset==="true"&&!!layer.style.getPropertyValue("background")&&layer.style.getPropertyValue("box-shadow").includes("inset")),
+    squareSurfacesNotAnimated:allIconTiles.every(tile=>tile.getAnimations().filter(animation=>animation.playState==="running").length===0),
+    longLabelsNotAnimated:allLabels.every(label=>label.getAnimations({subtree:true}).filter(animation=>animation.playState==="running").length===0),
+    longTileBoxGlowRemoved:allLabels.every(label=>getComputedStyle(label).boxShadow==="none"),
+    normalProjectionGraphicsBreathing:selectedProjection!==null||projectionGraphics.every(svg=>svg.getAnimations().some(animation=>animation.playState==="running"&&animation.effect.getTiming().duration===CYCLE)),
+    hamburgerNoGlow:c.menuButton?.getAnimations({subtree:true}).filter(animation=>animation.playState==="running").length===0,
+    coordinateGlowPreserved:window.GV7AK_VALIDATION?.checks?.coordinateGlowPersistent===true,
+    geometryUnchanged:sameGeometry,
+    noDuplicateProjectionRows:new Set(c.rightRows.map(row=>row.dataset.gv7alProjection)).size===5
+  };
+  const failedChecks=Object.entries(checks).filter(([,value])=>!value).map(([name])=>name);
+  window.GV7AL_VALIDATION={
+    passed:failedChecks.length===0,
+    pending:false,
+    pendingInteraction:true,
+    checks,failedChecks,
+    projectionMappings:{...PROJECTION_CODES},
+    staticInsetSource:"pre-7AK approved inset geometry with 7AK-retained 7AJ resting inset frame",
+    selectedSteadySource:"exact iconFrames offset .52 bright frame",
+    menuFadeMs:MENU_FADE_MS,
+    interaction:interaction,
+    baselineBlob:"c05439568678ead1811c6098f846115ca94d027d"
+  };
+
+  stateObserver=new MutationObserver(()=>afterInheritedPulse(()=>{
+    bindProjectionActions();
+    bindTargetReopen();
+    reapplyVisualState();
+  }));
+  stateObserver.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]});
+
+  if(failedChecks.length)throw new Error("GV-BETA-0007AL STRUCTURAL CONTRACT FAILED "+JSON.stringify(window.GV7AL_VALIDATION));
+})().catch(error=>console.error("GV-BETA-0007AL STARTUP FAILURE:",error));
+"""))
+
+# GV-beta-0007AL staged
