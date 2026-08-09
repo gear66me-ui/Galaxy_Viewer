@@ -89,6 +89,63 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e5b5264a0644 — GV 7AG: add centered projection and glow launcher
+
+**Recorded:** 2026-08-08T22:56:30-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e5b5264a064444b0f246059f155aa8df74718984`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e5b5264a064444b0f246059f155aa8df74718984)  
+**Parent/baseline:** `e0e711b3c403530f3cfb31d6c81baf7e67a250ac`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e0e711b3c403530f3cfb31d6c81baf7e67a250ac...e5b5264a064444b0f246059f155aa8df74718984)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AG: add centered projection and glow launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/7AG.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `87ad87da7244decc8c8a1544ae869d52b9a10dcaf48d8bcbb9d7c732604b09be`
+- Bytes: `0` → `2922`
+- Lines: `0` → `45`
+- Characters: `0` → `2915`
+- Inserted lines: `45`
+- Deleted lines: `0`
+- Inserted characters: `2915`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 45 - 0 = 45` — **PASS**
+- Character balance: `0 + 2915 - 0 = 2915` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/7AG.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AG
+PURPOSE: Dedicated launcher for the 7AG Projection icon centering, synchronized glow, and coordinate-frame glow release.
+AUTHORIZED CHANGES: mobile/beta/7AG.html only.
+PRESERVED BEHAVIOR: No application logic is implemented in this launcher; it loads the exact reviewed GV-beta-0007AG.py commit. Splash animation is not loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b00f89261a31 — GV 7AG: center projection icons and synchronize glow
 
 **Recorded:** 2026-08-08T22:55:06-05:00  
