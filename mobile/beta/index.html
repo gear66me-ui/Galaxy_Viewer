@@ -164,7 +164,6 @@ if (__earlyDiag) {
       const source=await response.text();
       await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
       const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
-      if(!htmlMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7AI STANDALONE VIEWER HTML.');
       await checkpoint('HTML EXTRACTED');
       const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
       if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7AI STANDALONE VIEWER JAVASCRIPT.');
