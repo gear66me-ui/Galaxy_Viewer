@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e49f14ded905 — GV 7AJ: remove hamburger glow and slow synchronized cycle
+
+**Recorded:** 2026-08-09T14:06:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e49f14ded905a3f6fa541ffd64269417e7d2720f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e49f14ded905a3f6fa541ffd64269417e7d2720f)  
+**Parent/baseline:** `5eb15b9ef22b72e24f31d21695549ac76e633149`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5eb15b9ef22b72e24f31d21695549ac76e633149...e49f14ded905a3f6fa541ffd64269417e7d2720f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AJ: remove hamburger glow and slow synchronized cycle
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AJ.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `f89c285962fcb1f4ea021e34f0468c4ef24dece8cd3b3f50b0b4b0d663d77471`
+- Bytes: `0` → `44299`
+- Lines: `0` → `728`
+- Characters: `0` → `44296`
+- Inserted lines: `728`
+- Deleted lines: `0`
+- Inserted characters: `44296`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 728 - 0 = 728` — **PASS**
+- Character balance: `0 + 44296 - 0 = 44296` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AJ.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AJ
+# PURPOSE: Preserve 7AI exactly except remove the hamburger glow/pulse and slow the remaining synchronized glow cycle to 3000 ms.
+# USER REQUEST: Remove the glowing/pulsing effect from the hamburger menu, keep hamburger geometry and functionality unchanged, and change the synchronized glow cycle to 3000 ms.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AJ.py only from the exact GV-beta-0007AI.py baseline.
+# PRESERVED BEHAVIOR: 7AI geometry, Projection/Mollweide SVG geometry, coordinate calculations/switching, target/SIMBAD, Aladin, navigation, controls, splash behavior, glow keyframes/intensity/colors except hamburger glow removal, actions, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a7482279eb8f — Target Cyclone: spin and shrink with 0058E collapse
 
 **Recorded:** 2026-08-09T13:52:13-05:00  
