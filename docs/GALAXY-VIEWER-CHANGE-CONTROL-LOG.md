@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1d0f87a0bd80 — Add exact 0057 vortex target cyclone lab
+
+**Recorded:** 2026-08-09T12:35:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1d0f87a0bd800ac2a1f79468161f943842adc130`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1d0f87a0bd800ac2a1f79468161f943842adc130)  
+**Parent/baseline:** `cab610beec7dfbb372d84136d8b86bdb37389751`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/cab610beec7dfbb372d84136d8b86bdb37389751...1d0f87a0bd800ac2a1f79468161f943842adc130)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add exact 0057 vortex target cyclone lab
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Target-Cyclone-0002.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `37018540afcbffe99717a21d1c1a5d2d32a0f6bf71a089b4365d0e8a339ba925`
+- Bytes: `0` → `10452`
+- Lines: `0` → `97`
+- Characters: `0` → `10435`
+- Inserted lines: `97`
+- Deleted lines: `0`
+- Inserted characters: `10435`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 97 - 0 = 97` — **PASS**
+- Character balance: `0 + 10435 - 0 = 10435` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Splash/Galaxy-Viewer-Target-Cyclone-0002.html`**
+
+```text
+/* GALAXY VIEWER CHANGE ORDER: standalone icon-only extraction of the exact 0057 cyclone core. The background vortex equations are copied from protected 0057; only local coordinate/time normalization is adapted. No target-specific capture overlay, no annuli, no historical ghost trail, no alternate motion system. Existing repository files remain protected. */
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-862f6b1332cb — Add standalone target cyclone lab
 
 **Recorded:** 2026-08-09T00:42:42-05:00  
