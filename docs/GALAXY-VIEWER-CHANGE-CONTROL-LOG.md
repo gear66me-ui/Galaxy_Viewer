@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ac1785e3a943 — GV 7AI: update mobile PWA manifest identity
+
+**Recorded:** 2026-08-09T13:08:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ac1785e3a94359e5b9c526781dedb0f4237e3bc8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ac1785e3a94359e5b9c526781dedb0f4237e3bc8)  
+**Parent/baseline:** `2bf086ac410cd36313df1cd141fa724a5434838a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2bf086ac410cd36313df1cd141fa724a5434838a...ac1785e3a94359e5b9c526781dedb0f4237e3bc8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AI: update mobile PWA manifest identity
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/manifest.webmanifest`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ed19750af2963c211280886d062ef929f1156981b03eaa3d86aa9a6692d4c412`
+- SHA-256 after: `8a43e9262499251be13f037cc95e6b71bf63f29dd20115f86583b722efa805e8`
+- Bytes: `921` → `873`
+- Lines: `29` → `29`
+- Characters: `921` → `873`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `42`
+- Deleted characters: `90`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `29 + 5 - 5 = 29` — **PASS**
+- Character balance: `921 + 42 - 90 = 873` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-71ed53d0e903 — GV 7AI: point installed mobile shell to approved viewer
 
 **Recorded:** 2026-08-09T13:07:54-05:00  
