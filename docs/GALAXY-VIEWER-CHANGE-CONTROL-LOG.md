@@ -89,6 +89,65 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6fc6aded604b — Add mandatory runtime and visual verification policy
+
+**Recorded:** 2026-08-08T22:53:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6fc6aded604b70e709f712e4994e56baead8c34c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6fc6aded604b70e709f712e4994e56baead8c34c)  
+**Parent/baseline:** `4c6d0138aa30930a4c78c68151c402709386c63a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4c6d0138aa30930a4c78c68151c402709386c63a...6fc6aded604b70e709f712e4994e56baead8c34c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add mandatory runtime and visual verification policy
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8be09dba1936750417088b011d886dbb53364b509ad58069f6621d000488dc72`
+- SHA-256 after: `ca78dc470032202d1e347cc17198880f8343ef4536af72088a3a5a71f4e002c9`
+- Bytes: `14501` → `21465`
+- Lines: `307` → `530`
+- Characters: `14479` → `21441`
+- Inserted lines: `223`
+- Deleted lines: `0`
+- Inserted characters: `6962`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `307 + 223 - 0 = 530` — **PASS**
+- Character balance: `14479 + 6962 - 0 = 21441` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+# Engineering Change Order.
+# Every Engineering Change Order must verify BOTH:
+# the controlled Engineering Change Order process.
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a4cb7f97220c — 0058E: repair exact fallback baseline hash
 
 **Recorded:** 2026-08-08T22:32:55-05:00  
