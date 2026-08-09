@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-456576a96b24 — GV 7AI: update install shell to current beta
+
+**Recorded:** 2026-08-09T13:09:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`456576a96b24b8ae40b35dc676bf0b9ad9ddb4db`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/456576a96b24b8ae40b35dc676bf0b9ad9ddb4db)  
+**Parent/baseline:** `22d211d56215730a33e605fedee8a145176b42b0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/22d211d56215730a33e605fedee8a145176b42b0...456576a96b24b8ae40b35dc676bf0b9ad9ddb4db)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AI: update install shell to current beta
+```
+
+### Complete changed-path accounting
+
+#### `launch/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `97daa2dd1f9b95c13b4457c4eec1e662447c11d7ddafd3449ff5c550749b4181`
+- SHA-256 after: `0f0a4eb8047086cc4a36ee72815044cd1886ee78847e4096cfddaed07184d899`
+- Bytes: `7105` → `7078`
+- Lines: `139` → `139`
+- Characters: `7102` → `7075`
+- Inserted lines: `14`
+- Deleted lines: `14`
+- Inserted characters: `139`
+- Deleted characters: `166`
+- Unified diff hunks: `9`
+- Inserted blocks: `9`
+- Deleted blocks: `9`
+- Changed blocks: `9`
+- Line balance: `139 + 14 - 14 = 139` — **PASS**
+- Character balance: `7102 + 139 - 166 = 7075` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-8051ef9a5641 — Add 0058E SVG target cyclone lab
 
 **Recorded:** 2026-08-09T13:09:32-05:00  
