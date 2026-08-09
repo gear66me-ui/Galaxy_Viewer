@@ -7,9 +7,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 7AK">
-<title>GALAXY VIEWER 7AK — MOBILE APP BETA</title>
-<link rel="manifest" href="./manifest.webmanifest?v=7AK-global-glow-001">
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 7AL">
+<title>GALAXY VIEWER 7AL — MOBILE APP BETA</title>
+<link rel="manifest" href="./manifest.webmanifest?v=7AL-global-glow-001">
 <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001">
 <style>
@@ -39,7 +39,7 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 <body>
 <div id="gv-splash-stage" class="gv-startup-stage">
   <img src="../../viewer/artwork/Splash/Galaxy%20Splash%20Ibis%20Galactic%20by%20GA.png?v=7K-centered-coordinate-digits-001" alt="GALAXY VIEWER SPLASH ARTWORK">
-  <div class="gv-startup-message"><span>GALAXY VIEWER BETA 7AK · LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
+  <div class="gv-startup-message"><span>GALAXY VIEWER BETA 7AL · LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
 </div>
 <div id="gv-loading-error" role="alert"></div>
 <section id="gv-diagnostics" hidden aria-label="GALAXY VIEWER ENGINEERING DIAGNOSTICS">
@@ -69,7 +69,7 @@ if (__earlyDiag) {
 (()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('./service-worker.js?v=7AK-global-glow-001',{scope:'./'}).then(registration=>{
+      navigator.serviceWorker.register('./service-worker.js?v=7AL-global-glow-001',{scope:'./'}).then(registration=>{
         console.log('GALAXY VIEWER SERVICE WORKER REGISTERED',registration.scope);
       }).catch(error=>{
         console.error('GALAXY VIEWER SERVICE WORKER REGISTRATION FAILED',error);
@@ -98,7 +98,7 @@ if (__earlyDiag) {
     if(detail===undefined)return '';
     if(detail instanceof Error)return ` — ${detail.name}: ${detail.message}`;
     if(typeof detail==='string')return ` — ${detail}`;
-    try{return ` — ${JSON.stringify(detail)}`;}catch(_){return ` — ${String(detail)}`;}
+    try{return ` — ${JSON.stringify(detail)};`}catch(_){return ` — ${String(detail)}`;}
   };
   const appendDiagnostic=(label,detail)=>{
     if(!diagnosticMode)return;
@@ -158,15 +158,15 @@ if (__earlyDiag) {
   try{
     const viewerReady=(async()=>{
       await checkpoint('FETCH STARTED');
-      const response=await fetch('../../viewer/GV-beta-0007AK.py?v=bae794773f0edb8838a110fc8a0a20b715c760aa',{cache:'no-store'});
+      const response=await fetch('../../viewer/GV-beta-0007AL.py?v=f95c122e6644d9ec1ef549ac22791c3c46d0b9f9',{cache:'no-store'});
       await checkpoint('HTTP RESPONSE RECEIVED',`HTTP ${response.status}`);
-      if(!response.ok)throw new Error(`GV-BETA-0007AK.PY RETURNED HTTP ${response.status}`);
+      if(!response.ok)throw new Error(`GV-BETA-0007AL.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
       await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
       const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
       await checkpoint('HTML EXTRACTED');
       const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
-      if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7AK STANDALONE VIEWER JAVASCRIPT.');
+      if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7AL STANDALONE VIEWER JAVASCRIPT.');
       await checkpoint('JAVASCRIPT EXTRACTED');
       htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
       await checkpoint('HTML INSERTED');
@@ -187,8 +187,8 @@ if (__earlyDiag) {
     document.body.classList.add('gv-ready');
     setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('GALAXY VIEWER 7AK MOBILE BETA STARTUP FAILURE',error);
-    try{localStorage.setItem('gv-beta-launch-failure','7AK');}catch(_){ }
+    console.error('GALAXY VIEWER 7AL MOBILE BETA STARTUP FAILURE',error);
+    try{localStorage.setItem('gv-beta-launch-failure','7AL');}catch(_){ }
     appendDiagnostic('APP FAILED TO LOAD',error);
     showError('APP FAILED TO LOAD');
     return;
