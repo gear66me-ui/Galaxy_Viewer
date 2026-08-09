@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-3099dd9d38c5 — Target Cyclone 0003: target-only spiral collapse
+
+**Recorded:** 2026-08-09T14:50:32-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`3099dd9d38c571d95592285f71b0a648de13e474`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/3099dd9d38c571d95592285f71b0a648de13e474)  
+**Parent/baseline:** `7abb88fbfa1e15221d2fd9d65abce2bc9bfdecd7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7abb88fbfa1e15221d2fd9d65abce2bc9bfdecd7...3099dd9d38c571d95592285f71b0a648de13e474)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Target Cyclone 0003: target-only spiral collapse
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Target-Cyclone-0003.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `3afb31792022ab9950c835fdfa62c36513bb27b046ff532c815f016972f3a892`
+- Bytes: `0` → `6704`
+- Lines: `0` → `132`
+- Characters: `0` → `6702`
+- Inserted lines: `132`
+- Deleted lines: `0`
+- Inserted characters: `6702`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 132 - 0 = 132` — **PASS**
+- Character balance: `0 + 6702 - 0 = 6702` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-fddc7eb3c21e — GV 7AK: point mobile beta launcher to current viewer
 
 **Recorded:** 2026-08-09T14:36:39-05:00  
