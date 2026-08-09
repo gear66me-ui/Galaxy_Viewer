@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9b50c10edc9a — Splash 0058F: surgical target cyclone handoff
+
+**Recorded:** 2026-08-09T14:10:47-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9b50c10edc9a531e8c63355e7a5c696baf7bb129`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9b50c10edc9a531e8c63355e7a5c696baf7bb129)  
+**Parent/baseline:** `0356de292703b47ca8fd95a285003a7c9c8924d3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0356de292703b47ca8fd95a285003a7c9c8924d3...9b50c10edc9a531e8c63355e7a5c696baf7bb129)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Splash 0058F: surgical target cyclone handoff
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058F.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6eca83e71033329aa72f739eeb387e5467db2f715969628c3c21b0b0fe857eae`
+- Bytes: `0` → `28230`
+- Lines: `0` → `41`
+- Characters: `0` → `28214`
+- Inserted lines: `41`
+- Deleted lines: `0`
+- Inserted characters: `28214`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 41 - 0 = 41` — **PASS**
+- Character balance: `0 + 28214 - 0 = 28214` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e49f14ded905 — GV 7AJ: remove hamburger glow and slow synchronized cycle
 
 **Recorded:** 2026-08-09T14:06:40-05:00  
