@@ -7,13 +7,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 6W">
-<title>GALAXY VIEWER — BETA 6W</title>
-<link rel="manifest" href="./manifest.webmanifest?v=6W-metallic-resume-001">
-<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=6W-metallic-resume-001" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../../viewer/artwork/App%20Icons/GV-app-icon-192.png?v=6W-metallic-resume-001">
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 7AI">
+<title>GALAXY VIEWER — BETA 7AI</title>
+<link rel="manifest" href="./manifest.webmanifest?v=7AI-global-glow-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7AI-global-glow-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/App%20Icons/GV-app-icon-192.png?v=7AI-global-glow-001">
 <style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6W-metallic-resume-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=7AI-global-glow-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 :root{color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#000;color:#fff}
@@ -35,12 +35,12 @@ a:active,button:active{transform:scale(.99)}
 </head>
 <body>
 <main>
-<div class="badge"><span class="gv-glyph">GALAXY VIEWER · BETA 6W</span></div>
+<div class="badge"><span class="gv-glyph">GALAXY VIEWER · BETA 7AI</span></div>
 <div class="choices">
-<button id="gv-install-app" type="button" aria-disabled="true"><span><span id="gv-install-label" class="gv-glyph">PREPARING INSTALL</span></span><img src="../../viewer/artwork/icon_target_vector.svg?v=6W-metallic-resume-001" alt=""></button>
+<button id="gv-install-app" type="button" aria-disabled="true"><span><span id="gv-install-label" class="gv-glyph">PREPARING INSTALL</span></span><img src="../../viewer/artwork/icon_target_vector.svg?v=7AI-global-glow-001" alt=""></button>
 <p id="gv-install-status" role="status" aria-live="polite"></p>
-<a id="gv-open-app" href="../../mobile/beta/?source=beta-6w-app&v=6W-metallic-resume-001"><span><span id="gv-open-app-label" class="gv-glyph">LAUNCH APP</span></span><img src="../../viewer/artwork/icon_target_vector.svg?v=6W-metallic-resume-001" alt=""></a>
-<a id="gv-open-diagnostics" href="../../mobile/beta/?diag=1&v=6W-metallic-resume-001"><span><span class="gv-glyph">LAUNCH DIAGNOSTICS</span></span><img src="../../viewer/artwork/icon_target_vector.svg?v=6W-metallic-resume-001" alt=""></a>
+<a id="gv-open-app" href="../../mobile/beta/?source=beta-7ai-app&v=7AI-global-glow-001"><span><span id="gv-open-app-label" class="gv-glyph">LAUNCH APP</span></span><img src="../../viewer/artwork/icon_target_vector.svg?v=7AI-global-glow-001" alt=""></a>
+<a id="gv-open-diagnostics" href="../../mobile/beta/?diag=1&v=7AI-global-glow-001"><span><span class="gv-glyph">LAUNCH DIAGNOSTICS</span></span><img src="../../viewer/artwork/icon_target_vector.svg?v=7AI-global-glow-001" alt=""></a>
 </div>
 </main>
 <script>
@@ -52,7 +52,7 @@ const openAppLabel=document.getElementById('gv-open-app-label');
 let deferredInstallPrompt=null;
 
 try{
-  if(localStorage.getItem('gv-beta-launch-failure')==='6W'){
+  if(localStorage.getItem('gv-beta-launch-failure')==='7AI'){
     openApp.classList.add('gv-launch-failed');
     openAppLabel.textContent='APP FAILED TO LOAD';
   }
@@ -66,7 +66,7 @@ openApp.addEventListener('click',()=>{
 
 window.addEventListener('pageshow',()=>{
   try{
-    if(localStorage.getItem('gv-beta-launch-failure')==='6W'){
+    if(localStorage.getItem('gv-beta-launch-failure')==='7AI'){
       openApp.classList.add('gv-launch-failed');
       openAppLabel.textContent='APP FAILED TO LOAD';
     }
@@ -111,13 +111,13 @@ installButton.addEventListener('click',async()=>{
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
 
   if(standalone){
-    window.location.replace('../../mobile/beta/?source=pwa&v=6W-metallic-resume-001');
+    window.location.replace('../../mobile/beta/?source=pwa&v=7AI-global-glow-001');
     return;
   }
 
   if('serviceWorker' in navigator){
     try{
-      const registration=await navigator.serviceWorker.register('./service-worker.js?v=6W-metallic-resume-001',{scope:'./'});
+      const registration=await navigator.serviceWorker.register('./service-worker.js?v=7AI-global-glow-001',{scope:'./'});
       console.log('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTERED',registration.scope);
     }catch(error){
       console.error('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTRATION FAILED',error);
