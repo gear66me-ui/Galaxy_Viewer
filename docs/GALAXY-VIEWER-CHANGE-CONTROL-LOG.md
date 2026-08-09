@@ -89,6 +89,65 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-db6bd0b9704d — Galaxy Viewer workflow: require launcher updates for current beta releases
+
+**Recorded:** 2026-08-09T14:21:47-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`db6bd0b9704dc2e4349ce191da1bdea1f88f5aee`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/db6bd0b9704dc2e4349ce191da1bdea1f88f5aee)  
+**Parent/baseline:** `98ea0cc6b69a5dd3a44e764f07f4c897c743453c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/98ea0cc6b69a5dd3a44e764f07f4c897c743453c...db6bd0b9704dc2e4349ce191da1bdea1f88f5aee)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Galaxy Viewer workflow: require launcher updates for current beta releases
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ca78dc470032202d1e347cc17198880f8343ef4536af72088a3a5a71f4e002c9`
+- SHA-256 after: `ad292899a961656f179e7c9751cf70ebdadfa882edd0d312dacee7c94947bff8`
+- Bytes: `21465` → `22581`
+- Lines: `530` → `554`
+- Characters: `21441` → `22557`
+- Inserted lines: `24`
+- Deleted lines: `0`
+- Inserted characters: `1116`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `530 + 24 - 0 = 554` — **PASS**
+- Character balance: `21441 + 1116 - 0 = 22557` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+# Engineering Change Order.
+# Every Engineering Change Order must verify BOTH:
+# the controlled Engineering Change Order process.
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-fdb3a299945c — Splash 0058F: compact controls-only player
 
 **Recorded:** 2026-08-09T14:20:24-05:00  
