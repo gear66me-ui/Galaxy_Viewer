@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-fe7012a89627 — Add Aladin projection reference viewer
+
+**Recorded:** 2026-08-08T20:55:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fe7012a896270af09619238091046bb3eea5144f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fe7012a896270af09619238091046bb3eea5144f)  
+**Parent/baseline:** `33d447d61fc7aad8fea2eb9a7f1a76db8e4fc4fa`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/33d447d61fc7aad8fea2eb9a7f1a76db8e4fc4fa...fe7012a896270af09619238091046bb3eea5144f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Aladin projection reference viewer
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Menu-Icons/aladin-projection-reference-0001.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `2e26bbdbfe0475c2515e75834eda6e11fb4d5a1f16d411a744210cf1980d01d8`
+- Bytes: `0` → `6789`
+- Lines: `0` → `59`
+- Characters: `0` → `6764`
+- Inserted lines: `59`
+- Deleted lines: `0`
+- Inserted characters: `6764`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 59 - 0 = 59` — **PASS**
+- Character balance: `0 + 6764 - 0 = 6764` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b758af6ae657 — 0058C: add target vortex smear capture
 
 **Recorded:** 2026-08-08T20:08:15-05:00  
