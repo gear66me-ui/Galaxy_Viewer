@@ -89,6 +89,64 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5e9fa27ed249 — GV 7AE: restore projection glyph wrappers
+
+**Recorded:** 2026-08-08T19:58:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5e9fa27ed2498211d353053740c535cce865d3b5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5e9fa27ed2498211d353053740c535cce865d3b5)  
+**Parent/baseline:** `83c6494647fa5163b4a279298e2944b304e7e730`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/83c6494647fa5163b4a279298e2944b304e7e730...5e9fa27ed2498211d353053740c535cce865d3b5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AE: restore projection glyph wrappers
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AE.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `335e802bd457945262cc08472719c94a97ecb784f5bfa052cd089c5b92136c22`
+- Bytes: `0` → `12338`
+- Lines: `0` → `193`
+- Characters: `0` → `12336`
+- Inserted lines: `193`
+- Deleted lines: `0`
+- Inserted characters: `12336`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 193 - 0 = 193` — **PASS**
+- Character balance: `0 + 12336 - 0 = 12336` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AE.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AE
+# PURPOSE: Restore the inherited Space Age glyph wrapper on all five Projection submenu labels and shorten ORTHOGRAPHIC to ORTHO.
+# USER REQUEST: Preserve GV-beta-0007AD exactly except the approved right-side label contents, V-7AE version label, and runtime validation.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AE.py and its dedicated launcher/ECO record only.
+# PRESERVED BEHAVIOR: 7AD geometry, icons, glow, dimming, coordinates, hamburger, target/SIMBAD, Aladin, navigation, controls, splash absence, fonts, colors, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-024e0bb2a90b — 0058B: add target distortion laboratory
 
 **Recorded:** 2026-08-08T19:26:25-05:00  
