@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-17bf048f0c97 — Add Aladin vs Galaxy Viewer projection icon lab
+
+**Recorded:** 2026-08-08T21:46:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`17bf048f0c971c5e51eb4103c7b74475d15d5b8f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/17bf048f0c971c5e51eb4103c7b74475d15d5b8f)  
+**Parent/baseline:** `a9678ab2be2ed54398c5a8ec6685c80d83030962`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a9678ab2be2ed54398c5a8ec6685c80d83030962...17bf048f0c971c5e51eb4103c7b74475d15d5b8f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Aladin vs Galaxy Viewer projection icon lab
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Menu-Icons/aladin-vs-gv-projection-icons-0001.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `7d96afcbaba5e5f865322dd9a239fe0a67d6032bce5f1f21f64bc35874378cbc`
+- Bytes: `0` → `15441`
+- Lines: `0` → `152`
+- Characters: `0` → `15424`
+- Inserted lines: `152`
+- Deleted lines: `0`
+- Inserted characters: `15424`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 152 - 0 = 152` — **PASS**
+- Character balance: `0 + 15424 - 0 = 15424` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Menu-Icons/aladin-vs-gv-projection-icons-0001.html`**
+
+```text
+<!-- ENGINEERING CHANGE ORDER: Authorized standalone visual comparison lab only. No existing Galaxy Viewer or Aladin source file is modified. -->
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-8106b56bdce1 — 0058D: add phase-1 target smear lab
 
 **Recorded:** 2026-08-08T21:17:59-05:00  
