@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-862f6b1332cb — Add standalone target cyclone lab
+
+**Recorded:** 2026-08-09T00:42:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`862f6b1332cbc2c3f9b2ccb905d64067656b83ca`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/862f6b1332cbc2c3f9b2ccb905d64067656b83ca)  
+**Parent/baseline:** `fdec33a55ddd959f47fa0c6f634f075f32732ab5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/fdec33a55ddd959f47fa0c6f634f075f32732ab5...862f6b1332cbc2c3f9b2ccb905d64067656b83ca)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add standalone target cyclone lab
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Target-Cyclone-0001.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `80432cbd0e29012ec2edee75c5e0539f54d03b9dcf1f91dd98197a06c6df798f`
+- Bytes: `0` → `11098`
+- Lines: `0` → `52`
+- Characters: `0` → `11077`
+- Inserted lines: `52`
+- Deleted lines: `0`
+- Inserted characters: `11077`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 52 - 0 = 52` — **PASS**
+- Character balance: `0 + 11077 - 0 = 11077` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Splash/Galaxy-Viewer-Target-Cyclone-0001.html`**
+
+```text
+/* GALAXY VIEWER CHANGE ORDER: standalone target cyclone lab only. Exact repository target SVG blob 92b223268c18c7ed67c69c56374fc0bd968b8236. Production 0057 flow/release/localTurns/releasedTurns equations retained. Existing repository files remain protected. */
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6e411eb01415 — GV 7AH: synchronize faster global glow and coordinate neon
 
 **Recorded:** 2026-08-08T23:25:58-05:00  
