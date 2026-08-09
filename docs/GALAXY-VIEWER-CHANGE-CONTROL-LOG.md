@@ -89,6 +89,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-8051ef9a5641 — Add 0058E SVG target cyclone lab
+
+**Recorded:** 2026-08-09T13:09:32-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8051ef9a564151cc787372d27d2cac688383ab94`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8051ef9a564151cc787372d27d2cac688383ab94)  
+**Parent/baseline:** `014e740b27324d3443802bc5d9b4b5b205e69e5c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/014e740b27324d3443802bc5d9b4b5b205e69e5c...8051ef9a564151cc787372d27d2cac688383ab94)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add 0058E SVG target cyclone lab
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Target-Cyclone-0003.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `54bf825861a69b1e981b39519eb61e441be1936715ac4e0ab50e4a2999d014cd`
+- Bytes: `0` → `20829`
+- Lines: `0` → `35`
+- Characters: `0` → `20813`
+- Inserted lines: `35`
+- Deleted lines: `0`
+- Inserted characters: `20813`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 35 - 0 = 35` — **PASS**
+- Character balance: `0 + 20813 - 0 = 20813` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/artwork/Splash/Galaxy-Viewer-Target-Cyclone-0003.html`**
+
+```text
+/* GALAXY VIEWER CHANGE ORDER: 0003 uses exact 0058E runtime/construction baseline; the splash source is replaced by ../icon_target_vector.svg; the failed targetLab overlay is removed; the existing 0058E WebGL cyclone/timing remains the motion system. Protected files remain unchanged. */
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6779ddb95b2d — GV 7AI: advance mobile service worker version
 
 **Recorded:** 2026-08-09T13:09:05-05:00  
