@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9f3f745dc7aa — GV 7AN candidate: promote verified viewer in mobile beta launcher
+
+**Recorded:** 2026-08-10T17:47:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9f3f745dc7aa9608f1751feb08b730de68a996f5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9f3f745dc7aa9608f1751feb08b730de68a996f5)  
+**Parent/baseline:** `b14d56c55c653ca8748a773ee2fd14969713f8d4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b14d56c55c653ca8748a773ee2fd14969713f8d4...9f3f745dc7aa9608f1751feb08b730de68a996f5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AN candidate: promote verified viewer in mobile beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `669fdfd2bc5136333e7cc605a84122e7644f9e2c1798643269c8d5abe81ad2c8`
+- SHA-256 after: `36608d21ff40ae9655b11faf9e96b851281153c1959cb578075b0cd35b8f1593`
+- Bytes: `11386` → `11386`
+- Lines: `199` → `199`
+- Characters: `11372` → `11372`
+- Inserted lines: `8`
+- Deleted lines: `8`
+- Inserted characters: `40`
+- Deleted characters: `40`
+- Unified diff hunks: `6`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `6`
+- Line balance: `199 + 8 - 8 = 199` — **PASS**
+- Character balance: `11372 + 40 - 40 = 11372` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-98728f2ac105 — GV 7AN: center status icons and enable Sinusoidal
 
 **Recorded:** 2026-08-10T17:45:41-05:00  
