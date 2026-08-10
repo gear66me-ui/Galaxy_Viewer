@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-59912bb8cd4f — GV 7AM: promote corrected viewer in mobile beta launcher
+
+**Recorded:** 2026-08-10T16:39:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`59912bb8cd4f38a8d02f2cd1b2d7678adbcf0cd3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/59912bb8cd4f38a8d02f2cd1b2d7678adbcf0cd3)  
+**Parent/baseline:** `eee12dddd813b3c25a7d6ec81a88d65cbb4be400`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/eee12dddd813b3c25a7d6ec81a88d65cbb4be400...59912bb8cd4f38a8d02f2cd1b2d7678adbcf0cd3)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AM: promote corrected viewer in mobile beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4eaf8aae11cc3e63aaf495e0e4cd4f2d6531ef63678e0b0edb225328efc5af82`
+- SHA-256 after: `669fdfd2bc5136333e7cc605a84122e7644f9e2c1798643269c8d5abe81ad2c8`
+- Bytes: `11386` → `11386`
+- Lines: `199` → `199`
+- Characters: `11372` → `11372`
+- Inserted lines: `8`
+- Deleted lines: `8`
+- Inserted characters: `43`
+- Deleted characters: `43`
+- Unified diff hunks: `6`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `6`
+- Line balance: `199 + 8 - 8 = 199` — **PASS**
+- Character balance: `11372 + 43 - 43 = 11372` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-61c855d32e7a — GV 7AM: restore normal hamburger menu after projection dismissal
 
 **Recorded:** 2026-08-10T16:33:57-05:00  
