@@ -89,6 +89,69 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b0bf73cc63e3 — GV 7AM: copy exact 7AL baseline
+
+**Recorded:** 2026-08-09T19:55:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b0bf73cc63e3e2d76b1b93f94333ac06f40b78ce`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b0bf73cc63e3e2d76b1b93f94333ac06f40b78ce)  
+**Parent/baseline:** `f92c98df864c140d5e13dfec8de7a577a3c7c615`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f92c98df864c140d5e13dfec8de7a577a3c7c615...b0bf73cc63e3e2d76b1b93f94333ac06f40b78ce)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AM: copy exact 7AL baseline
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AM.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `3931d8a4d38567f8cf56916d6c88c9e961c5dd7779dce8ca51f7d0ce5c7c1bf9`
+- Bytes: `0` → `66075`
+- Lines: `0` → `1109`
+- Characters: `0` → `66070`
+- Inserted lines: `1109`
+- Deleted lines: `0`
+- Inserted characters: `66070`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1109 - 0 = 1109` — **PASS**
+- Character balance: `0 + 66070 - 0 = 66070` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AM.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AK
+# PURPOSE: Preserve 7AJ exactly except remove all animated glow from long label tiles and square icon tile surfaces so only actual icon graphics glow on the existing 3000 ms cycle.
+# USER REQUEST: Long rectangular tiles must not glow, square tile backgrounds must not glow, only actual icon graphics may glow, hamburger remains non-glowing, and coordinate glow remains exactly as 7AJ.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AK.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: 7AJ geometry, Projection/Mollweide SVG geometry, coordinate glow/calculations/switching, target/SIMBAD, Aladin, navigation, controls, splash behavior, typography, dimming, actions, and all unrelated behavior.
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AL
+# PURPOSE: Restore static inner neon to square icon targets, keep long labels and square surfaces non-pulsing, wire all projection actions, hold the selected icon in a steady bright state, fade the complete menus after selection, and reopen projection selection from the existing target icon.
+# USER REQUEST: Preserve the static inner target glow, animate only selectable icon graphics on the 3000 ms cycle, make selected projection icons steady-bright, execute MOLLWEIDE/SPHERICAL/ORTHO/TANGENTIAL/SINUSOIDAL actions, fade the menus after selection, and use the target icon to reopen projection selection.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AL.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: GV-beta-0007AK.py remains frozen; preserve coordinate glow, icon/menu geometry, typography, dimming, Aladin/SIMBAD behavior outside the authorized target-reopen state, coordinate calculations, splash behavior, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c27c0c322d38 — GV 7AL: correct launcher diagnostic formatting regression
 
 **Recorded:** 2026-08-09T15:16:26-05:00  
