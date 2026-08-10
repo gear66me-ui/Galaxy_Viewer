@@ -89,6 +89,74 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-eb49637c53de — GV 7AM candidate: preserve hamburger and add projection status tile
+
+**Recorded:** 2026-08-09T20:51:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`eb49637c53deaaf0af0e04070985ad188f7f213d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/eb49637c53deaaf0af0e04070985ad188f7f213d)  
+**Parent/baseline:** `46ec288bda845968916c4e58c2fa83b4b3d2412b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/46ec288bda845968916c4e58c2fa83b4b3d2412b...eb49637c53deaaf0af0e04070985ad188f7f213d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+GV 7AM candidate: preserve hamburger and add projection status tile
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0007AM.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `3931d8a4d38567f8cf56916d6c88c9e961c5dd7779dce8ca51f7d0ce5c7c1bf9`
+- SHA-256 after: `7fdc4cad4b08f2fd41cf854abbdb48f7ec76b4be00fd0fbcf65d478b55897bcb`
+- Bytes: `66075` → `82211`
+- Lines: `1109` → `1424`
+- Characters: `66070` → `82200`
+- Inserted lines: `315`
+- Deleted lines: `0`
+- Inserted characters: `16130`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `1109 + 315 - 0 = 1424` — **PASS**
+- Character balance: `66070 + 16130 - 0 = 82200` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/GV-beta-0007AM.py`**
+
+```text
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AK
+# PURPOSE: Preserve 7AJ exactly except remove all animated glow from long label tiles and square icon tile surfaces so only actual icon graphics glow on the existing 3000 ms cycle.
+# USER REQUEST: Long rectangular tiles must not glow, square tile backgrounds must not glow, only actual icon graphics may glow, hamburger remains non-glowing, and coordinate glow remains exactly as 7AJ.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AK.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: 7AJ geometry, Projection/Mollweide SVG geometry, coordinate glow/calculations/switching, target/SIMBAD, Aladin, navigation, controls, splash behavior, typography, dimming, actions, and all unrelated behavior.
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AL
+# PURPOSE: Restore static inner neon to square icon targets, keep long labels and square surfaces non-pulsing, wire all projection actions, hold the selected icon in a steady bright state, fade the complete menus after selection, and reopen projection selection from the existing target icon.
+# USER REQUEST: Preserve the static inner target glow, animate only selectable icon graphics on the 3000 ms cycle, make selected projection icons steady-bright, execute MOLLWEIDE/SPHERICAL/ORTHO/TANGENTIAL/SINUSOIDAL actions, fade the menus after selection, and use the target icon to reopen projection selection.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AL.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: GV-beta-0007AK.py remains frozen; preserve coordinate glow, icon/menu geometry, typography, dimming, Aladin/SIMBAD behavior outside the authorized target-reopen state, coordinate calculations, splash behavior, and all unrelated behavior.
+# GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-ECO-0007AM
+# PURPOSE: Preserve 7AL exactly except keep the hamburger visible after projection selection and add one current-projection status tile directly below the existing target button.
+# USER REQUEST: Fade only the open menu panels, keep the non-glowing hamburger visible and usable, show the active projection icon in a glowing square tile centered below the target, and use that tile to reopen the existing projection chooser directly.
+# AUTHORIZED CHANGES: Create viewer/GV-beta-0007AM.py and update mobile/beta/index.html only.
+# PRESERVED BEHAVIOR: GV-beta-0007AL.py remains frozen; preserve working projection actions, target button geometry/behavior, coordinate glow, long-label non-glow, icon geometry, Aladin/SIMBAD behavior, splash behavior, and all unrelated behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b0bf73cc63e3 — GV 7AM: copy exact 7AL baseline
 
 **Recorded:** 2026-08-09T19:55:10-05:00  
