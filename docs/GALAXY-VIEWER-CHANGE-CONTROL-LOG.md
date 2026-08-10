@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-038f78eb66f6 — Splash 0058G: integrate target-only fluid cyclone
+
+**Recorded:** 2026-08-10T13:13:36-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`038f78eb66f62f918e387bdd57b66de813442ee4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/038f78eb66f62f918e387bdd57b66de813442ee4)  
+**Parent/baseline:** `413b30dd9850b29d0f097b8e6a8ff430465ab993`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/413b30dd9850b29d0f097b8e6a8ff430465ab993...038f78eb66f62f918e387bdd57b66de813442ee4)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Splash 0058G: integrate target-only fluid cyclone
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058G.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b64428cfc7277c23349ca85fe486044896679b088a3bfda605a89c223dcaa65c`
+- Bytes: `0` → `27885`
+- Lines: `0` → `43`
+- Characters: `0` → `27870`
+- Inserted lines: `43`
+- Deleted lines: `0`
+- Inserted characters: `27870`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 43 - 0 = 43` — **PASS**
+- Character balance: `0 + 27870 - 0 = 27870` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-eb49637c53de — GV 7AM candidate: preserve hamburger and add projection status tile
 
 **Recorded:** 2026-08-09T20:51:42-05:00  
