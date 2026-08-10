@@ -1422,3 +1422,53 @@ display(Javascript(r"""
 """))
 
 # GV-beta-0007AM staged
+
+# GV-beta-0007AM hamburger correction
+# PURPOSE: Restore the inherited menu panels before the native hamburger handler runs after projection dismissal; do not replace the native handler or open Projection automatically.
+
+display(Javascript(r"""
+(async()=>{
+  const waitFor=(test,timeout=20000)=>new Promise((resolve,reject)=>{const end=performance.now()+timeout;const tick=()=>{let value=null;try{value=test()}catch(_){ }if(value){resolve(value);return}if(performance.now()>end){reject(new Error("GV-BETA-0007AM HAMBURGER CORRECTION TIMEOUT"));return}setTimeout(tick,50)};tick()});
+  const root=await waitFor(()=>document.getElementById("aladin-cosmic-command-test"));
+  const inherited=await waitFor(()=>window.GV7AL_INTERACTION);
+  const menuButton=await waitFor(()=>root.querySelector("button.gv-menu-proxy"));
+
+  const correction=window.GV7AM_HAMBURGER_CORRECTION={
+    passed:false,
+    bound:true,
+    usesCapturePhase:true,
+    preventsDefault:false,
+    stopsPropagation:false,
+    lastPrepared:false,
+    rightMenuOpenBeforeNative:null,
+    leftMenuOpenedByNativeHandler:null,
+    projectionStayedClosed:null
+  };
+
+  const clearInheritedPanelFade=panel=>{
+    if(!panel)return;
+    ["transition","opacity","visibility","pointer-events"].forEach(property=>panel.style.removeProperty(property));
+  };
+
+  const restoreNormalMenuEntry=()=>{
+    if(inherited.menusHidden!==true)return;
+    const leftMenu=root.querySelector(".gv-viewer-menu");
+    const rightMenu=root.querySelector(".gv-projection-submenu");
+    clearInheritedPanelFade(leftMenu);
+    clearInheritedPanelFade(rightMenu);
+    correction.lastPrepared=true;
+    correction.rightMenuOpenBeforeNative=!!rightMenu?.classList.contains("gv-open");
+    requestAnimationFrame(()=>{
+      const leftOpen=!!leftMenu?.classList.contains("gv-open");
+      const rightOpen=!!rightMenu?.classList.contains("gv-open");
+      correction.leftMenuOpenedByNativeHandler=leftOpen;
+      correction.projectionStayedClosed=leftOpen&&!rightOpen;
+      correction.passed=leftOpen&&!rightOpen;
+    });
+  };
+
+  menuButton.addEventListener("click",restoreNormalMenuEntry,true);
+})().catch(error=>console.error("GV-BETA-0007AM HAMBURGER CORRECTION FAILURE:",error));
+"""))
+
+# GV-beta-0007AM hamburger correction staged
