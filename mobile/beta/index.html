@@ -69,6 +69,8 @@ if (__earlyDiag) {
 </script>
 <script>
 (async()=>{
+  window.location.replace('./8A.html'+window.location.search+window.location.hash);
+  return;
   const VIEWER_TIMEOUT_MS=20000;
   const diagnosticMode=new URLSearchParams(window.location.search).get('diag')==='1';
   const errorBox=document.getElementById('gv-loading-error');
@@ -149,9 +151,9 @@ if (__earlyDiag) {
       if(!response.ok)throw new Error(`GV-BETA-0008A.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
       await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
-      const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
+      const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
       await checkpoint('HTML EXTRACTED');
-      const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
+      const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
       if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8A STANDALONE VIEWER JAVASCRIPT.');
       await checkpoint('JAVASCRIPT EXTRACTED');
       htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
