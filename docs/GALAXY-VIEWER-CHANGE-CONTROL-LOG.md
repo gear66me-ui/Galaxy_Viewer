@@ -89,6 +89,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-b77c5588fe13 — 8C → 8D roll-up
+
+**Source current-beta commit:** `b77c5588fe132f6faea8428c1bd759dc1d3d7d10`  
+**Previous Viewer:** `viewer/GV-beta-0008C.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008C.py`  
+**Original Git blob:** `48600b7649dae35779da9f1a2c36df9f5779859b`  
+**Archived Git blob:** `48600b7649dae35779da9f1a2c36df9f5779859b`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008D.py`  
+
+---
+
 ## AUTO-b77c5588fe13 — Synchronize current beta app to Galaxy Viewer 8D launcher
 
 **Recorded:** 2026-08-14T16:18:52-05:00  
