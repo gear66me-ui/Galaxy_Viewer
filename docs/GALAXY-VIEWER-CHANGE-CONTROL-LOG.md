@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1413b01f65b3 — Add standalone hamburger menu module 0001
+
+**Recorded:** 2026-08-14T11:44:08-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1413b01f65b3086b4092d72869440266ddfc72c5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1413b01f65b3086b4092d72869440266ddfc72c5)  
+**Parent/baseline:** `a7482de9a8f8c1978a7d3273df41b4f41bf5bd1a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a7482de9a8f8c1978a7d3273df41b4f41bf5bd1a...1413b01f65b3086b4092d72869440266ddfc72c5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add standalone hamburger menu module 0001
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-hamburger-menu-0001.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `5ba1f0dbb133eb7863bc3ac5f80d32450410433e41250d57a220b515186af2e7`
+- Bytes: `0` → `27842`
+- Lines: `0` → `487`
+- Characters: `0` → `27842`
+- Inserted lines: `487`
+- Deleted lines: `0`
+- Inserted characters: `27842`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 487 - 0 = 487` — **PASS**
+- Character balance: `0 + 27842 - 0 = 27842` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-52a19774d469 — Galaxy Viewer workflow: require launcher sync for every Viewer-affecting ECO
 
 **Recorded:** 2026-08-13T21:20:55-05:00  
