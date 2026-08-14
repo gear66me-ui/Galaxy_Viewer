@@ -101,6 +101,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-fab3c3242331 — Add Random Galaxy 0005 ESA Hubble catalog travel
+
+**Recorded:** 2026-08-14T18:23:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fab3c324233123edcce445f23634af9af96a165a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fab3c324233123edcce445f23634af9af96a165a)  
+**Parent/baseline:** `5eb02d31f19163d43562f518bf894b20d856df02`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5eb02d31f19163d43562f518bf894b20d856df02...fab3c324233123edcce445f23634af9af96a165a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Random Galaxy 0005 ESA Hubble catalog travel
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-random-galaxy-0005.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `34168880440988af6c4fa562c0eea9296a84b4cbb4607fc06ba4ddff16ded1bb`
+- Bytes: `0` → `55628`
+- Lines: `0` → `1221`
+- Characters: `0` → `55619`
+- Inserted lines: `1221`
+- Deleted lines: `0`
+- Inserted characters: `55619`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1221 - 0 = 1221` — **PASS**
+- Character balance: `0 + 55619 - 0 = 55619` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/modules/gv-random-galaxy-0005.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0005
+USER REQUEST: Replace limited random-galaxy discovery with the ESA/Hubble Galaxies archive target, keep every selected image galaxy-related and Hubble-backed, add pinch-to-zoom and pan in the Hubble HD view, and make the established galactic-travel sequence 20% faster: 28.89 s -> 24.075 s.
+PRESERVED BEHAVIOR: Keep the existing zoom-out -> travel -> turn -> zoom-in geometry, FOV/projection choreography, distance animation, fixed-width GV digit font, arrival card, DISTANCE TO EARTH, CONSTELLATION, VIEW HUBBLE HD, BACK TO SKY, public module API, optional Gemini enrichment contract, and prior release files unchanged.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b77c5588fe13 — Synchronize current beta app to Galaxy Viewer 8D launcher
 
 **Recorded:** 2026-08-14T16:18:52-05:00  
