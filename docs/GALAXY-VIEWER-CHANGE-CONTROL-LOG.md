@@ -101,6 +101,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b317c6208fcc — Archive Galaxy Viewer 8D after 8E roll-up
+
+**Recorded:** 2026-08-14T18:25:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b317c6208fcc1361e259f0a59af8aadb5f8b4116`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b317c6208fcc1361e259f0a59af8aadb5f8b4116)  
+**Parent/baseline:** `3837955720f12b31b8f3687d5a736390c42c96ef`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3837955720f12b31b8f3687d5a736390c42c96ef...b317c6208fcc1361e259f0a59af8aadb5f8b4116)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Archive Galaxy Viewer 8D after 8E roll-up
+```
+
+### Complete changed-path accounting
+
+#### `viewer/archive/GV-beta-0008D.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `aa135d82ca29bfe0dba10410898e23681a589047a9f7e19d51aa9e7fad124f0e`
+- Bytes: `0` → `15900`
+- Lines: `0` → `301`
+- Characters: `0` → `15900`
+- Inserted lines: `301`
+- Deleted lines: `0`
+- Inserted characters: `15900`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 301 - 0 = 301` — **PASS**
+- Character balance: `0 + 15900 - 0 = 15900` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-fab3c3242331 — Add Random Galaxy 0005 ESA Hubble catalog travel
 
 **Recorded:** 2026-08-14T18:23:06-05:00  
