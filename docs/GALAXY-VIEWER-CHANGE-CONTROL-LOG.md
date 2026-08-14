@@ -89,6 +89,70 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-52a19774d469 — Galaxy Viewer workflow: require launcher sync for every Viewer-affecting ECO
+
+**Recorded:** 2026-08-13T21:20:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`52a19774d46979f55632f4396832a0738ef2f217`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/52a19774d46979f55632f4396832a0738ef2f217)  
+**Parent/baseline:** `d6bcfa9174f4e6f80febf197b77a97a5932a40a7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d6bcfa9174f4e6f80febf197b77a97a5932a40a7...52a19774d46979f55632f4396832a0738ef2f217)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Galaxy Viewer workflow: require launcher sync for every Viewer-affecting ECO
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ba583fdf75fe7af5b2ae899b546bbea258ad67a427465ab946a04012b58ddfdd`
+- SHA-256 after: `f5a0b36638b6840c9fa5dd3b89507d0b39abcc76000299d56ad84f1ee3c90448`
+- Bytes: `24330` → `24530`
+- Lines: `592` → `597`
+- Characters: `24304` → `24504`
+- Inserted lines: `15`
+- Deleted lines: `10`
+- Inserted characters: `563`
+- Deleted characters: `363`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `592 + 15 - 10 = 597` — **PASS**
+- Character balance: `24304 + 563 - 363 = 24504` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+# Engineering Change Order.
+# Every Engineering Change Order must verify BOTH:
+# the controlled Engineering Change Order process.
+# ENGINEERING CHANGE ORDER — AP SELF-PROMPT
+# USER REQUEST:
+# AUTHORIZED CHANGES:
+# PRESERVED BEHAVIOR:
+# protected until its own Engineering Change Order receives GO.
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7ae01ee82ebd — Galaxy Viewer workflow: add AP controlled-engineering self-prompt
 
 **Recorded:** 2026-08-13T20:08:26-05:00  
