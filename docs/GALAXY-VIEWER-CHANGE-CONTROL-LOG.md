@@ -89,6 +89,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c22d7b0e47ea — Add immutable Galaxy Viewer 8C app launcher
+
+**Recorded:** 2026-08-14T15:27:38-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c22d7b0e47ea9ed838373c288daedf6ff11b9fbe`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c22d7b0e47ea9ed838373c288daedf6ff11b9fbe)  
+**Parent/baseline:** `440e8836e5238223a286c11ac9a4d807a58068ce`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/440e8836e5238223a286c11ac9a4d807a58068ce...c22d7b0e47ea9ed838373c288daedf6ff11b9fbe)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add immutable Galaxy Viewer 8C app launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8C.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6269afa755447c668849a331fe4ffd83d24608a0222090b6cd6e99972fe3e6bd`
+- Bytes: `0` → `3109`
+- Lines: `0` → `67`
+- Characters: `0` → `3105`
+- Inserted lines: `67`
+- Deleted lines: `0`
+- Inserted characters: `3105`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 67 - 0 = 67` — **PASS**
+- Character balance: `0 + 3105 - 0 = 3105` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8C.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8C APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8C release.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8C Viewer. No splash is loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-12294d1489de — Add Galaxy Viewer 8C with approved repository reticle
 
 **Recorded:** 2026-08-14T15:26:20-05:00  
