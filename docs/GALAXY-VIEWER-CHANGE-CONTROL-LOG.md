@@ -89,6 +89,70 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7ae01ee82ebd — Galaxy Viewer workflow: add AP controlled-engineering self-prompt
+
+**Recorded:** 2026-08-13T20:08:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7ae01ee82ebdf10a0936761ac06045af44f0b9a9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7ae01ee82ebdf10a0936761ac06045af44f0b9a9)  
+**Parent/baseline:** `11f1b49054f7fa5366bc69fda1d6b2deacfd0c70`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/11f1b49054f7fa5366bc69fda1d6b2deacfd0c70...7ae01ee82ebdf10a0936761ac06045af44f0b9a9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Galaxy Viewer workflow: add AP controlled-engineering self-prompt
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ad292899a961656f179e7c9751cf70ebdadfa882edd0d312dacee7c94947bff8`
+- SHA-256 after: `ba583fdf75fe7af5b2ae899b546bbea258ad67a427465ab946a04012b58ddfdd`
+- Bytes: `22581` → `24330`
+- Lines: `554` → `592`
+- Characters: `22557` → `24304`
+- Inserted lines: `38`
+- Deleted lines: `0`
+- Inserted characters: `1747`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `554 + 38 - 0 = 592` — **PASS**
+- Character balance: `22557 + 1747 - 0 = 24304` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+# Engineering Change Order.
+# Every Engineering Change Order must verify BOTH:
+# the controlled Engineering Change Order process.
+# ENGINEERING CHANGE ORDER — AP SELF-PROMPT
+# USER REQUEST:
+# AUTHORIZED CHANGES:
+# PRESERVED BEHAVIOR:
+# protected until its own Engineering Change Order receives GO.
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5cff5845be2a — GV 7AO: promote verified viewer in mobile beta launcher
 
 **Recorded:** 2026-08-11T17:42:46-05:00  
