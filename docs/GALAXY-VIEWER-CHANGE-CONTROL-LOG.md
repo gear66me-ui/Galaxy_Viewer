@@ -89,6 +89,70 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-13baac0add9e — Require versioned app launcher for every Viewer release
+
+**Recorded:** 2026-08-14T15:01:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`13baac0add9e86f88bf2cc5cd0a7e70443e701fc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/13baac0add9e86f88bf2cc5cd0a7e70443e701fc)  
+**Parent/baseline:** `6abdf27743fda8e3ff81127e78817b67dad1d46f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6abdf27743fda8e3ff81127e78817b67dad1d46f...13baac0add9e86f88bf2cc5cd0a7e70443e701fc)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Require versioned app launcher for every Viewer release
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `f5a0b36638b6840c9fa5dd3b89507d0b39abcc76000299d56ad84f1ee3c90448`
+- SHA-256 after: `183655da1148a6692a29f7b4618248566f70137c384c7bf52ba0c591495c28b9`
+- Bytes: `24530` → `25509`
+- Lines: `597` → `617`
+- Characters: `24504` → `25483`
+- Inserted lines: `38`
+- Deleted lines: `18`
+- Inserted characters: `1517`
+- Deleted characters: `538`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `7`
+- Changed blocks: `7`
+- Line balance: `597 + 38 - 18 = 617` — **PASS**
+- Character balance: `24504 + 1517 - 538 = 25483` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+# Engineering Change Order.
+# Every Engineering Change Order must verify BOTH:
+# the controlled Engineering Change Order process.
+# ENGINEERING CHANGE ORDER — AP SELF-PROMPT
+# USER REQUEST:
+# AUTHORIZED CHANGES:
+# PRESERVED BEHAVIOR:
+# protected until its own Engineering Change Order receives GO.
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-1ee9ec4c0927 — Correct beta index regex integrity for 8B launcher
 
 **Recorded:** 2026-08-14T14:59:13-05:00  
