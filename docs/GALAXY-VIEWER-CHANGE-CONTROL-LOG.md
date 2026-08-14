@@ -89,6 +89,70 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-58b33ea9eb78 — Enforce standalone Viewer roll-up archiving
+
+**Recorded:** 2026-08-14T16:17:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`58b33ea9eb7806fc82497538c98144ec13fa20fc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/58b33ea9eb7806fc82497538c98144ec13fa20fc)  
+**Parent/baseline:** `033c9d8fb54dee601a90f2c8284c9832027314f1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/033c9d8fb54dee601a90f2c8284c9832027314f1...58b33ea9eb7806fc82497538c98144ec13fa20fc)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Enforce standalone Viewer roll-up archiving
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/automatic-change-control-log.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `183655da1148a6692a29f7b4618248566f70137c384c7bf52ba0c591495c28b9`
+- SHA-256 after: `a1565cef32c140f03ae0050c2f777bde941d7216c0b67a8e350e3a7d561995a9`
+- Bytes: `25509` → `35665`
+- Lines: `617` → `840`
+- Characters: `25483` → `35633`
+- Inserted lines: `223`
+- Deleted lines: `0`
+- Inserted characters: `10150`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `617 + 223 - 0 = 840` — **PASS**
+- Character balance: `25483 + 10150 - 0 = 35633` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/automatic-change-control-log.yml`**
+
+```text
+# Engineering Change Order.
+# Every Engineering Change Order must verify BOTH:
+# the controlled Engineering Change Order process.
+# ENGINEERING CHANGE ORDER — AP SELF-PROMPT
+# USER REQUEST:
+# AUTHORIZED CHANGES:
+# PRESERVED BEHAVIOR:
+# protected until its own Engineering Change Order receives GO.
+'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
+'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
+'PRESERVED BEHAVIOR:', 'PURPOSE:'
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9335ac3ff988 — Add immutable Galaxy Viewer 8D app launcher
 
 **Recorded:** 2026-08-14T16:06:55-05:00  
