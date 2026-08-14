@@ -69,7 +69,7 @@ if (__earlyDiag) {
 </script>
 <script>
 (async()=>{
-  window.location.replace('./8F.html'+window.location.search+window.location.hash);
+  window.location.replace('./8G.html'+window.location.search+window.location.hash);
   return;
   const VIEWER_TIMEOUT_MS=20000;
   const diagnosticMode=new URLSearchParams(window.location.search).get('diag')==='1';
@@ -86,7 +86,7 @@ if (__earlyDiag) {
     if(detail===undefined)return '';
     if(detail instanceof Error)return ` — ${detail.name}: ${detail.message}`;
     if(typeof detail==='string')return ` — ${detail}`;
-    try{return ` — ${JSON.stringify(detail)}`;}catch(_){return ` — ${String(detail)}`;}
+    try{return ` — ${JSON.stringify(detail)};`}catch(_){return ` — ${String(detail)}`;}
   };
   const appendDiagnostic=(label,detail)=>{
     if(!diagnosticMode)return;
