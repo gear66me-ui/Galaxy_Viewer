@@ -89,6 +89,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9335ac3ff988 — Add immutable Galaxy Viewer 8D app launcher
+
+**Recorded:** 2026-08-14T16:06:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9335ac3ff98803a28ca00995ed81f63aaa1b1686`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9335ac3ff98803a28ca00995ed81f63aaa1b1686)  
+**Parent/baseline:** `04909276d84065ef8ce9028220de63fef6b526f9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/04909276d84065ef8ce9028220de63fef6b526f9...9335ac3ff98803a28ca00995ed81f63aaa1b1686)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add immutable Galaxy Viewer 8D app launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8D.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b3fe97f43c5460cdecd96d06337ada32714099e9f72eae9ca605f46e4e652dde`
+- Bytes: `0` → `3109`
+- Lines: `0` → `67`
+- Characters: `0` → `3105`
+- Inserted lines: `67`
+- Deleted lines: `0`
+- Inserted characters: `3105`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 67 - 0 = 67` — **PASS**
+- Character balance: `0 + 3105 - 0 = 3105` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8D.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8D APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8D release.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8D Viewer. No splash is loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-adc5642e84e8 — Add standalone Galaxy Viewer 8D with built-in Hubble provider
 
 **Recorded:** 2026-08-14T16:05:51-05:00  
