@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-adc5642e84e8 — Add standalone Galaxy Viewer 8D with built-in Hubble provider
+
+**Recorded:** 2026-08-14T16:05:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`adc5642e84e8512a0aad34d942a80dec54c860d2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/adc5642e84e8512a0aad34d942a80dec54c860d2)  
+**Parent/baseline:** `d99e189c24ef8f8e7ce71dcd304734a5aebb429a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d99e189c24ef8f8e7ce71dcd304734a5aebb429a...adc5642e84e8512a0aad34d942a80dec54c860d2)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add standalone Galaxy Viewer 8D with built-in Hubble provider
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0008D.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `aa135d82ca29bfe0dba10410898e23681a589047a9f7e19d51aa9e7fad124f0e`
+- Bytes: `0` → `15900`
+- Lines: `0` → `301`
+- Characters: `0` → `15900`
+- Inserted lines: `301`
+- Deleted lines: `0`
+- Inserted characters: `15900`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 301 - 0 = 301` — **PASS**
+- Character balance: `0 + 15900 - 0 = 15900` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2c96737bbbd6 — Add self-contained Random Galaxy 0004 module
 
 **Recorded:** 2026-08-14T15:57:45-05:00  
