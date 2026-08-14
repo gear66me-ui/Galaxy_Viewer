@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 7AO">
-<title>GALAXY VIEWER 7AO — MOBILE APP BETA</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8A">
+<title>GALAXY VIEWER 8A — MOBILE APP BETA</title>
 <link rel="manifest" href="./manifest.webmanifest?v=7AL-global-glow-001">
 <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001">
@@ -16,15 +16,8 @@
 @font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=7K-centered-coordinate-digits-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
 body{font-family:"Space Age",sans-serif;text-transform:uppercase}
-.gv-startup-stage{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;opacity:1;transition:opacity .28s ease}
-.gv-startup-stage[hidden]{display:none}
-.gv-startup-stage img{display:block;object-fit:contain;background:#000}
-#gv-splash-stage img{width:100%;height:100%;position:absolute;inset:0}
-.gv-startup-message{position:relative;z-index:2;margin-top:18px;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,.72);color:#62D8FF;font-size:19.5px;font-weight:400;text-align:center}
-.gv-startup-message>span,#gv-loading-error>span{display:inline-block;transform:scaleY(1.5);transform-origin:center}
-#gv-splash-stage .gv-startup-message{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;white-space:nowrap}
-body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 #gv-loading-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:400 14px/1.5 "Space Age",sans-serif;text-transform:uppercase}
+#gv-loading-error>span{display:inline-block;transform:scaleY(1.5);transform-origin:center}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important;min-height:100vh!important;min-height:100svh!important;min-height:100dvh!important}
 #gv-diagnostics{position:fixed;z-index:2147483647;top:max(10px,env(safe-area-inset-top));right:10px;width:min(92vw,430px);max-height:72vh;display:flex;flex-direction:column;border:2px solid #62D8FF;border-radius:10px;background:rgba(0,5,18,.94);box-shadow:0 0 20px rgba(98,216,255,.42);color:#fff;font:400 11px/1.45 "Space Age",sans-serif;text-transform:uppercase}
 #gv-diagnostics[hidden]{display:none}
@@ -37,10 +30,6 @@ body.gv-ready .gv-startup-stage{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
-<div id="gv-splash-stage" class="gv-startup-stage">
-  <img src="../../viewer/artwork/Splash/Galaxy%20Splash%20Ibis%20Galactic%20by%20GA.png?v=7K-centered-coordinate-digits-001" alt="GALAXY VIEWER SPLASH ARTWORK">
-  <div class="gv-startup-message"><span>GALAXY VIEWER BETA 7AO · LOADING 1,000 GALAXIES · 250 SPECTACULAR…</span></div>
-</div>
 <div id="gv-loading-error" role="alert"></div>
 <section id="gv-diagnostics" hidden aria-label="GALAXY VIEWER ENGINEERING DIAGNOSTICS">
   <div class="gv-diag-title">ENGINEERING DIAGNOSTICS</div>
@@ -80,10 +69,8 @@ if (__earlyDiag) {
 </script>
 <script>
 (async()=>{
-  const SPLASH_MS=4000;
   const VIEWER_TIMEOUT_MS=20000;
   const diagnosticMode=new URLSearchParams(window.location.search).get('diag')==='1';
-  const splashStage=document.getElementById('gv-splash-stage');
   const errorBox=document.getElementById('gv-loading-error');
   const diagPanel=document.getElementById('gv-diagnostics');
   const diagLog=document.getElementById('gv-diag-log');
@@ -91,7 +78,6 @@ if (__earlyDiag) {
   const diagCopy=document.getElementById('gv-diag-copy');
   const diagClear=document.getElementById('gv-diag-clear');
   const diagAuto=document.getElementById('gv-diag-auto');
-  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   let continueResolver=null;
   const timestamp=()=>new Date().toISOString();
   const formatDetail=detail=>{
@@ -130,7 +116,7 @@ if (__earlyDiag) {
     const originalError=console.error.bind(console);
     console.error=(...args)=>{appendDiagnostic('EXCEPTION',args.map(String).join(' '));originalError(...args);};
   }
-  const showError=message=>{splashStage.hidden=true;errorBox.style.display='block';errorBox.innerHTML='<span>'+String(message).toUpperCase().replace(/[&<>]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]))+'</span>'};
+  const showError=message=>{errorBox.style.display='block';errorBox.innerHTML='<span>'+String(message).toUpperCase().replace(/[&<>]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]))+'</span>'};
   const prepareCleanBetaStart=async()=>{
     await checkpoint('CACHE CLEAR STARTED');
     try{
@@ -158,15 +144,15 @@ if (__earlyDiag) {
   try{
     const viewerReady=(async()=>{
       await checkpoint('FETCH STARTED');
-      const response=await fetch('../../viewer/GV-beta-0007AO.py?v=cf728f76e2612f8532efe3a5a9644eb4174f4b3b',{cache:'no-store'});
+      const response=await fetch('../../viewer/GV-beta-0008A.py?v=57e8103d2c4b1650da9ced03d8d4886d3f177dce',{cache:'no-store'});
       await checkpoint('HTTP RESPONSE RECEIVED',`HTTP ${response.status}`);
-      if(!response.ok)throw new Error(`GV-BETA-0007AO.PY RETURNED HTTP ${response.status}`);
+      if(!response.ok)throw new Error(`GV-BETA-0008A.PY RETURNED HTTP ${response.status}`);
       const source=await response.text();
       await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
       const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
       await checkpoint('HTML EXTRACTED');
       const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
-      if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 7AO STANDALONE VIEWER JAVASCRIPT.');
+      if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8A STANDALONE VIEWER JAVASCRIPT.');
       await checkpoint('JAVASCRIPT EXTRACTED');
       htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
       await checkpoint('HTML INSERTED');
@@ -182,13 +168,11 @@ if (__earlyDiag) {
       await checkpoint('CANVAS DETECTED');
       await checkpoint('VIEWER READY');
     })();
-    await Promise.all([viewerReady,sleep(SPLASH_MS)]);
+    await viewerReady;
     try{localStorage.removeItem('gv-beta-launch-failure');}catch(_){ }
-    document.body.classList.add('gv-ready');
-    setTimeout(()=>{splashStage.hidden=true;},300);
   }catch(error){
-    console.error('GALAXY VIEWER 7AO MOBILE BETA STARTUP FAILURE',error);
-    try{localStorage.setItem('gv-beta-launch-failure','7AO');}catch(_){ }
+    console.error('GALAXY VIEWER 8A MOBILE BETA STARTUP FAILURE',error);
+    try{localStorage.setItem('gv-beta-launch-failure','8A');}catch(_){ }
     appendDiagnostic('APP FAILED TO LOAD',error);
     showError('APP FAILED TO LOAD');
     return;
