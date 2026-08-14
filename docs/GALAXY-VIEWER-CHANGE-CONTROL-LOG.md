@@ -113,6 +113,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e062d55cbbf1 — Add Galaxy Viewer 8G beta launcher
+
+**Recorded:** 2026-08-14T18:44:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e062d55cbbf18feea49ed26b505a7ee534babb92`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e062d55cbbf18feea49ed26b505a7ee534babb92)  
+**Parent/baseline:** `680c4e88402f32f5dc0341487eb6c14239efac75`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/680c4e88402f32f5dc0341487eb6c14239efac75...e062d55cbbf18feea49ed26b505a7ee534babb92)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8G beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8G.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9f8a414919327b55d36ac3f6e8374c24513a51b2c49df7b01abe42417aa976fe`
+- Bytes: `0` → `3108`
+- Lines: `0` → `67`
+- Characters: `0` → `3104`
+- Inserted lines: `67`
+- Deleted lines: `0`
+- Inserted characters: `3104`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 67 - 0 = 67` — **PASS**
+- Character balance: `0 + 3104 - 0 = 3104` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8G.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8G APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8G release.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8G Viewer. No splash is loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-25cefc280cf1 — Add Galaxy Viewer 8G startup random galaxy travel
 
 **Recorded:** 2026-08-14T18:43:57-05:00  
