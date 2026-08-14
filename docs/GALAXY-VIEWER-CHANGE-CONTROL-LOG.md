@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-eaa660922951 — Launch clean Galaxy Viewer 8A without splash
+
+**Recorded:** 2026-08-14T13:57:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`eaa6609229517396e9d31f326aba008b428dd7e3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/eaa6609229517396e9d31f326aba008b428dd7e3)  
+**Parent/baseline:** `565858d5d251f388009cebf2261f7555d48b22a7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/565858d5d251f388009cebf2261f7555d48b22a7...eaa6609229517396e9d31f326aba008b428dd7e3)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Launch clean Galaxy Viewer 8A without splash
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `24b7165131830973eff6a19621cdb4e5ccfb0897119779d3cfd549c98aeb1599`
+- SHA-256 after: `eec47a4b0f3c1589489ef7292e0b0152ae558eed4689dd62fea44504f39af095`
+- Bytes: `11386` → `9910`
+- Lines: `199` → `183`
+- Characters: `11372` → `9900`
+- Inserted lines: `11`
+- Deleted lines: `27`
+- Inserted characters: `131`
+- Deleted characters: `1603`
+- Unified diff hunks: `15`
+- Inserted blocks: `9`
+- Deleted blocks: `14`
+- Changed blocks: `15`
+- Line balance: `199 + 11 - 27 = 183` — **PASS**
+- Character balance: `11372 + 131 - 1603 = 9900` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2139daf53459 — Add clean modular Galaxy Viewer 8A
 
 **Recorded:** 2026-08-14T13:54:46-05:00  
