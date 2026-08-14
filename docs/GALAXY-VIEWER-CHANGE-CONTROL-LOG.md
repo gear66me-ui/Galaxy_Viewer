@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-354a0771d0d3 — Add standalone target SIMBAD module 0001
+
+**Recorded:** 2026-08-14T13:51:23-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`354a0771d0d3056f05213fb052dfc18665b1e3b4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/354a0771d0d3056f05213fb052dfc18665b1e3b4)  
+**Parent/baseline:** `e6c48401e16cda4caeb7076f4146950d29a36332`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e6c48401e16cda4caeb7076f4146950d29a36332...354a0771d0d3056f05213fb052dfc18665b1e3b4)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add standalone target SIMBAD module 0001
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-target-simbad-0001.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `c6e132df0b102315474889859fb700bf8a09c723ae5d5c981cc1ce04988113f1`
+- Bytes: `0` → `10662`
+- Lines: `0` → `159`
+- Characters: `0` → `10662`
+- Inserted lines: `159`
+- Deleted lines: `0`
+- Inserted characters: `10662`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 159 - 0 = 159` — **PASS**
+- Character balance: `0 + 10662 - 0 = 10662` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0002cd527cc0 — Add hamburger menu 0002 standalone test
 
 **Recorded:** 2026-08-14T13:18:27-05:00  
