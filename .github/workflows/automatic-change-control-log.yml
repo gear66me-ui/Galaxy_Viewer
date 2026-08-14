@@ -615,3 +615,226 @@ jobs:
           git add -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md
           git commit -m "Forensic log for ${{ github.sha }}"
           git push origin HEAD:beta
+
+      # ------------------------------------------------
+      # STANDALONE VIEWER ENFORCEMENT + AUTOMATIC ROLL-UP ARCHIVAL
+      # ------------------------------------------------
+      #
+      # Every current Viewer must be a standalone root release. It may load
+      # explicitly authorized resources beneath viewer/ such as modules,
+      # artwork and fonts, but it may not load another GV-beta Viewer or
+      # anything beneath viewer/archive/.
+      #
+      # Automatic archival occurs only when mobile/beta/index.html changes
+      # from one dedicated versioned launcher to a newer matching launcher.
+      # The newly current Viewer remains in viewer/. The immediately previous
+      # Viewer is copied byte-for-byte to viewer/archive/, blob identity is
+      # verified, and only then is the previous root copy removed.
+      #
+      # Releases 8A and 8B predate this standing archive rule and are not
+      # retroactively archived by this workflow.
+      - name: Enforce standalone Viewer and archive previous roll-up
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          python3 <<'PY'
+          import hashlib
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+
+          commit_sha = os.environ['COMMIT_SHA']
+          before_sha = os.environ.get('BEFORE_SHA', '')
+          zero_sha = "0" * 40
+
+          def git_text(*args):
+              return subprocess.check_output(["git", *args], text=True).rstrip("\n")
+
+          def git_bytes(*args):
+              return subprocess.check_output(["git", *args])
+
+          def exists_at(ref, path):
+              return subprocess.run(
+                  ["git", "cat-file", "-e", f"{ref}:{path}"],
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+              ).returncode == 0
+
+          def text_at(ref, path):
+              return git_bytes("show", f"{ref}:{path}").decode("utf-8")
+
+          if not before_sha or before_sha == zero_sha:
+              try:
+                  before_sha = git_text("rev-parse", f"{commit_sha}^")
+              except subprocess.CalledProcessError:
+                  before_sha = commit_sha
+
+          index_path = "mobile/beta/index.html"
+          if not exists_at(commit_sha, index_path):
+              raise SystemExit("CURRENT-BETA INDEX IS MISSING.")
+
+          current_index = text_at(commit_sha, index_path)
+          route_re = re.compile(r"window\.location\.replace\('\./([0-9A-Z]+)\.html")
+          current_match = route_re.search(current_index)
+          if not current_match:
+              raise SystemExit("CURRENT-BETA INDEX DOES NOT NAME A VERSIONED LAUNCHER.")
+
+          current_version = current_match.group(1)
+          launcher_path = f"mobile/beta/{current_version}.html"
+          viewer_path = f"viewer/GV-beta-000{current_version}.py"
+
+          if not exists_at(commit_sha, launcher_path):
+              raise SystemExit(f"MATCHING LAUNCHER IS MISSING: {launcher_path}")
+          if not exists_at(commit_sha, viewer_path):
+              raise SystemExit(f"MATCHING VIEWER IS MISSING: {viewer_path}")
+
+          launcher_text = text_at(commit_sha, launcher_path)
+          viewer_text = text_at(commit_sha, viewer_path)
+
+          if "viewer/archive/" in launcher_text or "viewer/archive/" in viewer_text:
+              raise SystemExit("ACTIVE RELEASE REFERENCES viewer/archive/.")
+
+          viewer_refs = re.findall(r"GV-beta-[A-Za-z0-9-]+\.py", viewer_text)
+          if viewer_refs:
+              raise SystemExit(
+                  "CURRENT VIEWER REFERENCES ANOTHER VIEWER RELEASE: " +
+                  ", ".join(sorted(set(viewer_refs)))
+              )
+
+          launch_re = re.compile(
+              r"const VIEWER_URL='\.\./\.\./viewer/"
+              r"(GV-beta-000([0-9A-Z]+)\.py)\?v=([0-9a-f]{40})';"
+          )
+          launch_match = launch_re.search(launcher_text)
+          if not launch_match:
+              raise SystemExit("MATCHING LAUNCHER DOES NOT CONTAIN AN EXACT VIEWER PIN.")
+
+          launch_filename, launch_version, pinned_blob = launch_match.groups()
+          if launch_version != current_version:
+              raise SystemExit("CURRENT-BETA VERSION AND LAUNCHER VIEWER VERSION DO NOT MATCH.")
+          if launch_filename != pathlib.PurePosixPath(viewer_path).name:
+              raise SystemExit("LAUNCHER VIEWER PATH DOES NOT MATCH CURRENT VIEWER.")
+
+          actual_blob = git_text("rev-parse", f"{commit_sha}:{viewer_path}")
+          if pinned_blob != actual_blob:
+              raise SystemExit(
+                  f"LAUNCHER PIN MISMATCH: expected {actual_blob}, found {pinned_blob}"
+              )
+
+          launcher_viewer_refs = re.findall(r"GV-beta-[A-Za-z0-9-]+\.py", launcher_text)
+          if set(launcher_viewer_refs) != {launch_filename}:
+              raise SystemExit("LAUNCHER REFERENCES A VIEWER OTHER THAN ITS MATCHING CURRENT VIEWER.")
+
+          changed_paths = set(
+              git_text("diff", "--name-only", before_sha, commit_sha).splitlines()
+          )
+          if index_path not in changed_paths:
+              print(
+                  f"Standalone Viewer verification PASS for {current_version}; "
+                  "current-beta did not change, so no archive action is permitted."
+              )
+              raise SystemExit(0)
+
+          if not exists_at(before_sha, index_path):
+              raise SystemExit("PREVIOUS CURRENT-BETA INDEX IS MISSING.")
+
+          previous_index = text_at(before_sha, index_path)
+          previous_match = route_re.search(previous_index)
+          if not previous_match:
+              raise SystemExit("PREVIOUS CURRENT-BETA INDEX DOES NOT NAME A VERSIONED LAUNCHER.")
+
+          previous_version = previous_match.group(1)
+          if previous_version == current_version:
+              print("Current-beta route did not change version; no archive action.")
+              raise SystemExit(0)
+
+          if previous_version in {"8A", "8B"}:
+              print(f"Legacy {previous_version} is protected from retroactive archival.")
+              raise SystemExit(0)
+
+          previous_viewer = f"viewer/GV-beta-000{previous_version}.py"
+          archive_viewer = f"viewer/archive/GV-beta-000{previous_version}.py"
+
+          if not exists_at(commit_sha, previous_viewer):
+              raise SystemExit(f"EXPECTED PREVIOUS VIEWER IS MISSING: {previous_viewer}")
+
+          original_blob = git_text("rev-parse", f"{commit_sha}:{previous_viewer}")
+          original_bytes = git_bytes("show", f"{commit_sha}:{previous_viewer}")
+
+          archive_path = pathlib.Path(archive_viewer)
+          if archive_path.exists():
+              archived_existing = archive_path.read_bytes()
+              existing_blob = hashlib.sha1(
+                  f"blob {len(archived_existing)}\0".encode() + archived_existing
+              ).hexdigest()
+              if existing_blob != original_blob:
+                  raise SystemExit(
+                      f"ARCHIVE COLLISION: {archive_viewer} exists with blob "
+                      f"{existing_blob}, expected {original_blob}"
+                  )
+          else:
+              archive_path.parent.mkdir(parents=True, exist_ok=True)
+              archive_path.write_bytes(original_bytes)
+
+          archived_bytes = archive_path.read_bytes()
+          archived_blob = hashlib.sha1(
+              f"blob {len(archived_bytes)}\0".encode() + archived_bytes
+          ).hexdigest()
+          if archived_blob != original_blob or archived_bytes != original_bytes:
+              raise SystemExit("ARCHIVE BYTE/BLOB VERIFICATION FAILED; ROOT VIEWER NOT REMOVED.")
+
+          pathlib.Path(previous_viewer).unlink()
+
+          log_path = pathlib.Path("docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md")
+          existing_log = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
+          archive_record = (
+              f"## ARCHIVE-{commit_sha[:12]} — {previous_version} → {current_version} roll-up\n\n"
+              f"**Source current-beta commit:** `{commit_sha}`  \n"
+              f"**Previous Viewer:** `{previous_viewer}`  \n"
+              f"**Archive Viewer:** `{archive_viewer}`  \n"
+              f"**Original Git blob:** `{original_blob}`  \n"
+              f"**Archived Git blob:** `{archived_blob}`  \n"
+              f"**Blob/byte equality:** **PASS**  \n"
+              f"**Current Viewer retained in root:** `{viewer_path}`  \n\n"
+              "---\n\n"
+          )
+          first_auto = re.search(r"(?m)^## AUTO-", existing_log)
+          if first_auto:
+              updated_log = (
+                  existing_log[:first_auto.start()] +
+                  archive_record +
+                  existing_log[first_auto.start():]
+              )
+          else:
+              updated_log = existing_log.rstrip() + "\n\n" + archive_record
+          log_path.write_text(updated_log, encoding="utf-8", newline="\n")
+
+          subprocess.check_call(
+              ["git", "add", "-A", "--", previous_viewer, archive_viewer, str(log_path)]
+          )
+          staged = set(git_text("diff", "--cached", "--no-renames", "--name-only").splitlines())
+          expected = {previous_viewer, archive_viewer, str(log_path)}
+          if staged != expected:
+              raise SystemExit(
+                  "UNEXPECTED ARCHIVE-SIDE PATHS: " +
+                  ", ".join(sorted(staged.symmetric_difference(expected)))
+              )
+
+          subprocess.check_call(["git", "config", "user.name", "github-actions[bot]"])
+          subprocess.check_call([
+              "git", "config", "user.email",
+              "41898282+github-actions[bot]@users.noreply.github.com"
+          ])
+          subprocess.check_call([
+              "git", "commit", "-m",
+              f"Archive Galaxy Viewer {previous_version} after {current_version} roll-up"
+          ])
+          subprocess.check_call(["git", "push", "origin", "HEAD:beta"])
+          print(
+              f"Archived {previous_viewer} → {archive_viewer}; "
+              f"blob equality PASS: {original_blob}"
+          )
+          PY
