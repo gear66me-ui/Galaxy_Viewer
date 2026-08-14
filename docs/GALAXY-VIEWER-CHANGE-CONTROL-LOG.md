@@ -101,6 +101,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2d60f75ea301 — Add Galaxy Viewer 8F beta launcher
+
+**Recorded:** 2026-08-14T18:34:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2d60f75ea30179ffdd8cf9158b5566f21d757ace`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2d60f75ea30179ffdd8cf9158b5566f21d757ace)  
+**Parent/baseline:** `0d2bf4ae7dcfa64d29efe76fff8a1a4157774e81`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0d2bf4ae7dcfa64d29efe76fff8a1a4157774e81...2d60f75ea30179ffdd8cf9158b5566f21d757ace)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8F beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8F.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `847c4a18d630e508b9bd180a59ec8745a14cb261b16fde7b4627f2bfa9410507`
+- Bytes: `0` → `3108`
+- Lines: `0` → `67`
+- Characters: `0` → `3104`
+- Inserted lines: `67`
+- Deleted lines: `0`
+- Inserted characters: `3104`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 67 - 0 = 67` — **PASS**
+- Character balance: `0 + 3104 - 0 = 3104` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8F.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8F APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8F release.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8F Viewer. No splash is loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-116615e69535 — Create GV-beta-0008F with Random Galaxy button binding fix
 
 **Recorded:** 2026-08-14T18:34:29-05:00  
