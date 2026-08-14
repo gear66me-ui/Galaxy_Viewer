@@ -101,6 +101,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-98f4145c84f7 — 8E → 8F roll-up
+
+**Source current-beta commit:** `98f4145c84f762846a2a080e682ebd0219b95fd4`  
+**Previous Viewer:** `viewer/GV-beta-0008E.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008E.py`  
+**Original Git blob:** `1eba83422942e3bfe84d80ec6bed6d1bf338b55d`  
+**Archived Git blob:** `1eba83422942e3bfe84d80ec6bed6d1bf338b55d`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008F.py`  
+
+---
+
 ## AUTO-98f4145c84f7 — Point rolling beta launcher to Galaxy Viewer 8F
 
 **Recorded:** 2026-08-14T18:35:17-05:00  
