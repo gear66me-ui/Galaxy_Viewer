@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0002cd527cc0 — Add hamburger menu 0002 standalone test
+
+**Recorded:** 2026-08-14T13:18:27-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0002cd527cc02869f4278805cf8d87f34d738215`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0002cd527cc02869f4278805cf8d87f34d738215)  
+**Parent/baseline:** `102df90cda9cbf1e9e51ad0cd36c6b022729e943`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/102df90cda9cbf1e9e51ad0cd36c6b022729e943...0002cd527cc02869f4278805cf8d87f34d738215)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add hamburger menu 0002 standalone test
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/tests/gv-hamburger-menu-0002-test.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `d4ed9d336e1c5547444ed805ede55bbbd0f812404c5227d18e5d8326bae1dd7e`
+- Bytes: `0` → `908`
+- Lines: `0` → `27`
+- Characters: `0` → `906`
+- Inserted lines: `27`
+- Deleted lines: `0`
+- Inserted characters: `906`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 27 - 0 = 27` — **PASS**
+- Character balance: `0 + 906 - 0 = 906` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ce2e7abda64e — Add standalone hamburger menu module 0002 icon refinement
 
 **Recorded:** 2026-08-14T13:18:08-05:00  
