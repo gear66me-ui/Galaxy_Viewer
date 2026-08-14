@@ -220,32 +220,52 @@ name: Automatic Change Control Log
 #
 #
 # ------------------------------------------------
-# MANDATORY CURRENT-BETA LAUNCHER UPDATE
+# MANDATORY VERSIONED APP LAUNCHER + CURRENT-BETA UPDATE
 # ------------------------------------------------
 #
-# Every software change that affects the Galaxy Viewer app/Viewer MUST
-# include updating `mobile/beta/index.html` in the same authorized ECO.
+# Every software change that creates or modifies a Galaxy Viewer app/Viewer
+# release MUST create a new dedicated versioned app launcher in
+# `mobile/beta/` whose version matches that Viewer release.
 #
-# The launcher MUST point to the exact latest Viewer revision created or
-# modified by that ECO. This requirement applies to every Viewer-affecting
-# change; inspection-only, experimental, standalone, or other labels do
-# not waive launcher synchronization.
+# Example lineage:
+# `viewer/GV-beta-0008A.py` -> `mobile/beta/8A.html`
+# `viewer/GV-beta-0008B.py` -> `mobile/beta/8B.html`
 #
-# `mobile/beta/index.html` is therefore a required authorized path in
-# every Viewer-affecting ECO, alongside the exact Viewer file(s) changed.
+# A dedicated versioned launcher MUST load the exact verified Viewer
+# revision for its matching release. It MUST remain a launcher shell and
+# MUST NOT duplicate or reconstruct the full Viewer implementation.
 #
-# The Viewer change and launcher update must be committed and fetch-back
-# verified as part of the same authorized ECO. When technically possible,
-# the beta launcher must also be live-tested against that exact Viewer
-# revision.
+# A new Viewer version MUST NOT reuse, overwrite, rename, or modify an
+# older dedicated versioned launcher. Previous launchers are frozen release
+# history unless a separate ECO explicitly authorizes otherwise.
+#
+# Every Viewer-affecting ECO MUST explicitly authorize all three release
+# elements before GO:
+# 1. the exact new or modified Viewer version;
+# 2. the matching new versioned launcher path;
+# 3. `mobile/beta/index.html` synchronization to that newest launcher.
+#
+# `mobile/beta/index.html` remains the rolling current-beta app entrypoint.
+# It MUST route to or otherwise launch the newest approved dedicated
+# versioned launcher and MUST NOT remain an independent second Viewer.
+#
+# The Viewer, matching versioned launcher, and current-beta entrypoint MUST
+# each be committed and fetch-back verified. When technically possible,
+# the actual app launcher path must be runtime/visually tested against the
+# exact Viewer revision it launches.
+#
+# Inspection-only changes that do not create or modify a Viewer release do
+# not require inventing a new Viewer or launcher version unless the ECO
+# itself says they affect the released app/Viewer.
 #
 # Do not silently modify manifests, service workers, install launchers,
-# PWA files, or other delivery paths. If any of those are actually
-# necessary to make the current release launch correctly, name each path
-# in the ECO and obtain authorization before modifying it.
+# PWA files, artwork, dependencies, or other delivery paths. If any such
+# path is actually necessary, name it in the ECO and obtain GO before
+# modifying it.
 #
-# A Viewer-affecting ECO is not complete while `mobile/beta/index.html`
-# points to any older Viewer revision.
+# A Viewer-affecting ECO is incomplete if the new Viewer version, its
+# matching new dedicated launcher, or current-beta synchronization is
+# missing, stale, or points to a different Viewer revision.
 #
 # ------------------------------------------------
 # ENGINEERING CHANGE ORDER — AP SELF-PROMPT
