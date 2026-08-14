@@ -89,6 +89,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1ee9ec4c0927 — Correct beta index regex integrity for 8B launcher
+
+**Recorded:** 2026-08-14T14:59:13-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1ee9ec4c09277a8e7cf9122d10821ab04b149a09`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1ee9ec4c09277a8e7cf9122d10821ab04b149a09)  
+**Parent/baseline:** `bd7c793ec7bf28bf5ed71819d59d42897df1d78b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bd7c793ec7bf28bf5ed71819d59d42897df1d78b...1ee9ec4c09277a8e7cf9122d10821ab04b149a09)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Correct beta index regex integrity for 8B launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `92e1b8c1abc8927b8c702b192e25913810df595984418306de8f2ba29d57ce61`
+- SHA-256 after: `f16f16b8848cb636476288ce076aae867060b81b57ab9d8b960decf65c99cbca`
+- Bytes: `10016` → `10004`
+- Lines: `185` → `185`
+- Characters: `10006` → `9994`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `0`
+- Deleted characters: `12`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `185 + 2 - 2 = 185` — **PASS**
+- Character balance: `10006 + 0 - 12 = 9994` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b26ba067ebe8 — Synchronize current beta app to Galaxy Viewer 8B launcher
 
 **Recorded:** 2026-08-14T14:54:28-05:00  
