@@ -242,6 +242,44 @@ name: Automatic Change Control Log
 # A Viewer release intended to become current beta is not complete while
 # the current app launcher still points to the previous Viewer release.
 #
+# ------------------------------------------------
+# ENGINEERING CHANGE ORDER — AP SELF-PROMPT
+# ------------------------------------------------
+#
+# USER REQUEST:
+# Carry forward a fresh procedural self-prompt for the next AP
+# implementation under the Galaxy Viewer controlled-engineering rules.
+# This comment block does not authorize AP implementation.
+#
+# AUTHORIZED CHANGES:
+# - This workflow file may receive only this comment/instruction block.
+# - Existing executable workflow behavior must remain unchanged.
+# - The abandoned uncommitted workflow candidates are not baselines and
+#   must not be reproduced.
+#
+# AP EXECUTION GATE:
+# Before any AP write, ChatGPT must publish a separate AP Engineering
+# Change Order identifying the exact repository, branch, baseline,
+# authorized paths, protected paths, uncertainties, and acceptance tests,
+# and must receive a new explicit GO for that AP ECO.
+#
+# After AP GO, fetch the exact current baselines from GitHub, modify only
+# authorized files for authorized requirements, fetch every result back,
+# verify the exact changed blocks, record returned commit/blob SHAs, audit
+# every changed path, and distinguish source inspection, exact comparison,
+# syntax validation, runtime testing, visual testing, live-site testing,
+# and physical-device testing.
+#
+# PRESERVED BEHAVIOR:
+# No trigger, permission, concurrency, job, Python audit, commit, push,
+# launcher, Viewer, AP release, asset, documentation, dependency,
+# configuration, manifest, service worker, artwork, or other repository
+# behavior/path is changed or authorized by this block.
+#
+# CORE RULE:
+# This workflow self-prompt is procedural context only. AP remains
+# protected until its own Engineering Change Order receives GO.
+#
 # ================================================================
 # END MANDATORY RUNTIME AND VISUAL VERIFICATION POLICY
 # ================================================================
