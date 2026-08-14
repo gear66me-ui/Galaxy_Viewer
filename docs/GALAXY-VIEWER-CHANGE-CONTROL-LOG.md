@@ -101,6 +101,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b7b550d0793c — Restore 8E launcher pin to verified Viewer blob
+
+**Recorded:** 2026-08-14T18:30:01-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b7b550d0793cca3a5c29a0f6adbbb031580aab4d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b7b550d0793cca3a5c29a0f6adbbb031580aab4d)  
+**Parent/baseline:** `dce79cbed6b2ed9568be3ca17825402013f42dec`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dce79cbed6b2ed9568be3ca17825402013f42dec...b7b550d0793cca3a5c29a0f6adbbb031580aab4d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore 8E launcher pin to verified Viewer blob
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8E.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `3192046d56f3cdadb430cec0c79a8c42f254748c30159d3cf4e5c8379e6df8a2`
+- SHA-256 after: `c041c8dfee18a35bf227ee264087bd2f7a119e3e3952485cca67ff312d1d5d88`
+- Bytes: `3109` → `3108`
+- Lines: `67` → `67`
+- Characters: `3105` → `3104`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `66`
+- Deleted characters: `67`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `67 + 3 - 3 = 67` — **PASS**
+- Character balance: `3105 + 66 - 67 = 3104` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8E.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8E APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8E release.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8E Viewer. No splash is loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b317c6208fcc — Archive Galaxy Viewer 8D after 8E roll-up
 
 **Recorded:** 2026-08-14T18:25:57-05:00  
