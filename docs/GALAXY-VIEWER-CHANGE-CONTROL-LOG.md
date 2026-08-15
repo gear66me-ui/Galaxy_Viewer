@@ -125,6 +125,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2f0e997c3138 — Add Galaxy Viewer 8J beta launcher
+
+**Recorded:** 2026-08-14T22:23:17-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2f0e997c3138d64162b792e5f80016b8b856b684`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2f0e997c3138d64162b792e5f80016b8b856b684)  
+**Parent/baseline:** `b764aedb3121e4e9bdef214466ade442f9929b8c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b764aedb3121e4e9bdef214466ade442f9929b8c...2f0e997c3138d64162b792e5f80016b8b856b684)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8J beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8J.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `79c674f8982e9eb00d6d16ffce34e7d10ba6ae063519081b4ab45d72efce7759`
+- Bytes: `0` → `4129`
+- Lines: `0` → `84`
+- Characters: `0` → `4125`
+- Inserted lines: `84`
+- Deleted lines: `0`
+- Inserted characters: `4125`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 84 - 0 = 84` — **PASS**
+- Character balance: `0 + 4125 - 0 = 4125` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8J.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8J APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact Galaxy Viewer 8J test release with production Splash 0058H.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8J Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5b279cfb7f8d — Create Galaxy Viewer 8J interactive Hubble navigation
 
 **Recorded:** 2026-08-14T22:22:37-05:00  
