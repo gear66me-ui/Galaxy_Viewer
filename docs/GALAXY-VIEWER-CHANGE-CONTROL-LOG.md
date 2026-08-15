@@ -173,6 +173,125 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-87aa3f42918c — Create exact Galaxy Viewer 8X baselines
+
+**Recorded:** 2026-08-15T18:37:01-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`87aa3f42918c63f8f77c1327ca8605da40f6bb77`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/87aa3f42918c63f8f77c1327ca8605da40f6bb77)  
+**Parent/baseline:** `0f7949cb04d40cd3945f523f6e3d1277eb230243`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0f7949cb04d40cd3945f523f6e3d1277eb230243...87aa3f42918c63f8f77c1327ca8605da40f6bb77)  
+**Author:** German Arciniegas  
+**Changed-path count:** `4`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Create exact Galaxy Viewer 8X baselines
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8X.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6a6517f37f28a4387dcc8577e9e2a62925264afc8e14ecdbe16d57f22a2ae382`
+- Bytes: `0` → `7865`
+- Lines: `0` → `160`
+- Characters: `0` → `7861`
+- Inserted lines: `160`
+- Deleted lines: `0`
+- Inserted characters: `7861`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 160 - 0 = 160` — **PASS**
+- Character balance: `0 + 7861 - 0 = 7861` — **PASS**
+
+#### `viewer/GV-beta-0008X.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `a689a5562fefd5890f832162f307d3d5e05e397d9f73a33b90d9c2c27b958f66`
+- Bytes: `0` → `42357`
+- Lines: `0` → `703`
+- Characters: `0` → `42350`
+- Inserted lines: `703`
+- Deleted lines: `0`
+- Inserted characters: `42350`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 703 - 0 = 703` — **PASS**
+- Character balance: `0 + 42350 - 0 = 42350` — **PASS**
+
+#### `viewer/modules/gv-coordinate-overlay-0004.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b14b086d3a8d3724e78925c86ca476e7b1b9832799f6213579f2895876feb830`
+- Bytes: `0` → `9152`
+- Lines: `0` → `105`
+- Characters: `0` → `9151`
+- Inserted lines: `105`
+- Deleted lines: `0`
+- Inserted characters: `9151`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 105 - 0 = 105` — **PASS**
+- Character balance: `0 + 9151 - 0 = 9151` — **PASS**
+
+#### `viewer/modules/gv-random-galaxy-0020.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `fb3a43a13b14fc37bf27dff79915831b0cc937ca490872f54f6aca35df631e8f`
+- Bytes: `0` → `64630`
+- Lines: `0` → `1182`
+- Characters: `0` → `64622`
+- Inserted lines: `1182`
+- Deleted lines: `0`
+- Inserted characters: `64622`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1182 - 0 = 1182` — **PASS**
+- Character balance: `0 + 64622 - 0 = 64622` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8X.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8W APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8W with the standalone FINAL splash release and concurrent Viewer initialization behind an opaque launch/splash foreground.
+```
+
+**`viewer/modules/gv-random-galaxy-0020.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0011
+AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and 0011 identity. Touch-through interaction, 36px Hubble controls, top-centered HD viewing, no post-arrival reframing, and 24.075-second travel are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-73f322647f98 — Add temporary green coordinate box bridge
 
 **Recorded:** 2026-08-15T18:29:04-05:00  
