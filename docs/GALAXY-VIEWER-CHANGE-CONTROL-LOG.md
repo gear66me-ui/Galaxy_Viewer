@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-4642c626f359 — Use live consistent ESA Hubble archive snapshot
+
+**Recorded:** 2026-08-14T19:51:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4642c626f35903b211de50286a92e92bbf49ecc4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4642c626f35903b211de50286a92e92bbf49ecc4)  
+**Parent/baseline:** `91067378082e534328909ba061e3644c1c098b05`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/91067378082e534328909ba061e3644c1c098b05...4642c626f35903b211de50286a92e92bbf49ecc4)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use live consistent ESA Hubble archive snapshot
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `cb38c969343f0e2bf53473934b3501a7e791e61ac6edc5049e60ad28a505a5f2`
+- SHA-256 after: `356a0052461bd6bdb446d75fdcecdf2b4a7fcfdb6dbe84652a608eed9db4eb76`
+- Bytes: `31138` → `32452`
+- Lines: `670` → `686`
+- Characters: `31134` → `32448`
+- Inserted lines: `61`
+- Deleted lines: `45`
+- Inserted characters: `1646`
+- Deleted characters: `332`
+- Unified diff hunks: `4`
+- Inserted blocks: `3`
+- Deleted blocks: `5`
+- Changed blocks: `5`
+- Line balance: `670 + 61 - 45 = 686` — **PASS**
+- Character balance: `31134 + 1646 - 332 = 32448` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-dbda21aad4b6 — Add temporary Hubble galaxy archive importer
 
 **Recorded:** 2026-08-14T19:48:48-05:00  
