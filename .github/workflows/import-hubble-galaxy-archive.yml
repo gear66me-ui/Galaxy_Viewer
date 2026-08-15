@@ -1,0 +1,670 @@
+name: Import Hubble galaxy archive 0001
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/import-hubble-galaxy-archive.yml'
+
+permissions:
+  contents: write
+
+env:
+  EXPECTED_CATEGORY_COUNT: '1878'
+  RELEASE_A: 'hubble-galaxies-0001-a'
+  RELEASE_B: 'hubble-galaxies-0001-b'
+  CATALOG_PATH: 'viewer/data/gv-hubble-image-catalog-0001.json'
+  WORKFLOW_PATH: '.github/workflows/import-hubble-galaxy-archive.yml'
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Install importer dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet requests beautifulsoup4
+
+      - name: Inspect ESA Hubble archive and mirror qualified images to GitHub Releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          TARGET_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import concurrent.futures
+          import hashlib
+          import json
+          import math
+          import os
+          import re
+          import tempfile
+          import threading
+          import time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from urllib.parse import urljoin
+
+          import requests
+          from bs4 import BeautifulSoup
+
+          EXPECTED = int(os.environ['EXPECTED_CATEGORY_COUNT'])
+          RELEASE_A = os.environ['RELEASE_A']
+          RELEASE_B = os.environ['RELEASE_B']
+          REPO = os.environ['GH_REPOSITORY']
+          TOKEN = os.environ['GH_TOKEN']
+          TARGET_COMMIT = os.environ['TARGET_COMMIT']
+          CATALOG_PATH = os.environ['CATALOG_PATH']
+
+          BASE = 'https://esahubble.org'
+          ARCHIVE_ROOT = BASE + '/images/archive/category/galaxies/'
+          USER_AGENT = 'GalaxyViewerHubbleMirror/0001 (+https://github.com/gear66me-ui/Galaxy_Viewer)'
+          LICENSE_NAME = 'CC BY 4.0'
+          LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/'
+          COPYRIGHT_URL = BASE + '/copyright/'
+
+          thread_local = threading.local()
+          print_lock = threading.Lock()
+
+          def session():
+              s = getattr(thread_local, 'session', None)
+              if s is None:
+                  s = requests.Session()
+                  s.headers.update({'User-Agent': USER_AGENT, 'Accept': '*/*'})
+                  thread_local.session = s
+              return s
+
+          def request(method, url, *, headers=None, stream=False, data=None, params=None,
+                      timeout=(30, 180), expected=(200,), retries=5, auth=True):
+              merged = {}
+              if headers:
+                  merged.update(headers)
+              if auth and url.startswith('https://api.github.com/'):
+                  merged.setdefault('Authorization', f'Bearer {TOKEN}')
+                  merged.setdefault('Accept', 'application/vnd.github+json')
+                  merged.setdefault('X-GitHub-Api-Version', '2022-11-28')
+              last = None
+              for attempt in range(1, retries + 1):
+                  try:
+                      r = session().request(method, url, headers=merged, stream=stream,
+                                            data=data, params=params, timeout=timeout,
+                                            allow_redirects=True)
+                      if r.status_code in expected:
+                          return r
+                      last = RuntimeError(f'{method} {url} -> HTTP {r.status_code}: {r.text[:500]}')
+                      if r.status_code not in (429, 500, 502, 503, 504):
+                          raise last
+                      retry_after = r.headers.get('Retry-After')
+                      delay = float(retry_after) if retry_after and retry_after.isdigit() else min(30, 2 ** attempt)
+                  except requests.RequestException as exc:
+                      last = exc
+                      delay = min(30, 2 ** attempt)
+                  if attempt == retries:
+                      break
+                  time.sleep(delay)
+              raise RuntimeError(f'Network request failed after {retries} attempts: {method} {url}: {last}')
+
+          def get_html(url):
+              r = request('GET', url, headers={'Accept': 'text/html'}, auth=False, timeout=(30, 120))
+              return r.text
+
+          def norm(value):
+              if value is None:
+                  return None
+              value = re.sub(r'\s+', ' ', str(value)).strip()
+              return value or None
+
+          def pair_value(soup, label):
+              target = label.rstrip(':').casefold()
+              for tr in soup.find_all('tr'):
+                  cells = tr.find_all(['th', 'td'])
+                  if len(cells) >= 2:
+                      key = norm(cells[0].get_text(' ', strip=True))
+                      if key and key.rstrip(':').casefold() == target:
+                          return norm(cells[1].get_text(' ', strip=True))
+              for dt in soup.find_all('dt'):
+                  key = norm(dt.get_text(' ', strip=True))
+                  if key and key.rstrip(':').casefold() == target:
+                      dd = dt.find_next_sibling('dd')
+                      if dd:
+                          return norm(dd.get_text(' ', strip=True))
+              node = soup.find(string=lambda s: s and norm(s).rstrip(':').casefold() == target)
+              if node:
+                  parent = node.parent
+                  if parent and parent.name in ('th', 'td'):
+                      sib = parent.find_next_sibling(['th', 'td'])
+                      if sib:
+                          return norm(sib.get_text(' ', strip=True))
+                  if parent:
+                      sib = parent.find_next_sibling()
+                      if sib:
+                          value = norm(sib.get_text(' ', strip=True))
+                          if value:
+                              return value
+              return None
+
+          def extract_credit(soup):
+              node = soup.find(string=lambda s: s and norm(s).casefold() == 'credit:')
+              if node:
+                  ancestors = []
+                  p = node.parent
+                  for _ in range(4):
+                      if not p:
+                          break
+                      ancestors.append(p)
+                      p = p.parent
+                  for anc in ancestors:
+                      text = norm(anc.get_text(' ', strip=True))
+                      if text and text.casefold().startswith('credit:'):
+                          candidate = norm(text[len('credit:'):])
+                          if candidate and 'usage of esa/hubble images' not in candidate.casefold() and len(candidate) < 1000:
+                              return candidate
+                  for nxt in node.parent.find_all_next(string=True, limit=12):
+                      value = norm(nxt)
+                      if not value or value.casefold() == 'credit:':
+                          continue
+                      if value.casefold().startswith('usage of esa/hubble images'):
+                          break
+                      if value.casefold().startswith('about the image'):
+                          break
+                      return value
+              lines = [norm(x) for x in soup.stripped_strings]
+              for i, line in enumerate(lines):
+                  if line and line.casefold() == 'credit:':
+                      pieces = []
+                      for nxt in lines[i + 1:i + 10]:
+                          if not nxt:
+                              continue
+                          low = nxt.casefold()
+                          if low.startswith('usage of esa/hubble images') or low.startswith('about the image'):
+                              break
+                          pieces.append(nxt)
+                      if pieces:
+                          return norm(' '.join(pieces))
+              return None
+
+          def parse_ra(text):
+              if not text:
+                  return None
+              nums = [float(x) for x in re.findall(r'\d+(?:\.\d+)?', text)]
+              if len(nums) < 3:
+                  return None
+              h, m, s = nums[:3]
+              if h > 24 or m >= 60 or s >= 60:
+                  return None
+              return (h + m / 60.0 + s / 3600.0) * 15.0
+
+          def parse_dec(text):
+              if not text:
+                  return None
+              nums = [float(x) for x in re.findall(r'\d+(?:\.\d+)?', text)]
+              if len(nums) < 3:
+                  return None
+              d, m, s = nums[:3]
+              if d > 90 or m >= 60 or s >= 60:
+                  return None
+              sign = -1.0 if ('-' in text or '−' in text) else 1.0
+              value = sign * (d + m / 60.0 + s / 3600.0)
+              if not -90 <= value <= 90:
+                  return None
+              return value
+
+          def archive_ids():
+              first_html = get_html(ARCHIVE_ROOT + '?sort=-release_date')
+              first_text = BeautifulSoup(first_html, 'html.parser').get_text(' ', strip=True)
+              m = re.search(r'Showing\s+1\s+to\s+\d+\s+of\s+(\d+)', first_text, flags=re.I)
+              if not m:
+                  raise RuntimeError('Could not determine ESA/Hubble Galaxies category count.')
+              count = int(m.group(1))
+              print(f'CATEGORY_COUNT|{count}')
+              if count != EXPECTED:
+                  raise RuntimeError(f'Category count changed: expected {EXPECTED}, found {count}. No releases will be created.')
+
+              pages = math.ceil(count / 50)
+              ordered = []
+              seen = set()
+              for page in range(1, pages + 1):
+                  url = f'{ARCHIVE_ROOT}page/{page}/?sort=-release_date'
+                  html = first_html if page == 1 else get_html(url)
+                  soup = BeautifulSoup(html, 'html.parser')
+                  page_ids = []
+                  page_seen = set()
+                  for a in soup.find_all('a', href=True):
+                      href = a.get('href', '')
+                      match = re.fullmatch(r'/images/([A-Za-z0-9_-]+)/', href)
+                      if not match:
+                          continue
+                      image_id = match.group(1)
+                      if image_id not in page_seen:
+                          page_seen.add(image_id)
+                          page_ids.append(image_id)
+                  expected_page = 50 if page < pages else count - 50 * (pages - 1)
+                  if len(page_ids) != expected_page:
+                      raise RuntimeError(
+                          f'Archive page {page} yielded {len(page_ids)} unique image IDs; expected {expected_page}. '
+                          'Stopping rather than guessing the archive structure.'
+                      )
+                  for image_id in page_ids:
+                      if image_id in seen:
+                          raise RuntimeError(f'Duplicate archive ID across pages: {image_id}')
+                      seen.add(image_id)
+                      ordered.append(image_id)
+                  print(f'ARCHIVE_PAGE|{page}/{pages}|ids={len(page_ids)}|cumulative={len(ordered)}')
+              if len(ordered) != count:
+                  raise RuntimeError(f'Archive ID total mismatch: {len(ordered)} != {count}')
+              return ordered
+
+          def parse_detail(item):
+              index, image_id = item
+              source_url = f'{BASE}/images/{image_id}/'
+              html = get_html(source_url)
+              soup = BeautifulSoup(html, 'html.parser')
+
+              pub_url = None
+              for a in soup.find_all('a', href=True):
+                  href = a.get('href', '')
+                  if '/archives/images/publicationjpg/' in href and href.lower().endswith('.jpg'):
+                      pub_url = urljoin(source_url, href)
+                      break
+
+              ra_text = pair_value(soup, 'Position (RA)')
+              dec_text = pair_value(soup, 'Position (Dec)')
+              ra_deg = parse_ra(ra_text)
+              dec_deg = parse_dec(dec_text)
+
+              title_node = soup.find('h1')
+              title = norm(title_node.get_text(' ', strip=True)) if title_node else image_id
+              object_name = pair_value(soup, 'Name') or title
+              record = {
+                  '_index': index,
+                  'archiveId': image_id,
+                  'name': object_name,
+                  'title': title,
+                  'ra': round(ra_deg, 10) if ra_deg is not None else None,
+                  'dec': round(dec_deg, 10) if dec_deg is not None else None,
+                  'raText': ra_text,
+                  'decText': dec_text,
+                  'distance': pair_value(soup, 'Distance'),
+                  'constellation': pair_value(soup, 'Constellation'),
+                  'fieldOfView': pair_value(soup, 'Field of view'),
+                  'orientation': pair_value(soup, 'Orientation'),
+                  'imageType': pair_value(soup, 'Type'),
+                  'releaseDate': pair_value(soup, 'Release date'),
+                  'pixelSize': pair_value(soup, 'Size'),
+                  'credit': extract_credit(soup),
+                  'sourceUrl': source_url,
+                  'esaPublicationJpeg': pub_url,
+                  'license': LICENSE_NAME,
+                  'licenseUrl': LICENSE_URL,
+              }
+              reasons = []
+              if ra_deg is None:
+                  reasons.append('missing_or_invalid_ra')
+              if dec_deg is None:
+                  reasons.append('missing_or_invalid_dec')
+              if not pub_url:
+                  reasons.append('missing_publication_jpeg')
+              if not record['credit']:
+                  reasons.append('missing_credit')
+              return record, reasons
+
+          def inspect_all(ids):
+              qualified = []
+              excluded = []
+              with concurrent.futures.ThreadPoolExecutor(max_workers=10) as pool:
+                  future_map = {pool.submit(parse_detail, item): item for item in enumerate(ids)}
+                  done = 0
+                  for future in concurrent.futures.as_completed(future_map):
+                      record, reasons = future.result()
+                      if reasons:
+                          excluded.append({'archiveId': record['archiveId'], 'reasons': reasons})
+                      else:
+                          qualified.append(record)
+                      done += 1
+                      if done % 50 == 0 or done == len(ids):
+                          with print_lock:
+                              print(f'DETAIL_PROGRESS|{done}/{len(ids)}|qualified={len(qualified)}|excluded={len(excluded)}')
+              qualified.sort(key=lambda r: r['_index'])
+              excluded.sort(key=lambda r: ids.index(r['archiveId']))
+              return qualified, excluded
+
+          api = f'https://api.github.com/repos/{REPO}'
+
+          def api_json(method, url, *, payload=None, expected=(200,), retries=5):
+              headers = {
+                  'Authorization': f'Bearer {TOKEN}',
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              }
+              last = None
+              for attempt in range(1, retries + 1):
+                  try:
+                      r = requests.request(method, url, headers=headers, json=payload,
+                                           timeout=(30, 180), allow_redirects=True)
+                      if r.status_code in expected:
+                          return r.json() if r.content else None
+                      last = RuntimeError(f'{method} {url} -> HTTP {r.status_code}: {r.text[:800]}')
+                      if r.status_code not in (429, 500, 502, 503, 504):
+                          raise last
+                  except requests.RequestException as exc:
+                      last = exc
+                  if attempt == retries:
+                      break
+                  time.sleep(min(30, 2 ** attempt))
+              raise RuntimeError(f'GitHub API request failed: {last}')
+
+          def assert_release_absent(tag):
+              r = requests.get(f'{api}/releases/tags/{tag}', headers={
+                  'Authorization': f'Bearer {TOKEN}',
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              }, timeout=(30, 120))
+              if r.status_code == 404:
+                  return
+              if r.status_code == 200:
+                  raise RuntimeError(f'Release tag already exists: {tag}. Refusing to overwrite it.')
+              raise RuntimeError(f'Could not confirm release absence for {tag}: HTTP {r.status_code} {r.text[:500]}')
+
+          def create_release(tag, count, part):
+              body = (
+                  f'Galaxy Viewer Hubble Galaxies archive 0001, part {part}.\n\n'
+                  f'Contains {count} exact-byte Publication JPEG mirrors from ESA/Hubble entries '
+                  'that passed RA, Declination, Publication JPEG, and credit validation.\n\n'
+                  'Image credits remain those supplied by ESA/Hubble and are preserved in '
+                  '`viewer/data/gv-hubble-image-catalog-0001.json`. '
+                  'ESA/Hubble media usage: https://esahubble.org/copyright/ . '
+                  'License: Creative Commons Attribution 4.0 where stated by ESA/Hubble.'
+              )
+              payload = {
+                  'tag_name': tag,
+                  'target_commitish': TARGET_COMMIT,
+                  'name': f'Galaxy Viewer Hubble Galaxies 0001 {part}',
+                  'body': body,
+                  'draft': False,
+                  'prerelease': False,
+              }
+              release = api_json('POST', f'{api}/releases', payload=payload, expected=(201,))
+              print(f'RELEASE_CREATED|{tag}|id={release["id"]}|url={release["html_url"]}')
+              return release
+
+          def list_assets(release_id):
+              assets = []
+              page = 1
+              while True:
+                  batch = api_json('GET', f'{api}/releases/{release_id}/assets?per_page=100&page={page}', expected=(200,))
+                  assets.extend(batch)
+                  if len(batch) < 100:
+                      break
+                  page += 1
+              return assets
+
+          def find_existing_asset(release_id, name):
+              for asset in list_assets(release_id):
+                  if asset.get('name') == name:
+                      return asset
+              return None
+
+          def download_source(record, path):
+              url = record['esaPublicationJpeg']
+              r = request('GET', url, headers={'Accept': 'image/jpeg', 'Cache-Control': 'no-cache'},
+                          stream=True, auth=False, timeout=(30, 600), retries=5)
+              ctype = (r.headers.get('Content-Type') or '').split(';', 1)[0].strip().lower()
+              if ctype and ctype not in ('image/jpeg', 'image/jpg'):
+                  raise RuntimeError(f'{record["archiveId"]}: ESA content type is {ctype}, not JPEG')
+              h = hashlib.sha256()
+              size = 0
+              first = b''
+              tail = b''
+              with open(path, 'wb') as f:
+                  for chunk in r.iter_content(chunk_size=1024 * 1024):
+                      if not chunk:
+                          continue
+                      if not first:
+                          first = chunk[:2]
+                      tail = (tail + chunk)[-2:]
+                      f.write(chunk)
+                      h.update(chunk)
+                      size += len(chunk)
+              if first != b'\xff\xd8' or tail != b'\xff\xd9':
+                  raise RuntimeError(f'{record["archiveId"]}: downloaded ESA file does not have complete JPEG markers')
+              if size <= 0:
+                  raise RuntimeError(f'{record["archiveId"]}: zero-byte ESA JPEG')
+              return size, h.hexdigest()
+
+          def upload_asset(release, path, name):
+              upload_url = release['upload_url'].split('{', 1)[0]
+              headers = {
+                  'Authorization': f'Bearer {TOKEN}',
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'Content-Type': 'image/jpeg',
+              }
+              last = None
+              for attempt in range(1, 6):
+                  try:
+                      with open(path, 'rb') as f:
+                          r = requests.post(upload_url, headers=headers, params={'name': name}, data=f,
+                                            timeout=(30, 1200))
+                      if r.status_code == 201:
+                          return r.json()
+                      last = RuntimeError(f'Upload {name} -> HTTP {r.status_code}: {r.text[:500]}')
+                      if r.status_code == 422:
+                          existing = find_existing_asset(release['id'], name)
+                          if existing:
+                              return existing
+                          raise last
+                      if r.status_code not in (429, 500, 502, 503, 504):
+                          raise last
+                  except requests.RequestException as exc:
+                      last = exc
+                      existing = find_existing_asset(release['id'], name)
+                      if existing:
+                          return existing
+                  if attempt == 5:
+                      break
+                  time.sleep(min(30, 2 ** attempt))
+              raise RuntimeError(f'Upload failed for {name}: {last}')
+
+          def verify_github_asset(record, asset, expected_size, expected_sha):
+              url = asset['browser_download_url']
+              r = request('GET', url, headers={'Cache-Control': 'no-cache'}, stream=True,
+                          auth=False, timeout=(30, 600), retries=5)
+              h = hashlib.sha256()
+              size = 0
+              first = b''
+              tail = b''
+              for chunk in r.iter_content(chunk_size=1024 * 1024):
+                  if not chunk:
+                      continue
+                  if not first:
+                      first = chunk[:2]
+                  tail = (tail + chunk)[-2:]
+                  h.update(chunk)
+                  size += len(chunk)
+              actual_sha = h.hexdigest()
+              if first != b'\xff\xd8' or tail != b'\xff\xd9':
+                  raise RuntimeError(f'{record["archiveId"]}: GitHub asset is not a complete JPEG')
+              if size != expected_size or actual_sha != expected_sha:
+                  raise RuntimeError(
+                      f'{record["archiveId"]}: verification mismatch. '
+                      f'ESA size/sha={expected_size}/{expected_sha}, GitHub={size}/{actual_sha}'
+                  )
+              return url
+
+          def mirror_one(record, release):
+              image_id = record['archiveId']
+              asset_name = f'{image_id}.jpg'
+              with tempfile.TemporaryDirectory(prefix='gv-hubble-') as td:
+                  path = Path(td) / asset_name
+                  size, sha = download_source(record, path)
+                  asset = upload_asset(release, path, asset_name)
+                  github_url = verify_github_asset(record, asset, size, sha)
+              out = dict(record)
+              out.pop('_index', None)
+              out['releaseTag'] = release['tag_name']
+              out['imageUrl'] = github_url
+              out['bytes'] = size
+              out['sha256'] = sha
+              out['assetName'] = asset_name
+              return out
+
+          ids = archive_ids()
+          qualified, excluded = inspect_all(ids)
+          print(f'INSPECTION_COMPLETE|entries={len(ids)}|qualified={len(qualified)}|excluded={len(excluded)}')
+
+          exclusion_counts = {}
+          for item in excluded:
+              for reason in item['reasons']:
+                  exclusion_counts[reason] = exclusion_counts.get(reason, 0) + 1
+          print('EXCLUSIONS|' + json.dumps(exclusion_counts, sort_keys=True))
+
+          if len(qualified) > EXPECTED:
+              raise RuntimeError('Qualified count exceeds category count, which is impossible.')
+          if not qualified:
+              raise RuntimeError('No qualified images found; refusing to create releases.')
+          if len(qualified) > 2000:
+              raise RuntimeError('Qualified set exceeds authorized two-release capacity.')
+
+          # Reconfirm release names remain unused immediately before any release write.
+          assert_release_absent(RELEASE_A)
+          assert_release_absent(RELEASE_B)
+
+          part_a = qualified[:1000]
+          part_b = qualified[1000:]
+          release_a = create_release(RELEASE_A, len(part_a), 'A')
+          release_b = create_release(RELEASE_B, len(part_b), 'B') if part_b else None
+
+          assignments = [(record, release_a) for record in part_a]
+          if part_b:
+              assignments.extend((record, release_b) for record in part_b)
+
+          mirrored_by_id = {}
+          total = len(assignments)
+          batch_size = 16
+          for start in range(0, total, batch_size):
+              batch = assignments[start:start + batch_size]
+              results = []
+              with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                  futures = [pool.submit(mirror_one, record, release) for record, release in batch]
+                  for future in futures:
+                      results.append(future.result())
+              for result in results:
+                  mirrored_by_id[result['archiveId']] = result
+              complete = min(start + len(batch), total)
+              print(f'MIRROR_PROGRESS|{complete}/{total}')
+
+          mirrored = [mirrored_by_id[r['archiveId']] for r in qualified]
+          if len(mirrored) != len(qualified):
+              raise RuntimeError('Mirrored record count does not equal qualified record count.')
+
+          expected_a = len(part_a)
+          expected_b = len(part_b)
+          assets_a = list_assets(release_a['id'])
+          if len(assets_a) != expected_a:
+              raise RuntimeError(f'Release A asset count mismatch: {len(assets_a)} != {expected_a}')
+          if release_b:
+              assets_b = list_assets(release_b['id'])
+              if len(assets_b) != expected_b:
+                  raise RuntimeError(f'Release B asset count mismatch: {len(assets_b)} != {expected_b}')
+          else:
+              assets_b = []
+
+          catalog = {
+              'version': '0001',
+              'generatedAt': datetime.now(timezone.utc).isoformat(),
+              'source': 'ESA/Hubble Image Archive — Galaxies category',
+              'sourceArchiveUrl': ARCHIVE_ROOT,
+              'sourceCopyrightUrl': COPYRIGHT_URL,
+              'license': LICENSE_NAME,
+              'licenseUrl': LICENSE_URL,
+              'categoryEntryCount': len(ids),
+              'qualifiedImageCount': len(mirrored),
+              'excludedEntryCount': len(excluded),
+              'exclusionCounts': exclusion_counts,
+              'releaseTags': [release_a['tag_name']] + ([release_b['tag_name']] if release_b else []),
+              'images': mirrored,
+          }
+
+          out = Path('/tmp/gv-hubble-image-catalog-0001.json')
+          out.write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          catalog_sha = hashlib.sha256(out.read_bytes()).hexdigest()
+          print(f'CATALOG_READY|path={CATALOG_PATH}|bytes={out.stat().st_size}|sha256={catalog_sha}')
+          print(f'RELEASE_A_AUDIT|tag={release_a["tag_name"]}|assets={len(assets_a)}|id={release_a["id"]}')
+          if release_b:
+              print(f'RELEASE_B_AUDIT|tag={release_b["tag_name"]}|assets={len(assets_b)}|id={release_b["id"]}')
+          print(f'FINAL_IMPORT_COUNTS|inspected={len(ids)}|qualified={len(mirrored)}|excluded={len(excluded)}|assets={len(assets_a)+len(assets_b)}')
+          PY
+
+      - name: Commit catalog and remove temporary importer
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/gv-hubble-image-catalog-0001.json
+
+          git init /tmp/gv-hubble-repo
+          cd /tmp/gv-hubble-repo
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin beta
+          git checkout -B beta FETCH_HEAD
+
+          if [ -e "$CATALOG_PATH" ]; then
+            echo "ERROR: $CATALOG_PATH appeared concurrently; refusing to overwrite it."
+            exit 1
+          fi
+          if [ ! -f "$WORKFLOW_PATH" ]; then
+            echo "ERROR: temporary importer is missing before authorized cleanup."
+            exit 1
+          fi
+
+          mkdir -p "$(dirname "$CATALOG_PATH")"
+          cp /tmp/gv-hubble-image-catalog-0001.json "$CATALOG_PATH"
+          git rm "$WORKFLOW_PATH"
+          git add "$CATALOG_PATH"
+
+          mapfile -t changed < <(git diff --cached --name-only | sort)
+          expected=(
+            '.github/workflows/import-hubble-galaxy-archive.yml'
+            'viewer/data/gv-hubble-image-catalog-0001.json'
+          )
+          mapfile -t expected_sorted < <(printf '%s\n' "${expected[@]}" | sort)
+          if [ "${#changed[@]}" -ne 2 ] || [ "$(printf '%s\n' "${changed[@]}")" != "$(printf '%s\n' "${expected_sorted[@]}")" ]; then
+            echo 'ERROR: staged path set is outside authorized scope.'
+            printf 'Changed:\n%s\n' "${changed[*]}"
+            exit 1
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Add Hubble galaxy image catalog 0001 and remove temporary importer'
+
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:beta; then
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              echo 'ERROR: failed to push catalog cleanup commit.'
+              exit 1
+            fi
+            git fetch origin beta
+            git rebase origin/beta
+            mapfile -t delta < <(git diff --name-only origin/beta...HEAD | sort)
+            if [ "${#delta[@]}" -ne 2 ] || [ "$(printf '%s\n' "${delta[@]}")" != "$(printf '%s\n' "${expected_sorted[@]}")" ]; then
+              echo 'ERROR: post-rebase changed-path audit failed.'
+              printf 'Delta:\n%s\n' "${delta[*]}"
+              exit 1
+            fi
+          done
+
+          final_commit="$(git rev-parse HEAD)"
+          catalog_blob="$(git rev-parse HEAD:"$CATALOG_PATH")"
+          catalog_sha256="$(sha256sum "$CATALOG_PATH" | awk '{print $1}')"
+          echo "FINAL_COMMIT|$final_commit"
+          echo "CATALOG_BLOB|$catalog_blob"
+          echo "CATALOG_SHA256|$catalog_sha256"
+          echo 'CHANGED_PATH|.github/workflows/import-hubble-galaxy-archive.yml'
+          echo 'CHANGED_PATH|viewer/data/gv-hubble-image-catalog-0001.json'
