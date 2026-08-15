@@ -173,6 +173,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-eb6f1eaa68e0 — Add coordinate box control pad test viewer
+
+**Recorded:** 2026-08-15T18:37:25-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`eb6f1eaa68e0e3af258f38b4538112f660ca8f33`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/eb6f1eaa68e0e3af258f38b4538112f660ca8f33)  
+**Parent/baseline:** `6ef1bc4cecfa37fbef3e25288a375438c3a323b3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6ef1bc4cecfa37fbef3e25288a375438c3a323b3...eb6f1eaa68e0e3af258f38b4538112f660ca8f33)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add coordinate box control pad test viewer
+```
+
+### Complete changed-path accounting
+
+#### `viewer/tests/coordinate-box-control-pad.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9f350e6357fca9b8c0b989822d57e52fb0c3f16a20df4593232519154d0ab212`
+- Bytes: `0` → `4931`
+- Lines: `0` → `125`
+- Characters: `0` → `4929`
+- Inserted lines: `125`
+- Deleted lines: `0`
+- Inserted characters: `4929`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 125 - 0 = 125` — **PASS**
+- Character balance: `0 + 4929 - 0 = 4929` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-87aa3f42918c — Create exact Galaxy Viewer 8X baselines
 
 **Recorded:** 2026-08-15T18:37:01-05:00  
