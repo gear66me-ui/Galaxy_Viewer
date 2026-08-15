@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-4ea5c8ab357b — Restore exact Hubble ESA icon payload for Galaxy Viewer 8J
+
+**Recorded:** 2026-08-14T22:06:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4ea5c8ab357b63f9cf16d08811b36b95c1a327d2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4ea5c8ab357b63f9cf16d08811b36b95c1a327d2)  
+**Parent/baseline:** `91a40d68b05793826b24d461dc095f4d21827812`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/91a40d68b05793826b24d461dc095f4d21827812...4ea5c8ab357b63f9cf16d08811b36b95c1a327d2)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore exact Hubble ESA icon payload for Galaxy Viewer 8J
+```
+
+### Complete changed-path accounting
+
+#### `viewer/artwork/Hubble/Hubble-ESA-icon-0001.svg`
+
+- Status: **MODIFIED**
+- SHA-256 before: `08080c203398e0be08f5977d724cd29ff92f7a641f5909597e243439e7840759`
+- SHA-256 after: `dbcf04c76de408f36a39d47bbc14f2172c785ac4c3669980679c5445ac240131`
+- Bytes: `19043` → `20019`
+- Lines: `3` → `3`
+- Characters: `19043` → `20019`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `976`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `3 + 1 - 1 = 3` — **PASS**
+- Character balance: `19043 + 976 - 0 = 20019` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-bfeb512c6d16 — Add Hubble ESA icon for Galaxy Viewer 8J
 
 **Recorded:** 2026-08-14T21:58:56-05:00  
