@@ -1,9 +1,10 @@
 <!doctype html>
 <!--
 GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8H APP LAUNCHER
-PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8H release.
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8H release with production Splash 0058H.
 AUTHORIZED RELEASE: viewer/GV-beta-0008H.py blob 778b31bd51f19101ec5b235ef5e5db3a90e4bc8b
-PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8H Viewer. No splash is loaded.
+AUTHORIZED SPLASH: viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058H.html blob 730d5e35a3d375c668fd3464d8f1181eea7d37b9
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8H Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
 -->
 <html lang="en">
 <head>
@@ -18,17 +19,31 @@ PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; 
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
+#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483646;background:#000}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
 </style>
 </head>
 <body>
+<iframe id="gv-splash-frame" src="../../viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058H.html?v=730d5e35a3d375c668fd3464d8f1181eea7d37b9" title="GALAXY VIEWER SPLASH"></iframe>
 <div id="gv-launch-error" role="alert"></div>
 <script>
 (async()=>{
   'use strict';
   const VIEWER_URL='../../viewer/GV-beta-0008H.py?v=778b31bd51f19101ec5b235ef5e5db3a90e4bc8b';
   const VIEWER_TIMEOUT_MS=20000;
+  const splashFrame=document.getElementById('gv-splash-frame');
   const errorBox=document.getElementById('gv-launch-error');
+  let splashComplete=false,viewerReady=false;
+  const maybeReveal=()=>{
+    if(splashComplete&&viewerReady&&splashFrame.isConnected)splashFrame.remove();
+  };
+  const onSplashLoaded=()=>{
+    splashFrame.contentWindow.addEventListener('galaxy-splash-complete',()=>{
+      splashComplete=true;
+      maybeReveal();
+    },{once:true});
+  };
+  splashFrame.addEventListener('load',onSplashLoaded,{once:true});
   const showError=error=>{
     errorBox.style.display='block';
     errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error);
@@ -57,6 +72,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
       document.body.appendChild(script);
     });
     await waitForViewer();
+    viewerReady=true;
+    maybeReveal();
   }catch(error){
     console.error('GALAXY VIEWER 8H APP LAUNCHER FAILURE',error);
     showError(error);
