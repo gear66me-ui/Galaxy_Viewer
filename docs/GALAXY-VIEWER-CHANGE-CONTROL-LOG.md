@@ -125,6 +125,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-be7cadae331f — Pin 8I launcher to verified Viewer blob
+
+**Recorded:** 2026-08-14T21:13:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`be7cadae331fbfe2795c1243604359d015b79564`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/be7cadae331fbfe2795c1243604359d015b79564)  
+**Parent/baseline:** `da0ba6f6a9c007414404c20dad37942f95aaac73`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/da0ba6f6a9c007414404c20dad37942f95aaac73...be7cadae331fbfe2795c1243604359d015b79564)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Pin 8I launcher to verified Viewer blob
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6c17c861edbbd8d8edcf892155bd6203711708d5af0d3985edd1c9563809a6b0`
+- SHA-256 after: `0872ddaafc855b504a80a18b000abc65d5f9c594b0896b111b24cc9011d0cb1f`
+- Bytes: `4130` → `4130`
+- Lines: `84` → `84`
+- Characters: `4126` → `4126`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `56`
+- Deleted characters: `56`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `84 + 2 - 2 = 84` — **PASS**
+- Character balance: `4126 + 56 - 56 = 4126` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8I APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact Galaxy Viewer 8I test release with production Splash 0058H.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8I Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2cedefac35dc — Restore exact 8I formatting after catalog pin
 
 **Recorded:** 2026-08-14T21:12:28-05:00  
