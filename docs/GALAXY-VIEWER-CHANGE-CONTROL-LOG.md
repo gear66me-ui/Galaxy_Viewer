@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1f4b6b83ab98 — Parse ESA Hubble archive script image URLs
+
+**Recorded:** 2026-08-14T20:06:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1f4b6b83ab9867197fda8bf6657b3b1ed7af4897`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1f4b6b83ab9867197fda8bf6657b3b1ed7af4897)  
+**Parent/baseline:** `a2d94871a4a0bc4de67750ce6125096cce6939e6`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a2d94871a4a0bc4de67750ce6125096cce6939e6...1f4b6b83ab9867197fda8bf6657b3b1ed7af4897)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Parse ESA Hubble archive script image URLs
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `356a0052461bd6bdb446d75fdcecdf2b4a7fcfdb6dbe84652a608eed9db4eb76`
+- SHA-256 after: `3326fde9cc5b99c2621fcea1d40452e53ee207d2d1d64cdb5757adfaf2323899`
+- Bytes: `32452` → `32146`
+- Lines: `686` → `680`
+- Characters: `32448` → `32142`
+- Inserted lines: `1`
+- Deleted lines: `7`
+- Inserted characters: `36`
+- Deleted characters: `342`
+- Unified diff hunks: `2`
+- Inserted blocks: `1`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `686 + 1 - 7 = 680` — **PASS**
+- Character balance: `32448 + 36 - 342 = 32142` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4642c626f359 — Use live consistent ESA Hubble archive snapshot
 
 **Recorded:** 2026-08-14T19:51:48-05:00  
