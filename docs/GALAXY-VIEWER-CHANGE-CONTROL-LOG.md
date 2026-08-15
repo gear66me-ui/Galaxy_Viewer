@@ -149,6 +149,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-d1619e731ad0 — Refine 8U arrival banner and HD download icon
+
+**Recorded:** 2026-08-15T16:32:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d1619e731ad09e361b30e22d3a80d81697575bdb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d1619e731ad09e361b30e22d3a80d81697575bdb)  
+**Parent/baseline:** `648eb7ee3738ecdfcff036ebc6d852fc4b5d7ec7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/648eb7ee3738ecdfcff036ebc6d852fc4b5d7ec7...d1619e731ad09e361b30e22d3a80d81697575bdb)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Refine 8U arrival banner and HD download icon
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-random-galaxy-0017.js`
+
+- Status: **MODIFIED**
+- SHA-256 before: `fff1616ec16e8a0e0874639d24f114d63f0c7e44a6d036cded3065d93d9f94b0`
+- SHA-256 after: `82cac8598cea1dfa184de817460b8a497cc0a6252c79f31b5311b2b099d8bb6c`
+- Bytes: `64546` → `64700`
+- Lines: `1181` → `1181`
+- Characters: `64538` → `64692`
+- Inserted lines: `8`
+- Deleted lines: `8`
+- Inserted characters: `184`
+- Deleted characters: `30`
+- Unified diff hunks: `6`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `6`
+- Line balance: `1181 + 8 - 8 = 1181` — **PASS**
+- Character balance: `64538 + 184 - 30 = 64692` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/modules/gv-random-galaxy-0017.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0011
+AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and 0011 identity. Touch-through interaction, 36px Hubble controls, top-centered HD viewing, no post-arrival reframing, and 24.075-second travel are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a3f6dc82af95 — Stage exact 8U baselines
 
 **Recorded:** 2026-08-15T16:29:37-05:00  
