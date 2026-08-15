@@ -173,6 +173,247 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2188f59b1f7e — Archive Galaxy Viewer 8H through 8T
+
+**Recorded:** 2026-08-15T18:17:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2188f59b1f7ea6ac528875148f8e513f678b6332`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2188f59b1f7ea6ac528875148f8e513f678b6332)  
+**Parent/baseline:** `8ded5bea0611b281d52fd0d4f76831f816c4fbe8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8ded5bea0611b281d52fd0d4f76831f816c4fbe8...2188f59b1f7ea6ac528875148f8e513f678b6332)  
+**Author:** German Arciniegas  
+**Changed-path count:** `11`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Archive Galaxy Viewer 8H through 8T
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0008H.py → viewer/archive/GV-beta-0008H-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `31847e56a2a70dad23cd901ff52ac015a66311da84dce63d9303c181452510ea`
+- SHA-256 after: `31847e56a2a70dad23cd901ff52ac015a66311da84dce63d9303c181452510ea`
+- Bytes: `17026` → `17026`
+- Lines: `288` → `288`
+- Characters: `17026` → `17026`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `288 + 0 - 0 = 288` — **PASS**
+- Character balance: `17026 + 0 - 0 = 17026` — **PASS**
+
+#### `viewer/GV-beta-0008J.py → viewer/archive/GV-beta-0008J.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `5419f34ae2467657557bd35fee74310248f8da37bbc28ef48200ae6ee95167c7`
+- SHA-256 after: `5419f34ae2467657557bd35fee74310248f8da37bbc28ef48200ae6ee95167c7`
+- Bytes: `19520` → `19520`
+- Lines: `308` → `308`
+- Characters: `19513` → `19513`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `308 + 0 - 0 = 308` — **PASS**
+- Character balance: `19513 + 0 - 0 = 19513` — **PASS**
+
+#### `viewer/GV-beta-0008K.py → viewer/archive/GV-beta-0008K-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `0c67df3f3676984456877c809e6446b8de3bb3d180ea923651cfad46fc78041c`
+- SHA-256 after: `0c67df3f3676984456877c809e6446b8de3bb3d180ea923651cfad46fc78041c`
+- Bytes: `31319` → `31319`
+- Lines: `486` → `486`
+- Characters: `31312` → `31312`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `486 + 0 - 0 = 486` — **PASS**
+- Character balance: `31312 + 0 - 0 = 31312` — **PASS**
+
+#### `viewer/GV-beta-0008L.py → viewer/archive/GV-beta-0008L-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `e90d6308f02622ca0db604fd9c39521504e6a02c4911ed7511bcef43428e6d05`
+- SHA-256 after: `e90d6308f02622ca0db604fd9c39521504e6a02c4911ed7511bcef43428e6d05`
+- Bytes: `43294` → `43294`
+- Lines: `732` → `732`
+- Characters: `43283` → `43283`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `732 + 0 - 0 = 732` — **PASS**
+- Character balance: `43283 + 0 - 0 = 43283` — **PASS**
+
+#### `viewer/GV-beta-0008M.py → viewer/archive/GV-beta-0008M-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `342310b961b5de78e61355761f0aaee84ae29585c3a7109c942a177d767297ea`
+- SHA-256 after: `342310b961b5de78e61355761f0aaee84ae29585c3a7109c942a177d767297ea`
+- Bytes: `38820` → `38820`
+- Lines: `674` → `674`
+- Characters: `38809` → `38809`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `674 + 0 - 0 = 674` — **PASS**
+- Character balance: `38809 + 0 - 0 = 38809` — **PASS**
+
+#### `viewer/GV-beta-0008N.py → viewer/archive/GV-beta-0008N-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `7fe553fd0fcfe1b5f2154cb0a5183ceab0d2f8cbcfad78602ead941f2c672a73`
+- SHA-256 after: `7fe553fd0fcfe1b5f2154cb0a5183ceab0d2f8cbcfad78602ead941f2c672a73`
+- Bytes: `39636` → `39636`
+- Lines: `678` → `678`
+- Characters: `39629` → `39629`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `678 + 0 - 0 = 678` — **PASS**
+- Character balance: `39629 + 0 - 0 = 39629` — **PASS**
+
+#### `viewer/GV-beta-0008O.py → viewer/archive/GV-beta-0008O-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `d43d4f90a85640cbe51b0ce7a0c9239f2eefcbfde447b2b8e4358b0ee4ae3d86`
+- SHA-256 after: `d43d4f90a85640cbe51b0ce7a0c9239f2eefcbfde447b2b8e4358b0ee4ae3d86`
+- Bytes: `40045` → `40045`
+- Lines: `680` → `680`
+- Characters: `40038` → `40038`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `680 + 0 - 0 = 680` — **PASS**
+- Character balance: `40038 + 0 - 0 = 40038` — **PASS**
+
+#### `viewer/GV-beta-0008P.py → viewer/archive/GV-beta-0008P-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `bfac7f09f57d706d5c1327142d8fc93a3e0f9811b966acbdb3d3b5dd311eb690`
+- SHA-256 after: `bfac7f09f57d706d5c1327142d8fc93a3e0f9811b966acbdb3d3b5dd311eb690`
+- Bytes: `40133` → `40133`
+- Lines: `680` → `680`
+- Characters: `40126` → `40126`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `680 + 0 - 0 = 680` — **PASS**
+- Character balance: `40126 + 0 - 0 = 40126` — **PASS**
+
+#### `viewer/GV-beta-0008Q.py → viewer/archive/GV-beta-0008Q-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `ef4e6bb2e0dcba6bb15805fb9c141c6bdefac1b6be5c95ec3e38d1272048d0ae`
+- SHA-256 after: `ef4e6bb2e0dcba6bb15805fb9c141c6bdefac1b6be5c95ec3e38d1272048d0ae`
+- Bytes: `41169` → `41169`
+- Lines: `693` → `693`
+- Characters: `41162` → `41162`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `693 + 0 - 0 = 693` — **PASS**
+- Character balance: `41162 + 0 - 0 = 41162` — **PASS**
+
+#### `viewer/GV-beta-0008R.py → viewer/archive/GV-beta-0008R-preexisting.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `febbf327550f23084cfcea61bef446b7da45cb6c03cd42132bf36fd359c6914c`
+- SHA-256 after: `febbf327550f23084cfcea61bef446b7da45cb6c03cd42132bf36fd359c6914c`
+- Bytes: `41169` → `41169`
+- Lines: `693` → `693`
+- Characters: `41162` → `41162`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `693 + 0 - 0 = 693` — **PASS**
+- Character balance: `41162 + 0 - 0 = 41162` — **PASS**
+
+#### `viewer/GV-beta-0008T.py → viewer/archive/GV-beta-0008T.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `6e92b22d72856f19eee7951a498966225d3e2e9b1d73e3ca5f98e9a9dbfed32b`
+- SHA-256 after: `6e92b22d72856f19eee7951a498966225d3e2e9b1d73e3ca5f98e9a9dbfed32b`
+- Bytes: `41366` → `41366`
+- Lines: `695` → `695`
+- Characters: `41359` → `41359`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `695 + 0 - 0 = 695` — **PASS**
+- Character balance: `41359 + 0 - 0 = 41359` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a8f2cd8e832a — Validate 8W emergency launcher repair
 
 **Recorded:** 2026-08-15T18:06:40-05:00  
