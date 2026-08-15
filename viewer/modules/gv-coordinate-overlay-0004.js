@@ -62,10 +62,10 @@
       style.textContent=`
 :host{display:block;width:${GEOMETRY.width}px;height:${GEOMETRY.height}px;contain:layout style paint;}
 *,*::before,*::after{box-sizing:border-box;text-transform:none}
-.gvco-root{position:relative;width:${GEOMETRY.width}px;height:${GEOMETRY.height}px;overflow:hidden;background:rgba(0,0,0,.86);border:1px solid #D7F4FF;border-radius:6px;box-shadow:0 0 10px rgba(98,216,255,.44);color:#72A7E8;user-select:none;-webkit-user-select:none}
+.gvco-root{position:relative;width:${GEOMETRY.width}px;height:${GEOMETRY.height}px;overflow:hidden;background:rgba(0,0,0,.86);border:1px solid #78FFAB;border-radius:6px;box-shadow:0 0 10px rgba(87,255,147,.44);color:#78FFAB;user-select:none;-webkit-user-select:none}
 .gvco-frame{position:absolute;top:50%;display:inline-flex;align-items:baseline;gap:.8px;font:400 12.5px/1 "${FONT_NAMES.spaceAge}",sans-serif;white-space:nowrap;transform:translateY(-50%) scaleY(1.1);transform-origin:left center;cursor:pointer;touch-action:manipulation}
 .gvco-frame .gvco-small-d{font-size:60%;line-height:1;transform-origin:left bottom}
-.gvco-divider{position:absolute;left:${GEOMETRY.dividerCenterX}px;top:50%;width:1px;height:15px;background:rgba(114,167,232,.75);transform:translate(-.5px,-50%)}
+.gvco-divider{position:absolute;left:${GEOMETRY.dividerCenterX}px;top:50%;width:1px;height:15px;background:rgba(120,255,171,.75);transform:translate(-.5px,-50%)}
 .gvco-number{position:absolute;top:3px;height:30px;font:400 20px/30px "${FONT_NAMES.digits}",sans-serif;white-space:nowrap}
 .gvco-cell{position:absolute;top:0;height:30px;display:flex;align-items:center;justify-content:center;line-height:30px;font-family:"${FONT_NAMES.digits}",sans-serif;transform:scaleY(1.15);transform-origin:center}
 .gvco-lambda{position:absolute;left:${GEOMETRY.lambdaCenterX}px;top:50%;width:9px;height:30px;font:400 9px/30px Arial,sans-serif;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center}
