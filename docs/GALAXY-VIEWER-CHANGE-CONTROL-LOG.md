@@ -137,6 +137,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e0eac95ed1f0 — Archive exact Galaxy Viewer 8L baseline for 8M
+
+**Recorded:** 2026-08-15T00:45:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e0eac95ed1f0549e62003199cbefb86a588c04e9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e0eac95ed1f0549e62003199cbefb86a588c04e9)  
+**Parent/baseline:** `a04f48c643b8a5a7cbe099653eb0e751b0340939`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a04f48c643b8a5a7cbe099653eb0e751b0340939...e0eac95ed1f0549e62003199cbefb86a588c04e9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Archive exact Galaxy Viewer 8L baseline for 8M
+```
+
+### Complete changed-path accounting
+
+#### `viewer/archive/GV-beta-0008L.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `e90d6308f02622ca0db604fd9c39521504e6a02c4911ed7511bcef43428e6d05`
+- Bytes: `0` → `43294`
+- Lines: `0` → `732`
+- Characters: `0` → `43283`
+- Inserted lines: `732`
+- Deleted lines: `0`
+- Inserted characters: `43283`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 732 - 0 = 732` — **PASS**
+- Character balance: `0 + 43283 - 0 = 43283` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2a2e12194182 — Route rolling beta launcher to Galaxy Viewer 8L
 
 **Recorded:** 2026-08-15T00:08:54-05:00  
