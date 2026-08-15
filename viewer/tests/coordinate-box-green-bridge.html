@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Coordinate Box Green Bridge</title>
+<style>
+html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+#coordinate-box{width:290px;height:36px}
+</style>
+</head>
+<body>
+<div id="coordinate-box"></div>
+<script src="../modules/gv-coordinate-overlay-0003.js?v=34e599fe4e8d3881105b6491c2d9eda9b5c1c17a"></script>
+<script>
+(async()=>{
+  'use strict';
+  const host=document.getElementById('coordinate-box');
+  const overlay=GalaxyCoordinateOverlay.mount(host);
+  await overlay.ready;
+  overlay.update(266.41683,-29.00781);
+  const root=host.shadowRoot&&host.shadowRoot.querySelector('.gvco-root');
+  if(root)root.style.setProperty('color','#78FFAB');
+})();
+</script>
+</body>
+</html>
