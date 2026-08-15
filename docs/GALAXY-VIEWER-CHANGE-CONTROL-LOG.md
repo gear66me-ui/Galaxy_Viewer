@@ -137,6 +137,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9e0094118212 — Add Galaxy Viewer 8T decimal and HD integration
+
+**Recorded:** 2026-08-15T16:03:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9e0094118212ad6e23546c6571691bdf91d8c492`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9e0094118212ad6e23546c6571691bdf91d8c492)  
+**Parent/baseline:** `41cd50a6fa59c46f7223667ef9f27447c5cdc5e4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/41cd50a6fa59c46f7223667ef9f27447c5cdc5e4...9e0094118212ad6e23546c6571691bdf91d8c492)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8T decimal and HD integration
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0008T.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6e92b22d72856f19eee7951a498966225d3e2e9b1d73e3ca5f98e9a9dbfed32b`
+- Bytes: `0` → `41366`
+- Lines: `0` → `695`
+- Characters: `0` → `41359`
+- Inserted lines: `695`
+- Deleted lines: `0`
+- Inserted characters: `41359`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 695 - 0 = 695` — **PASS**
+- Character balance: `0 + 41359 - 0 = 41359` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-58c3f167ab1c — Add Random Galaxy 0016 HD color controls
 
 **Recorded:** 2026-08-15T16:01:14-05:00  
