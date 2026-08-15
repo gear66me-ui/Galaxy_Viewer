@@ -149,6 +149,100 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-4d30e74ea953 — Add Galaxy Viewer 8V standalone launcher
+
+**Recorded:** 2026-08-15T17:12:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4d30e74ea9530ef3fd5ff39a95f8f3130c4b6b8b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4d30e74ea9530ef3fd5ff39a95f8f3130c4b6b8b)  
+**Parent/baseline:** `74e83e8189a3d2c923ce508b952951bbae5fe258`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/74e83e8189a3d2c923ce508b952951bbae5fe258...4d30e74ea9530ef3fd5ff39a95f8f3130c4b6b8b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `3`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8V standalone launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8V.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `543ec4fdfb32b5f51561d1ce9cb4de6b34094755c38acfbee4c72326836ce838`
+- Bytes: `0` → `7853`
+- Lines: `0` → `162`
+- Characters: `0` → `7849`
+- Inserted lines: `162`
+- Deleted lines: `0`
+- Inserted characters: `7849`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 162 - 0 = 162` — **PASS**
+- Character balance: `0 + 7849 - 0 = 7849` — **PASS**
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `c2170f4b29af89aacbb31ff220507c587cf8090c13094183451959c9d9453f6d`
+- SHA-256 after: `6d4656d9b927caaa6b394a9a523adb0874940c1bc0a0685c64b3d398e100f81c`
+- Bytes: `4359` → `4359`
+- Lines: `74` → `74`
+- Characters: `4357` → `4357`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `27`
+- Deleted characters: `27`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `74 + 5 - 5 = 74` — **PASS**
+- Character balance: `4357 + 27 - 27 = 4357` — **PASS**
+
+#### `mobile/beta/manifest.webmanifest`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8a43e9262499251be13f037cc95e6b71bf63f29dd20115f86583b722efa805e8`
+- SHA-256 after: `8a4bdc5aefc4a1835858e61822f5ea10eab971e466101f4dedca253f0e685b00`
+- Bytes: `873` → `871`
+- Lines: `29` → `29`
+- Characters: `873` → `871`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `40`
+- Deleted characters: `42`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `29 + 5 - 5 = 29` — **PASS**
+- Character balance: `873 + 40 - 42 = 871` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8V.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8V APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8V with the standalone FINAL splash release and a forward-only app-icon to splash to Viewer startup sequence.
+PRESERVED BEHAVIOR: Viewer source downloads in parallel while the app icon and splash display; heavy Viewer initialization begins only after the splash completes so the visible animation is not competing with Aladin startup.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-515dabfc1613 — Create Galaxy Viewer 8V fixed decimal and HD banner
 
 **Recorded:** 2026-08-15T17:07:00-05:00  
