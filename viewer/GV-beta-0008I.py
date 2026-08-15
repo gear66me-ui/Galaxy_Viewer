@@ -48,7 +48,7 @@ display(Javascript(r"""
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0003.js?v=34e599fe4e8d3881105b6491c2d9eda9b5c1c17a';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
     const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0006.js?v=8b32487130fb9146521786209ae7a0745721ceae';
-    const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/data/gv-hubble-galaxies-0001.json?v=5e30b5537f8f907559f9ea72737adc80c4fc85ca';
+    const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/data/gv-hubble-galaxies-0002.json?v=9f886f354f33b91e193c4f9e8f185701bb8fe663';
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
     const HOME=Object.freeze({name:'MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
 
@@ -178,7 +178,6 @@ display(Javascript(r"""
         l=((l%360)+360)%360;
         return [l,b/d];
     }
-
     function readCurrentRaDec(aladin,root){
         try{
             const value=aladin.getRaDec?.();
