@@ -137,6 +137,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-d641e6561ed0 — Archive exact Galaxy Viewer 8P baseline for 8Q
+
+**Recorded:** 2026-08-15T14:19:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d641e6561ed00d20640a10ea8aeaeb39c3a56d1d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d641e6561ed00d20640a10ea8aeaeb39c3a56d1d)  
+**Parent/baseline:** `202a540d7bdaaec3be90e8987adf65716d5e54a4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/202a540d7bdaaec3be90e8987adf65716d5e54a4...d641e6561ed00d20640a10ea8aeaeb39c3a56d1d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Archive exact Galaxy Viewer 8P baseline for 8Q
+```
+
+### Complete changed-path accounting
+
+#### `viewer/archive/GV-beta-0008P.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `bfac7f09f57d706d5c1327142d8fc93a3e0f9811b966acbdb3d3b5dd311eb690`
+- Bytes: `0` → `40133`
+- Lines: `0` → `680`
+- Characters: `0` → `40126`
+- Inserted lines: `680`
+- Deleted lines: `0`
+- Inserted characters: `40126`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 680 - 0 = 680` — **PASS**
+- Character balance: `0 + 40126 - 0 = 40126` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-f358ac45ace6 — Repair 8P launcher integrity
 
 **Recorded:** 2026-08-15T13:58:35-05:00  
