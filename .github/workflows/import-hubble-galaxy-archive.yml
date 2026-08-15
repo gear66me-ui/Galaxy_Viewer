@@ -230,15 +230,9 @@ jobs:
                       for page in range(1, pages + 1):
                           url = f'{ARCHIVE_ROOT}page/{page}/?sort=-release_date'
                           html = first_html if page == 1 else get_html(url)
-                          soup = BeautifulSoup(html, 'html.parser')
                           page_ids = []
                           page_seen = set()
-                          for a in soup.find_all('a', href=True):
-                              href = a.get('href', '')
-                              match = re.fullmatch(r'/images/([A-Za-z0-9_-]+)/', href)
-                              if not match:
-                                  continue
-                              image_id = match.group(1)
+                          for image_id in re.findall(r"url\s*:\s*['\"]\/images\/([A-Za-z0-9_-]+)\/['\"]", html):
                               if image_id not in page_seen:
                                   page_seen.add(image_id)
                                   page_ids.append(image_id)
