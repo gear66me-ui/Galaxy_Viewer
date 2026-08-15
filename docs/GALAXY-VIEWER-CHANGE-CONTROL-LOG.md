@@ -137,6 +137,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-dc08296c01d5 — Add Galaxy Viewer 8M beta launcher
+
+**Recorded:** 2026-08-15T00:52:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dc08296c01d57a553c7017b14589a71c780e358c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dc08296c01d57a553c7017b14589a71c780e358c)  
+**Parent/baseline:** `488cf05bddad6eeaf6e098e89dddae70cbec2863`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/488cf05bddad6eeaf6e098e89dddae70cbec2863...dc08296c01d57a553c7017b14589a71c780e358c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8M beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8M.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `89a1540145dbda7f7ea824ffe295bf01f943fdc9007c1ff72c8cff0bf01b6cc4`
+- Bytes: `0` → `5984`
+- Lines: `0` → `129`
+- Characters: `0` → `5980`
+- Inserted lines: `129`
+- Deleted lines: `0`
+- Inserted characters: `5980`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 129 - 0 = 129` — **PASS**
+- Character balance: `0 + 5980 - 0 = 5980` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8M.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8M APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8M with the standalone FINAL splash release.
+PRESERVED BEHAVIOR: Viewer source downloads while splash assets/playback run, but Viewer application logic initializes only after splash completion and is revealed only when ready.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0a353b2449cb — Add Galaxy Viewer 8M standalone release
 
 **Recorded:** 2026-08-15T00:51:44-05:00  
