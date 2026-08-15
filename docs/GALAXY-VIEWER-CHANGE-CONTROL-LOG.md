@@ -173,6 +173,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b511b3743cac — Add Galaxy Viewer 8X prepared startup launcher
+
+**Recorded:** 2026-08-15T18:43:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b511b3743cac088d7ea20e3ee47de5c9e33fcfd1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b511b3743cac088d7ea20e3ee47de5c9e33fcfd1)  
+**Parent/baseline:** `e11450681e5512476c1c78ff8cf665aefbbc4293`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e11450681e5512476c1c78ff8cf665aefbbc4293...b511b3743cac088d7ea20e3ee47de5c9e33fcfd1)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8X prepared startup launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8X.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6a6517f37f28a4387dcc8577e9e2a62925264afc8e14ecdbe16d57f22a2ae382`
+- SHA-256 after: `f8cc0b114e56d13b0a796bf671821c07f8c8bd8f59a864477f783275fb2eb2da`
+- Bytes: `7865` → `8157`
+- Lines: `160` → `164`
+- Characters: `7861` → `8153`
+- Inserted lines: `17`
+- Deleted lines: `13`
+- Inserted characters: `546`
+- Deleted characters: `254`
+- Unified diff hunks: `13`
+- Inserted blocks: `12`
+- Deleted blocks: `10`
+- Changed blocks: `13`
+- Line balance: `160 + 17 - 13 = 164` — **PASS**
+- Character balance: `7861 + 546 - 254 = 8153` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8X.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8X APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8X with the standalone FINAL splash release, a prepared 3.5-second opening hold, and concurrent Viewer initialization behind the opaque launch/splash foreground.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c6a2b849e3fa — Wire Galaxy Viewer 8X modules
 
 **Recorded:** 2026-08-15T18:43:08-05:00  
