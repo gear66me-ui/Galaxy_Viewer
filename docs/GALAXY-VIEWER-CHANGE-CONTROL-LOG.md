@@ -125,6 +125,46 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-894decf241dc — Delete viewer/archive/file_0000000084e4820e9973d90b20799862.png
+
+**Recorded:** 2026-08-14T19:12:16-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`894decf241dc4b4e9d16568d916b28af4d6a0783`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/894decf241dc4b4e9d16568d916b28af4d6a0783)  
+**Parent/baseline:** `206cdac071b1c519b843bf69c0d5229b90d9d051`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/206cdac071b1c519b843bf69c0d5229b90d9d051...894decf241dc4b4e9d16568d916b28af4d6a0783)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Delete viewer/archive/file_0000000084e4820e9973d90b20799862.png
+```
+
+### Complete changed-path accounting
+
+#### `viewer/archive/file_0000000084e4820e9973d90b20799862.png`
+
+- Status: **DELETED**
+- SHA-256 before: `d3fb5b2fc875a09246a71f7f518afc3436d382fe92bf6c4601e635b396059931`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `488335` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7903d75c5bb5 — Point rolling beta launcher to 8H and remove stale 8A loader
 
 **Recorded:** 2026-08-14T19:10:06-05:00  
