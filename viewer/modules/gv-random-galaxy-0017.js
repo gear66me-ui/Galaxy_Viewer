@@ -335,16 +335,16 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-route{height:14px;font:400 8px/14px "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:1px;color:#a4d8b7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gvrg-progress{height:3px;margin-top:6px;border-radius:3px;background:rgba(183,255,208,.14);overflow:hidden}
 .gvrg-progress-fill{width:0;height:100%;background:#66ff9f;box-shadow:0 0 8px rgba(102,255,159,.75);transition:width .08s linear}
-.gvrg-card{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);width:min(286px,78vw);padding:7px 8px 8px;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.78);box-shadow:inset 0 0 10px rgba(120,255,171,.10),0 0 14px rgba(77,255,143,.34);opacity:0;transition:opacity .20s ease;pointer-events:none}
+.gvrg-card{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);width:calc(100vw - 24px);max-width:none;padding:5px 6px 6px;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.78);box-shadow:inset 0 0 10px rgba(120,255,171,.10),0 0 14px rgba(77,255,143,.34);opacity:0;transition:opacity .20s ease;pointer-events:none}
 .gvrg-card-visible{opacity:1;pointer-events:none}
 .gvrg-name{display:none}
-.gvrg-science-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 7px;pointer-events:none}.gvrg-row{display:block;min-width:0;margin:0;padding:2px 0 3px;border-bottom:1px solid rgba(120,255,171,.12);text-align:center;pointer-events:none}
+.gvrg-science-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 6px;pointer-events:none}.gvrg-row{display:block;min-width:0;margin:0;padding:1px 0 2px;border-bottom:1px solid rgba(120,255,171,.12);text-align:center;pointer-events:none}
 .gvrg-label{font:400 10px/1.12 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.48px;color:#b9e9ff;text-align:center;text-shadow:0 0 4px rgba(98,216,255,.24);pointer-events:none}
 .gvrg-value{min-width:0;min-height:15px;margin-top:1px;font:400 12px/1.16 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.15px;color:#ffffff;text-align:center;text-shadow:0 0 4px rgba(205,244,255,.18);white-space:normal;overflow-wrap:anywhere;pointer-events:none}
 .gvrg-card-distance{display:block;min-width:0}
 .gvrg-value-number{font:400 12px/1.16 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.15px}
 .gvrg-value-unit{display:none}
-.gvrg-actions{display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:5px;align-items:stretch;margin-top:6px;pointer-events:none}
+.gvrg-actions{display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:5px;align-items:stretch;margin-top:4px;pointer-events:none}
 .gvrg-button{appearance:none;border:1px solid rgba(175,225,255,.84);border-radius:5px;background:rgba(7,27,42,.95);color:#effbff;padding:6px 8px;font:400 9px/1 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.55px;cursor:pointer}
 .gvrg-button:disabled{opacity:.45;cursor:default}
 .gvrg-hd-primary{min-width:0;height:36px;padding:4px 8px;border-color:#78FFAB;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.55px;text-align:center;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(77,255,143,.34);pointer-events:auto}
@@ -369,9 +369,9 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-download-button,.gvrg-back-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:156px;padding:7px 12px}
 .gvrg-download-button{border-color:#9DEAFF;background:linear-gradient(145deg,rgba(7,49,104,.98),rgba(48,177,255,.96));color:#F2FBFF;text-shadow:0 0 4px rgba(206,244,255,.88);box-shadow:inset 0 0 8px rgba(11,61,255,.34),0 0 10px rgba(72,190,255,.54),0 0 18px rgba(5,140,255,.18)}
 .gvrg-download-icon{position:relative;display:inline-block;width:20px;height:20px;flex:none;filter:drop-shadow(0 0 4px rgba(157,234,255,.82));pointer-events:none}
-.gvrg-download-arrow{position:absolute;left:8px;top:1px;width:4px;height:12px;background:#DFF7FF;border-radius:2px;box-shadow:0 0 4px rgba(157,234,255,.78)}
-.gvrg-download-arrow::after{content:"";position:absolute;left:-4px;bottom:-1px;width:9px;height:9px;border-right:4px solid #62D8FF;border-bottom:4px solid #62D8FF;transform:rotate(45deg);box-sizing:border-box}
-.gvrg-download-bar{position:absolute;left:2px;bottom:0;width:16px;height:3px;border-radius:2px;background:#DFF7FF;box-shadow:0 0 5px rgba(98,216,255,.88)}
+.gvrg-download-arrow{position:absolute;left:50%;top:1px;width:4px;height:12px;transform:translateX(-50%);background:#DFF7FF;border-radius:2px;box-shadow:0 0 4px rgba(157,234,255,.78)}
+.gvrg-download-arrow::after{content:"";position:absolute;left:50%;bottom:-1px;width:9px;height:9px;border-right:4px solid #62D8FF;border-bottom:4px solid #62D8FF;transform:translateX(-50%) rotate(45deg);transform-origin:center;box-sizing:border-box}
+.gvrg-download-bar{position:absolute;left:50%;bottom:0;width:16px;height:3px;transform:translateX(-50%);border-radius:2px;background:#DFF7FF;box-shadow:0 0 5px rgba(98,216,255,.88)}
 .gvrg-back-button{border-color:#B7FFD0;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(77,255,143,.34)}
 .gvrg-back-chevron{position:relative;display:inline-block;width:20px;height:20px;flex:none;pointer-events:none}
 .gvrg-back-chevron::before,.gvrg-back-chevron::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:15px;border-style:solid;border-left:0;border-bottom:0;box-sizing:border-box;pointer-events:none}
@@ -732,7 +732,7 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       this.nameEl.textContent = destination.name.toUpperCase();
       this.designationValueEl.textContent = cleanText(destination.designation).toUpperCase();
       this.commonNameValueEl.textContent = cleanText(destination.commonName || destination.name).toUpperCase();
-      this.distanceValueNumberEl.textContent = formatDistanceMly(destination.distance);
+      this.distanceValueNumberEl.textContent = formatDistanceMly(destination.distance).replace(/\bMILLION LIGHT-YEARS\b/g, 'MLY');
       this.distanceValueUnitEl.textContent = '';
       this.constellationValueEl.textContent = cleanText(destination.constellation).toUpperCase();
       this.ageValueEl.textContent = destination.ageYears ? formatAgeYears(destination.ageYears) : cleanText(destination.age).toUpperCase();
