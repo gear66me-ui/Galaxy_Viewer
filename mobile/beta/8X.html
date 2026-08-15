@@ -1,10 +1,10 @@
 <!doctype html>
 <!--
-GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8W APP LAUNCHER
-PURPOSE: Dedicated launcher for exact Galaxy Viewer 8W with the standalone FINAL splash release and concurrent Viewer initialization behind an opaque launch/splash foreground.
-AUTHORIZED RELEASE: viewer/GV-beta-0008W.py blob d38d3aec5c2fae11377d17656e58722faeba245d
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8X APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8X with the standalone FINAL splash release, a prepared 3.5-second opening hold, and concurrent Viewer initialization behind the opaque launch/splash foreground.
+AUTHORIZED RELEASE: viewer/GV-beta-0008X.py blob 27e96874621ff0bbd85a6d00184c3855f851f27c
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
-AUTHORIZED STARTUP: Viewer/Aladin initialization and splash start immediately together; the Viewer remains visually covered until the splash completes; no forced opening or post-splash delay.
+AUTHORIZED STARTUP: Viewer/Aladin initialization begins immediately; splash image/font/HTML are fully warmed during a minimum 3.5-second app-icon hold; the prepared splash then runs once; no forced post-splash delay.
 -->
 <html lang="en">
 <head>
@@ -14,8 +14,8 @@ AUTHORIZED STARTUP: Viewer/Aladin initialization and splash start immediately to
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8W">
-<title>GALAXY VIEWER 8W — APP LAUNCHER</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8X">
+<title>GALAXY VIEWER 8X — APP LAUNCHER</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
@@ -33,11 +33,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
   'use strict';
-  const VIEWER_URL='../../viewer/GV-beta-0008W.py?v=d38d3aec5c2fae11377d17656e58722faeba245d';
+  const VIEWER_URL='../../viewer/GV-beta-0008X.py?v=27e96874621ff0bbd85a6d00184c3855f851f27c';
   const SPLASH_BASE='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/';
   const SPLASH_URL=SPLASH_BASE+'index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
   const SPLASH_IMAGE_URL=SPLASH_BASE+'Galaxy-Splash.png';
   const SPLASH_FONT_URL=SPLASH_BASE+'Space-Age.otf';
+  const MIN_OPENING_HOLD_MS=3500;
   const VIEWER_TIMEOUT_MS=20000;
   const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
   const launchCover=document.getElementById('gv-launch-cover');
@@ -50,7 +51,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   };
 
   const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'no-store'}).then(async response=>{
-    if(!response.ok)throw new Error('GV-BETA-0008W.PY RETURNED HTTP '+response.status);
+    if(!response.ok)throw new Error('GV-BETA-0008X.PY RETURNED HTTP '+response.status);
     return response.blob();
   });
 
@@ -116,11 +117,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
       const root=document.getElementById('aladin-cosmic-command-test');
       const home=document.getElementById('gv-we-are-here');
       const homeReady=Boolean(home&&!home.classList.contains('gv-hidden')&&String(home.textContent||'').includes('WE ARE HERE'));
-      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GV8W&&homeReady){
+      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GV8X&&homeReady){
         requestAnimationFrame(()=>requestAnimationFrame(resolve));
         return;
       }
-      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 8W STARTUP TIMEOUT'));return}
+      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 8X STARTUP TIMEOUT'));return}
       setTimeout(check,100);
     };
     check();
@@ -131,7 +132,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     const source=await viewerBlob.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
-    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8W FULL VIEWER');
+    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8X FULL VIEWER');
     htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
     jsMatches.forEach(match=>{
       const script=document.createElement('script');
@@ -142,16 +143,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   };
 
   try{
+    const openingStarted=performance.now();
     const viewerInitializePromise=initializeViewer();
+    const splashWarmPromise=Promise.all([warmSplashImage(),warmSplashFont(),warmSplashHtml()]);
+    const openingHoldPromise=new Promise(resolve=>setTimeout(resolve,Math.max(0,MIN_OPENING_HOLD_MS-(performance.now()-openingStarted))));
+    await Promise.all([splashWarmPromise,openingHoldPromise]);
     const splashCompletePromise=startPreparedSplash();
-    Promise.all([warmSplashImage(),warmSplashFont(),warmSplashHtml()]).catch(error=>console.warn('GALAXY VIEWER 8W SPLASH WARMUP WARNING',error));
     await Promise.all([splashCompletePromise,viewerInitializePromise]);
     requestAnimationFrame(()=>{
       if(splashFrame.isConnected)splashFrame.remove();
       if(launchCover.isConnected)launchCover.remove();
     });
   }catch(error){
-    console.error('GALAXY VIEWER 8W APP LAUNCHER FAILURE',error);
+    console.error('GALAXY VIEWER 8X APP LAUNCHER FAILURE',error);
     showError(error);
   }
 })();
