@@ -173,6 +173,80 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a8f2cd8e832a — Validate 8W emergency launcher repair
+
+**Recorded:** 2026-08-15T18:06:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a8f2cd8e832a581ce882d4a84fc5d19fe0de077c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a8f2cd8e832a581ce882d4a84fc5d19fe0de077c)  
+**Parent/baseline:** `d4bf2f011c6628853d0040ce5e8a7d5f889ad732`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d4bf2f011c6628853d0040ce5e8a7d5f889ad732...a8f2cd8e832a581ce882d4a84fc5d19fe0de077c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `2`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Validate 8W emergency launcher repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-8W.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `dbf1fea933097c0abf11272fc1cdf91a05092ee40ddba427b094af9517f6b706`
+- Bytes: `0` → `1315`
+- Lines: `0` → `51`
+- Characters: `0` → `1315`
+- Inserted lines: `51`
+- Deleted lines: `0`
+- Inserted characters: `1315`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 51 - 0 = 51` — **PASS**
+- Character balance: `0 + 1315 - 0 = 1315` — **PASS**
+
+#### `mobile/beta/8W.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ad19d0067d204e647804b2aad189ad44c238ec3c6d632ab70f2ff8444f6f9555`
+- SHA-256 after: `6a6517f37f28a4387dcc8577e9e2a62925264afc8e14ecdbe16d57f22a2ae382`
+- Bytes: `7893` → `7865`
+- Lines: `162` → `160`
+- Characters: `7889` → `7861`
+- Inserted lines: `10`
+- Deleted lines: `12`
+- Inserted characters: `444`
+- Deleted characters: `472`
+- Unified diff hunks: `10`
+- Inserted blocks: `9`
+- Deleted blocks: `9`
+- Changed blocks: `10`
+- Line balance: `162 + 10 - 12 = 160` — **PASS**
+- Character balance: `7889 + 444 - 472 = 7861` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8W.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8W APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8W with the standalone FINAL splash release and concurrent Viewer initialization behind an opaque launch/splash foreground.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7b10ca8d79fd — Galaxy Viewer 8W
 
 **Recorded:** 2026-08-15T17:43:05-05:00  
