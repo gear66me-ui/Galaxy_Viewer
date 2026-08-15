@@ -173,6 +173,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-dbbc91a2a519 — 8W → 8X roll-up
+
+**Source current-beta commit:** `dbbc91a2a519e23337b866986535712e12c99c50`  
+**Previous Viewer:** `viewer/GV-beta-0008W.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008W.py`  
+**Original Git blob:** `d38d3aec5c2fae11377d17656e58722faeba245d`  
+**Archived Git blob:** `d38d3aec5c2fae11377d17656e58722faeba245d`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008X.py`  
+
+---
+
 ## AUTO-dbbc91a2a519 — Point beta standalone entry to 8X
 
 **Recorded:** 2026-08-15T18:44:07-05:00  
