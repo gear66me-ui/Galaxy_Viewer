@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-04fdcfee28d0 — Enumerate ESA Hubble archive by ranking and date
+
+**Recorded:** 2026-08-14T20:26:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`04fdcfee28d05c0aa6b58ecb985bb058ccbc8681`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/04fdcfee28d05c0aa6b58ecb985bb058ccbc8681)  
+**Parent/baseline:** `91d1d631b874cfde5bb30f8aa49af5237a4a6722`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/91d1d631b874cfde5bb30f8aa49af5237a4a6722...04fdcfee28d05c0aa6b58ecb985bb058ccbc8681)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Enumerate ESA Hubble archive by ranking and date
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `5ffc6563cbccc0b46cad6b4ffc11acccb1b0fcfb04f0cc8eb7b1812522b08db3`
+- SHA-256 after: `52ce95552b2e5e375c93723bb94ffab1dc243f422a8319c919b5a250dac4c5de`
+- Bytes: `32982` → `35432`
+- Lines: `698` → `759`
+- Characters: `32978` → `35428`
+- Inserted lines: `101`
+- Deleted lines: `40`
+- Inserted characters: `4295`
+- Deleted characters: `1845`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `6`
+- Changed blocks: `7`
+- Line balance: `698 + 101 - 40 = 759` — **PASS**
+- Character balance: `32978 + 4295 - 1845 = 35428` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6409e0b291b0 — Cache-bust ESA Hubble archive snapshot
 
 **Recorded:** 2026-08-14T20:15:09-05:00  
