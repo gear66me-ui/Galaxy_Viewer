@@ -137,6 +137,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a2a0a2c315a9 — Repin 8K launcher to PNG-logo Viewer blob
+
+**Recorded:** 2026-08-14T23:04:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a2a0a2c315a918c668bf6fff6ed26cb30df60436`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a2a0a2c315a918c668bf6fff6ed26cb30df60436)  
+**Parent/baseline:** `37dd72db080b2bcfb57ab687b3a0f60ae50bf52f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/37dd72db080b2bcfb57ab687b3a0f60ae50bf52f...a2a0a2c315a918c668bf6fff6ed26cb30df60436)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Repin 8K launcher to PNG-logo Viewer blob
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8K.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ce29bb3aeeeb8622d14c047f1800c3f6f1e7ebf78259865040832042a9c584a0`
+- SHA-256 after: `d75e2e34eb1f122268ca4fa417ceca885833083f3617fe8ffe0f3a4d40691bf8`
+- Bytes: `5984` → `5984`
+- Lines: `129` → `129`
+- Characters: `5980` → `5980`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `62`
+- Deleted characters: `62`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `129 + 2 - 2 = 129` — **PASS**
+- Character balance: `5980 + 62 - 62 = 5980` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8K.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8K APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8K with the standalone FINAL splash release.
+PRESERVED BEHAVIOR: Viewer source downloads while splash assets/playback run, but Viewer application logic initializes only after splash completion and is revealed only when ready.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-593eadf2e52b — Repin Galaxy Viewer 8K to PNG-logo Random Galaxy 0008
 
 **Recorded:** 2026-08-14T23:04:33-05:00  
