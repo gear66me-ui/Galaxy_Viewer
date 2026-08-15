@@ -137,6 +137,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-487390f4588e — 8S → 8T roll-up
+
+**Source current-beta commit:** `487390f4588ef22ebc109b3aff2211eb3e1e35d3`  
+**Previous Viewer:** `viewer/GV-beta-0008S.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008S.py`  
+**Original Git blob:** `303529bdc593d1642a5f536143249bd45260a7eb`  
+**Archived Git blob:** `303529bdc593d1642a5f536143249bd45260a7eb`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008T.py`  
+
+---
+
 ## AUTO-487390f4588e — Point beta mobile launcher to 8T
 
 **Recorded:** 2026-08-15T16:04:43-05:00  
