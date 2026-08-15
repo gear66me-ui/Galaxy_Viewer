@@ -149,6 +149,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9aad29b3f898 — Update dedicated 8U launcher target
+
+**Recorded:** 2026-08-15T16:42:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9aad29b3f8988ca5061b0cd30446bda9a1d48241`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9aad29b3f8988ca5061b0cd30446bda9a1d48241)  
+**Parent/baseline:** `89bcb8381ea47c0995f79fe163b88acfcff6a2b9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/89bcb8381ea47c0995f79fe163b88acfcff6a2b9...9aad29b3f8988ca5061b0cd30446bda9a1d48241)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Update dedicated 8U launcher target
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8U.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `458783c8fa36a96de75e90ec37f4a31655563582a5c86fe02837870b1694f0a1`
+- SHA-256 after: `b75774a55a6e93e43f4ee67e9df118d48b4c11acf1e4985a859acd97c4d58715`
+- Bytes: `7853` → `7853`
+- Lines: `162` → `162`
+- Characters: `7849` → `7849`
+- Inserted lines: `10`
+- Deleted lines: `10`
+- Inserted characters: `10`
+- Deleted characters: `10`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `7`
+- Changed blocks: `7`
+- Line balance: `162 + 10 - 10 = 162` — **PASS**
+- Character balance: `7849 + 10 - 10 = 7849` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8U.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8U APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8U with the standalone FINAL splash release and a forward-only app-icon to splash to Viewer startup sequence.
+PRESERVED BEHAVIOR: Viewer source downloads in parallel while the app icon and splash display; heavy Viewer initialization begins only after the splash completes so the visible animation is not competing with Aladin startup.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ce0dea6de7c2 — Point beta mobile entry to 8U
 
 **Recorded:** 2026-08-15T16:42:19-05:00  
