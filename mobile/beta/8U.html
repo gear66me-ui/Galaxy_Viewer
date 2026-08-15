@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
-GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8T APP LAUNCHER
-PURPOSE: Dedicated launcher for exact Galaxy Viewer 8T with the standalone FINAL splash release and a forward-only app-icon to splash to Viewer startup sequence.
-AUTHORIZED RELEASE: viewer/GV-beta-0008T.py blob c762cb41c840a7a788d2342d0ceef9f531129f7c
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8U APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8U with the standalone FINAL splash release and a forward-only app-icon to splash to Viewer startup sequence.
+AUTHORIZED RELEASE: viewer/GV-beta-0008U.py blob c762cb41c840a7a788d2342d0ceef9f531129f7c
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
 PRESERVED BEHAVIOR: Viewer source downloads in parallel while the app icon and splash display; heavy Viewer initialization begins only after the splash completes so the visible animation is not competing with Aladin startup.
 -->
@@ -14,8 +14,8 @@ PRESERVED BEHAVIOR: Viewer source downloads in parallel while the app icon and s
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8T">
-<title>GALAXY VIEWER 8T — APP LAUNCHER</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8U">
+<title>GALAXY VIEWER 8U — APP LAUNCHER</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
@@ -32,7 +32,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
   'use strict';
-  const VIEWER_URL='../../viewer/GV-beta-0008T.py?v=c762cb41c840a7a788d2342d0ceef9f531129f7c';
+  const VIEWER_URL='../../viewer/GV-beta-0008U.py?v=c762cb41c840a7a788d2342d0ceef9f531129f7c';
   const SPLASH_BASE='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/';
   const SPLASH_URL=SPLASH_BASE+'index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
   const SPLASH_IMAGE_URL=SPLASH_BASE+'Galaxy-Splash.png';
@@ -50,7 +50,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   };
 
   const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'no-store'}).then(async response=>{
-    if(!response.ok)throw new Error('GV-BETA-0008T.PY RETURNED HTTP '+response.status);
+    if(!response.ok)throw new Error('GV-BETA-0008U.PY RETURNED HTTP '+response.status);
     return response.blob();
   });
 
@@ -120,7 +120,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
         requestAnimationFrame(()=>requestAnimationFrame(resolve));
         return;
       }
-      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 8T STARTUP TIMEOUT'));return}
+      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 8U STARTUP TIMEOUT'));return}
       setTimeout(check,100);
     };
     check();
@@ -131,7 +131,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     const source=await viewerBlob.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
-    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8T FULL VIEWER');
+    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8U FULL VIEWER');
     htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
     jsMatches.forEach(match=>{
       const script=document.createElement('script');
@@ -153,7 +153,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
       if(openingPoster.isConnected)openingPoster.remove();
     });
   }catch(error){
-    console.error('GALAXY VIEWER 8T APP LAUNCHER FAILURE',error);
+    console.error('GALAXY VIEWER 8U APP LAUNCHER FAILURE',error);
     showError(error);
   }
 })();
