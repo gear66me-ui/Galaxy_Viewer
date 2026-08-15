@@ -137,6 +137,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-d8029cc06f0c — Point beta launcher to Galaxy Viewer 8R
+
+**Recorded:** 2026-08-15T14:47:07-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d8029cc06f0c623483618d47758556dfa6b60b48`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d8029cc06f0c623483618d47758556dfa6b60b48)  
+**Parent/baseline:** `37cc74ef2b209832f9636e4139d1546529bf7812`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/37cc74ef2b209832f9636e4139d1546529bf7812...d8029cc06f0c623483618d47758556dfa6b60b48)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Point beta launcher to Galaxy Viewer 8R
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `18cafaf0976ca2d9dded1a0d45370e726f1739f4b3f4b277cade12f495f1ec79`
+- SHA-256 after: `27e54ad6a7c30df159d5480c8ca6f3046bf29cbdb5c23c5b4f55acbcd3e8ac83`
+- Bytes: `4359` → `4359`
+- Lines: `74` → `74`
+- Characters: `4357` → `4357`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `1`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `74 + 1 - 1 = 74` — **PASS**
+- Character balance: `4357 + 1 - 1 = 4357` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7462bd796911 — Create Galaxy Viewer 8R beta launcher
 
 **Recorded:** 2026-08-15T14:46:49-05:00  
