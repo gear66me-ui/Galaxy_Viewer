@@ -47,7 +47,7 @@ button{min-height:38px;border:1px solid #78FFAB;border-radius:6px;background:#0B
       <button id="lat-max" type="button">LAT MAX 90.0000</button>
     </div>
 
-    <div class="note">Coordinate box revision 0003 · green #78FFAB · numeric spacing preview +3%</div>
+    <div class="note">Coordinate box revision 0003 · green #78FFAB · numeric spacing preview +3% · numeric stroke preview -10%</div>
   </div>
 </div>
 
@@ -71,6 +71,18 @@ button{min-height:38px;border:1px solid #78FFAB;border-radius:6px;background:#0B
   const xNumber=shadow.querySelector('.gvco-x');
   const yNumber=shadow.querySelector('.gvco-y');
   root.style.setProperty('color','#78FFAB');
+
+  const thinSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  thinSvg.setAttribute('width','0');
+  thinSvg.setAttribute('height','0');
+  thinSvg.setAttribute('aria-hidden','true');
+  thinSvg.style.position='absolute';
+  thinSvg.innerHTML='<filter id="gvco-thin-10" x="-50%" y="-50%" width="200%" height="200%"><feMorphology operator="erode" radius="0.10"/></filter>';
+  shadow.appendChild(thinSvg);
+
+  const thinStyle=document.createElement('style');
+  thinStyle.textContent='.gvco-cell{filter:url(#gvco-thin-10)}';
+  shadow.appendChild(thinStyle);
 
   function spreadNumber(numberEl){
     const cells=[...numberEl.querySelectorAll('.gvco-cell')];
