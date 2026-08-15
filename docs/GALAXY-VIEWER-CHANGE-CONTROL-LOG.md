@@ -149,6 +149,107 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a3f6dc82af95 — Stage exact 8U baselines
+
+**Recorded:** 2026-08-15T16:29:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a3f6dc82af9527f771240195b71a2dc71c92db5b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a3f6dc82af9527f771240195b71a2dc71c92db5b)  
+**Parent/baseline:** `ea465d81e7653dd284ed4a01f4ac3f7ec3067607`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ea465d81e7653dd284ed4a01f4ac3f7ec3067607...a3f6dc82af9527f771240195b71a2dc71c92db5b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `3`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Stage exact 8U baselines
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8U.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `458783c8fa36a96de75e90ec37f4a31655563582a5c86fe02837870b1694f0a1`
+- Bytes: `0` → `7853`
+- Lines: `0` → `162`
+- Characters: `0` → `7849`
+- Inserted lines: `162`
+- Deleted lines: `0`
+- Inserted characters: `7849`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 162 - 0 = 162` — **PASS**
+- Character balance: `0 + 7849 - 0 = 7849` — **PASS**
+
+#### `viewer/GV-beta-0008U.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6e92b22d72856f19eee7951a498966225d3e2e9b1d73e3ca5f98e9a9dbfed32b`
+- Bytes: `0` → `41366`
+- Lines: `0` → `695`
+- Characters: `0` → `41359`
+- Inserted lines: `695`
+- Deleted lines: `0`
+- Inserted characters: `41359`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 695 - 0 = 695` — **PASS**
+- Character balance: `0 + 41359 - 0 = 41359` — **PASS**
+
+#### `viewer/modules/gv-random-galaxy-0017.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `fff1616ec16e8a0e0874639d24f114d63f0c7e44a6d036cded3065d93d9f94b0`
+- Bytes: `0` → `64546`
+- Lines: `0` → `1181`
+- Characters: `0` → `64538`
+- Inserted lines: `1181`
+- Deleted lines: `0`
+- Inserted characters: `64538`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1181 - 0 = 1181` — **PASS**
+- Character balance: `0 + 64538 - 0 = 64538` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8U.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8T APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8T with the standalone FINAL splash release and a forward-only app-icon to splash to Viewer startup sequence.
+PRESERVED BEHAVIOR: Viewer source downloads in parallel while the app icon and splash display; heavy Viewer initialization begins only after the splash completes so the visible animation is not competing with Aladin startup.
+```
+
+**`viewer/modules/gv-random-galaxy-0017.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0011
+AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and 0011 identity. Touch-through interaction, 36px Hubble controls, top-centered HD viewing, no post-arrival reframing, and 24.075-second travel are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-487390f4588e — Point beta mobile launcher to 8T
 
 **Recorded:** 2026-08-15T16:04:43-05:00  
