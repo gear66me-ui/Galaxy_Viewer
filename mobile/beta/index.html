@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8V">
+<title>GALAXY VIEWER 8V — MOBILE APP BETA</title>
+<link rel="manifest" href="./manifest.webmanifest?v=8V-app-launcher-001">
+<link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001">
+<style>
+@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=7K-centered-coordinate-digits-001") format("opentype");font-style:normal;font-weight:400;font-display:block}
+html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
+body{font-family:"Space Age",sans-serif;text-transform:uppercase}
+#gv-loading-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:400 14px/1.5 "Space Age",sans-serif;text-transform:uppercase}
+#gv-loading-error>span{display:inline-block;transform:scaleY(1.5);transform-origin:center}
+#aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important;min-height:100vh!important;min-height:100svh!important;min-height:100dvh!important}
+#gv-diagnostics{position:fixed;z-index:2147483647;top:max(10px,env(safe-area-inset-top));right:10px;width:min(92vw,430px);max-height:72vh;display:flex;flex-direction:column;border:2px solid #62D8FF;border-radius:10px;background:rgba(0,5,18,.94);box-shadow:0 0 20px rgba(98,216,255,.42);color:#fff;font:400 11px/1.45 "Space Age",sans-serif;text-transform:uppercase}
+#gv-diagnostics[hidden]{display:none}
+.gv-diag-title{padding:10px;border-bottom:1px solid #7575ff;color:#62D8FF;text-align:center}
+#gv-diag-log{min-height:120px;overflow:auto;padding:10px;white-space:pre-wrap;word-break:break-word;text-transform:none}
+.gv-diag-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px;border-top:1px solid #7575ff}
+.gv-diag-controls button,.gv-diag-toggle{min-height:38px;border:1px solid #62D8FF;border-radius:6px;background:#101024;color:#fff;font:400 10px "Space Age",sans-serif;text-transform:uppercase}
+.gv-diag-toggle{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;padding:7px}
+.gv-diag-toggle input{width:18px;height:18px}
+</style>
+</head>
+<body>
+<div id="gv-loading-error" role="alert"></div>
+<section id="gv-diagnostics" hidden aria-label="GALAXY VIEWER ENGINEERING DIAGNOSTICS">
+  <div class="gv-diag-title">ENGINEERING DIAGNOSTICS</div>
+  <div id="gv-diag-log" role="log" aria-live="polite"></div>
+  <div class="gv-diag-controls">
+    <button id="gv-diag-continue" type="button">CONTINUE</button>
+    <button id="gv-diag-copy" type="button">COPY LOG</button>
+    <button id="gv-diag-clear" type="button">CLEAR LOG</button>
+    <label class="gv-diag-toggle"><input id="gv-diag-auto" type="checkbox"> AUTO RUN</label>
+  </div>
+</section>
+<script>
+console.log("DIAG: JS ENTERED");
+
+const __earlyDiag = new URLSearchParams(window.location.search).get('diag') === '1';
+if (__earlyDiag) {
+  const panel = document.getElementById('gv-diagnostics');
+  const log = document.getElementById('gv-diag-log');
+  if (panel && log) {
+    panel.hidden = false;
+    log.textContent = "[EARLY] DIAGNOSTIC MODE ENTERED";
+  }
+}
+</script>
+<script>
+(()=>{
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./service-worker.js?v=8V-app-launcher-001',{scope:'./'}).then(registration=>{
+        console.log('GALAXY VIEWER SERVICE WORKER REGISTERED',registration.scope);
+      }).catch(error=>{
+        console.error('GALAXY VIEWER SERVICE WORKER REGISTRATION FAILED',error);
+      });
+    });
+  }
+})();
+</script>
+<script>
+window.location.replace('./8V.html'+window.location.search+window.location.hash);
+</script>
+</body>
+</html>
