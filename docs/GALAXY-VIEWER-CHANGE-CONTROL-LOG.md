@@ -125,6 +125,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6192d2182d0f — Defer Galaxy Viewer initialization until splash completion
+
+**Recorded:** 2026-08-14T22:19:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6192d2182d0fdcb62eea4ac67f9c1a030ccb416c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6192d2182d0fdcb62eea4ac67f9c1a030ccb416c)  
+**Parent/baseline:** `890b825949af82117db2c3784414e3f2ccf08b84`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/890b825949af82117db2c3784414e3f2ccf08b84...6192d2182d0fdcb62eea4ac67f9c1a030ccb416c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Defer Galaxy Viewer initialization until splash completion
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8H.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `7b5a0f119d94a7570fbe92d60ef569dbefbd567be394be26a002069e03948fc1`
+- SHA-256 after: `a3406d579c1e11e0b5156d06b65fa2425007b458347b70b14ca88429ff6a703c`
+- Bytes: `4133` → `4449`
+- Lines: `84` → `89`
+- Characters: `4129` → `4445`
+- Inserted lines: `10`
+- Deleted lines: `5`
+- Inserted characters: `374`
+- Deleted characters: `58`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `3`
+- Changed blocks: `4`
+- Line balance: `84 + 10 - 5 = 89` — **PASS**
+- Character balance: `4129 + 374 - 58 = 4445` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8H.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8H APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8H release with production Splash 0058H.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it downloads the full 8H Viewer during the production splash, initializes it only after splash completion, and reveals it only when ready.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-246635ce014f — Correct Hubble ESA icon payload for Galaxy Viewer 8J
 
 **Recorded:** 2026-08-14T22:17:59-05:00  
