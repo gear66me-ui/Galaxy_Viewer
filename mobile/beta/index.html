@@ -7,9 +7,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8V">
-<title>GALAXY VIEWER 8V — MOBILE APP BETA</title>
-<link rel="manifest" href="./manifest.webmanifest?v=8V-app-launcher-001">
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8W">
+<title>GALAXY VIEWER 8W — MOBILE APP BETA</title>
+<link rel="manifest" href="./manifest.webmanifest?v=8W-app-launcher-001">
 <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001">
 <style>
@@ -58,7 +58,7 @@ if (__earlyDiag) {
 (()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('./service-worker.js?v=8V-app-launcher-001',{scope:'./'}).then(registration=>{
+      navigator.serviceWorker.register('./service-worker.js?v=8W-app-launcher-001',{scope:'./'}).then(registration=>{
         console.log('GALAXY VIEWER SERVICE WORKER REGISTERED',registration.scope);
       }).catch(error=>{
         console.error('GALAXY VIEWER SERVICE WORKER REGISTRATION FAILED',error);
@@ -68,7 +68,7 @@ if (__earlyDiag) {
 })();
 </script>
 <script>
-window.location.replace('./8V.html'+window.location.search+window.location.hash);
+window.location.replace('./8W.html'+window.location.search+window.location.hash);
 </script>
 </body>
 </html>

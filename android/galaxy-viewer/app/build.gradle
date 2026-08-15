@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.gear66me.galaxyviewer'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.gear66me.galaxyviewer'
+        minSdk 29
+        targetSdk 35
+        versionCode 8
+        versionName '8W'
+    }
+}
