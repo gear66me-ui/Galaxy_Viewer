@@ -113,6 +113,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ba03f6acf90c — Add Galaxy Viewer 8H dedicated launcher
+
+**Recorded:** 2026-08-14T19:09:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ba03f6acf90c41356c2d0cd84f5e1ecf44b7891a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ba03f6acf90c41356c2d0cd84f5e1ecf44b7891a)  
+**Parent/baseline:** `6afd2731e9a0e068523b773845604d16c6b480f2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6afd2731e9a0e068523b773845604d16c6b480f2...ba03f6acf90c41356c2d0cd84f5e1ecf44b7891a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8H dedicated launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8H.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `c7c302ac47a6271f30e8e177d178d25927a954f4c11395b0ae66e60ec112abdd`
+- Bytes: `0` → `3108`
+- Lines: `0` → `67`
+- Characters: `0` → `3104`
+- Inserted lines: `67`
+- Deleted lines: `0`
+- Inserted characters: `3104`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 67 - 0 = 67` — **PASS**
+- Character balance: `0 + 3104 - 0 = 3104` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8H.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8H APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8H release.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8H Viewer. No splash is loaded.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-42409a3f06ac — Add Galaxy Viewer 8H deterministic random galaxy travel
 
 **Recorded:** 2026-08-14T19:08:43-05:00  
