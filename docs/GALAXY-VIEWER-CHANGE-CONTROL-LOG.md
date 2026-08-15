@@ -125,6 +125,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0103ecbf69fb — Preserve final newline in Galaxy Viewer 8J launcher
+
+**Recorded:** 2026-08-14T22:26:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0103ecbf69fb6c425a11c6e5a648a4c366964d41`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0103ecbf69fb6c425a11c6e5a648a4c366964d41)  
+**Parent/baseline:** `5baf5630a3114e26e9ec020b0f2535f3f0a426b0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5baf5630a3114e26e9ec020b0f2535f3f0a426b0...0103ecbf69fb6c425a11c6e5a648a4c366964d41)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Preserve final newline in Galaxy Viewer 8J launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8J.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `79c674f8982e9eb00d6d16ffce34e7d10ba6ae063519081b4ab45d72efce7759`
+- SHA-256 after: `c1d756b4e9a66b0aaaceb687819bf58fafad16d3e74399bd85d1f72837632091`
+- Bytes: `4129` → `4130`
+- Lines: `84` → `84`
+- Characters: `4125` → `4126`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `84 + 1 - 1 = 84` — **PASS**
+- Character balance: `4125 + 1 - 0 = 4126` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8J.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8J APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact Galaxy Viewer 8J test release with production Splash 0058H.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8J Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2f0e997c3138 — Add Galaxy Viewer 8J beta launcher
 
 **Recorded:** 2026-08-14T22:23:17-05:00  
