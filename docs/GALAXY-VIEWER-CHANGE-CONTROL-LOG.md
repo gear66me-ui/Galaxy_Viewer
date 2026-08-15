@@ -125,6 +125,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1b4ea47b50c4 — Integrate production Splash 0058H into Galaxy Viewer 8H launcher
+
+**Recorded:** 2026-08-14T19:33:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1b4ea47b50c46c5447bd51efd46454814154014a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1b4ea47b50c46c5447bd51efd46454814154014a)  
+**Parent/baseline:** `be6697bdb060672177d465edb475ea9868b4472b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/be6697bdb060672177d465edb475ea9868b4472b...1b4ea47b50c46c5447bd51efd46454814154014a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Integrate production Splash 0058H into Galaxy Viewer 8H launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8H.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `c7c302ac47a6271f30e8e177d178d25927a954f4c11395b0ae66e60ec112abdd`
+- SHA-256 after: `7b5a0f119d94a7570fbe92d60ef569dbefbd567be394be26a002069e03948fc1`
+- Bytes: `3108` → `4133`
+- Lines: `67` → `84`
+- Characters: `3104` → `4129`
+- Inserted lines: `19`
+- Deleted lines: `2`
+- Inserted characters: `1030`
+- Deleted characters: `5`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `2`
+- Changed blocks: `7`
+- Line balance: `67 + 19 - 2 = 84` — **PASS**
+- Character balance: `3104 + 1030 - 5 = 4129` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8H.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8H APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8H release with production Splash 0058H.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8H Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e8497c79d011 — Create production Splash 0058H from approved 0058G
 
 **Recorded:** 2026-08-14T19:32:27-05:00  
