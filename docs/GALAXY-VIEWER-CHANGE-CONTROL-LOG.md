@@ -149,6 +149,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-4d30e74ea953 — 8U → 8V roll-up
+
+**Source current-beta commit:** `4d30e74ea9530ef3fd5ff39a95f8f3130c4b6b8b`  
+**Previous Viewer:** `viewer/GV-beta-0008U.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008U.py`  
+**Original Git blob:** `c762cb41c840a7a788d2342d0ceef9f531129f7c`  
+**Archived Git blob:** `c762cb41c840a7a788d2342d0ceef9f531129f7c`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008V.py`  
+
+---
+
 ## AUTO-4d30e74ea953 — Add Galaxy Viewer 8V standalone launcher
 
 **Recorded:** 2026-08-15T17:12:55-05:00  
