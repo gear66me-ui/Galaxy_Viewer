@@ -137,6 +137,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7462bd796911 — Create Galaxy Viewer 8R beta launcher
+
+**Recorded:** 2026-08-15T14:46:49-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7462bd7969119da92f9f487f5b0057a79347afe4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7462bd7969119da92f9f487f5b0057a79347afe4)  
+**Parent/baseline:** `1f15b91f434ef6d73e163b4e755e95795012605f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1f15b91f434ef6d73e163b4e755e95795012605f...7462bd7969119da92f9f487f5b0057a79347afe4)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Create Galaxy Viewer 8R beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8R.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6146b48529d2061a683745e5ad83234145fd980d088e814fde5ba75c713e1231`
+- Bytes: `0` → `5984`
+- Lines: `0` → `129`
+- Characters: `0` → `5980`
+- Inserted lines: `129`
+- Deleted lines: `0`
+- Inserted characters: `5980`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 129 - 0 = 129` — **PASS**
+- Character balance: `0 + 5980 - 0 = 5980` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8R.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8R APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8R with the standalone FINAL splash release.
+PRESERVED BEHAVIOR: Viewer source downloads while splash assets/playback run, but Viewer application logic initializes only after splash completion and is revealed only when ready.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-540afb16ff31 — Create Galaxy Viewer 8R with centered Hubble HD module wiring
 
 **Recorded:** 2026-08-15T14:46:26-05:00  
