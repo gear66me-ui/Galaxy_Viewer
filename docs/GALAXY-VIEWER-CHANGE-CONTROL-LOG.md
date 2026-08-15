@@ -113,6 +113,114 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-406564843e25 — Archive Galaxy Viewer 8A 8B 8D 8F
+
+**Recorded:** 2026-08-14T19:03:56-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`406564843e2529d6d76854a29404a9082156cdc9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/406564843e2529d6d76854a29404a9082156cdc9)  
+**Parent/baseline:** `7699a5263f1b70ea3c13fa7f4da1a7a32bc830f4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7699a5263f1b70ea3c13fa7f4da1a7a32bc830f4...406564843e2529d6d76854a29404a9082156cdc9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `4`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Archive Galaxy Viewer 8A 8B 8D 8F
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0008D.py`
+
+- Status: **DELETED**
+- SHA-256 before: `aa135d82ca29bfe0dba10410898e23681a589047a9f7e19d51aa9e7fad124f0e`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `15900` → `0`
+- Lines: `301` → `0`
+- Characters: `15900` → `0`
+- Inserted lines: `0`
+- Deleted lines: `301`
+- Inserted characters: `0`
+- Deleted characters: `15900`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `301 + 0 - 301 = 0` — **PASS**
+- Character balance: `15900 + 0 - 15900 = 0` — **PASS**
+
+#### `viewer/GV-beta-0008F.py`
+
+- Status: **DELETED**
+- SHA-256 before: `77ceac1770600f8bf3b842f1ac8f2529b2cc16455b19bc832f1a7ddc8f689aef`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `13371` → `0`
+- Lines: `239` → `0`
+- Characters: `13371` → `0`
+- Inserted lines: `0`
+- Deleted lines: `239`
+- Inserted characters: `0`
+- Deleted characters: `13371`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `239 + 0 - 239 = 0` — **PASS**
+- Character balance: `13371 + 0 - 13371 = 0` — **PASS**
+
+#### `viewer/GV-beta-0008A.py → viewer/archive/GV-beta-0008A.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `463592a18237bc6eac589314e2116de8891d74371aa0d21f28f5d77ce304ddb6`
+- SHA-256 after: `463592a18237bc6eac589314e2116de8891d74371aa0d21f28f5d77ce304ddb6`
+- Bytes: `11942` → `11942`
+- Lines: `217` → `217`
+- Characters: `11942` → `11942`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `217 + 0 - 0 = 217` — **PASS**
+- Character balance: `11942 + 0 - 0 = 11942` — **PASS**
+
+#### `viewer/GV-beta-0008B.py → viewer/archive/GV-beta-0008B.py`
+
+- Status: **RENAMED 100%**
+- SHA-256 before: `e0cf30c9c80a279ca70a87be1d01e8edd36431c3fad651a09f473a6ff727c9c4`
+- SHA-256 after: `e0cf30c9c80a279ca70a87be1d01e8edd36431c3fad651a09f473a6ff727c9c4`
+- Bytes: `13364` → `13364`
+- Lines: `232` → `232`
+- Characters: `13364` → `13364`
+- Inserted lines: `0`
+- Deleted lines: `0`
+- Inserted characters: `0`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `0`
+- Changed blocks: `0`
+- Line balance: `232 + 0 - 0 = 232` — **PASS**
+- Character balance: `13364 + 0 - 0 = 13364` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4a76c5221949 — Restore exact beta index diagnostic text
 
 **Recorded:** 2026-08-14T18:47:29-05:00  
