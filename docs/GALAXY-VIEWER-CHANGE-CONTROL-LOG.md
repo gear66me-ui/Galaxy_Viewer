@@ -137,6 +137,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6575648c33b6 — Archive exact Galaxy Viewer 8O baseline for 8P
+
+**Recorded:** 2026-08-15T13:50:19-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6575648c33b6efbf176d274b2dd7de39065d585f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6575648c33b6efbf176d274b2dd7de39065d585f)  
+**Parent/baseline:** `fd753052e1b78b9cc2ee4781b23a9276ec126b06`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/fd753052e1b78b9cc2ee4781b23a9276ec126b06...6575648c33b6efbf176d274b2dd7de39065d585f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Archive exact Galaxy Viewer 8O baseline for 8P
+```
+
+### Complete changed-path accounting
+
+#### `viewer/archive/GV-beta-0008O.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `d43d4f90a85640cbe51b0ce7a0c9239f2eefcbfde447b2b8e4358b0ee4ae3d86`
+- Bytes: `0` → `40045`
+- Lines: `0` → `680`
+- Characters: `0` → `40038`
+- Inserted lines: `680`
+- Deleted lines: `0`
+- Inserted characters: `40038`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 680 - 0 = 680` — **PASS**
+- Character balance: `0 + 40038 - 0 = 40038` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-53873846f817 — Route beta launcher to Galaxy Viewer 8O
 
 **Recorded:** 2026-08-15T13:34:25-05:00  
