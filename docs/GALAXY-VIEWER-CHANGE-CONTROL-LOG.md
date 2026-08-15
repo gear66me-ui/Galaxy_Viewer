@@ -173,6 +173,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ac0326be5c29 — Restore 8X coordinate overlay EOF newline
+
+**Recorded:** 2026-08-15T18:38:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ac0326be5c29a6848965cb3af8cc2c29c6c9873f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ac0326be5c29a6848965cb3af8cc2c29c6c9873f)  
+**Parent/baseline:** `9ddefb5fdbeb3b3a2797eae0048cbc311475cc5f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9ddefb5fdbeb3b3a2797eae0048cbc311475cc5f...ac0326be5c29a6848965cb3af8cc2c29c6c9873f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore 8X coordinate overlay EOF newline
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-coordinate-overlay-0004.js`
+
+- Status: **MODIFIED**
+- SHA-256 before: `20ef890a949bf7ab931b83706e76a047a10038171c508b3f3e92e1e167cbce6c`
+- SHA-256 after: `f94b6680edca45ee0b816ce527ff2b73eae118dd2ae4f374dad965b8cfdea65f`
+- Bytes: `9151` → `9152`
+- Lines: `105` → `105`
+- Characters: `9150` → `9151`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `105 + 1 - 1 = 105` — **PASS**
+- Character balance: `9150 + 1 - 0 = 9151` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-630234e53d6f — Add 8X green coordinate overlay
 
 **Recorded:** 2026-08-15T18:37:44-05:00  
