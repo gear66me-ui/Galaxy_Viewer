@@ -1,0 +1,165 @@
+name: Hubble fetch benchmark 10x
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/hubble-fetch-benchmark-10x.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Benchmark four exact Hubble images ten times
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > /tmp/benchmark.csv
+
+          IMAGE_COMMIT='f8a9bfa28d14c2776c798e41983d2814b44a243e'
+
+          declare -A ESA_URL=(
+            [Sombrero-Galaxy-M104.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic2506a.jpg'
+            [Whirlpool-Galaxy-M51.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg'
+            [NGC-1300.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/opo0501a.jpg'
+            [Phantom-Galaxy-M74.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/potw2235a.jpg'
+          )
+
+          declare -A EXPECTED_BYTES=(
+            [Sombrero-Galaxy-M104.jpg]='1636885'
+            [Whirlpool-Galaxy-M51.jpg]='4060187'
+            [NGC-1300.jpg]='3825103'
+            [Phantom-Galaxy-M74.jpg]='8387861'
+          )
+
+          files=(
+            Sombrero-Galaxy-M104.jpg
+            Whirlpool-Galaxy-M51.jpg
+            NGC-1300.jpg
+            Phantom-Galaxy-M74.jpg
+          )
+
+          for file in "${files[@]}"; do
+            esa="${ESA_URL[$file]}"
+            github="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/${IMAGE_COMMIT}/viewer/image-database/Hubble/${file}"
+            expected="${EXPECTED_BYTES[$file]}"
+
+            for trial in $(seq 1 10); do
+              nonce="${GITHUB_RUN_ID}-${file}-${trial}-$(date +%s%N)"
+
+              esa_result="$(curl --fail --silent --show-error --location \
+                -H 'Cache-Control: no-cache' \
+                --output /dev/null \
+                --write-out '%{time_starttransfer},%{time_total},%{size_download},%{speed_download},%{http_code}' \
+                "${esa}?gvbench=${nonce}-esa")"
+
+              github_result="$(curl --fail --silent --show-error --location \
+                -H 'Cache-Control: no-cache' \
+                --output /dev/null \
+                --write-out '%{time_starttransfer},%{time_total},%{size_download},%{speed_download},%{http_code}' \
+                "${github}?gvbench=${nonce}-github")"
+
+              esa_size="$(printf '%s' "$esa_result" | cut -d, -f3)"
+              github_size="$(printf '%s' "$github_result" | cut -d, -f3)"
+              test "$esa_size" = "$expected"
+              test "$github_size" = "$expected"
+
+              echo "$file,$trial,ESA,$esa_result" | tee -a /tmp/benchmark.csv
+              echo "$file,$trial,GITHUB,$github_result" | tee -a /tmp/benchmark.csv
+            done
+          done
+
+          test "$(awk -F, '$3=="ESA"{n++} END{print n+0}' /tmp/benchmark.csv)" -eq 40
+          test "$(awk -F, '$3=="GITHUB"{n++} END{print n+0}' /tmp/benchmark.csv)" -eq 40
+
+          python3 - <<'PY'
+          import csv, statistics
+          from collections import defaultdict
+
+          rows=[]
+          with open('/tmp/benchmark.csv', newline='') as f:
+              for r in csv.reader(f):
+                  file, trial, source, ttfb, total, size, speed, http = r
+                  rows.append({
+                      'file': file,
+                      'trial': int(trial),
+                      'source': source,
+                      'ttfb': float(ttfb),
+                      'total': float(total),
+                      'size': int(float(size)),
+                      'speed': float(speed),
+                      'http': int(http),
+                  })
+
+          assert len(rows) == 80
+          assert sum(r['source']=='ESA' for r in rows) == 40
+          assert sum(r['source']=='GITHUB' for r in rows) == 40
+          assert all(r['http'] == 200 for r in rows)
+
+          by_pair=defaultdict(list)
+          by_source=defaultdict(list)
+          for r in rows:
+              by_pair[(r['file'],r['source'])].append(r)
+              by_source[r['source']].append(r)
+
+          for file in sorted({r['file'] for r in rows}):
+              e=by_pair[(file,'ESA')]
+              g=by_pair[(file,'GITHUB')]
+              e_mean=statistics.mean(v['total'] for v in e)
+              g_mean=statistics.mean(v['total'] for v in g)
+              print('IMAGE_RESULT|{}|ESA_mean={:.6f}|GITHUB_mean={:.6f}|ESA_median={:.6f}|GITHUB_median={:.6f}|speedup={:.3f}x|bytes={}'.format(
+                  file,
+                  e_mean,
+                  g_mean,
+                  statistics.median(v['total'] for v in e),
+                  statistics.median(v['total'] for v in g),
+                  e_mean/g_mean,
+                  e[0]['size'],
+              ))
+
+          for source in ('ESA','GITHUB'):
+              vals=by_source[source]
+              print('OVERALL|{}|mean_ttfb={:.6f}|mean_total={:.6f}|median_total={:.6f}|mean_MBps={:.3f}|samples={}'.format(
+                  source,
+                  statistics.mean(v['ttfb'] for v in vals),
+                  statistics.mean(v['total'] for v in vals),
+                  statistics.median(v['total'] for v in vals),
+                  statistics.mean(v['speed'] for v in vals)/1_000_000,
+                  len(vals),
+              ))
+
+          esa=statistics.mean(v['total'] for v in by_source['ESA'])
+          github=statistics.mean(v['total'] for v in by_source['GITHUB'])
+          print('FINAL_SPEEDUP|{:.3f}x'.format(esa/github))
+          PY
+
+      - name: Checkout repository for temporary workflow removal
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove temporary benchmark workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          git reset --hard origin/beta
+          git rm .github/workflows/hubble-fetch-benchmark-10x.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Remove temporary Hubble 10x benchmark workflow'
+
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:beta; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              exit 1
+            fi
+            git fetch origin beta
+            git rebase origin/beta
+          done
