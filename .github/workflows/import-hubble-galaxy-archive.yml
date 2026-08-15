@@ -131,7 +131,7 @@ jobs:
                       dd = dt.find_next_sibling('dd')
                       if dd:
                           return norm(dd.get_text(' ', strip=True))
-              node = soup.find(string=lambda s: s and norm(s).rstrip(':').casefold() == target)
+              node = soup.find(string=lambda s: s and norm(s) and norm(s).rstrip(':').casefold() == target)
               if node:
                   parent = node.parent
                   if parent and parent.name in ('th', 'td'):
@@ -147,7 +147,7 @@ jobs:
               return None
 
           def extract_credit(soup):
-              node = soup.find(string=lambda s: s and norm(s).casefold() == 'credit:')
+              node = soup.find(string=lambda s: s and norm(s) and norm(s).casefold() == 'credit:')
               if node:
                   ancestors = []
                   p = node.parent
