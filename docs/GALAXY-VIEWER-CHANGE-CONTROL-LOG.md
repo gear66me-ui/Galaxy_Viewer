@@ -137,6 +137,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-12d692cf63b3 — Use verified PNG Hubble logo in Random Galaxy 0008
+
+**Recorded:** 2026-08-14T23:03:02-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`12d692cf63b3c63ffdd73a1e698a3b6b94a4ceac`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/12d692cf63b3c63ffdd73a1e698a3b6b94a4ceac)  
+**Parent/baseline:** `c50a1b44cce95a07773995d6d291e5d7eb55fc88`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c50a1b44cce95a07773995d6d291e5d7eb55fc88...12d692cf63b3c63ffdd73a1e698a3b6b94a4ceac)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use verified PNG Hubble logo in Random Galaxy 0008
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-random-galaxy-0008.js`
+
+- Status: **MODIFIED**
+- SHA-256 before: `461dd0a6a1c8510b0a4bf0c855d40504946fd6ee8b73ae305fa3a80f6cace5b0`
+- SHA-256 after: `b6e43d237c21cc773d33ace8b515aba61c51b52b191215179b68e09ec9662b58`
+- Bytes: `48868` → `48868`
+- Lines: `968` → `968`
+- Characters: `48862` → `48862`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `41`
+- Deleted characters: `41`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `968 + 1 - 1 = 968` — **PASS**
+- Character balance: `48862 + 41 - 41 = 48862` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/modules/gv-random-galaxy-0008.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0008
+AUTHORIZED CHANGES: version identity only; Galaxy Viewer 8K owns the separately authorized presentation and arrival-framing refinements. All 0007 behavior and 24.075-second travel choreography are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ae0f360634f3 — Rename logo.9ab14af4d8f2.png to Hubble-NASA-ESA-logo.png
 
 **Recorded:** 2026-08-14T23:00:12-05:00  
