@@ -213,10 +213,28 @@ jobs:
               return value
 
           def archive_ids():
+              def snapshot_html(url, nonce):
+                  separator = '&' if '?' in url else '?'
+                  snapshot_url = f'{url}{separator}_gv_snapshot={nonce}'
+                  r = request(
+                      'GET',
+                      snapshot_url,
+                      headers={
+                          'Accept': 'text/html',
+                          'Cache-Control': 'no-cache, no-store, max-age=0',
+                          'Pragma': 'no-cache',
+                      },
+                      auth=False,
+                      timeout=(30, 120),
+                  )
+                  return r.text
+
               last_error = None
               for snapshot_attempt in range(1, 4):
                   try:
-                      first_html = get_html(ARCHIVE_ROOT + '?sort=-release_date')
+                      nonce = f'{time.time_ns()}-{snapshot_attempt}'
+                      print(f'SNAPSHOT_NONCE|attempt={snapshot_attempt}|nonce={nonce}')
+                      first_html = snapshot_html(ARCHIVE_ROOT + '?sort=-release_date', nonce)
                       first_text = BeautifulSoup(first_html, 'html.parser').get_text(' ', strip=True)
                       m = re.search(r'Showing\s+1\s+to\s+\d+\s+of\s+(\d+)', first_text, flags=re.I)
                       if not m:
@@ -229,7 +247,7 @@ jobs:
                       seen = set()
                       for page in range(1, pages + 1):
                           url = f'{ARCHIVE_ROOT}page/{page}/?sort=-release_date'
-                          html = first_html if page == 1 else get_html(url)
+                          html = first_html if page == 1 else snapshot_html(url, nonce)
                           page_ids = []
                           page_seen = set()
                           for image_id in re.findall(r"url\s*:\s*['\"]\/images\/([A-Za-z0-9_-]+)\/['\"]", html):
@@ -250,7 +268,7 @@ jobs:
                       if len(ordered) != count:
                           raise RuntimeError(f'Archive ID total mismatch: {len(ordered)} != {count}')
 
-                      verify_html = get_html(ARCHIVE_ROOT + '?sort=-release_date')
+                      verify_html = snapshot_html(ARCHIVE_ROOT + '?sort=-release_date', nonce)
                       verify_text = BeautifulSoup(verify_html, 'html.parser').get_text(' ', strip=True)
                       verify_match = re.search(r'Showing\s+1\s+to\s+\d+\s+of\s+(\d+)', verify_text, flags=re.I)
                       if not verify_match:
@@ -259,7 +277,7 @@ jobs:
                       if verify_count != count:
                           raise RuntimeError(f'Archive count changed during snapshot crawl: {count} -> {verify_count}')
 
-                      print(f'SNAPSHOT_FROZEN|entries={count}|attempt={snapshot_attempt}')
+                      print(f'SNAPSHOT_FROZEN|entries={count}|attempt={snapshot_attempt}|nonce={nonce}')
                       return ordered
                   except RuntimeError as exc:
                       last_error = exc
