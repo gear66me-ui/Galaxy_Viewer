@@ -137,6 +137,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-36a5363f4929 — Create Galaxy Viewer 8S parallel startup launcher
+
+**Recorded:** 2026-08-15T15:20:41-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`36a5363f492932916fde0e3a3fd56e69090bbd04`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/36a5363f492932916fde0e3a3fd56e69090bbd04)  
+**Parent/baseline:** `b85b9625aa8c2d1f0eff28cc9d0e879cfd72541c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b85b9625aa8c2d1f0eff28cc9d0e879cfd72541c...36a5363f492932916fde0e3a3fd56e69090bbd04)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Create Galaxy Viewer 8S parallel startup launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8S.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `cdf62ccf69e0e3ee7b3273587c74a3849adadd5778b6991f4c31d50d043d798a`
+- Bytes: `0` → `7185`
+- Lines: `0` → `155`
+- Characters: `0` → `7181`
+- Inserted lines: `155`
+- Deleted lines: `0`
+- Inserted characters: `7181`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 155 - 0 = 155` — **PASS**
+- Character balance: `0 + 7181 - 0 = 7181` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8S.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8S APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8S with the standalone FINAL splash release and parallel Viewer startup.
+PRESERVED BEHAVIOR: Viewer source and Aladin initialize behind the splash, and the splash remains visible until both splash completion and meaningful Viewer readiness.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-489d863bf826 — Create Galaxy Viewer 8S startup handoff and distance readability release
 
 **Recorded:** 2026-08-15T15:19:42-05:00  
