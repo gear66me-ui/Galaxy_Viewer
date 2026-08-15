@@ -125,6 +125,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-24f70b4c4287 — 8I → 8K roll-up
+
+**Source current-beta commit:** `24f70b4c42875ae884e25c7fddfe1efefec399a7`  
+**Previous Viewer:** `viewer/GV-beta-0008I.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008I.py`  
+**Original Git blob:** `99f10c103d865179ce498b37851025c25dc6434a`  
+**Archived Git blob:** `99f10c103d865179ce498b37851025c25dc6434a`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008K.py`  
+
+---
+
 ## AUTO-24f70b4c4287 — Route rolling Galaxy Viewer beta to 8K
 
 **Recorded:** 2026-08-14T22:55:21-05:00  
