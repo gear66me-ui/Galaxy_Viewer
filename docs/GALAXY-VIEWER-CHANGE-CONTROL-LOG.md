@@ -113,6 +113,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-7903d75c5bb5 — 8G → 8H roll-up
+
+**Source current-beta commit:** `7903d75c5bb52c9a81275db8dc916069740d5b32`  
+**Previous Viewer:** `viewer/GV-beta-0008G.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0008G.py`  
+**Original Git blob:** `e6c7598653ba12a2992fde193fdaa28072638402`  
+**Archived Git blob:** `e6c7598653ba12a2992fde193fdaa28072638402`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0008H.py`  
+
+---
+
 ## AUTO-7903d75c5bb5 — Point rolling beta launcher to 8H and remove stale 8A loader
 
 **Recorded:** 2026-08-14T19:10:06-05:00  
