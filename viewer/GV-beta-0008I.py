@@ -178,6 +178,7 @@ display(Javascript(r"""
         l=((l%360)+360)%360;
         return [l,b/d];
     }
+
     function readCurrentRaDec(aladin,root){
         try{
             const value=aladin.getRaDec?.();
