@@ -137,6 +137,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-71d8313f077d — Create Galaxy Viewer 8P beta launcher
+
+**Recorded:** 2026-08-15T13:56:35-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`71d8313f077d11b5ea1f9af710391ad12ab005e3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/71d8313f077d11b5ea1f9af710391ad12ab005e3)  
+**Parent/baseline:** `75fd9fdc875be4d237d810372e1b04e2dcfdec31`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/75fd9fdc875be4d237d810372e1b04e2dcfdec31...71d8313f077d11b5ea1f9af710391ad12ab005e3)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Create Galaxy Viewer 8P beta launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8P.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `402c8750bb5a94de87880b0841e66e6f6143f54bcd71c225df790ea1f960c2d9`
+- Bytes: `0` → `5984`
+- Lines: `0` → `129`
+- Characters: `0` → `5980`
+- Inserted lines: `129`
+- Deleted lines: `0`
+- Inserted characters: `5980`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 129 - 0 = 129` — **PASS**
+- Character balance: `0 + 5980 - 0 = 5980` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8P.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8P APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8P with the standalone FINAL splash release.
+PRESERVED BEHAVIOR: Viewer source downloads while splash assets/playback run, but Viewer application logic initializes only after splash completion and is revealed only when ready.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-34147d7c9b5e — Create Galaxy Viewer 8P surgical corrections
 
 **Recorded:** 2026-08-15T13:55:36-05:00  
