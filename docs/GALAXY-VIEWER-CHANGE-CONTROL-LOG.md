@@ -185,6 +185,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-179df743501a — Add ICRSD GAL touch glow to coordinate test
+
+**Recorded:** 2026-08-15T18:48:32-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`179df743501add91571928d71ef6745f2ce91a0e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/179df743501add91571928d71ef6745f2ce91a0e)  
+**Parent/baseline:** `ea01f6b3464f7141ce93e3b4f63fe372c2ab8a54`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ea01f6b3464f7141ce93e3b4f63fe372c2ab8a54...179df743501add91571928d71ef6745f2ce91a0e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add ICRSD GAL touch glow to coordinate test
+```
+
+### Complete changed-path accounting
+
+#### `viewer/tests/coordinate-box-control-pad.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ad4320e21f3929bda4f8f10340a9aa3727ba9c3655d3dc5e70030aa5961ffe26`
+- SHA-256 after: `1be87c1c01fe4fd47cc17141fdef2071388f16a67d7c7c0d2bfaebc140946132`
+- Bytes: `5530` → `5931`
+- Lines: `137` → `141`
+- Characters: `5527` → `5928`
+- Inserted lines: `4`
+- Deleted lines: `0`
+- Inserted characters: `401`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `137 + 4 - 0 = 141` — **PASS**
+- Character balance: `5527 + 401 - 0 = 5928` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-dbbc91a2a519 — Point beta standalone entry to 8X
 
 **Recorded:** 2026-08-15T18:44:07-05:00  
