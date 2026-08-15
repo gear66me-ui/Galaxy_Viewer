@@ -4,7 +4,7 @@ GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8H APP LAUNCHER
 PURPOSE: Dedicated app launcher for the exact verified Galaxy Viewer 8H release with production Splash 0058H.
 AUTHORIZED RELEASE: viewer/GV-beta-0008H.py blob 778b31bd51f19101ec5b235ef5e5db3a90e4bc8b
 AUTHORIZED SPLASH: viewer/artwork/Splash/Galaxy-Viewer-Singularity-0058H.html blob 730d5e35a3d375c668fd3464d8f1181eea7d37b9
-PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8H Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it downloads the full 8H Viewer during the production splash, initializes it only after splash completion, and reveals it only when ready.
 -->
 <html lang="en">
 <head>
@@ -33,13 +33,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   const VIEWER_TIMEOUT_MS=20000;
   const splashFrame=document.getElementById('gv-splash-frame');
   const errorBox=document.getElementById('gv-launch-error');
-  let splashComplete=false,viewerReady=false;
+  let splashComplete=false,viewerReady=false,resolveSplashComplete;
+  const splashCompletePromise=new Promise(resolve=>{resolveSplashComplete=resolve});
   const maybeReveal=()=>{
     if(splashComplete&&viewerReady&&splashFrame.isConnected)splashFrame.remove();
   };
   const onSplashLoaded=()=>{
     splashFrame.contentWindow.addEventListener('galaxy-splash-complete',()=>{
       splashComplete=true;
+      resolveSplashComplete();
       maybeReveal();
     },{once:true});
   };
@@ -59,9 +61,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     check();
   });
   try{
-    const response=await fetch(VIEWER_URL,{cache:'no-store'});
-    if(!response.ok)throw new Error('GV-BETA-0008H.PY RETURNED HTTP '+response.status);
-    const source=await response.text();
+    const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'no-store'}).then(async response=>{
+      if(!response.ok)throw new Error('GV-BETA-0008H.PY RETURNED HTTP '+response.status);
+      return response.blob();
+    });
+    const [viewerBlob]=await Promise.all([viewerDownloadPromise,splashCompletePromise]);
+    const source=await viewerBlob.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8H FULL VIEWER');
