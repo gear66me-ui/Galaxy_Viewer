@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Coordinate Box Control Pad</title>
+<style>
+html,body{margin:0;width:100%;min-height:100%;background:#000;color:#78FFAB;font-family:Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:24px 12px}
+.wrap{width:min(430px,100%);display:flex;flex-direction:column;align-items:center;gap:22px}
+#coordinate-box{width:290px;height:36px}
+.pad{width:100%;box-sizing:border-box;padding:14px;border:1px solid rgba(120,255,171,.72);border-radius:8px;background:rgba(0,18,10,.9);box-shadow:0 0 12px rgba(87,255,147,.18)}
+.row{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:10px;margin:10px 0}
+.label{font-size:12px;letter-spacing:.5px}
+input[type="range"]{width:100%;accent-color:#78FFAB}
+.value{font:600 13px/1.2 monospace;color:#E8FFF0;text-align:right;margin-top:2px}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+button{min-height:38px;border:1px solid #78FFAB;border-radius:6px;background:#0B3B22;color:#E8FFF0;font:600 11px/1 Arial,sans-serif;letter-spacing:.35px;touch-action:manipulation}
+.note{margin-top:12px;font-size:11px;line-height:1.35;color:#A7DDBA;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="coordinate-box"></div>
+
+  <div class="pad" aria-label="Coordinate test controls">
+    <div class="row">
+      <div class="label">LONGITUDE</div>
+      <div>
+        <input id="lon" type="range" min="0" max="359.9999" step="0.0001" value="266.4168">
+        <div id="lon-value" class="value">266.4168</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">LATITUDE</div>
+      <div>
+        <input id="lat" type="range" min="-90" max="90" step="0.0001" value="-29.0078">
+        <div id="lat-value" class="value">-29.0078</div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="lon-min" type="button">LONG MIN 0.0000</button>
+      <button id="lon-max" type="button">LONG MAX 359.9999</button>
+      <button id="lat-min" type="button">LAT MIN -90.0000</button>
+      <button id="lat-max" type="button">LAT MAX 90.0000</button>
+    </div>
+
+    <div class="note">Coordinate box revision 0003 · green #78FFAB · numeric spacing preview +3%</div>
+  </div>
+</div>
+
+<script src="../modules/gv-coordinate-overlay-0003.js?v=34e599fe4e8d3881105b6491c2d9eda9b5c1c17a"></script>
+<script>
+(async()=>{
+  'use strict';
+
+  const SPACING_SCALE=1.03;
+  const host=document.getElementById('coordinate-box');
+  const lon=document.getElementById('lon');
+  const lat=document.getElementById('lat');
+  const lonValue=document.getElementById('lon-value');
+  const latValue=document.getElementById('lat-value');
+
+  const overlay=GalaxyCoordinateOverlay.mount(host);
+  await overlay.ready;
+
+  const shadow=host.shadowRoot;
+  const root=shadow.querySelector('.gvco-root');
+  const xNumber=shadow.querySelector('.gvco-x');
+  const yNumber=shadow.querySelector('.gvco-y');
+  root.style.setProperty('color','#78FFAB');
+
+  function spreadNumber(numberEl){
+    const cells=[...numberEl.querySelectorAll('.gvco-cell')];
+    const decimal=cells.find(cell=>cell.textContent==='.');
+    if(!decimal)return;
+
+    const decimalLeft=parseFloat(decimal.style.left);
+    const decimalWidth=parseFloat(decimal.style.width);
+    const decimalCenter=decimalLeft+(decimalWidth/2);
+
+    for(const cell of cells){
+      if(cell===decimal)continue;
+      if(!cell.dataset.baseLeft)cell.dataset.baseLeft=cell.style.left;
+      const baseLeft=parseFloat(cell.dataset.baseLeft);
+      const width=parseFloat(cell.style.width);
+      const center=baseLeft+(width/2);
+      const spacedCenter=decimalCenter+((center-decimalCenter)*SPACING_SCALE);
+      cell.style.left=`${spacedCenter-(width/2)}px`;
+    }
+  }
+
+  function applySpacing(){
+    spreadNumber(xNumber);
+    spreadNumber(yNumber);
+  }
+
+  const observer=new MutationObserver(()=>requestAnimationFrame(applySpacing));
+  observer.observe(xNumber,{childList:true});
+  observer.observe(yNumber,{childList:true});
+
+  function render(){
+    const longitude=Number(lon.value);
+    const latitude=Number(lat.value);
+    lonValue.textContent=longitude.toFixed(4);
+    latValue.textContent=latitude.toFixed(4);
+    overlay.update(longitude,latitude);
+    requestAnimationFrame(applySpacing);
+  }
+
+  lon.addEventListener('input',render);
+  lat.addEventListener('input',render);
+
+  document.getElementById('lon-min').addEventListener('click',()=>{lon.value='0';render()});
+  document.getElementById('lon-max').addEventListener('click',()=>{lon.value='359.9999';render()});
+  document.getElementById('lat-min').addEventListener('click',()=>{lat.value='-90';render()});
+  document.getElementById('lat-max').addEventListener('click',()=>{lat.value='90';render()});
+
+  render();
+})();
+</script>
+</body>
+</html>
