@@ -1,0 +1,195 @@
+name: Import Hubble image database
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/import-hubble-images.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-hubble-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact beta repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download exact ESA Hubble publication JPEGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hubble
+
+          declare -A URLS=(
+            [Sombrero-Galaxy-M104.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic2506a.jpg'
+            [Whirlpool-Galaxy-M51.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg'
+            [NGC-1300.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/opo0501a.jpg'
+            [Phantom-Galaxy-M74.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/potw2235a.jpg'
+            [Pinwheel-Galaxy-M101.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic0602a.jpg'
+          )
+
+          for file in Sombrero-Galaxy-M104.jpg Whirlpool-Galaxy-M51.jpg NGC-1300.jpg Phantom-Galaxy-M74.jpg Pinwheel-Galaxy-M101.jpg; do
+            url="${URLS[$file]}"
+            echo "DOWNLOAD|$file|$url"
+            curl --fail --location --retry 4 --retry-delay 2 --connect-timeout 20 --max-time 300 "$url" --output "/tmp/hubble/$file"
+            test "$(head -c 2 "/tmp/hubble/$file" | od -An -tx1 | tr -d ' \n')" = 'ffd8'
+            mime="$(file --brief --mime-type "/tmp/hubble/$file")"
+            test "$mime" = 'image/jpeg'
+            bytes="$(stat -c '%s' "/tmp/hubble/$file")"
+            sha="$(sha256sum "/tmp/hubble/$file" | awk '{print $1}')"
+            echo "ESA_FILE|$file|bytes=$bytes|sha256=$sha|mime=$mime"
+          done
+
+      - name: Create exact image commit and remove temporary workflow
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          git reset --hard origin/beta
+
+          mkdir -p viewer/image-database/Hubble
+          cp /tmp/hubble/Sombrero-Galaxy-M104.jpg viewer/image-database/Hubble/
+          cp /tmp/hubble/Whirlpool-Galaxy-M51.jpg viewer/image-database/Hubble/
+          cp /tmp/hubble/NGC-1300.jpg viewer/image-database/Hubble/
+          cp /tmp/hubble/Phantom-Galaxy-M74.jpg viewer/image-database/Hubble/
+          cp /tmp/hubble/Pinwheel-Galaxy-M101.jpg viewer/image-database/Hubble/
+
+          git rm .github/workflows/import-hubble-images.yml
+          git add viewer/image-database/Hubble
+
+          expected="$(printf '%s\n' \
+            '.github/workflows/import-hubble-images.yml' \
+            'viewer/image-database/Hubble/NGC-1300.jpg' \
+            'viewer/image-database/Hubble/Phantom-Galaxy-M74.jpg' \
+            'viewer/image-database/Hubble/Pinwheel-Galaxy-M101.jpg' \
+            'viewer/image-database/Hubble/Sombrero-Galaxy-M104.jpg' \
+            'viewer/image-database/Hubble/Whirlpool-Galaxy-M51.jpg')"
+          actual="$(git diff --cached --name-only | sort)"
+          test "$actual" = "$expected"
+
+          for file in viewer/image-database/Hubble/*.jpg; do
+            base="$(basename "$file")"
+            cmp --silent "$file" "/tmp/hubble/$base"
+          done
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Import five exact ESA Hubble publication JPEGs'
+
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:beta; then
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              echo 'Push failed after five attempts.' >&2
+              exit 1
+            fi
+            git fetch origin beta
+            git rebase origin/beta
+          done
+
+          image_commit="$(git rev-parse HEAD)"
+          echo "image_commit=$image_commit" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_COMMIT|$image_commit"
+
+      - name: Verify GitHub raw bytes and benchmark ESA versus GitHub
+        shell: bash
+        env:
+          IMAGE_COMMIT: ${{ steps.commit.outputs.image_commit }}
+        run: |
+          set -euo pipefail
+          : > /tmp/benchmark.csv
+
+          declare -A URLS=(
+            [Sombrero-Galaxy-M104.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic2506a.jpg'
+            [Whirlpool-Galaxy-M51.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg'
+            [NGC-1300.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/opo0501a.jpg'
+            [Phantom-Galaxy-M74.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/potw2235a.jpg'
+            [Pinwheel-Galaxy-M101.jpg]='https://cdn.esahubble.org/archives/images/publicationjpg/heic0602a.jpg'
+          )
+
+          for file in Sombrero-Galaxy-M104.jpg Whirlpool-Galaxy-M51.jpg NGC-1300.jpg Phantom-Galaxy-M74.jpg Pinwheel-Galaxy-M101.jpg; do
+            esa="${URLS[$file]}"
+            github="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/${IMAGE_COMMIT}/viewer/image-database/Hubble/${file}"
+
+            expected_sha="$(sha256sum "/tmp/hubble/$file" | awk '{print $1}')"
+            verified=0
+            for attempt in 1 2 3 4 5 6 7 8 9 10; do
+              if curl --fail --location --retry 2 --connect-timeout 20 --max-time 300 \
+                "${github}?verify=${GITHUB_RUN_ID}-${attempt}" --output "/tmp/github-$file"; then
+                actual_sha="$(sha256sum "/tmp/github-$file" | awk '{print $1}')"
+                if [ "$actual_sha" = "$expected_sha" ]; then
+                  verified=1
+                  break
+                fi
+              fi
+              sleep 3
+            done
+            test "$verified" -eq 1
+            echo "GITHUB_VERIFY|$file|sha256=$expected_sha|PASS"
+
+            for trial in 1 2 3; do
+              nonce="${GITHUB_RUN_ID}-${file}-${trial}-$(date +%s%N)"
+              esa_result="$(curl --fail --silent --show-error --location --retry 3 -H 'Cache-Control: no-cache' --output /dev/null \
+                --write-out '%{time_starttransfer},%{time_total},%{size_download},%{speed_download}' "${esa}?gvbench=${nonce}-esa")"
+              gh_result="$(curl --fail --silent --show-error --location --retry 3 -H 'Cache-Control: no-cache' --output /dev/null \
+                --write-out '%{time_starttransfer},%{time_total},%{size_download},%{speed_download}' "${github}?gvbench=${nonce}-github")"
+              echo "$file,$trial,ESA,$esa_result" | tee -a /tmp/benchmark.csv
+              echo "$file,$trial,GITHUB,$gh_result" | tee -a /tmp/benchmark.csv
+            done
+          done
+
+          python3 - <<'PY'
+          import csv, statistics
+          from collections import defaultdict
+
+          rows=[]
+          with open('/tmp/benchmark.csv', newline='') as f:
+              for r in csv.reader(f):
+                  file, trial, source, ttfb, total, size, speed = r
+                  rows.append({
+                      'file': file,
+                      'trial': int(trial),
+                      'source': source,
+                      'ttfb': float(ttfb),
+                      'total': float(total),
+                      'size': int(float(size)),
+                      'speed': float(speed),
+                  })
+
+          by_pair=defaultdict(list)
+          by_source=defaultdict(list)
+          for r in rows:
+              by_pair[(r['file'],r['source'])].append(r)
+              by_source[r['source']].append(r)
+
+          for (file,source), vals in sorted(by_pair.items()):
+              print(
+                  'IMAGE_SUMMARY|{}|{}|mean_ttfb={:.6f}|mean_total={:.6f}|median_total={:.6f}|mean_MBps={:.3f}|bytes={}'.format(
+                      file, source,
+                      statistics.mean(v['ttfb'] for v in vals),
+                      statistics.mean(v['total'] for v in vals),
+                      statistics.median(v['total'] for v in vals),
+                      statistics.mean(v['speed'] for v in vals)/1_000_000,
+                      vals[0]['size'],
+                  )
+              )
+
+          for source, vals in sorted(by_source.items()):
+              print(
+                  'OVERALL_SUMMARY|{}|mean_ttfb={:.6f}|mean_total={:.6f}|median_total={:.6f}|mean_MBps={:.3f}|samples={}'.format(
+                      source,
+                      statistics.mean(v['ttfb'] for v in vals),
+                      statistics.mean(v['total'] for v in vals),
+                      statistics.median(v['total'] for v in vals),
+                      statistics.mean(v['speed'] for v in vals)/1_000_000,
+                      len(vals),
+                  )
+              )
+          PY
