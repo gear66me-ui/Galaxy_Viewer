@@ -18,7 +18,7 @@ AUTHORIZED CHANGES: version identity only; Galaxy Viewer 8K owns the separately 
     digits: 'GV Random Galaxy Digits 0008'
   });
 
-  const HUBBLE_ICON_URL = 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-ESA-icon-0001.svg?v=1cb3ee0653c79f8ff7875b2dbaa4d1769f1f7eec';
+  const HUBBLE_ICON_URL = 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b';
 
   const DEFAULTS = Object.freeze({
     geminiEndpoint: null,
