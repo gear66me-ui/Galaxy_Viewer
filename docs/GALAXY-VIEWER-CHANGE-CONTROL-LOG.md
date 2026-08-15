@@ -173,6 +173,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1d128a7fbac1 — Thin coordinate test strokes by 10 percent
+
+**Recorded:** 2026-08-15T18:42:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1d128a7fbac17d8813b568cfc382b0683204fad0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1d128a7fbac17d8813b568cfc382b0683204fad0)  
+**Parent/baseline:** `ef569a31f034296fcbcd2f42e1237960dc6d7c90`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ef569a31f034296fcbcd2f42e1237960dc6d7c90...1d128a7fbac17d8813b568cfc382b0683204fad0)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Thin coordinate test strokes by 10 percent
+```
+
+### Complete changed-path accounting
+
+#### `viewer/tests/coordinate-box-control-pad.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `9f350e6357fca9b8c0b989822d57e52fb0c3f16a20df4593232519154d0ab212`
+- SHA-256 after: `ad4320e21f3929bda4f8f10340a9aa3727ba9c3655d3dc5e70030aa5961ffe26`
+- Bytes: `4931` → `5530`
+- Lines: `125` → `137`
+- Characters: `4929` → `5527`
+- Inserted lines: `13`
+- Deleted lines: `1`
+- Inserted characters: `598`
+- Deleted characters: `0`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `1`
+- Changed blocks: `2`
+- Line balance: `125 + 13 - 1 = 137` — **PASS**
+- Character balance: `4929 + 598 - 0 = 5527` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ac0326be5c29 — Restore 8X coordinate overlay EOF newline
 
 **Recorded:** 2026-08-15T18:38:53-05:00  
