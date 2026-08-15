@@ -125,6 +125,54 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6220b3e8c508 — Add exact FINAL splash assets
+
+**Recorded:** 2026-08-14T22:34:33-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6220b3e8c50839ca84f619789f05d217d9d3b72c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6220b3e8c50839ca84f619789f05d217d9d3b72c)  
+**Parent/baseline:** `3b656f74323800cdf677781c8b2dbb1f31b99bb2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3b656f74323800cdf677781c8b2dbb1f31b99bb2...6220b3e8c50839ca84f619789f05d217d9d3b72c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `2`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add exact FINAL splash assets
+```
+
+### Complete changed-path accounting
+
+#### `viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `5e7bef7fdb89f19f762a22f023119b022038140304d7e68c414670738f5bb208`
+- Bytes: `0` → `2547975`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `c5c87d63fc241c6444d634da485068c60b66ca9bb43b26dc31253e5a50a09256`
+- Bytes: `0` → `18496`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4396dc9b879d — Create FINAL standalone Galaxy Viewer splash index
 
 **Recorded:** 2026-08-14T22:32:49-05:00  
