@@ -137,6 +137,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-675775c9f87d — Create Random Galaxy 0013 HD layout correction
+
+**Recorded:** 2026-08-15T13:52:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`675775c9f87d26695d4a546996e11ff7a5d6fe6c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/675775c9f87d26695d4a546996e11ff7a5d6fe6c)  
+**Parent/baseline:** `f0cc5b66a1ef9de88fc98f705058ef5b43c7b3d0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f0cc5b66a1ef9de88fc98f705058ef5b43c7b3d0...675775c9f87d26695d4a546996e11ff7a5d6fe6c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Create Random Galaxy 0013 HD layout correction
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-random-galaxy-0013.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `912252867019347f303b01960ed5b4951ae0707bef4b19d1f776f3842eebb1fe`
+- Bytes: `0` → `58319`
+- Lines: `0` → `1098`
+- Characters: `0` → `58311`
+- Inserted lines: `1098`
+- Deleted lines: `0`
+- Inserted characters: `58311`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1098 - 0 = 1098` — **PASS**
+- Character balance: `0 + 58311 - 0 = 58311` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/modules/gv-random-galaxy-0013.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0011
+AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and 0011 identity. Touch-through interaction, 36px Hubble controls, top-centered HD viewing, no post-arrival reframing, and 24.075-second travel are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6575648c33b6 — Archive exact Galaxy Viewer 8O baseline for 8P
 
 **Recorded:** 2026-08-15T13:50:19-05:00  
