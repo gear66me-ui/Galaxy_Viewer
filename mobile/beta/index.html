@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8A">
-<title>GALAXY VIEWER 8A — MOBILE APP BETA</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 8H">
+<title>GALAXY VIEWER 8H — MOBILE APP BETA</title>
 <link rel="manifest" href="./manifest.webmanifest?v=7AL-global-glow-001">
 <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../viewer/artwork/icon_target_vector.svg?v=7K-centered-coordinate-digits-001">
@@ -68,118 +68,7 @@ if (__earlyDiag) {
 })();
 </script>
 <script>
-(async()=>{
-  window.location.replace('./8G.html'+window.location.search+window.location.hash);
-  return;
-  const VIEWER_TIMEOUT_MS=20000;
-  const diagnosticMode=new URLSearchParams(window.location.search).get('diag')==='1';
-  const errorBox=document.getElementById('gv-loading-error');
-  const diagPanel=document.getElementById('gv-diagnostics');
-  const diagLog=document.getElementById('gv-diag-log');
-  const diagContinue=document.getElementById('gv-diag-continue');
-  const diagCopy=document.getElementById('gv-diag-copy');
-  const diagClear=document.getElementById('gv-diag-clear');
-  const diagAuto=document.getElementById('gv-diag-auto');
-  let continueResolver=null;
-  const timestamp=()=>new Date().toISOString();
-  const formatDetail=detail=>{
-    if(detail===undefined)return '';
-    if(detail instanceof Error)return ` — ${detail.name}: ${detail.message}`;
-    if(typeof detail==='string')return ` — ${detail}`;
-    try{return ` — ${JSON.stringify(detail)}`;}catch(_){return ` — ${String(detail)}`;}
-  };
-  const appendDiagnostic=(label,detail)=>{
-    if(!diagnosticMode)return;
-    const line=`[${timestamp()}] ${label}${formatDetail(detail)}`;
-    diagLog.textContent+=(diagLog.textContent?'\n':'')+line;
-    diagLog.scrollTop=diagLog.scrollHeight;
-  };
-  const checkpoint=async(label,detail)=>{
-    appendDiagnostic(label,detail);
-    if(!diagnosticMode||diagAuto.checked)return;
-    await new Promise(resolve=>{continueResolver=resolve;});
-    continueResolver=null;
-  };
-  if(diagnosticMode){
-    diagPanel.hidden=false;
-    diagContinue.addEventListener('click',()=>{continueResolver?.();});
-    diagAuto.addEventListener('change',()=>{if(diagAuto.checked)continueResolver?.();});
-    diagCopy.addEventListener('click',async()=>{
-      try{
-        await navigator.clipboard.writeText(diagLog.textContent);
-        appendDiagnostic('LOG COPIED');
-      }catch(error){appendDiagnostic('WARNING','COPY LOG FAILED: '+String(error?.message||error));}
-    });
-    diagClear.addEventListener('click',()=>{diagLog.textContent='';});
-    window.addEventListener('error',event=>appendDiagnostic('EXCEPTION',event.error||event.message));
-    window.addEventListener('unhandledrejection',event=>appendDiagnostic('EXCEPTION',event.reason));
-    const originalWarn=console.warn.bind(console);
-    console.warn=(...args)=>{appendDiagnostic('WARNING',args.map(String).join(' '));originalWarn(...args);};
-    const originalError=console.error.bind(console);
-    console.error=(...args)=>{appendDiagnostic('EXCEPTION',args.map(String).join(' '));originalError(...args);};
-  }
-  const showError=message=>{errorBox.style.display='block';errorBox.innerHTML='<span>'+String(message).toUpperCase().replace(/[&<>]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]))+'</span>'};
-  const prepareCleanBetaStart=async()=>{
-    await checkpoint('CACHE CLEAR STARTED');
-    try{
-      if('caches' in window){
-        const keys=await caches.keys();
-        await Promise.all(keys.filter(key=>key.startsWith('galaxy-viewer-beta-')).map(key=>caches.delete(key)));
-      }
-      navigator.serviceWorker?.controller?.postMessage('CLEAR_BETA_CACHES');
-    }catch(error){console.warn('GALAXY VIEWER BETA CLEAN-START PREPARATION FAILED',error);}
-    await checkpoint('CACHE CLEAR COMPLETED');
-  };
-  const waitForViewer=()=>new Promise((resolve,reject)=>{
-    const deadline=performance.now()+VIEWER_TIMEOUT_MS;
-    const check=()=>{
-      const root=document.getElementById('aladin-cosmic-command-test');
-      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test){resolve();return;}
-      if(performance.now()>=deadline){reject(new Error('THE ALADIN VIEWER DID NOT CREATE A CANVAS WITHIN 20 SECONDS.'));return;}
-      setTimeout(check,100);
-    };
-    check();
-  });
-  await checkpoint('LAUNCHER ENTERED');
-  if(diagnosticMode)await checkpoint('DIAGNOSTIC MODE ENABLED');
-  await prepareCleanBetaStart();
-  try{
-    const viewerReady=(async()=>{
-      await checkpoint('FETCH STARTED');
-      const response=await fetch('../../viewer/GV-beta-0008A.py?v=57e8103d2c4b1650da9ced03d8d4886d3f177dce',{cache:'no-store'});
-      await checkpoint('HTTP RESPONSE RECEIVED',`HTTP ${response.status}`);
-      if(!response.ok)throw new Error(`GV-BETA-0008A.PY RETURNED HTTP ${response.status}`);
-      const source=await response.text();
-      await checkpoint('PYTHON DOWNLOADED',`${source.length} CHARACTERS`);
-      const htmlMatches=[...source.matchAll(/display\(HTML\("""([\s\S]*?)"""\)\)/g)];
-      await checkpoint('HTML EXTRACTED');
-      const jsMatches=[...source.matchAll(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/g)];
-      if(!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 8A STANDALONE VIEWER JAVASCRIPT.');
-      await checkpoint('JAVASCRIPT EXTRACTED');
-      htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
-      await checkpoint('HTML INSERTED');
-      jsMatches.forEach(match=>{
-        const script=document.createElement('script');
-        script.textContent=match[1];
-        document.body.appendChild(script);
-      });
-      await checkpoint('JAVASCRIPT INJECTED');
-      await checkpoint('ALADIN INITIALIZATION');
-      await checkpoint('WAITING FOR CANVAS');
-      await waitForViewer();
-      await checkpoint('CANVAS DETECTED');
-      await checkpoint('VIEWER READY');
-    })();
-    await viewerReady;
-    try{localStorage.removeItem('gv-beta-launch-failure');}catch(_){ }
-  }catch(error){
-    console.error('GALAXY VIEWER 8A MOBILE BETA STARTUP FAILURE',error);
-    try{localStorage.setItem('gv-beta-launch-failure','8A');}catch(_){ }
-    appendDiagnostic('APP FAILED TO LOAD',error);
-    showError('APP FAILED TO LOAD');
-    return;
-  }
-})();
+window.location.replace('./8H.html'+window.location.search+window.location.hash);
 </script>
 </body>
 </html>
