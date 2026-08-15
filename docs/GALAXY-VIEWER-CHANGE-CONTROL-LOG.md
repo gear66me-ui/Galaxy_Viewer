@@ -137,6 +137,62 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1d89d3b6a0c7 — Add Galaxy Viewer 8T smooth launcher
+
+**Recorded:** 2026-08-15T16:04:19-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1d89d3b6a0c7d39dd4da6f1ff9aa05725b88b9f9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1d89d3b6a0c7d39dd4da6f1ff9aa05725b88b9f9)  
+**Parent/baseline:** `4c2af0c4e9f5365c93ec9d241c624810ba895f1f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4c2af0c4e9f5365c93ec9d241c624810ba895f1f...1d89d3b6a0c7d39dd4da6f1ff9aa05725b88b9f9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 8T smooth launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8T.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `458783c8fa36a96de75e90ec37f4a31655563582a5c86fe02837870b1694f0a1`
+- Bytes: `0` → `7853`
+- Lines: `0` → `162`
+- Characters: `0` → `7849`
+- Inserted lines: `162`
+- Deleted lines: `0`
+- Inserted characters: `7849`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 162 - 0 = 162` — **PASS**
+- Character balance: `0 + 7849 - 0 = 7849` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8T.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8T APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8T with the standalone FINAL splash release and a forward-only app-icon to splash to Viewer startup sequence.
+PRESERVED BEHAVIOR: Viewer source downloads in parallel while the app icon and splash display; heavy Viewer initialization begins only after the splash completes so the visible animation is not competing with Aladin startup.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9e0094118212 — Add Galaxy Viewer 8T decimal and HD integration
 
 **Recorded:** 2026-08-15T16:03:09-05:00  
