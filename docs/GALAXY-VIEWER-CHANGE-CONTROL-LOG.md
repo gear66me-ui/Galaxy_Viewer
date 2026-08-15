@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6409e0b291b0 — Cache-bust ESA Hubble archive snapshot
+
+**Recorded:** 2026-08-14T20:15:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6409e0b291b05afd17d62ac3e3804abd9415ecd8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6409e0b291b05afd17d62ac3e3804abd9415ecd8)  
+**Parent/baseline:** `d24395cd8fea66487dae500c787bb243fc0022b3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d24395cd8fea66487dae500c787bb243fc0022b3...6409e0b291b05afd17d62ac3e3804abd9415ecd8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Cache-bust ESA Hubble archive snapshot
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `3326fde9cc5b99c2621fcea1d40452e53ee207d2d1d64cdb5757adfaf2323899`
+- SHA-256 after: `5ffc6563cbccc0b46cad6b4ffc11acccb1b0fcfb04f0cc8eb7b1812522b08db3`
+- Bytes: `32146` → `32982`
+- Lines: `680` → `698`
+- Characters: `32142` → `32978`
+- Inserted lines: `22`
+- Deleted lines: `4`
+- Inserted characters: `842`
+- Deleted characters: `6`
+- Unified diff hunks: `5`
+- Inserted blocks: `5`
+- Deleted blocks: `4`
+- Changed blocks: `5`
+- Line balance: `680 + 22 - 4 = 698` — **PASS**
+- Character balance: `32142 + 842 - 6 = 32978` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-1f4b6b83ab98 — Parse ESA Hubble archive script image URLs
 
 **Recorded:** 2026-08-14T20:06:28-05:00  
