@@ -1,10 +1,10 @@
 <!doctype html>
 <!--
 GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8W APP LAUNCHER
-PURPOSE: Dedicated launcher for exact Galaxy Viewer 8W with the standalone FINAL splash release and concurrent Viewer initialization behind the splash.
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8W with the standalone FINAL splash release and concurrent Viewer initialization behind an opaque launch/splash foreground.
 AUTHORIZED RELEASE: viewer/GV-beta-0008W.py blob d38d3aec5c2fae11377d17656e58722faeba245d
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
-AUTHORIZED STARTUP: Viewer/Aladin initialization starts immediately under the splash; splash timing remains unchanged; after splash completion only unfinished real Viewer readiness may delay reveal.
+AUTHORIZED STARTUP: Viewer/Aladin initialization and splash start immediately together; the Viewer remains visually covered until the splash completes; no forced opening or post-splash delay.
 -->
 <html lang="en">
 <head>
@@ -19,14 +19,15 @@ AUTHORIZED STARTUP: Viewer/Aladin initialization starts immediately under the sp
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
-#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483646;background:#000;opacity:0;visibility:hidden;transition:opacity .08s linear}
+#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483646;background:#000;opacity:0;visibility:hidden}
 #gv-splash-frame.gv-splash-visible{opacity:1;visibility:visible}
-#gv-opening-poster{position:fixed;left:50%;top:50%;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain;transform:translate(-50%,-50%);z-index:2147483645;background:transparent}
+#gv-launch-cover{position:fixed;inset:0;z-index:2147483645;display:flex;align-items:center;justify-content:center;background:#000}
+#gv-opening-poster{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain;background:transparent}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
 </style>
 </head>
 <body>
-<img id="gv-opening-poster" src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="GALAXY VIEWER">
+<div id="gv-launch-cover"><img id="gv-opening-poster" src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="GALAXY VIEWER"></div>
 <iframe id="gv-splash-frame" title="GALAXY VIEWER SPLASH"></iframe>
 <div id="gv-launch-error" role="alert"></div>
 <script>
@@ -39,8 +40,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   const SPLASH_FONT_URL=SPLASH_BASE+'Space-Age.otf';
   const VIEWER_TIMEOUT_MS=20000;
   const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
-  const MIN_OPENING_HOLD_MS=2500;
-  const openingPoster=document.getElementById('gv-opening-poster');
+  const launchCover=document.getElementById('gv-launch-cover');
   const splashFrame=document.getElementById('gv-splash-frame');
   const errorBox=document.getElementById('gv-launch-error');
 
@@ -95,7 +95,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
             const ready=scene?.style.opacity==='1'||poster?.style.visibility==='visible';
             if(ready){
               splashFrame.classList.add('gv-splash-visible');
-              openingPoster.style.visibility='hidden';
+              requestAnimationFrame(()=>{if(launchCover.isConnected)launchCover.remove()});
               return;
             }
             if(performance.now()>=firstFrameDeadline){reject(new Error('FINAL SPLASH FIRST FRAME TIMEOUT'));return}
@@ -143,14 +143,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 
   try{
     const viewerInitializePromise=initializeViewer();
-    const splashWarmPromise=Promise.all([warmSplashImage(),warmSplashFont(),warmSplashHtml()]);
-    const openingHoldPromise=new Promise(resolve=>setTimeout(resolve,MIN_OPENING_HOLD_MS));
-    await Promise.all([splashWarmPromise,openingHoldPromise]);
     const splashCompletePromise=startPreparedSplash();
+    Promise.all([warmSplashImage(),warmSplashFont(),warmSplashHtml()]).catch(error=>console.warn('GALAXY VIEWER 8W SPLASH WARMUP WARNING',error));
     await Promise.all([splashCompletePromise,viewerInitializePromise]);
     requestAnimationFrame(()=>{
       if(splashFrame.isConnected)splashFrame.remove();
-      if(openingPoster.isConnected)openingPoster.remove();
+      if(launchCover.isConnected)launchCover.remove();
     });
   }catch(error){
     console.error('GALAXY VIEWER 8W APP LAUNCHER FAILURE',error);
