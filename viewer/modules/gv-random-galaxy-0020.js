@@ -338,8 +338,10 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-card{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);width:calc(100vw - 24px);max-width:none;padding:5px 6px 6px;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.78);box-shadow:inset 0 0 10px rgba(120,255,171,.10),0 0 14px rgba(77,255,143,.34);opacity:0;transition:opacity .20s ease;pointer-events:none}
 .gvrg-card-visible{opacity:1;pointer-events:none}
 .gvrg-name{display:none}
-.gvrg-science-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 6px;pointer-events:none}.gvrg-row{display:block;min-width:0;margin:0;padding:1px 0 2px;border-bottom:1px solid rgba(120,255,171,.12);text-align:center;pointer-events:none}
-.gvrg-label{font:400 10px/1.12 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.48px;color:#b9e9ff;text-align:center;text-shadow:0 0 4px rgba(98,216,255,.24);pointer-events:none}
+.gvrg-science-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid rgba(120,255,171,.28);border-left:1px solid rgba(120,255,171,.28);pointer-events:none}
+.gvrg-row{display:block;min-width:0;margin:0;padding:2px 4px 3px;border-right:1px solid rgba(120,255,171,.28);border-bottom:1px solid rgba(120,255,171,.28);text-align:center;pointer-events:none}
+.gvrg-row:nth-child(3n){border-right:0}
+.gvrg-label{font:400 10px/1.12 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.48px;color:#78FFAB;text-align:center;text-shadow:0 0 4px rgba(87,255,147,.42);pointer-events:none}
 .gvrg-value{min-width:0;min-height:15px;margin-top:1px;font:400 12px/1.16 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.15px;color:#ffffff;text-align:center;text-shadow:0 0 4px rgba(205,244,255,.18);white-space:normal;overflow-wrap:anywhere;pointer-events:none}
 .gvrg-card-distance{display:block;min-width:0}
 .gvrg-value-number{font:400 12px/1.16 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.15px}
@@ -358,7 +360,6 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-hd-science{position:absolute;left:50%;top:max(6px,env(safe-area-inset-top));z-index:4;transform:translateX(-50%);width:min(560px,92vw);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 6px;padding:6px 8px;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,9,.72);box-shadow:inset 0 0 8px rgba(120,255,171,.08),0 0 12px rgba(77,255,143,.28);text-align:center;pointer-events:none}
 .gvrg-hd-science-item{min-width:0;padding:2px;pointer-events:none}
 .gvrg-hd-science-label{font:400 11.4px/1.08 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.22px;color:#78FFAB;text-shadow:0 0 5px rgba(87,255,147,.42);text-align:center;pointer-events:none}
-.gvrg-hd-science-item:first-child .gvrg-hd-science-value{color:#78FFAB;text-shadow:0 0 6px rgba(87,255,147,.48)}
 .gvrg-hd-science-value{min-height:15px;margin-top:1px;font:400 13.5px/1.12 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.04px;color:#ffffff;text-shadow:0 0 4px rgba(205,255,224,.20);text-align:center;white-space:normal;overflow-wrap:anywhere;pointer-events:none}
 @media(min-width:520px){.gvrg-hd-science{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .gvrg-hd-footer{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.94));text-align:center;pointer-events:none}
@@ -435,7 +436,7 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       scienceGrid.className = 'gvrg-science-grid';
       const designationRow = makeRow('DESIGNATION');
       this.designationValueEl = designationRow.value;
-      const commonNameRow = makeRow('NAME');
+      const commonNameRow = makeRow('NAME / PSEUDONYM');
       this.commonNameValueEl = commonNameRow.value;
       const distanceRow = makeRow('DISTANCE');
       distanceRow.value.classList.add('gvrg-card-distance');
