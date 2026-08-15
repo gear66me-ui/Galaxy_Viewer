@@ -161,6 +161,266 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7b10ca8d79fd — Galaxy Viewer 8W
+
+**Recorded:** 2026-08-15T17:43:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7b10ca8d79fd29f619f79abac33364ff413ef608`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7b10ca8d79fd29f619f79abac33364ff413ef608)  
+**Parent/baseline:** `1f33bc7d2c1cfe845a1c2b9ce1cdc528653b15be`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1f33bc7d2c1cfe845a1c2b9ce1cdc528653b15be...7b10ca8d79fd29f619f79abac33364ff413ef608)  
+**Author:** German Arciniegas  
+**Changed-path count:** `12`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Galaxy Viewer 8W
+```
+
+### Complete changed-path accounting
+
+#### `android/galaxy-viewer/app/build.gradle`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `1c180cc4930a9bb70c1a0c55a5b6fdedd865610d6400ba76fc764ec4fe53c1f9`
+- Bytes: `0` → `281`
+- Lines: `0` → `16`
+- Characters: `0` → `281`
+- Inserted lines: `16`
+- Deleted lines: `0`
+- Inserted characters: `281`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 16 - 0 = 16` — **PASS**
+- Character balance: `0 + 281 - 0 = 281` — **PASS**
+
+#### `android/galaxy-viewer/app/src/main/AndroidManifest.xml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `dbd41abe0518753fd4d128bf8375233bbccbd62138f1a8a5ddff24f38116f640`
+- Bytes: `0` → `862`
+- Lines: `0` → `20`
+- Characters: `0` → `862`
+- Inserted lines: `20`
+- Deleted lines: `0`
+- Inserted characters: `862`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 20 - 0 = 20` — **PASS**
+- Character balance: `0 + 862 - 0 = 862` — **PASS**
+
+#### `android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9d145992094e2b01d26da81e86fec5389e8d9d5f259a8451861c255005abb746`
+- Bytes: `0` → `6740`
+- Lines: `0` → `146`
+- Characters: `0` → `6740`
+- Inserted lines: `146`
+- Deleted lines: `0`
+- Inserted characters: `6740`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 146 - 0 = 146` — **PASS**
+- Character balance: `0 + 6740 - 0 = 6740` — **PASS**
+
+#### `android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `012db3ad766832a865b779d532acc0b93717e4dc8f4c635081c615856aeb4d01`
+- Bytes: `0` → `33287`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer/build.gradle`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `c3c0cf04da0fc239f391c774554d97d890018ab6e37e87cc62f6070d0c8c9909`
+- Bytes: `0` → `73`
+- Lines: `0` → `3`
+- Characters: `0` → `73`
+- Inserted lines: `3`
+- Deleted lines: `0`
+- Inserted characters: `73`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 3 - 0 = 3` — **PASS**
+- Character balance: `0 + 73 - 0 = 73` — **PASS**
+
+#### `android/galaxy-viewer/gradle.properties`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `4d4c82226865844bdc85391d907a383da4a35d3a3f5348985d5ec3997ab932fe`
+- Bytes: `0` → `76`
+- Lines: `0` → `2`
+- Characters: `0` → `76`
+- Inserted lines: `2`
+- Deleted lines: `0`
+- Inserted characters: `76`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 2 - 0 = 2` — **PASS**
+- Character balance: `0 + 76 - 0 = 76` — **PASS**
+
+#### `android/galaxy-viewer/settings.gradle`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `189442949ca23c8b52993ccf8178fbc25fafab38098b8b09a5f7c83a44a8aad6`
+- Bytes: `0` → `329`
+- Lines: `0` → `16`
+- Characters: `0` → `329`
+- Inserted lines: `16`
+- Deleted lines: `0`
+- Inserted characters: `329`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 16 - 0 = 16` — **PASS**
+- Character balance: `0 + 329 - 0 = 329` — **PASS**
+
+#### `mobile/beta/8W.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `ad19d0067d204e647804b2aad189ad44c238ec3c6d632ab70f2ff8444f6f9555`
+- Bytes: `0` → `7893`
+- Lines: `0` → `162`
+- Characters: `0` → `7889`
+- Inserted lines: `162`
+- Deleted lines: `0`
+- Inserted characters: `7889`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 162 - 0 = 162` — **PASS**
+- Character balance: `0 + 7889 - 0 = 7889` — **PASS**
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6d4656d9b927caaa6b394a9a523adb0874940c1bc0a0685c64b3d398e100f81c`
+- SHA-256 after: `6d0508eee43a9321a9f3ae9cb4401ca6b22876a4defa04139f178071b76fd02f`
+- Bytes: `4359` → `4359`
+- Lines: `74` → `74`
+- Characters: `4357` → `4357`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `5`
+- Deleted characters: `5`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `74 + 5 - 5 = 74` — **PASS**
+- Character balance: `4357 + 5 - 5 = 4357` — **PASS**
+
+#### `mobile/beta/manifest.webmanifest`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8a4bdc5aefc4a1835858e61822f5ea10eab971e466101f4dedca253f0e685b00`
+- SHA-256 after: `af77ad09c8475e62ff61680b8a7ac0067e5630aa24908b76c9038b74b97f4ce1`
+- Bytes: `871` → `871`
+- Lines: `29` → `29`
+- Characters: `871` → `871`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `5`
+- Deleted characters: `5`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `29 + 5 - 5 = 29` — **PASS**
+- Character balance: `871 + 5 - 5 = 871` — **PASS**
+
+#### `viewer/GV-beta-0008W.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `a689a5562fefd5890f832162f307d3d5e05e397d9f73a33b90d9c2c27b958f66`
+- Bytes: `0` → `42357`
+- Lines: `0` → `703`
+- Characters: `0` → `42350`
+- Inserted lines: `703`
+- Deleted lines: `0`
+- Inserted characters: `42350`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 703 - 0 = 703` — **PASS**
+- Character balance: `0 + 42350 - 0 = 42350` — **PASS**
+
+#### `viewer/modules/gv-random-galaxy-0019.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `fb3a43a13b14fc37bf27dff79915831b0cc937ca490872f54f6aca35df631e8f`
+- Bytes: `0` → `64630`
+- Lines: `0` → `1182`
+- Characters: `0` → `64622`
+- Inserted lines: `1182`
+- Deleted lines: `0`
+- Inserted characters: `64622`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1182 - 0 = 1182` — **PASS**
+- Character balance: `0 + 64622 - 0 = 64622` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8W.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8W APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8W with the standalone FINAL splash release and concurrent Viewer initialization behind the splash.
+```
+
+**`viewer/modules/gv-random-galaxy-0019.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0011
+AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and 0011 identity. Touch-through interaction, 36px Hubble controls, top-centered HD viewing, no post-arrival reframing, and 24.075-second travel are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4d30e74ea953 — Add Galaxy Viewer 8V standalone launcher
 
 **Recorded:** 2026-08-15T17:12:55-05:00  
