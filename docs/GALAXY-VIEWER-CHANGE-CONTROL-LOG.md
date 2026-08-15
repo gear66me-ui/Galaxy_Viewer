@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-dbda21aad4b6 — Add temporary Hubble galaxy archive importer
+
+**Recorded:** 2026-08-14T19:48:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dbda21aad4b62afcd481165cb07af3d046811a0d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dbda21aad4b62afcd481165cb07af3d046811a0d)  
+**Parent/baseline:** `bbe582304bc8792c1735694d90a9e92a1e229bd3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bbe582304bc8792c1735694d90a9e92a1e229bd3...dbda21aad4b62afcd481165cb07af3d046811a0d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add temporary Hubble galaxy archive importer
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `cb38c969343f0e2bf53473934b3501a7e791e61ac6edc5049e60ad28a505a5f2`
+- Bytes: `0` → `31138`
+- Lines: `0` → `670`
+- Characters: `0` → `31134`
+- Inserted lines: `670`
+- Deleted lines: `0`
+- Inserted characters: `31134`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 670 - 0 = 670` — **PASS**
+- Character balance: `0 + 31134 - 0 = 31134` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-1b4ea47b50c4 — Integrate production Splash 0058H into Galaxy Viewer 8H launcher
 
 **Recorded:** 2026-08-14T19:33:40-05:00  
