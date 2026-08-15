@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2cedefac35dc — Restore exact 8I formatting after catalog pin
+
+**Recorded:** 2026-08-14T21:12:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2cedefac35dcc25bd23ffdaf46471f6d3354b2e8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2cedefac35dcc25bd23ffdaf46471f6d3354b2e8)  
+**Parent/baseline:** `645733ae9d1f62c6efa707f20d3abe5d7e8eac2e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/645733ae9d1f62c6efa707f20d3abe5d7e8eac2e...2cedefac35dcc25bd23ffdaf46471f6d3354b2e8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore exact 8I formatting after catalog pin
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0008I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `92e618c61c0b55907107e06946dbcabc17aa4cb19bbba8a84cc63dafe69e02aa`
+- SHA-256 after: `951b868d077964f33e9749776b2e410c4510987cbd162fa73e64167b1834359b`
+- Bytes: `18337` → `18339`
+- Lines: `301` → `302`
+- Characters: `18335` → `18337`
+- Inserted lines: `2`
+- Deleted lines: `1`
+- Inserted characters: `2`
+- Deleted characters: `0`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `1`
+- Changed blocks: `2`
+- Line balance: `301 + 2 - 1 = 302` — **PASS**
+- Character balance: `18335 + 2 - 0 = 18337` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a147813639eb — Pin Galaxy Viewer 8I to Hubble catalog 0002
 
 **Recorded:** 2026-08-14T21:06:49-05:00  
