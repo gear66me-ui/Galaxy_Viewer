@@ -173,6 +173,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-73f322647f98 — Add temporary green coordinate box bridge
+
+**Recorded:** 2026-08-15T18:29:04-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`73f322647f982ab1d36a0f9eb5f05e5e2ad2e435`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/73f322647f982ab1d36a0f9eb5f05e5e2ad2e435)  
+**Parent/baseline:** `d7f505ba7c3a56dd36c5085b119e2c251b76059f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d7f505ba7c3a56dd36c5085b119e2c251b76059f...73f322647f982ab1d36a0f9eb5f05e5e2ad2e435)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add temporary green coordinate box bridge
+```
+
+### Complete changed-path accounting
+
+#### `viewer/tests/coordinate-box-green-bridge.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `e99e3f6a9ebd332142e49637bc53fa2564c39384b50c33a141cff87ab6e909d7`
+- Bytes: `0` → `910`
+- Lines: `0` → `28`
+- Characters: `0` → `910`
+- Inserted lines: `28`
+- Deleted lines: `0`
+- Inserted characters: `910`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 28 - 0 = 28` — **PASS**
+- Character balance: `0 + 910 - 0 = 910` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-be77d9b442f6 — Restore beta app entry after connector write failure
 
 **Recorded:** 2026-08-15T18:25:36-05:00  
