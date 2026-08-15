@@ -125,6 +125,145 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0b01994474ee — Release Galaxy Viewer 8I static Milky Way start
+
+**Recorded:** 2026-08-14T20:30:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0b01994474ee82f82bfe457dfa4980ba1d65234a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0b01994474ee82f82bfe457dfa4980ba1d65234a)  
+**Parent/baseline:** `7d06fc7cc349b25042ab284c74d39e4a52a11a69`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7d06fc7cc349b25042ab284c74d39e4a52a11a69...0b01994474ee82f82bfe457dfa4980ba1d65234a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `5`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Release Galaxy Viewer 8I static Milky Way start
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8I.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6c17c861edbbd8d8edcf892155bd6203711708d5af0d3985edd1c9563809a6b0`
+- Bytes: `0` → `4130`
+- Lines: `0` → `84`
+- Characters: `0` → `4126`
+- Inserted lines: `84`
+- Deleted lines: `0`
+- Inserted characters: `4126`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 84 - 0 = 84` — **PASS**
+- Character balance: `0 + 4126 - 0 = 4126` — **PASS**
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `16ac63cc572a6a598c4a495f586dd352544c2ad33156dd43063f372a787b8a90`
+- SHA-256 after: `31d95f7b0af5fd2811acdf98d54a2fc63796d023587c645fbe1191e9a7938822`
+- Bytes: `4360` → `4360`
+- Lines: `74` → `74`
+- Characters: `4358` → `4358`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `3`
+- Deleted characters: `3`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `74 + 3 - 3 = 74` — **PASS**
+- Character balance: `4358 + 3 - 3 = 4358` — **PASS**
+
+#### `viewer/GV-beta-0008I.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `1b14f589fec14d8ac7b4249cfc4c35acfca3fc107ad58d17af2a378fdb89b0ab`
+- Bytes: `0` → `18339`
+- Lines: `0` → `302`
+- Characters: `0` → `18337`
+- Inserted lines: `302`
+- Deleted lines: `0`
+- Inserted characters: `18337`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 302 - 0 = 302` — **PASS**
+- Character balance: `0 + 18337 - 0 = 18337` — **PASS**
+
+#### `viewer/archive/GV-beta-0008H.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `31847e56a2a70dad23cd901ff52ac015a66311da84dce63d9303c181452510ea`
+- Bytes: `0` → `17026`
+- Lines: `0` → `288`
+- Characters: `0` → `17026`
+- Inserted lines: `288`
+- Deleted lines: `0`
+- Inserted characters: `17026`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 288 - 0 = 288` — **PASS**
+- Character balance: `0 + 17026 - 0 = 17026` — **PASS**
+
+#### `viewer/modules/gv-random-galaxy-0006.js`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `2011ce158f4dd3c0ba10d5920d439550d1bad78c431968187c5fc4e122df5068`
+- Bytes: `0` → `42889`
+- Lines: `0` → `870`
+- Characters: `0` → `42885`
+- Inserted lines: `870`
+- Deleted lines: `0`
+- Inserted characters: `42885`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 870 - 0 = 870` — **PASS**
+- Character balance: `0 + 42885 - 0 = 42885` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8I APP LAUNCHER
+PURPOSE: Dedicated app launcher for the exact Galaxy Viewer 8I test release with production Splash 0058H.
+PRESERVED BEHAVIOR: No Viewer application logic is duplicated in this launcher; it loads the full 8I Viewer concurrently with the production splash and reveals the Viewer only after both are complete.
+```
+
+**`viewer/modules/gv-random-galaxy-0006.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0006
+AUTHORIZED CHANGES: local-catalog/provider-only random selection, readable compact arrival card with galaxy name / distance / constellation / age / Hubble HD, and preserved 24.075-second travel choreography and HD pinch/pan behavior.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-04fdcfee28d0 — Enumerate ESA Hubble archive by ranking and date
 
 **Recorded:** 2026-08-14T20:26:24-05:00  
