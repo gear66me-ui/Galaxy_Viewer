@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-29ecf1d6a46a — Make Hubble metadata parsing null-safe
+
+**Recorded:** 2026-08-14T20:39:23-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`29ecf1d6a46a58c334afacba7cdbeeecc40d56e6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/29ecf1d6a46a58c334afacba7cdbeeecc40d56e6)  
+**Parent/baseline:** `fab2442b18be4a158973f79f39ce2b045295d01c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/fab2442b18be4a158973f79f39ce2b045295d01c...29ecf1d6a46a58c334afacba7cdbeeecc40d56e6)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Make Hubble metadata parsing null-safe
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `52ce95552b2e5e375c93723bb94ffab1dc243f422a8319c919b5a250dac4c5de`
+- SHA-256 after: `644ab75e180cdb8e136761274913c90588299cb20ab61c11ba2c3819a2a1a18e`
+- Bytes: `35432` → `35457`
+- Lines: `759` → `759`
+- Characters: `35428` → `35453`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `25`
+- Deleted characters: `0`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `759 + 3 - 3 = 759` — **PASS**
+- Character balance: `35428 + 25 - 0 = 35453` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0b01994474ee — Release Galaxy Viewer 8I static Milky Way start
 
 **Recorded:** 2026-08-14T20:30:55-05:00  
