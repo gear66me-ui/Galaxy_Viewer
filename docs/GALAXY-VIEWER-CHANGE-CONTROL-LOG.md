@@ -113,6 +113,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7903d75c5bb5 — Point rolling beta launcher to 8H and remove stale 8A loader
+
+**Recorded:** 2026-08-14T19:10:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7903d75c5bb52c9a81275db8dc916069740d5b32`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7903d75c5bb52c9a81275db8dc916069740d5b32)  
+**Parent/baseline:** `ee467e79adc0be1c3c1cb4e75764b8f8a0b0b6fc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ee467e79adc0be1c3c1cb4e75764b8f8a0b0b6fc...7903d75c5bb52c9a81275db8dc916069740d5b32)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Point rolling beta launcher to 8H and remove stale 8A loader
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `de2ae74c28c2cddf2bafe20972c009ddf7b9a10a7223451cee26b5897487a2cb`
+- SHA-256 after: `16ac63cc572a6a598c4a495f586dd352544c2ad33156dd43063f372a787b8a90`
+- Bytes: `10004` → `4360`
+- Lines: `185` → `74`
+- Characters: `9994` → `4358`
+- Inserted lines: `3`
+- Deleted lines: `114`
+- Inserted characters: `3`
+- Deleted characters: `5639`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `185 + 3 - 114 = 74` — **PASS**
+- Character balance: `9994 + 3 - 5639 = 4358` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ba03f6acf90c — Add Galaxy Viewer 8H dedicated launcher
 
 **Recorded:** 2026-08-14T19:09:43-05:00  
