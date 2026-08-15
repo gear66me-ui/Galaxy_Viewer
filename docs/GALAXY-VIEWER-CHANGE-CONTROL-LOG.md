@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-cfb0bb98beb7 — Capture full Hubble Galaxies archive inventory and images
+
+**Recorded:** 2026-08-14T21:45:16-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`cfb0bb98beb7e13884aefa2578f4c1ec08b00e5c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/cfb0bb98beb7e13884aefa2578f4c1ec08b00e5c)  
+**Parent/baseline:** `c556e5ca75b0f35914d3f4125479a09b4cc33f4f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c556e5ca75b0f35914d3f4125479a09b4cc33f4f...cfb0bb98beb7e13884aefa2578f4c1ec08b00e5c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Capture full Hubble Galaxies archive inventory and images
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/import-hubble-galaxy-archive.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `644ab75e180cdb8e136761274913c90588299cb20ab61c11ba2c3819a2a1a18e`
+- SHA-256 after: `0a6df4e28f65efe3b4f7e34c00d47cec5905713a109b7f9bdf371d9d395f14f3`
+- Bytes: `35457` → `44518`
+- Lines: `759` → `962`
+- Characters: `35453` → `44514`
+- Inserted lines: `293`
+- Deleted lines: `90`
+- Inserted characters: `11885`
+- Deleted characters: `2824`
+- Unified diff hunks: `31`
+- Inserted blocks: `35`
+- Deleted blocks: `25`
+- Changed blocks: `35`
+- Line balance: `759 + 293 - 90 = 962` — **PASS**
+- Character balance: `35453 + 11885 - 2824 = 44514` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-be7cadae331f — Pin 8I launcher to verified Viewer blob
 
 **Recorded:** 2026-08-14T21:13:50-05:00  
