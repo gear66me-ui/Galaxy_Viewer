@@ -125,6 +125,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ef17e0546a42 — Delete viewer/archive/test_chatgpt_connector.py
+
+**Recorded:** 2026-08-14T19:13:20-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ef17e0546a424c888931aa6ea5fb55ea860afa48`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ef17e0546a424c888931aa6ea5fb55ea860afa48)  
+**Parent/baseline:** `4e3ae232dd91ac17f51b92372a18f1693bfd3342`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4e3ae232dd91ac17f51b92372a18f1693bfd3342...ef17e0546a424c888931aa6ea5fb55ea860afa48)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Delete viewer/archive/test_chatgpt_connector.py
+```
+
+### Complete changed-path accounting
+
+#### `viewer/archive/test_chatgpt_connector.py`
+
+- Status: **DELETED**
+- SHA-256 before: `177fe04926e70db7ec502eaf5524963fd21cd9c1efb8e7707a7af698546d6bfa`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `34` → `0`
+- Lines: `1` → `0`
+- Characters: `34` → `0`
+- Inserted lines: `0`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `34`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 0 - 1 = 0` — **PASS**
+- Character balance: `34 + 0 - 34 = 0` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-bc063234de91 — Add temporary ESA Hubble image import workflow
 
 **Recorded:** 2026-08-14T19:13:05-05:00  
