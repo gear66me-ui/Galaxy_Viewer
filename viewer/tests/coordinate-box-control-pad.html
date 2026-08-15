@@ -84,6 +84,10 @@ button{min-height:38px;border:1px solid #78FFAB;border-radius:6px;background:#0B
   thinStyle.textContent='.gvco-cell{filter:url(#gvco-thin-10)}';
   shadow.appendChild(thinStyle);
 
+  const touchStyle=document.createElement('style');
+  touchStyle.textContent='.gvco-frame{z-index:2}.gvco-frame::before{content:"";position:absolute;inset:-5px -5px;border:1px solid rgba(120,255,171,.72);border-radius:5px;background:rgba(120,255,171,.16);box-shadow:0 0 8px rgba(120,255,171,.72),inset 0 0 7px rgba(120,255,171,.24);pointer-events:none;z-index:-1}';
+  shadow.appendChild(touchStyle);
+
   function spreadNumber(numberEl){
     const cells=[...numberEl.querySelectorAll('.gvco-cell')];
     const decimal=cells.find(cell=>cell.textContent==='.');
