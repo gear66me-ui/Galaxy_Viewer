@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-266f061f9063 — Patch 9I runtime for immediate HD entry and SEE NOW
+
+**Recorded:** 2026-08-16T17:18:35-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`266f061f9063253e958e54a4cfdf80352da6ae28`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/266f061f9063253e958e54a4cfdf80352da6ae28)  
+**Parent/baseline:** `4386dd3a48e8282e4bf7442ca5ae0c6999ee7983`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4386dd3a48e8282e4bf7442ca5ae0c6999ee7983...266f061f9063253e958e54a4cfdf80352da6ae28)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Patch 9I runtime for immediate HD entry and SEE NOW
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `0cd073286b33b578d742938d281cb6eca39adae3b8335403c90caa4976369238`
+- SHA-256 after: `33124ad8328727a648670803dbf5472902e02e8d6ed20cfa20f3aa1099aa0f01`
+- Bytes: `7358` → `8420`
+- Lines: `115` → `124`
+- Characters: `7354` → `8416`
+- Inserted lines: `10`
+- Deleted lines: `1`
+- Inserted characters: `1066`
+- Deleted characters: `4`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `1`
+- Changed blocks: `2`
+- Line balance: `115 + 10 - 1 = 124` — **PASS**
+- Character balance: `7354 + 1066 - 4 = 8416` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I-app.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c94e3e9a673c — Restore exact 9I-A viewer after failed surgical write
 
 **Recorded:** 2026-08-16T17:17:51-05:00  
