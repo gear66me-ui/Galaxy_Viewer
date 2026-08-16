@@ -257,6 +257,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-6534af384541 — 9D → 9E roll-up
+
+**Source current-beta commit:** `6534af384541a2ac3a6196ce50acaaaea8cf755e`  
+**Previous Viewer:** `viewer/GV-beta-0009D.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0009D.py`  
+**Original Git blob:** `a28ffe2b797fbf61a9a02716d133e1b52dc18405`  
+**Archived Git blob:** `a28ffe2b797fbf61a9a02716d133e1b52dc18405`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0009E.py`  
+
+---
+
 ## AUTO-6534af384541 — Point beta launcher to 9E
 
 **Recorded:** 2026-08-15T23:09:18-05:00  
