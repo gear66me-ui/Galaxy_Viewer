@@ -20,7 +20,7 @@ jobs:
       SOURCE: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json
       OUTPUT: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
       EXPECTED_SOURCE_BLOB: d02cfaae7c690b75db70010a7a5fa87c917d2f37
-      RESEARCH_MODEL: gemini-3.5-flash-lite
+      RESEARCH_MODEL: gemini-3.1-flash-lite
       SYNTHESIS_MODEL: gemini-3.7-flash
       TARGET_THIS_RUN: "220"
       CHECKPOINT_SIZE: "10"
