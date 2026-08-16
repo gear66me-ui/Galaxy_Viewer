@@ -1,0 +1,66 @@
+name: Fix 9I public landing
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-9i-public-landing.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Preserve launcher and restore landing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f mobile/beta/9I.html
+          test ! -e mobile/beta/9I-app.html
+          cp mobile/beta/9I.html mobile/beta/9I-app.html
+          cat > mobile/beta/9I.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#000000">
+          <title>GALAXY VIEWER — 9I</title>
+          <link rel="icon" href="../../viewer/artwork/icon_target_vector.svg" type="image/svg+xml">
+          <style>
+          *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#000;color:#fff}body{font-family:system-ui,sans-serif;text-align:center}main{width:min(100%,960px);margin:0 auto;padding:18px 14px 28px}.banner{width:100%;aspect-ratio:3/1;border:0;display:block;background:#000}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:min(100%,620px);margin:22px auto 0}.choice{display:flex;align-items:center;justify-content:center;gap:14px;min-height:82px;padding:12px 16px;border:1px solid #78ffab;border-radius:10px;background:#07130d;color:#eafff1;text-decoration:none;box-shadow:0 0 14px rgba(87,255,147,.22);font:600 15px/1.2 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}.choice img{width:48px;height:48px;object-fit:contain}.choice:active{transform:scale(.99)}@media(max-width:520px){.choices{grid-template-columns:1fr}.choice{min-height:76px}}
+          </style>
+          </head>
+          <body>
+          <main>
+            <iframe class="banner" src="../../launch/galaxy-viewer-banner-0002.html" title="Galaxy Viewer 9I banner"></iframe>
+            <div class="choices">
+              <a class="choice" href="./9I-app.html?source=9i-web-launch"><span>Launch Galaxy Viewer 9I</span><img src="../../viewer/artwork/App%20Icons/GV-app-icon-192.png" alt=""></a>
+              <a class="choice" href="https://github.com/gear66me-ui/Galaxy_Viewer" target="_blank" rel="noopener"><span>Galaxy Viewer Project</span><img src="../../viewer/artwork/icon_target_vector.svg" alt=""></a>
+            </div>
+          </main>
+          <script>
+          (()=>{
+            const q=new URLSearchParams(location.search);
+            if(q.get('source')==='android-app' || q.get('launch')==='1'){
+              location.replace('./9I-app.html'+location.search+location.hash);
+            }
+          })();
+          </script>
+          </body>
+          </html>
+          HTML
+          git diff --exit-code -- viewer/GV-beta-0009I.py
+          grep -F 'galaxy-viewer-banner-0002.html' mobile/beta/9I.html
+          grep -F '9I-app.html' mobile/beta/9I.html
+          grep -F 'GV-beta-0009I.py' mobile/beta/9I-app.html
+          git config user.name 'Galaxy Viewer Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add mobile/beta/9I.html mobile/beta/9I-app.html
+          git commit -m 'Restore 9I banner landing and preserve explicit app launcher'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          echo "COMMIT=$(git rev-parse HEAD)"
