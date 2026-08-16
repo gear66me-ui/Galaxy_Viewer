@@ -221,6 +221,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-201a663d5b84 — Create exact Galaxy Viewer 9B launcher baseline
+
+**Recorded:** 2026-08-15T20:47:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`201a663d5b847195f990c8f5aa401233e47f5932`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/201a663d5b847195f990c8f5aa401233e47f5932)  
+**Parent/baseline:** `d1b7fa81c0cb568c4f3aa8dffffa64f664ea30dc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d1b7fa81c0cb568c4f3aa8dffffa64f664ea30dc...201a663d5b847195f990c8f5aa401233e47f5932)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Create exact Galaxy Viewer 9B launcher baseline
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9B.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `f45ed5183219e897341f49726c6025c07734f68005ab1448dda8fd0a50237820`
+- Bytes: `0` → `8054`
+- Lines: `0` → `164`
+- Characters: `0` → `8050`
+- Inserted lines: `164`
+- Deleted lines: `0`
+- Inserted characters: `8050`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 164 - 0 = 164` — **PASS**
+- Character balance: `0 + 8050 - 0 = 8050` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9B.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9A APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9A, preserving the verified 8Z startup sequence unchanged.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-73de21730c88 — Create exact Galaxy Viewer 9B Viewer baseline
 
 **Recorded:** 2026-08-15T20:47:03-05:00  
