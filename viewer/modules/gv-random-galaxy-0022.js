@@ -335,10 +335,10 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-route{height:14px;font:400 8px/14px "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:1px;color:#a4d8b7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gvrg-progress{height:3px;margin-top:6px;border-radius:3px;background:rgba(183,255,208,.14);overflow:hidden}
 .gvrg-progress-fill{width:0;height:100%;background:#66ff9f;box-shadow:0 0 8px rgba(102,255,159,.75);transition:width .08s linear}
-.gvrg-card{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);width:calc(100vw - 24px);max-width:none;padding:5px 6px 6px;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.78);box-shadow:inset 0 0 10px rgba(120,255,171,.10),0 0 14px rgba(77,255,143,.34);opacity:0;transition:opacity .20s ease;pointer-events:none}
+.gvrg-card{position:absolute;left:50%;top:24%;transform:translate(-50%,-50%);width:calc(100vw - 24px);max-width:none;padding:5px 6px 6px;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.78);box-shadow:inset 0 0 10px rgba(120,255,171,.10),0 0 14px rgba(77,255,143,.34);opacity:0;transition:opacity .20s ease;pointer-events:none}
 .gvrg-card-visible{opacity:1;pointer-events:none}
 .gvrg-name{display:none}
-.gvrg-science-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid rgba(120,255,171,.28);border-left:1px solid rgba(120,255,171,.28);pointer-events:none}
+.gvrg-science-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(0,1.08fr) minmax(0,.74fr);gap:0;border-top:1px solid rgba(120,255,171,.28);border-left:1px solid rgba(120,255,171,.28);pointer-events:none}
 .gvrg-row{display:block;min-width:0;margin:0;padding:2px 4px 3px;border-right:1px solid rgba(120,255,171,.28);border-bottom:1px solid rgba(120,255,171,.28);text-align:center;pointer-events:none}
 .gvrg-row:nth-child(3n){border-right:0}
 .gvrg-label{font:400 10px/1.12 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.48px;color:#78FFAB;text-align:center;text-shadow:0 0 4px rgba(87,255,147,.42);pointer-events:none}
@@ -349,7 +349,7 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-actions{display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:5px;align-items:stretch;margin-top:4px;pointer-events:none}
 .gvrg-button{appearance:none;border:1px solid rgba(175,225,255,.84);border-radius:5px;background:rgba(7,27,42,.95);color:#effbff;padding:6px 8px;font:400 9px/1 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.55px;cursor:pointer}
 .gvrg-button:disabled{opacity:.45;cursor:default}
-.gvrg-hd-primary{min-width:0;height:36px;padding:4px 8px;border-color:#78FFAB;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.55px;text-align:center;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(77,255,143,.34);pointer-events:auto}
+.gvrg-hd-primary{min-width:0;height:36px;padding:4px 8px;border-color:#FF7894;background:linear-gradient(145deg,rgba(48,5,23,.98) 0%,rgba(103,11,42,.97) 36%,rgba(171,30,65,.96) 68%,rgba(226,72,96,.94) 100%);color:#FFF4F7;font:400 11px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.55px;text-align:center;text-shadow:0 0 4px rgba(255,226,234,.88),0 0 8px rgba(255,96,132,.45);box-shadow:inset 0 0 8px rgba(255,151,173,.24),0 0 9px rgba(255,61,105,.46),0 0 18px rgba(157,18,61,.26);pointer-events:auto}
 .gvrg-hd-icon-button{width:36px;height:36px;padding:2px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-color:#78FFAB;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(77,255,143,.34);pointer-events:auto}
 .gvrg-hd-icon-button img{display:block;width:100%;height:100%;object-fit:contain;background:transparent;pointer-events:none}
 .gvrg-hd{position:absolute;inset:0;display:none;z-index:20;background:#000;pointer-events:auto;overflow:hidden}
@@ -438,7 +438,7 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       scienceGrid.className = 'gvrg-science-grid';
       const designationRow = makeRow('DESIGNATION');
       this.designationValueEl = designationRow.value;
-      const commonNameRow = makeRow('NAME / PSEUDONYM');
+      const commonNameRow = makeRow('NAME / PSEUDO');
       this.commonNameValueEl = commonNameRow.value;
       const distanceRow = makeRow('DISTANCE');
       distanceRow.value.classList.add('gvrg-card-distance');
