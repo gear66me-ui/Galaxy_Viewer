@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-002a12563d70 — Restore beta app entrypoint to Galaxy Viewer 9C
+
+**Recorded:** 2026-08-16T17:29:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`002a12563d708c84487d93a5caf4f913d1fa91ee`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/002a12563d708c84487d93a5caf4f913d1fa91ee)  
+**Parent/baseline:** `767a8c485f906438e8ffddb644e4a317caff0c2c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/767a8c485f906438e8ffddb644e4a317caff0c2c...002a12563d708c84487d93a5caf4f913d1fa91ee)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore beta app entrypoint to Galaxy Viewer 9C
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e8ff664fa85e7639215f5d7dd156b9e632ea2da0fb0c0ad0dbf0112a17eb5913`
+- SHA-256 after: `e80cf4f5cd0ea3fc1f5ec9c19d51d4f42dca844d7327a2a1087fbd35ec102fac`
+- Bytes: `1018` → `1014`
+- Lines: `24` → `24`
+- Characters: `1018` → `1014`
+- Inserted lines: `4`
+- Deleted lines: `4`
+- Inserted characters: `4`
+- Deleted characters: `8`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `24 + 4 - 4 = 24` — **PASS**
+- Character balance: `1018 + 4 - 8 = 1014` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-958b14546f74 — Rename installed Galaxy Viewer tile to 9C
 
 **Recorded:** 2026-08-16T17:26:06-05:00  
