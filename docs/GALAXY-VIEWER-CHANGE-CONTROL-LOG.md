@@ -197,6 +197,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-35e02dee556c — Refine 8Z arrival presentation
+
+**Recorded:** 2026-08-15T19:43:41-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`35e02dee556ce77de7be49152c56d7b8fd5dadfb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/35e02dee556ce77de7be49152c56d7b8fd5dadfb)  
+**Parent/baseline:** `d4f628f334a64d4b5fca355980db53195794575f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d4f628f334a64d4b5fca355980db53195794575f...35e02dee556ce77de7be49152c56d7b8fd5dadfb)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Refine 8Z arrival presentation
+```
+
+### Complete changed-path accounting
+
+#### `viewer/modules/gv-random-galaxy-0022.js`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ca63d6937fec4960c1eab6f44442db5ed158588579c0cfdb0f0bb1ac31291044`
+- SHA-256 after: `5440c6464ed588f3920a865add4e4d9eb7fc032dc51255ad86a2d3aef4bff3bf`
+- Bytes: `65034` → `65169`
+- Lines: `1185` → `1185`
+- Characters: `65026` → `65161`
+- Inserted lines: `4`
+- Deleted lines: `4`
+- Inserted characters: `204`
+- Deleted characters: `69`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `1185 + 4 - 4 = 1185` — **PASS**
+- Character balance: `65026 + 204 - 69 = 65161` — **PASS**
+
+### Recorded instruction evidence
+
+**`viewer/modules/gv-random-galaxy-0022.js`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0011
+AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and 0011 identity. Touch-through interaction, 36px Hubble controls, top-centered HD viewing, no post-arrival reframing, and 24.075-second travel are preserved.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-41ccc0aab744 — Create exact Galaxy Viewer 8Z baselines
 
 **Recorded:** 2026-08-15T19:40:01-05:00  
