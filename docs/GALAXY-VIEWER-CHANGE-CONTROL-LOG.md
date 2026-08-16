@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-947fb582f8c8 — Add deterministic 9I-G Android packaging repair
+
+**Recorded:** 2026-08-16T18:58:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`947fb582f8c8d8a7171e6d874c2856245603f15c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/947fb582f8c8d8a7171e6d874c2856245603f15c)  
+**Parent/baseline:** `22ce9e3a47cfd6b0e920dafdf0138a5e5642572e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/22ce9e3a47cfd6b0e920dafdf0138a5e5642572e...947fb582f8c8d8a7171e6d874c2856245603f15c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add deterministic 9I-G Android packaging repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/scripts/prepare_galaxy_viewer_9ig.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `371edbed39498c80377c94c17ac8e48109e64a6ce04bb460f2eb96f2657f40da`
+- Bytes: `0` → `7549`
+- Lines: `0` → `121`
+- Characters: `0` → `7549`
+- Inserted lines: `121`
+- Deleted lines: `0`
+- Inserted characters: `7549`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 121 - 0 = 121` — **PASS**
+- Character balance: `0 + 7549 - 0 = 7549` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-642d1f1d6302 — Archive Galaxy Viewer 9I-F exact beta source
 
 **Recorded:** 2026-08-16T18:58:14-05:00  
