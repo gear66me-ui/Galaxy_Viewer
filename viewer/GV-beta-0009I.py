@@ -2,7 +2,7 @@ from IPython.display import HTML, Javascript, display
 
 # GV-beta-0009I
 # Derived from exact repaired GV-beta-0009H baseline blob 6e29dd296343dc43e086b619872ad1ece1e8b833.
-# Authorized 9I change: prewarm final Aladin P/DSS2/color survey imagery for the ten Hubble-ready destinations and immediately prioritize the selected destination without changing visible travel choreography.
+# Authorized 9I change: destination-first preparation. Aladin final-view prewarm begins concurrently with each sequential Hubble HD preload; catalog switched to JSON 0002. Visible travel choreography remains unchanged.
 # Repaired 9H Hubble instant-open behavior and all unrelated behavior remain frozen.
 
 display(HTML("""
@@ -81,7 +81,7 @@ display(Javascript(r"""
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
     const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0028.js?v=228d6b59b0a394d3c2bb6eae29213eb9a9bcd5d4';
-    const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json?v=060f0abadd103e320c70f035ac93f42d200eda0f';
+    const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json?v=c1e850ee3f9476882e7efde5fa24d0a36290a1b3';
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
     const HOME=Object.freeze({name:'EARTH — MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
     const ARRIVAL_OCCUPANCY=Object.freeze({target:0.35,max:0.40,minFov:0.05,maxFov:8});
@@ -427,9 +427,9 @@ display(Javascript(r"""
         const controller=new AbortController();
         activePrefetchAbort=controller;
         activePrefetchKey=key;
+        queueAladinPrewarm(destination,priority);
         const promise=prepareHdDestination(destination,controller.signal).then(item=>{
             if(backgroundWorkSuspended){releasePreparedItem(item);return}
-            queueAladinPrewarm(item.destination,false);
             if(key===activeTargetKey&&!activePreparedItem){
                 activePreparedItem=item;
                 window.__gv9iRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
