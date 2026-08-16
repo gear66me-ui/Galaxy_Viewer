@@ -23,57 +23,50 @@ jobs:
           test "$(git rev-parse origin/beta:viewer/GV-beta-0009J.py)" = "02c1070ee8f1528f7c04a53d81b79f2d044bde3f"
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path('viewer/GV-beta-0009I.py')
           s=p.read_text()
-          old='''    function extractDesignation(candidate){
-              const texts=[candidate?.name,candidate?.title].map(value=>String(value||'').trim()).filter(Boolean);
-              for(const text of texts){
-                  const match=text.match(/\\b(?:M|NGC|IC|UGC|PGC)\\s*[- ]?\\s*\\d+[A-Z]?\\b/i);
-                  if(match)return match[0].replace(/\\s+/g,' ').toUpperCase();
-              }
-              return '';
-          }
-          '''
-          new='''    function extractDesignation(candidate){
-              const explicit=String(candidate?.designation||'').trim();
-              const texts=[explicit,candidate?.name,candidate?.title,candidate?.displayName,candidate?.imageType,candidate?.category]
-                  .map(value=>String(value||'').trim()).filter(Boolean);
-              const joined=texts.join(' | ');
+          pattern=r"    function extractDesignation\(candidate\)\{.*?\n    \}\n\n    function normalizeCatalogGalaxy"
+          m=re.search(pattern,s,re.S)
+          if not m:
+              raise SystemExit('REFUSE: 9I designation function boundary not found')
+          new_func="""    function extractDesignation(candidate){
+        const explicit=String(candidate?.designation||'').trim();
+        const texts=[explicit,candidate?.name,candidate?.title,candidate?.displayName,candidate?.imageType,candidate?.category]
+            .map(value=>String(value||'').trim()).filter(Boolean);
+        const joined=texts.join(' | ');
 
-              if(/stephan(?:'|’)?s\\s+quintet/i.test(joined))return 'HCG 92';
+        if(/stephan(?:'|’)?s\\s+quintet/i.test(joined))return 'HCG 92';
 
-              for(const text of texts){
-                  let match=text.match(/\\bHCG\\s*[- ]?\\s*(\\d+[A-Z]?)\\b/i);
-                  if(match)return `HCG ${match[1].toUpperCase()}`;
-                  match=text.match(/\\bHICKSON(?:\\s+COMPACT\\s+GROUP)?\\s*[- ]?\\s*(\\d+[A-Z]?)\\b/i);
-                  if(match)return `HCG ${match[1].toUpperCase()}`;
-                  match=text.match(/\\bABELL\\s*[- ]?\\s*(\\d+[A-Z]?)\\b/i);
-                  if(match)return `ABELL ${match[1].toUpperCase()}`;
-              }
+        for(const text of texts){
+            let match=text.match(/\\bHCG\\s*[- ]?\\s*(\\d+[A-Z]?)\\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\\bHICKSON(?:\\s+COMPACT\\s+GROUP)?\\s*[- ]?\\s*(\\d+[A-Z]?)\\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\\bABELL\\s*[- ]?\\s*(\\d+[A-Z]?)\\b/i);
+            if(match)return `ABELL ${match[1].toUpperCase()}`;
+        }
 
-              if(explicit)return explicit.toUpperCase();
+        if(explicit)return explicit.toUpperCase();
 
-              for(const text of texts){
-                  const match=text.match(/\\b(?:M|NGC|IC|UGC|PGC|ARP)\\s*[- ]?\\s*\\d+[A-Z]?\\b/i);
-                  if(match)return match[0].replace(/\\s+/g,' ').toUpperCase();
-              }
+        for(const text of texts){
+            const match=text.match(/\\b(?:M|NGC|IC|UGC|PGC|ARP)\\s*[- ]?\\s*\\d+[A-Z]?\\b/i);
+            if(match)return match[0].replace(/\\s+/g,' ').toUpperCase();
+        }
 
-              if(/\\b(?:galaxy\\s+cluster|cluster\\s+of\\s+galaxies|galaxies\\s+cluster)\\b/i.test(joined))return 'GALAXY CLUSTER';
-              if(/\\b(?:compact\\s+group|galaxy\\s+group|group\\s+of\\s+galaxies)\\b/i.test(joined))return 'GALAXY GROUP';
-              if(/\\b(?:galaxy\\s+pair|pair\\s+of\\s+galaxies|interacting\\s+galaxies)\\b/i.test(joined))return 'GALAXY PAIR';
-              if(/\\b(?:star\\s+cluster|stellar\\s+cluster)\\b/i.test(joined))return 'STAR CLUSTER';
-              if(/\\b(?:star\\s+field|stellar\\s+field)\\b/i.test(joined))return 'STAR FIELD';
-              if(/\\bstar\\b/i.test(joined)&&!/\\bgalax/i.test(joined))return 'STAR';
-              if(/\\bnebula\\b/i.test(joined))return 'NEBULA';
-              return 'GALAXY';
-          }
-          '''
-          if s.count(old)!=1:
-              raise SystemExit('REFUSE: exact 9I extractDesignation baseline not found')
-          s=s.replace(old,new,1)
-          old_source="source:'ESA/HUBBLE GALAXIES CATALOG FULL-0001'"
-          if s.count(old_source)==1:
-              s=s.replace(old_source,"source:'ESA/HUBBLE GALAXIES CATALOG FULL-0002'",1)
+        if(/\\b(?:galaxy\\s+cluster|cluster\\s+of\\s+galaxies|galaxies\\s+cluster)\\b/i.test(joined))return 'GALAXY CLUSTER';
+        if(/\\b(?:compact\\s+group|galaxy\\s+group|group\\s+of\\s+galaxies)\\b/i.test(joined))return 'GALAXY GROUP';
+        if(/\\b(?:galaxy\\s+pair|pair\\s+of\\s+galaxies|interacting\\s+galaxies)\\b/i.test(joined))return 'GALAXY PAIR';
+        if(/\\b(?:star\\s+cluster|stellar\\s+cluster)\\b/i.test(joined))return 'STAR CLUSTER';
+        if(/\\b(?:star\\s+field|stellar\\s+field)\\b/i.test(joined))return 'STAR FIELD';
+        if(/\\bstar\\b/i.test(joined)&&!/\\bgalax/i.test(joined))return 'STAR';
+        if(/\\bnebula\\b/i.test(joined))return 'NEBULA';
+        return 'GALAXY';
+    }
+
+    function normalizeCatalogGalaxy"""
+          s=s[:m.start()]+new_func+s[m.end():]
+          s=s.replace("source:'ESA/HUBBLE GALAXIES CATALOG FULL-0001'","source:'ESA/HUBBLE GALAXIES CATALOG FULL-0002'",1)
           p.write_text(s)
           PY
           NEW_BLOB=$(git hash-object viewer/GV-beta-0009I.py)
