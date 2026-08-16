@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c94e3e9a673c — Restore exact 9I-A viewer after failed surgical write
+
+**Recorded:** 2026-08-16T17:17:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c94e3e9a673cc43d524541ef10c5494954f4e967`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c94e3e9a673cc43d524541ef10c5494954f4e967)  
+**Parent/baseline:** `f2b9e6f338de8fb54ccb1e9f47cf07dbc04eb1aa`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f2b9e6f338de8fb54ccb1e9f47cf07dbc04eb1aa...c94e3e9a673cc43d524541ef10c5494954f4e967)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore exact 9I-A viewer after failed surgical write
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ba363722863fbcaec6220c9374eee834874730495884eb91015fffe29af850d2`
+- SHA-256 after: `e39d52c7ddeeb13e2dca3cac424f0ad3236bfb6450f105cc4fbbfb2f4c1849e3`
+- Bytes: `44053` → `66823`
+- Lines: `681` → `1130`
+- Characters: `44049` → `66814`
+- Inserted lines: `459`
+- Deleted lines: `10`
+- Inserted characters: `23219`
+- Deleted characters: `454`
+- Unified diff hunks: `7`
+- Inserted blocks: `6`
+- Deleted blocks: `5`
+- Changed blocks: `7`
+- Line balance: `681 + 459 - 10 = 1130` — **PASS**
+- Character balance: `44049 + 23219 - 454 = 66814` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9b16f70313ad — Fix 9I immediate Hubble HD entry and SEE NOW action
 
 **Recorded:** 2026-08-16T17:16:55-05:00  
