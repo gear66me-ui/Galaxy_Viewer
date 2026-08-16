@@ -513,7 +513,7 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       this.hdCommonNameValueEl = hdCommonName.value;
       const hdDistance = makeHdScienceItem('DISTANCE');
       this.hdDistanceValueEl = hdDistance.value;
-      const hdConstellation = makeHdScienceItem('CONSTELLATION');
+      const hdConstellation = makeHdScienceItem('CONST');
       this.hdConstellationValueEl = hdConstellation.value;
       const hdAge = makeHdScienceItem('AGE');
       this.hdAgeValueEl = hdAge.value;
