@@ -2,7 +2,7 @@ from IPython.display import HTML, Javascript, display
 
 # GV-beta-0009I
 # Derived from exact repaired GV-beta-0009H baseline blob 6e29dd296343dc43e086b619872ad1ece1e8b833.
-# Authorized 9I-F change: preserve the current 9I beta Viewer behavior, display VERSION 9I-F, and defensively keep exactly one CONST cell in the Hubble HD science table.
+# Authorized 9I-A change: JSON 0002 preserved; Hubble HD starts first while isolated Aladin prewarms the current and two future destinations; next HD prefers a prewarmed target; navigation suspension/resume preserved; retryable no-timeout HD preload preserved; visible revision label VERSION 9I-A.
 # Repaired 9H Hubble instant-open behavior and all unrelated behavior remain frozen.
 
 display(HTML("""
@@ -76,7 +76,7 @@ display(Javascript(r"""
 (async()=>{
     'use strict';
     const VERSION='9I';
-    const DISPLAY_VERSION='9I-F';
+    const DISPLAY_VERSION='9I-A';
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
@@ -483,6 +483,429 @@ display(Javascript(r"""
     }
 
     function angularSeparationDegrees(ra1,dec1,ra2,dec2){
+        const d=Math.PI/180;
+        const a1=ra1*d,a2=ra2*d,b1=dec1*d,b2=dec2*d;
+        const cosine=Math.sin(b1)*Math.sin(b2)+Math.cos(b1)*Math.cos(b2)*Math.cos(a1-a2);
+        return Math.acos(clamp(cosine,-1,1))/d;
+    }
+
+    function deriveHubbleFraming(destination,hubbleImage){
+        if(!hubbleImage?.naturalWidth||!hubbleImage?.naturalHeight||!aladinPrewarm||!aladinPrewarmHost)return destination;
+        try{
+            const skyCanvas=aladinPrewarmHost.contentDocument?.querySelector('canvas');
+            if(!skyCanvas)return destination;
+            const hubble=imageLightProfile(hubbleImage),sky=imageLightProfile(skyCanvas);
+            if(!hubble||!sky)return destination;
+            const width=skyCanvas.clientWidth||skyCanvas.width||512,height=skyCanvas.clientHeight||skyCanvas.height||512;
+            const desiredX=hubble.x/FRAMING_SAMPLE_SIZE*width;
+            const desiredY=hubble.y/FRAMING_SAMPLE_SIZE*height;
+            const currentX=sky.x/FRAMING_SAMPLE_SIZE*width;
+            const currentY=sky.y/FRAMING_SAMPLE_SIZE*height;
+            const maxDx=width*FRAMING_MAX_SHIFT_FRACTION,maxDy=height*FRAMING_MAX_SHIFT_FRACTION;
+            const sampleX=width/2+clamp(currentX-desiredX,-maxDx,maxDx);
+            const sampleY=height/2+clamp(currentY-desiredY,-maxDy,maxDy);
+            if(typeof aladinPrewarm.pix2world!=='function')return destination;
+            const world=aladinPrewarm.pix2world(sampleX,sampleY);
+            const ra=Number(world?.[0]),dec=Number(world?.[1]);
+            if(!Number.isFinite(ra)||!Number.isFinite(dec))return destination;
+            const maxAngularShift=Math.max(.02,Number(destination.fov)*.30);
+            if(angularSeparationDegrees(destination.ra,destination.dec,ra,dec)>maxAngularShift)return destination;
+            let rotation=null;
+            if(hubble.eccentricity>.22&&sky.eccentricity>.22){
+                const delta=normalizeSignedAngle(hubble.angle-sky.angle);
+                if(Number.isFinite(delta)&&Math.abs(delta)<=90)rotation=delta;
+            }
+            return Object.freeze({...destination,ra,dec,aladinRotation:rotation,framingCorrected:true});
+        }catch(error){
+            console.warn('GV-9I OPTIONAL HUBBLE FRAMING SKIPPED',error);
+            return destination;
+        }
+    }
+
+    function blockedPrefetchKeys(){
+        const keys=new Set(prefetchReady.map(item=>item.key));
+        for(const key of prefetchLoading.keys())keys.add(key);
+        if(priorityPrefetchDestination)keys.add(destinationKey(priorityPrefetchDestination));
+        if(activePreparedItem?.key)keys.add(activePreparedItem.key);
+        if(historyPreparedItem?.key)keys.add(historyPreparedItem.key);
+        if(activeTargetKey)keys.add(activeTargetKey);
+        return keys;
+    }
+
+    function choosePrefetchCandidate(){
+        const blocked=blockedPrefetchKeys(),now=Date.now();
+        const pool=galaxyCatalog.filter(item=>{const key=destinationKey(item);return key&&!blocked.has(key)&&now>=Number(prefetchRetryAfter.get(key)||0)});
+        if(!pool.length)return null;
+        const warmed=pool.filter(item=>aladinPrewarmedKeys.has(destinationKey(item)));
+        const preferred=warmed.length?warmed:pool;
+        return preferred[Math.floor(Math.random()*preferred.length)];
+    }
+
+    function chooseAladinAheadCandidates(destination,count=2){
+        const blocked=blockedPrefetchKeys();
+        blocked.add(destinationKey(destination));
+        const pool=galaxyCatalog.filter(item=>{const key=destinationKey(item);return key&&!blocked.has(key)&&!aladinPrewarmedKeys.has(key)});
+        const chosen=[];
+        while(pool.length&&chosen.length<count){const index=Math.floor(Math.random()*pool.length);chosen.push(pool.splice(index,1)[0])}
+        return chosen;
+    }
+
+    function inFlightDestination(excludeName=''){
+        const excluded=String(excludeName||'').trim().toLowerCase();
+        for(const key of prefetchLoading.keys()){
+            const destination=galaxyCatalog.find(item=>destinationKey(item)===key&&item.name.toLowerCase()!==excluded);
+            if(destination)return destination;
+        }
+        return null;
+    }
+
+    function scheduleRetryFill(){
+        if(backgroundWorkSuspended||prefetchRetryTimer)return;
+        const now=Date.now();
+        const waits=[...prefetchRetryAfter.values()].map(value=>Number(value)-now).filter(value=>value>0);
+        if(!waits.length)return;
+        prefetchRetryTimer=setTimeout(()=>{prefetchRetryTimer=0;fillPrefetchQueue()},Math.max(100,Math.min(...waits)));
+    }
+
+    function startPrefetch(destination,priority=false){
+        if(backgroundWorkSuspended)return;
+        const key=destinationKey(destination);
+        if(!key||prefetchLoading.has(key)||prefetchReady.some(item=>item.key===key)||activePreparedItem?.key===key||historyPreparedItem?.key===key)return;
+        if(!priority&&Date.now()<Number(prefetchRetryAfter.get(key)||0)){scheduleRetryFill();return}
+        if(prefetchLoading.size){
+            if(priority){
+                priorityPrefetchDestination=destination;
+                if(activePrefetchAbort)activePrefetchAbort.abort();
+            }
+            return;
+        }
+        const controller=new AbortController();
+        activePrefetchAbort=controller;
+        activePrefetchKey=key;
+        const promise=(async()=>{
+            try{
+                setHdStatus(destination,'QUEUED');
+                const hdPromise=prepareHdDestination(destination,controller.signal);
+                const ahead=chooseAladinAheadCandidates(destination,2);
+                const aladinPromise=(async()=>{
+                    for(const candidate of [destination,...ahead]){
+                        if(backgroundWorkSuspended||controller.signal.aborted)throw abortError();
+                        try{await prepareAladinDestination(candidate,priority&&candidate===destination)}catch(error){if(error?.name==='AbortError')throw error;console.warn('GV-9I ALADIN AHEAD PREWARM WARNING',error)}
+                    }
+                })();
+                const item=await hdPromise;
+                try{await aladinPromise}catch(error){if(error?.name==='AbortError')throw error}
+                let preparedDestination=destination;
+                if(!backgroundWorkSuspended&&item.image&&aladinPrewarmLastKey===key){
+                    preparedDestination=deriveHubbleFraming(destination,item.image);
+                    if(preparedDestination!==destination&&preparedDestination.framingCorrected){
+                        try{await prepareAladinDestination(preparedDestination,true)}catch(error){if(error?.name==='AbortError')throw error;preparedDestination=destination}
+                    }
+                }
+                item.destination=preparedDestination;
+                prefetchRetryAfter.delete(key);
+                if(backgroundWorkSuspended){releasePreparedItem(item);throw abortError()}
+                if(key===activeTargetKey&&!activePreparedItem){
+                    activePreparedItem=item;
+                    window.__gv9iRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
+                    return;
+                }
+                if(prefetchReady.length<HUBBLE_PREFETCH_TARGET)prefetchReady.push(item);else releasePreparedItem(item);
+            }catch(error){
+                if(error?.name==='AbortError'){
+                    if(key===activeTargetKey)priorityPrefetchDestination=destination;
+                    return;
+                }
+                prefetchFailedCount++;
+                setHdStatus(destination,'RETRY-WAIT');
+                prefetchRetryAfter.set(key,Date.now()+PREFETCH_RETRY_MS);
+            }
+        })().finally(()=>{
+            prefetchLoading.delete(key);
+            if(activePrefetchKey===key){activePrefetchAbort=null;activePrefetchKey=''}
+            if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
+        });
+        prefetchLoading.set(key,promise);
+    }
+
+    function fillPrefetchQueue(){
+        if(backgroundWorkSuspended)return;
+        if(prefetchLoading.size)return;
+        if(priorityPrefetchDestination){
+            const destination=priorityPrefetchDestination;
+            priorityPrefetchDestination=null;
+            startPrefetch(destination,true);
+            return;
+        }
+        if(prefetchReady.length>=HUBBLE_PREFETCH_TARGET)return;
+        const candidate=choosePrefetchCandidate();
+        if(candidate)startPrefetch(candidate);else scheduleRetryFill();
+    }
+
+    function destinationWithPrepared(item){
+        return {...item.destination,preparedHdUrl:item.objectUrl,preparedSource:item.sourceKind,preparedHdImage:item.image};
+    }
+
+    function setPreparedActive(item){
+        if(activePreparedItem&&activePreparedItem!==item&&activePreparedItem.key!==item.key){
+            releasePreparedItem(historyPreparedItem);
+            historyPreparedItem=activePreparedItem;
+        }
+        activePreparedItem=item;
+        activeTargetKey=item.key;
+    }
+
+    function setUnpreparedActive(destination){
+        const key=destinationKey(destination);
+        if(activePreparedItem&&activePreparedItem.key!==key){
+            releasePreparedItem(historyPreparedItem);
+            historyPreparedItem=activePreparedItem;
+        }
+        activePreparedItem=null;
+        activeTargetKey=key;
+        return {...destination,preparedHdUrl:'',preparedSource:'',preparedHdImage:null};
+    }
+
+    function consumeReady(destination=null,excludeName=''){
+        const requestedKey=destination?destinationKey(destination):'';
+        if(requestedKey&&activePreparedItem?.key===requestedKey)return destinationWithPrepared(activePreparedItem);
+        if(requestedKey&&historyPreparedItem?.key===requestedKey){
+            const item=historyPreparedItem;
+            historyPreparedItem=activePreparedItem;
+            activePreparedItem=item;
+            activeTargetKey=item.key;
+            if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
+            return destinationWithPrepared(item);
+        }
+        let index=-1;
+        if(destination)index=prefetchReady.findIndex(item=>item.key===requestedKey);
+        else{
+            const excluded=String(excludeName||'').trim().toLowerCase();
+            index=prefetchReady.findIndex(item=>item.destination.name.toLowerCase()!==excluded);
+        }
+        if(index<0)return null;
+        const [item]=prefetchReady.splice(index,1);
+        setPreparedActive(item);
+        if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
+        return destinationWithPrepared(item);
+    }
+
+    async function waitForPreparedKey(key){
+        for(;;){
+            if(activePreparedItem?.key===key)return true;
+            const loading=prefetchLoading.get(key);
+            if(loading){
+                try{await loading}catch(_){}
+                return activePreparedItem?.key===key;
+            }
+            if(priorityPrefetchDestination&&destinationKey(priorityPrefetchDestination)===key){
+                await new Promise(resolve=>setTimeout(resolve,25));
+                continue;
+            }
+            return false;
+        }
+    }
+
+    function distanceProgress(t){
+        const turn=0.46,ninety=0.58,complete=0.68;
+        if(t<=turn)return 0.20*smootherstep(t/turn);
+        if(t<=ninety)return 0.20+0.70*smootherstep((t-turn)/(ninety-turn));
+        if(t<=complete)return 0.90+0.08*smootherstep((t-ninety)/(complete-ninety));
+        return 0.98+0.02*smootherstep((t-complete)/(1-complete));
+    }
+
+    function routeDistanceMillionLy(source,destination){
+        const dA=Number(source?.distance),dB=Number(destination?.distance);
+        if(Number.isFinite(dA)&&dA>0&&Number.isFinite(dB)&&dB>0){
+            const toVector=(ra,dec)=>{const r=Number(ra)*Math.PI/180,d=Number(dec)*Math.PI/180;return [Math.cos(d)*Math.cos(r),Math.cos(d)*Math.sin(r),Math.sin(d)]};
+            const a=toVector(source.ra,source.dec),b=toVector(destination.ra,destination.dec);
+            const theta=Math.acos(clamp(a[0]*b[0]+a[1]*b[1]+a[2]*b[2],-1,1));
+            return Math.sqrt(Math.max(0,dA*dA+dB*dB-2*dA*dB*Math.cos(theta)));
+        }
+        return Number.isFinite(dB)&&dB>0?dB:0;
+    }
+
+    function formatTravelDistance(millionLy){
+        const value=Number.isFinite(Number(millionLy))&&Number(millionLy)>0?Number(millionLy):0;
+        const scaled=value>=1000?value/1000:value;
+        const [integer,fraction='00']=scaled.toFixed(2).split('.');
+        return {integer,fraction:fraction.padEnd(2,'0').slice(0,2),unit:value>=1000?'BILLION LIGHT-YEARS':'MILLION LIGHT-YEARS'};
+    }
+
+    function beginTravelHud(destination){
+        const hud=document.getElementById('gv-travel-hud');
+        const destinationEl=document.getElementById('gv-travel-destination');
+        const distanceIntegerEl=document.getElementById('gv-travel-distance-integer');
+        const distanceFractionEl=document.getElementById('gv-travel-distance-fraction');
+        const distanceUnitEl=document.getElementById('gv-travel-distance-unit');
+        if(!hud||!destinationEl||!distanceIntegerEl||!distanceFractionEl||!distanceUnitEl)return;
+        cancelAnimationFrame(travelHudFrame);
+        const state=window.GV9I?.randomGalaxy?.getState?.()||window.__gv9iRandomGalaxy?.getState?.()||{};
+        const coords=window.aladin_cosmic_command_test?.getRaDec?.()||[HOME.ra,HOME.dec];
+        const source={...(state.currentGalaxy||HOME),ra:Number(coords[0]),dec:Number(coords[1])};
+        const fov=window.aladin_cosmic_command_test?.getFov?.()||[0,0];
+        const firstHomeTrip=!(Number(source?.distance)>0)&&Number(fov[0])>=300;
+        const hudSeconds=firstHomeTrip?10:TRAVEL_SECONDS;
+        const total=routeDistanceMillionLy(source,destination);
+        destinationEl.textContent=destination.name.toUpperCase();
+        const initialDistance=formatTravelDistance(0);
+        distanceIntegerEl.textContent=initialDistance.integer;
+        distanceFractionEl.textContent=initialDistance.fraction;
+        distanceUnitEl.textContent=initialDistance.unit;
+        hud.classList.add('gv-visible');
+        const started=performance.now();
+        const frame=now=>{
+            const t=Math.min(1,(now-started)/(hudSeconds*1000));
+            const shown=formatTravelDistance(total*(firstHomeTrip?t:distanceProgress(t)));
+            distanceIntegerEl.textContent=shown.integer;
+            distanceFractionEl.textContent=shown.fraction;
+            distanceUnitEl.textContent=shown.unit;
+            if(t<1)travelHudFrame=requestAnimationFrame(frame);
+        };
+        travelHudFrame=requestAnimationFrame(frame);
+    }
+
+    function endTravelHud(){
+        cancelAnimationFrame(travelHudFrame);
+        const hud=document.getElementById('gv-travel-hud');
+        if(hud)hud.classList.remove('gv-visible');
+    }
+
+    function randomHubbleProvider({excludeName}={}){
+        let destination=null;
+        if(forcedDestination){
+            const requested=forcedDestination;
+            forcedDestination=null;
+            destination=consumeReady(requested,excludeName);
+            if(!destination){destination=setUnpreparedActive(requested)}
+        }else{
+            destination=consumeReady(null,excludeName);
+            if(!destination){
+                const inFlight=inFlightDestination(excludeName);
+                if(inFlight)destination=setUnpreparedActive(inFlight);
+                else destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
+            }
+        }
+        activeTargetKey=destinationKey(destination);
+        if(Number.isFinite(Number(destination.aladinRotation))&&typeof window.aladin_cosmic_command_test?.setRotation==='function'){
+            try{window.aladin_cosmic_command_test.setRotation(Number(destination.aladinRotation))}catch(error){console.warn('GV-9I OPTIONAL ARRIVAL ROTATION SKIPPED',error)}
+        }
+        beginTravelHud(destination);
+        return destination;
+    }
+
+    function getHubblePrefetchState(){
+        return Object.freeze({
+            targetReady:HUBBLE_PREFETCH_TARGET,
+            readyCount:prefetchReady.length,
+            loadingCount:prefetchLoading.size,
+            failedCount:prefetchFailedCount,
+            activeDownloadKey:activePrefetchKey,
+            activePreparedGalaxy:activePreparedItem?.destination?.name||'',
+            activePreparedSource:activePreparedItem?.sourceKind||'',
+            queuedDestinations:prefetchReady.map(item=>item.destination.name),
+            downloads:getHubbleDownloadStatus()
+        });
+    }
+
+    function getAladinPrewarmState(){
+        return Object.freeze({
+            targetReady:HUBBLE_PREFETCH_TARGET,
+            cachedCount:aladinPrewarmedKeys.size,
+            activeKey:aladinPrewarmActiveKey,
+            queuedDestinations:[]
+        });
+    }
+
+    function loadScript(url,datasetKey){
+        return new Promise((resolve,reject)=>{
+            const existing=[...document.scripts].find(script=>script.src===url||script.dataset[datasetKey]==='true');
+            if(existing){
+                if(existing.dataset.gvLoaded==='true'){resolve(existing);return}
+                existing.addEventListener('load',()=>resolve(existing),{once:true});
+                existing.addEventListener('error',()=>reject(new Error('SCRIPT FAILED TO LOAD: '+url)),{once:true});
+                return;
+            }
+            const script=document.createElement('script');
+            script.src=url;
+            script.charset='utf-8';
+            script.dataset[datasetKey]='true';
+            script.addEventListener('load',()=>{script.dataset.gvLoaded='true';resolve(script)},{once:true});
+            script.addEventListener('error',()=>reject(new Error('SCRIPT FAILED TO LOAD: '+url)),{once:true});
+            document.head.appendChild(script);
+        });
+    }
+
+    async function ensureAladin(){
+        if(window.A?.init)return window.A;
+        await loadScript(ALADIN_URL,'gvAladin382');
+        if(!window.A?.init)throw new Error('ALADIN LITE 3.8.2 EXPORT MISSING');
+        return window.A;
+    }
+
+    function createHost(root,id){
+        let host=root.querySelector('#'+id);
+        if(!host){host=document.createElement('div');host.id=id;root.appendChild(host)}
+        return host;
+    }
+
+    function createCenterReticle(root){
+        const reticle=document.createElement('div');
+        reticle.id='gv-center-reticle';
+        reticle.setAttribute('aria-hidden','true');
+        const image=document.createElement('img');
+        image.src=RETICLE_URL;
+        image.alt='';
+        image.width=32;
+        image.height=32;
+        reticle.appendChild(image);
+        root.appendChild(reticle);
+        return reticle;
+    }
+
+    function createBottomControls(root){
+        const version=document.createElement('div');
+        version.id='gv-version-label';
+        version.textContent=`VERSION ${DISPLAY_VERSION}`;
+        version.setAttribute('aria-label',`GALAXY VIEWER VERSION ${DISPLAY_VERSION}`);
+        root.appendChild(version);
+
+        const nav=document.createElement('div');
+        nav.id='gv-galaxy-nav';
+        const back=document.createElement('button');
+        back.type='button';back.className='gv-galaxy-history gv-galaxy-history-back';back.textContent='';back.setAttribute('aria-label','PREVIOUS GALAXY');back.disabled=true;
+        const random=document.createElement('button');
+        random.id='gv-random-galaxy';random.type='button';random.textContent='RANDOM GALAXY';random.setAttribute('aria-label','RANDOM GALAXY');
+        const forward=document.createElement('button');
+        forward.type='button';forward.className='gv-galaxy-history gv-galaxy-history-forward';forward.textContent='';forward.setAttribute('aria-label','NEXT GALAXY');forward.disabled=true;
+        nav.append(back,random,forward);root.appendChild(nav);
+
+        const hud=document.createElement('div');
+        hud.id='gv-travel-hud';hud.setAttribute('role','status');hud.setAttribute('aria-live','polite');
+        hud.innerHTML='<div id="gv-travel-distance"><span id="gv-travel-distance-value"><span id="gv-travel-distance-integer">0</span><span id="gv-travel-distance-decimal">.</span><span id="gv-travel-distance-fraction">00</span></span><span id="gv-travel-distance-unit">MILLION LIGHT-YEARS</span></div><div id="gv-travel-primary"><div id="gv-travel-course">COURSE LOCKED</div><div id="gv-travel-heading">HEADING TO</div><div id="gv-travel-destination"></div></div>';
+        root.appendChild(hud);
+        return {version,nav,back,random,forward,hud};
+    }
+
+    function createUniverseContext(root){
+        const context=document.createElement('div');
+        context.id='gv-universe-context';
+        context.setAttribute('aria-live','polite');
+        context.innerHTML='<div class="gv-universe-label">THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE<span class="gv-universe-count">EST. ~2 TRILLION GALAXIES</span></div><div class="gv-universe-leader" aria-hidden="true"></div>';
+        root.appendChild(context);
+        return context;
+    }
+
+    function createHomeOverlay(root){
+        const overlay=document.createElement('div');
+        overlay.id='gv-we-are-here';
+        overlay.setAttribute('aria-live','polite');
+        overlay.innerHTML='<div class="gv-home-leader" aria-hidden="true"></div><div class="gv-home-label"><div class="gv-home-origin"><span class="gv-earth-icon" aria-hidden="true">🌎</span><strong>WE ARE HERE</strong></div><div class="gv-home-sub">EARTH — MILKY WAY</div><div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div></div>';
+        root.appendChild(overlay);
+        return overlay;
+    }
+
+    function equatorialToGalactic(raDeg,decDeg){
         const d=Math.PI/180,ra=raDeg*d,dec=decDeg*d;
         const raNGP=192.85948*d,decNGP=27.12825*d,lOmega=32.93192*d;
         const b=Math.asin(Math.sin(dec)*Math.sin(decNGP)+Math.cos(dec)*Math.cos(decNGP)*Math.cos(ra-raNGP));
@@ -666,11 +1089,6 @@ display(Javascript(r"""
     });
     window.__gv9iRandomGalaxy=randomGalaxy;
     await randomGalaxy.ready;
-    const hdScience=randomGalaxy.hdScience;
-    if(hdScience){
-        const constCells=[...hdScience.querySelectorAll('.gvrg-hd-science-item')].filter(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()==='CONST');
-        constCells.slice(1).forEach(item=>item.remove());
-    }
 
     const deferHdUntilPrepared=async event=>{
         const destination=randomGalaxy.getState?.().activeDestination;
