@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-966d93665396 — Add read-only Hubble size input audit
+
+**Recorded:** 2026-08-16T14:19:30-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`966d936653963d8e62663f8ac90e62e92c6fe298`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/966d936653963d8e62663f8ac90e62e92c6fe298)  
+**Parent/baseline:** `d1ebbca55a5920c489f1d878c5d1193a7598ef90`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d1ebbca55a5920c489f1d878c5d1193a7598ef90...966d936653963d8e62663f8ac90e62e92c6fe298)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add read-only Hubble size input audit
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/audit-hubble-size-inputs-0002.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `ea8f2af4945da42df7201c4e3496d0b88335eb3a217e1bb2456b782c8e71533c`
+- Bytes: `0` → `1968`
+- Lines: `0` → `48`
+- Characters: `0` → `1968`
+- Inserted lines: `48`
+- Deleted lines: `0`
+- Inserted characters: `1968`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 48 - 0 = 48` — **PASS**
+- Character balance: `0 + 1968 - 0 = 1968` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-19a79b97e71b — Add read-only Hubble 0002 six-field status report
 
 **Recorded:** 2026-08-16T14:16:44-05:00  
