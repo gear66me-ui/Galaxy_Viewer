@@ -1,0 +1,88 @@
+name: Build Galaxy Viewer Android 9I-G
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-G.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Prepare 9I-G Viewer and Android working tree
+        run: python .github/scripts/prepare_galaxy_viewer_9ig.py
+
+      - name: Commit and safely rebase 9I-G Viewer source
+        run: |
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py
+          git diff --cached --check
+          git commit -m 'Rev beta Viewer to 9I-G for Android startup repair'
+          git stash push --include-untracked -m 9ig-build-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          git stash pop
+
+      - name: Verify existing icon is unchanged
+        run: |
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build 9I-G APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Stage and hash APK
+        run: |
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-G.apk
+          sha256sum Galaxy-Viewer-9I-G.apk | tee Galaxy-Viewer-9I-G.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-9I-G
+          path: |
+            Galaxy-Viewer-9I-G.apk
+            Galaxy-Viewer-9I-G.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 9I-G release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view galaxy-viewer-9i-g >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-G release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-g Galaxy-Viewer-9I-G.apk Galaxy-Viewer-9I-G.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-G — Android' --notes 'Galaxy Viewer 9I-G beta test APK. Uses the existing unchanged app icon. Local splash completion uses parent postMessage instead of cross-frame event-listener and DOM access. Viewer remains bundled locally and the HD science table keeps one CONST field.'
