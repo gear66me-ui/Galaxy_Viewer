@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-82c182ca6e49 — Fix 9I-F beta build workflow
+
+**Recorded:** 2026-08-16T18:44:36-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`82c182ca6e49599d464f69860d2442bf44f0dd37`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/82c182ca6e49599d464f69860d2442bf44f0dd37)  
+**Parent/baseline:** `c0aaef83905e2844dffcf6b2e86a5bde1e819419`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c0aaef83905e2844dffcf6b2e86a5bde1e819419...82c182ca6e49599d464f69860d2442bf44f0dd37)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix 9I-F beta build workflow
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I-F.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `0fa6f9e4c64ed05b41871818d89bba4feebd5ad1794310c41846e3a815c0015c`
+- SHA-256 after: `aabbd46135f31b2791be9e0677f161788928dea764c3aac7890fa8fe7c225304`
+- Bytes: `12516` → `2808`
+- Lines: `260` → `85`
+- Characters: `12514` → `2806`
+- Inserted lines: `8`
+- Deleted lines: `183`
+- Inserted characters: `107`
+- Deleted characters: `9815`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `7`
+- Changed blocks: `7`
+- Line balance: `260 + 8 - 183 = 85` — **PASS**
+- Character balance: `12514 + 107 - 9815 = 2806` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-bb14149399db — Add 9I-F icon generator
 
 **Recorded:** 2026-08-16T18:44:24-05:00  
