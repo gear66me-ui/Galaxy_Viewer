@@ -24,14 +24,18 @@ jobs:
       - name: Prepare 9I-F Viewer and Android working tree
         run: python .github/scripts/prepare_galaxy_viewer_9if.py
 
-      - name: Commit only the 9I-F Viewer source
+      - name: Commit and safely rebase 9I-F Viewer source
         run: |
           git config user.name 'Galaxy Viewer Build Bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/GV-beta-0009I.py
           git diff --cached --check
           git commit -m 'Rev beta Viewer to 9I-F and normalize HD CONST cell'
+          git stash push --include-untracked -m 9if-build-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
           git push origin HEAD:beta
+          git stash pop
 
       - name: Generate black 9I-F icon
         run: |
