@@ -109,6 +109,7 @@ display(Javascript(r"""
     let travelHudFrame=0;
     let aladinPrewarm=null;
     let aladinPrewarmHost=null;
+    let aladinPrewarmReady=null;
     let aladinPrewarmTimer=0;
     let aladinPrewarmActiveKey='';
     const aladinPrewarmQueue=[];
@@ -267,17 +268,78 @@ display(Javascript(r"""
         throw lastError||new Error('HUBBLE HD PRELOAD HAS NO USABLE SOURCE');
     }
 
-    function runAladinPrewarm(){
-        if(!aladinPrewarm||aladinPrewarmActiveKey||!aladinPrewarmQueue.length)return;
+    function ensureAladinPrewarm(){
+        if(aladinPrewarmReady)return aladinPrewarmReady;
+        aladinPrewarmReady=new Promise((resolve,reject)=>{
+            const frame=document.createElement('iframe');
+            aladinPrewarmHost=frame;
+            frame.id='gv-aladin-prewarm-frame';
+            frame.setAttribute('aria-hidden','true');
+            frame.tabIndex=-1;
+            Object.assign(frame.style,{position:'fixed',left:'-10000px',top:'0',width:'512px',height:'512px',border:'0',opacity:'0',pointerEvents:'none',overflow:'hidden'});
+            frame.srcdoc=`<!doctype html><html><head><link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css"><style>html,body,#gv-prewarm{margin:0;width:512px;height:512px;overflow:hidden;background:#000}</style></head><body><div id="gv-prewarm"></div><script src="${ALADIN_URL}"><\/script></body></html>`;
+            frame.addEventListener('load',async()=>{
+                try{
+                    const win=frame.contentWindow;
+                    if(!win?.A?.init)throw new Error('ISOLATED ALADIN PREWARM EXPORT MISSING');
+                    await win.A.init;
+                    aladinPrewarm=win.A.aladin('#gv-prewarm',{
+                        target:`${HOME.ra} ${HOME.dec}`,
+                        survey:'P/DSS2/color',
+                        fov:1,
+                        projection:'SIN',
+                        cooFrame:'ICRSd',
+                        showReticle:false,
+                        showZoomControl:false,
+                        showFullscreenControl:false,
+                        showLayersControl:false,
+                        showGotoControl:false,
+                        showCooGridControl:false,
+                        showSettingsControl:false,
+                        showSelectionModeControl:false,
+                        showColorPickerControl:false,
+                        showShareControl:false,
+                        showSimbadPointerControl:false,
+                        showProjectionControl:false,
+                        showStatusBar:false,
+                        showFrame:false,
+                        showFov:false,
+                        showCooLocation:false,
+                        showContextMenu:false,
+                        showCatalog:false,
+                        showCooGrid:false
+                    });
+                    if(typeof aladinPrewarm.setFrame==='function')aladinPrewarm.setFrame('ICRSd');
+                    if(typeof aladinPrewarm.setProjection==='function')aladinPrewarm.setProjection('SIN');
+                    resolve(aladinPrewarm);
+                }catch(error){reject(error)}
+            },{once:true});
+            frame.addEventListener('error',()=>reject(new Error('ISOLATED ALADIN PREWARM FRAME FAILED TO LOAD')),{once:true});
+            document.body.appendChild(frame);
+        }).catch(error=>{
+            console.warn('GV-9I ISOLATED ALADIN PREWARM WARNING',error);
+            aladinPrewarmReady=null;
+            aladinPrewarm=null;
+            try{aladinPrewarmHost?.remove()}catch(_){}
+            aladinPrewarmHost=null;
+            return null;
+        });
+        return aladinPrewarmReady;
+    }
+
+    async function runAladinPrewarm(){
+        if(aladinPrewarmActiveKey||!aladinPrewarmQueue.length)return;
         const destination=aladinPrewarmQueue.shift();
         const key=destinationKey(destination);
         if(!key||aladinPrewarmedKeys.has(key)){queueMicrotask(runAladinPrewarm);return}
         aladinPrewarmActiveKey=key;
+        const isolated=await ensureAladinPrewarm();
+        if(!isolated){aladinPrewarmActiveKey='';queueMicrotask(runAladinPrewarm);return}
         try{
-            if(typeof aladinPrewarm.setFrame==='function')aladinPrewarm.setFrame('ICRSd');
-            if(typeof aladinPrewarm.setProjection==='function')aladinPrewarm.setProjection('SIN');
-            if(typeof aladinPrewarm.gotoRaDec==='function')aladinPrewarm.gotoRaDec(destination.ra,destination.dec);
-            if(typeof aladinPrewarm.setFov==='function')aladinPrewarm.setFov(destination.fov);
+            if(typeof isolated.setFrame==='function')isolated.setFrame('ICRSd');
+            if(typeof isolated.setProjection==='function')isolated.setProjection('SIN');
+            if(typeof isolated.gotoRaDec==='function')isolated.gotoRaDec(destination.ra,destination.dec);
+            if(typeof isolated.setFov==='function')isolated.setFov(destination.fov);
         }catch(error){console.warn('GV-9I ALADIN PREWARM TARGET WARNING',error)}
         aladinPrewarmTimer=setTimeout(()=>{
             aladinPrewarmedKeys.add(key);
@@ -707,39 +769,6 @@ display(Javascript(r"""
     if(typeof aladin.gotoRaDec==='function')aladin.gotoRaDec(HOME.ra,HOME.dec);
     if(typeof aladin.setFov==='function')aladin.setFov(360);
     window.aladin_cosmic_command_test=aladin;
-
-    aladinPrewarmHost=document.createElement('div');
-    aladinPrewarmHost.id='gv-aladin-prewarm';
-    Object.assign(aladinPrewarmHost.style,{position:'fixed',left:'-10000px',top:'0',width:'512px',height:'512px',opacity:'0',pointerEvents:'none',overflow:'hidden'});
-    document.body.appendChild(aladinPrewarmHost);
-    aladinPrewarm=A.aladin('#gv-aladin-prewarm',{
-        target:`${HOME.ra} ${HOME.dec}`,
-        survey:'P/DSS2/color',
-        fov:1,
-        projection:'SIN',
-        cooFrame:'ICRSd',
-        showReticle:false,
-        showZoomControl:false,
-        showFullscreenControl:false,
-        showLayersControl:false,
-        showGotoControl:false,
-        showCooGridControl:false,
-        showSettingsControl:false,
-        showSelectionModeControl:false,
-        showColorPickerControl:false,
-        showShareControl:false,
-        showSimbadPointerControl:false,
-        showProjectionControl:false,
-        showStatusBar:false,
-        showFrame:false,
-        showFov:false,
-        showCooLocation:false,
-        showContextMenu:false,
-        showCatalog:false,
-        showCooGrid:false
-    });
-    if(typeof aladinPrewarm.setFrame==='function')aladinPrewarm.setFrame('ICRSd');
-    if(typeof aladinPrewarm.setProjection==='function')aladinPrewarm.setProjection('SIN');
 
     const hamburgerHost=createHost(root,'gv-hamburger-host');
     const coordinateHost=createHost(root,'gv-coordinate-host');
