@@ -197,6 +197,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-608d599438c1 — Wire Galaxy Viewer 8Z full Galactic view
+
+**Recorded:** 2026-08-15T19:45:16-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`608d599438c1ccb3bb47c1086a50b906d38d799b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/608d599438c1ccb3bb47c1086a50b906d38d799b)  
+**Parent/baseline:** `9f3bcdbfcdd70661a0f9cab6d0ba78f9df27773d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9f3bcdbfcdd70661a0f9cab6d0ba78f9df27773d...608d599438c1ccb3bb47c1086a50b906d38d799b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Wire Galaxy Viewer 8Z full Galactic view
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0008Z.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4d30e5c2b6c833dcebab9db7967c7dd15c8b1a1d8b8fc63d424cbc295b00fedb`
+- SHA-256 after: `8da53c39badf06459558a7f537c178bea588f25ad36cbd1eb370ab07ef77534e`
+- Bytes: `42320` → `42714`
+- Lines: `703` → `708`
+- Characters: `42313` → `42707`
+- Inserted lines: `29`
+- Deleted lines: `24`
+- Inserted characters: `679`
+- Deleted characters: `285`
+- Unified diff hunks: `22`
+- Inserted blocks: `22`
+- Deleted blocks: `20`
+- Changed blocks: `22`
+- Line balance: `703 + 29 - 24 = 708` — **PASS**
+- Character balance: `42313 + 679 - 285 = 42707` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-35e02dee556c — Refine 8Z arrival presentation
 
 **Recorded:** 2026-08-15T19:43:41-05:00  
