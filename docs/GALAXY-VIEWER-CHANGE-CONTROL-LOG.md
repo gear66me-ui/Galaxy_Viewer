@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e91804084609 — Add exact read-only Hubble 0002 audit
+
+**Recorded:** 2026-08-16T14:20:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e91804084609333960bf4b2ab248eb4b9215b1f5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e91804084609333960bf4b2ab248eb4b9215b1f5)  
+**Parent/baseline:** `2c424b6a92ecb61c5a233723d6bfe3334dd7c6ec`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2c424b6a92ecb61c5a233723d6bfe3334dd7c6ec...e91804084609333960bf4b2ab248eb4b9215b1f5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add exact read-only Hubble 0002 audit
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/audit-hubble-0002-exact.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `514fd0157bd4dd89f06b89bb1222b1e23aa0cd854e20b53ff622131817528d16`
+- Bytes: `0` → `5817`
+- Lines: `0` → `115`
+- Characters: `0` → `5817`
+- Inserted lines: `115`
+- Deleted lines: `0`
+- Inserted characters: `5817`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 115 - 0 = 115` — **PASS**
+- Character balance: `0 + 5817 - 0 = 5817` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-966d93665396 — Add read-only Hubble size input audit
 
 **Recorded:** 2026-08-16T14:19:30-05:00  
