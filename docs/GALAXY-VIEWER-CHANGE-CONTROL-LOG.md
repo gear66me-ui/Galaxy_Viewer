@@ -305,6 +305,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-615c77096ca2 — Route 220-galaxy Gemini research to 3.1 Flash Lite
+
+**Recorded:** 2026-08-16T12:48:30-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`615c77096ca28da19bc8782ceb375817cf2e22ed`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/615c77096ca28da19bc8782ceb375817cf2e22ed)  
+**Parent/baseline:** `dfa1a79d58d84f3a96ad3ce783d566be67e01575`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dfa1a79d58d84f3a96ad3ce783d566be67e01575...615c77096ca28da19bc8782ceb375817cf2e22ed)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Route 220-galaxy Gemini research to 3.1 Flash Lite
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/research-hubble-science-gemini-pilot.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `c5dc241a3b2b62742710dd731aac3f2a807274f76271e34ec5c34c90705a0ab4`
+- SHA-256 after: `aed70511b770eff6261a8ad1b7854f09637694086352a1948a6ce95e7242a7dc`
+- Bytes: `31251` → `31250`
+- Lines: `591` → `591`
+- Characters: `31249` → `31248`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `1`
+- Deleted characters: `2`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `591 + 2 - 2 = 591` — **PASS**
+- Character balance: `31249 + 1 - 2 = 31248` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/research-hubble-science-gemini-pilot.yml`**
+
+```text
+raise SystemExit(f'Checkpoint commit changed unauthorized paths: {changed_paths}')
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9870389f04b9 — Add standalone Galaxy Viewer artistic web banner 0002
 
 **Recorded:** 2026-08-16T02:23:55-05:00  
