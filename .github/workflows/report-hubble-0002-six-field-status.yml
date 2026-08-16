@@ -1,0 +1,65 @@
+name: Report Hubble 0002 six-field status
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/report-hubble-0002-six-field-status.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Tally six display fields
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, re
+          p=pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          data=json.loads(p.read_text())
+          entries=data['entries']
+          assert len(entries)==1879
+
+          def present(v):
+              return v is not None and (not isinstance(v,str) or bool(v.strip()))
+
+          def designation(e):
+              # Strict target-schema coverage: explicit display designation only.
+              return present(e.get('designation'))
+          def name(e):
+              return present(e.get('displayName')) or present(e.get('name'))
+          def distance(e):
+              return isinstance(e.get('science',{}).get('distanceMly'),(int,float)) and e['science']['distanceMly']>0
+          def constellation(e):
+              return present(e.get('constellation'))
+          def age(e):
+              s=e.get('science',{})
+              return (isinstance(s.get('ageGyr'),(int,float)) and s['ageGyr']>=0) or \
+                     (isinstance(s.get('ageMinGyr'),(int,float)) and isinstance(s.get('ageMaxGyr'),(int,float))) or \
+                     present(s.get('ageDisplay'))
+          def size(e):
+              v=e.get('science',{}).get('sizeKly')
+              return isinstance(v,list) and len(v)>=2 and all(isinstance(x,(int,float)) and x>0 for x in v[:2])
+
+          funcs={'designation':designation,'name':name,'distance':distance,'constellation':constellation,'age':age,'size':size}
+          per={k:sum(f(e) for e in entries) for k,f in funcs.items()}
+          tally={str(i):0 for i in range(7)}
+          for e in entries:
+              n=sum(f(e) for f in funcs.values())
+              tally[str(n)]+=1
+
+          # Also report source identity coverage separately because designation has not yet been normalized catalog-wide.
+          source_identity=sum(present(e.get('name')) or present(e.get('title')) for e in entries)
+          out={'total':len(entries),'sixFieldDefinition':['designation','name','distance','constellation','age','size'],
+               'perFieldPopulated':per,'recordsByFieldsPopulated':tally,
+               'sourceIdentityCoverage':source_identity,
+               'designationCountingRule':'explicit designation field only; aliases embedded in source name/title are not counted as normalized designation'}
+          print('SIX_FIELD_STATUS='+json.dumps(out,sort_keys=True))
+          assert sum(tally.values())==1879
+          PY
