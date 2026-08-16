@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0c6f319e2d3e — Repair 9G launcher archived viewer path
+
+**Recorded:** 2026-08-16T00:13:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0c6f319e2d3ea86a6135f96e56a535fdb0b685c8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0c6f319e2d3ea86a6135f96e56a535fdb0b685c8)  
+**Parent/baseline:** `a2f47c4566035a5a023aede4d23803b712bd5374`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a2f47c4566035a5a023aede4d23803b712bd5374...0c6f319e2d3ea86a6135f96e56a535fdb0b685c8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Repair 9G launcher archived viewer path
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9G.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `52da42b067fa57b2c69d2dceb04fb55dc9177c4a7237d3d5ba630b4215075d08`
+- SHA-256 after: `aee2d7131c9478434522c0a22b06dd89cebbd3902289130e6b95f110a4f427cd`
+- Bytes: `6692` → `6700`
+- Lines: `139` → `139`
+- Characters: `6688` → `6696`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `8`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `139 + 1 - 1 = 139` — **PASS**
+- Character balance: `6688 + 8 - 0 = 6696` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9G.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9G APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9G with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d48f4ebf3a58 — Repair 9F launcher archived viewer path
 
 **Recorded:** 2026-08-16T00:13:33-05:00  
