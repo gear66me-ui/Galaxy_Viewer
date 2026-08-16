@@ -1,10 +1,10 @@
 <!doctype html>
 <!--
-GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9B APP LAUNCHER
-PURPOSE: Dedicated launcher for exact Galaxy Viewer 9B, preserving the verified 9A startup sequence unchanged.
-AUTHORIZED RELEASE: viewer/GV-beta-0009B.py blob 062f7f3bc088fc7646aa9a90ec6a01e32222c062
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9C APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9C with non-blocking startup presentation.
+AUTHORIZED RELEASE: viewer/GV-beta-0009C.py blob ece82ca54f7ca9789b492b38da7c38ca8c308332
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
-AUTHORIZED STARTUP: Viewer/Aladin initialization begins immediately; splash image/font/HTML are fully warmed during a minimum 3.5-second app-icon hold; the prepared splash then runs once; no forced post-splash delay.
+AUTHORIZED STARTUP: Viewer/Aladin initialization begins immediately; splash warming is concurrent and non-blocking; HOME is revealed as soon as the Aladin canvas and WE ARE HERE overlay are ready.
 -->
 <html lang="en">
 <head>
@@ -14,8 +14,8 @@ AUTHORIZED STARTUP: Viewer/Aladin initialization begins immediately; splash imag
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 9B">
-<title>GALAXY VIEWER 9B — APP LAUNCHER</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 9C">
+<title>GALAXY VIEWER 9C — APP LAUNCHER</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
@@ -33,12 +33,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
   'use strict';
-  const VIEWER_URL='../../viewer/GV-beta-0009B.py?v=062f7f3bc088fc7646aa9a90ec6a01e32222c062';
+  const VIEWER_URL='../../viewer/GV-beta-0009C.py?v=ece82ca54f7ca9789b492b38da7c38ca8c308332';
   const SPLASH_BASE='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/';
   const SPLASH_URL=SPLASH_BASE+'index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
   const SPLASH_IMAGE_URL=SPLASH_BASE+'Galaxy-Splash.png';
   const SPLASH_FONT_URL=SPLASH_BASE+'Space-Age.otf';
-  const MIN_OPENING_HOLD_MS=3500;
   const VIEWER_TIMEOUT_MS=20000;
   const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
   const launchCover=document.getElementById('gv-launch-cover');
@@ -50,8 +49,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error);
   };
 
-  const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'no-store'}).then(async response=>{
-    if(!response.ok)throw new Error('GV-BETA-0009B.PY RETURNED HTTP '+response.status);
+  const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'force-cache'}).then(async response=>{
+    if(!response.ok)throw new Error('GV-BETA-0009C.PY RETURNED HTTP '+response.status);
     return response.blob();
   });
 
@@ -117,11 +116,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
       const root=document.getElementById('aladin-cosmic-command-test');
       const home=document.getElementById('gv-we-are-here');
       const homeReady=Boolean(home&&!home.classList.contains('gv-hidden')&&String(home.textContent||'').includes('WE ARE HERE'));
-      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GV9B&&homeReady){
+      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&homeReady){
         requestAnimationFrame(()=>requestAnimationFrame(resolve));
         return;
       }
-      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 9B STARTUP TIMEOUT'));return}
+      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 9C STARTUP TIMEOUT'));return}
       setTimeout(check,100);
     };
     check();
@@ -132,7 +131,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     const source=await viewerBlob.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
-    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 9B FULL VIEWER');
+    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 9C FULL VIEWER');
     htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
     jsMatches.forEach(match=>{
       const script=document.createElement('script');
@@ -143,19 +142,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   };
 
   try{
-    const openingStarted=performance.now();
     const viewerInitializePromise=initializeViewer();
-    const splashWarmPromise=Promise.all([warmSplashImage(),warmSplashFont(),warmSplashHtml()]);
-    const openingHoldPromise=new Promise(resolve=>setTimeout(resolve,Math.max(0,MIN_OPENING_HOLD_MS-(performance.now()-openingStarted))));
-    await Promise.all([splashWarmPromise,openingHoldPromise]);
-    const splashCompletePromise=startPreparedSplash();
-    await Promise.all([splashCompletePromise,viewerInitializePromise]);
+    Promise.all([warmSplashImage(),warmSplashFont(),warmSplashHtml()])
+      .then(()=>startPreparedSplash())
+      .catch(error=>console.warn('GALAXY VIEWER 9C SPLASH WARMUP WARNING',error));
+    await viewerInitializePromise;
     requestAnimationFrame(()=>{
       if(splashFrame.isConnected)splashFrame.remove();
       if(launchCover.isConnected)launchCover.remove();
     });
   }catch(error){
-    console.error('GALAXY VIEWER 9B APP LAUNCHER FAILURE',error);
+    console.error('GALAXY VIEWER 9C APP LAUNCHER FAILURE',error);
     showError(error);
   }
 })();
