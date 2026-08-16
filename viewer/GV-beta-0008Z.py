@@ -1,9 +1,9 @@
 from IPython.display import HTML, Javascript, display
 
-# GV-beta-0008Y
-# Derived from exact GV-beta-0008X baseline blob 27e96874621ff0bbd85a6d00184c3855f851f27c.
-# Authorized 8Y change: Hubble HD science-banner table dividers via module 0021 only.
-# All unrelated 8X behavior remains frozen.
+# GV-beta-0008Z
+# Derived from exact GV-beta-0008Y baseline blob e1c13d926954d3dc625906a9f15e1af9802bf173.
+# Authorized 8Z changes: full-sky Galactic opening orientation, symmetric travel HUD order,
+# and refined arrival presentation through module 0022. All unrelated 8Y behavior remains frozen.
 
 display(HTML("""
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css" />
@@ -39,7 +39,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 .gv-galaxy-history-back::before{transform:translate(-38%,-50%) rotate(-135deg)}
 .gv-galaxy-history-back::after{transform:translate(-34%,-50%) rotate(-135deg)}
 .gv-galaxy-history:disabled{opacity:.62;cursor:default;box-shadow:inset 0 0 7px rgba(167,255,203,.18),0 0 6px rgba(77,255,143,.24)}
-#gv-travel-hud{position:absolute;left:50%;top:66px;z-index:7350;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;width:min(214px,68vw);padding:0;border:0;background:transparent;box-shadow:none;text-align:center;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
+#gv-travel-hud{position:absolute;left:50%;top:auto;bottom:54px;z-index:7350;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;width:min(214px,68vw);padding:0;border:0;background:transparent;box-shadow:none;text-align:center;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
 #gv-travel-hud.gv-visible{opacity:1;visibility:visible}
 #gv-travel-primary{width:100%;padding:4px 7px 5px;border:1px solid rgba(131,255,176,.76);border-radius:6px;background:rgba(0,16,10,.72);box-shadow:0 0 8px rgba(65,255,133,.14);text-align:center}
 #gv-travel-course,#gv-travel-heading{font:400 13px/1.05 "Space Age",sans-serif;letter-spacing:.55px;color:#E1FFEC;text-align:center;text-shadow:0 0 4px rgba(87,255,147,.20)}
@@ -69,12 +69,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
     'use strict';
-    const VERSION='8Y';
+    const VERSION='8Z';
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
-    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0021.js?v=320f4b8a2c94f67345d5f74b5e91b938c4015267';
+    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0022.js?v=a2f4ef249520b5109994217d30e11041858c263d';
     const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json?v=060f0abadd103e320c70f035ac93f42d200eda0f';
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
     const HOME=Object.freeze({name:'EARTH — MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
@@ -269,7 +269,7 @@ display(Javascript(r"""
         const promise=prepareHdDestination(destination).then(item=>{
             if(key===activeTargetKey&&!activePreparedItem){
                 activePreparedItem=item;
-                window.__gv8yRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
+                window.__gv8zRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
                 return;
             }
             if(prefetchReady.length<HUBBLE_PREFETCH_TARGET)prefetchReady.push(item);else releasePreparedItem(item);
@@ -370,7 +370,7 @@ display(Javascript(r"""
         const distanceUnitEl=document.getElementById('gv-travel-distance-unit');
         if(!hud||!destinationEl||!distanceIntegerEl||!distanceFractionEl||!distanceUnitEl)return;
         cancelAnimationFrame(travelHudFrame);
-        const state=window.GV8Y?.randomGalaxy?.getState?.()||window.__gv8yRandomGalaxy?.getState?.()||{};
+        const state=window.GV8Z?.randomGalaxy?.getState?.()||window.__gv8zRandomGalaxy?.getState?.()||{};
         const coords=window.aladin_cosmic_command_test?.getRaDec?.()||[HOME.ra,HOME.dec];
         const source={...(state.currentGalaxy||HOME),ra:Number(coords[0]),dec:Number(coords[1])};
         const total=routeDistanceMillionLy(source,destination);
@@ -485,7 +485,7 @@ display(Javascript(r"""
         const version=document.createElement('div');
         version.id='gv-version-label';
         version.textContent=VERSION;
-        version.setAttribute('aria-label','GALAXY VIEWER VERSION 8Y');
+        version.setAttribute('aria-label','GALAXY VIEWER VERSION 8Z');
         root.appendChild(version);
 
         const nav=document.createElement('div');
@@ -500,7 +500,7 @@ display(Javascript(r"""
 
         const hud=document.createElement('div');
         hud.id='gv-travel-hud';hud.setAttribute('role','status');hud.setAttribute('aria-live','polite');
-        hud.innerHTML='<div id="gv-travel-primary"><div id="gv-travel-course">COURSE LOCKED</div><div id="gv-travel-heading">HEADING TO</div><div id="gv-travel-destination"></div></div><div id="gv-travel-distance"><span id="gv-travel-distance-value"><span id="gv-travel-distance-integer">0</span><span id="gv-travel-distance-decimal">.</span><span id="gv-travel-distance-fraction">00</span></span><span id="gv-travel-distance-unit">MILLION LIGHT-YEARS</span></div>';
+        hud.innerHTML='<div id="gv-travel-distance"><span id="gv-travel-distance-value"><span id="gv-travel-distance-integer">0</span><span id="gv-travel-distance-decimal">.</span><span id="gv-travel-distance-fraction">00</span></span><span id="gv-travel-distance-unit">MILLION LIGHT-YEARS</span></div><div id="gv-travel-primary"><div id="gv-travel-course">COURSE LOCKED</div><div id="gv-travel-heading">HEADING TO</div><div id="gv-travel-destination"></div></div>';
         root.appendChild(hud);
         return {version,nav,back,random,forward,hud};
     }
@@ -553,8 +553,9 @@ display(Javascript(r"""
     const aladin=A.aladin('#aladin-cosmic-command-test',{
         target:`${HOME.ra} ${HOME.dec}`,
         survey:'P/DSS2/color',
-        fov:1.5,
+        fov:360,
         projection:'MOL',
+        cooFrame:'galactic',
         showReticle:false,
         showZoomControl:false,
         showFullscreenControl:false,
@@ -575,6 +576,10 @@ display(Javascript(r"""
         showCatalog:false,
         showCooGrid:false
     });
+    if(typeof aladin.setFrame==='function')aladin.setFrame('galactic');
+    if(typeof aladin.setRotation==='function')aladin.setRotation(0);
+    if(typeof aladin.gotoRaDec==='function')aladin.gotoRaDec(HOME.ra,HOME.dec);
+    if(typeof aladin.setFov==='function')aladin.setFov(360);
     window.aladin_cosmic_command_test=aladin;
 
     const hamburgerHost=createHost(root,'gv-hamburger-host');
@@ -596,7 +601,7 @@ display(Javascript(r"""
             try{
                 if(typeof aladin.setProjection!=='function')throw new Error('ALADIN setProjection IS UNAVAILABLE');
                 aladin.setProjection(detail.code);
-            }catch(error){console.error('GV-8Y PROJECTION FAILURE',name,detail?.code,error)}
+            }catch(error){console.error('GV-8Z PROJECTION FAILURE',name,detail?.code,error)}
         }
     });
     hamburger.root.style.position='absolute';
@@ -608,7 +613,7 @@ display(Javascript(r"""
 
     await loadScript(COORDINATE_URL,'gvCoordinate0004');
     if(window.GalaxyCoordinateOverlay?.VERSION!=='0003')throw new Error('COORDINATE MODULE 0004 PATH / 0003 VERIFIED CORE EXPORT MISSING');
-    let frame='ICRSD',latestRa=0,latestDec=0;
+    let frame='GAL',latestRa=HOME.ra,latestDec=HOME.dec;
     let coordinate=null;
     function renderCoordinates(){
         if(!coordinate)return;
@@ -618,7 +623,7 @@ display(Javascript(r"""
     }
     coordinate=window.GalaxyCoordinateOverlay.mount(coordinateHost,{onFrameChange(nextFrame){
         frame=nextFrame;
-        try{if(typeof aladin.setFrame==='function')aladin.setFrame(frame==='GAL'?'galactic':'ICRSd')}catch(error){console.warn('GV-8Y FRAME CHANGE WARNING',error)}
+        try{if(typeof aladin.setFrame==='function')aladin.setFrame(frame==='GAL'?'galactic':'ICRSd')}catch(error){console.warn('GV-8Z FRAME CHANGE WARNING',error)}
         renderCoordinates();
     }});
     await coordinate.ready;
@@ -638,14 +643,14 @@ display(Javascript(r"""
     if(window.GalaxyViewerTargetSimbad?.version!=='0001')throw new Error('TARGET / SIMBAD MODULE 0001 EXPORT MISSING');
     const target=window.GalaxyViewerTargetSimbad.init({host:targetHost,aladin,viewerRoot:root});
 
-    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0021');
-    if(window.GalaxyRandomGalaxy?.VERSION!=='0011')throw new Error('RANDOM GALAXY 0021 PATH / 0011 VERIFIED CORE EXPORT MISSING');
+    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0022');
+    if(window.GalaxyRandomGalaxy?.VERSION!=='0011')throw new Error('RANDOM GALAXY 0022 PATH / 0011 VERIFIED CORE EXPORT MISSING');
     function historySnapshot(destination){
         const {preparedHdUrl,preparedSource,preparedHdImage,...snapshot}=destination||{};
         return Object.freeze({...snapshot});
     }
     function setHistoryControls(){
-        const busy=navigationPending||Boolean(window.__gv8yRandomGalaxy?.getState?.().busy);
+        const busy=navigationPending||Boolean(window.__gv8zRandomGalaxy?.getState?.().busy);
         bottom.back.disabled=busy||galaxyHistoryIndex<=0;
         bottom.forward.disabled=busy||galaxyHistoryIndex<0||galaxyHistoryIndex>=galaxyHistory.length-1;
     }
@@ -666,7 +671,7 @@ display(Javascript(r"""
         navigationPending=true;
         homeOverlay.classList.add('gv-hidden');setHistoryControls();
         randomGalaxy.travelToRandom().catch(error=>{
-            forcedDestination=null;pendingHistoryIndex=null;navigationPending=false;endTravelHud();setHistoryControls();console.error('GV-8Y HISTORY NAVIGATION FAILURE',error);
+            forcedDestination=null;pendingHistoryIndex=null;navigationPending=false;endTravelHud();setHistoryControls();console.error('GV-8Z HISTORY NAVIGATION FAILURE',error);
         });
     }
 
@@ -685,19 +690,19 @@ display(Javascript(r"""
             setHistoryControls();
         },
         onError(error){
-            navigationPending=false;pendingHistoryIndex=null;forcedDestination=null;endTravelHud();setHistoryControls();console.error('GV-8Y RANDOM GALAXY FAILURE',error);
+            navigationPending=false;pendingHistoryIndex=null;forcedDestination=null;endTravelHud();setHistoryControls();console.error('GV-8Z RANDOM GALAXY FAILURE',error);
         }
     });
-    window.__gv8yRandomGalaxy=randomGalaxy;
+    window.__gv8zRandomGalaxy=randomGalaxy;
     await randomGalaxy.ready;
     window.addEventListener('beforeunload',()=>{releasePreparedItem(activePreparedItem);releasePreparedItem(historyPreparedItem);prefetchReady.splice(0).forEach(releasePreparedItem)},{once:true});
     bottom.random.addEventListener('click',()=>{pendingHistoryIndex=null;navigationPending=true;homeOverlay.classList.add('gv-hidden');setHistoryControls()});
     bottom.back.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex-1));
     bottom.forward.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex+1));
     setHistoryControls();
-    window.GV8Y=Object.freeze({version:VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,getHubblePrefetchState,startHubblePrefetch:fillPrefetchQueue,getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId}))})});
+    window.GV8Z=Object.freeze({version:VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,getHubblePrefetchState,startHubblePrefetch:fillPrefetchQueue,getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId}))})});
     document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length}}));
-})().catch(error=>console.error('GALAXY VIEWER 8Y STARTUP FAILURE:',error));
+})().catch(error=>console.error('GALAXY VIEWER 8Z STARTUP FAILURE:',error));
 """))
 
-# GV-beta-0008Y staged
+# GV-beta-0008Z staged
