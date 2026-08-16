@@ -2,7 +2,7 @@ from IPython.display import HTML, Javascript, display
 
 # GV-beta-0009I
 # Derived from exact repaired GV-beta-0009H baseline blob 6e29dd296343dc43e086b619872ad1ece1e8b833.
-# Authorized 9I-A change: JSON 0002 preserved; Hubble HD starts first while isolated Aladin prewarms the current and two future destinations; next HD prefers a prewarmed target; navigation suspension/resume preserved; retryable no-timeout HD preload preserved; visible revision label VERSION 9I-A.
+# Authorized 9I-B change: JSON 0002 preserved; HD-ready destinations are consumed before random fallback; canceled in-flight HD destinations are never selected merely because they were downloading; Hubble HD controls wait for the prepared-resource pipeline; staggered single-HD + Aladin-ahead preparation, navigation suspension/resume, retryable no-timeout HD preload, and all unrelated behavior remain preserved.
 # Repaired 9H Hubble instant-open behavior and all unrelated behavior remain frozen.
 
 display(HTML("""
@@ -76,7 +76,7 @@ display(Javascript(r"""
 (async()=>{
     'use strict';
     const VERSION='9I';
-    const DISPLAY_VERSION='9I-A';
+    const DISPLAY_VERSION='9I-B';
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
@@ -277,9 +277,10 @@ display(Javascript(r"""
     function destinationKey(destination){return String(destination?.archiveId||destination?.name||'').trim().toLowerCase()}
     function chooseGalaxy(catalog,excludeName=''){
         const excluded=String(excludeName||'').trim().toLowerCase();
-        const available=catalog.filter(item=>item.name.toLowerCase()!==excluded&&destinationKey(item)!==activeTargetKey);
-        const pool=available.length?available:catalog;
-        return pool[Math.floor(Math.random()*pool.length)];
+        const available=catalog.filter(item=>item.name.toLowerCase()!==excluded&&destinationKey(item)!==activeTargetKey&&destinationKey(item)!==activePrefetchKey);
+        const pool=available.length?available:catalog.filter(item=>destinationKey(item)!==activePrefetchKey);
+        const finalPool=pool.length?pool:catalog;
+        return finalPool[Math.floor(Math.random()*finalPool.length)];
     }
 
     function releasePreparedItem(item){
@@ -550,15 +551,6 @@ display(Javascript(r"""
         return chosen;
     }
 
-    function inFlightDestination(excludeName=''){
-        const excluded=String(excludeName||'').trim().toLowerCase();
-        for(const key of prefetchLoading.keys()){
-            const destination=galaxyCatalog.find(item=>destinationKey(item)===key&&item.name.toLowerCase()!==excluded);
-            if(destination)return destination;
-        }
-        return null;
-    }
-
     function scheduleRetryFill(){
         if(backgroundWorkSuspended||prefetchRetryTimer)return;
         const now=Date.now();
@@ -780,11 +772,7 @@ display(Javascript(r"""
             if(!destination){destination=setUnpreparedActive(requested)}
         }else{
             destination=consumeReady(null,excludeName);
-            if(!destination){
-                const inFlight=inFlightDestination(excludeName);
-                if(inFlight)destination=setUnpreparedActive(inFlight);
-                else destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
-            }
+            if(!destination)destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
         }
         activeTargetKey=destinationKey(destination);
         if(Number.isFinite(Number(destination.aladinRotation))&&typeof window.aladin_cosmic_command_test?.setRotation==='function'){
@@ -1093,8 +1081,14 @@ display(Javascript(r"""
     const deferHdUntilPrepared=async event=>{
         const destination=randomGalaxy.getState?.().activeDestination;
         const key=destinationKey(destination);
-        const pending=Boolean(key&&(prefetchLoading.has(key)||(priorityPrefetchDestination&&destinationKey(priorityPrefetchDestination)===key)));
-        if(!pending)return;
+        if(!key)return;
+        const alreadyPrepared=Boolean(activePreparedItem?.key===key||prefetchReady.some(item=>item.key===key));
+        if(alreadyPrepared)return;
+        const catalogDestination=galaxyCatalog.find(item=>destinationKey(item)===key);
+        if(catalogDestination&&!prefetchLoading.has(key)&&!(priorityPrefetchDestination&&destinationKey(priorityPrefetchDestination)===key)){
+            priorityPrefetchDestination=catalogDestination;
+            if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
+        }
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -1106,6 +1100,8 @@ display(Javascript(r"""
             try{randomGalaxy.showHubbleHD()}catch(fallbackError){console.error('GV-9I HUBBLE FALLBACK FAILURE',fallbackError)}
         }
     };
+    randomGalaxy.viewHdButton?.addEventListener('click',deferHdUntilPrepared,true);
+    randomGalaxy.hubbleIconButton?.addEventListener('click',deferHdUntilPrepared,true);
 
     window.addEventListener('beforeunload',()=>{
         if(activePrefetchAbort)activePrefetchAbort.abort();
