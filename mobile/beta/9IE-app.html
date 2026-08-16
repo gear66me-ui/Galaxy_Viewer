@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>GALAXY VIEWER 9IE</title>
+<style>html,body,#gv9ie{margin:0;width:100%;height:100%;overflow:hidden;background:#000;border:0}#gv9ie{position:fixed;inset:0}</style>
+</head>
+<body>
+<iframe id="gv9ie" src="./9I-app.html?source=9ie-wrapper" title="GALAXY VIEWER 9IE"></iframe>
+<script>
+(()=>{
+  'use strict';
+  const frame=document.getElementById('gv9ie');
+  const patch=()=>{
+    try{
+      const doc=frame.contentDocument;
+      if(!doc)return;
+      const version=doc.getElementById('gv-version-label');
+      if(version){version.textContent='VERSION 9IE';version.setAttribute('aria-label','GALAXY VIEWER VERSION 9IE')}
+      const science=doc.querySelector('.gvrg-hd-science');
+      if(!science)return;
+      const items=[...science.querySelectorAll('.gvrg-hd-science-item')];
+      const byLabel=text=>items.find(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()===text);
+      const designation=byLabel('DESIGNATION')||byLabel('DESTINATION');
+      const name=items.find(item=>/NAME/.test(String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').toUpperCase()));
+      const distance=byLabel('DISTANCE');
+      const constItems=items.filter(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()==='CONST');
+      const constellation=constItems.find(item=>!item.hasAttribute('data-gv-hd-const'))||constItems[0];
+      const size=byLabel('SIZE');
+      const age=byLabel('AGE');
+      constItems.forEach(item=>{if(item!==constellation)item.remove()});
+      if(designation)designation.querySelector('.gvrg-hd-science-label').textContent='DESTINATION';
+      if(name)name.querySelector('.gvrg-hd-science-label').textContent='NAME / PSEUDO';
+      [designation,name,distance,constellation,size,age].filter(Boolean).forEach(item=>science.appendChild(item));
+      science.style.gridTemplateColumns='repeat(6,minmax(0,1fr))';
+    }catch(_){ }
+  };
+  frame.addEventListener('load',()=>{
+    patch();
+    try{new MutationObserver(patch).observe(frame.contentDocument.documentElement,{childList:true,subtree:true,characterData:true})}catch(_){ }
+    setInterval(patch,500);
+  });
+})();
+</script>
+</body>
+</html>
