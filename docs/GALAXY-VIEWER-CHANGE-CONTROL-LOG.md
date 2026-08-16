@@ -221,6 +221,18 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## ARCHIVE-d1d55d25c4e7 — 9A → 9B roll-up
+
+**Source current-beta commit:** `d1d55d25c4e77fe5cf57bce52b16fd470e10081d`  
+**Previous Viewer:** `viewer/GV-beta-0009A.py`  
+**Archive Viewer:** `viewer/archive/GV-beta-0009A.py`  
+**Original Git blob:** `0ce451ac6d373be92cb5925368d924bd774f1c91`  
+**Archived Git blob:** `0ce451ac6d373be92cb5925368d924bd774f1c91`  
+**Blob/byte equality:** **PASS**  
+**Current Viewer retained in root:** `viewer/GV-beta-0009B.py`  
+
+---
+
 ## AUTO-d1d55d25c4e7 — Point beta app entry to Galaxy Viewer 9B
 
 **Recorded:** 2026-08-15T21:17:44-05:00  
