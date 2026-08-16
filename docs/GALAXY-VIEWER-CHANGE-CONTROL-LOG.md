@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b0de857492d7 — Preload splash behind 2.5 second 9I icon hold
+
+**Recorded:** 2026-08-16T00:52:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b0de857492d729a27cf7d31130154794d7e81432`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b0de857492d729a27cf7d31130154794d7e81432)  
+**Parent/baseline:** `0ccedee4fe71f846d15413e2da6f4363dacef43d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0ccedee4fe71f846d15413e2da6f4363dacef43d...b0de857492d729a27cf7d31130154794d7e81432)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Preload splash behind 2.5 second 9I icon hold
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `1a6f9a2e0a28f80c602da9e66eb2bb7504c0be0aac81da15709536fc083d6522`
+- SHA-256 after: `59de58c3e41320e30ff1f02ea8a0af255d518307a38eb342da3d8af9c4a81eee`
+- Bytes: `7139` → `7631`
+- Lines: `148` → `156`
+- Characters: `7135` → `7627`
+- Inserted lines: `49`
+- Deleted lines: `41`
+- Inserted characters: `699`
+- Deleted characters: `207`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `148 + 49 - 41 = 156` — **PASS**
+- Character balance: `7135 + 699 - 207 = 7627` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-631f229cba1c — Hold 9I app icon for 2.5 seconds
 
 **Recorded:** 2026-08-16T00:52:12-05:00  
