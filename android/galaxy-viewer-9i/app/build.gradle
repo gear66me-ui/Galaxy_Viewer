@@ -11,6 +11,6 @@ android {
         minSdk 29
         targetSdk 35
         versionCode 11
-        versionName '9ID'
+        versionName '9I-D'
     }
 }
