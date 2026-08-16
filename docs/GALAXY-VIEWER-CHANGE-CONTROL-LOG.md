@@ -305,6 +305,179 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-19a521ebf137 — Add frozen Galaxy Viewer 9I Android launcher
+
+**Recorded:** 2026-08-16T01:37:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`19a521ebf137bc7d5701570a6201b931d08b0575`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/19a521ebf137bc7d5701570a6201b931d08b0575)  
+**Parent/baseline:** `3e92751b9b9f523f9e3590a6a2c5c6a516608054`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3e92751b9b9f523f9e3590a6a2c5c6a516608054...19a521ebf137bc7d5701570a6201b931d08b0575)  
+**Author:** German Arciniegas  
+**Changed-path count:** `8`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add frozen Galaxy Viewer 9I Android launcher
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `aafc4fd29ce7c1a95ae753e7c2efe42c68f1d5b31f20d40273524ce053cea8f5`
+- Bytes: `0` → `1818`
+- Lines: `0` → `60`
+- Characters: `0` → `1816`
+- Inserted lines: `60`
+- Deleted lines: `0`
+- Inserted characters: `1816`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 60 - 0 = 60` — **PASS**
+- Character balance: `0 + 1816 - 0 = 1816` — **PASS**
+
+#### `android/galaxy-viewer-9i/app/build.gradle`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `056e36fb3f02fd2aff6f8f4df6999c663c772165aac4dc20e8a9aafa4d53f13d`
+- Bytes: `0` → `292`
+- Lines: `0` → `16`
+- Characters: `0` → `292`
+- Inserted lines: `16`
+- Deleted lines: `0`
+- Inserted characters: `292`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 16 - 0 = 16` — **PASS**
+- Character balance: `0 + 292 - 0 = 292` — **PASS**
+
+#### `android/galaxy-viewer-9i/app/src/main/AndroidManifest.xml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `db821889738f96d8ff292fa2faa99b935e2927af63556df6bedd3061d24efbe3`
+- Bytes: `0` → `862`
+- Lines: `0` → `20`
+- Characters: `0` → `862`
+- Inserted lines: `20`
+- Deleted lines: `0`
+- Inserted characters: `862`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 20 - 0 = 20` — **PASS**
+- Character balance: `0 + 862 - 0 = 862` — **PASS**
+
+#### `android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `a0b8f492c106d5a0e606c986c493b9af421037a304ca900f716b92033efb93a2`
+- Bytes: `0` → `6793`
+- Lines: `0` → `146`
+- Characters: `0` → `6793`
+- Inserted lines: `146`
+- Deleted lines: `0`
+- Inserted characters: `6793`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 146 - 0 = 146` — **PASS**
+- Character balance: `0 + 6793 - 0 = 6793` — **PASS**
+
+#### `android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `012db3ad766832a865b779d532acc0b93717e4dc8f4c635081c615856aeb4d01`
+- Bytes: `0` → `33287`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-9i/build.gradle`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `c3c0cf04da0fc239f391c774554d97d890018ab6e37e87cc62f6070d0c8c9909`
+- Bytes: `0` → `73`
+- Lines: `0` → `3`
+- Characters: `0` → `73`
+- Inserted lines: `3`
+- Deleted lines: `0`
+- Inserted characters: `73`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 3 - 0 = 3` — **PASS**
+- Character balance: `0 + 73 - 0 = 73` — **PASS**
+
+#### `android/galaxy-viewer-9i/gradle.properties`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `4d4c82226865844bdc85391d907a383da4a35d3a3f5348985d5ec3997ab932fe`
+- Bytes: `0` → `76`
+- Lines: `0` → `2`
+- Characters: `0` → `76`
+- Inserted lines: `2`
+- Deleted lines: `0`
+- Inserted characters: `76`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 2 - 0 = 2` — **PASS**
+- Character balance: `0 + 76 - 0 = 76` — **PASS**
+
+#### `android/galaxy-viewer-9i/settings.gradle`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `cce949eafa95223fd1f0874025b38234f3bd75062a8ecbddbb8586f56121e6fe`
+- Bytes: `0` → `331`
+- Lines: `0` → `16`
+- Characters: `0` → `331`
+- Inserted lines: `16`
+- Deleted lines: `0`
+- Inserted characters: `331`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 16 - 0 = 16` — **PASS**
+- Character balance: `0 + 331 - 0 = 331` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c35a6f253efc — Point 9I launcher to travel quiet-zone viewer
 
 **Recorded:** 2026-08-16T01:24:14-05:00  
