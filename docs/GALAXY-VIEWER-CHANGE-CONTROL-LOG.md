@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e90ab47deaa4 — Rev Galaxy Viewer beta to 9I-F and guard duplicate HD CONST
+
+**Recorded:** 2026-08-16T18:36:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e90ab47deaa40843042453cef778abb49db17a53`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e90ab47deaa40843042453cef778abb49db17a53)  
+**Parent/baseline:** `5f8154142cacea02f33e83b79f5654dcf678b84e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5f8154142cacea02f33e83b79f5654dcf678b84e...e90ab47deaa40843042453cef778abb49db17a53)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Rev Galaxy Viewer beta to 9I-F and guard duplicate HD CONST
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e39d52c7ddeeb13e2dca3cac424f0ad3236bfb6450f105cc4fbbfb2f4c1849e3`
+- SHA-256 after: `4e3f5fbcfdd89152e920215ed61c271b922769e5f3f1e77146f6fb55d5220047`
+- Bytes: `66823` → `45361`
+- Lines: `1130` → `712`
+- Characters: `66814` → `45357`
+- Inserted lines: `7`
+- Deleted lines: `425`
+- Inserted characters: `421`
+- Deleted characters: `21878`
+- Unified diff hunks: `4`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `4`
+- Line balance: `1130 + 7 - 425 = 712` — **PASS**
+- Character balance: `66814 + 421 - 21878 = 45357` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7c31e4767fd8 — Archive Galaxy Viewer 9I-E baseline
 
 **Recorded:** 2026-08-16T18:34:14-05:00  
