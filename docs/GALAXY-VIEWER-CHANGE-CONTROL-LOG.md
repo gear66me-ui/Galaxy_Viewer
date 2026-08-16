@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9b877e4a15a3 — Add one-shot workflow for 9J JSON 0002 group designation
+
+**Recorded:** 2026-08-16T14:40:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9b877e4a15a32a50fa372127e02151a43dfe4980`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9b877e4a15a32a50fa372127e02151a43dfe4980)  
+**Parent/baseline:** `39d0e3392b354a5f3be0332122c77b4ab4a709c7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/39d0e3392b354a5f3be0332122c77b4ab4a709c7...9b877e4a15a32a50fa372127e02151a43dfe4980)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add one-shot workflow for 9J JSON 0002 group designation
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/create-9j-json0002-group-designation.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b444e87653b8b068e13e3dda208ab6e5a09a6301210cc6348d0f11650c72e199`
+- Bytes: `0` → `10048`
+- Lines: `0` → `147`
+- Characters: `0` → `10042`
+- Inserted lines: `147`
+- Deleted lines: `0`
+- Inserted characters: `10042`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 147 - 0 = 147` — **PASS**
+- Character balance: `0 + 10042 - 0 = 10042` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-8178b5c0e224 — Correct Hubble 0002 exact audit distance logic
 
 **Recorded:** 2026-08-16T14:21:37-05:00  
