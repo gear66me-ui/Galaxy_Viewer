@@ -233,6 +233,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a3c9e937de9d — Route Gemini pilot through Flash-Lite research and 3.7 synthesis
+
+**Recorded:** 2026-08-15T21:43:52-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a3c9e937de9d4ab2dbf2ed384dff675eedd936cd`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a3c9e937de9d4ab2dbf2ed384dff675eedd936cd)  
+**Parent/baseline:** `98d1e5a56f84f42ca645d90158cb34c7fb3fde5f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/98d1e5a56f84f42ca645d90158cb34c7fb3fde5f...a3c9e937de9d4ab2dbf2ed384dff675eedd936cd)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Route Gemini pilot through Flash-Lite research and 3.7 synthesis
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/research-hubble-science-gemini-pilot.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `79e9c8923462cf773ba6cd428711604a860f4b6eb52b21fbb2dcb5d8cd826738`
+- SHA-256 after: `abd16752db0429a7ce6677c3017f1da9c1c94325a96075303f033ee70036951d`
+- Bytes: `14393` → `14629`
+- Lines: `175` → `177`
+- Characters: `14391` → `14627`
+- Inserted lines: `9`
+- Deleted lines: `7`
+- Inserted characters: `236`
+- Deleted characters: `0`
+- Unified diff hunks: `6`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `6`
+- Line balance: `175 + 9 - 7 = 177` — **PASS**
+- Character balance: `14391 + 236 - 0 = 14627` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-046bb5198487 — Auto-start Gemini Hubble science pilot
 
 **Recorded:** 2026-08-15T21:35:25-05:00  
