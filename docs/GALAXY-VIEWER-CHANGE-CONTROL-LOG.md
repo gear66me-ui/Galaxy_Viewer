@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-bcf86fb127cc — Restore VIEW IN HD title and 9C viewer label
+
+**Recorded:** 2026-08-16T17:24:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`bcf86fb127cc74863bce3cd578fecd07d5065ffd`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/bcf86fb127cc74863bce3cd578fecd07d5065ffd)  
+**Parent/baseline:** `69a80c7cdacc391c46611428710e19bc1a38aceb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/69a80c7cdacc391c46611428710e19bc1a38aceb...bcf86fb127cc74863bce3cd578fecd07d5065ffd)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore VIEW IN HD title and 9C viewer label
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `33124ad8328727a648670803dbf5472902e02e8d6ed20cfa20f3aa1099aa0f01`
+- SHA-256 after: `950bc6e4214b84491c8b4476dc44b807c05c067bfa2c821c50cd32e981cc3b74`
+- Bytes: `8420` → `8631`
+- Lines: `124` → `124`
+- Characters: `8416` → `8627`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `251`
+- Deleted characters: `40`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `124 + 2 - 2 = 124` — **PASS**
+- Character balance: `8416 + 251 - 40 = 8627` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I-app.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4352d4039073 — Restore 9I friends landing three blue comet tiles
 
 **Recorded:** 2026-08-16T17:22:21-05:00  
