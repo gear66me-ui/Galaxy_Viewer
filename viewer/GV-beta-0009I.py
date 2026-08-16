@@ -104,6 +104,7 @@ display(Javascript(r"""
     let forcedDestination=null;
     let pendingHistoryIndex=null;
     let navigationPending=false;
+    let backgroundWorkSuspended=false;
     const galaxyHistory=[];
     let galaxyHistoryIndex=-1;
     let travelHudFrame=0;
@@ -114,6 +115,25 @@ display(Javascript(r"""
     let aladinPrewarmActiveKey='';
     const aladinPrewarmQueue=[];
     const aladinPrewarmedKeys=new Set();
+
+    function suspendBackgroundWork(){
+        if(backgroundWorkSuspended)return;
+        backgroundWorkSuspended=true;
+        if(activePrefetchAbort)activePrefetchAbort.abort();
+        if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
+        aladinPrewarmActiveKey='';
+        aladinPrewarm=null;
+        aladinPrewarmReady=null;
+        try{aladinPrewarmHost?.remove()}catch(_){}
+        aladinPrewarmHost=null;
+    }
+
+    function resumeBackgroundWork(){
+        if(!backgroundWorkSuspended)return;
+        backgroundWorkSuspended=false;
+        queueMicrotask(runAladinPrewarm);
+        queueMicrotask(fillPrefetchQueue);
+    }
 
     function clamp(value,min,max){return Math.max(min,Math.min(max,Number(value)))}
     function clamp01(value){return clamp(value,0,1)}
@@ -258,6 +278,7 @@ display(Javascript(r"""
                 const response=await fetch(source.url,{cache:'force-cache',signal});
                 if(!response.ok)throw new Error('HUBBLE HD PRELOAD RETURNED HTTP '+response.status);
                 const blob=await response.blob();
+                if(backgroundWorkSuspended||signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');
                 const prepared=await decodePreparedBlob(blob);
                 return {key:destinationKey(destination),destination,image:prepared.image,objectUrl:prepared.objectUrl,sourceUrl:source.url,sourceKind:source.kind};
             }catch(error){
@@ -269,6 +290,7 @@ display(Javascript(r"""
     }
 
     function ensureAladinPrewarm(){
+        if(backgroundWorkSuspended)return Promise.resolve(null);
         if(aladinPrewarmReady)return aladinPrewarmReady;
         aladinPrewarmReady=new Promise((resolve,reject)=>{
             const frame=document.createElement('iframe');
@@ -280,9 +302,11 @@ display(Javascript(r"""
             frame.srcdoc=`<!doctype html><html><head><link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css"><style>html,body,#gv-prewarm{margin:0;width:512px;height:512px;overflow:hidden;background:#000}</style></head><body><div id="gv-prewarm"></div><script src="${ALADIN_URL}"><\/script></body></html>`;
             frame.addEventListener('load',async()=>{
                 try{
+                    if(backgroundWorkSuspended){resolve(null);return}
                     const win=frame.contentWindow;
                     if(!win?.A?.init)throw new Error('ISOLATED ALADIN PREWARM EXPORT MISSING');
                     await win.A.init;
+                    if(backgroundWorkSuspended){resolve(null);return}
                     aladinPrewarm=win.A.aladin('#gv-prewarm',{
                         target:`${HOME.ra} ${HOME.dec}`,
                         survey:'P/DSS2/color',
@@ -328,13 +352,13 @@ display(Javascript(r"""
     }
 
     async function runAladinPrewarm(){
-        if(aladinPrewarmActiveKey||!aladinPrewarmQueue.length)return;
+        if(backgroundWorkSuspended||aladinPrewarmActiveKey||!aladinPrewarmQueue.length)return;
         const destination=aladinPrewarmQueue.shift();
         const key=destinationKey(destination);
         if(!key||aladinPrewarmedKeys.has(key)){queueMicrotask(runAladinPrewarm);return}
         aladinPrewarmActiveKey=key;
         const isolated=await ensureAladinPrewarm();
-        if(!isolated){aladinPrewarmActiveKey='';queueMicrotask(runAladinPrewarm);return}
+        if(backgroundWorkSuspended||!isolated){aladinPrewarmActiveKey='';return}
         try{
             if(typeof isolated.setFrame==='function')isolated.setFrame('ICRSd');
             if(typeof isolated.setProjection==='function')isolated.setProjection('SIN');
@@ -342,6 +366,7 @@ display(Javascript(r"""
             if(typeof isolated.setFov==='function')isolated.setFov(destination.fov);
         }catch(error){console.warn('GV-9I ALADIN PREWARM TARGET WARNING',error)}
         aladinPrewarmTimer=setTimeout(()=>{
+            if(backgroundWorkSuspended){aladinPrewarmActiveKey='';aladinPrewarmTimer=0;return}
             aladinPrewarmedKeys.add(key);
             aladinPrewarmActiveKey='';
             aladinPrewarmTimer=0;
@@ -360,7 +385,7 @@ display(Javascript(r"""
             aladinPrewarmedKeys.delete(key);
             aladinPrewarmQueue.unshift(destination);
         }else aladinPrewarmQueue.push(destination);
-        runAladinPrewarm();
+        if(!backgroundWorkSuspended)runAladinPrewarm();
     }
 
     function blockedPrefetchKeys(){
@@ -389,6 +414,7 @@ display(Javascript(r"""
     }
 
     function startPrefetch(destination,priority=false){
+        if(backgroundWorkSuspended)return;
         const key=destinationKey(destination);
         if(!key||prefetchLoading.has(key)||prefetchReady.some(item=>item.key===key)||activePreparedItem?.key===key||historyPreparedItem?.key===key||prefetchFailedKeys.has(key))return;
         if(prefetchLoading.size){
@@ -402,6 +428,7 @@ display(Javascript(r"""
         activePrefetchAbort=controller;
         activePrefetchKey=key;
         const promise=prepareHdDestination(destination,controller.signal).then(item=>{
+            if(backgroundWorkSuspended){releasePreparedItem(item);return}
             queueAladinPrewarm(item.destination,false);
             if(key===activeTargetKey&&!activePreparedItem){
                 activePreparedItem=item;
@@ -416,12 +443,13 @@ display(Javascript(r"""
         }).finally(()=>{
             prefetchLoading.delete(key);
             if(activePrefetchKey===key){activePrefetchAbort=null;activePrefetchKey=''}
-            queueMicrotask(fillPrefetchQueue);
+            if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
         });
         prefetchLoading.set(key,promise);
     }
 
     function fillPrefetchQueue(){
+        if(backgroundWorkSuspended)return;
         if(prefetchLoading.size)return;
         if(priorityPrefetchDestination){
             const destination=priorityPrefetchDestination;
@@ -466,7 +494,7 @@ display(Javascript(r"""
             historyPreparedItem=activePreparedItem;
             activePreparedItem=item;
             activeTargetKey=item.key;
-            queueMicrotask(fillPrefetchQueue);
+            if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
             return destinationWithPrepared(item);
         }
         let index=-1;
@@ -478,7 +506,7 @@ display(Javascript(r"""
         if(index<0)return null;
         const [item]=prefetchReady.splice(index,1);
         setPreparedActive(item);
-        queueMicrotask(fillPrefetchQueue);
+        if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
         return destinationWithPrepared(item);
     }
 
@@ -572,7 +600,7 @@ display(Javascript(r"""
             if(!destination){
                 destination=setUnpreparedActive(requested);
                 const key=destinationKey(destination);
-                if(!prefetchLoading.has(key)&&!prefetchFailedKeys.has(key))startPrefetch(destination,true);
+                if(!backgroundWorkSuspended&&!prefetchLoading.has(key)&&!prefetchFailedKeys.has(key))startPrefetch(destination,true);
             }
         }else{
             destination=consumeReady(null,excludeName);
@@ -583,14 +611,12 @@ display(Javascript(r"""
                 }else{
                     destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
                     const key=destinationKey(destination);
-                    if(!prefetchLoading.has(key)&&!prefetchFailedKeys.has(key))startPrefetch(destination,true);
+                    if(!backgroundWorkSuspended&&!prefetchLoading.has(key)&&!prefetchFailedKeys.has(key))startPrefetch(destination,true);
                 }
             }
         }
         activeTargetKey=destinationKey(destination);
-        queueAladinPrewarm(destination,true);
         beginTravelHud(destination);
-        queueMicrotask(fillPrefetchQueue);
         return destination;
     }
 
@@ -855,12 +881,13 @@ display(Javascript(r"""
     }
     function navigateHistory(index){
         if(index<0||index>=galaxyHistory.length||navigationPending||randomGalaxy.getState().busy)return;
+        suspendBackgroundWork();
         forcedDestination=galaxyHistory[index];
         pendingHistoryIndex=index;
         navigationPending=true;
         homeOverlay.classList.add('gv-hidden');universeContext.classList.add('gv-hidden');setHistoryControls();
         randomGalaxy.travelToRandom().catch(error=>{
-            forcedDestination=null;pendingHistoryIndex=null;navigationPending=false;endTravelHud();setHistoryControls();console.error('GV-9I HISTORY NAVIGATION FAILURE',error);
+            forcedDestination=null;pendingHistoryIndex=null;navigationPending=false;resumeBackgroundWork();endTravelHud();setHistoryControls();console.error('GV-9I HISTORY NAVIGATION FAILURE',error);
         });
     }
 
@@ -878,9 +905,10 @@ display(Javascript(r"""
             endTravelHud();
             recordArrival(destination);
             setHistoryControls();
+            resumeBackgroundWork();
         },
         onError(error){
-            navigationPending=false;pendingHistoryIndex=null;forcedDestination=null;endTravelHud();setHistoryControls();console.error('GV-9I RANDOM GALAXY FAILURE',error);
+            navigationPending=false;pendingHistoryIndex=null;forcedDestination=null;endTravelHud();setHistoryControls();resumeBackgroundWork();console.error('GV-9I RANDOM GALAXY FAILURE',error);
         }
     });
     window.__gv9iRandomGalaxy=randomGalaxy;
@@ -911,6 +939,7 @@ display(Javascript(r"""
         releasePreparedItem(activePreparedItem);releasePreparedItem(historyPreparedItem);prefetchReady.splice(0).forEach(releasePreparedItem);
         try{aladinPrewarmHost?.remove()}catch(_){}
     },{once:true});
+    bottom.random.addEventListener('click',suspendBackgroundWork,true);
     bottom.random.addEventListener('click',()=>{pendingHistoryIndex=null;navigationPending=true;homeOverlay.classList.add('gv-hidden');universeContext.classList.add('gv-hidden');setHistoryControls()});
     bottom.back.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex-1));
     bottom.forward.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex+1));
