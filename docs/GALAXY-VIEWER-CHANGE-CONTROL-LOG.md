@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2decaad7e844 — Restore HD constellation and enlarge Random Galaxy label
+
+**Recorded:** 2026-08-16T17:47:04-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2decaad7e844b833d8db7b3ce2d6ff05c49f4c15`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2decaad7e844b833d8db7b3ce2d6ff05c49f4c15)  
+**Parent/baseline:** `0358abedd3d632bb12a3ed94fc6823d64ea38deb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0358abedd3d632bb12a3ed94fc6823d64ea38deb...2decaad7e844b833d8db7b3ce2d6ff05c49f4c15)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore HD constellation and enlarge Random Galaxy label
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `950bc6e4214b84491c8b4476dc44b807c05c067bfa2c821c50cd32e981cc3b74`
+- SHA-256 after: `e9229393e7e1d809907e7a9a1bd8430f7d82118cca64073688dc27f7b84936d6`
+- Bytes: `8631` → `10578`
+- Lines: `124` → `124`
+- Characters: `8627` → `10574`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `1950`
+- Deleted characters: `3`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `124 + 2 - 2 = 124` — **PASS**
+- Character balance: `8627 + 1950 - 3 = 10574` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I-app.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ac5a0365b6ab — Launch installed Galaxy Viewer app directly into 9C
 
 **Recorded:** 2026-08-16T17:30:56-05:00  
