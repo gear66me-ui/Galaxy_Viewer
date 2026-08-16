@@ -11,12 +11,18 @@ on:
         description: Pilot batch size; authorized maximum is 10
         required: true
         default: "10"
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/research-hubble-science-gemini-pilot.yml
 
 permissions:
   contents: write
 
 jobs:
   research:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -49,7 +55,10 @@ jobs:
 
           src=pathlib.Path(os.environ['SOURCE']); out=pathlib.Path(os.environ['OUTPUT'])
           expected=os.environ['EXPECTED_SOURCE_BLOB']; model=os.environ['MODEL']; key=os.environ['GEMINI_API_KEY']
-          start=int('${{ inputs.start_index }}'); batch=int('${{ inputs.batch_size }}')
+          if os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch':
+              start=int('${{ inputs.start_index }}'); batch=int('${{ inputs.batch_size }}')
+          else:
+              start=0; batch=10
           if start < 0 or batch != 10: raise SystemExit('Authorized pilot requires start_index >= 0 and exactly 10 galaxies')
           if subprocess.check_output(['git','hash-object',str(src)],text=True).strip()!=expected: raise SystemExit('Source blob changed')
           original=json.loads(src.read_text(encoding='utf-8')); entries=original.get('entries',[])
