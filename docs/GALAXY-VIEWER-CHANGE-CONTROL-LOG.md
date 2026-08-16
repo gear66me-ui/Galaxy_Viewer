@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e83aefd569b2 — Test Gemini 3.6 Flash via Interactions API with Google Search
+
+**Recorded:** 2026-08-16T13:22:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e83aefd569b2f1ad6b4443d35c4a91e045deadb6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e83aefd569b2f1ad6b4443d35c4a91e045deadb6)  
+**Parent/baseline:** `a3066d5a1b018ab7620b24e42456a32c1b63d258`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a3066d5a1b018ab7620b24e42456a32c1b63d258...e83aefd569b2f1ad6b4443d35c4a91e045deadb6)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Test Gemini 3.6 Flash via Interactions API with Google Search
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/test-gemini-2.5-flash-grounding.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `fbb8081e1e25e5871edec1170055101c17efc117acbc93e1a2110fb53d874673`
+- SHA-256 after: `d1b25d42503cfec0fdd89a72bb6bc2eaa5fbbabf4ed8dbf8425d7c5ff08b56a1`
+- Bytes: `2908` → `3829`
+- Lines: `81` → `94`
+- Characters: `2908` → `3829`
+- Inserted lines: `39`
+- Deleted lines: `26`
+- Inserted characters: `1368`
+- Deleted characters: `447`
+- Unified diff hunks: `11`
+- Inserted blocks: `11`
+- Deleted blocks: `11`
+- Changed blocks: `11`
+- Line balance: `81 + 39 - 26 = 94` — **PASS**
+- Character balance: `2908 + 1368 - 447 = 3829` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-746fc10791f3 — Add isolated Gemini 2.5 Flash grounding preflight
 
 **Recorded:** 2026-08-16T13:21:07-05:00  
