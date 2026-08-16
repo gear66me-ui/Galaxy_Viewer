@@ -4,7 +4,7 @@ GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
 PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
 AUTHORIZED RELEASE: viewer/GV-beta-0009I.py blob 1c0c87c753fc11f3ce382fa22802060ed6689064
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
-AUTHORIZED STARTUP: Viewer/Aladin and splash initialize concurrently; app icon is only a loading cover and is removed at the splash's first genuinely rendered frame; the unchanged splash then remains visible through completion; HOME is revealed after splash completion and Viewer readiness.
+AUTHORIZED STARTUP: Viewer/Aladin and splash initialize concurrently; app icon is held visibly for a hard minimum of 2500 ms while the splash preloads behind it; the icon cover is removed only after both the minimum hold and the splash's first genuinely rendered frame; the unchanged splash then remains visible through completion; HOME is revealed after splash completion and Viewer readiness.
 -->
 <html lang="en">
 <head>
@@ -37,6 +37,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   const SPLASH_URL=SPLASH_BASE+'index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
   const VIEWER_TIMEOUT_MS=20000;
   const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
+  const ICON_MIN_HOLD_MS=2500;
+  const launchStartedAt=performance.now();
   const launchCover=document.getElementById('gv-launch-cover');
   const splashFrame=document.getElementById('gv-splash-frame');
   const errorBox=document.getElementById('gv-launch-error');
@@ -49,6 +51,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'force-cache'}).then(async response=>{
     if(!response.ok)throw new Error('GV-BETA-0009I.PY RETURNED HTTP '+response.status);
     return response.blob();
+  });
+
+  const waitForIconMinimum=()=>new Promise(resolve=>{
+    const remaining=Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt));
+    setTimeout(resolve,remaining);
   });
 
   const startVisibleSplash=()=>new Promise((resolve,reject)=>{
@@ -75,7 +82,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
             const poster=splashDocument.getElementById('poster');
             const rendered=scene?.style.opacity==='1'||poster?.style.visibility==='visible';
             if(rendered){
-              if(launchCover.isConnected)launchCover.remove();
+              waitForIconMinimum().then(()=>{
+                if(launchCover.isConnected)launchCover.remove();
+              });
               return;
             }
             if(performance.now()>=firstFrameDeadline){fail(new Error('FINAL SPLASH FIRST FRAME TIMEOUT'));return}
@@ -124,7 +133,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   try{
     const viewerInitializePromise=initializeViewer();
     const splashCompletePromise=startVisibleSplash();
-    await Promise.all([viewerInitializePromise,splashCompletePromise]);
+    await Promise.all([viewerInitializePromise,splashCompletePromise,waitForIconMinimum()]);
     requestAnimationFrame(()=>{
       if(splashFrame.isConnected)splashFrame.remove();
       if(launchCover.isConnected)launchCover.remove();
