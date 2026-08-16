@@ -197,6 +197,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-3223ec6b4cbc — Wire Galaxy Viewer 8Z launcher
+
+**Recorded:** 2026-08-15T19:45:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`3223ec6b4cbc3d361c7a1f556f3c6bb2bbcee671`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/3223ec6b4cbc3d361c7a1f556f3c6bb2bbcee671)  
+**Parent/baseline:** `7041695c87435d2badfaf6a7bad233f707b9c668`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7041695c87435d2badfaf6a7bad233f707b9c668...3223ec6b4cbc3d361c7a1f556f3c6bb2bbcee671)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Wire Galaxy Viewer 8Z launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/8Z.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `bba1f495a3e7458099407154980811b558428d8f5902a3200201b7fa114141fe`
+- SHA-256 after: `4c05fbf1cf83a161744a664a8f171bb4d7f1e5f67089486da0d13dbc510c18ad`
+- Bytes: `8054` → `8054`
+- Lines: `164` → `164`
+- Characters: `8050` → `8050`
+- Inserted lines: `11`
+- Deleted lines: `11`
+- Inserted characters: `68`
+- Deleted characters: `68`
+- Unified diff hunks: `8`
+- Inserted blocks: `8`
+- Deleted blocks: `8`
+- Changed blocks: `8`
+- Line balance: `164 + 11 - 11 = 164` — **PASS**
+- Character balance: `8050 + 68 - 68 = 8050` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/8Z.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-8Z APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 8Z, preserving the verified 8Y startup sequence unchanged.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-608d599438c1 — Wire Galaxy Viewer 8Z full Galactic view
 
 **Recorded:** 2026-08-15T19:45:16-05:00  
