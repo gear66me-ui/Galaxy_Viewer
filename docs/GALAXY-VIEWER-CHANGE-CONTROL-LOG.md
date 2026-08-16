@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0946dd74c545 — Add read-only Hubble manual research batch lister
+
+**Recorded:** 2026-08-16T13:26:18-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0946dd74c5454940e73060e224968292103356a0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0946dd74c5454940e73060e224968292103356a0)  
+**Parent/baseline:** `52f7aafed2831c70fd71fdcd14d5563503d2e09f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/52f7aafed2831c70fd71fdcd14d5563503d2e09f...0946dd74c5454940e73060e224968292103356a0)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add read-only Hubble manual research batch lister
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/list-hubble-manual-research-batch.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `2b6336515438fb9ac24bbbf7ee88bd3870c055ffdbb47ae76042e9aed57ede21`
+- Bytes: `0` → `2051`
+- Lines: `0` → `63`
+- Characters: `0` → `2051`
+- Inserted lines: `63`
+- Deleted lines: `0`
+- Inserted characters: `2051`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 63 - 0 = 63` — **PASS**
+- Character balance: `0 + 2051 - 0 = 2051` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e83aefd569b2 — Test Gemini 3.6 Flash via Interactions API with Google Search
 
 **Recorded:** 2026-08-16T13:22:53-05:00  
