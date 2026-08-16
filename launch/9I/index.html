@@ -3,140 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#020818">
 <title>Galaxy Viewer 9I</title>
 <style>
-@font-face{
-  font-family:"Space Age";
-  src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");
-  font-style:normal;
-  font-weight:400;
-  font-display:swap;
-}
+@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-style:normal;font-weight:400;font-display:swap}
 :root{color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#000;color:#fff;font-family:"Space Age",sans-serif}
-body{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  background:
-    radial-gradient(circle at 50% 18%,rgba(52,255,124,.08),transparent 32%),
-    radial-gradient(circle at 50% 78%,rgba(58,170,255,.05),transparent 36%),
-    #000;
-}
-main{
-  width:min(470px,100%);
-  text-align:center;
-  padding:30px 20px 24px;
-  border:1px solid rgba(120,255,171,.26);
-  border-radius:18px;
-  background:linear-gradient(180deg,rgba(7,18,12,.88),rgba(0,0,0,.94));
-  box-shadow:0 0 34px rgba(56,255,124,.09),inset 0 0 28px rgba(36,255,113,.025);
-}
-.icon-wrap{
-  width:124px;
-  height:124px;
-  margin:0 auto 18px;
-  border-radius:26px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.68);
-  border:1px solid rgba(120,255,171,.38);
-  box-shadow:0 0 20px rgba(77,255,143,.18),inset 0 0 18px rgba(77,255,143,.06);
-}
-.icon-wrap img{display:block;width:104px;height:104px;object-fit:contain}
-h1{
-  margin:0;
-  color:#E8FFF0;
-  font-size:clamp(25px,7vw,36px);
-  font-weight:400;
-  line-height:1.1;
-  letter-spacing:.08em;
-  text-shadow:0 0 8px rgba(120,255,171,.36);
-}
-.version{
-  display:inline-block;
-  margin-top:8px;
-  padding:4px 9px;
-  border:1px solid rgba(120,255,171,.48);
-  border-radius:999px;
-  color:#78FFAB;
-  font-size:10px;
-  letter-spacing:.12em;
-  box-shadow:0 0 9px rgba(77,255,143,.12);
-}
-p{
-  margin:18px auto 24px;
-  max-width:340px;
-  color:#B7DCC4;
-  font-size:11px;
-  line-height:1.65;
-  letter-spacing:.06em;
-}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 12%,rgba(0,74,255,.18),transparent 34%),radial-gradient(circle at 50% 88%,rgba(0,135,255,.10),transparent 42%),#000}
+main{width:min(560px,100%);text-align:center;padding:14px;border:1px solid rgba(89,158,255,.34);border-radius:22px;background:linear-gradient(180deg,rgba(4,12,30,.94),rgba(0,0,0,.98));box-shadow:0 0 36px rgba(22,91,255,.16),inset 0 0 28px rgba(35,92,255,.05)}
+.banner-shell{width:100%;overflow:hidden;border:1px solid rgba(105,166,255,.62);border-radius:18px;background:#000;box-shadow:0 0 22px rgba(21,90,255,.24),inset 0 0 18px rgba(34,95,255,.08)}
+.banner-shell iframe{display:block;width:100%;aspect-ratio:3/1;min-height:150px;border:0;background:#000}
+.version{display:inline-block;margin:15px 0 8px;padding:5px 11px;border:1px solid rgba(91,151,255,.68);border-radius:999px;color:#9EC7FF;font-size:10px;letter-spacing:.12em;box-shadow:0 0 12px rgba(36,92,255,.22)}
+p{margin:7px auto 18px;max-width:390px;color:#B9D6FF;font-size:10px;line-height:1.65;letter-spacing:.065em}
 .actions{display:grid;gap:12px}
-a.action{
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:58px;
-  padding:14px 16px;
-  border:1px solid #B7FFD0;
-  border-radius:9px;
-  background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.96));
-  color:#E8FFF0;
-  text-decoration:none;
-  font-size:12px;
-  font-weight:400;
-  line-height:1.25;
-  letter-spacing:.065em;
-  text-transform:uppercase;
-  text-shadow:0 0 5px rgba(229,255,239,.78);
-  box-shadow:inset 0 0 9px rgba(167,255,203,.28),0 0 12px rgba(77,255,143,.30);
-  -webkit-tap-highlight-color:transparent;
-}
-a.action::before{
-  content:"";
-  position:absolute;
-  left:12px;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#78FFAB;
-  box-shadow:0 0 8px rgba(120,255,171,.9);
-}
+a.action{position:relative;display:grid;grid-template-columns:1fr 54px;align-items:center;min-height:68px;padding:8px 8px 8px 18px;border:1px solid #8EBBFF;border-radius:11px;background:linear-gradient(145deg,rgba(9,44,119,.98),rgba(20,82,190,.97));color:#F4F8FF;text-decoration:none;font-size:12px;font-weight:400;line-height:1.25;letter-spacing:.07em;text-transform:uppercase;text-shadow:0 0 5px rgba(223,236,255,.82);box-shadow:inset 0 0 12px rgba(117,167,255,.20),0 0 12px rgba(33,90,255,.28);-webkit-tap-highlight-color:transparent}
+a.action.secondary{background:linear-gradient(145deg,rgba(6,27,74,.98),rgba(12,53,126,.97));border-color:#6FA8FF;box-shadow:inset 0 0 10px rgba(97,150,255,.14),0 0 10px rgba(31,77,222,.20)}
 a.action:active{filter:brightness(1.12);transform:translateY(1px)}
-a.action.secondary{
-  background:linear-gradient(145deg,rgba(9,57,37,.97),rgba(15,91,53,.94));
-  border-color:#83EFA8;
-  box-shadow:inset 0 0 8px rgba(167,255,203,.18),0 0 9px rgba(77,255,143,.20);
-}
-small{
-  display:block;
-  margin-top:20px;
-  color:#6FA584;
-  font-size:8px;
-  line-height:1.6;
-  letter-spacing:.07em;
-}
+.action-label{text-align:center;padding-left:8px}
+.tile-target{justify-self:end;width:46px;height:46px;border:1px solid rgba(137,187,255,.72);border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(4,17,49,.96),rgba(0,0,0,.96));box-shadow:0 0 12px rgba(28,93,255,.30),inset 0 0 10px rgba(66,124,255,.12)}
+.tile-target img{display:block;width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(64,133,255,.75))}
+small{display:block;margin:17px 4px 3px;color:#739ACC;font-size:8px;line-height:1.6;letter-spacing:.07em}
 </style>
 </head>
 <body>
 <main>
-  <div class="icon-wrap" aria-hidden="true">
-    <img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="">
-  </div>
-  <h1>GALAXY VIEWER</h1>
+  <div class="banner-shell"><iframe src="../galaxy-viewer-banner-0002.html" title="Galaxy Viewer banner" loading="eager"></iframe></div>
   <div class="version">9I FROZEN RELEASE</div>
   <p>CHOOSE HOW YOU WANT TO ENTER GALAXY VIEWER.</p>
   <div class="actions">
-    <a class="action" href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.gear66me.galaxyviewer9i/.MainActivity;end">LAUNCH GALAXY VIEWER APP</a>
-    <a class="action secondary" href="https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-9i-frozen/Galaxy-Viewer-9I.apk">INSTALL ANDROID APP</a>
-    <a class="action secondary" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/9I.html">LAUNCH IN BROWSER</a>
+    <a class="action" href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.gear66me.galaxyviewer9i/.MainActivity;end"><span class="action-label">LAUNCH GALAXY VIEWER APP</span><span class="tile-target"><img src="../../viewer/artwork/icon_target_vector.svg" alt=""></span></a>
+    <a class="action secondary" href="https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-9i-frozen/Galaxy-Viewer-9I.apk"><span class="action-label">INSTALL ANDROID APP</span><span class="tile-target"><img src="../../viewer/artwork/icon_target_vector.svg" alt=""></span></a>
+    <a class="action secondary" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/9I.html"><span class="action-label">LAUNCH IN BROWSER</span><span class="tile-target"><img src="../../viewer/artwork/icon_target_vector.svg" alt=""></span></a>
   </div>
   <small>IF THE ANDROID APP IS NOT INSTALLED, USE INSTALL ANDROID APP FIRST.</small>
 </main>
