@@ -1,0 +1,135 @@
+name: Build Galaxy Viewer Android 9I-D
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-D.yml'
+      - 'android/galaxy-viewer-9i/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Generate black 9I-D Space Age launcher icon
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+          import math
+
+          root = Path('.')
+          source_path = root / 'android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png'
+          output_path = root / 'android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon_9id.png'
+          font_path = root / 'viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf'
+
+          source = Image.open(source_path).convert('RGBA')
+          px = source.load()
+          corners = [px[0,0], px[source.width-1,0], px[0,source.height-1], px[source.width-1,source.height-1]]
+          bg = tuple(sum(c[i] for c in corners) / len(corners) for i in range(3))
+
+          cleaned = source.copy()
+          cp = cleaned.load()
+          for y in range(cleaned.height):
+              for x in range(cleaned.width):
+                  r,g,b,a = cp[x,y]
+                  d = math.sqrt((r-bg[0])**2 + (g-bg[1])**2 + (b-bg[2])**2)
+                  if d < 24:
+                      cp[x,y] = (r,g,b,0)
+                  elif d < 58:
+                      cp[x,y] = (r,g,b,int(a * (d-24) / 34))
+
+          bbox = cleaned.getbbox()
+          if bbox:
+              cleaned = cleaned.crop(bbox)
+
+          max_w, max_h = 360, 340
+          scale = min(max_w / cleaned.width, max_h / cleaned.height)
+          cleaned = cleaned.resize((max(1,int(cleaned.width*scale)), max(1,int(cleaned.height*scale))), Image.Resampling.LANCZOS)
+
+          canvas = Image.new('RGBA', (512,512), (0,0,0,255))
+          x = (512-cleaned.width)//2
+          y = 36 + max(0,(330-cleaned.height)//2)
+
+          alpha = cleaned.getchannel('A')
+          glow = Image.new('RGBA', cleaned.size, (90,165,255,0))
+          glow.putalpha(alpha.filter(ImageFilter.GaussianBlur(14)))
+          canvas.alpha_composite(glow, (x,y))
+          canvas.alpha_composite(cleaned, (x,y))
+
+          draw = ImageDraw.Draw(canvas)
+          label = '9I-D'
+          size = 68
+          while size >= 32:
+              font = ImageFont.truetype(str(font_path), size=size)
+              box = draw.textbbox((0,0), label, font=font)
+              if box[2]-box[0] <= 430:
+                  break
+              size -= 2
+          box = draw.textbbox((0,0), label, font=font)
+          tw, th = box[2]-box[0], box[3]-box[1]
+          tx = (512-tw)//2
+          ty = 426
+          draw.text((tx+2,ty+2), label, font=font, fill=(45,105,210,220))
+          draw.text((tx,ty), label, font=font, fill=(235,245,255,255))
+
+          output_path.parent.mkdir(parents=True, exist_ok=True)
+          canvas.convert('RGB').save(output_path, 'PNG', optimize=True)
+          print(f'Generated {output_path} with Space Age label {label}')
+          PY
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build Galaxy Viewer 9I-D debug APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify APK exists
+        run: test -f android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Stage 9I-D APK
+        run: cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-D.apk
+
+      - name: Create immutable 9I-D release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view galaxy-viewer-9i-d >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-D release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-d Galaxy-Viewer-9I-D.apk \
+            --target "$GITHUB_SHA" \
+            --title 'Galaxy Viewer 9I-D — Android' \
+            --notes 'Galaxy Viewer 9I-D Android APK. Black launcher icon uses the Galaxy Viewer target with the 9I-D revision rendered underneath in the repository Space Age font.'
