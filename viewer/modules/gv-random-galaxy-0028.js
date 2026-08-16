@@ -364,7 +364,6 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
 .gvrg-hd-science-item:nth-child(n+4){border-bottom:0}
 .gvrg-hd-science-label{font:400 11.4px/1.08 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.22px;color:#78FFAB;text-shadow:0 0 5px rgba(87,255,147,.42);text-align:center;pointer-events:none}
 .gvrg-hd-science-value{min-height:15px;margin-top:1px;font:400 13.5px/1.12 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.04px;color:#ffffff;text-shadow:0 0 4px rgba(205,255,224,.20);text-align:center;white-space:normal;overflow-wrap:anywhere;pointer-events:none}
-@media(min-width:520px){.gvrg-hd-science{grid-template-columns:repeat(5,minmax(0,1fr))}.gvrg-hd-science-item{border-bottom:0;border-right:1px solid rgba(120,255,171,.22)}.gvrg-hd-science-item:last-child{border-right:0}}
 .gvrg-hd-footer{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.94));text-align:center;pointer-events:none}
 .gvrg-hd-footer>*{pointer-events:auto}
 .gvrg-credit{margin-bottom:8px;font:400 8px/1.4 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.5px;color:#d8eff9}
@@ -514,11 +513,13 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       this.hdCommonNameValueEl = hdCommonName.value;
       const hdDistance = makeHdScienceItem('DISTANCE');
       this.hdDistanceValueEl = hdDistance.value;
+      const hdConstellation = makeHdScienceItem('CONSTELLATION');
+      this.hdConstellationValueEl = hdConstellation.value;
       const hdAge = makeHdScienceItem('AGE');
       this.hdAgeValueEl = hdAge.value;
       const hdSize = makeHdScienceItem('SIZE');
       this.hdSizeValueEl = hdSize.value;
-      hdScience.append(hdDesignation.item, hdCommonName.item, hdDistance.item, hdAge.item, hdSize.item);
+      hdScience.append(hdDesignation.item, hdCommonName.item, hdDistance.item, hdConstellation.item, hdAge.item, hdSize.item);
       this.hdScience = hdScience;
 
       const footer = document.createElement('div');
@@ -858,6 +859,7 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       this.hdDesignationValueEl.textContent = designation;
       this.hdCommonNameValueEl.textContent = commonDisplay;
       this.hdDistanceValueEl.textContent = formatDistanceMly(destination.distance);
+      this.hdConstellationValueEl.textContent = cleanText(destination.constellation).toUpperCase();
       this.hdAgeValueEl.textContent = destination.ageYears ? formatAgeYears(destination.ageYears) : cleanText(destination.age).toUpperCase();
       this.hdSizeValueEl.textContent = formatPhysicalSize(destination.physicalSizeLy);
     }
