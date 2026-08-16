@@ -1,10 +1,8 @@
 <!doctype html>
 <!--
-GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
-PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
-AUTHORIZED RELEASE: viewer/GV-beta-0009I.py blob 04dffd9eca05022019ab3933595285011ef4cac7
-AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
-AUTHORIZED STARTUP: Viewer/Aladin initialize concurrently while a hidden splash preload warms the unchanged splash assets; the app icon remains visibly covering the page for a hard minimum of 3500 ms; only after that minimum does the real splash start fresh from warmed cache, and the icon cover is removed at the splash's first genuinely rendered frame; HOME is revealed after splash completion and Viewer readiness.
+GALAXY VIEWER 9I — DIRECT APP LAUNCHER
+Permanent launcher path. No splash animation. The public 9I website owns the approved Galaxy Viewer banner.
+Viewer: viewer/GV-beta-0009I.py
 -->
 <html lang="en">
 <head>
@@ -19,92 +17,21 @@ AUTHORIZED STARTUP: Viewer/Aladin initialize concurrently while a hidden splash 
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
-#gv-launch-cover{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#000}
-#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000;opacity:1;visibility:visible}
-#gv-opening-poster{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain;background:transparent}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
 </style>
 </head>
 <body>
-<div id="gv-launch-cover"><img id="gv-opening-poster" src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="GALAXY VIEWER"></div>
-<iframe id="gv-splash-frame" title="GALAXY VIEWER SPLASH"></iframe>
 <div id="gv-launch-error" role="alert"></div>
 <script>
 (async()=>{
   'use strict';
-  const VIEWER_URL='../../viewer/GV-beta-0009I.py?v=04dffd9eca05022019ab3933595285011ef4cac7';
-  const SPLASH_BASE='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/';
-  const SPLASH_URL=SPLASH_BASE+'index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
+  const VIEWER_URL='../../viewer/GV-beta-0009I.py?v=b3be3d94fbeeea16dd13384cf2b51a7a218f0ddf';
   const VIEWER_TIMEOUT_MS=20000;
-  const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
-  const ICON_MIN_HOLD_MS=3500;
-  const launchStartedAt=performance.now();
-  const launchCover=document.getElementById('gv-launch-cover');
-  const splashFrame=document.getElementById('gv-splash-frame');
   const errorBox=document.getElementById('gv-launch-error');
 
   const showError=error=>{
     errorBox.style.display='block';
     errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error);
-  };
-
-  const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'force-cache'}).then(async response=>{
-    if(!response.ok)throw new Error('GV-BETA-0009I.PY RETURNED HTTP '+response.status);
-    return response.blob();
-  });
-
-  const waitForIconMinimum=()=>new Promise(resolve=>{
-    const remaining=Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt));
-    setTimeout(resolve,remaining);
-  });
-
-  const splashPreloadFrame=document.createElement('iframe');
-  Object.assign(splashPreloadFrame.style,{position:'fixed',left:'-10000px',top:'0',width:'1px',height:'1px',border:'0',opacity:'0',pointerEvents:'none'});
-  splashPreloadFrame.setAttribute('aria-hidden','true');
-  splashPreloadFrame.src=SPLASH_URL;
-  document.body.appendChild(splashPreloadFrame);
-
-  const startVisibleSplash=async()=>{
-    await waitForIconMinimum();
-    if(splashPreloadFrame.isConnected)splashPreloadFrame.remove();
-    return new Promise((resolve,reject)=>{
-      let settled=false;
-      const fail=error=>{
-        if(settled)return;
-        settled=true;
-        reject(error);
-      };
-      const onLoad=()=>{
-        try{
-          const splashWindow=splashFrame.contentWindow;
-          if(!splashWindow)throw new Error('FINAL SPLASH WINDOW IS UNAVAILABLE');
-          splashWindow.addEventListener('galaxy-splash-complete',()=>{
-            if(settled)return;
-            settled=true;
-            resolve();
-          },{once:true});
-          const firstFrameDeadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
-          const revealAtFirstFrame=()=>{
-            try{
-              const splashDocument=splashWindow.document;
-              const scene=splashDocument.getElementById('scene');
-              const poster=splashDocument.getElementById('poster');
-              const rendered=scene?.style.opacity==='1'||poster?.style.visibility==='visible';
-              if(rendered){
-                if(launchCover.isConnected)launchCover.remove();
-                return;
-              }
-              if(performance.now()>=firstFrameDeadline){fail(new Error('FINAL SPLASH FIRST FRAME TIMEOUT'));return}
-              requestAnimationFrame(revealAtFirstFrame);
-            }catch(error){fail(error)}
-          };
-          requestAnimationFrame(revealAtFirstFrame);
-        }catch(error){fail(error)}
-      };
-      splashFrame.addEventListener('load',onLoad,{once:true});
-      splashFrame.addEventListener('error',()=>fail(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});
-      splashFrame.src=SPLASH_URL;
-    });
   };
 
   const waitForViewer=()=>new Promise((resolve,reject)=>{
@@ -124,8 +51,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   });
 
   const initializeViewer=async()=>{
-    const viewerBlob=await viewerDownloadPromise;
-    const source=await viewerBlob.text();
+    const response=await fetch(VIEWER_URL,{cache:'force-cache'});
+    if(!response.ok)throw new Error('GV-BETA-0009I.PY RETURNED HTTP '+response.status);
+    const source=await response.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 9I FULL VIEWER');
@@ -139,13 +67,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   };
 
   try{
-    const viewerInitializePromise=initializeViewer();
-    const splashCompletePromise=startVisibleSplash();
-    await Promise.all([viewerInitializePromise,splashCompletePromise]);
-    requestAnimationFrame(()=>{
-      if(splashFrame.isConnected)splashFrame.remove();
-      if(launchCover.isConnected)launchCover.remove();
-    });
+    await initializeViewer();
   }catch(error){
     console.error('GALAXY VIEWER 9I APP LAUNCHER FAILURE',error);
     showError(error);
