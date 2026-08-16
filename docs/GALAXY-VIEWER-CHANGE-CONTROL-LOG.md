@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-8178b5c0e224 — Correct Hubble 0002 exact audit distance logic
+
+**Recorded:** 2026-08-16T14:21:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8178b5c0e2243f33236a9ac86440f9b689439022`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8178b5c0e2243f33236a9ac86440f9b689439022)  
+**Parent/baseline:** `2091513ddcd33d5e046f9e7fde374904dbe95605`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2091513ddcd33d5e046f9e7fde374904dbe95605...8178b5c0e2243f33236a9ac86440f9b689439022)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Correct Hubble 0002 exact audit distance logic
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/audit-hubble-0002-exact.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `514fd0157bd4dd89f06b89bb1222b1e23aa0cd854e20b53ff622131817528d16`
+- SHA-256 after: `6fc28e675fdf5d6a0c4ebc393d35ef15cdc4be084f7e0b7ba0c83a2bf84140c6`
+- Bytes: `5817` → `3661`
+- Lines: `115` → `71`
+- Characters: `5817` → `3661`
+- Inserted lines: `51`
+- Deleted lines: `95`
+- Inserted characters: `1601`
+- Deleted characters: `3757`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `115 + 51 - 95 = 71` — **PASS**
+- Character balance: `5817 + 1601 - 3757 = 3661` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e91804084609 — Add exact read-only Hubble 0002 audit
 
 **Recorded:** 2026-08-16T14:20:59-05:00  
