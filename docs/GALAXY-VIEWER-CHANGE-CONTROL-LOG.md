@@ -209,6 +209,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e5ceaf307b6f — Wire Galaxy Viewer 9A bottom controls
+
+**Recorded:** 2026-08-15T20:00:23-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e5ceaf307b6f2334b12a764a136431627c0c9de2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e5ceaf307b6f2334b12a764a136431627c0c9de2)  
+**Parent/baseline:** `6e8c570dc8b3543aee999981a64f98e90e4c4c0f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6e8c570dc8b3543aee999981a64f98e90e4c4c0f...e5ceaf307b6f2334b12a764a136431627c0c9de2)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Wire Galaxy Viewer 9A bottom controls
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009A.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8da53c39badf06459558a7f537c178bea588f25ad36cbd1eb370ab07ef77534e`
+- SHA-256 after: `faa231241a2b4e71c674b31e3afc08f6bc52c603571c0e4408a6c4e36412bb90`
+- Bytes: `42714` → `42731`
+- Lines: `708` → `708`
+- Characters: `42707` → `42724`
+- Inserted lines: `23`
+- Deleted lines: `23`
+- Inserted characters: `193`
+- Deleted characters: `176`
+- Unified diff hunks: `18`
+- Inserted blocks: `18`
+- Deleted blocks: `18`
+- Changed blocks: `18`
+- Line balance: `708 + 23 - 23 = 708` — **PASS**
+- Character balance: `42707 + 193 - 176 = 42724` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2eb048a63b55 — Refine 9A bottom arrival stack
 
 **Recorded:** 2026-08-15T19:58:44-05:00  
