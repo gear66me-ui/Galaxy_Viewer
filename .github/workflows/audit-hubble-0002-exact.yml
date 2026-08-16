@@ -1,0 +1,115 @@
+name: Audit Hubble 0002 exact
+on:
+  push:
+    paths:
+      - '.github/workflows/audit-hubble-0002-exact.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Exact audit
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, collections, math
+          p=pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          d=json.loads(p.read_text())
+          E=d['entries']
+          print('TOTAL',len(E))
+          print('BLOB_FILE_BYTES',p.stat().st_size)
+
+          def present(v):
+              if v is None: return False
+              if isinstance(v,str): return bool(v.strip())
+              if isinstance(v,(list,dict)): return len(v)>0
+              return True
+          def num(v):
+              return isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v)
+          def pathget(e,path):
+              cur=e
+              for k in path.split('.'):
+                  if not isinstance(cur,dict) or k not in cur: return None
+                  cur=cur[k]
+              return cur
+
+          # Inventory all leaf key paths and population counts.
+          counts=collections.Counter(); samples={}
+          def walk(o,prefix=''):
+              if isinstance(o,dict):
+                  for k,v in o.items():
+                      q=f'{prefix}.{k}' if prefix else k
+                      if isinstance(v,dict): walk(v,q)
+                      else:
+                          if present(v):
+                              counts[q]+=1
+                              samples.setdefault(q,v)
+          for e in E: walk(e)
+          print('---TOP_PATHS---')
+          for k,n in counts.most_common():
+              if any(t in k.lower() for t in ['dist','fov','field','size','constell','age','ra','dec','coord','name','title','design']):
+                  sv=repr(samples[k])[:180]
+                  print(f'PATH {k} COUNT {n} SAMPLE {sv}')
+
+          # Known/likely alternatives discovered generically by key names.
+          def paths_matching(words):
+              return [k for k in counts if any(w in k.lower() for w in words)]
+          distpaths=paths_matching(['distance','distancemly','distancely'])
+          fovpaths=paths_matching(['fov','fieldofview','field_of_view'])
+          sizepaths=paths_matching(['sizekly','size','diameter'])
+          rapaths=[k for k in counts if k.lower().endswith('ra') or '.ra' in k.lower()]
+          decpaths=[k for k in counts if k.lower().endswith('dec') or '.dec' in k.lower()]
+          print('DIST_PATHS',distpaths)
+          print('FOV_PATHS',fovpaths)
+          print('SIZE_PATHS',sizepaths)
+          print('RA_PATHS',rapaths)
+          print('DEC_PATHS',decpaths)
+
+          def any_present(e,paths): return any(present(pathget(e,p)) for p in paths)
+          def any_numeric(e,paths): return any(num(pathget(e,p)) and pathget(e,p)>0 for p in paths)
+
+          # Exact normalized schema counts.
+          norm={
+            'name':sum(present(e.get('name')) for e in E),
+            'title':sum(present(e.get('title')) for e in E),
+            'designation':sum(present(e.get('designation')) for e in E),
+            'distanceMly':sum(num(pathget(e,'science.distanceMly')) and pathget(e,'science.distanceMly')>0 for e in E),
+            'constellation':sum(present(e.get('constellation')) for e in E),
+            'age_any':sum(any([num(pathget(e,'science.ageGyr')),present(pathget(e,'science.ageDisplay')),num(pathget(e,'science.ageMinGyr')) and num(pathget(e,'science.ageMaxGyr'))]) for e in E),
+            'sizeKly':sum(isinstance(pathget(e,'science.sizeKly'),list) and len(pathget(e,'science.sizeKly'))>=2 for e in E),
+            'ra_top':sum(num(e.get('ra')) for e in E),
+            'dec_top':sum(num(e.get('dec')) for e in E),
+          }
+          print('NORMALIZED',json.dumps(norm,sort_keys=True))
+
+          # Any-path availability by semantic family.
+          print('ANY_DISTANCE_PRESENT',sum(any_present(e,distpaths) for e in E))
+          print('ANY_DISTANCE_NUMERIC',sum(any_numeric(e,distpaths) for e in E))
+          print('ANY_FOV_PRESENT',sum(any_present(e,fovpaths) for e in E))
+          print('ANY_SIZE_PRESENT',sum(any_present(e,sizepaths) for e in E))
+          print('ANY_RA_PRESENT',sum(any_present(e,rapaths) for e in E))
+          print('ANY_DEC_PRESENT',sum(any_present(e,decpaths) for e in E))
+
+          # Cross-tab exact blockers for normalized size.
+          missing_size=[e for e in E if not (isinstance(pathget(e,'science.sizeKly'),list) and len(pathget(e,'science.sizeKly'))>=2)]
+          print('MISSING_SIZE',len(missing_size))
+          print('MISSING_SIZE_WITH_ANY_DISTANCE',sum(any_present(e,distpaths) for e in missing_size))
+          print('MISSING_SIZE_WITH_ANY_FOV',sum(any_present(e,fovpaths) for e in missing_size))
+          print('MISSING_SIZE_WITH_BOTH',sum(any_present(e,distpaths) and any_present(e,fovpaths) for e in missing_size))
+          print('MISSING_SIZE_NO_DISTANCE',sum(not any_present(e,distpaths) for e in missing_size))
+          print('MISSING_SIZE_NO_FOV',sum(not any_present(e,fovpaths) for e in missing_size))
+
+          # Show first 20 missing-size records and relevant keys/values for diagnosis.
+          print('---MISSING_SIZE_SAMPLES---')
+          for e in missing_size[:20]:
+              rel={}
+              for k in counts:
+                  if any(t in k.lower() for t in ['dist','fov','field','size','ra','dec','coord']):
+                      v=pathget(e,k)
+                      if present(v): rel[k]=v
+              print(json.dumps({'archiveId':e.get('archiveId'),'name':e.get('name'),'title':e.get('title'),'relevant':rel},ensure_ascii=False)[:2000])
+          PY
