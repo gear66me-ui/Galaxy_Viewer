@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b0090d8073b6 — Preserve installed PWA identity while routing directly to 9D app
+
+**Recorded:** 2026-08-16T17:50:30-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b0090d8073b6942be7836a178f2d3a2687ecd0df`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b0090d8073b6942be7836a178f2d3a2687ecd0df)  
+**Parent/baseline:** `dc7d6c8e448b6642dc45519bc3d19d776a86d665`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dc7d6c8e448b6642dc45519bc3d19d776a86d665...b0090d8073b6942be7836a178f2d3a2687ecd0df)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Preserve installed PWA identity while routing directly to 9D app
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/manifest.webmanifest`
+
+- Status: **MODIFIED**
+- SHA-256 before: `0ce92ce4e28a12b8dacedf7f1ef4bf5b75eab3b547764bed2f3a5de60c741056`
+- SHA-256 after: `c324f3c03af2b1a6b5b1cb4176d651563f5202988c41bd38970e543fe37eded0`
+- Bytes: `758` → `761`
+- Lines: `26` → `26`
+- Characters: `758` → `761`
+- Inserted lines: `4`
+- Deleted lines: `4`
+- Inserted characters: `10`
+- Deleted characters: `7`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `26 + 4 - 4 = 26` — **PASS**
+- Character balance: `758 + 10 - 7 = 761` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-392593625970 — Point Galaxy Viewer PWA directly to 9D app launcher
 
 **Recorded:** 2026-08-16T17:50:05-05:00  
