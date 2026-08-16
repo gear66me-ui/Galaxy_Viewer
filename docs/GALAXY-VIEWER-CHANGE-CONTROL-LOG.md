@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-307fcf176a34 — Fix 9I-B HD preload lifecycle
+
+**Recorded:** 2026-08-16T16:54:33-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`307fcf176a34285e7e66ee7ad192904c51681260`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/307fcf176a34285e7e66ee7ad192904c51681260)  
+**Parent/baseline:** `6b7afe0308cbedc2c371b26c966422bfc795d1da`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6b7afe0308cbedc2c371b26c966422bfc795d1da...307fcf176a34285e7e66ee7ad192904c51681260)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix 9I-B HD preload lifecycle
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e39d52c7ddeeb13e2dca3cac424f0ad3236bfb6450f105cc4fbbfb2f4c1849e3`
+- SHA-256 after: `6cc3b949ec0e3b36ec12a619a45919bd6dca7e2d19f85e24f763e5ecd82c6a2c`
+- Bytes: `66823` → `67092`
+- Lines: `1130` → `1126`
+- Characters: `66814` → `67083`
+- Inserted lines: `17`
+- Deleted lines: `21`
+- Inserted characters: `969`
+- Deleted characters: `700`
+- Unified diff hunks: `7`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `7`
+- Line balance: `1130 + 17 - 21 = 1126` — **PASS**
+- Character balance: `66814 + 969 - 700 = 67083` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4916041776ac — Archive exact 9I-A as 9I-3
 
 **Recorded:** 2026-08-16T16:52:02-05:00  
