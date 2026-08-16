@@ -6,24 +6,139 @@
 <meta name="theme-color" content="#000000">
 <title>Galaxy Viewer 9I</title>
 <style>
-html,body{margin:0;min-height:100%;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif}
-body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;box-sizing:border-box}
-main{width:min(460px,100%);text-align:center}
-h1{margin:0 0 10px;font-size:28px;letter-spacing:.08em}
-p{margin:0 0 24px;color:#cfd8dc;font-size:15px;line-height:1.45}
-a{display:block;margin:12px 0;padding:17px 18px;border:1px solid #8cffb3;border-radius:10px;background:#123d25;color:#fff;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:.04em}
-a.secondary{background:#151515;border-color:#888}
-small{display:block;margin-top:20px;color:#7f8c8d;font-size:12px;line-height:1.4}
+@font-face{
+  font-family:"Space Age";
+  src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:swap;
+}
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#000;color:#fff;font-family:"Space Age",sans-serif}
+body{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 50% 18%,rgba(52,255,124,.08),transparent 32%),
+    radial-gradient(circle at 50% 78%,rgba(58,170,255,.05),transparent 36%),
+    #000;
+}
+main{
+  width:min(470px,100%);
+  text-align:center;
+  padding:30px 20px 24px;
+  border:1px solid rgba(120,255,171,.26);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(7,18,12,.88),rgba(0,0,0,.94));
+  box-shadow:0 0 34px rgba(56,255,124,.09),inset 0 0 28px rgba(36,255,113,.025);
+}
+.icon-wrap{
+  width:124px;
+  height:124px;
+  margin:0 auto 18px;
+  border-radius:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.68);
+  border:1px solid rgba(120,255,171,.38);
+  box-shadow:0 0 20px rgba(77,255,143,.18),inset 0 0 18px rgba(77,255,143,.06);
+}
+.icon-wrap img{display:block;width:104px;height:104px;object-fit:contain}
+h1{
+  margin:0;
+  color:#E8FFF0;
+  font-size:clamp(25px,7vw,36px);
+  font-weight:400;
+  line-height:1.1;
+  letter-spacing:.08em;
+  text-shadow:0 0 8px rgba(120,255,171,.36);
+}
+.version{
+  display:inline-block;
+  margin-top:8px;
+  padding:4px 9px;
+  border:1px solid rgba(120,255,171,.48);
+  border-radius:999px;
+  color:#78FFAB;
+  font-size:10px;
+  letter-spacing:.12em;
+  box-shadow:0 0 9px rgba(77,255,143,.12);
+}
+p{
+  margin:18px auto 24px;
+  max-width:340px;
+  color:#B7DCC4;
+  font-size:11px;
+  line-height:1.65;
+  letter-spacing:.06em;
+}
+.actions{display:grid;gap:12px}
+a.action{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:58px;
+  padding:14px 16px;
+  border:1px solid #B7FFD0;
+  border-radius:9px;
+  background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.96));
+  color:#E8FFF0;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:400;
+  line-height:1.25;
+  letter-spacing:.065em;
+  text-transform:uppercase;
+  text-shadow:0 0 5px rgba(229,255,239,.78);
+  box-shadow:inset 0 0 9px rgba(167,255,203,.28),0 0 12px rgba(77,255,143,.30);
+  -webkit-tap-highlight-color:transparent;
+}
+a.action::before{
+  content:"";
+  position:absolute;
+  left:12px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#78FFAB;
+  box-shadow:0 0 8px rgba(120,255,171,.9);
+}
+a.action:active{filter:brightness(1.12);transform:translateY(1px)}
+a.action.secondary{
+  background:linear-gradient(145deg,rgba(9,57,37,.97),rgba(15,91,53,.94));
+  border-color:#83EFA8;
+  box-shadow:inset 0 0 8px rgba(167,255,203,.18),0 0 9px rgba(77,255,143,.20);
+}
+small{
+  display:block;
+  margin-top:20px;
+  color:#6FA584;
+  font-size:8px;
+  line-height:1.6;
+  letter-spacing:.07em;
+}
 </style>
 </head>
 <body>
 <main>
-<h1>GALAXY VIEWER 9I</h1>
-<p>Choose how you want to open the frozen 9I release.</p>
-<a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.gear66me.galaxyviewer9i/.MainActivity;end">LAUNCH GALAXY VIEWER APP</a>
-<a class="secondary" href="https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-9i-frozen/Galaxy-Viewer-9I.apk">INSTALL ANDROID APP</a>
-<a class="secondary" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/9I.html">LAUNCH IN BROWSER</a>
-<small>If the Android app is not installed, use INSTALL ANDROID APP first.</small>
+  <div class="icon-wrap" aria-hidden="true">
+    <img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="">
+  </div>
+  <h1>GALAXY VIEWER</h1>
+  <div class="version">9I FROZEN RELEASE</div>
+  <p>CHOOSE HOW YOU WANT TO ENTER GALAXY VIEWER.</p>
+  <div class="actions">
+    <a class="action" href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.gear66me.galaxyviewer9i/.MainActivity;end">LAUNCH GALAXY VIEWER APP</a>
+    <a class="action secondary" href="https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-9i-frozen/Galaxy-Viewer-9I.apk">INSTALL ANDROID APP</a>
+    <a class="action secondary" href="https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/9I.html">LAUNCH IN BROWSER</a>
+  </div>
+  <small>IF THE ANDROID APP IS NOT INSTALLED, USE INSTALL ANDROID APP FIRST.</small>
 </main>
 </body>
 </html>
