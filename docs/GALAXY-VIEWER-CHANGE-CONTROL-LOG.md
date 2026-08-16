@@ -281,6 +281,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-f12b317bed08 — Add Galaxy Viewer 9G launcher
+
+**Recorded:** 2026-08-15T23:42:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f12b317bed083d2c0f57ebb73bc2a909422d501f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f12b317bed083d2c0f57ebb73bc2a909422d501f)  
+**Parent/baseline:** `ba9fe6e8f91bfbfdcee8a115a26287d7818941ab`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ba9fe6e8f91bfbfdcee8a115a26287d7818941ab...f12b317bed083d2c0f57ebb73bc2a909422d501f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add Galaxy Viewer 9G launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9G.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `52da42b067fa57b2c69d2dceb04fb55dc9177c4a7237d3d5ba630b4215075d08`
+- Bytes: `0` → `6692`
+- Lines: `0` → `139`
+- Characters: `0` → `6688`
+- Inserted lines: `139`
+- Deleted lines: `0`
+- Inserted characters: `6688`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 139 - 0 = 139` — **PASS**
+- Character balance: `0 + 6688 - 0 = 6688` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9G.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9G APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9G with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d727a54d8248 — Add Galaxy Viewer 9G universe banner position
 
 **Recorded:** 2026-08-15T23:41:37-05:00  
