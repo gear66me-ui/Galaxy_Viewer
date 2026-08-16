@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a974b9e710c4 — Hold 9I app icon for 2.5 seconds
+
+**Recorded:** 2026-08-16T00:51:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a974b9e710c4a4c9bd0edd2c23f046428c2ffe0f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a974b9e710c4a4c9bd0edd2c23f046428c2ffe0f)  
+**Parent/baseline:** `e2d08e44c160cec840f14c06ef77e3c9c0fe013e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e2d08e44c160cec840f14c06ef77e3c9c0fe013e...a974b9e710c4a4c9bd0edd2c23f046428c2ffe0f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Hold 9I app icon for 2.5 seconds
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `5cb3f0d07a847486d90bba7496840018c1a6aeed902543a136577dc9dbb1f08e`
+- SHA-256 after: `1a6f9a2e0a28f80c602da9e66eb2bb7504c0be0aac81da15709536fc083d6522`
+- Bytes: `6692` → `7139`
+- Lines: `139` → `148`
+- Characters: `6688` → `7135`
+- Inserted lines: `12`
+- Deleted lines: `3`
+- Inserted characters: `454`
+- Deleted characters: `7`
+- Unified diff hunks: `5`
+- Inserted blocks: `5`
+- Deleted blocks: `3`
+- Changed blocks: `5`
+- Line balance: `139 + 12 - 3 = 148` — **PASS**
+- Character balance: `6688 + 454 - 7 = 7135` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e00e3383643d — Launch Galaxy Viewer 9I from beta index
 
 **Recorded:** 2026-08-16T00:38:32-05:00  
