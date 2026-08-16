@@ -5,7 +5,7 @@
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
         android:icon="@drawable/gv_app_icon_9id"
-        android:label="GALAXY VIEWER 9ID"
+        android:label="GALAXY VIEWER 9I-D"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
         <activity
             android:name=".MainActivity"
