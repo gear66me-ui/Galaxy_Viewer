@@ -2,7 +2,7 @@ from IPython.display import HTML, Javascript, display
 
 # GV-beta-0009I
 # Derived from exact repaired GV-beta-0009H baseline blob 6e29dd296343dc43e086b619872ad1ece1e8b833.
-# Authorized 9I change: JSON 0002; stationary destination-first Aladin then Hubble HD preparation; navigation suspension/resume; retryable no-timeout HD preload; nonblank designation; optional bounded Hubble/Aladin framing correction; visible VERSION 9I label. Visible travel choreography remains unchanged.
+# Authorized 9I change: prewarm final Aladin P/DSS2/color survey imagery for the ten Hubble-ready destinations and immediately prioritize the selected destination without changing visible travel choreography.
 # Repaired 9H Hubble instant-open behavior and all unrelated behavior remain frozen.
 
 display(HTML("""
@@ -52,7 +52,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-travel-distance-decimal{position:absolute;left:50%;top:0;width:6px;height:18px;transform:translateX(-50%);font:inherit;letter-spacing:0;text-align:center;white-space:nowrap}
 #gv-travel-distance-fraction{position:absolute;left:calc(50% + 3px);top:0;height:18px;font:inherit;letter-spacing:inherit;text-align:left;white-space:nowrap}
 #gv-travel-distance-unit{display:block;width:100%;height:12px;font:400 10.5px/12px "Space Age",sans-serif;letter-spacing:.45px;text-align:center;white-space:nowrap}
-#gv-version-label{position:absolute;left:50%;bottom:51px;z-index:7400;transform:translateX(-50%);height:10px;color:rgba(183,255,208,.86);font:400 8px/10px "Space Age",sans-serif;letter-spacing:.85px;text-align:center;text-transform:uppercase;text-shadow:0 0 5px rgba(87,255,147,.40);white-space:nowrap;pointer-events:none}
+#gv-version-label{display:none}
 #gv-universe-context{position:absolute;left:50%;top:auto;bottom:calc(50% + min(25vw,50dvh) + 8px);z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(310px,76vw);pointer-events:none;transition:opacity .2s ease}
 #gv-universe-context .gv-universe-label{padding:5px 8px 6px;border:1px solid rgba(120,255,171,.78);border-radius:6px;background:rgba(0,12,8,.68);box-shadow:0 0 9px rgba(87,255,147,.18);color:#DFFFEA;text-align:center;text-transform:uppercase;text-shadow:0 0 6px rgba(87,255,147,.42);font:400 9px/1.25 "Space Age",sans-serif;letter-spacing:.65px}
 #gv-universe-context .gv-universe-count{display:block;margin-top:2px;color:#78FFAB;font-size:10px;letter-spacing:.8px}
@@ -80,25 +80,21 @@ display(Javascript(r"""
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
-    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0028.js?v=228d6b59b0a394d3c2bb6eae29213eb9a9bcd5d4';
-    const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json?v=c1e850ee3f9476882e7efde5fa24d0a36290a1b3';
+    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0028.js?v=625b8d889f67652fa19a39b8689e306ea1c1fb91';
+    const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json?v=060f0abadd103e320c70f035ac93f42d200eda0f';
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
     const HOME=Object.freeze({name:'EARTH — MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
     const ARRIVAL_OCCUPANCY=Object.freeze({target:0.35,max:0.40,minFov:0.05,maxFov:8});
     const HUBBLE_PREFETCH_TARGET=10;
     const ALADIN_PREWARM_DWELL_MS=1400;
-    const PREFETCH_RETRY_MS=5000;
-    const FRAMING_SAMPLE_SIZE=96;
-    const FRAMING_MAX_SHIFT_FRACTION=0.18;
     const TRAVEL_SECONDS=18;
 
     let galaxyCatalog=[];
     let catalogRecordCount=0;
     const prefetchReady=[];
     const prefetchLoading=new Map();
-    const prefetchRetryAfter=new Map();
+    const prefetchFailedKeys=new Set();
     let prefetchFailedCount=0;
-    let prefetchRetryTimer=0;
     let priorityPrefetchDestination=null;
     let activePrefetchAbort=null;
     let activePrefetchKey='';
@@ -116,17 +112,15 @@ display(Javascript(r"""
     let aladinPrewarmHost=null;
     let aladinPrewarmReady=null;
     let aladinPrewarmTimer=0;
-    let aladinPrewarmWaitResolve=null;
     let aladinPrewarmActiveKey='';
+    const aladinPrewarmQueue=[];
     const aladinPrewarmedKeys=new Set();
 
     function suspendBackgroundWork(){
         if(backgroundWorkSuspended)return;
         backgroundWorkSuspended=true;
         if(activePrefetchAbort)activePrefetchAbort.abort();
-        if(prefetchRetryTimer){clearTimeout(prefetchRetryTimer);prefetchRetryTimer=0}
         if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
-        if(aladinPrewarmWaitResolve){const resolve=aladinPrewarmWaitResolve;aladinPrewarmWaitResolve=null;resolve(false)}
         aladinPrewarmActiveKey='';
         aladinPrewarm=null;
         aladinPrewarmReady=null;
@@ -137,9 +131,7 @@ display(Javascript(r"""
     function resumeBackgroundWork(){
         if(!backgroundWorkSuspended)return;
         backgroundWorkSuspended=false;
-        const active=galaxyCatalog.find(item=>destinationKey(item)===activeTargetKey);
-        const alreadyReady=Boolean(activePreparedItem?.key===activeTargetKey||prefetchReady.some(item=>item.key===activeTargetKey));
-        if(active&&!alreadyReady)priorityPrefetchDestination=active;
+        queueMicrotask(runAladinPrewarm);
         queueMicrotask(fillPrefetchQueue);
     }
 
@@ -178,47 +170,25 @@ display(Javascript(r"""
     }
 
     function extractDesignation(candidate){
-        const explicit=String(candidate?.designation||'').trim();
-        const texts=[explicit,candidate?.name,candidate?.title,candidate?.displayName,candidate?.imageType,candidate?.category]
-            .map(value=>String(value||'').trim()).filter(Boolean);
-        const joined=texts.join(' | ');
-        if(/stephan(?:'|’)?s\s+quintet/i.test(joined))return 'HCG 92';
+        const texts=[candidate?.name,candidate?.title].map(value=>String(value||'').trim()).filter(Boolean);
         for(const text of texts){
-            let match=text.match(/\bHCG\s*[- ]?\s*(\d+[A-Z]?)\b/i);
-            if(match)return `HCG ${match[1].toUpperCase()}`;
-            match=text.match(/\bHICKSON(?:\s+COMPACT\s+GROUP)?\s*[- ]?\s*(\d+[A-Z]?)\b/i);
-            if(match)return `HCG ${match[1].toUpperCase()}`;
-            match=text.match(/\bABELL\s*[- ]?\s*(\d+[A-Z]?)\b/i);
-            if(match)return `ABELL ${match[1].toUpperCase()}`;
-        }
-        if(explicit)return explicit.toUpperCase();
-        for(const text of texts){
-            const match=text.match(/\b(?:M|NGC|IC|UGC|PGC|ARP|ESO)\s*[- ]?\s*\d+[A-Z]?(?:[- ]?\d+)?\b/i);
+            const match=text.match(/\b(?:M|NGC|IC|UGC|PGC)\s*[- ]?\s*\d+[A-Z]?\b/i);
             if(match)return match[0].replace(/\s+/g,' ').toUpperCase();
         }
-        if(/\b(?:galaxy\s+cluster|cluster\s+of\s+galaxies|galaxies\s+cluster)\b/i.test(joined))return 'GALAXY CLUSTER';
-        if(/\b(?:compact\s+group|galaxy\s+group|group\s+of\s+galaxies|quintet|quartet|triplet)\b/i.test(joined))return 'GALAXY GROUP';
-        if(/\b(?:galaxy\s+pair|pair\s+of\s+galaxies|interacting\s+galaxies)\b/i.test(joined))return 'GALAXY PAIR';
-        if(/\b(?:star\s+cluster|stellar\s+cluster)\b/i.test(joined))return 'STAR CLUSTER';
-        if(/\b(?:star\s+field|stellar\s+field)\b/i.test(joined))return 'STAR FIELD';
-        if(/\bnebula\b/i.test(joined))return 'NEBULA';
-        if(/\bstar\b/i.test(joined)&&!/\bgalax/i.test(joined))return 'STAR';
-        return 'GALAXY';
+        return '';
     }
 
     function normalizeCatalogGalaxy(candidate,index){
         if(!candidate||typeof candidate!=='object')return null;
         const name=String(candidate.name||candidate.title||'').trim();
         const ra=Number(candidate.ra),dec=Number(candidate.dec);
-        const distance=parseDistanceMly(candidate.science?.distanceMly??candidate.distance);
+        const distance=parseDistanceMly(candidate.distance);
         const constellation=String(candidate.constellation||'').trim();
         const designation=extractDesignation(candidate);
-        const commonName=String(candidate.displayName||candidate.title||candidate.name||'').trim();
-        const age=String(candidate.science?.ageDisplay??candidate.age??candidate.ageEstimate??candidate.age_estimate??'').trim();
-        const ageGyr=Number(candidate.science?.ageGyr);
-        const ageYears=Number.isFinite(ageGyr)&&ageGyr>0?ageGyr*1_000_000_000:Number(candidate.ageYears??candidate.age_years);
-        const scienceSize=Array.isArray(candidate.science?.sizeKly)?candidate.science.sizeKly.map(value=>Number(value)*1000):null;
-        const sizeRaw=scienceSize??candidate.physicalSizeLy??candidate.physical_size_ly??null;
+        const commonName=String(candidate.title||candidate.name||'').trim();
+        const age=String(candidate.age??candidate.ageEstimate??candidate.age_estimate??'').trim();
+        const ageYears=Number(candidate.ageYears??candidate.age_years);
+        const sizeRaw=candidate.physicalSizeLy??candidate.physical_size_ly??null;
         const physicalSizeLy=Array.isArray(sizeRaw)?sizeRaw.map(Number):Number(sizeRaw);
         const fieldDegrees=parseFieldOfViewDegrees(candidate.fieldOfView);
         const sourceUrl=String(candidate.sourceUrl||'').trim();
@@ -233,7 +203,7 @@ display(Javascript(r"""
         if(imageType&&/\b(artwork|illustration|collage|chart|simulation|diagram|artist(?:'s)? impression)\b/i.test(imageType))return null;
         const fov=clamp(fieldDegrees/ARRIVAL_OCCUPANCY.target,ARRIVAL_OCCUPANCY.minFov,ARRIVAL_OCCUPANCY.maxFov);
         return Object.freeze({
-            source:'ESA/HUBBLE GALAXIES CATALOG FULL-0002',
+            source:'ESA/HUBBLE GALAXIES CATALOG FULL-0001',
             hubble:true,
             archiveId:String(candidate.archiveId||'').trim(),
             name,ra,dec,distance,constellation,designation,commonName,age,
@@ -381,125 +351,41 @@ display(Javascript(r"""
         return aladinPrewarmReady;
     }
 
-    function abortError(message='BACKGROUND PREPARATION SUSPENDED'){return new DOMException(message,'AbortError')}
-
-    async function prepareAladinDestination(destination,force=false){
-        if(backgroundWorkSuspended)throw abortError();
+    async function runAladinPrewarm(){
+        if(backgroundWorkSuspended||aladinPrewarmActiveKey||!aladinPrewarmQueue.length)return;
+        const destination=aladinPrewarmQueue.shift();
         const key=destinationKey(destination);
-        if(!key)return false;
-        if(aladinPrewarmedKeys.has(key)&&!force)return true;
+        if(!key||aladinPrewarmedKeys.has(key)){queueMicrotask(runAladinPrewarm);return}
         aladinPrewarmActiveKey=key;
         const isolated=await ensureAladinPrewarm();
-        if(backgroundWorkSuspended||!isolated){aladinPrewarmActiveKey='';throw abortError()}
+        if(backgroundWorkSuspended||!isolated){aladinPrewarmActiveKey='';return}
         try{
             if(typeof isolated.setFrame==='function')isolated.setFrame('ICRSd');
             if(typeof isolated.setProjection==='function')isolated.setProjection('SIN');
-            if(typeof isolated.setRotation==='function'&&Number.isFinite(Number(destination.aladinRotation)))isolated.setRotation(Number(destination.aladinRotation));
             if(typeof isolated.gotoRaDec==='function')isolated.gotoRaDec(destination.ra,destination.dec);
             if(typeof isolated.setFov==='function')isolated.setFov(destination.fov);
-        }catch(error){
+        }catch(error){console.warn('GV-9I ALADIN PREWARM TARGET WARNING',error)}
+        aladinPrewarmTimer=setTimeout(()=>{
+            if(backgroundWorkSuspended){aladinPrewarmActiveKey='';aladinPrewarmTimer=0;return}
+            aladinPrewarmedKeys.add(key);
             aladinPrewarmActiveKey='';
-            throw error;
-        }
-        const completed=await new Promise(resolve=>{
-            aladinPrewarmWaitResolve=resolve;
-            aladinPrewarmTimer=setTimeout(()=>{
-                aladinPrewarmTimer=0;
-                if(aladinPrewarmWaitResolve===resolve)aladinPrewarmWaitResolve=null;
-                resolve(true);
-            },ALADIN_PREWARM_DWELL_MS);
-        });
-        aladinPrewarmActiveKey='';
-        if(!completed||backgroundWorkSuspended)throw abortError();
-        aladinPrewarmedKeys.add(key);
-        return true;
+            aladinPrewarmTimer=0;
+            runAladinPrewarm();
+        },ALADIN_PREWARM_DWELL_MS);
     }
 
-    function imageLightProfile(source){
-        if(!source)return null;
-        try{
-            const canvas=document.createElement('canvas');
-            canvas.width=FRAMING_SAMPLE_SIZE;canvas.height=FRAMING_SAMPLE_SIZE;
-            const ctx=canvas.getContext('2d',{willReadFrequently:true});
-            if(!ctx)return null;
-            ctx.filter='blur(2px)';
-            ctx.drawImage(source,0,0,FRAMING_SAMPLE_SIZE,FRAMING_SAMPLE_SIZE);
-            const data=ctx.getImageData(0,0,FRAMING_SAMPLE_SIZE,FRAMING_SAMPLE_SIZE).data;
-            const lum=[];
-            for(let i=0;i<data.length;i+=4)lum.push(.2126*data[i]+.7152*data[i+1]+.0722*data[i+2]);
-            const sorted=[...lum].sort((a,b)=>a-b);
-            const background=sorted[Math.floor(sorted.length*.45)]||0;
-            const threshold=sorted[Math.floor(sorted.length*.78)]||background;
-            let sum=0,sx=0,sy=0;
-            const weights=new Float64Array(lum.length);
-            for(let y=0;y<FRAMING_SAMPLE_SIZE;y++)for(let x=0;x<FRAMING_SAMPLE_SIZE;x++){
-                const index=y*FRAMING_SAMPLE_SIZE+x;
-                const edge=Math.min(x,y,FRAMING_SAMPLE_SIZE-1-x,FRAMING_SAMPLE_SIZE-1-y);
-                const edgeFactor=clamp(edge/(FRAMING_SAMPLE_SIZE*.08),0,1);
-                const weight=Math.max(0,lum[index]-Math.max(background,threshold*.82))*edgeFactor;
-                weights[index]=weight;sum+=weight;sx+=weight*x;sy+=weight*y;
-            }
-            if(!(sum>1))return null;
-            const cx=sx/sum,cy=sy/sum;
-            let xx=0,yy=0,xy=0;
-            for(let y=0;y<FRAMING_SAMPLE_SIZE;y++)for(let x=0;x<FRAMING_SAMPLE_SIZE;x++){
-                const weight=weights[y*FRAMING_SAMPLE_SIZE+x];if(!weight)continue;
-                const dx=x-cx,dy=y-cy;xx+=weight*dx*dx;yy+=weight*dy*dy;xy+=weight*dx*dy;
-            }
-            xx/=sum;yy/=sum;xy/=sum;
-            const trace=xx+yy,disc=Math.sqrt(Math.max(0,(xx-yy)*(xx-yy)+4*xy*xy));
-            const major=(trace+disc)/2,minor=(trace-disc)/2;
-            const eccentricity=major>0?clamp(1-Math.max(0,minor)/major,0,1):0;
-            const angle=.5*Math.atan2(2*xy,xx-yy)*180/Math.PI;
-            return {x:cx,y:cy,angle,eccentricity,weight:sum};
-        }catch(_){return null}
-    }
-
-    function normalizeSignedAngle(value){
-        let angle=Number(value)||0;
-        while(angle>90)angle-=180;
-        while(angle<-90)angle+=180;
-        return angle;
-    }
-
-    function angularSeparationDegrees(ra1,dec1,ra2,dec2){
-        const d=Math.PI/180;
-        const a1=ra1*d,a2=ra2*d,b1=dec1*d,b2=dec2*d;
-        const cosine=Math.sin(b1)*Math.sin(b2)+Math.cos(b1)*Math.cos(b2)*Math.cos(a1-a2);
-        return Math.acos(clamp(cosine,-1,1))/d;
-    }
-
-    function deriveHubbleFraming(destination,hubbleImage){
-        if(!hubbleImage?.naturalWidth||!hubbleImage?.naturalHeight||!aladinPrewarm||!aladinPrewarmHost)return destination;
-        try{
-            const skyCanvas=aladinPrewarmHost.contentDocument?.querySelector('canvas');
-            if(!skyCanvas)return destination;
-            const hubble=imageLightProfile(hubbleImage),sky=imageLightProfile(skyCanvas);
-            if(!hubble||!sky)return destination;
-            const width=skyCanvas.clientWidth||skyCanvas.width||512,height=skyCanvas.clientHeight||skyCanvas.height||512;
-            const desiredX=hubble.x/FRAMING_SAMPLE_SIZE*width;
-            const desiredY=hubble.y/FRAMING_SAMPLE_SIZE*height;
-            const currentX=sky.x/FRAMING_SAMPLE_SIZE*width;
-            const currentY=sky.y/FRAMING_SAMPLE_SIZE*height;
-            const maxDx=width*FRAMING_MAX_SHIFT_FRACTION,maxDy=height*FRAMING_MAX_SHIFT_FRACTION;
-            const sampleX=width/2+clamp(currentX-desiredX,-maxDx,maxDx);
-            const sampleY=height/2+clamp(currentY-desiredY,-maxDy,maxDy);
-            if(typeof aladinPrewarm.pix2world!=='function')return destination;
-            const world=aladinPrewarm.pix2world(sampleX,sampleY);
-            const ra=Number(world?.[0]),dec=Number(world?.[1]);
-            if(!Number.isFinite(ra)||!Number.isFinite(dec))return destination;
-            const maxAngularShift=Math.max(.02,Number(destination.fov)*.30);
-            if(angularSeparationDegrees(destination.ra,destination.dec,ra,dec)>maxAngularShift)return destination;
-            let rotation=null;
-            if(hubble.eccentricity>.22&&sky.eccentricity>.22){
-                const delta=normalizeSignedAngle(hubble.angle-sky.angle);
-                if(Number.isFinite(delta)&&Math.abs(delta)<=90)rotation=delta;
-            }
-            return Object.freeze({...destination,ra,dec,aladinRotation:rotation,framingCorrected:true});
-        }catch(error){
-            console.warn('GV-9I OPTIONAL HUBBLE FRAMING SKIPPED',error);
-            return destination;
-        }
+    function queueAladinPrewarm(destination,priority=false){
+        const key=destinationKey(destination);
+        if(!key||!Number.isFinite(Number(destination?.ra))||!Number.isFinite(Number(destination?.dec))||!Number.isFinite(Number(destination?.fov))||Number(destination.fov)<=0)return;
+        if(aladinPrewarmedKeys.has(key)&&!priority)return;
+        for(let index=aladinPrewarmQueue.length-1;index>=0;index--){if(destinationKey(aladinPrewarmQueue[index])===key)aladinPrewarmQueue.splice(index,1)}
+        if(priority){
+            if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
+            aladinPrewarmActiveKey='';
+            aladinPrewarmedKeys.delete(key);
+            aladinPrewarmQueue.unshift(destination);
+        }else aladinPrewarmQueue.push(destination);
+        if(!backgroundWorkSuspended)runAladinPrewarm();
     }
 
     function blockedPrefetchKeys(){
@@ -513,8 +399,8 @@ display(Javascript(r"""
     }
 
     function choosePrefetchCandidate(){
-        const blocked=blockedPrefetchKeys(),now=Date.now();
-        const pool=galaxyCatalog.filter(item=>{const key=destinationKey(item);return key&&!blocked.has(key)&&now>=Number(prefetchRetryAfter.get(key)||0)});
+        const blocked=blockedPrefetchKeys();
+        const pool=galaxyCatalog.filter(item=>{const key=destinationKey(item);return key&&!blocked.has(key)&&!prefetchFailedKeys.has(key)});
         return pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
     }
 
@@ -527,19 +413,10 @@ display(Javascript(r"""
         return null;
     }
 
-    function scheduleRetryFill(){
-        if(backgroundWorkSuspended||prefetchRetryTimer)return;
-        const now=Date.now();
-        const waits=[...prefetchRetryAfter.values()].map(value=>Number(value)-now).filter(value=>value>0);
-        if(!waits.length)return;
-        prefetchRetryTimer=setTimeout(()=>{prefetchRetryTimer=0;fillPrefetchQueue()},Math.max(100,Math.min(...waits)));
-    }
-
     function startPrefetch(destination,priority=false){
         if(backgroundWorkSuspended)return;
         const key=destinationKey(destination);
-        if(!key||prefetchLoading.has(key)||prefetchReady.some(item=>item.key===key)||activePreparedItem?.key===key||historyPreparedItem?.key===key)return;
-        if(!priority&&Date.now()<Number(prefetchRetryAfter.get(key)||0)){scheduleRetryFill();return}
+        if(!key||prefetchLoading.has(key)||prefetchReady.some(item=>item.key===key)||activePreparedItem?.key===key||historyPreparedItem?.key===key||prefetchFailedKeys.has(key))return;
         if(prefetchLoading.size){
             if(priority){
                 priorityPrefetchDestination=destination;
@@ -550,36 +427,20 @@ display(Javascript(r"""
         const controller=new AbortController();
         activePrefetchAbort=controller;
         activePrefetchKey=key;
-        const promise=(async()=>{
-            try{
-                await prepareAladinDestination(destination,priority);
-                if(backgroundWorkSuspended||controller.signal.aborted)throw abortError();
-                const item=await prepareHdDestination(destination,controller.signal);
-                let preparedDestination=destination;
-                if(!backgroundWorkSuspended&&item.image){
-                    preparedDestination=deriveHubbleFraming(destination,item.image);
-                    if(preparedDestination!==destination&&preparedDestination.framingCorrected){
-                        try{await prepareAladinDestination(preparedDestination,true)}catch(error){if(error?.name==='AbortError')throw error;preparedDestination=destination}
-                    }
-                }
-                item.destination=preparedDestination;
-                prefetchRetryAfter.delete(key);
-                if(backgroundWorkSuspended){releasePreparedItem(item);throw abortError()}
-                if(key===activeTargetKey&&!activePreparedItem){
-                    activePreparedItem=item;
-                    window.__gv9iRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
-                    return;
-                }
-                if(prefetchReady.length<HUBBLE_PREFETCH_TARGET)prefetchReady.push(item);else releasePreparedItem(item);
-            }catch(error){
-                if(error?.name==='AbortError'){
-                    if(key===activeTargetKey)priorityPrefetchDestination=destination;
-                    return;
-                }
-                prefetchFailedCount++;
-                prefetchRetryAfter.set(key,Date.now()+PREFETCH_RETRY_MS);
+        const promise=prepareHdDestination(destination,controller.signal).then(item=>{
+            if(backgroundWorkSuspended){releasePreparedItem(item);return}
+            queueAladinPrewarm(item.destination,false);
+            if(key===activeTargetKey&&!activePreparedItem){
+                activePreparedItem=item;
+                window.__gv9iRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
+                return;
             }
-        })().finally(()=>{
+            if(prefetchReady.length<HUBBLE_PREFETCH_TARGET)prefetchReady.push(item);else releasePreparedItem(item);
+        }).catch(error=>{
+            if(error?.name==='AbortError')return;
+            prefetchFailedCount++;
+            prefetchFailedKeys.add(key);
+        }).finally(()=>{
             prefetchLoading.delete(key);
             if(activePrefetchKey===key){activePrefetchAbort=null;activePrefetchKey=''}
             if(!backgroundWorkSuspended)queueMicrotask(fillPrefetchQueue);
@@ -598,7 +459,7 @@ display(Javascript(r"""
         }
         if(prefetchReady.length>=HUBBLE_PREFETCH_TARGET)return;
         const candidate=choosePrefetchCandidate();
-        if(candidate)startPrefetch(candidate);else scheduleRetryFill();
+        if(candidate)startPrefetch(candidate);
     }
 
     function destinationWithPrepared(item){
@@ -736,19 +597,25 @@ display(Javascript(r"""
             const requested=forcedDestination;
             forcedDestination=null;
             destination=consumeReady(requested,excludeName);
-            if(!destination){destination=setUnpreparedActive(requested)}
+            if(!destination){
+                destination=setUnpreparedActive(requested);
+                const key=destinationKey(destination);
+                if(!backgroundWorkSuspended&&!prefetchLoading.has(key)&&!prefetchFailedKeys.has(key))startPrefetch(destination,true);
+            }
         }else{
             destination=consumeReady(null,excludeName);
             if(!destination){
                 const inFlight=inFlightDestination(excludeName);
-                if(inFlight)destination=setUnpreparedActive(inFlight);
-                else destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
+                if(inFlight){
+                    destination=setUnpreparedActive(inFlight);
+                }else{
+                    destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
+                    const key=destinationKey(destination);
+                    if(!backgroundWorkSuspended&&!prefetchLoading.has(key)&&!prefetchFailedKeys.has(key))startPrefetch(destination,true);
+                }
             }
         }
         activeTargetKey=destinationKey(destination);
-        if(Number.isFinite(Number(destination.aladinRotation))&&typeof window.aladin_cosmic_command_test?.setRotation==='function'){
-            try{window.aladin_cosmic_command_test.setRotation(Number(destination.aladinRotation))}catch(error){console.warn('GV-9I OPTIONAL ARRIVAL ROTATION SKIPPED',error)}
-        }
         beginTravelHud(destination);
         return destination;
     }
@@ -770,7 +637,7 @@ display(Javascript(r"""
             targetReady:HUBBLE_PREFETCH_TARGET,
             cachedCount:aladinPrewarmedKeys.size,
             activeKey:aladinPrewarmActiveKey,
-            queuedDestinations:[]
+            queuedDestinations:aladinPrewarmQueue.map(item=>item.name)
         });
     }
 
@@ -823,7 +690,7 @@ display(Javascript(r"""
     function createBottomControls(root){
         const version=document.createElement('div');
         version.id='gv-version-label';
-        version.textContent=`VERSION ${VERSION}`;
+        version.textContent=VERSION;
         version.setAttribute('aria-label','GALAXY VIEWER VERSION 9I');
         root.appendChild(version);
 
@@ -1066,9 +933,7 @@ display(Javascript(r"""
 
     window.addEventListener('beforeunload',()=>{
         if(activePrefetchAbort)activePrefetchAbort.abort();
-        if(prefetchRetryTimer)clearTimeout(prefetchRetryTimer);
         if(aladinPrewarmTimer)clearTimeout(aladinPrewarmTimer);
-        if(aladinPrewarmWaitResolve){const resolve=aladinPrewarmWaitResolve;aladinPrewarmWaitResolve=null;resolve(false)}
         randomGalaxy.viewHdButton?.removeEventListener('click',deferHdUntilPrepared,true);
         randomGalaxy.hubbleIconButton?.removeEventListener('click',deferHdUntilPrepared,true);
         releasePreparedItem(activePreparedItem);releasePreparedItem(historyPreparedItem);prefetchReady.splice(0).forEach(releasePreparedItem);
