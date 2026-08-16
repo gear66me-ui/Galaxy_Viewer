@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
-GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9A APP LAUNCHER
-PURPOSE: Dedicated launcher for exact Galaxy Viewer 9A, preserving the verified 8Z startup sequence unchanged.
-AUTHORIZED RELEASE: viewer/GV-beta-0009A.py blob 0ce451ac6d373be92cb5925368d924bd774f1c91
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9B APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9B, preserving the verified 9A startup sequence unchanged.
+AUTHORIZED RELEASE: viewer/GV-beta-0009B.py blob 062f7f3bc088fc7646aa9a90ec6a01e32222c062
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
 AUTHORIZED STARTUP: Viewer/Aladin initialization begins immediately; splash image/font/HTML are fully warmed during a minimum 3.5-second app-icon hold; the prepared splash then runs once; no forced post-splash delay.
 -->
@@ -14,8 +14,8 @@ AUTHORIZED STARTUP: Viewer/Aladin initialization begins immediately; splash imag
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 9A">
-<title>GALAXY VIEWER 9A — APP LAUNCHER</title>
+<meta name="apple-mobile-web-app-title" content="GALAXY VIEWER BETA 9B">
+<title>GALAXY VIEWER 9B — APP LAUNCHER</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
@@ -33,7 +33,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
   'use strict';
-  const VIEWER_URL='../../viewer/GV-beta-0009A.py?v=0ce451ac6d373be92cb5925368d924bd774f1c91';
+  const VIEWER_URL='../../viewer/GV-beta-0009B.py?v=062f7f3bc088fc7646aa9a90ec6a01e32222c062';
   const SPLASH_BASE='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/';
   const SPLASH_URL=SPLASH_BASE+'index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
   const SPLASH_IMAGE_URL=SPLASH_BASE+'Galaxy-Splash.png';
@@ -51,7 +51,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   };
 
   const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'no-store'}).then(async response=>{
-    if(!response.ok)throw new Error('GV-BETA-0009A.PY RETURNED HTTP '+response.status);
+    if(!response.ok)throw new Error('GV-BETA-0009B.PY RETURNED HTTP '+response.status);
     return response.blob();
   });
 
@@ -117,11 +117,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
       const root=document.getElementById('aladin-cosmic-command-test');
       const home=document.getElementById('gv-we-are-here');
       const homeReady=Boolean(home&&!home.classList.contains('gv-hidden')&&String(home.textContent||'').includes('WE ARE HERE'));
-      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GV9A&&homeReady){
+      if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GV9B&&homeReady){
         requestAnimationFrame(()=>requestAnimationFrame(resolve));
         return;
       }
-      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 9A STARTUP TIMEOUT'));return}
+      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 9B STARTUP TIMEOUT'));return}
       setTimeout(check,100);
     };
     check();
@@ -132,7 +132,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     const source=await viewerBlob.text();
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
-    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 9A FULL VIEWER');
+    if(!htmlMatches.length||!jsMatches.length)throw new Error('COULD NOT EXTRACT THE VERIFIED 9B FULL VIEWER');
     htmlMatches.forEach(match=>document.body.insertAdjacentHTML('beforeend',match[1]));
     jsMatches.forEach(match=>{
       const script=document.createElement('script');
@@ -155,7 +155,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
       if(launchCover.isConnected)launchCover.remove();
     });
   }catch(error){
-    console.error('GALAXY VIEWER 9A APP LAUNCHER FAILURE',error);
+    console.error('GALAXY VIEWER 9B APP LAUNCHER FAILURE',error);
     showError(error);
   }
 })();
