@@ -1,4 +1,4 @@
-name: Gemini 2.5 Flash Grounding Preflight
+name: Gemini Interactions Grounding Preflight
 
 on:
   push:
@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      MODEL: gemini-2.5-flash
+      MODEL: gemini-3.6-flash
     steps:
-      - name: Test ordinary and grounded Gemini calls
+      - name: Test Interactions API ordinary and grounded calls
         shell: bash
         run: |
           set -euo pipefail
@@ -31,15 +31,15 @@ jobs:
 
           key=os.environ['GEMINI_API_KEY']
           model=os.environ['MODEL']
-          url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+          url='https://generativelanguage.googleapis.com/v1beta/interactions'
 
           def call(prompt, grounded=False):
               body={
-                  'contents':[{'parts':[{'text':prompt}]}],
-                  'generationConfig':{'temperature':0.0},
+                  'model':model,
+                  'input':prompt,
               }
               if grounded:
-                  body['tools']=[{'google_search':{}}]
+                  body['tools']=[{'type':'google_search'}]
               req=urllib.request.Request(
                   url,
                   data=json.dumps(body).encode('utf-8'),
@@ -51,31 +51,44 @@ jobs:
                       return json.loads(response.read().decode('utf-8'))
               except urllib.error.HTTPError as exc:
                   response_body=exc.read().decode('utf-8','replace')
-                  raise SystemExit(f'Gemini API HTTP {exc.code}: {response_body[:2000]}')
+                  raise SystemExit(f'Gemini Interactions API HTTP {exc.code}: {response_body[:3000]}')
+
+          def extract_text(resp):
+              texts=[]
+              for step in resp.get('steps') or []:
+                  if step.get('type') != 'model_output':
+                      continue
+                  for block in step.get('content') or []:
+                      if block.get('type') == 'text' and block.get('text'):
+                          texts.append(block['text'])
+              return ''.join(texts).strip()
 
           ordinary=call('Reply with exactly OK.')
-          ordinary_text=''.join(
-              p.get('text','')
-              for p in ordinary.get('candidates',[{}])[0].get('content',{}).get('parts',[])
-          ).strip()
+          ordinary_text=extract_text(ordinary)
           if not ordinary_text:
-              raise SystemExit('Ordinary call returned no text')
-          print('ORDINARY PASS:', ordinary_text[:120])
+              raise SystemExit(f'Ordinary Interactions call returned no text: {json.dumps(ordinary)[:2000]}')
+          print('ORDINARY INTERACTIONS PASS:',ordinary_text[:120])
 
           grounded=call(
-              'Use Google Search to identify the common name of Messier 104. Reply briefly and ground the answer.',
+              'Use Google Search to identify the common name of Messier 104. Reply briefly and cite the sources you used.',
               grounded=True,
           )
-          candidate=(grounded.get('candidates') or [{}])[0]
-          md=candidate.get('groundingMetadata') or {}
-          chunks=md.get('groundingChunks') or []
-          sources=[]
-          for chunk in chunks:
-              web=(chunk or {}).get('web') or {}
-              if web.get('uri'):
-                  sources.append(web.get('uri'))
-          if not sources:
-              raise SystemExit('Grounded call returned no grounding sources')
-          print('GROUNDING PASS: sources=',len(sources))
+          grounded_text=extract_text(grounded)
+          search_calls=[s for s in grounded.get('steps') or [] if s.get('type') == 'google_search_call']
+          citations=[]
+          for step in grounded.get('steps') or []:
+              if step.get('type') != 'model_output':
+                  continue
+              for block in step.get('content') or []:
+                  for ann in block.get('annotations') or []:
+                      if ann.get('type') == 'url_citation' and ann.get('url'):
+                          citations.append(ann['url'])
+          if not grounded_text:
+              raise SystemExit(f'Grounded Interactions call returned no text: {json.dumps(grounded)[:2000]}')
+          if not search_calls:
+              raise SystemExit(f'Grounded Interactions call returned no google_search_call: {json.dumps(grounded)[:2500]}')
+          if not citations:
+              raise SystemExit(f'Grounded Interactions call returned no URL citations: {json.dumps(grounded)[:2500]}')
+          print('GROUNDING INTERACTIONS PASS: searches=',len(search_calls),'citations=',len(citations))
           print('MODEL PASS:',model)
           PY
