@@ -10,7 +10,7 @@ android {
         applicationId 'com.gear66me.galaxyviewer9i'
         minSdk 29
         targetSdk 35
-        versionCode 9
-        versionName '9I-FROZEN'
+        versionCode 10
+        versionName '9D'
     }
 }
