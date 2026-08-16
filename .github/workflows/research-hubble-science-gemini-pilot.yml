@@ -29,7 +29,8 @@ jobs:
       SOURCE: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json
       OUTPUT: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
       EXPECTED_SOURCE_BLOB: d02cfaae7c690b75db70010a7a5fa87c917d2f37
-      MODEL: gemini-2.5-flash
+      MODEL: gemini-2.5-flash-lite
+      SYNTHESIS_MODEL: gemini-3.7-flash
     steps:
       - name: Checkout beta
         uses: actions/checkout@v4
@@ -54,7 +55,7 @@ jobs:
           import copy,csv,datetime as dt,json,os,pathlib,subprocess,time,urllib.request,urllib.error
 
           src=pathlib.Path(os.environ['SOURCE']); out=pathlib.Path(os.environ['OUTPUT'])
-          expected=os.environ['EXPECTED_SOURCE_BLOB']; model=os.environ['MODEL']; key=os.environ['GEMINI_API_KEY']
+          expected=os.environ['EXPECTED_SOURCE_BLOB']; model=os.environ['MODEL']; synth_model=os.environ['SYNTHESIS_MODEL']; key=os.environ['GEMINI_API_KEY']
           if os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch':
               start=int('${{ inputs.start_index }}'); batch=int('${{ inputs.batch_size }}')
           else:
@@ -72,8 +73,9 @@ jobs:
           selected=queue[start:start+10]
           if len(selected)!=10: raise SystemExit('Selected range does not contain exactly ten galaxies')
 
-          def call(prompt,grounded=False,schema=None):
-              url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+          def call(prompt,grounded=False,schema=None,model_override=None):
+              active_model=model_override or model
+              url=f'https://generativelanguage.googleapis.com/v1beta/models/{active_model}:generateContent'
               payload={'contents':[{'parts':[{'text':prompt}]}],'generationConfig':{'temperature':0.1}}
               if grounded: payload['tools']=[{'google_search':{}}]
               if schema:
@@ -119,7 +121,7 @@ jobs:
               verify=call(vp,True); vt=text(verify); vq,vs=ground(verify)
               pathlib.Path(f'gemini-pilot/raw-verification/{aid}.json').write_text(json.dumps(verify,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
               sp='''Synthesize the research and independent verification into the required JSON schema. HIGH is allowed only when identity is verified and a defensible numeric stellar-population age is explicitly supported. MEDIUM, LOW and UNRESOLVED must have ageGyr null. Reject lookback time, cosmic age, redshift-derived age, cluster age, or a localized region age misrepresented as the galaxy age. Use a conservative ageMethod such as published_mass_weighted_stellar_age, published_luminosity_weighted_stellar_age, published_stellar_population_age, or unresolved. Do not change/recalculate distance or size; only assess them.\n\nOBJECT:\n'''+json.dumps(packet,ensure_ascii=False,indent=2)+'\n\nRESEARCH:\n'+rt+'\n\nVERIFICATION:\n'+vt
-              syn=json.loads(text(call(sp,False,schema)))
+              syn=json.loads(text(call(sp,False,schema,synth_model)))
               if not syn['identityVerified'] or syn['confidence']!='HIGH': syn['ageGyr']=None; syn['ageMethod']='unresolved'
               if not syn['identityVerified']: syn['confidence']='LOW'
               sources=[]; seen=set()
@@ -127,12 +129,12 @@ jobs:
                   if s.get('url') and s['url'] not in seen: seen.add(s['url']); sources.append(s)
               d=byid[aid]; before=copy.deepcopy(d['science'])
               if syn['confidence']=='HIGH' and syn['ageGyr'] is not None: d['science']['ageGyr']=syn['ageGyr']; d['science']['ageMethod']=syn['ageMethod']
-              d['geminiResearch']={'batch':'0001','model':model,'researchMethod':'Gemini API with Google Search grounding','verificationMethod':'independent second-pass Gemini Google Search grounding','identityVerified':syn['identityVerified'],'confidence':syn['confidence'],'proposedAgeGyr':syn['ageGyr'],'ageDefinition':syn['ageDefinition'],'ageMethod':syn['ageMethod'],'distanceAssessment':syn['distanceAssessment'],'sizeAssessment':syn['sizeAssessment'],'conflicts':syn['conflicts'],'reason':syn['reason'],'researchSearchQueries':rq,'verificationSearchQueries':vq,'sources':sources,'originalScience':before}
+              d['geminiResearch']={'batch':'0001','model':model,'synthesisModel':synth_model,'researchMethod':'Gemini API with Google Search grounding','verificationMethod':'independent second-pass Gemini Google Search grounding','identityVerified':syn['identityVerified'],'confidence':syn['confidence'],'proposedAgeGyr':syn['ageGyr'],'ageDefinition':syn['ageDefinition'],'ageMethod':syn['ageMethod'],'distanceAssessment':syn['distanceAssessment'],'sizeAssessment':syn['sizeAssessment'],'conflicts':syn['conflicts'],'reason':syn['reason'],'researchSearchQueries':rq,'verificationSearchQueries':vq,'sources':sources,'originalScience':before}
               changed.append(aid); rows.append({'archiveId':aid,'name':e.get('name') or '','proposedAgeGyr':syn['ageGyr'],'ageDefinition':syn['ageDefinition'] or '','confidence':syn['confidence'],'sourceCount':len(sources),'reason':syn['reason']})
               print(f'[{i}/10] {aid} {e.get("name")} -> {syn["confidence"]} age={syn["ageGyr"]}')
 
           payload['version']='full-0002'
-          payload['geminiResearchEnrichment']={'version':'0001','sourceCatalog':src.name,'sourceCatalogBlobSha':expected,'researchMethod':'Gemini API with Google Search grounding','model':model,'batch':'0001','startIndexWithinFourOfFiveQueue':start,'galaxiesResearched':10,'selectedArchiveIds':changed,'generatedAt':dt.datetime.now(dt.timezone.utc).isoformat(),'verificationMethod':'independent second-pass Gemini Google Search grounding','policy':'AI-assisted research is retained with provenance and requires scientific verification. Unsupported or ambiguous ages remain unresolved.','apiKeyStoredInCatalog':False}
+          payload['geminiResearchEnrichment']={'version':'0001','sourceCatalog':src.name,'sourceCatalogBlobSha':expected,'researchMethod':'Gemini API with Google Search grounding','model':model,'synthesisModel':synth_model,'batch':'0001','startIndexWithinFourOfFiveQueue':start,'galaxiesResearched':10,'selectedArchiveIds':changed,'generatedAt':dt.datetime.now(dt.timezone.utc).isoformat(),'verificationMethod':'independent second-pass Gemini Google Search grounding','policy':'AI-assisted research is retained with provenance and requires scientific verification. Unsupported or ambiguous ages remain unresolved.','apiKeyStoredInCatalog':False}
           if [e['archiveId'] for e in payload['entries']] != [e['archiveId'] for e in original['entries']]: raise SystemExit('Archive order changed')
           if len(changed)!=10 or len(set(changed))!=10: raise SystemExit('Exactly ten unique records were not researched')
           for b,a in zip(original['entries'],payload['entries']):
