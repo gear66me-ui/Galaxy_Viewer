@@ -1,0 +1,71 @@
+name: Create Hubble manual catalog 0002
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/create-hubble-manual-0002.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Create 0002 and patch Antennae
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          src = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json')
+          dst = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          data = json.loads(src.read_text())
+          assert data.get('metadataRecordCount') == 1879
+          assert len(data.get('entries', [])) == 1879
+          matches = [e for e in data['entries'] if e.get('archiveId') == 'potw1345a']
+          assert len(matches) == 1
+          e = matches[0]
+          e['designation'] = 'NGC 4038 / NGC 4039'
+          e['displayName'] = 'Antennae Galaxies'
+          e['imageReview'] = 'PASS'
+          s = e.setdefault('science', {})
+          s['distanceMly'] = 65.0
+          s['distanceMethod'] = 'esa'
+          s['sizeKly'] = [53.0, 53.0]
+          s['sizeMethod'] = 'manual_rounded_fov'
+          s['ageGyr'] = None
+          s['ageMinGyr'] = 0.1
+          s['ageMaxGyr'] = 1.0
+          s['ageEstimated'] = True
+          s['ageMethod'] = 'manual_stellar_population_range'
+          s['ageDisplay'] = 'EST. 0.1-1 GYR'
+          data['version'] = 'full-0002'
+          data['manualEnrichment'] = {
+              'status': 'in_progress',
+              'completedRecords': 1,
+              'displayFields': ['designation','name','distance','constellation','age','size']
+          }
+          dst.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+          chk = json.loads(dst.read_text())
+          assert chk['version'] == 'full-0002'
+          assert len(chk['entries']) == 1879
+          m = [x for x in chk['entries'] if x.get('archiveId') == 'potw1345a'][0]
+          assert m['science']['ageDisplay'] == 'EST. 0.1-1 GYR'
+          assert m['science']['sizeKly'] == [53.0, 53.0]
+          print('PASS: 0002 created, 1879 records preserved, potw1345a patched')
+          PY
+      - name: Commit catalog 0002
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+          git commit -m 'Create Hubble full catalog 0002 with Antennae enrichment'
+          git push origin beta
