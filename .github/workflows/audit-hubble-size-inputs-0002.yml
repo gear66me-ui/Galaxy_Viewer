@@ -1,0 +1,48 @@
+name: Audit Hubble 0002 size inputs
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/audit-hubble-size-inputs-0002.yml'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Audit size blockers
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          data=json.loads(p.read_text())
+          es=data['entries']
+          def num(v): return isinstance(v,(int,float)) and v>0
+          def sizeok(e):
+              v=e.get('science',{}).get('sizeKly')
+              return isinstance(v,list) and len(v)>=2 and all(num(x) for x in v[:2])
+          # inspect likely fov keys/locations
+          topkeys={}
+          scikeys={}
+          missing=[]
+          cats={'size_present':0,'missing_size_distance_missing':0,'missing_size_distance_present':0}
+          samples=[]
+          for e in es:
+              for k in e: topkeys[k]=topkeys.get(k,0)+1
+              for k in e.get('science',{}): scikeys[k]=scikeys.get(k,0)+1
+              if sizeok(e):
+                  cats['size_present']+=1; continue
+              d=e.get('science',{}).get('distanceMly')
+              if num(d): cats['missing_size_distance_present']+=1
+              else: cats['missing_size_distance_missing']+=1
+              if len(samples)<12:
+                  samples.append({k:e.get(k) for k in ['archiveId','name','title','fov','fieldOfView','ra','dec'] if k in e} | {'science':e.get('science',{})})
+          print('CATEGORIES='+json.dumps(cats,sort_keys=True))
+          print('TOP_KEYS='+json.dumps(sorted(topkeys.items(), key=lambda x:-x[1])[:40]))
+          print('SCI_KEYS='+json.dumps(sorted(scikeys.items(), key=lambda x:-x[1])[:40]))
+          print('SAMPLES='+json.dumps(samples)[:12000])
+          PY
