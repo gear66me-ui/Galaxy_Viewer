@@ -2,7 +2,7 @@ from IPython.display import HTML, Javascript, display
 
 # GV-beta-0009I
 # Derived from exact repaired GV-beta-0009H baseline blob 6e29dd296343dc43e086b619872ad1ece1e8b833.
-# Authorized 9I change: JSON 0002; stationary destination-first Aladin then Hubble HD preparation; navigation suspension/resume; retryable no-timeout HD preload; nonblank designation; optional bounded Hubble/Aladin framing correction; visible VERSION 9I label. Visible travel choreography remains unchanged.
+# Authorized 9I-A change: JSON 0002 preserved; Hubble HD starts first while isolated Aladin prewarms the current and two future destinations; next HD prefers a prewarmed target; navigation suspension/resume preserved; retryable no-timeout HD preload preserved; visible revision label VERSION 9I-A.
 # Repaired 9H Hubble instant-open behavior and all unrelated behavior remain frozen.
 
 display(HTML("""
@@ -76,6 +76,7 @@ display(Javascript(r"""
 (async()=>{
     'use strict';
     const VERSION='9I';
+    const DISPLAY_VERSION='9I-A';
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
@@ -97,6 +98,7 @@ display(Javascript(r"""
     const prefetchReady=[];
     const prefetchLoading=new Map();
     const prefetchRetryAfter=new Map();
+    const hdDownloadStatus=new Map();
     let prefetchFailedCount=0;
     let prefetchRetryTimer=0;
     let priorityPrefetchDestination=null;
@@ -118,11 +120,24 @@ display(Javascript(r"""
     let aladinPrewarmTimer=0;
     let aladinPrewarmWaitResolve=null;
     let aladinPrewarmActiveKey='';
+    let aladinPrewarmLastKey='';
     const aladinPrewarmedKeys=new Set();
+
+    function setHdStatus(destination,state,sourceKind=''){
+        const key=destinationKey(destination);
+        if(!key)return;
+        const old=hdDownloadStatus.get(key)||{};
+        hdDownloadStatus.set(key,{key,name:String(destination?.name||old.name||''),state,sourceKind:sourceKind||old.sourceKind||'',updatedAt:Date.now()});
+    }
+
+    function getHubbleDownloadStatus(){
+        return Object.freeze([...hdDownloadStatus.values()].map(item=>Object.freeze({...item})));
+    }
 
     function suspendBackgroundWork(){
         if(backgroundWorkSuspended)return;
         backgroundWorkSuspended=true;
+        if(activePrefetchKey){const active=galaxyCatalog.find(item=>destinationKey(item)===activePrefetchKey);if(active)setHdStatus(active,'SUSPENDED')}
         if(activePrefetchAbort)activePrefetchAbort.abort();
         if(prefetchRetryTimer){clearTimeout(prefetchRetryTimer);prefetchRetryTimer=0}
         if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
@@ -305,17 +320,21 @@ display(Javascript(r"""
         let lastError=null;
         for(const source of sources){
             try{
+                setHdStatus(destination,'DOWNLOADING',source.kind);
                 const response=await fetch(source.url,{cache:'force-cache',signal});
                 if(!response.ok)throw new Error('HUBBLE HD PRELOAD RETURNED HTTP '+response.status);
                 const blob=await response.blob();
                 if(backgroundWorkSuspended||signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');
+                setHdStatus(destination,'DECODING',source.kind);
                 const prepared=await decodePreparedBlob(blob);
+                setHdStatus(destination,'READY',source.kind);
                 return {key:destinationKey(destination),destination,image:prepared.image,objectUrl:prepared.objectUrl,sourceUrl:source.url,sourceKind:source.kind};
             }catch(error){
-                if(error?.name==='AbortError')throw error;
+                if(error?.name==='AbortError'){setHdStatus(destination,'SUSPENDED',source.kind);throw error}
                 lastError=error;
             }
         }
+        setHdStatus(destination,'RETRY-WAIT');
         throw lastError||new Error('HUBBLE HD PRELOAD HAS NO USABLE SOURCE');
     }
 
@@ -412,6 +431,7 @@ display(Javascript(r"""
         aladinPrewarmActiveKey='';
         if(!completed||backgroundWorkSuspended)throw abortError();
         aladinPrewarmedKeys.add(key);
+        aladinPrewarmLastKey=key;
         return true;
     }
 
@@ -515,7 +535,19 @@ display(Javascript(r"""
     function choosePrefetchCandidate(){
         const blocked=blockedPrefetchKeys(),now=Date.now();
         const pool=galaxyCatalog.filter(item=>{const key=destinationKey(item);return key&&!blocked.has(key)&&now>=Number(prefetchRetryAfter.get(key)||0)});
-        return pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
+        if(!pool.length)return null;
+        const warmed=pool.filter(item=>aladinPrewarmedKeys.has(destinationKey(item)));
+        const preferred=warmed.length?warmed:pool;
+        return preferred[Math.floor(Math.random()*preferred.length)];
+    }
+
+    function chooseAladinAheadCandidates(destination,count=2){
+        const blocked=blockedPrefetchKeys();
+        blocked.add(destinationKey(destination));
+        const pool=galaxyCatalog.filter(item=>{const key=destinationKey(item);return key&&!blocked.has(key)&&!aladinPrewarmedKeys.has(key)});
+        const chosen=[];
+        while(pool.length&&chosen.length<count){const index=Math.floor(Math.random()*pool.length);chosen.push(pool.splice(index,1)[0])}
+        return chosen;
     }
 
     function inFlightDestination(excludeName=''){
@@ -552,11 +584,19 @@ display(Javascript(r"""
         activePrefetchKey=key;
         const promise=(async()=>{
             try{
-                await prepareAladinDestination(destination,priority);
-                if(backgroundWorkSuspended||controller.signal.aborted)throw abortError();
-                const item=await prepareHdDestination(destination,controller.signal);
+                setHdStatus(destination,'QUEUED');
+                const hdPromise=prepareHdDestination(destination,controller.signal);
+                const ahead=chooseAladinAheadCandidates(destination,2);
+                const aladinPromise=(async()=>{
+                    for(const candidate of [destination,...ahead]){
+                        if(backgroundWorkSuspended||controller.signal.aborted)throw abortError();
+                        try{await prepareAladinDestination(candidate,priority&&candidate===destination)}catch(error){if(error?.name==='AbortError')throw error;console.warn('GV-9I ALADIN AHEAD PREWARM WARNING',error)}
+                    }
+                })();
+                const item=await hdPromise;
+                try{await aladinPromise}catch(error){if(error?.name==='AbortError')throw error}
                 let preparedDestination=destination;
-                if(!backgroundWorkSuspended&&item.image){
+                if(!backgroundWorkSuspended&&item.image&&aladinPrewarmLastKey===key){
                     preparedDestination=deriveHubbleFraming(destination,item.image);
                     if(preparedDestination!==destination&&preparedDestination.framingCorrected){
                         try{await prepareAladinDestination(preparedDestination,true)}catch(error){if(error?.name==='AbortError')throw error;preparedDestination=destination}
@@ -577,6 +617,7 @@ display(Javascript(r"""
                     return;
                 }
                 prefetchFailedCount++;
+                setHdStatus(destination,'RETRY-WAIT');
                 prefetchRetryAfter.set(key,Date.now()+PREFETCH_RETRY_MS);
             }
         })().finally(()=>{
@@ -759,9 +800,11 @@ display(Javascript(r"""
             readyCount:prefetchReady.length,
             loadingCount:prefetchLoading.size,
             failedCount:prefetchFailedCount,
+            activeDownloadKey:activePrefetchKey,
             activePreparedGalaxy:activePreparedItem?.destination?.name||'',
             activePreparedSource:activePreparedItem?.sourceKind||'',
-            queuedDestinations:prefetchReady.map(item=>item.destination.name)
+            queuedDestinations:prefetchReady.map(item=>item.destination.name),
+            downloads:getHubbleDownloadStatus()
         });
     }
 
@@ -823,8 +866,8 @@ display(Javascript(r"""
     function createBottomControls(root){
         const version=document.createElement('div');
         version.id='gv-version-label';
-        version.textContent=`VERSION ${VERSION}`;
-        version.setAttribute('aria-label','GALAXY VIEWER VERSION 9I');
+        version.textContent=`VERSION ${DISPLAY_VERSION}`;
+        version.setAttribute('aria-label',`GALAXY VIEWER VERSION ${DISPLAY_VERSION}`);
         root.appendChild(version);
 
         const nav=document.createElement('div');
@@ -1079,8 +1122,8 @@ display(Javascript(r"""
     bottom.back.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex-1));
     bottom.forward.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex+1));
     setHistoryControls();
-    window.GV9I=Object.freeze({version:VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,universeContext,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,getHubblePrefetchState,getAladinPrewarmState,startHubblePrefetch:fillPrefetchQueue,getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId}))})});
-    document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length}}));
+    window.GV9I=Object.freeze({version:VERSION,displayVersion:DISPLAY_VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,universeContext,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,getHubblePrefetchState,getHubbleDownloadStatus,getAladinPrewarmState,startHubblePrefetch:fillPrefetchQueue,getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId}))})});
+    document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length}}));
 })().catch(error=>console.error('GALAXY VIEWER 9I STARTUP FAILURE:',error));
 """))
 
