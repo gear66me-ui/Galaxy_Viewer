@@ -1,0 +1,166 @@
+name: Hubble Gemini Science Pilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_index:
+        description: Zero-based index within current 4/5 queue
+        required: true
+        default: "0"
+      batch_size:
+        description: Pilot batch size; authorized maximum is 10
+        required: true
+        default: "10"
+
+permissions:
+  contents: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      SOURCE: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json
+      OUTPUT: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+      EXPECTED_SOURCE_BLOB: d02cfaae7c690b75db70010a7a5fa87c917d2f37
+      MODEL: gemini-2.5-flash
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GEMINI_API_KEY:-}" || { echo "GEMINI_API_KEY secret missing"; exit 1; }
+          test "$(git hash-object "$SOURCE")" = "$EXPECTED_SOURCE_BLOB" || { echo "Frozen source blob mismatch"; exit 1; }
+          test ! -e "$OUTPUT" || { echo "$OUTPUT already exists; refusing to overwrite"; exit 1; }
+
+      - name: Research ten galaxies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p gemini-pilot/raw-research gemini-pilot/raw-verification
+          python3 <<'PY'
+          import copy,csv,datetime as dt,json,os,pathlib,subprocess,time,urllib.request,urllib.error
+
+          src=pathlib.Path(os.environ['SOURCE']); out=pathlib.Path(os.environ['OUTPUT'])
+          expected=os.environ['EXPECTED_SOURCE_BLOB']; model=os.environ['MODEL']; key=os.environ['GEMINI_API_KEY']
+          start=int('${{ inputs.start_index }}'); batch=int('${{ inputs.batch_size }}')
+          if start < 0 or batch != 10: raise SystemExit('Authorized pilot requires start_index >= 0 and exactly 10 galaxies')
+          if subprocess.check_output(['git','hash-object',str(src)],text=True).strip()!=expected: raise SystemExit('Source blob changed')
+          original=json.loads(src.read_text(encoding='utf-8')); entries=original.get('entries',[])
+          if len(entries)!=1879 or len({e.get('archiveId') for e in entries})!=1879: raise SystemExit('Catalog identity/count gate failed')
+
+          def eligible(e):
+              s=e.get('science') or {}
+              return bool(e.get('archiveId')) and bool(e.get('name')) and s.get('distanceMly') is not None and s.get('sizeKly') is not None and s.get('ageGyr') is None
+          queue=[e for e in entries if eligible(e)]
+          if len(queue)!=1070: raise SystemExit(f'Expected 1070 current 4/5 records, got {len(queue)}')
+          selected=queue[start:start+10]
+          if len(selected)!=10: raise SystemExit('Selected range does not contain exactly ten galaxies')
+
+          def call(prompt,grounded=False,schema=None):
+              url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+              payload={'contents':[{'parts':[{'text':prompt}]}],'generationConfig':{'temperature':0.1}}
+              if grounded: payload['tools']=[{'google_search':{}}]
+              if schema:
+                  payload['generationConfig']['responseMimeType']='application/json'
+                  payload['generationConfig']['responseSchema']=schema
+              data=json.dumps(payload).encode()
+              for n in range(3):
+                  req=urllib.request.Request(url,data=data,method='POST',headers={'Content-Type':'application/json','x-goog-api-key':key})
+                  try:
+                      with urllib.request.urlopen(req,timeout=180) as r: return json.loads(r.read().decode())
+                  except urllib.error.HTTPError as e:
+                      body=e.read().decode('utf-8','replace')
+                      if e.code in (429,500,502,503,504) and n<2: time.sleep(5*(n+1)); continue
+                      raise SystemExit(f'Gemini API HTTP {e.code}: {body[:1000]}')
+              raise SystemExit('Gemini API retry gate exhausted')
+
+          def text(resp):
+              return ''.join(p.get('text','') for p in resp['candidates'][0]['content']['parts'])
+          def ground(resp):
+              md=resp.get('candidates',[{}])[0].get('groundingMetadata') or {}
+              qs=md.get('webSearchQueries') or []; sources=[]; seen=set()
+              for c in md.get('groundingChunks') or []:
+                  w=(c or {}).get('web') or {}; u=w.get('uri')
+                  if u and u not in seen: seen.add(u); sources.append({'url':u,'title':w.get('title')})
+              return qs,sources
+
+          schema={'type':'object','properties':{
+            'identityVerified':{'type':'boolean'},
+            'confidence':{'type':'string','enum':['HIGH','MEDIUM','LOW','UNRESOLVED']},
+            'ageGyr':{'type':['number','null']},'ageDefinition':{'type':['string','null']},
+            'ageMethod':{'type':'string'},'distanceAssessment':{'type':'string'},'sizeAssessment':{'type':'string'},
+            'conflicts':{'type':'array','items':{'type':'string'}},'reason':{'type':'string'}},
+            'required':['identityVerified','confidence','ageGyr','ageDefinition','ageMethod','distanceAssessment','sizeAssessment','conflicts','reason'],
+            'additionalProperties':False}
+
+          payload=copy.deepcopy(original); byid={e['archiveId']:e for e in payload['entries']}; rows=[]; changed=[]
+          for i,e in enumerate(selected,1):
+              aid=e['archiveId']; packet={'archiveId':aid,'name':e.get('name'),'title':e.get('title'),'raDegrees':e.get('ra'),'decDegrees':e.get('dec'),'constellation':e.get('constellation'),'currentDistanceMly':e['science'].get('distanceMly'),'currentDistanceMethod':e['science'].get('distanceMethod'),'currentSizeKly':e['science'].get('sizeKly'),'currentSizeMethod':e['science'].get('sizeMethod'),'esaSourceUrl':e.get('sourceUrl')}
+              rp='''Conservative astronomy literature research. Identify this exact Hubble object from designation/aliases and RA/Dec. Search authoritative scientific sources and refereed literature for stellar-population age information and independently check the existing distance and physical size. Prefer NASA ADS-linked papers, NED, SIMBAD, VizieR, ApJ, AJ, A&A, MNRAS, PASP and authoritative observatories. Cite sources supporting claims. Never use lookback time, age of the Universe at redshift, redshift-derived age, cluster age, distance-derived age, or a local star cluster/HII region/nucleus as whole-galaxy age. State the exact age definition (mass-weighted, luminosity-weighted, dominant population, oldest population, nuclear population, starburst, etc.). If no defensible numeric stellar age for this exact object is supported, say UNRESOLVED. Never invent precision.\n\nCATALOG PACKET:\n'''+json.dumps(packet,ensure_ascii=False,indent=2)
+              research=call(rp,True); rt=text(research); rq,rs=ground(research)
+              pathlib.Path(f'gemini-pilot/raw-research/{aid}.json').write_text(json.dumps(research,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+              vp='''Independent astronomy verification. Challenge the research below using a fresh Google Search. Verify exact object identity/aliases/coordinates; whether scientific sources truly support any numeric stellar-population age; whether the age definition is represented correctly; and whether current distance and approximate size are broadly plausible. Reject lookback/cosmic/redshift/cluster/local-region ages misrepresented as whole-galaxy age. Note conflicts. Grade age evidence HIGH, MEDIUM, LOW or UNRESOLVED; if not defensible, state UNRESOLVED.\n\nOBJECT:\n'''+json.dumps(packet,ensure_ascii=False,indent=2)+'\n\nRESEARCH:\n'+rt
+              verify=call(vp,True); vt=text(verify); vq,vs=ground(verify)
+              pathlib.Path(f'gemini-pilot/raw-verification/{aid}.json').write_text(json.dumps(verify,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+              sp='''Synthesize the research and independent verification into the required JSON schema. HIGH is allowed only when identity is verified and a defensible numeric stellar-population age is explicitly supported. MEDIUM, LOW and UNRESOLVED must have ageGyr null. Reject lookback time, cosmic age, redshift-derived age, cluster age, or a localized region age misrepresented as the galaxy age. Use a conservative ageMethod such as published_mass_weighted_stellar_age, published_luminosity_weighted_stellar_age, published_stellar_population_age, or unresolved. Do not change/recalculate distance or size; only assess them.\n\nOBJECT:\n'''+json.dumps(packet,ensure_ascii=False,indent=2)+'\n\nRESEARCH:\n'+rt+'\n\nVERIFICATION:\n'+vt
+              syn=json.loads(text(call(sp,False,schema)))
+              if not syn['identityVerified'] or syn['confidence']!='HIGH': syn['ageGyr']=None; syn['ageMethod']='unresolved'
+              if not syn['identityVerified']: syn['confidence']='LOW'
+              sources=[]; seen=set()
+              for s in rs+vs:
+                  if s.get('url') and s['url'] not in seen: seen.add(s['url']); sources.append(s)
+              d=byid[aid]; before=copy.deepcopy(d['science'])
+              if syn['confidence']=='HIGH' and syn['ageGyr'] is not None: d['science']['ageGyr']=syn['ageGyr']; d['science']['ageMethod']=syn['ageMethod']
+              d['geminiResearch']={'batch':'0001','model':model,'researchMethod':'Gemini API with Google Search grounding','verificationMethod':'independent second-pass Gemini Google Search grounding','identityVerified':syn['identityVerified'],'confidence':syn['confidence'],'proposedAgeGyr':syn['ageGyr'],'ageDefinition':syn['ageDefinition'],'ageMethod':syn['ageMethod'],'distanceAssessment':syn['distanceAssessment'],'sizeAssessment':syn['sizeAssessment'],'conflicts':syn['conflicts'],'reason':syn['reason'],'researchSearchQueries':rq,'verificationSearchQueries':vq,'sources':sources,'originalScience':before}
+              changed.append(aid); rows.append({'archiveId':aid,'name':e.get('name') or '','proposedAgeGyr':syn['ageGyr'],'ageDefinition':syn['ageDefinition'] or '','confidence':syn['confidence'],'sourceCount':len(sources),'reason':syn['reason']})
+              print(f'[{i}/10] {aid} {e.get("name")} -> {syn["confidence"]} age={syn["ageGyr"]}')
+
+          payload['version']='full-0002'
+          payload['geminiResearchEnrichment']={'version':'0001','sourceCatalog':src.name,'sourceCatalogBlobSha':expected,'researchMethod':'Gemini API with Google Search grounding','model':model,'batch':'0001','startIndexWithinFourOfFiveQueue':start,'galaxiesResearched':10,'selectedArchiveIds':changed,'generatedAt':dt.datetime.now(dt.timezone.utc).isoformat(),'verificationMethod':'independent second-pass Gemini Google Search grounding','policy':'AI-assisted research is retained with provenance and requires scientific verification. Unsupported or ambiguous ages remain unresolved.','apiKeyStoredInCatalog':False}
+          if [e['archiveId'] for e in payload['entries']] != [e['archiveId'] for e in original['entries']]: raise SystemExit('Archive order changed')
+          if len(changed)!=10 or len(set(changed))!=10: raise SystemExit('Exactly ten unique records were not researched')
+          for b,a in zip(original['entries'],payload['entries']):
+              if b['archiveId'] not in changed and b!=a: raise SystemExit(f'Unauthorized non-pilot record change {b["archiveId"]}')
+              if b['archiveId'] in changed:
+                  p=copy.deepcopy(a); p.pop('geminiResearch',None); p['science']=b['science']
+                  if p!=b: raise SystemExit(f'Unauthorized pilot record content change {b["archiveId"]}')
+          out.write_text(json.dumps(payload,indent=2,ensure_ascii=False)+'\n',encoding='utf-8'); json.loads(out.read_text(encoding='utf-8'))
+          if key in out.read_text(encoding='utf-8'): raise SystemExit('Secret leaked into output catalog')
+          pathlib.Path('gemini-pilot/hubble-research-batch.json').write_text(json.dumps(rows,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          with open('gemini-pilot/hubble-research-batch.csv','w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+          md=['# Hubble Gemini Research Pilot — Batch 0001','','| # | Archive ID | Galaxy | Proposed age (Gyr) | Definition | Confidence | Sources |','|---:|---|---|---:|---|---|---:|']
+          for j,r in enumerate(rows,1): md.append(f'| {j} | {r["archiveId"]} | {r["name"].replace("|","/")} | {"" if r["proposedAgeGyr"] is None else r["proposedAgeGyr"]} | {r["ageDefinition"].replace("|","/")} | {r["confidence"]} | {r["sourceCount"]} |')
+          pathlib.Path('gemini-pilot/hubble-research-batch.md').write_text('\n'.join(md)+'\n',encoding='utf-8')
+          pathlib.Path('gemini-pilot/changed-archive-ids.txt').write_text('\n'.join(changed)+'\n',encoding='utf-8')
+          print('Selected:', ', '.join(changed)); print('Output blob:',subprocess.check_output(['git','hash-object',str(out)],text=True).strip())
+          PY
+
+      - name: Verify and commit only new catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object "$SOURCE")" = "$EXPECTED_SOURCE_BLOB"
+          python3 -m json.tool "$OUTPUT" >/dev/null
+          git add -- "$OUTPUT"
+          test "$(git diff --cached --name-only)" = "$OUTPUT" || { echo "Unauthorized staged path"; git diff --cached --name-only; exit 1; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Add Gemini Hubble science pilot batch 0001 [skip ci]"
+          git push origin HEAD:beta
+
+      - name: Upload human verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubble-gemini-research-batch-0001
+          path: gemini-pilot/
+          if-no-files-found: warn
+          retention-days: 30
