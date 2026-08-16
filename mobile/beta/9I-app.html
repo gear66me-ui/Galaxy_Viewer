@@ -5,7 +5,7 @@ PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash r
 AUTHORIZED RELEASE: viewer/GV-beta-0009I.py blob b3be3d94fbeeea16dd13384cf2b51a7a218f0ddf
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
 AUTHORIZED STARTUP: Viewer/Aladin initialize concurrently while a hidden splash preload warms the unchanged splash assets; the app icon remains visibly covering the page for a hard minimum of 3500 ms; only after that minimum does the real splash start fresh from warmed cache, and the icon cover is removed at the splash's first genuinely rendered frame; HOME is revealed after splash completion and Viewer readiness.
-SURGICAL RUNTIME PATCH: preserve the exact 9I-A Viewer blob; force a fresh Random Galaxy 0028 cache key; show the HD overlay synchronously on tap; allow image loading to continue asynchronously; change only the visible HD action text to SEE NOW.
+SURGICAL RUNTIME PATCH: preserve the exact 9I-A Viewer blob; force a fresh Random Galaxy 0028 cache key; show the HD overlay synchronously on tap; allow image loading to continue asynchronously; preserve VIEW IN HD; show VERSION 9C beneath the Viewer tile.
 -->
 <html lang="en">
 <head>
@@ -103,7 +103,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     );
     source=source.replace(
       '    await randomGalaxy.ready;\n',
-      "    await randomGalaxy.ready;\n    randomGalaxy.viewHdButton.textContent='SEE NOW';\n    const openHdImmediately=()=>{randomGalaxy.hdOverlay?.classList.add('gvrg-hd-open');randomGalaxy.hdOpen=true};\n    randomGalaxy.viewHdButton?.addEventListener('click',openHdImmediately,true);\n    randomGalaxy.hubbleIconButton?.addEventListener('click',openHdImmediately,true);\n"
+      "    await randomGalaxy.ready;\n    randomGalaxy.viewHdButton.textContent='VIEW IN HD';\n    const versionLabel=document.getElementById('gv-version-label');\n    if(versionLabel){versionLabel.textContent='VERSION 9C';versionLabel.setAttribute('aria-label','GALAXY VIEWER VERSION 9C')}\n    const openHdImmediately=()=>{randomGalaxy.hdOverlay?.classList.add('gvrg-hd-open');randomGalaxy.hdOpen=true};\n    randomGalaxy.viewHdButton?.addEventListener('click',openHdImmediately,true);\n    randomGalaxy.hubbleIconButton?.addEventListener('click',openHdImmediately,true);\n"
     );
     const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
     const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
