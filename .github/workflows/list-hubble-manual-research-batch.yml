@@ -1,0 +1,63 @@
+name: Hubble Manual Research Batch Lister
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/list-hubble-manual-research-batch.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  list-batch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Print first 10 eligible galaxies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+
+          p=Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json')
+          data=json.loads(p.read_text(encoding='utf-8'))
+          selected=[]
+          for e in data.get('entries',[]):
+              s=e.get('science') or {}
+              if (
+                  e.get('archiveId') and e.get('name')
+                  and s.get('distanceMly') is not None
+                  and s.get('sizeKly') is not None
+                  and s.get('ageGyr') is None
+              ):
+                  selected.append(e)
+                  if len(selected)==10:
+                      break
+          if len(selected)!=10:
+              raise SystemExit(f'Expected 10 eligible records, got {len(selected)}')
+          for i,e in enumerate(selected,1):
+              s=e.get('science') or {}
+              row={
+                  'index':i,
+                  'archiveId':e.get('archiveId'),
+                  'name':e.get('name'),
+                  'title':e.get('title'),
+                  'ra':e.get('ra'),
+                  'dec':e.get('dec'),
+                  'constellation':e.get('constellation'),
+                  'distanceMly':s.get('distanceMly'),
+                  'distanceMethod':s.get('distanceMethod'),
+                  'sizeKly':s.get('sizeKly'),
+                  'sizeMethod':s.get('sizeMethod'),
+                  'sourceUrl':e.get('sourceUrl'),
+              }
+              print('BATCH_RECORD '+json.dumps(row,ensure_ascii=False,sort_keys=True))
+          PY
