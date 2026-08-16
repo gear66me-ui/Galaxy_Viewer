@@ -233,6 +233,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2276fb1fac62 — Run 220-galaxy Gemini production research with checkpoints
+
+**Recorded:** 2026-08-15T22:19:57-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2276fb1fac624988c99c7f36552b3d00e92d4433`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2276fb1fac624988c99c7f36552b3d00e92d4433)  
+**Parent/baseline:** `09a2579c6d678daee4cd3e65c39d9dbe47c3614d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/09a2579c6d678daee4cd3e65c39d9dbe47c3614d...2276fb1fac624988c99c7f36552b3d00e92d4433)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run 220-galaxy Gemini production research with checkpoints
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/research-hubble-science-gemini-pilot.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `abd16752db0429a7ce6677c3017f1da9c1c94325a96075303f033ee70036951d`
+- SHA-256 after: `c5dc241a3b2b62742710dd731aac3f2a807274f76271e34ec5c34c90705a0ab4`
+- Bytes: `14629` → `31251`
+- Lines: `177` → `591`
+- Characters: `14627` → `31249`
+- Inserted lines: `529`
+- Deleted lines: `115`
+- Inserted characters: `20663`
+- Deleted characters: `4041`
+- Unified diff hunks: `12`
+- Inserted blocks: `14`
+- Deleted blocks: `15`
+- Changed blocks: `16`
+- Line balance: `177 + 529 - 115 = 591` — **PASS**
+- Character balance: `14627 + 20663 - 4041 = 31249` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/research-hubble-science-gemini-pilot.yml`**
+
+```text
+raise SystemExit(f'Checkpoint commit changed unauthorized paths: {changed_paths}')
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a83d163fb994 — Copy 9B launcher to 9C baseline
 
 **Recorded:** 2026-08-15T22:19:14-05:00  
