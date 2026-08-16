@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-816bdb1be5d7 — Point 9I launcher to repaired viewer blob
+
+**Recorded:** 2026-08-16T01:12:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`816bdb1be5d7f622c0bf10ada7bbf0e19a89133f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/816bdb1be5d7f622c0bf10ada7bbf0e19a89133f)  
+**Parent/baseline:** `b0c9742128b116d19fb2bf06d97c25bdd6a5c289`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b0c9742128b116d19fb2bf06d97c25bdd6a5c289...816bdb1be5d7f622c0bf10ada7bbf0e19a89133f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Point 9I launcher to repaired viewer blob
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `61f8bbe7e0b6061ad07ad97d7dd580cfbd85e556efe698e715f3b2e166552b47`
+- SHA-256 after: `09670e24ba9ace89e24a353b5ba4f2e163e222f178183f3011d995b5591b0969`
+- Bytes: `7631` → `7631`
+- Lines: `156` → `156`
+- Characters: `7627` → `7627`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `62`
+- Deleted characters: `62`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `156 + 2 - 2 = 156` — **PASS**
+- Character balance: `7627 + 62 - 62 = 7627` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-83c2fb7ec8d5 — Repair 9I isolated Aladin prewarm runtime
 
 **Recorded:** 2026-08-16T01:12:09-05:00  
