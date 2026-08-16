@@ -4,7 +4,7 @@ GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
 PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
 AUTHORIZED RELEASE: viewer/GV-beta-0009I.py blob 1c0c87c753fc11f3ce382fa22802060ed6689064
 AUTHORIZED SPLASH: viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html blob a22e99d53d1cea58736d961e2d8bec400c670b72
-AUTHORIZED STARTUP: Viewer/Aladin and splash initialize concurrently; app icon is held visibly for a hard minimum of 2500 ms while the splash preloads behind it; the icon cover is removed only after both the minimum hold and the splash's first genuinely rendered frame; the unchanged splash then remains visible through completion; HOME is revealed after splash completion and Viewer readiness.
+AUTHORIZED STARTUP: Viewer/Aladin initialize concurrently while a hidden splash preload warms the unchanged splash assets; the app icon remains visibly covering the page for a hard minimum of 2500 ms; only after that minimum does the real splash start fresh from warmed cache, and the icon cover is removed at the splash's first genuinely rendered frame; HOME is revealed after splash completion and Viewer readiness.
 -->
 <html lang="en">
 <head>
@@ -58,46 +58,54 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     setTimeout(resolve,remaining);
   });
 
-  const startVisibleSplash=()=>new Promise((resolve,reject)=>{
-    let settled=false;
-    const fail=error=>{
-      if(settled)return;
-      settled=true;
-      reject(error);
-    };
-    const onLoad=()=>{
-      try{
-        const splashWindow=splashFrame.contentWindow;
-        if(!splashWindow)throw new Error('FINAL SPLASH WINDOW IS UNAVAILABLE');
-        splashWindow.addEventListener('galaxy-splash-complete',()=>{
-          if(settled)return;
-          settled=true;
-          resolve();
-        },{once:true});
-        const firstFrameDeadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
-        const revealAtFirstFrame=()=>{
-          try{
-            const splashDocument=splashWindow.document;
-            const scene=splashDocument.getElementById('scene');
-            const poster=splashDocument.getElementById('poster');
-            const rendered=scene?.style.opacity==='1'||poster?.style.visibility==='visible';
-            if(rendered){
-              waitForIconMinimum().then(()=>{
+  const splashPreloadFrame=document.createElement('iframe');
+  Object.assign(splashPreloadFrame.style,{position:'fixed',left:'-10000px',top:'0',width:'1px',height:'1px',border:'0',opacity:'0',pointerEvents:'none'});
+  splashPreloadFrame.setAttribute('aria-hidden','true');
+  splashPreloadFrame.src=SPLASH_URL;
+  document.body.appendChild(splashPreloadFrame);
+
+  const startVisibleSplash=async()=>{
+    await waitForIconMinimum();
+    if(splashPreloadFrame.isConnected)splashPreloadFrame.remove();
+    return new Promise((resolve,reject)=>{
+      let settled=false;
+      const fail=error=>{
+        if(settled)return;
+        settled=true;
+        reject(error);
+      };
+      const onLoad=()=>{
+        try{
+          const splashWindow=splashFrame.contentWindow;
+          if(!splashWindow)throw new Error('FINAL SPLASH WINDOW IS UNAVAILABLE');
+          splashWindow.addEventListener('galaxy-splash-complete',()=>{
+            if(settled)return;
+            settled=true;
+            resolve();
+          },{once:true});
+          const firstFrameDeadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
+          const revealAtFirstFrame=()=>{
+            try{
+              const splashDocument=splashWindow.document;
+              const scene=splashDocument.getElementById('scene');
+              const poster=splashDocument.getElementById('poster');
+              const rendered=scene?.style.opacity==='1'||poster?.style.visibility==='visible';
+              if(rendered){
                 if(launchCover.isConnected)launchCover.remove();
-              });
-              return;
-            }
-            if(performance.now()>=firstFrameDeadline){fail(new Error('FINAL SPLASH FIRST FRAME TIMEOUT'));return}
-            requestAnimationFrame(revealAtFirstFrame);
-          }catch(error){fail(error)}
-        };
-        requestAnimationFrame(revealAtFirstFrame);
-      }catch(error){fail(error)}
-    };
-    splashFrame.addEventListener('load',onLoad,{once:true});
-    splashFrame.addEventListener('error',()=>fail(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});
-    splashFrame.src=SPLASH_URL;
-  });
+                return;
+              }
+              if(performance.now()>=firstFrameDeadline){fail(new Error('FINAL SPLASH FIRST FRAME TIMEOUT'));return}
+              requestAnimationFrame(revealAtFirstFrame);
+            }catch(error){fail(error)}
+          };
+          requestAnimationFrame(revealAtFirstFrame);
+        }catch(error){fail(error)}
+      };
+      splashFrame.addEventListener('load',onLoad,{once:true});
+      splashFrame.addEventListener('error',()=>fail(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});
+      splashFrame.src=SPLASH_URL;
+    });
+  };
 
   const waitForViewer=()=>new Promise((resolve,reject)=>{
     const deadline=performance.now()+VIEWER_TIMEOUT_MS;
@@ -133,7 +141,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   try{
     const viewerInitializePromise=initializeViewer();
     const splashCompletePromise=startVisibleSplash();
-    await Promise.all([viewerInitializePromise,splashCompletePromise,waitForIconMinimum()]);
+    await Promise.all([viewerInitializePromise,splashCompletePromise]);
     requestAnimationFrame(()=>{
       if(splashFrame.isConnected)splashFrame.remove();
       if(launchCover.isConnected)launchCover.remove();
