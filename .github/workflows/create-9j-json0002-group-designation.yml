@@ -1,0 +1,147 @@
+name: Create Galaxy Viewer 9J JSON 0002 group designation
+on:
+  push:
+    paths:
+      - '.github/workflows/create-9j-json0002-group-designation.yml'
+permissions:
+  contents: write
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Create immutable 9J and launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          src = Path('viewer/GV-beta-0009I.py')
+          dst = Path('viewer/GV-beta-0009J.py')
+          if dst.exists():
+              raise SystemExit('REFUSE: viewer/GV-beta-0009J.py already exists')
+          text = src.read_text()
+
+          # Identity and catalog switch: preserve 9I, create 9J only.
+          text = text.replace('# GV-beta-0009I', '# GV-beta-0009J', 1)
+          text = text.replace("const VERSION='9I';", "const VERSION='9J';", 1)
+          old_catalog = "const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json?v=060f0abadd103e320c70f035ac93f42d200eda0f';"
+          new_catalog = "const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json?v=c1e850ee3f9476882e7efde5fa24d0a36290a1b3';"
+          if old_catalog not in text:
+              raise SystemExit('REFUSE: exact 9I catalog URL not found')
+          text = text.replace(old_catalog, new_catalog, 1)
+
+          # Group-aware best-designation rule. Prefer group IDs when the image represents a group;
+          # otherwise keep the best individual catalog designation. Explicit JSON designation remains valid fallback.
+          pattern = re.compile(r"    function extractDesignation\(candidate\)\{.*?\n    \}", re.S)
+          match = pattern.search(text)
+          if not match:
+              raise SystemExit('REFUSE: extractDesignation function not found')
+          replacement = r'''    function extractDesignation(candidate){
+        const texts=[candidate?.designation,candidate?.name,candidate?.title].map(value=>String(value||'').trim()).filter(Boolean);
+        const joined=texts.join(' | ');
+
+        // Common-name group aliases that do not necessarily carry their catalog ID in ESA/Hubble text.
+        if(/\bstephan(?:'|’)?s\s+quintet\b/i.test(joined))return 'HCG 92';
+
+        // If the image represents a recognized group/cluster, prefer the group designation.
+        for(const text of texts){
+            let match=text.match(/\bHCG\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\bHICKSON(?:\s+COMPACT\s+GROUP)?\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\bABELL\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `ABELL ${match[1].toUpperCase()}`;
+        }
+
+        // Otherwise prefer an explicit curated designation, then the best individual catalog identity.
+        const explicit=String(candidate?.designation||'').trim();
+        if(explicit)return explicit.replace(/\s+/g,' ').toUpperCase();
+        for(const text of texts){
+            const match=text.match(/\b(?:M|NGC|IC|UGC|PGC|ARP)\s*[- ]?\s*\d+[A-Z]?\b/i);
+            if(match)return match[0].replace(/\s+/g,' ').toUpperCase();
+        }
+        return '';
+    }'''
+          text = text[:match.start()] + replacement + text[match.end():]
+
+          # Read the enriched science values in JSON 0002 while retaining all legacy fallbacks.
+          old_block = """        const distance=parseDistanceMly(candidate.distance);\n        const constellation=String(candidate.constellation||'').trim();\n        const designation=extractDesignation(candidate);\n        const commonName=String(candidate.title||candidate.name||'').trim();\n        const age=String(candidate.age??candidate.ageEstimate??candidate.age_estimate??'').trim();\n        const ageYears=Number(candidate.ageYears??candidate.age_years);\n        const sizeRaw=candidate.physicalSizeLy??candidate.physical_size_ly??null;\n        const physicalSizeLy=Array.isArray(sizeRaw)?sizeRaw.map(Number):Number(sizeRaw);"""
+          new_block = """        const science=(candidate.science&&typeof candidate.science==='object')?candidate.science:{};\n        const scienceDistance=Number(science.distanceMly);\n        const distance=Number.isFinite(scienceDistance)&&scienceDistance>0?scienceDistance:parseDistanceMly(candidate.distance);\n        const constellation=String(candidate.constellation||'').trim();\n        const designation=extractDesignation(candidate);\n        const commonName=String(candidate.displayName||candidate.title||candidate.name||'').trim();\n        const age=String(science.ageDisplay??candidate.age??candidate.ageEstimate??candidate.age_estimate??'').trim();\n        const scienceAgeGyr=Number(science.ageGyr);\n        const ageYears=Number(candidate.ageYears??candidate.age_years??(Number.isFinite(scienceAgeGyr)&&scienceAgeGyr>0?scienceAgeGyr*1e9:NaN));\n        const scienceSizeKly=Array.isArray(science.sizeKly)?science.sizeKly:null;\n        const sizeRaw=candidate.physicalSizeLy??candidate.physical_size_ly??(scienceSizeKly?scienceSizeKly.map(value=>Number(value)*1000):null);\n        const physicalSizeLy=Array.isArray(sizeRaw)?sizeRaw.map(Number):Number(sizeRaw);"""
+          if old_block not in text:
+              raise SystemExit('REFUSE: exact 9I catalog mapping block not found')
+          text = text.replace(old_block, new_block, 1)
+          text = text.replace("source:'ESA/HUBBLE GALAXIES CATALOG FULL-0001'", "source:'ESA/HUBBLE GALAXIES CATALOG FULL-0002'", 1)
+
+          # Add explicit 9J provenance note without touching 9I.
+          text = text.replace(
+              '# Authorized 9I change: prewarm final Aladin P/DSS2/color survey imagery for the ten Hubble-ready destinations and immediately prioritize the selected destination without changing visible travel choreography.',
+              '# 9J: preserves 9I choreography; switches to Hubble sandbox JSON 0002, consumes enriched science fields, and prefers recognized group designations when the image represents a group.',
+              1
+          )
+          dst.write_text(text)
+
+          # Dedicated 9J launcher copied from exact 9I launcher, then pointed only to 9J.
+          launch_src=Path('mobile/beta/9I.html')
+          launch_dst=Path('mobile/beta/9J.html')
+          if launch_dst.exists():
+              raise SystemExit('REFUSE: mobile/beta/9J.html already exists')
+          launcher=launch_src.read_text()
+          viewer_blob='PLACEHOLDER'
+          launcher=launcher.replace('GV-9I APP LAUNCHER','GV-9J APP LAUNCHER')
+          launcher=launcher.replace('Galaxy Viewer 9I','Galaxy Viewer 9J')
+          launcher=launcher.replace('GALAXY VIEWER BETA 9I','GALAXY VIEWER BETA 9J')
+          launcher=launcher.replace('GALAXY VIEWER 9I — APP LAUNCHER','GALAXY VIEWER 9J — APP LAUNCHER')
+          launcher=launcher.replace('GV-beta-0009I.py','GV-beta-0009J.py')
+          launcher=launcher.replace('GV-BETA-0009I.PY','GV-BETA-0009J.PY')
+          launcher=launcher.replace('GALAXY VIEWER 9I STARTUP TIMEOUT','GALAXY VIEWER 9J STARTUP TIMEOUT')
+          launcher=launcher.replace('GALAXY VIEWER 9I APP LAUNCHER FAILURE','GALAXY VIEWER 9J APP LAUNCHER FAILURE')
+          launcher=launcher.replace('COULD NOT EXTRACT THE VERIFIED 9I FULL VIEWER','COULD NOT EXTRACT THE VERIFIED 9J FULL VIEWER')
+          launcher=launcher.replace('AUTHORIZED RELEASE: viewer/GV-beta-0009J.py blob 04dffd9eca05022019ab3933595285011ef4cac7','AUTHORIZED RELEASE: viewer/GV-beta-0009J.py blob PLACEHOLDER')
+          launcher=launcher.replace("../../viewer/GV-beta-0009J.py?v=04dffd9eca05022019ab3933595285011ef4cac7", "../../viewer/GV-beta-0009J.py?v=PLACEHOLDER")
+          launch_dst.write_text(launcher)
+
+          # Keep the beta launcher current for testing; the dedicated 9I launcher remains untouched.
+          beta_index=Path('mobile/beta/index.html')
+          index_text=beta_index.read_text()
+          if "window.location.replace('./9I.html'" not in index_text:
+              raise SystemExit('REFUSE: beta index does not currently point to 9I')
+          index_text=index_text.replace("window.location.replace('./9I.html'", "window.location.replace('./9J.html'", 1)
+          beta_index.write_text(index_text)
+          PY
+
+          # Insert exact viewer blob SHA into the new launcher.
+          VIEWER_BLOB=$(git hash-object viewer/GV-beta-0009J.py)
+          python - "$VIEWER_BLOB" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path('mobile/beta/9J.html')
+          text=p.read_text().replace('PLACEHOLDER',sys.argv[1])
+          p.write_text(text)
+          PY
+
+          # Validation: frozen 9I files unchanged; new viewer references 0002 and group logic.
+          git diff --exit-code -- viewer/GV-beta-0009I.py mobile/beta/9I.html
+          grep -F "gv-hubble-galaxies-full-0002.json" viewer/GV-beta-0009J.py
+          ! grep -F "gv-hubble-galaxies-full-0001.json" viewer/GV-beta-0009J.py
+          grep -F "HCG 92" viewer/GV-beta-0009J.py
+          grep -F "HICKSON" viewer/GV-beta-0009J.py
+          grep -F "ABELL" viewer/GV-beta-0009J.py
+          grep -F "science.sizeKly" viewer/GV-beta-0009J.py
+          grep -F "science.distanceMly" viewer/GV-beta-0009J.py
+          grep -F "./9J.html" mobile/beta/index.html
+
+          git config user.name 'Galaxy Viewer Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add viewer/GV-beta-0009J.py mobile/beta/9J.html mobile/beta/index.html
+          git commit -m 'Create 9J with JSON 0002 and group-aware designation'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          echo "VIEWER_BLOB=$VIEWER_BLOB"
+          echo "COMMIT=$(git rev-parse HEAD)"
