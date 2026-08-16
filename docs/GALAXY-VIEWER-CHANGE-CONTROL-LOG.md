@@ -221,6 +221,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1abef4cb9b17 — Wire Galaxy Viewer 9B launcher to 9B Viewer
+
+**Recorded:** 2026-08-15T21:16:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1abef4cb9b172346eecc5bc3326e69bdaad01be6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1abef4cb9b172346eecc5bc3326e69bdaad01be6)  
+**Parent/baseline:** `a9fe8f700dbfe33281beb9579d0a397ec7a45523`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a9fe8f700dbfe33281beb9579d0a397ec7a45523...1abef4cb9b172346eecc5bc3326e69bdaad01be6)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Wire Galaxy Viewer 9B launcher to 9B Viewer
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9B.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `f45ed5183219e897341f49726c6025c07734f68005ab1448dda8fd0a50237820`
+- SHA-256 after: `df4848649816cb5036c7f96b2f3fa18decfcf23e446ca7c5faf4377a2db949b5`
+- Bytes: `8054` → `8054`
+- Lines: `164` → `164`
+- Characters: `8050` → `8050`
+- Inserted lines: `11`
+- Deleted lines: `11`
+- Inserted characters: `75`
+- Deleted characters: `75`
+- Unified diff hunks: `8`
+- Inserted blocks: `8`
+- Deleted blocks: `8`
+- Changed blocks: `8`
+- Line balance: `164 + 11 - 11 = 164` — **PASS**
+- Character balance: `8050 + 75 - 75 = 8050` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9B.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9B APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9B, preserving the verified 9A startup sequence unchanged.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-dd0dfc8d3ade — Implement Galaxy Viewer 9B travel HUD and module wiring
 
 **Recorded:** 2026-08-15T20:48:53-05:00  
