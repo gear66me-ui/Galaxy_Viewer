@@ -76,7 +76,7 @@ display(Javascript(r"""
 (async()=>{
     'use strict';
     const VERSION='9I';
-    const DISPLAY_VERSION='9I-A';
+    const DISPLAY_VERSION='9I-F';
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
@@ -1089,6 +1089,35 @@ display(Javascript(r"""
     });
     window.__gv9iRandomGalaxy=randomGalaxy;
     await randomGalaxy.ready;
+    const hdScience=randomGalaxy.hdScience;
+    if(hdScience){
+        const scienceItems=[...hdScience.querySelectorAll('.gvrg-hd-science-item')];
+        const constellationItems=scienceItems.filter(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()==='CONST');
+        let constellationItem=constellationItems.shift()||null;
+        constellationItems.forEach(item=>item.remove());
+        let constellationValue=null;
+        if(!constellationItem){
+            constellationItem=document.createElement('div');
+            constellationItem.className='gvrg-hd-science-item';
+            const key=document.createElement('div');
+            key.className='gvrg-hd-science-label';
+            key.textContent='CONST';
+            constellationValue=document.createElement('div');
+            constellationValue.className='gvrg-hd-science-value';
+            constellationItem.append(key,constellationValue);
+            const ageItem=scienceItems.find(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()==='AGE');
+            hdScience.insertBefore(constellationItem,ageItem||null);
+        }else{
+            constellationValue=constellationItem.querySelector('.gvrg-hd-science-value');
+        }
+        const syncHdConst=()=>{
+            if(constellationValue)constellationValue.textContent=String(randomGalaxy.activeDestination?.constellation||randomGalaxy.constellationValueEl?.textContent||'').trim().toUpperCase();
+        };
+        if(randomGalaxy.constellationValueEl)new MutationObserver(syncHdConst).observe(randomGalaxy.constellationValueEl,{childList:true,subtree:true,characterData:true});
+        randomGalaxy.viewHdButton?.addEventListener('click',syncHdConst,true);
+        randomGalaxy.hubbleIconButton?.addEventListener('click',syncHdConst,true);
+        syncHdConst();
+    }
 
     const deferHdUntilPrepared=async event=>{
         const destination=randomGalaxy.getState?.().activeDestination;
