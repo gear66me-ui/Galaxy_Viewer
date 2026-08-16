@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-97a90c5f2a04 — Make 9I-F beta build rebase safely before push
+
+**Recorded:** 2026-08-16T18:45:22-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`97a90c5f2a045576690a0fc5ea38bdbebbfeba82`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/97a90c5f2a045576690a0fc5ea38bdbebbfeba82)  
+**Parent/baseline:** `721becbeeb69f66e861a99c584c930f2484bedb4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/721becbeeb69f66e861a99c584c930f2484bedb4...97a90c5f2a045576690a0fc5ea38bdbebbfeba82)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Make 9I-F beta build rebase safely before push
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I-F.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `aabbd46135f31b2791be9e0677f161788928dea764c3aac7890fa8fe7c225304`
+- SHA-256 after: `998dd37b2ffdbdfcbe7170fc9db4e8fbb7da93b2aa90aa20c268a8e226ffe4a3`
+- Bytes: `2808` → `3005`
+- Lines: `85` → `89`
+- Characters: `2806` → `3003`
+- Inserted lines: `5`
+- Deleted lines: `1`
+- Inserted characters: `200`
+- Deleted characters: `3`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `1`
+- Changed blocks: `3`
+- Line balance: `85 + 5 - 1 = 89` — **PASS**
+- Character balance: `2806 + 200 - 3 = 3003` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-82c182ca6e49 — Fix 9I-F beta build workflow
 
 **Recorded:** 2026-08-16T18:44:36-05:00  
