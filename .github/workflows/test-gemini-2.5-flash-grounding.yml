@@ -1,0 +1,81 @@
+name: Gemini 2.5 Flash Grounding Preflight
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/test-gemini-2.5-flash-grounding.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      MODEL: gemini-2.5-flash
+    steps:
+      - name: Test ordinary and grounded Gemini calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GEMINI_API_KEY:-}" || { echo "GEMINI_API_KEY secret missing"; exit 1; }
+          python3 <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          key=os.environ['GEMINI_API_KEY']
+          model=os.environ['MODEL']
+          url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+
+          def call(prompt, grounded=False):
+              body={
+                  'contents':[{'parts':[{'text':prompt}]}],
+                  'generationConfig':{'temperature':0.0},
+              }
+              if grounded:
+                  body['tools']=[{'google_search':{}}]
+              req=urllib.request.Request(
+                  url,
+                  data=json.dumps(body).encode('utf-8'),
+                  method='POST',
+                  headers={'Content-Type':'application/json','x-goog-api-key':key},
+              )
+              try:
+                  with urllib.request.urlopen(req,timeout=120) as response:
+                      return json.loads(response.read().decode('utf-8'))
+              except urllib.error.HTTPError as exc:
+                  response_body=exc.read().decode('utf-8','replace')
+                  raise SystemExit(f'Gemini API HTTP {exc.code}: {response_body[:2000]}')
+
+          ordinary=call('Reply with exactly OK.')
+          ordinary_text=''.join(
+              p.get('text','')
+              for p in ordinary.get('candidates',[{}])[0].get('content',{}).get('parts',[])
+          ).strip()
+          if not ordinary_text:
+              raise SystemExit('Ordinary call returned no text')
+          print('ORDINARY PASS:', ordinary_text[:120])
+
+          grounded=call(
+              'Use Google Search to identify the common name of Messier 104. Reply briefly and ground the answer.',
+              grounded=True,
+          )
+          candidate=(grounded.get('candidates') or [{}])[0]
+          md=candidate.get('groundingMetadata') or {}
+          chunks=md.get('groundingChunks') or []
+          sources=[]
+          for chunk in chunks:
+              web=(chunk or {}).get('web') or {}
+              if web.get('uri'):
+                  sources.append(web.get('uri'))
+          if not sources:
+              raise SystemExit('Grounded call returned no grounding sources')
+          print('GROUNDING PASS: sources=',len(sources))
+          print('MODEL PASS:',model)
+          PY
