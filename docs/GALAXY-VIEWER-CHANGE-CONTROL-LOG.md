@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-83c2fb7ec8d5 — Repair 9I isolated Aladin prewarm runtime
+
+**Recorded:** 2026-08-16T01:12:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`83c2fb7ec8d57c72ef3cd66d1d88294411a8024b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/83c2fb7ec8d57c72ef3cd66d1d88294411a8024b)  
+**Parent/baseline:** `108dffbb26f20aeef2816c5126bafbb47e93b346`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/108dffbb26f20aeef2816c5126bafbb47e93b346...83c2fb7ec8d57c72ef3cd66d1d88294411a8024b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Repair 9I isolated Aladin prewarm runtime
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `fbe350ae523e15bc99186ee4ae6befc746f010532d9f0a869c88a74fc6b4f65f`
+- SHA-256 after: `7a8b981216c1bfaff4e3ee22919f11601145c401a4a047ace99b0e5e337875c3`
+- Bytes: `51938` → `53981`
+- Lines: `894` → `923`
+- Characters: `51931` → `53974`
+- Inserted lines: `68`
+- Deleted lines: `39`
+- Inserted characters: `3434`
+- Deleted characters: `1391`
+- Unified diff hunks: `5`
+- Inserted blocks: `4`
+- Deleted blocks: `3`
+- Changed blocks: `5`
+- Line balance: `894 + 68 - 39 = 923` — **PASS**
+- Character balance: `51931 + 3434 - 1391 = 53974` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9621cf1041bf — Verify 9I immediate splash preload and 3.5 second icon hold
 
 **Recorded:** 2026-08-16T01:05:30-05:00  
