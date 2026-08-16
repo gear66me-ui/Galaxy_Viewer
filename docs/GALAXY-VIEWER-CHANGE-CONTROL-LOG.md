@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-58716bfda8b2 — Increase 9I icon hold to 3.5 seconds
+
+**Recorded:** 2026-08-16T01:04:27-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`58716bfda8b2f470546d32c2f2cd2421d2e4a996`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/58716bfda8b2f470546d32c2f2cd2421d2e4a996)  
+**Parent/baseline:** `c511a9ba03e84a9cb9c14de3c5b703229b872fb2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c511a9ba03e84a9cb9c14de3c5b703229b872fb2...58716bfda8b2f470546d32c2f2cd2421d2e4a996)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Increase 9I icon hold to 3.5 seconds
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `59de58c3e41320e30ff1f02ea8a0af255d518307a38eb342da3d8af9c4a81eee`
+- SHA-256 after: `61f8bbe7e0b6061ad07ad97d7dd580cfbd85e556efe698e715f3b2e166552b47`
+- Bytes: `7631` → `7631`
+- Lines: `156` → `156`
+- Characters: `7627` → `7627`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `2`
+- Deleted characters: `2`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `156 + 2 - 2 = 156` — **PASS**
+- Character balance: `7627 + 2 - 2 = 7627` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-95e987101e0e — Preload splash behind 2.5 second 9I icon hold
 
 **Recorded:** 2026-08-16T00:56:27-05:00  
