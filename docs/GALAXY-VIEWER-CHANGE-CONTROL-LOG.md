@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e95d7f42fe56 — Add deterministic Hubble sandbox 0002 enrichment workflow
+
+**Recorded:** 2026-08-16T14:06:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e95d7f42fe566eeebfac6fb63af900841f48f442`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e95d7f42fe566eeebfac6fb63af900841f48f442)  
+**Parent/baseline:** `dcdf6e6f7e85d91ed2a76d0c66901977ab83461f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dcdf6e6f7e85d91ed2a76d0c66901977ab83461f...e95d7f42fe566eeebfac6fb63af900841f48f442)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add deterministic Hubble sandbox 0002 enrichment workflow
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/enrich-hubble-sandbox-0002.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9b8abe0dea8674a59d69718bf4d57ff1d57e7a87cffe1240cd82d2ebe6882aa6`
+- Bytes: `0` → `4952`
+- Lines: `0` → `118`
+- Characters: `0` → `4952`
+- Inserted lines: `118`
+- Deleted lines: `0`
+- Inserted characters: `4952`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 118 - 0 = 118` — **PASS**
+- Character balance: `0 + 4952 - 0 = 4952` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e990df80bbce — Fix 0002 catalog workflow push race
 
 **Recorded:** 2026-08-16T13:59:14-05:00  
