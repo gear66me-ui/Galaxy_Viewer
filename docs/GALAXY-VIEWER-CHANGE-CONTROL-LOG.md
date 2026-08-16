@@ -305,6 +305,60 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-f61ee59c2b59 — Fix Gemini free-tier grounded research routing and diagnostics
+
+**Recorded:** 2026-08-16T13:16:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f61ee59c2b5904f5db9bd5fb14a867a410fd51fe`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f61ee59c2b5904f5db9bd5fb14a867a410fd51fe)  
+**Parent/baseline:** `8b553f924c572b6d720e01de724ef7a5cbd5e6c1`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8b553f924c572b6d720e01de724ef7a5cbd5e6c1...f61ee59c2b5904f5db9bd5fb14a867a410fd51fe)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix Gemini free-tier grounded research routing and diagnostics
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/research-hubble-science-gemini-pilot.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `aed70511b770eff6261a8ad1b7854f09637694086352a1948a6ce95e7242a7dc`
+- SHA-256 after: `de41d339f6ba9d187d2b3c132933a9c731b0eb3337b80d2d72637cb7f915bf1a`
+- Bytes: `31250` → `31275`
+- Lines: `591` → `591`
+- Characters: `31248` → `31273`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `27`
+- Deleted characters: `2`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `591 + 2 - 2 = 591` — **PASS**
+- Character balance: `31248 + 27 - 2 = 31273` — **PASS**
+
+### Recorded instruction evidence
+
+**`.github/workflows/research-hubble-science-gemini-pilot.yml`**
+
+```text
+raise SystemExit(f'Checkpoint commit changed unauthorized paths: {changed_paths}')
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-615c77096ca2 — Route 220-galaxy Gemini research to 3.1 Flash Lite
 
 **Recorded:** 2026-08-16T12:48:30-05:00  
