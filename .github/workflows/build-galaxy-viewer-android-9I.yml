@@ -1,0 +1,60 @@
+name: Build Frozen Galaxy Viewer Android 9I
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I.yml'
+      - 'android/galaxy-viewer-9i/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build frozen 9I debug APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify APK exists
+        run: test -f android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Stage frozen APK
+        run: cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I.apk
+
+      - name: Create immutable 9I release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view galaxy-viewer-9i-frozen >/dev/null 2>&1; then
+            echo 'Frozen 9I release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-frozen Galaxy-Viewer-9I.apk \
+            --target "$GITHUB_SHA" \
+            --title 'Galaxy Viewer 9I — Frozen Android' \
+            --notes 'Frozen Android launcher for Galaxy Viewer 9I. Targets the permanently frozen 9I release.'
