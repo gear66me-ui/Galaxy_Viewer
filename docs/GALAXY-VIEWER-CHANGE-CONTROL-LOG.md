@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-d892af8fcabb — Restore exact beta 9I viewer after rejected 9I-F candidate
+
+**Recorded:** 2026-08-16T18:37:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d892af8fcabb2b5b7548f65878654ef48a2a82a7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d892af8fcabb2b5b7548f65878654ef48a2a82a7)  
+**Parent/baseline:** `9f899fb40fbc4b8fae6e359b162e29bf7e6db197`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9f899fb40fbc4b8fae6e359b162e29bf7e6db197...d892af8fcabb2b5b7548f65878654ef48a2a82a7)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore exact beta 9I viewer after rejected 9I-F candidate
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4e3f5fbcfdd89152e920215ed61c271b922769e5f3f1e77146f6fb55d5220047`
+- SHA-256 after: `e39d52c7ddeeb13e2dca3cac424f0ad3236bfb6450f105cc4fbbfb2f4c1849e3`
+- Bytes: `45361` → `66823`
+- Lines: `712` → `1130`
+- Characters: `45357` → `66814`
+- Inserted lines: `425`
+- Deleted lines: `7`
+- Inserted characters: `21878`
+- Deleted characters: `421`
+- Unified diff hunks: `4`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `4`
+- Line balance: `712 + 425 - 7 = 1130` — **PASS**
+- Character balance: `45357 + 21878 - 421 = 66814` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e90ab47deaa4 — Rev Galaxy Viewer beta to 9I-F and guard duplicate HD CONST
 
 **Recorded:** 2026-08-16T18:36:10-05:00  
