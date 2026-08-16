@@ -305,6 +305,76 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-14a4ac5fdb26 — Restore 9I-A HD instant-open behavior
+
+**Recorded:** 2026-08-16T17:08:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`14a4ac5fdb265e91b3a5caa593bc19c43a4b810e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/14a4ac5fdb265e91b3a5caa593bc19c43a4b810e)  
+**Parent/baseline:** `af2b8856df865874758e590bd45d43ee0b34c9fc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/af2b8856df865874758e590bd45d43ee0b34c9fc...14a4ac5fdb265e91b3a5caa593bc19c43a4b810e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `2`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore 9I-A HD instant-open behavior
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6cc3b949ec0e3b36ec12a619a45919bd6dca7e2d19f85e24f763e5ecd82c6a2c`
+- SHA-256 after: `e39d52c7ddeeb13e2dca3cac424f0ad3236bfb6450f105cc4fbbfb2f4c1849e3`
+- Bytes: `67092` → `66823`
+- Lines: `1126` → `1130`
+- Characters: `67083` → `66814`
+- Inserted lines: `21`
+- Deleted lines: `17`
+- Inserted characters: `699`
+- Deleted characters: `968`
+- Unified diff hunks: `7`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `7`
+- Line balance: `1126 + 21 - 17 = 1130` — **PASS**
+- Character balance: `67083 + 699 - 968 = 66814` — **PASS**
+
+#### `viewer/archive/GV-beta-0009I-4.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6cc3b949ec0e3b36ec12a619a45919bd6dca7e2d19f85e24f763e5ecd82c6a2c`
+- Bytes: `0` → `67092`
+- Lines: `0` → `1126`
+- Characters: `0` → `67083`
+- Inserted lines: `1126`
+- Deleted lines: `0`
+- Inserted characters: `67083`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1126 - 0 = 1126` — **PASS**
+- Character balance: `0 + 67083 - 0 = 67083` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c9d7d64fed8b — Restore beta 9I approved splash launcher
 
 **Recorded:** 2026-08-16T17:00:40-05:00  
