@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ac5a0365b6ab — Launch installed Galaxy Viewer app directly into 9C
+
+**Recorded:** 2026-08-16T17:30:56-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ac5a0365b6ab8bc658ed4cf74893ebae5f99451f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ac5a0365b6ab8bc658ed4cf74893ebae5f99451f)  
+**Parent/baseline:** `aa188cc2b0e9100da08589c6462b76a74e91ebe3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/aa188cc2b0e9100da08589c6462b76a74e91ebe3...ac5a0365b6ab8bc658ed4cf74893ebae5f99451f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Launch installed Galaxy Viewer app directly into 9C
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/manifest.webmanifest`
+
+- Status: **MODIFIED**
+- SHA-256 before: `86ef1a02081cf9a8f00a9ea9a04c61c2fd4a13eb726a729fa1cc6a9cc1fb49a8`
+- SHA-256 after: `0ff519160eeb1021cfd24373898e8badd9d4f9a9529148e185a921c84779d100`
+- Bytes: `822` → `832`
+- Lines: `29` → `29`
+- Characters: `822` → `832`
+- Inserted lines: `4`
+- Deleted lines: `4`
+- Inserted characters: `34`
+- Deleted characters: `24`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `29 + 4 - 4 = 29` — **PASS**
+- Character balance: `822 + 34 - 24 = 832` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-002a12563d70 — Restore beta app entrypoint to Galaxy Viewer 9C
 
 **Recorded:** 2026-08-16T17:29:05-05:00  
