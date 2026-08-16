@@ -4,8 +4,8 @@
     <application
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
-        android:icon="@drawable/gv_app_icon"
-        android:label="GALAXY VIEWER 9D"
+        android:icon="@drawable/gv_app_icon_9id"
+        android:label="GALAXY VIEWER 9ID"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
         <activity
             android:name=".MainActivity"
