@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-4a864f2068d3 — Restore 9I direct launcher without splash
+
+**Recorded:** 2026-08-16T16:41:22-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4a864f2068d36cd7dfcd111cea8226e8f899d5e2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4a864f2068d36cd7dfcd111cea8226e8f899d5e2)  
+**Parent/baseline:** `86586f86b557de0ed7176781bedccb95485da873`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/86586f86b557de0ed7176781bedccb95485da873...4a864f2068d36cd7dfcd111cea8226e8f899d5e2)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore 9I direct launcher without splash
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `860d5b704c9c1d289794cb3869c1430bd780abd4af6f6f104492f0ace3bd6434`
+- SHA-256 after: `eb98e462ac78916958d0c13e5865caa50e88c32104316ab320e75befb885e747`
+- Bytes: `7631` → `3280`
+- Lines: `156` → `78`
+- Characters: `7627` → `3276`
+- Inserted lines: `9`
+- Deleted lines: `87`
+- Inserted characters: `258`
+- Deleted characters: `4609`
+- Unified diff hunks: `9`
+- Inserted blocks: `5`
+- Deleted blocks: `9`
+- Changed blocks: `9`
+- Line balance: `156 + 9 - 87 = 78` — **PASS**
+- Character balance: `7627 + 258 - 4609 = 3276` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9827633e9f5e — Optimize 9I-A HD-first staggered preload
 
 **Recorded:** 2026-08-16T16:34:04-05:00  
