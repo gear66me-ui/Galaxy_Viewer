@@ -1,0 +1,60 @@
+name: Build Galaxy Viewer Android 9D
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9D.yml'
+      - 'android/galaxy-viewer-9i/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build Galaxy Viewer 9D debug APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify APK exists
+        run: test -f android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Stage 9D APK
+        run: cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9D.apk
+
+      - name: Create immutable 9D release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view galaxy-viewer-9d >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9D release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9d Galaxy-Viewer-9D.apk \
+            --target "$GITHUB_SHA" \
+            --title 'Galaxy Viewer 9D — Android' \
+            --notes 'Galaxy Viewer 9D Android APK. Native launcher opens the dedicated Galaxy Viewer app entrypoint directly; no launcher website or tile page.'
