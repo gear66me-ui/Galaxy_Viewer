@@ -1,0 +1,80 @@
+name: Update 9I destination-first JSON 0002
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/update-9i-destination-first-json0002.yml']
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Apply 9I-only update
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE_BLOB=$(git hash-object mobile/beta/9I.html)
+          LAUNCH_SITE_BLOB=$(git hash-object launch/9I/index.html)
+          git fetch origin beta main
+          test "$(git rev-parse origin/beta:viewer/GV-beta-0009J.py)" = "02c1070ee8f1528f7c04a53d81b79f2d044bde3f"
+          mkdir -p viewer/image-databases/Hubble/databases
+          git show origin/beta:viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json > viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+          test "$(git hash-object viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json)" = "c1e850ee3f9476882e7efde5fa24d0a36290a1b3"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/GV-beta-0009I.py')
+          s=p.read_text()
+          old="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json?v=060f0abadd103e320c70f035ac93f42d200eda0f"
+          new="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json?v=c1e850ee3f9476882e7efde5fa24d0a36290a1b3"
+          assert s.count(old)==1
+          s=s.replace(old,new,1)
+          anchor="""        const controller=new AbortController();
+          activePrefetchAbort=controller;
+          activePrefetchKey=key;
+          const promise=prepareHdDestination(destination,controller.signal).then(item=>{
+          """
+          replacement="""        const controller=new AbortController();
+          activePrefetchAbort=controller;
+          activePrefetchKey=key;
+          queueAladinPrewarm(destination,priority);
+          const promise=prepareHdDestination(destination,controller.signal).then(item=>{
+          """
+          assert s.count(anchor)==1
+          s=s.replace(anchor,replacement,1)
+          late="            queueAladinPrewarm(item.destination,false);\n"
+          assert s.count(late)==1
+          s=s.replace(late,"",1)
+          s=s.replace('# Authorized 9I change: prewarm final Aladin P/DSS2/color survey imagery for the ten Hubble-ready destinations and immediately prioritize the selected destination without changing visible travel choreography.','# Authorized 9I change: destination-first preparation. Aladin final-view prewarm begins concurrently with each sequential Hubble HD preload; catalog switched to JSON 0002. Visible travel choreography remains unchanged.',1)
+          p.write_text(s)
+          PY
+          NEW_BLOB=$(git hash-object viewer/GV-beta-0009I.py)
+          python - "$NEW_BLOB" <<'PY'
+          from pathlib import Path
+          import re,sys
+          sha=sys.argv[1]
+          p=Path('mobile/beta/9I-app.html')
+          s=p.read_text()
+          n=re.sub(r'GV-beta-0009I\.py\?v=[0-9a-f]+',f'GV-beta-0009I.py?v={sha}',s,count=1)
+          assert n!=s
+          p.write_text(n)
+          PY
+          test "$(git hash-object mobile/beta/9I.html)" = "$SITE_BLOB"
+          test "$(git hash-object launch/9I/index.html)" = "$LAUNCH_SITE_BLOB"
+          grep -F 'gv-hubble-galaxies-full-0002.json?v=c1e850ee3f9476882e7efde5fa24d0a36290a1b3' viewer/GV-beta-0009I.py
+          grep -F 'queueAladinPrewarm(destination,priority);' viewer/GV-beta-0009I.py
+          git config user.name 'Galaxy Viewer Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py mobile/beta/9I-app.html viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+          git commit -m 'Update 9I destination-first preload and JSON 0002'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+          echo "COMMIT=$(git rev-parse HEAD)"
+          echo "VIEWER_BLOB=$(git hash-object viewer/GV-beta-0009I.py)"
+          echo "LAUNCHER_BLOB=$(git hash-object mobile/beta/9I-app.html)"
+          echo "SITE_BLOB=$(git hash-object mobile/beta/9I.html)"
+          echo "JSON0002_BLOB=$(git hash-object viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json)"
