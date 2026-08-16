@@ -788,8 +788,6 @@ display(Javascript(r"""
             try{randomGalaxy.showHubbleHD()}catch(fallbackError){console.error('GV-9H HUBBLE FALLBACK FAILURE',fallbackError)}
         }
     };
-    randomGalaxy.viewHdButton?.addEventListener('click',deferHdUntilPrepared,true);
-    randomGalaxy.hubbleIconButton?.addEventListener('click',deferHdUntilPrepared,true);
 
     window.addEventListener('beforeunload',()=>{
         if(activePrefetchAbort)activePrefetchAbort.abort();
