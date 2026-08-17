@@ -40,9 +40,10 @@ jobs:
           replacement=marker+"\n    if 'settings.setAllowFileAccessFromFileURLs(true);' not in text:\n        text=text.replace('settings.setAllowContentAccess(true);','settings.setAllowContentAccess(true);\\n        settings.setAllowFileAccessFromFileURLs(true);\\n        settings.setAllowUniversalAccessFromFileURLs(true);',1)"
           if marker not in src: raise SystemExit('Android WebSettings marker missing')
           src=src.replace(marker,replacement,1)
-          Path('/tmp/prepare_9ii.py').write_text(src,encoding='utf-8')
+          Path('.github/scripts/_prepare_9ii_runtime.py').write_text(src,encoding='utf-8')
           PY
-          python /tmp/prepare_9ii.py
+          python .github/scripts/_prepare_9ii_runtime.py
+          rm .github/scripts/_prepare_9ii_runtime.py
           python - <<'PY'
           from pathlib import Path
           p=Path('android/galaxy-viewer-9i/app/src/main/assets/index.html')
