@@ -1089,6 +1089,11 @@ display(Javascript(r"""
     });
     window.__gv9iRandomGalaxy=randomGalaxy;
     await randomGalaxy.ready;
+    const presentationStyle=document.createElement('style');
+    presentationStyle.textContent='#gv-random-galaxy{font-size:22px!important;border:2px solid #FFD85A!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(77,255,143,.34),0 0 10px rgba(255,216,90,.65)!important}.gv-galaxy-history{border:2px solid #FFD85A!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(77,255,143,.34),0 0 10px rgba(255,216,90,.65)!important}.gvrg-hd-science,.gvrg-hd-viewport{box-sizing:border-box!important;width:min(620px,96vw)!important}.gvrg-hd-science{border-color:#4F8CFF!important;box-shadow:inset 0 0 8px rgba(79,140,255,.12),0 0 12px rgba(79,140,255,.34)!important}.gvrg-hd-viewport{left:50%!important;right:auto!important;transform:translateX(-50%);border:2px solid #4F8CFF!important;border-radius:8px!important;background:#020818!important;box-shadow:inset 0 0 12px rgba(79,140,255,.16),0 0 16px rgba(79,140,255,.48)!important}';
+    document.head.appendChild(presentationStyle);
+    const hubbleIcon=randomGalaxy.hubbleIconButton?.querySelector('img');
+    if(hubbleIcon)hubbleIcon.src='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/4383b1848bdc747ed0eaf45c8d300019cd312492/viewer/artwork/Hubble/Hubble-NASA-ESA-BW.png';
     const hdScience=randomGalaxy.hdScience;
     if(hdScience){
         const scienceItems=[...hdScience.querySelectorAll('.gvrg-hd-science-item')];
