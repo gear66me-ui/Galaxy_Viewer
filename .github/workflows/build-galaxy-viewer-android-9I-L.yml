@@ -6,6 +6,7 @@ on:
       - beta
     paths:
       - '.github/workflows/build-galaxy-viewer-android-9I-L.yml'
+      - '.github/scripts/prepare_galaxy_viewer_9il.py'
   workflow_dispatch:
 
 permissions:
@@ -110,19 +111,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk
           python - <<'PY'
           from zipfile import ZipFile
           from pathlib import Path
           apk=Path('android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk')
           with ZipFile(apk) as z:
               names=set(z.namelist())
-              required={
-                  'assets/index.html',
-                  'assets/splash/index.html',
-                  'assets/data/gv-hubble-galaxies-full-0002.json',
-                  'assets/app-icon.png',
-              }
+              required={'assets/index.html','assets/splash/index.html','assets/data/gv-hubble-galaxies-full-0002.json','assets/app-icon.png'}
               missing=required-names
               assert not missing, missing
               index=z.read('assets/index.html').decode('utf-8')
