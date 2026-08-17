@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-d4eb383fb124 — Run 9I-M Viewer smoke test without splash timing
+
+**Recorded:** 2026-08-16T20:18:02-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d4eb383fb12429fa4ce62b7ce75a33c428b0a78b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d4eb383fb12429fa4ce62b7ce75a33c428b0a78b)  
+**Parent/baseline:** `80cb73e6310cd83a433dbd100ff94f83e643d48e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/80cb73e6310cd83a433dbd100ff94f83e643d48e...d4eb383fb12429fa4ce62b7ce75a33c428b0a78b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run 9I-M Viewer smoke test without splash timing
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I-M.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `5120c4715bef501e8709c7d7777f8d5668538991ef1b68305895bbe08c9f440c`
+- SHA-256 after: `48bff7263f67634ddb4b5e9b396e37643e5b9aeb5b7e8c61b901a0f829ae77b3`
+- Bytes: `9390` → `9502`
+- Lines: `194` → `196`
+- Characters: `9388` → `9500`
+- Inserted lines: `6`
+- Deleted lines: `4`
+- Inserted characters: `129`
+- Deleted characters: `17`
+- Unified diff hunks: `6`
+- Inserted blocks: `6`
+- Deleted blocks: `4`
+- Changed blocks: `6`
+- Line balance: `194 + 6 - 4 = 196` — **PASS**
+- Character balance: `9388 + 129 - 17 = 9500` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b3ca414cc776 — Separate Viewer smoke mode from splash timing in 9I-M
 
 **Recorded:** 2026-08-16T20:17:31-05:00  
