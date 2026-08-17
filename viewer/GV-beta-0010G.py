@@ -8,7 +8,7 @@ display(Javascript(r"""
 (async()=>{
   'use strict';
   const BASELINE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/a88b56749bd73efe166e0a849749f15d03fed47d/viewer/GV-beta-0010F.py';
-  const INFO_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-info-module-0001.js?v=df2e313042f398e518aca64bffde455389e10f5b';
+  const INFO_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-info-module-0001.js?v=90dbdbfad10e92435e5da284aaea0d3f5da7c61d';
   const source=await fetch(BASELINE_URL,{cache:'force-cache'}).then(r=>{if(!r.ok)throw new Error('10F baseline HTTP '+r.status);return r.text()});
   const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
   const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
