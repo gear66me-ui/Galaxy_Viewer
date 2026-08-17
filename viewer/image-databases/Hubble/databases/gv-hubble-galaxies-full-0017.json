@@ -94862,30 +94862,23 @@
       "orientation": "North is 91.2° left of vertical",
       "imageType": "Observation",
       "releaseDate": "19 November 1992, 06:00",
-      "pixelSize": "446 x 390 px",
-      "credit": "N/A",
-      "sourceUrl": "https://esahubble.org/images/opo9227a/",
+      "pixelSize": "1024 x 930 px",
+      "credit": "Walter Jaffe/Leiden Observatory, Holland Ford/JHU/STScI, and NASA",
+      "sourceUrl": "https://science.nasa.gov/image-detail/hubble-ngc4261-core-stsci-01evtb3x6gaw32dnbfwsszfe70/",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
-        "https://cdn.esahubble.org/archives/images/publicationjpg/opo9227a.jpg",
-        "https://cdn.esahubble.org/archives/images/large/opo9227a.jpg",
-        "https://cdn.esahubble.org/archives/images/screen/opo9227a.jpg"
+        "https://science.nasa.gov/wp-content/uploads/2023/11/hubble-ngc4261-core-stsci-01evtb3x6gaw32dnbfwsszfe70.jpg"
       ],
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9227a.jpg",
-      "assetName": "opo9227a.jpg",
-      "bytes": 57645,
-      "sha256": "4c2596b8ee7187872ab7a48bd7976bf4c588c8de1cf186be3ba5c0ce0cf8950e",
-      "downloadErrors": [
-        {
-          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9227a.jpg",
-          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9227a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000344244570420"
-        }
-      ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9227a.jpg",
-      "releaseTag": "hubble-galaxies-0001-b",
+      "imageStatus": "remote_authoritative",
+      "selectedImageUrl": "https://science.nasa.gov/wp-content/uploads/2023/11/hubble-ngc4261-core-stsci-01evtb3x6gaw32dnbfwsszfe70.jpg",
+      "assetName": "hubble-ngc4261-core-stsci-01evtb3x6gaw32dnbfwsszfe70.jpg",
+      "bytes": null,
+      "sha256": null,
+      "downloadErrors": [],
+      "githubImageUrl": "https://science.nasa.gov/wp-content/uploads/2023/11/hubble-ngc4261-core-stsci-01evtb3x6gaw32dnbfwsszfe70.jpg",
+      "releaseTag": null,
       "science": {
         "distanceMly": 100.0,
         "distanceMethod": "esa",
@@ -94913,7 +94906,40 @@
       "designationSourceFields": [
         "name",
         "title"
-      ]
+      ],
+      "imageReplacement0017": {
+        "replacementSource": "NASA Hubble",
+        "reason": "Replace the lower-resolution legacy NGC 4261 core JPEG with NASA’s 1024×930 Hubble rendering of the same observation.",
+        "preservedTargetArchiveId": "opo9227a",
+        "presentationOnly": true,
+        "sameFieldOfView": true,
+        "originalImage": {
+          "fieldOfView": "0.08 x 0.07 arcminutes",
+          "orientation": "North is 91.2° left of vertical",
+          "pixelSize": "446 x 390 px",
+          "credit": "N/A",
+          "sourceUrl": "https://esahubble.org/images/opo9227a/",
+          "esaPublicationJpeg": null,
+          "jpegCandidates": [
+            "https://cdn.esahubble.org/archives/images/publicationjpg/opo9227a.jpg",
+            "https://cdn.esahubble.org/archives/images/large/opo9227a.jpg",
+            "https://cdn.esahubble.org/archives/images/screen/opo9227a.jpg"
+          ],
+          "imageStatus": "downloaded",
+          "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9227a.jpg",
+          "assetName": "opo9227a.jpg",
+          "bytes": 57645,
+          "sha256": "4c2596b8ee7187872ab7a48bd7976bf4c588c8de1cf186be3ba5c0ce0cf8950e",
+          "downloadErrors": [
+            {
+              "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9227a.jpg",
+              "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9227a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000344244570420"
+            }
+          ],
+          "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9227a.jpg",
+          "releaseTag": "hubble-galaxies-0001-b"
+        }
+      }
     },
     {
       "archiveId": "heic1719c",
@@ -133313,46 +133339,55 @@
       "decText": "47° 11' 43.40\"",
       "distance": "25 million light years",
       "constellation": "Canes Venatici",
-      "fieldOfView": "0.14 x 0.13 arcminutes",
-      "orientation": "North is 89.7° right of vertical",
+      "fieldOfView": "9.56 x 6.64 arcminutes",
+      "orientation": "North is 91.9° right of vertical",
       "imageType": "Observation",
       "releaseDate": "8 June 1992, 15:30",
-      "pixelSize": "2169 x 2025 px",
-      "credit": "H. Ford (JHU/",
-      "sourceUrl": "https://esahubble.org/images/opo9217a/",
-      "esaPublicationJpeg": null,
+      "pixelSize": "11477 x 7965 px",
+      "credit": "NASA",
+      "sourceUrl": "https://esahubble.org/images/heic0506a/",
+      "esaPublicationJpeg": "https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg",
       "jpegCandidates": [
-        "https://cdn.esahubble.org/archives/images/publicationjpg/opo9217a.jpg",
-        "https://cdn.esahubble.org/archives/images/large/opo9217a.jpg",
-        "https://cdn.esahubble.org/archives/images/screen/opo9217a.jpg"
+        "https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/large/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/screen/heic0506a.jpg",
+        "https://esahubble.org/media/archives/images/pl_screen/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper1/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper2/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper3/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper4/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper5/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_hd/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_fhd/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_qhd/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_uhd/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_mobile_fhd/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_mobile_fhd_plus/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_mobile_qhd_plus/heic0506a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper_mobile_uhd/heic0506a.jpg"
       ],
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9217a.jpg",
-      "assetName": "opo9217a.jpg",
-      "bytes": 1103361,
-      "sha256": "e58174356b7a44d7f12981ea6eed367ecdcf3db5cad42a416f39c4225b70feab",
-      "downloadErrors": [
-        {
-          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9217a.jpg",
-          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9217a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx000001f183c1c63c4"
-        }
-      ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9217a.jpg",
-      "releaseTag": "hubble-galaxies-0001-b",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg",
+      "assetName": "heic0506a.jpg",
+      "bytes": 4060187,
+      "sha256": "7b13a932bcf54653c591d369e8d1c4cbdbeb693ecc468242facb239fde52e4c2",
+      "downloadErrors": [],
+      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/heic0506a.jpg",
+      "releaseTag": "hubble-galaxies-0001-a",
       "science": {
         "distanceMly": 25.0,
         "distanceMethod": "esa",
         "sizeKly": [
-          1.02,
-          0.95
+          69.52,
+          48.29
         ],
         "sizeMethod": "distance_fov_estimate",
         "ageGyr": 0.025,
         "ageMethod": "lookback_est_from_published_light_travel_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1 x 1 KLY",
+        "sizeDisplay": "EST. 70 x 48 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -133368,7 +133403,39 @@
       "designationSourceFields": [
         "name",
         "title"
-      ]
+      ],
+      "imageReplacement0017": {
+        "replacementArchiveId": "heic0506a",
+        "reason": "Replace the old blue M51 core frame with the authoritative 2005 Hubble ACS full-frame Whirlpool Galaxy mosaic.",
+        "preservedTargetArchiveId": "opo9217a",
+        "presentationOnly": true,
+        "originalImage": {
+          "fieldOfView": "0.14 x 0.13 arcminutes",
+          "orientation": "North is 89.7° right of vertical",
+          "pixelSize": "2169 x 2025 px",
+          "credit": "H. Ford (JHU/",
+          "sourceUrl": "https://esahubble.org/images/opo9217a/",
+          "esaPublicationJpeg": null,
+          "jpegCandidates": [
+            "https://cdn.esahubble.org/archives/images/publicationjpg/opo9217a.jpg",
+            "https://cdn.esahubble.org/archives/images/large/opo9217a.jpg",
+            "https://cdn.esahubble.org/archives/images/screen/opo9217a.jpg"
+          ],
+          "imageStatus": "downloaded",
+          "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9217a.jpg",
+          "assetName": "opo9217a.jpg",
+          "bytes": 1103361,
+          "sha256": "e58174356b7a44d7f12981ea6eed367ecdcf3db5cad42a416f39c4225b70feab",
+          "downloadErrors": [
+            {
+              "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9217a.jpg",
+              "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9217a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx000001f183c1c63c4"
+            }
+          ],
+          "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9217a.jpg",
+          "releaseTag": "hubble-galaxies-0001-b"
+        }
+      }
     },
     {
       "archiveId": "opo9216a",
