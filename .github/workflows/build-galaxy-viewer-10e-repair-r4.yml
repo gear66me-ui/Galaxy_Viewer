@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer 10E Repair R4
+name: Build Galaxy Viewer 10E Scale Refinement R5
 on:
   push:
     branches: [beta]
@@ -7,8 +7,8 @@ on:
 permissions:
   contents: write
 env:
-  APK_NAME: Galaxy-Viewer-10E-Repair-R2.apk
-  RELEASE_TAG: galaxy-viewer-10e-repair-r2
+  APK_NAME: Galaxy-Viewer-10E-Scale-R3.apk
+  RELEASE_TAG: galaxy-viewer-10e-scale-r3
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,23 +26,87 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Apply guarded repairs
-        run: python tools/build_10e_repair_r2.py
-      - name: Validate source
+      - name: Apply surgical Hubble scale refinement
         shell: bash
         run: |
           set -euo pipefail
-          node --check viewer/modules/gv-random-galaxy-0029.js
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          old = Path('viewer/modules/gv-random-galaxy-0029.js')
+          new = Path('viewer/modules/gv-random-galaxy-0030.js')
+          expected_old = '9fe0ac11b49b0e6629f4135f6d6dafb518ea59f6'
+          actual_old = subprocess.check_output(['git','hash-object',str(old)], text=True).strip()
+          if actual_old != expected_old:
+              raise SystemExit(f'0029 immutable guard failed: {actual_old}')
+          if new.exists():
+              raise SystemExit('0030 already exists; refusing overwrite')
+
+          s = old.read_text(encoding='utf-8')
+          s = s.replace('RANDOM GALAXY 0012', 'RANDOM GALAXY 0013', 1)
+          s = s.replace("const VERSION = '0012';", "const VERSION = '0013';", 1)
+          s = s.replace('GV Random Galaxy Space Age 0012', 'GV Random Galaxy Space Age 0013')
+          s = s.replace('GV Random Galaxy Digits 0012', 'GV Random Galaxy Digits 0013')
+
+          anchor = "  function formatDistanceMly(millionLy) {"
+          compact = """  function formatCompactHdScale(lightYears) {\n    const value = finiteNumber(lightYears);\n    if (value == null || value <= 0) return '';\n    if (value >= 1_000_000_000) return `${value / 1_000_000_000}G LY`;\n    if (value >= 1_000_000) return `${value / 1_000_000}M LY`;\n    if (value >= 1_000) return `${value / 1_000}K LY`;\n    return `${value} LY`;\n  }\n"""
+          if anchor not in s:
+              raise SystemExit('compact formatter anchor missing')
+          s = s.replace(anchor, compact + anchor, 1)
+
+          old_css = '.gvrg-hd-scale{position:absolute;left:50%;bottom:12px;z-index:6;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:4px;pointer-events:none;color:#FFD85A;font:400 10px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.45px;text-align:center;text-shadow:0 0 4px rgba(255,242,168,.82),0 0 9px rgba(255,180,45,.34);white-space:nowrap}\n.gvrg-hd-scale-line{position:relative;height:12px;border-top:2px solid #FFD85A;filter:drop-shadow(0 0 4px rgba(255,216,90,.60))}\n.gvrg-hd-scale-line::before,.gvrg-hd-scale-line::after{content:"";position:absolute;top:-6px;width:2px;height:11px;background:#FFD85A;box-shadow:0 0 4px rgba(255,216,90,.55)}\n.gvrg-hd-scale-line::before{left:0}.gvrg-hd-scale-line::after{right:0}\n.gvrg-hd-scale-label{font:400 10px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;color:#FFD85A;letter-spacing:.45px;text-shadow:0 0 4px rgba(255,242,168,.82),0 0 9px rgba(255,180,45,.34)}'
+          new_css = '.gvrg-hd-scale{position:absolute;left:50%;bottom:12px;z-index:6;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:4px;pointer-events:none;color:#FFD85A;font:400 9px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.7px;text-align:center;text-shadow:0 0 3px rgba(255,242,168,.72),0 0 7px rgba(255,180,45,.28);white-space:nowrap}\n.gvrg-hd-scale-line{position:relative;height:10px;border-top:1px solid #FFD85A;filter:drop-shadow(0 0 2px rgba(255,216,90,.52))}\n.gvrg-hd-scale-line::before,.gvrg-hd-scale-line::after{content:"";position:absolute;top:-5px;width:1px;height:9px;background:#FFD85A;box-shadow:0 0 2px rgba(255,216,90,.48)}\n.gvrg-hd-scale-line::before{left:0}.gvrg-hd-scale-line::after{right:0}\n.gvrg-hd-scale-label{font:400 9px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;color:#FFD85A;letter-spacing:.7px;text-shadow:0 0 3px rgba(255,242,168,.72),0 0 7px rgba(255,180,45,.28)}'
+          if old_css not in s:
+              raise SystemExit('scale CSS baseline missing')
+          s = s.replace(old_css, new_css, 1)
+
+          old_label = 'this.hdScaleLabel.textContent = formatWholeAstronomyScale(this.hdScaleBarValue);'
+          new_label = 'this.hdScaleLabel.textContent = formatCompactHdScale(this.hdScaleBarValue);'
+          if old_label not in s:
+              raise SystemExit('scale label formatter baseline missing')
+          s = s.replace(old_label, new_label, 1)
+          new.write_text(s, encoding='utf-8')
+
+          new_hash = subprocess.check_output(['git','hash-object',str(new)], text=True).strip()
+          print('0030 blob:', new_hash)
+
+          for p in [Path('viewer/GV-beta-0010E.py'), Path('android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010E.py')]:
+              t = p.read_text(encoding='utf-8')
+              old_ref = 'gv-random-galaxy-0029.js?v=9fe0ac11b49b0e6629f4135f6d6dafb518ea59f6'
+              new_ref = f'gv-random-galaxy-0030.js?v={new_hash}'
+              if old_ref not in t:
+                  raise SystemExit(f'0029 reference missing in {p}')
+              t = t.replace(old_ref, new_ref, 1)
+              t = t.replace("loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0029')", "loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0030')", 1)
+              t = t.replace("window.GalaxyRandomGalaxy?.VERSION!=='0012'", "window.GalaxyRandomGalaxy?.VERSION!=='0013'", 1)
+              t = t.replace('RANDOM GALAXY 0029 PATH / 0012 VERIFIED CORE EXPORT MISSING', 'RANDOM GALAXY 0030 PATH / 0013 VERIFIED CORE EXPORT MISSING', 1)
+              p.write_text(t, encoding='utf-8')
+
+          gradle = Path('android/galaxy-viewer-10e/app/build.gradle')
+          g = gradle.read_text(encoding='utf-8')
+          old_cfg = "applicationId 'com.gear66me.galaxyviewer10e.r2'; minSdk 29; targetSdk 35; versionCode 1008; versionName '10E-generic-r2'"
+          new_cfg = "applicationId 'com.gear66me.galaxyviewer10e.r3'; minSdk 29; targetSdk 35; versionCode 1009; versionName '10E-generic-r3'"
+          if old_cfg not in g:
+              raise SystemExit('R2 Gradle identity missing')
+          gradle.write_text(g.replace(old_cfg, new_cfg, 1), encoding='utf-8')
+          PY
+      - name: Validate source and immutable guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check viewer/modules/gv-random-galaxy-0030.js
           python - <<'PY'
           from pathlib import Path
           compile(Path('viewer/GV-beta-0010E.py').read_text(encoding='utf-8'),'viewer/GV-beta-0010E.py','exec')
           PY
-          grep -q 'color:#FFD85A' android/galaxy-viewer-10e/app/src/main/assets/index.html
-          grep -q 'font-family:"Space Age"' android/galaxy-viewer-10e/app/src/main/assets/index.html
-          grep -q 'android:icon="@mipmap/ic_launcher"' android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
-          test -s android/galaxy-viewer-10e/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          test "$(git hash-object viewer/modules/gv-random-galaxy-0028.js)" = "625b8d889f67652fa19a39b8689e306ea1c1fb91"
-      - name: Verify change scope
+          test "$(git hash-object viewer/modules/gv-random-galaxy-0029.js)" = "9fe0ac11b49b0e6629f4135f6d6dafb518ea59f6"
+          grep -q 'border-top:1px solid #FFD85A' viewer/modules/gv-random-galaxy-0030.js
+          grep -q 'width:1px;height:9px;background:#FFD85A' viewer/modules/gv-random-galaxy-0030.js
+          grep -q 'font:400 9px/1.05' viewer/modules/gv-random-galaxy-0030.js
+          grep -q 'formatCompactHdScale' viewer/modules/gv-random-galaxy-0030.js
+          grep -q '0030.js?v=' viewer/GV-beta-0010E.py
+      - name: Verify exact source scope
         shell: bash
         run: |
           set -euo pipefail
@@ -50,21 +114,16 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           allowed={
-            'viewer/modules/gv-random-galaxy-0029.js',
+            'viewer/modules/gv-random-galaxy-0030.js',
             'viewer/GV-beta-0010E.py',
-            'android/galaxy-viewer-10e/app/src/main/assets/index.html',
-            'android/galaxy-viewer-10e/app/src/main/assets/artwork/icon.svg',
-            'android/galaxy-viewer-10e/app/src/main/assets/artwork/Space-Age.otf',
             'android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010E.py',
-            'android/galaxy-viewer-10e/app/src/main/assets/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html',
-            'android/galaxy-viewer-10e/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
-            'android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml',
-            'android/galaxy-viewer-10e/app/build.gradle',
-            'android/galaxy-viewer-10e/app/src/main/java/com/gear66me/galaxyviewer10e/MainActivity.java'
+            'android/galaxy-viewer-10e/app/build.gradle'
           }
           changed=set(Path('/tmp/changed.txt').read_text().splitlines())
           extra=changed-allowed
+          missing=allowed-changed
           if extra: raise SystemExit('Unauthorized changed paths: '+repr(sorted(extra)))
+          if missing: raise SystemExit('Missing intended paths: '+repr(sorted(missing)))
           PY
       - name: Build APK
         run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
@@ -75,36 +134,40 @@ jobs:
           APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer10e.r2'" /tmp/badging.txt
-          grep -q "versionName='10E-generic-r2'" /tmp/badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10e.r3'" /tmp/badging.txt
+          grep -q "versionName='10E-generic-r3'" /tmp/badging.txt
           grep -q "launchable-activity: name='com.gear66me.galaxyviewer10e.MainActivity'" /tmp/badging.txt
           unzip -l "$APK" | grep -q 'assets/artwork/Space-Age.otf'
+          unzip -p "$APK" assets/viewer/GV-beta-0010E.py | grep -q 'gv-random-galaxy-0030.js'
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
           cp "$APK" "$APK_NAME"
           sha256sum "$APK_NAME" | tee "${APK_NAME}.sha256"
-      - name: Commit repaired 10E source
+      - name: Commit only refined 10E source
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/modules/gv-random-galaxy-0029.js viewer/GV-beta-0010E.py android/galaxy-viewer-10e
-          git commit -m 'Repair 10E startup icon splash and HD scale'
+          git add viewer/modules/gv-random-galaxy-0030.js viewer/GV-beta-0010E.py android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010E.py android/galaxy-viewer-10e/app/build.gradle
+          git diff --cached --name-only | tee /tmp/staged.txt
+          diff -u <(printf '%s\n' android/galaxy-viewer-10e/app/build.gradle android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010E.py viewer/GV-beta-0010E.py viewer/modules/gv-random-galaxy-0030.js | sort) <(sort /tmp/staged.txt)
+          git commit -m 'Refine 10E Hubble scale ruler typography'
           git fetch origin beta
           git rebase origin/beta
           git push origin HEAD:beta
           echo "RELEASE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "MODULE_BLOB=$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-10E-Repair-R2
+          name: Galaxy-Viewer-10E-Scale-R3
           path: |
-            Galaxy-Viewer-10E-Repair-R2.apk
-            Galaxy-Viewer-10E-Repair-R2.apk.sha256
+            Galaxy-Viewer-10E-Scale-R3.apk
+            Galaxy-Viewer-10E-Scale-R3.apk.sha256
           if-no-files-found: error
-      - name: Publish replacement installer
+      - name: Publish refined installer
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh release create "$RELEASE_TAG" "$APK_NAME" "${APK_NAME}.sha256" --target "$RELEASE_COMMIT" --title 'Galaxy Viewer 10E — Repair R2' --notes '10E replacement installer with Space Age shell typography, centered approved app artwork, explicit launcher icon, corrected icon-to-splash-to-viewer sequence, isolated splash animation, and dynamic Hubble light-year scale.'
+          gh release create "$RELEASE_TAG" "$APK_NAME" "${APK_NAME}.sha256" --target "$RELEASE_COMMIT" --title 'Galaxy Viewer 10E — Scale R3' --notes "10E scale-ruler refinement only: hairline #FFD85A ruler/ticks, main-viewer Space Age unit sizing, compact K/M/G LY labels, immutable Random Galaxy 0030. Module blob: $MODULE_BLOB"
