@@ -1,0 +1,114 @@
+name: TEMP 10F Random Font Position Fix
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-10f-random-font-position-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Surgical repair and pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          MOD='viewer/modules/gv-random-galaxy-0031.js'
+          VIEW='viewer/GV-beta-0010F.py'
+          BEFORE_VIEW=$(git hash-object "$VIEW")
+          BEFORE_MOD=$(git hash-object "$MOD")
+
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/modules/gv-random-galaxy-0031.js')
+          s=p.read_text(encoding='utf-8')
+          old='#gv-random-galaxy .gvrg-random-label{display:inline-block;transform:translateX(2ch)}#gv-random-galaxy .gvrg-random-star-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:13px;flex:0 0 20px;line-height:20px;transform:translateX(2ch)}'
+          new='#gv-random-galaxy .gvrg-random-label{display:inline-block;transform:translateX(0)}#gv-random-galaxy .gvrg-random-star-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:13px;flex:0 0 20px;line-height:20px;transform:translateX(2ch)}'
+          if s.count(old)!=1: raise SystemExit(f'ABORT module geometry match count={s.count(old)}')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$MOD"
+          test "$(git diff --cached --name-only)" = "$MOD"
+          git diff --cached --check
+          git commit -m '10F move Random Galaxy text two characters left only'
+          MOD_COMMIT=$(git rev-parse HEAD)
+          MOD_BLOB=$(git hash-object "$MOD")
+          git push origin HEAD:beta
+
+          python - "$MOD_COMMIT" "$MOD_BLOB" <<'PY'
+          from pathlib import Path
+          import re,sys
+          commit,blob=sys.argv[1:3]
+          p=Path('viewer/GV-beta-0010F.py')
+          s=p.read_text(encoding='utf-8')
+
+          # One font size from first paint: move approved 15.5px into base rule.
+          old='color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.38px;'
+          new='color:#E8FFF0;font:400 15.5px/1 "Space Age",sans-serif;letter-spacing:.38px;'
+          if s.count(old)!=1: raise SystemExit(f'ABORT base font match count={s.count(old)}')
+          s=s.replace(old,new,1)
+
+          # Remove only delayed duplicate font-size override, preserve all other presentation styling.
+          oldov='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #ABB3AA!important;'
+          newov='#gv-random-galaxy{border:2px solid #ABB3AA!important;'
+          if s.count(oldov)!=1: raise SystemExit(f'ABORT delayed font override count={s.count(oldov)}')
+          s=s.replace(oldov,newov,1)
+
+          pattern=r"const RANDOM_GALAXY_URL='https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/[0-9a-f]{40}/viewer/modules/gv-random-galaxy-0031\.js\?v=[0-9a-f]{40}';"
+          repl=f"const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/{commit}/viewer/modules/gv-random-galaxy-0031.js?v={blob}';"
+          s,n=re.subn(pattern,repl,s,count=1)
+          if n!=1: raise SystemExit(f'ABORT module pin replacement count={n}')
+          compile(s,str(p),'exec')
+          p.write_text(s,encoding='utf-8')
+          PY
+
+          # Exact guards.
+          grep -Fq 'font:400 15.5px/1 "Space Age",sans-serif' "$VIEW"
+          ! grep -Fq '#gv-random-galaxy{font-size:15.5px!important' "$VIEW"
+          grep -Fq '.gvrg-random-label{display:inline-block;transform:translateX(0)}' "$MOD"
+          grep -Fq 'line-height:20px;transform:translateX(2ch)}' "$MOD"
+          grep -Fq "GalaxyRandomGalaxy?.VERSION!=='0031'" "$VIEW"
+          grep -Fq "bottom.random.addEventListener('click',launchRandomGalaxy);" "$VIEW"
+
+          git add "$VIEW"
+          test "$(git diff --cached --name-only)" = "$VIEW"
+          git diff --cached --check
+          git commit -m '10F unify Random Galaxy font and pin corrected 0031'
+          git push origin HEAD:beta
+
+      - name: Fetch-back verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          git reset --hard origin/beta
+          MOD='viewer/modules/gv-random-galaxy-0031.js'
+          VIEW='viewer/GV-beta-0010F.py'
+          grep -Fq '.gvrg-random-label{display:inline-block;transform:translateX(0)}' "$MOD"
+          grep -Fq 'line-height:20px;transform:translateX(2ch)}' "$MOD"
+          grep -Fq 'font:400 15.5px/1 "Space Age",sans-serif' "$VIEW"
+          ! grep -Fq '#gv-random-galaxy{font-size:15.5px!important' "$VIEW"
+          grep -Fq "bottom.random.addEventListener('click',launchRandomGalaxy);" "$VIEW"
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('viewer/GV-beta-0010F.py').read_text(encoding='utf-8')
+          compile(s,'viewer/GV-beta-0010F.py','exec')
+          print('10F syntax PASS')
+          print('base 15.5 count',s.count('font:400 15.5px/1 "Space Age",sans-serif'))
+          print('delayed 15.5 override count',s.count('#gv-random-galaxy{font-size:15.5px!important'))
+          PY
