@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-de5df70f2c4c — Add final Hubble coordinate recovery workflow
+
+**Recorded:** 2026-08-16T21:40:29-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`de5df70f2c4cc6b09250d05924be8401c775d47f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/de5df70f2c4cc6b09250d05924be8401c775d47f)  
+**Parent/baseline:** `781afbcf73ba9452f2dc42b0a4e0c65fa239d7eb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/781afbcf73ba9452f2dc42b0a4e0c65fa239d7eb...de5df70f2c4cc6b09250d05924be8401c775d47f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add final Hubble coordinate recovery workflow
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/recover-hubble-0002-final-coordinates.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9a07ff0bd25b1079c7d13ac37581287e20c4ac431cea77fd8e4b5dcc6a85fc4a`
+- Bytes: `0` → `11565`
+- Lines: `0` → `244`
+- Characters: `0` → `11564`
+- Inserted lines: `244`
+- Deleted lines: `0`
+- Inserted characters: `11564`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 244 - 0 = 244` — **PASS**
+- Character balance: `0 + 11564 - 0 = 11564` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-686f1a1b62b9 — Archive exact Galaxy Viewer 9I-M as 9I-6
 
 **Recorded:** 2026-08-16T21:35:04-05:00  
