@@ -1,0 +1,244 @@
+name: Recover Hubble 0002 final coordinates
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/recover-hubble-0002-final-coordinates.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install astronomy recovery tools
+        run: python -m pip install --quiet astropy astroquery requests beautifulsoup4
+
+      - name: Recover unresolved coordinates and constellations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, math, pathlib, re, time
+          import requests
+          from bs4 import BeautifulSoup
+          from astropy.coordinates import SkyCoord, get_constellation
+          import astropy.units as u
+          from astroquery.simbad import Simbad
+          from astroquery.ipac.ned import Ned
+
+          path = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          data = json.loads(path.read_text())
+          entries = data['entries']
+          assert len(entries) == 1879
+
+          session = requests.Session()
+          session.headers['User-Agent'] = 'GalaxyViewer-HubbleCatalog/0002 coordinate recovery'
+
+          def valid_coord(e):
+              ra, dec = e.get('ra'), e.get('dec')
+              return isinstance(ra,(int,float)) and isinstance(dec,(int,float)) and math.isfinite(ra) and math.isfinite(dec) and 0 <= ra < 360 and -90 <= dec <= 90
+
+          ID_PATTERNS = [
+              r'\bM(?:ESSIER)?\s*\d{1,3}\b', r'\bNGC\s*\d{1,4}[A-Z]?\b', r'\bIC\s*\d{1,4}[A-Z]?\b',
+              r'\bUGC\s*\d{1,5}\b', r'\bPGC\s*\d{1,6}\b', r'\bLEDA\s*\d{1,6}\b', r'\bARP\s*\d{1,3}\b',
+              r'\bHCG\s*\d{1,3}[A-Z]?\b', r'\bABELL\s*\d{1,4}\b', r'\bMRK\s*\d{1,4}\b', r'\bVV\s*\d{1,4}\b',
+              r'\bESO\s*\d{2,4}[- ]?[A-Z]?\d{1,3}\b', r'\b(?:2MASX?|SDSS)\s*J?\d{6,8}(?:\.\d+)?[+-]\d{6,8}(?:\.\d+)?\b',
+              r'\b(?:MACS|CL|RXJ|RXC)\s*J?\d{4,8}(?:\.\d+)?[+-]\d{4,8}(?:\.\d+)?\b'
+          ]
+          id_re = re.compile('|'.join(f'(?:{p})' for p in ID_PATTERNS), re.I)
+          generic = re.compile(r'^(galaxy|galaxies|galaxy pair|galaxy group|galaxy cluster|cluster|group|field|deep field|hubble image)$', re.I)
+
+          def normalize(s):
+              return ' '.join(str(s or '').replace('_',' ').split()).strip(' ,;/:-')
+
+          def add_unique(out, value):
+              v = normalize(value)
+              if not v or generic.match(v): return
+              if v.lower() not in {x.lower() for x in out}: out.append(v)
+
+          def mine_ids(text):
+              return [normalize(m.group(0)) for m in id_re.finditer(text or '')]
+
+          def candidate_strings(e, extra_text=''):
+              out=[]
+              for k in ('designation','name','displayName','title'):
+                  val=e.get(k)
+                  if not val: continue
+                  for found in mine_ids(str(val)): add_unique(out, found)
+                  for part in re.split(r'\s*/\s*|\s*,\s*|\s*;\s*', str(val)):
+                      if len(part.split()) <= 8: add_unique(out, part)
+              for found in mine_ids(extra_text): add_unique(out, found)
+              return out
+
+          def parse_positional_name(s):
+              # Decode common JHHMMSS.ss+DDMMSS.s designations conservatively.
+              m=re.search(r'J?(\d{2})(\d{2})(\d{2}(?:\.\d+)?)([+-])(\d{2})(\d{2})(\d{2}(?:\.\d+)?)', s.replace(' ',''), re.I)
+              if not m: return None
+              hh,mm,ss,sign,dd,dm,ds=m.groups()
+              hh=float(hh); mm=float(mm); ss=float(ss); dd=float(dd); dm=float(dm); ds=float(ds)
+              if hh>=24 or mm>=60 or ss>=60 or dd>90 or dm>=60 or ds>=60: return None
+              ra=15*(hh+mm/60+ss/3600)
+              dec=(dd+dm/60+ds/3600)*(1 if sign=='+' else -1)
+              return SkyCoord(ra=ra*u.deg, dec=dec*u.deg, frame='icrs')
+
+          def resolve_sesame(name):
+              try:
+                  return SkyCoord.from_name(name), 'cds_sesame', name
+              except Exception:
+                  return None
+
+          def resolve_simbad(name):
+              try:
+                  t=Simbad.query_object(name)
+                  if t is None or len(t)==0: return None
+                  cols={c.lower():c for c in t.colnames}
+                  if 'ra' in cols and 'dec' in cols:
+                      ra=t[cols['ra']][0]; dec=t[cols['dec']][0]
+                      try: c=SkyCoord(str(ra), str(dec), unit=(u.hourangle,u.deg), frame='icrs')
+                      except Exception: c=SkyCoord(float(ra)*u.deg,float(dec)*u.deg,frame='icrs')
+                      return c, 'simbad', name
+              except Exception:
+                  pass
+              return None
+
+          def resolve_ned(name):
+              try:
+                  t=Ned.query_object(name)
+                  if t is None or len(t)==0: return None
+                  cols={c.lower():c for c in t.colnames}
+                  rak=next((cols[k] for k in cols if k in ('ra','ra(deg)','ra(deg)')),None)
+                  dek=next((cols[k] for k in cols if k in ('dec','dec(deg)','dec(deg)')),None)
+                  if rak and dek:
+                      c=SkyCoord(float(t[rak][0])*u.deg,float(t[dek][0])*u.deg,frame='icrs')
+                      return c, 'ned', name
+              except Exception:
+                  pass
+              return None
+
+          def fetch_esa_text(e):
+              url=e.get('sourceUrl')
+              if not url: return ''
+              try:
+                  r=session.get(url,timeout=20)
+                  r.raise_for_status()
+                  soup=BeautifulSoup(r.text,'html.parser')
+                  return soup.get_text(' ', strip=True)
+              except Exception:
+                  return ''
+
+          def parse_esa_radec(text):
+              # ESA pages often expose sexagesimal coordinates in their metadata text.
+              pats=[
+                r'(?:Right Ascension|RA)\s*[:=]?\s*(\d{1,2})\s*[h:]\s*(\d{1,2})\s*[m:]\s*(\d{1,2}(?:\.\d+)?)\s*[s]?[^\d+-]{0,50}(?:Declination|Dec)\s*[:=]?\s*([+-]?\d{1,2})\s*[°d:]\s*(\d{1,2})\s*[\'m:]\s*(\d{1,2}(?:\.\d+)?)',
+                r'(?:RA)\s*[:=]?\s*(\d{1,2})\s+(\d{1,2})\s+(\d{1,2}(?:\.\d+)?)[^\d+-]{0,50}(?:Dec)\s*[:=]?\s*([+-]?\d{1,2})\s+(\d{1,2})\s+(\d{1,2}(?:\.\d+)?)'
+              ]
+              for p in pats:
+                  m=re.search(p,text,re.I)
+                  if m:
+                      h,mi,s,d,dm,ds=m.groups()
+                      sign=-1 if str(d).startswith('-') else 1
+                      dd=abs(float(d))+float(dm)/60+float(ds)/3600
+                      return SkyCoord((float(h)+float(mi)/60+float(s)/3600)*15*u.deg, sign*dd*u.deg, frame='icrs')
+              return None
+
+          before=sum(valid_coord(e) for e in entries)
+          missing=[e for e in entries if not valid_coord(e)]
+          recovered=[]; unresolved=[]; method_counts={}
+
+          for n,e in enumerate(missing,1):
+              esa_text=fetch_esa_text(e)
+              result=None
+
+              # 1. Exact coordinates embedded in ESA source metadata.
+              c=parse_esa_radec(esa_text)
+              if c is not None:
+                  result=(c,'esa_source_metadata',e.get('sourceUrl'))
+
+              # 2. Existing fields + identifiers mined from ESA page.
+              candidates=candidate_strings(e, esa_text)
+              if result is None:
+                  for cand in candidates:
+                      pc=parse_positional_name(cand)
+                      if pc is not None:
+                          result=(pc,'iau_positional_designation',cand); break
+
+              # 3. Cross-database resolution, escalating Sesame -> SIMBAD -> NED.
+              if result is None:
+                  for cand in candidates:
+                      for resolver in (resolve_sesame, resolve_simbad, resolve_ned):
+                          r=resolver(cand)
+                          if r is not None:
+                              result=r; break
+                      if result is not None: break
+                      time.sleep(0.12)
+
+              if result is None:
+                  unresolved.append({'archiveId':e.get('archiveId'),'name':e.get('name'),'title':e.get('title'),'designation':e.get('designation'),'candidates':candidates[:12]})
+                  continue
+
+              coord,method,source=result
+              c=coord.icrs
+              if not (0 <= float(c.ra.deg) < 360 and -90 <= float(c.dec.deg) <= 90):
+                  unresolved.append({'archiveId':e.get('archiveId'),'reason':'invalid_resolved_coordinate','source':source})
+                  continue
+              e['ra']=round(float(c.ra.deg),10)
+              e['dec']=round(float(c.dec.deg),10)
+              e['raText']=c.ra.to_string(unit=u.hour,sep=' ',precision=2,pad=False)
+              e['decText']=c.dec.to_string(unit=u.deg,sep=' ',precision=2,alwayssign=True,pad=False)
+              e['coordinateMethod']=method
+              e['coordinateResolvedFrom']=source
+              e['constellation']=get_constellation(c,short_name=False)
+              e['constellationMethod']='iau_boundary_from_radec'
+              method_counts[method]=method_counts.get(method,0)+1
+              recovered.append({'archiveId':e.get('archiveId'),'method':method,'source':source,'ra':e['ra'],'dec':e['dec'],'constellation':e['constellation']})
+              time.sleep(0.10)
+
+          after=sum(valid_coord(e) for e in entries)
+          constellations=sum(bool(normalize(e.get('constellation'))) for e in entries)
+          stats={
+            'totalRecords':len(entries), 'coordinatesBefore':before,
+            'coordinatesMissingBefore':len(missing), 'coordinatesRecoveredThisPass':len(recovered),
+            'coordinatesAfter':after, 'coordinatesStillMissing':len(entries)-after,
+            'constellationsAfter':constellations, 'methodCounts':method_counts,
+            'methods':'ESA source metadata + ESA alias mining + positional designation decoding + CDS Sesame + SIMBAD + NED',
+            'recovered':recovered, 'unresolved':unresolved
+          }
+          data.setdefault('manualEnrichment',{})['finalCoordinateRecovery']=stats
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+
+          check=json.loads(path.read_text())
+          assert len(check['entries'])==1879
+          assert sum(valid_coord(e) for e in check['entries'])==after
+          print('FINAL_COORDINATE_RECOVERY='+json.dumps({k:v for k,v in stats.items() if k not in ('recovered','unresolved')},sort_keys=True))
+          print('RECOVERED_SAMPLE='+json.dumps(recovered[:25],ensure_ascii=False))
+          print('UNRESOLVED_SAMPLE='+json.dumps(unresolved[:25],ensure_ascii=False))
+          PY
+
+      - name: Commit catalog only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+          if git diff --cached --quiet; then
+            echo 'No catalog changes'
+            exit 0
+          fi
+          git commit -m 'Recover remaining Hubble coordinates and constellations'
+          for i in 1 2 3 4 5; do
+            git fetch origin beta
+            git rebase origin/beta
+            if git push origin HEAD:beta; then exit 0; fi
+            sleep 2
+          done
+          exit 1
