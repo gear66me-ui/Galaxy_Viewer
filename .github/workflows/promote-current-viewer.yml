@@ -1,0 +1,122 @@
+name: Promote Current Galaxy Viewer
+
+# Permanent release-promotion gate for every Viewer-affecting ECO.
+# Rule: a new Viewer ECO is not complete until this workflow succeeds.
+# Future ECO build workflows must call this reusable workflow after their
+# source/syntax/scope validation passes. The generic APK itself stays frozen;
+# this workflow advances only viewer/gv-current-viewer.json.
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Viewer display version, e.g. 10F'
+        required: true
+        type: string
+      viewer_file:
+        description: 'Viewer filename under viewer/, e.g. GV-beta-0010F.py'
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Viewer display version, e.g. 10F'
+        required: true
+        type: string
+      viewer_file:
+        description: 'Viewer filename under viewer/, e.g. GV-beta-0010F.py'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-viewer-current-promotion-beta
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Validate release and promote current pointer
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          VIEWER_FILE: ${{ inputs.viewer_file }}
+        run: |
+          set -euo pipefail
+          test -n "$VERSION"
+          test -n "$VIEWER_FILE"
+          [[ "$VERSION" =~ ^[0-9]+[A-Z]$ ]]
+          [[ "$VIEWER_FILE" =~ ^GV-beta-[A-Za-z0-9._-]+\.py$ ]]
+          VIEWER_PATH="viewer/$VIEWER_FILE"
+          POINTER="viewer/gv-current-viewer.json"
+          BOOTSTRAP="viewer/bootstrap/gv-generic-bootstrap-current.js"
+          test -f "$VIEWER_PATH"
+          test -f "$POINTER"
+          test -f "$BOOTSTRAP"
+
+          # The release file itself must identify the requested version.
+          grep -Fq "const VERSION='$VERSION';" "$VIEWER_PATH"
+          grep -Fq "const DISPLAY_VERSION='$VERSION';" "$VIEWER_PATH"
+          grep -Fq "VERSION $VERSION" "$VIEWER_PATH"
+
+          # The permanent bootstrap must remain version-agnostic.
+          ! grep -Eq "Manifest did not select [0-9]+[A-Z]" "$BOOTSTRAP"
+          grep -Fq "gv-current-viewer.json" "$BOOTSTRAP"
+          grep -Fq "m.viewer" "$BOOTSTRAP"
+
+          python3 - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path('viewer/gv-current-viewer.json')
+          data={'version':os.environ['VERSION'],'viewer':os.environ['VIEWER_FILE']}
+          p.write_text(json.dumps(data,indent=2)+'\n',encoding='utf-8')
+          PY
+
+          python3 - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path('viewer/gv-current-viewer.json')
+          d=json.loads(p.read_text())
+          assert d == {'version':os.environ['VERSION'],'viewer':os.environ['VIEWER_FILE']}
+          assert pathlib.Path('viewer',d['viewer']).is_file()
+          print('PROMOTION VERIFIED', d)
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- "$POINTER"; then
+            echo "Current pointer already selects $VERSION / $VIEWER_FILE"
+            exit 0
+          fi
+          test "$(git diff --name-only | wc -l)" -eq 1
+          test "$(git diff --name-only)" = "$POINTER"
+          git add "$POINTER"
+          git commit -m "Promote Galaxy Viewer $VERSION as current generic Viewer"
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+
+      - name: Fetch-back verification
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          VIEWER_FILE: ${{ inputs.viewer_file }}
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          CONTENT=$(git show origin/beta:viewer/gv-current-viewer.json)
+          printf '%s\n' "$CONTENT"
+          python3 - "$VERSION" "$VIEWER_FILE" <<'PY'
+          import json, subprocess, sys
+          version, viewer = sys.argv[1:]
+          raw=subprocess.check_output(['git','show','origin/beta:viewer/gv-current-viewer.json'],text=True)
+          assert json.loads(raw)=={'version':version,'viewer':viewer}
+          print('FETCH-BACK PROMOTION PASS')
+          PY
