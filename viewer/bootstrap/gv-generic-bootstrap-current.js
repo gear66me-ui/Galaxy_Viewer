@@ -1,0 +1,23 @@
+(async()=>{'use strict';
+const R='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+const c=document.getElementById('gv-apk-cover');
+const p=document.getElementById('gv-splash-frame');
+const e=document.getElementById('gv-launch-error');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+const text=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.text()};
+const extract=s=>{const h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw new Error('Viewer extraction failed');return[h[0][1],j[0][1]]};
+const loadViewerPayload=async()=>{try{const m=JSON.parse(await text(R+'gv-current-viewer.json?t='+Date.now()));return[m,await text(R+m.viewer+'?t='+Date.now())]}catch(_){const m=JSON.parse(await text('viewer/gv-current-viewer.json'));return[m,await text('viewer/'+m.viewer)]}};
+const warm=async s=>{try{const urls=[...new Set([...s.matchAll(/https:\/\/[^'\"`\s]+/g)].map(m=>m[0]))];const primary=urls.filter(u=>/aladin|viewer\/modules\/|gv-hubble-galaxies-full/i.test(u));await Promise.allSettled(primary.map(u=>fetch(u,{cache:'force-cache'})));const cu=primary.find(u=>/gv-hubble-galaxies-full/i.test(u));if(!cu)return;const r=await fetch(cu,{cache:'force-cache'});if(!r.ok)return;const j=await r.json();const a=Array.isArray(j?.entries)?[...j.entries]:[];for(let i=a.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[a[i],a[k]]=[a[k],a[i]]}const imgs=a.slice(0,10).map(o=>String(o?.githubImageUrl||o?.selectedImageUrl||'')).filter(u=>/^https:\/\//.test(u));Promise.allSettled(imgs.map(u=>fetch(u,{cache:'force-cache'}))).catch(()=>{})}catch(_){}};
+const ready=()=>new Promise((ok,no)=>{const d=performance.now()+30000;const f=()=>{if(document.getElementById('aladin-cosmic-command-test')?.querySelector('canvas')&&window.aladin_cosmic_command_test)return ok();if(performance.now()>d)return no(new Error('10E Viewer readiness timeout'));setTimeout(f,50)};f()});
+const startViewer=async payloadPromise=>{const[m,s]=await payloadPromise;if(m.version!=='10E')throw new Error('Manifest did not select 10E');warm(s);const[h,j]=extract(s);document.body.insertAdjacentHTML('beforeend',h);const z=document.createElement('script');z.textContent=j;document.body.appendChild(z);await ready();return true};
+const runSplash=()=>new Promise((ok,no)=>{let timer=0,done=false;const finish=()=>{if(done)return;done=true;if(timer)clearTimeout(timer);ok()};p.addEventListener('load',()=>{try{p.contentWindow.addEventListener('galaxy-splash-complete',finish,{once:true});p.style.visibility='visible';c?.remove();timer=setTimeout(()=>no(new Error('10E splash completion timeout')),22000)}catch(z){no(z)}},{once:true});p.addEventListener('error',()=>no(new Error('10E splash failed to load')),{once:true});p.src='viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html'});
+try{
+ const started=performance.now();
+ const payloadPromise=loadViewerPayload();
+ const viewerReadyPromise=startViewer(payloadPromise);
+ await delay(Math.max(0,3500-(performance.now()-started)));
+ await runSplash();
+ await viewerReadyPromise;
+ p.remove();
+}catch(z){e.style.display='block';e.textContent='GALAXY VIEWER 10E FAILED TO LOAD\n\n'+String(z?.stack||z)}
+})();
