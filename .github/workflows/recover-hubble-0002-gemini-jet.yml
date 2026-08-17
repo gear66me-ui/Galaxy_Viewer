@@ -70,36 +70,30 @@ jobs:
           model=os.environ['GEMINI_MODEL']
           records=json.loads(pathlib.Path('/tmp/hubble15.json').read_text(encoding='utf-8'))
           assert len(records)==15
-          prompt='''You are doing forensic astronomical catalog research for ESA/Hubble archive records. Research each of the 15 supplied records using Google Search when useful. Return JSON only, with top-level key "records" and exactly 15 results in the same archiveId order.
-
-For each result return these fields:
-archiveId, galaxy_name, canonical_target, aliases, right_ascension, declination, constellation, classification, confidence, evidence.
-
-Rules:
-- classification must be POSITIONAL, NON_POSITIONAL, or UNRESOLVED.
-- POSITIONAL means a real celestial object, cluster, or named sky field with a defensible sky position.
-- NON_POSITIONAL means artwork, concept, diagram, mission image, multi-object composition, or material with no single defensible sky position.
-- UNRESOLVED means evidence is insufficient.
-- Do not invent coordinates or identity.
-- Prefer exact astronomical catalog identifiers such as NGC, IC, Messier, UGC, PGC, Abell, MACS, SDSS, 2MASS, RXJ, SpARCS, or a specific named survey field.
-- right_ascension and declination may be null when unsupported.
-- constellation may be null when unsupported.
-- evidence must be a concise description of why the proposed identity is associated with this Hubble record.
-- Do not use Hubble, Webb, NASA, ESA, galaxy, image, or a constellation name alone as canonical_target.
-
-INPUT:\n'''+json.dumps(records,ensure_ascii=False)
+          instructions=[
+              'You are doing forensic astronomical catalog research for ESA/Hubble archive records.',
+              'Research each of the 15 supplied records using Google Search when useful.',
+              'Return JSON only, with top-level key records and exactly 15 results in the same archiveId order.',
+              'For each result return: archiveId, galaxy_name, canonical_target, aliases, right_ascension, declination, constellation, classification, confidence, evidence.',
+              'classification must be POSITIONAL, NON_POSITIONAL, or UNRESOLVED.',
+              'POSITIONAL means a real celestial object, cluster, or named sky field with a defensible sky position.',
+              'NON_POSITIONAL means artwork, concept, diagram, mission image, multi-object composition, or material with no single defensible sky position.',
+              'UNRESOLVED means evidence is insufficient.',
+              'Do not invent coordinates or identity.',
+              'Prefer exact astronomical catalog identifiers such as NGC, IC, Messier, UGC, PGC, Abell, MACS, SDSS, 2MASS, RXJ, SpARCS, or a specific named survey field.',
+              'right_ascension and declination may be null when unsupported.',
+              'constellation may be null when unsupported.',
+              'evidence must concisely explain why the proposed identity is associated with this Hubble record.',
+              'Do not use Hubble, Webb, NASA, ESA, galaxy, image, or a constellation name alone as canonical_target.'
+          ]
+          prompt='\n'.join(instructions)+'\nINPUT:\n'+json.dumps(records,ensure_ascii=False)
           url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
           body={
               'contents':[{'parts':[{'text':prompt}]}],
               'tools':[{'google_search':{}}],
               'generationConfig':{'temperature':0.0,'maxOutputTokens':8000},
           }
-          req=urllib.request.Request(
-              url,
-              data=json.dumps(body).encode('utf-8'),
-              method='POST',
-              headers={'Content-Type':'application/json','x-goog-api-key':key},
-          )
+          req=urllib.request.Request(url,data=json.dumps(body).encode('utf-8'),method='POST',headers={'Content-Type':'application/json','x-goog-api-key':key})
           try:
               with urllib.request.urlopen(req,timeout=180) as r:
                   resp=json.loads(r.read().decode('utf-8'))
