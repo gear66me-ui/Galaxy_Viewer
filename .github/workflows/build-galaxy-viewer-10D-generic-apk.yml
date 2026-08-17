@@ -19,34 +19,17 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Verify protected baselines and committed 10D
+      - name: Verify protected baselines and frozen corrected 10D
         run: |
           set -euo pipefail
           test "$(git hash-object viewer/GV-beta-0010C.py)" = '762d3a25971ba245d868d484ac45d1cdfce930b2'
-          test "$(git hash-object viewer/GV-beta-0010D.py)" = '2c6fe45f647b21bcf7e024c0b6c9a6664c4fb0e1'
+          test "$(git hash-object viewer/GV-beta-0010D.py)" = '9d92071b74237dbc9806752414fc1f26be8ccd19'
           test "$(git hash-object viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json)" = 'c30bd2648e6b96c586e5b81150b7743a881f1b23'
           test "$(git hash-object android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java)" = '55b478f9e932962ac01f65c3e305ad1d7a16e768'
           test "$(git hash-object .github/workflows/galaxy-viewer-release-gate.yml)" = 'e79db4e131891ecdc298f104f647dd78aa38f6c4'
           test "$(git hash-object mobile/beta/9I.html)" = '8075bef46a18c7b10401de140034fd56945d8c9c'
           test "$(git hash-object mobile/beta/9I-app.html)" = 'ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178'
           test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = '47b3e714053bfd64f835d3f1a2510e13618dbede'
-
-      - name: Correct only stale 10C version class inside 10D
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('viewer/GV-beta-0010D.py')
-          s=p.read_text(encoding='utf-8')
-          old="version.className='gv-10c-version';version.textContent='VERSION 10D'"
-          new="version.className='gv-10d-version';version.textContent='VERSION 10D'"
-          if s.count(old)!=1: raise SystemExit('REFUSING 10D CLASS FIX: exact stale class anchor count changed')
-          p.write_text(s.replace(old,new,1),encoding='utf-8')
-          PY
-          git diff --check
-          test "$(git status --short | wc -l)" -eq 1
-          test "$(git status --short | awk '{print $2}')" = 'viewer/GV-beta-0010D.py'
-          test "$(git diff --numstat -- viewer/GV-beta-0010D.py | awk '{print $1,$2}')" = '1 1'
           python -m py_compile viewer/GV-beta-0010D.py
           rm -rf viewer/__pycache__
           python - <<'PY'
@@ -57,7 +40,6 @@ jobs:
           assert s.count('border:2px solid #ABB3AA!important') == 2
           assert 'transform:scale(.8)' not in s
           assert 'gv-hubble-galaxies-full-0010.json?v=c30bd2648e6b96c586e5b81150b7743a881f1b23' in s
-          assert "version.className='gv-10c-version'" not in s
           assert "version.className='gv-10d-version'" in s
           html=re.findall(r'display\(HTML\("""([\s\S]*?)"""\)\)',s)
           js=re.findall(r'display\(Javascript\(r"""([\s\S]*?)"""\)\)',s)
@@ -67,19 +49,7 @@ jobs:
           assert len(data.get('entries',[])) == data.get('categoryEntryCount') == 1879
           PY
           node --check /tmp/gv10d.js
-
-      - name: Commit only the one-line 10D class correction
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/GV-beta-0010D.py
-          git commit -m 'Correct Galaxy Viewer 10D version label class'
-          git fetch origin beta
-          git rebase origin/beta
-          git push origin HEAD:beta
-          echo "TEN_D_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-          echo "TEN_D_BLOB=$(git hash-object viewer/GV-beta-0010D.py)" >> "$GITHUB_ENV"
+          test -z "$(git status --short)"
 
       - name: Prepare disposable generic Android build tree
         run: |
@@ -170,8 +140,10 @@ jobs:
           s=p.read_text(encoding='utf-8')
           a='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json'
           b='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/'
-          if s.count(a)!=1 or s.count(b)!=1: raise SystemExit('REFUSING 10D SMOKE: bootstrap URL anchors changed')
-          p.write_text(s.replace(a,'http://127.0.0.1:8765/test-manifest.json',1).replace(b,'http://127.0.0.1:8765/test-viewer/',1),encoding='utf-8')
+          if s.count(a)!=1 or s.count(b)!=2: raise SystemExit('REFUSING 10D SMOKE: bootstrap URL anchors changed')
+          s=s.replace(a,'http://127.0.0.1:8765/test-manifest.json',1)
+          if s.count(b)!=1: raise SystemExit('REFUSING 10D SMOKE: viewer base anchor changed after manifest replacement')
+          p.write_text(s.replace(b,'http://127.0.0.1:8765/test-viewer/',1),encoding='utf-8')
           PY
           (cd "$ASSETS" && python -m http.server 8765 >/tmp/gv-http.log 2>&1 & echo $! >/tmp/gv-http.pid)
           sleep 2
