@@ -54,7 +54,7 @@ jobs:
                   raise SystemExit(f'{label}: expected 1 occurrence, got {count}')
               text=text.replace(old,new,1)
 
-          once('# GV-beta-0009I','# GV-beta-0010A','header identity')
+          once('\n# GV-beta-0009I\n','\n# GV-beta-0010A\n','header identity')
           once("    const VERSION='9I';\n    const DISPLAY_VERSION='9I-M';","    const VERSION='10A';\n    const DISPLAY_VERSION='10A';",'runtime identity')
 
           startup_old='#gv-we-are-here.gv-hidden{opacity:0;visibility:hidden}\n</style>\n<div id="aladin-cosmic-command-test"></div>'
