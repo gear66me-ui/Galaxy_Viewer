@@ -1,0 +1,121 @@
+name: TEMP 10F Symmetric Dual Comet Layout
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-10f-dual-comet-symmetric.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Patch module symmetrically and pin 10F
+        shell: bash
+        run: |
+          set -euo pipefail
+          MOD='viewer/modules/gv-random-galaxy-0031.js'
+          VIEW='viewer/GV-beta-0010F.py'
+          test "$(git hash-object "$MOD")" = '79673a80b51b9ec12484760fc348f3bdcd8d273c'
+          test "$(git hash-object "$VIEW")" = 'd6b34ece795a3450d04652c2a7ee97f10a03b15d'
+
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/modules/gv-random-galaxy-0031.js')
+          s=p.read_text(encoding='utf-8')
+
+          old_css='#gv-random-galaxy .gvrg-random-label{display:inline-block;transform:translateX(0)}#gv-random-galaxy .gvrg-random-star-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:13px;flex:0 0 20px;line-height:20px;transform:translateX(2ch)}'
+          new_css='#gv-random-galaxy .gvrg-random-layout{display:grid;grid-template-columns:20px auto 20px;align-items:center;justify-content:center;column-gap:13px}#gv-random-galaxy .gvrg-random-label{display:block;grid-column:2;text-align:center}#gv-random-galaxy .gvrg-random-star-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin:0;flex:0 0 20px;line-height:20px;transform:none}#gv-random-galaxy .gvrg-random-star-wrap-left{grid-column:1}#gv-random-galaxy .gvrg-random-star-wrap-right{grid-column:3}'
+          if s.count(old_css)!=1: raise SystemExit(f'ABORT CSS baseline count={s.count(old_css)}')
+          s=s.replace(old_css,new_css,1)
+
+          marker='#gv-random-galaxy.gvrg-random-busy .gvrg-random-comet{opacity:1;animation-play-state:running}'
+          phase=marker+'#gv-random-galaxy .gvrg-random-comet-left{animation-delay:-1.4s}'
+          if s.count(marker)!=1: raise SystemExit(f'ABORT busy comet marker count={s.count(marker)}')
+          s=s.replace(marker,phase,1)
+
+          old_html='button.innerHTML=\'<span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>\';'
+          stars='<span class="gvrg-random-star">✨</span><span class="gvrg-random-comet{extra}"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>'
+          left=stars.format(extra=' gvrg-random-comet-left')
+          right=stars.format(extra='')
+          new_html='button.innerHTML=\'<span class="gvrg-random-layout"><span class="gvrg-random-star-wrap gvrg-random-star-wrap-left" aria-hidden="true">'+left+'</span><span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap gvrg-random-star-wrap-right" aria-hidden="true">'+right+'</span></span>\';'
+          if s.count(old_html)!=1: raise SystemExit(f'ABORT HTML baseline count={s.count(old_html)}')
+          s=s.replace(old_html,new_html,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+
+          # JS syntax.
+          node --check "$MOD"
+          grep -Fq 'grid-template-columns:20px auto 20px' "$MOD"
+          grep -Fq 'gvrg-random-star-wrap-left' "$MOD"
+          grep -Fq 'gvrg-random-star-wrap-right' "$MOD"
+          grep -Fq 'gvrg-random-comet-left{animation-delay:-1.4s}' "$MOD"
+          test "$(grep -o 'RANDOM GALAXY' "$MOD" | wc -l)" -ge 1
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$MOD"
+          test "$(git diff --cached --name-only)" = "$MOD"
+          git diff --cached --check
+          git commit -m '10F center Random Galaxy with mirrored dual comets'
+          MOD_COMMIT=$(git rev-parse HEAD)
+          MOD_BLOB=$(git hash-object "$MOD")
+          git push origin HEAD:beta
+
+          python - "$MOD_COMMIT" "$MOD_BLOB" <<'PY'
+          from pathlib import Path
+          import re,sys
+          commit,blob=sys.argv[1:3]
+          p=Path('viewer/GV-beta-0010F.py')
+          s=p.read_text(encoding='utf-8')
+          pattern=r"const RANDOM_GALAXY_URL='https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/[0-9a-f]{40}/viewer/modules/gv-random-galaxy-0031\.js\?v=[0-9a-f]{40}';"
+          repl=f"const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/{commit}/viewer/modules/gv-random-galaxy-0031.js?v={blob}';"
+          s,n=re.subn(pattern,repl,s,count=1)
+          if n!=1: raise SystemExit(f'ABORT pin replacement count={n}')
+          compile(s,str(p),'exec')
+          p.write_text(s,encoding='utf-8')
+          PY
+
+          grep -Fq 'font:400 15.5px/1 "Space Age",sans-serif' "$VIEW"
+          ! grep -Fq '#gv-random-galaxy{font-size:15.5px!important' "$VIEW"
+          grep -Fq "bottom.random.addEventListener('click',launchRandomGalaxy);" "$VIEW"
+          grep -Fq "GalaxyRandomGalaxy?.VERSION!=='0031'" "$VIEW"
+
+          git add "$VIEW"
+          test "$(git diff --cached --name-only)" = "$VIEW"
+          git diff --cached --check
+          git commit -m '10F pin symmetric dual-comet Random Galaxy module'
+          git push origin HEAD:beta
+
+      - name: Fetch-back verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          git reset --hard origin/beta
+          MOD='viewer/modules/gv-random-galaxy-0031.js'
+          VIEW='viewer/GV-beta-0010F.py'
+          node --check "$MOD"
+          grep -Fq 'grid-template-columns:20px auto 20px' "$MOD"
+          grep -Fq 'gvrg-random-comet-left{animation-delay:-1.4s}' "$MOD"
+          grep -Fq 'gvrg-random-star-wrap-left' "$MOD"
+          grep -Fq 'gvrg-random-star-wrap-right' "$MOD"
+          grep -Fq 'font:400 15.5px/1 "Space Age",sans-serif' "$VIEW"
+          ! grep -Fq '#gv-random-galaxy{font-size:15.5px!important' "$VIEW"
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('viewer/GV-beta-0010F.py').read_text(encoding='utf-8')
+          compile(s,'viewer/GV-beta-0010F.py','exec')
+          print('PASS symmetric dual-comet 10F')
+          PY
