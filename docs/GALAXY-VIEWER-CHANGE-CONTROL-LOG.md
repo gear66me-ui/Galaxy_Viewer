@@ -305,6 +305,707 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-f6eceb73bce1 — Clean 10E build artifacts from repair commit
+
+**Recorded:** 2026-08-17T14:15:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`f6eceb73bce1244f327fd6a5a20b054a5491e1fb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/f6eceb73bce1244f327fd6a5a20b054a5491e1fb)  
+**Parent/baseline:** `0f92bda5fa72ca9ce91898dd18945611ef632dae`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0f92bda5fa72ca9ce91898dd18945611ef632dae...f6eceb73bce1244f327fd6a5a20b054a5491e1fb)  
+**Author:** German Arciniegas  
+**Changed-path count:** `52`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Clean 10E build artifacts from repair commit
+```
+
+### Complete changed-path accounting
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/checksums/checksums.lock`
+
+- Status: **MODIFIED**
+- SHA-256 before: `f8b7eea29d595b1465842ae17c068b1359198fde0f5e91ae388cc34dafb84151`
+- SHA-256 after: `defc2dc74d871e0ba59b5c3791bb7fc960c2b27d9f623cb1e3fa0ebb33a6fadf`
+- Bytes: `17` → `17`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/checksums/md5-checksums.bin`
+
+- Status: **DELETED**
+- SHA-256 before: `108e71873532f60d6bd241119ef0c37c1122e6334bffa5a10668b37027e848f7`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `28347` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/checksums/sha1-checksums.bin`
+
+- Status: **DELETED**
+- SHA-256 before: `5898a4558bd5c638a6fa61e5d9ca8f03cb05aebfd25ffab61b9a2b8955615392`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `41717` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/executionHistory/executionHistory.bin`
+
+- Status: **MODIFIED**
+- SHA-256 before: `84b596387df4ed1ede1aafc8f8d91b814abfc8e809b602e2943c289ca46bb084`
+- SHA-256 after: `962f88180273dc0fcab8a5d65260ad2c6f3a60ac048e1031932935e6fe95212c`
+- Bytes: `130452` → `91501`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/executionHistory/executionHistory.lock`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e631ec0fdb2b40a0a3302dea6acc41aafc82c714f315f11e54449184c9d7a2d6`
+- SHA-256 after: `05e5472c9ebe8b38fa74b538e340a77965428349761b187c9ef7f3a8544e04f4`
+- Bytes: `17` → `17`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/fileHashes/fileHashes.bin`
+
+- Status: **MODIFIED**
+- SHA-256 before: `21a167019cc97973b3eb5305a0f587b49c24db420f6b092a515644b77be572ac`
+- SHA-256 after: `c74b105448debcd4f0150126dec801455b47c7113ff2fe92ba7e0dd4296bdb07`
+- Bytes: `23047` → `22647`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/fileHashes/fileHashes.lock`
+
+- Status: **MODIFIED**
+- SHA-256 before: `16561d2ef6ba81d52923d7806f64490be878fda8b66d81addc340a8aa665acef`
+- SHA-256 after: `d7db2cbc0fa631c3a43fa1ff3705f2b3d62622f1657c7e135702a8f2deae1405`
+- Bytes: `17` → `17`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/8.9/fileHashes/resourceHashesCache.bin`
+
+- Status: **MODIFIED**
+- SHA-256 before: `43690aacd6b3ba29675de7778aadda2fea7ffb35eb2c4df04f0ec069e42326b4`
+- SHA-256 after: `16c2a63f97fa3c442dfb32e29d04ea9435cf1b23069c3dc23dd562c5f61c41df`
+- Bytes: `18837` → `18701`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/buildOutputCleanup/buildOutputCleanup.lock`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8daa5745a111adb774092c3b543dd676c74354b305c240555de2a5bb1ec57ec1`
+- SHA-256 after: `7dc811d3f950e3591d3dffcdde411dc6644ca04322161570c8ade8443365db20`
+- Bytes: `17` → `17`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/.gradle/file-system.probe`
+
+- Status: **MODIFIED**
+- SHA-256 before: `043559be339c634cafb90af57d5b4854cbc4e27dcbd1661edbac862979254210`
+- SHA-256 after: `4071aa07effa3ed99329b407ef80b5f788d28a15e066c0c464045b9303ff6fe9`
+- Bytes: `8` → `8`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/assets/debug/mergeDebugAssets/artwork/Space-Age.otf`
+
+- Status: **DELETED**
+- SHA-256 before: `1492bf8ab6b6d5bd804308bac5af1d4e0119b76364d8eeffb598361268ccc711`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `17776` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/assets/debug/mergeDebugAssets/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `47c6480abf72a9c66dd1af2f17fc002fb2a51e47e59b91e3cc1a0fd271e266b7`
+- SHA-256 after: `962e498765d1ae34698048320a24e4bf9456a36ffee5dbb021ae9532e72771c7`
+- Bytes: `4639` → `2907`
+- Lines: `1` → `1`
+- Characters: `4639` → `2907`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `192`
+- Deleted characters: `1924`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 1 - 1 = 1` — **PASS**
+- Character balance: `4639 + 192 - 1924 = 2907` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/assets/debug/mergeDebugAssets/viewer/GV-beta-0010E.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `38b2c5d01a46a7919a2b609ce53c7574da5cbe8495d5b6dc927305ffecb79a90`
+- SHA-256 after: `05d1424d2f4e3738a49bd8daa9570398966b1c9d5fcc495ba9cef45255499dcc`
+- Bytes: `70873` → `70844`
+- Lines: `1166` → `1166`
+- Characters: `70864` → `70835`
+- Inserted lines: `5`
+- Deleted lines: `5`
+- Inserted characters: `67`
+- Deleted characters: `96`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `1166 + 5 - 5 = 1166` — **PASS**
+- Character balance: `70864 + 67 - 96 = 70835` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/assets/debug/mergeDebugAssets/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `1853609eb2cd1eb6067b7c97d1f045695af74373162796da8b0fc8588bbacd5a`
+- SHA-256 after: `545569a7565e879b0c139056a0e5324ae62e17e46d7f97bde21269d8154ed169`
+- Bytes: `25463` → `25414`
+- Lines: `40` → `40`
+- Characters: `25460` → `25411`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `8`
+- Deleted characters: `57`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `40 + 2 - 2 = 40` — **PASS**
+- Character balance: `25460 + 8 - 57 = 25411` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/compatible_screen_manifest/debug/createDebugCompatibleScreenManifests/output-metadata.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e96e8fbf978388c27855b489b345a57fb686283a340b87bea1c157970b2b6f98`
+- SHA-256 after: `d81d8722133f0ba42ece6657c81dc49bf12d1cc7d8d4c9704bff47df7dbeb526`
+- Bytes: `207` → `204`
+- Lines: `10` → `10`
+- Characters: `207` → `204`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `3`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `10 + 1 - 1 = 10` — **PASS**
+- Character balance: `207 + 0 - 3 = 204` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/processDebugResources/R.jar`
+
+- Status: **MODIFIED**
+- SHA-256 before: `75172dddc5c7c61b746890f307755c00a2a6aa53d2c9f44183436c63198632b7`
+- SHA-256 after: `4835fe8d950c1e9eb758f87c0b07abdf46021ce6d16d2e197c7583923d97e5fe`
+- Bytes: `843` → `315`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/compressed_assets/debug/compressDebugAssets/out/assets/artwork/Space-Age.otf.jar`
+
+- Status: **DELETED**
+- SHA-256 before: `76bea35b6aa6580329bbad28aca967a379f1e7e8ff12fd72f0873e46c1c500af`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `13656` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/compressed_assets/debug/compressDebugAssets/out/assets/index.html.jar`
+
+- Status: **MODIFIED**
+- SHA-256 before: `480d9fde0c7cf69c17ec17912125799304e520bd475206e6492b91b40a71951a`
+- SHA-256 after: `9c606c18357d3b46febfc50c16a8ddc4c316a6ef238e7c675b642e27f987c301`
+- Bytes: `2376` → `1601`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/compressed_assets/debug/compressDebugAssets/out/assets/viewer/GV-beta-0010E.py.jar`
+
+- Status: **MODIFIED**
+- SHA-256 before: `c6bcb8fa361dc0c97fb970005f1a1f8d0e70b8248462f20f952ce14755367ad0`
+- SHA-256 after: `e0a522969b1add615eda88d5483028ea6f90595a09ae36aabed037a96ad34e22`
+- Bytes: `21262` → `21249`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/compressed_assets/debug/compressDebugAssets/out/assets/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html.jar`
+
+- Status: **MODIFIED**
+- SHA-256 before: `f3985fac5781e6923df7caf40ae69c952a611385145473fd59ff08cedd5148b0`
+- SHA-256 after: `08e72bcb5a9cf8a77c242fe475eddb5b8ea6f7ddc80bbfdb3a1ac6cc85da4ce7`
+- Bytes: `10283` → `10261`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex`
+
+- Status: **MODIFIED**
+- SHA-256 before: `87f79f1838bb637b08dae0504c0b87b575abf4a9260c6300b31973c2cbcf23ed`
+- SHA-256 after: `d0e4af0a62f71e0b0e74145c498dd82f8f66d27284bce313f2fe0727d87b33cb`
+- Bytes: `1120` → `588`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/dex/debug/mergeProjectDexDebug/5/classes.dex`
+
+- Status: **MODIFIED**
+- SHA-256 before: `bda13e4e648587f20b2a8754d6e4351733b838eb395b4b3441a7f73bf90f41bf`
+- SHA-256 after: `8ba171eff565a5d8204cc8e148d2fbed326339a11dc9ddc83b90d01e74667339`
+- Bytes: `6620` → `6356`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/dex_archive_input_jar_hashes/debug/dexBuilderDebug/out`
+
+- Status: **MODIFIED**
+- SHA-256 before: `0c154885fa758784b0aabbf790f6313de527df73e3279ab845f942e102387460`
+- SHA-256 after: `534ccd482904dcb55116d039cb4cf7dc1baeae04831e97a345f29c9b73ee7839`
+- Bytes: `443` → `443`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/debug/mergeDebugResources/compile-file-map.properties`
+
+- Status: **MODIFIED**
+- SHA-256 before: `98c4eb8b5b741abd1418967d0f2357ba5a00ec634ba3826cec063a7ed63d61c4`
+- SHA-256 after: `7fe74655adac321ef538bd8acc1ac102385227f5f5d82ff65808bce4dcc54022`
+- Bytes: `272` → `30`
+- Lines: `2` → `1`
+- Characters: `272` → `30`
+- Inserted lines: `1`
+- Deleted lines: `2`
+- Inserted characters: `4`
+- Deleted characters: `246`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `2 + 1 - 2 = 1` — **PASS**
+- Character balance: `272 + 4 - 246 = 30` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/debug/mergeDebugResources/merger.xml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ad675ad1a76dbade9277712f65fa324ab4cdef6ea275785d0780f6d24044293d`
+- SHA-256 after: `5640cf5ea2c2fda119533609529ead62727a8993147522b20e072abae313c14f`
+- Bytes: `2249` → `2050`
+- Lines: `2` → `2`
+- Characters: `2249` → `2050`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `199`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `2 + 1 - 1 = 2` — **PASS**
+- Character balance: `2249 + 0 - 199 = 2050` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6260bd3a27d69800fec052aff6513676cd160ee76f58b28720445ea9c90a3220`
+- SHA-256 after: `fafc786492c2b4aca09e99e7bff801415f7a4beb499de48e1ce5c7fb9f5f6140`
+- Bytes: `274` → `30`
+- Lines: `2` → `1`
+- Characters: `274` → `30`
+- Inserted lines: `1`
+- Deleted lines: `2`
+- Inserted characters: `4`
+- Deleted characters: `248`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `2 + 1 - 2 = 1` — **PASS**
+- Character balance: `274 + 4 - 248 = 30` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/debug/packageDebugResources/merger.xml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ad675ad1a76dbade9277712f65fa324ab4cdef6ea275785d0780f6d24044293d`
+- SHA-256 after: `5640cf5ea2c2fda119533609529ead62727a8993147522b20e072abae313c14f`
+- Bytes: `2249` → `2050`
+- Lines: `2` → `2`
+- Characters: `2249` → `2050`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `199`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `2 + 1 - 1 = 2` — **PASS**
+- Character balance: `2249 + 0 - 199 = 2050` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/mergeDebugAssets/merger.xml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6a1057332662fc84cfe438edfa83590cd4eee74aa5e313baf08a19f01c0800bd`
+- SHA-256 after: `56f6bf0f07bc16d4150167a43bc8eafcf3d446e55e4ac974b01e532d01872eb1`
+- Bytes: `3589` → `3432`
+- Lines: `2` → `2`
+- Characters: `3589` → `3432`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `157`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `2 + 1 - 1 = 2` — **PASS**
+- Character balance: `3589 + 0 - 157 = 3432` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt`
+
+- Status: **MODIFIED**
+- SHA-256 before: `ebddf2b55efe15c82251f7742a87917b2678654b13d2ed85330998d53bab9b7e`
+- SHA-256 after: `1832401ae9017b17a9fb6831fd107d35fdfa336c3d6d573a27f0f96aaf0fc1c0`
+- Bytes: `413` → `413`
+- Lines: `7` → `7`
+- Characters: `413` → `413`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `5`
+- Deleted characters: `5`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `7 + 1 - 1 = 7` — **PASS**
+- Character balance: `413 + 5 - 5 = 413` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/incremental/packageDebug/tmp/debug/zip-cache/androidResources`
+
+- Status: **MODIFIED**
+- SHA-256 before: `98c47b7f860a2f6bce47a466a329f3b18a643a91d44c5f1422606b5d72e52c15`
+- SHA-256 after: `178d6fef0fae769b88ec0f33527d592852a8632b31413c0fad6b2ceb27c32ec1`
+- Bytes: `230` → `147`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/gear66me/galaxyviewer10e/MainActivity.class`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4dd562c212eb65a85cbc9833d1758f046854a0651b098a9dcb9ce3eae26fdcc6`
+- SHA-256 after: `f82ac3ccd355c6318bb8d11929f273bc5ae05df6a8b48e9eb327eda2680c3d02`
+- Bytes: `5563` → `5262`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/linked_resources_binary_format/debug/processDebugResources/linked-resources-binary-format-debug.ap_`
+
+- Status: **MODIFIED**
+- SHA-256 before: `7364211bce62e02c95f33ab25b1a00fd197ed8acf0477aaa09c1e3787015bd89`
+- SHA-256 after: `9aeaf33a55a4c111a5258ad8fb395409678f29127d0a7862777e4742c27065c1`
+- Bytes: `34898` → `1187`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/linked_resources_binary_format/debug/processDebugResources/output-metadata.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `9fb78b70abf1a58a6e3f1f0acd454fd632167122c26a6b60f5a5176ef7af750c`
+- SHA-256 after: `3be63982008d17c5c4bf73bde6fa5b344ed891a1ac5041a71ee84d4f986e56b2`
+- Bytes: `449` → `443`
+- Lines: `20` → `20`
+- Characters: `449` → `443`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `1`
+- Deleted characters: `7`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `20 + 3 - 3 = 20` — **PASS**
+- Character balance: `449 + 1 - 7 = 443` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt`
+
+- Status: **MODIFIED**
+- SHA-256 before: `aee1010691f4775a2cb1553c8efeaad79edbadf3e42464e6d424d90f8b168e48`
+- SHA-256 after: `80470905e6f0fca8966eeaf24ad1fee6605885a24498cfa501bd86a1a7472529`
+- Bytes: `74` → `55`
+- Lines: `3` → `2`
+- Characters: `74` → `55`
+- Inserted lines: `0`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `19`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `3 + 0 - 1 = 2` — **PASS**
+- Character balance: `74 + 0 - 19 = 55` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/manifest_merge_blame_file/debug/processDebugMainManifest/manifest-merger-blame-debug-report.txt`
+
+- Status: **MODIFIED**
+- SHA-256 before: `b9deea25e0f5426759be8e3df8f54392588e8a6e97bd631bbc519686a3c91d75`
+- SHA-256 after: `a75e31c45ff761f178571bbe75a8535c60484ebaa37577450efe4e5d19e33369`
+- Bytes: `3606` → `3265`
+- Lines: `54` → `50`
+- Characters: `3606` → `3265`
+- Inserted lines: `34`
+- Deleted lines: `38`
+- Inserted characters: `333`
+- Deleted characters: `674`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `54 + 34 - 38 = 50` — **PASS**
+- Character balance: `3606 + 333 - 674 = 3265` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/merged_manifest/debug/processDebugMainManifest/AndroidManifest.xml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `44e6d0836823b3ec74ea1df11fb85c2277160c322d52d25d164ac936ed2e7f39`
+- SHA-256 after: `8096392cea046c21434987fc2bcd837d4cacb1d30625ec8a7690ca6496363f0e`
+- Bytes: `1266` → `1169`
+- Lines: `35` → `33`
+- Characters: `1266` → `1169`
+- Inserted lines: `3`
+- Deleted lines: `5`
+- Inserted characters: `1`
+- Deleted characters: `98`
+- Unified diff hunks: `3`
+- Inserted blocks: `1`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `35 + 3 - 5 = 33` — **PASS**
+- Character balance: `1266 + 1 - 98 = 1169` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `44e6d0836823b3ec74ea1df11fb85c2277160c322d52d25d164ac936ed2e7f39`
+- SHA-256 after: `8096392cea046c21434987fc2bcd837d4cacb1d30625ec8a7690ca6496363f0e`
+- Bytes: `1266` → `1169`
+- Lines: `35` → `33`
+- Characters: `1266` → `1169`
+- Inserted lines: `3`
+- Deleted lines: `5`
+- Inserted characters: `1`
+- Deleted characters: `98`
+- Unified diff hunks: `3`
+- Inserted blocks: `1`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `35 + 3 - 5 = 33` — **PASS**
+- Character balance: `1266 + 1 - 98 = 1169` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/merged_manifests/debug/processDebugManifest/output-metadata.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `fef64c208dfba4c56a77a55a0be3432c01acf1a9ebca762d3c26687d86011151`
+- SHA-256 after: `94de85b9fb48fdc2305addc28cd4f3ebccc7d0587afa9588a82b4926129e59ba`
+- Bytes: `414` → `408`
+- Lines: `20` → `20`
+- Characters: `414` → `408`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `1`
+- Deleted characters: `7`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `20 + 3 - 3 = 20` — **PASS**
+- Character balance: `414 + 1 - 7 = 408` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/merged_res/debug/mergeDebugResources/mipmap-xxxhdpi_ic_launcher.png.flat`
+
+- Status: **DELETED**
+- SHA-256 before: `1e4ccc2a99238fb9cf2f1587955412e640d8b85590162b06b9653384a36318bb`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `33104` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/merged_res_blame_folder/debug/mergeDebugResources/out/single/mergeDebugResources.json`
+
+- Status: **DELETED**
+- SHA-256 before: `5581a6763bea3b93e43dcb3f73c967c5866a119e9a6b35e52262f0e9657f227e`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `206` → `0`
+- Lines: `6` → `0`
+- Characters: `206` → `0`
+- Inserted lines: `0`
+- Deleted lines: `6`
+- Inserted characters: `0`
+- Deleted characters: `206`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `6 + 0 - 6 = 0` — **PASS**
+- Character balance: `206 + 0 - 206 = 0` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/packaged_manifests/debug/processDebugManifestForPackage/AndroidManifest.xml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `44e6d0836823b3ec74ea1df11fb85c2277160c322d52d25d164ac936ed2e7f39`
+- SHA-256 after: `8096392cea046c21434987fc2bcd837d4cacb1d30625ec8a7690ca6496363f0e`
+- Bytes: `1266` → `1169`
+- Lines: `35` → `33`
+- Characters: `1266` → `1169`
+- Inserted lines: `3`
+- Deleted lines: `5`
+- Inserted characters: `1`
+- Deleted characters: `98`
+- Unified diff hunks: `3`
+- Inserted blocks: `1`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `35 + 3 - 5 = 33` — **PASS**
+- Character balance: `1266 + 1 - 98 = 1169` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/packaged_manifests/debug/processDebugManifestForPackage/output-metadata.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `04ab6c4c677ca985e0fa88b76bb2a83f8404e79e7c7e0248fcae03d050e2da72`
+- SHA-256 after: `e878ecb755d8fa805a450616399de8841d3ccd1f0a45e92263489d73bb78017f`
+- Bytes: `416` → `410`
+- Lines: `20` → `20`
+- Characters: `416` → `410`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `1`
+- Deleted characters: `7`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `20 + 3 - 3 = 20` — **PASS**
+- Character balance: `416 + 1 - 7 = 410` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/packaged_res/debug/packageDebugResources/mipmap-xxxhdpi-v4/ic_launcher.png`
+
+- Status: **DELETED**
+- SHA-256 before: `34b130cfad18763f2e2734fcd046ea619f281b79539b5e03ea3f000c84eae465`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `32962` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/project_dex_archive/debug/dexBuilderDebug/out/4835fe8d950c1e9eb758f87c0b07abdf46021ce6d16d2e197c7583923d97e5fe_0.jar`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `21df18b3b42f8c634b02c642dfd67060d633813eb8211be31c837c16b004b5ad`
+- Bytes: `0` → `518`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/project_dex_archive/debug/dexBuilderDebug/out/75172dddc5c7c61b746890f307755c00a2a6aa53d2c9f44183436c63198632b7_0.jar`
+
+- Status: **DELETED**
+- SHA-256 before: `456c7ab16157d3dfec77ba0f544968965485370301122640079b94a863e70e4a`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `774` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/project_dex_archive/debug/dexBuilderDebug/out/com/gear66me/galaxyviewer10e/MainActivity.dex`
+
+- Status: **MODIFIED**
+- SHA-256 before: `fb9bac20b4756319da79a3afe73b5820efeb8ae1f94168cce2b9356e1ef9d782`
+- SHA-256 after: `f35368b220e770b90c51d340c4c5a8f37203710b64e2b275483667e172ebc0f5`
+- Bytes: `5880` → `5616`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/runtime_symbol_list/debug/processDebugResources/R.txt`
+
+- Status: **MODIFIED**
+- SHA-256 before: `301c865f83747ecef2747f2765e76c8545aaa817d6ccddf41cf69e538198b3a6`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `34` → `0`
+- Lines: `1` → `0`
+- Characters: `34` → `0`
+- Inserted lines: `0`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `34`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 0 - 1 = 0` — **PASS**
+- Character balance: `34 + 0 - 34 = 0` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/intermediates/stable_resource_ids_file/debug/processDebugResources/stableIds.txt`
+
+- Status: **MODIFIED**
+- SHA-256 before: `c0068694897ccb9b522df29c5f66e700f279ec82698f707dd04981057d8747b2`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `64` → `0`
+- Lines: `1` → `0`
+- Characters: `64` → `0`
+- Inserted lines: `0`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `64`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 0 - 1 = 0` — **PASS**
+- Character balance: `64 + 0 - 64 = 0` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6d6282827573cc3ee8bbd3fed5762b442c28ca6c647adb3ce91855c47f3f1da0`
+- SHA-256 after: `292b6842190cd04b9de6ec280f1321d467250e57c433f90de86058573c3a86a2`
+- Bytes: `3397763` → `3348806`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `android/galaxy-viewer-10e/app/build/outputs/apk/debug/output-metadata.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `b267a33ca846ab795f1a5f548a71802adea8cd2ab180052a7ae43a9cb23873c9`
+- SHA-256 after: `4a360a2514fa171464212ce3a52ed2a47b398e2d82ebd8820fcdb5b6c633792e`
+- Bytes: `427` → `421`
+- Lines: `21` → `21`
+- Characters: `427` → `421`
+- Inserted lines: `3`
+- Deleted lines: `3`
+- Inserted characters: `1`
+- Deleted characters: `7`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `21 + 3 - 3 = 21` — **PASS**
+- Character balance: `427 + 1 - 7 = 421` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/outputs/logs/manifest-merger-debug-report.txt`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e07907fd667d0c7959b7c822e95acb29e85e63b4f708217274a224cb1200be19`
+- SHA-256 after: `0e1cd735c2de70c66ca09cec37d11ebc1646ade42dd973e041c9c6a258cbf452`
+- Bytes: `5011` → `4722`
+- Lines: `63` → `59`
+- Characters: `5011` → `4722`
+- Inserted lines: `19`
+- Deleted lines: `23`
+- Inserted characters: `78`
+- Deleted characters: `367`
+- Unified diff hunks: `15`
+- Inserted blocks: `15`
+- Deleted blocks: `15`
+- Changed blocks: `15`
+- Line balance: `63 + 19 - 23 = 59` — **PASS**
+- Character balance: `5011 + 78 - 367 = 4722` — **PASS**
+
+#### `android/galaxy-viewer-10e/app/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin`
+
+- Status: **MODIFIED**
+- SHA-256 before: `29e7f3cf903f4e84ad493343fcabb292808c300f0550ce2464576ce39f744b04`
+- SHA-256 after: `fd22f51d3bc380f329532b6d01d6fda9b1b92b70a17819989ad384207eb626c7`
+- Bytes: `664` → `646`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0256ba455f6d — Run 10E repair build R4
 
 **Recorded:** 2026-08-17T14:11:15-05:00  
