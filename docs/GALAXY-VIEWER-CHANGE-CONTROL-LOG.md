@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-42f134b3ecf8 — Add deterministic 9I-J Android packager
+
+**Recorded:** 2026-08-16T19:31:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`42f134b3ecf83f6263f14824d467dbdf9ada5c9c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/42f134b3ecf83f6263f14824d467dbdf9ada5c9c)  
+**Parent/baseline:** `c95804907447751db4c50b64104bb049e3e77e92`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c95804907447751db4c50b64104bb049e3e77e92...42f134b3ecf83f6263f14824d467dbdf9ada5c9c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add deterministic 9I-J Android packager
+```
+
+### Complete changed-path accounting
+
+#### `.github/scripts/prepare_galaxy_viewer_9ij.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `f02de8d636d60a630b1b23ad59edf1b1897de36e27bfecaceb2b0b1f45e81265`
+- Bytes: `0` → `11456`
+- Lines: `0` → `164`
+- Characters: `0` → `11456`
+- Inserted lines: `164`
+- Deleted lines: `0`
+- Inserted characters: `11456`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 164 - 0 = 164` — **PASS**
+- Character balance: `0 + 11456 - 0 = 11456` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e84716d1f732 — Fix 9I-I build helper path
 
 **Recorded:** 2026-08-16T19:22:04-05:00  
