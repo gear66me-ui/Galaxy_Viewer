@@ -305,6 +305,61 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c9ecd831c686 — Make beta 9I.html the exact 9I app launcher
+
+**Recorded:** 2026-08-16T20:27:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c9ecd831c686aa37612dae8bd0a13acbcc60e95e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c9ecd831c686aa37612dae8bd0a13acbcc60e95e)  
+**Parent/baseline:** `c7e3cafa0620eaa524df3f99a11331911b8244b6`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c7e3cafa0620eaa524df3f99a11331911b8244b6...c9ecd831c686aa37612dae8bd0a13acbcc60e95e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Make beta 9I.html the exact 9I app launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `665099e89d8cf09c5416106c8bafe3a03f2805c627236adff67e628be84b1c58`
+- SHA-256 after: `0b4abda95321a134c5ddcf58eef96347b29649d57e384eb12aa67da688b7d294`
+- Bytes: `4006` → `9531`
+- Lines: `49` → `124`
+- Characters: `4004` → `9527`
+- Inserted lines: `111`
+- Deleted lines: `36`
+- Inserted characters: `8541`
+- Deleted characters: `3018`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `6`
+- Changed blocks: `7`
+- Line balance: `49 + 111 - 36 = 124` — **PASS**
+- Character balance: `4004 + 8541 - 3018 = 9527` — **PASS**
+
+### Recorded instruction evidence
+
+**`mobile/beta/9I.html`**
+
+```text
+GALAXY VIEWER ENGINEERING CHANGE ORDER — GV-9I APP LAUNCHER
+PURPOSE: Dedicated launcher for exact Galaxy Viewer 9I with first-frame splash reveal.
+```
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d4eb383fb124 — Run 9I-M Viewer smoke test without splash timing
 
 **Recorded:** 2026-08-16T20:18:02-05:00  
