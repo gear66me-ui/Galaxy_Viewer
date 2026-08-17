@@ -10360,12 +10360,12 @@
       "archiveId": "heic2411a",
       "name": "Black hole jet and accompanying erupting nova (artist's concept)",
       "title": "Black hole jet and accompanying erupting nova (artist's concept)",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 187.70593077,
+      "dec": 12.39112325,
+      "raText": "12 30 49.42",
+      "decText": "+12 23 28.04",
       "distance": null,
-      "constellation": null,
+      "constellation": "Virgo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Artwork",
@@ -10406,7 +10406,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M87",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "potw2439a",
@@ -27942,12 +27945,12 @@
       "archiveId": "opo2146a",
       "name": "Hubble Showcases Hamilton’s Object",
       "title": "Hubble Showcases Hamilton’s Object",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 337.543625,
+      "dec": -8.1716111111,
+      "raText": "22 30 10.47",
+      "decText": "-8 10 17.80",
       "distance": null,
-      "constellation": null,
+      "constellation": "Aquarius",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -27988,7 +27991,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "iau_positional_designation",
+      "coordinateResolvedFrom": "SDSS J223010.47-081017.8",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "potw2127a",
@@ -34693,12 +34699,12 @@
       "archiveId": "heic2508a",
       "name": "Milky Way and Andromeda encounters",
       "title": "Milky Way and Andromeda encounters",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 148.8882194,
+      "dec": 69.06529514,
+      "raText": "9 55 33.17",
+      "decText": "+69 03 55.06",
       "distance": null,
-      "constellation": null,
+      "constellation": "Ursa Major",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -34734,18 +34740,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M81",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo2509",
       "name": "Survey of Andromeda's satellite galaxies",
       "title": "Survey of Andromeda's satellite galaxies",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 10.68470833,
+      "dec": 41.26875,
+      "raText": "0 42 44.33",
+      "decText": "+41 16 07.50",
       "distance": null,
-      "constellation": null,
+      "constellation": "Andromeda",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -34781,7 +34790,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M31",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "potw2236a",
@@ -45917,12 +45929,12 @@
       "archiveId": "opo1828a",
       "name": "Hubble and Keck observatories uncover black holes coalescing",
       "title": "Hubble and Keck observatories uncover black holes coalescing",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 253.2454,
+      "dec": 2.4009,
+      "raText": "16 52 58.90",
+      "decText": "+2 24 03.24",
       "distance": null,
-      "constellation": null,
+      "constellation": "Ophiucus",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -45963,7 +45975,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "NGC 6240",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo1815a",
@@ -47793,12 +47808,12 @@
       "archiveId": "opo1345b",
       "name": "Milky Way",
       "title": "The present and early Milky Way (artist’s illustration)",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 23.46206906,
+      "dec": 30.66017511,
+      "raText": "1 33 50.90",
+      "decText": "+30 39 36.63",
       "distance": null,
-      "constellation": null,
+      "constellation": "Triangulum",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Artwork",
@@ -47835,7 +47850,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M33",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo1038b",
@@ -48488,12 +48506,12 @@
       "archiveId": "opo1345d",
       "name": "Milky Way",
       "title": "Artist's illustration of the early Milky Way",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 23.46206906,
+      "dec": 30.66017511,
+      "raText": "1 33 50.90",
+      "decText": "+30 39 36.63",
       "distance": null,
-      "constellation": null,
+      "constellation": "Triangulum",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Artwork",
@@ -48529,7 +48547,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M33",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "heic2609b",
@@ -49487,12 +49508,12 @@
       "archiveId": "opo1726b",
       "name": "MACS2129-1, Milky Way",
       "title": "MACS2129-1 compared with the Milky Way (artist’s impression)",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 322.359225,
+      "dec": -7.690617,
+      "raText": "21 29 26.21",
+      "decText": "-7 41 26.22",
       "distance": null,
-      "constellation": null,
+      "constellation": "Aquarius",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Artwork",
@@ -49528,7 +49549,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "MACS J2129-0741",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "potw1640a",
@@ -61919,12 +61943,12 @@
       "archiveId": "heic2501b",
       "name": "Hubble’s panoramic view of the Andromeda Galaxy (annotated)",
       "title": "Hubble’s panoramic view of the Andromeda Galaxy (annotated)",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 10.14083333,
+      "dec": 40.73944444,
+      "raText": "0 40 33.80",
+      "decText": "+40 44 22.00",
       "distance": null,
-      "constellation": null,
+      "constellation": "Andromeda",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -61960,7 +61984,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "NGC 206",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "potw2445c",
@@ -66002,12 +66029,12 @@
       "archiveId": "ann1119a",
       "name": "HUDF/GOODS Galaxies from the CANDELS Survey",
       "title": "Even low-mass galaxies can harbour supermassive black holes",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 53.1625,
+      "dec": -27.79138889,
+      "raText": "3 32 39.00",
+      "decText": "-27 47 29.00",
       "distance": null,
-      "constellation": null,
+      "constellation": "Fornax",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -66043,7 +66070,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "HUDF",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "heic1102b",
@@ -76107,12 +76137,12 @@
       "archiveId": "opo9826a",
       "name": "MS1054-0321",
       "title": "Telescopes Unveil View Of Remote, Massive Galaxy Cluster",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -76149,7 +76179,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-0321",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9821f",
@@ -91223,12 +91256,12 @@
       "archiveId": "opo9928f",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Observation",
@@ -91264,18 +91297,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9928g",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Observation",
@@ -91311,18 +91347,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9928h",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Observation",
@@ -91358,7 +91397,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9928j",
@@ -91414,12 +91456,12 @@
       "archiveId": "opo9928d",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Observation",
@@ -91455,18 +91497,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9928a",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -91503,18 +91548,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9928c",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Observation",
@@ -91550,18 +91598,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9928e",
       "name": "MS1054-03",
       "title": "Galaxy Cluster MS1054-03",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 164.24792,
+      "dec": -3.62444,
+      "raText": "10 56 59.50",
+      "decText": "-3 37 27.98",
       "distance": "z=0.823 ( redshift )",
-      "constellation": null,
+      "constellation": "Leo",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Observation",
@@ -91597,7 +91648,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "ned",
+      "coordinateResolvedFrom": "MS1054-03",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo9919h",
@@ -97811,12 +97865,12 @@
       "archiveId": "opo1115a",
       "name": "Hubble's Cepheid, V1",
       "title": "Hubble views the star that changed the Universe",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 10.68470833,
+      "dec": 41.26875,
+      "raText": "0 42 44.33",
+      "decText": "+41 16 07.50",
       "distance": "2 million light years",
-      "constellation": null,
+      "constellation": "Andromeda",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Collage",
@@ -97853,7 +97907,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M31",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo1005b",
@@ -101267,12 +101324,12 @@
       "archiveId": "heic0404b",
       "name": "Different types of gravitational lenses",
       "title": "Different types of gravitational lenses",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 248.975,
+      "dec": 66.21666667,
+      "raText": "16 35 54.00",
+      "decText": "+66 13 00.00",
       "distance": null,
-      "constellation": null,
+      "constellation": "Draco",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Simulation",
@@ -101308,7 +101365,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "Abell 2218",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo0404b",
@@ -101371,12 +101431,12 @@
       "archiveId": "opo0319g",
       "name": "Constellation Scorpius",
       "title": "The Milky Way and Scorpius constellation (ground-based image)",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 245.89675,
+      "dec": -26.52575,
+      "raText": "16 23 35.22",
+      "decText": "-26 31 32.70",
       "distance": null,
-      "constellation": null,
+      "constellation": "Scorpius",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Photographic",
@@ -101413,7 +101473,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "cds_sesame",
+      "coordinateResolvedFrom": "M4",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo0315j",
@@ -101695,12 +101758,12 @@
       "archiveId": "opo0206f",
       "name": "ACS",
       "title": "ACS Z-band",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 280.5,
+      "dec": -50.9,
+      "raText": "18 42 00.00",
+      "decText": "-50 54 00.00",
       "distance": null,
-      "constellation": null,
+      "constellation": "Telescopium",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Simulation",
@@ -101736,18 +101799,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "simbad",
+      "coordinateResolvedFrom": "ACS",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo0206k",
       "name": "ACS",
       "title": "ACS will find the most distant galaxies",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 280.5,
+      "dec": -50.9,
+      "raText": "18 42 00.00",
+      "decText": "-50 54 00.00",
       "distance": null,
-      "constellation": null,
+      "constellation": "Telescopium",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Simulation",
@@ -101784,18 +101850,21 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "simbad",
+      "coordinateResolvedFrom": "ACS",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo0206e",
       "name": "ACS",
       "title": "ACS I-band",
-      "ra": null,
-      "dec": null,
-      "raText": null,
-      "decText": null,
+      "ra": 280.5,
+      "dec": -50.9,
+      "raText": "18 42 00.00",
+      "decText": "-50 54 00.00",
       "distance": null,
-      "constellation": null,
+      "constellation": "Telescopium",
       "fieldOfView": null,
       "orientation": null,
       "imageType": "Simulation",
@@ -101831,7 +101900,10 @@
         "sizeMethod": "unresolved",
         "ageGyr": null,
         "ageMethod": "unresolved"
-      }
+      },
+      "coordinateMethod": "simbad",
+      "coordinateResolvedFrom": "ACS",
+      "constellationMethod": "iau_boundary_from_radec"
     },
     {
       "archiveId": "opo0122i",
@@ -108200,6 +108272,1675 @@
           "ra": 3.58345833,
           "dec": -30.38827778,
           "constellation": "Sculptor"
+        }
+      ]
+    },
+    "finalCoordinateRecovery": {
+      "totalRecords": 1879,
+      "coordinatesBefore": 1703,
+      "coordinatesMissingBefore": 176,
+      "coordinatesRecoveredThisPass": 24,
+      "coordinatesAfter": 1727,
+      "coordinatesStillMissing": 152,
+      "constellationsAfter": 1727,
+      "methodCounts": {
+        "cds_sesame": 12,
+        "iau_positional_designation": 1,
+        "ned": 8,
+        "simbad": 3
+      },
+      "methods": "ESA source metadata + ESA alias mining + positional designation decoding + CDS Sesame + SIMBAD + NED",
+      "recovered": [
+        {
+          "archiveId": "heic2411a",
+          "method": "cds_sesame",
+          "source": "M87",
+          "ra": 187.70593077,
+          "dec": 12.39112325,
+          "constellation": "Virgo"
+        },
+        {
+          "archiveId": "opo2146a",
+          "method": "iau_positional_designation",
+          "source": "SDSS J223010.47-081017.8",
+          "ra": 337.543625,
+          "dec": -8.1716111111,
+          "constellation": "Aquarius"
+        },
+        {
+          "archiveId": "heic2508a",
+          "method": "cds_sesame",
+          "source": "M81",
+          "ra": 148.8882194,
+          "dec": 69.06529514,
+          "constellation": "Ursa Major"
+        },
+        {
+          "archiveId": "opo2509",
+          "method": "cds_sesame",
+          "source": "M31",
+          "ra": 10.68470833,
+          "dec": 41.26875,
+          "constellation": "Andromeda"
+        },
+        {
+          "archiveId": "opo1828a",
+          "method": "cds_sesame",
+          "source": "NGC 6240",
+          "ra": 253.2454,
+          "dec": 2.4009,
+          "constellation": "Ophiucus"
+        },
+        {
+          "archiveId": "opo1345b",
+          "method": "cds_sesame",
+          "source": "M33",
+          "ra": 23.46206906,
+          "dec": 30.66017511,
+          "constellation": "Triangulum"
+        },
+        {
+          "archiveId": "opo1345d",
+          "method": "cds_sesame",
+          "source": "M33",
+          "ra": 23.46206906,
+          "dec": 30.66017511,
+          "constellation": "Triangulum"
+        },
+        {
+          "archiveId": "opo1726b",
+          "method": "cds_sesame",
+          "source": "MACS J2129-0741",
+          "ra": 322.359225,
+          "dec": -7.690617,
+          "constellation": "Aquarius"
+        },
+        {
+          "archiveId": "heic2501b",
+          "method": "cds_sesame",
+          "source": "NGC 206",
+          "ra": 10.14083333,
+          "dec": 40.73944444,
+          "constellation": "Andromeda"
+        },
+        {
+          "archiveId": "ann1119a",
+          "method": "cds_sesame",
+          "source": "HUDF",
+          "ra": 53.1625,
+          "dec": -27.79138889,
+          "constellation": "Fornax"
+        },
+        {
+          "archiveId": "opo9826a",
+          "method": "ned",
+          "source": "MS1054-0321",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928f",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928g",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928h",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928d",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928a",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928c",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo9928e",
+          "method": "ned",
+          "source": "MS1054-03",
+          "ra": 164.24792,
+          "dec": -3.62444,
+          "constellation": "Leo"
+        },
+        {
+          "archiveId": "opo1115a",
+          "method": "cds_sesame",
+          "source": "M31",
+          "ra": 10.68470833,
+          "dec": 41.26875,
+          "constellation": "Andromeda"
+        },
+        {
+          "archiveId": "heic0404b",
+          "method": "cds_sesame",
+          "source": "Abell 2218",
+          "ra": 248.975,
+          "dec": 66.21666667,
+          "constellation": "Draco"
+        },
+        {
+          "archiveId": "opo0319g",
+          "method": "cds_sesame",
+          "source": "M4",
+          "ra": 245.89675,
+          "dec": -26.52575,
+          "constellation": "Scorpius"
+        },
+        {
+          "archiveId": "opo0206f",
+          "method": "simbad",
+          "source": "ACS",
+          "ra": 280.5,
+          "dec": -50.9,
+          "constellation": "Telescopium"
+        },
+        {
+          "archiveId": "opo0206k",
+          "method": "simbad",
+          "source": "ACS",
+          "ra": 280.5,
+          "dec": -50.9,
+          "constellation": "Telescopium"
+        },
+        {
+          "archiveId": "opo0206e",
+          "method": "simbad",
+          "source": "ACS",
+          "ra": 280.5,
+          "dec": -50.9,
+          "constellation": "Telescopium"
+        }
+      ],
+      "unresolved": [
+        {
+          "archiveId": "opo1724a",
+          "name": "J022633.98, J074851.72, J084648.55, J114329.52, J132217.52, J231356.64",
+          "title": "Hubble captures gallery of ultra-bright galaxies",
+          "designation": null,
+          "candidates": [
+            "J022633.98",
+            "J074851.72",
+            "J084648.55",
+            "J114329.52",
+            "J132217.52",
+            "J231356.64",
+            "Hubble captures gallery of ultra-bright galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo2428a",
+          "name": "Mars corona",
+          "title": "Mars corona",
+          "designation": null,
+          "candidates": [
+            "Mars corona"
+          ]
+        },
+        {
+          "archiveId": "heic2402a",
+          "name": "Hubble photographs home of farthest fast radio burst (annotated)",
+          "title": "Hubble photographs home of farthest fast radio burst (annotated)",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "heic2212a",
+          "name": "Webb and Hubble Capture Detailed Views of DART Debris (27 September 2022)",
+          "title": "Webb and Hubble Capture Detailed Views of DART Debris (27 September 2022)",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "heic2609a",
+          "name": "Galactic pioneer MXDFz4.4 (annotated Hubble and Webb image)",
+          "title": "Galactic pioneer MXDFz4.4 (annotated Hubble and Webb image)",
+          "designation": null,
+          "candidates": [
+            "Galactic pioneer MXDFz4.4 (annotated Hubble and Webb image)"
+          ]
+        },
+        {
+          "archiveId": "heic2603a",
+          "name": "Astrophysical anomalies from Hubble’s archive",
+          "title": "Astrophysical anomalies from Hubble’s archive",
+          "designation": null,
+          "candidates": [
+            "Astrophysical anomalies from Hubble’s archive"
+          ]
+        },
+        {
+          "archiveId": "heic2010a",
+          "name": "The Early Universe (artist’s impression)",
+          "title": "The Early Universe (artist’s impression)",
+          "designation": null,
+          "candidates": [
+            "The Early Universe (artist’s impression)"
+          ]
+        },
+        {
+          "archiveId": "sci22005a",
+          "name": "Webb’s First Images",
+          "title": "Webb’s First Images",
+          "designation": null,
+          "candidates": [
+            "Webb’s First Images"
+          ]
+        },
+        {
+          "archiveId": "heic1315a",
+          "name": "Hubble Galaxy Classification",
+          "title": "The Hubble Sequence throughout the Universe's history",
+          "designation": null,
+          "candidates": [
+            "Hubble Galaxy Classification",
+            "The Hubble Sequence throughout the Universe's history"
+          ]
+        },
+        {
+          "archiveId": "heic0306a",
+          "name": "Quasar",
+          "title": "Finding the ashes of the first stars [artist's impression]",
+          "designation": null,
+          "candidates": [
+            "Quasar"
+          ]
+        },
+        {
+          "archiveId": "heic1308a",
+          "name": "Artist's impression of a galaxy undergoing a starburst",
+          "title": "Artist's impression of a galaxy undergoing a starburst",
+          "designation": null,
+          "candidates": [
+            "Artist's impression of a galaxy undergoing a starburst"
+          ]
+        },
+        {
+          "archiveId": "opo2145a",
+          "name": "Hubble Returns to Science Operations",
+          "title": "Hubble Returns to Science Operations",
+          "designation": null,
+          "candidates": [
+            "Hubble Returns to Science Operations"
+          ]
+        },
+        {
+          "archiveId": "potw1722a",
+          "name": "Vermin Galaxy",
+          "title": "Viewing the Vermin Galaxy",
+          "designation": null,
+          "candidates": [
+            "Vermin Galaxy",
+            "Viewing the Vermin Galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo1345a",
+          "name": "Milky Way",
+          "title": "Tracing the growth of Milky Way-like galaxies",
+          "designation": null,
+          "candidates": [
+            "Milky Way",
+            "Tracing the growth of Milky Way-like galaxies"
+          ]
+        },
+        {
+          "archiveId": "heic1319a",
+          "name": "J1000+0221",
+          "title": "The most distant gravitational lens yet discovered",
+          "designation": null,
+          "candidates": [
+            "J1000+0221",
+            "The most distant gravitational lens yet discovered"
+          ]
+        },
+        {
+          "archiveId": "heic1905a",
+          "name": "Milky Way",
+          "title": "Globular clusters surrounding the Milky Way (artist’s impression)",
+          "designation": null,
+          "candidates": [
+            "Milky Way",
+            "Globular clusters surrounding the Milky Way (artist’s impression)"
+          ]
+        },
+        {
+          "archiveId": "opo1815a",
+          "name": "Milky Way",
+          "title": "Hubble measures content of the leading arm of the Magellanic Stream",
+          "designation": null,
+          "candidates": [
+            "Milky Way"
+          ]
+        },
+        {
+          "archiveId": "heic1511a",
+          "name": "Artist’s illustration of galaxy with jets from a supermassive black hole",
+          "title": "Artist’s illustration of galaxy with jets from a supermassive black hole",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "opo1511a",
+          "name": "A firestorm of star birth (artist’s illustration)",
+          "title": "A firestorm of star birth (artist’s illustration)",
+          "designation": null,
+          "candidates": [
+            "A firestorm of star birth (artist’s illustration)"
+          ]
+        },
+        {
+          "archiveId": "heic1519b",
+          "name": "SpARCS1049+56",
+          "title": "Image of the central region of SpARCS1049",
+          "designation": null,
+          "candidates": [
+            "SpARCS1049+56",
+            "Image of the central region of SpARCS1049"
+          ]
+        },
+        {
+          "archiveId": "opo1448a",
+          "name": "Fast evolution of a galaxy",
+          "title": "Fast evolution of a galaxy",
+          "designation": null,
+          "candidates": [
+            "Fast evolution of a galaxy"
+          ]
+        },
+        {
+          "archiveId": "heic2605b",
+          "name": "Dark galaxy CDG-2 near Perseus Cluster (annotated)",
+          "title": "Dark galaxy CDG-2 near Perseus Cluster (annotated)",
+          "designation": null,
+          "candidates": [
+            "Dark galaxy CDG-2 near Perseus Cluster (annotated)"
+          ]
+        },
+        {
+          "archiveId": "opo2303a",
+          "name": "Hubble Finds That Ghost Light Among Galaxies Stretches Far Back In Time",
+          "title": "Hubble Finds That Ghost Light Among Galaxies Stretches Far Back In Time",
+          "designation": null,
+          "candidates": [
+            "CL J2106-5844"
+          ]
+        },
+        {
+          "archiveId": "opo22030a",
+          "name": "Hubble Detects Protective Shield Defending a Pair of Dwarf Galaxies",
+          "title": "Hubble Detects Protective Shield Defending a Pair of Dwarf Galaxies",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "opo1629a",
+          "name": "Pisces",
+          "title": "Dwarf galaxies in Pisces",
+          "designation": null,
+          "candidates": [
+            "Pisces",
+            "Dwarf galaxies in Pisces"
+          ]
+        },
+        {
+          "archiveId": "opo1511f",
+          "name": "Galaxy",
+          "title": "Hubble galaxy at redshift z = 2.0",
+          "designation": null,
+          "candidates": [
+            "Hubble galaxy at redshift z = 2.0"
+          ]
+        },
+        {
+          "archiveId": "opo1511c",
+          "name": "Galaxy",
+          "title": "Hubble galaxy at redshift z = 0.26",
+          "designation": null,
+          "candidates": [
+            "Hubble galaxy at redshift z = 0.26"
+          ]
+        },
+        {
+          "archiveId": "opo1511e",
+          "name": "Galaxy",
+          "title": "Hubble galaxy at redshift z = 1.3",
+          "designation": null,
+          "candidates": [
+            "Hubble galaxy at redshift z = 1.3"
+          ]
+        },
+        {
+          "archiveId": "opo1511d",
+          "name": "Galaxy",
+          "title": "Hubble galaxy at redshift z = 0.65",
+          "designation": null,
+          "candidates": [
+            "Hubble galaxy at redshift z = 0.65"
+          ]
+        },
+        {
+          "archiveId": "opo1511g",
+          "name": "Galaxy",
+          "title": "Hubble galaxy at redshift z = 2.4",
+          "designation": null,
+          "candidates": [
+            "Hubble galaxy at redshift z = 2.4"
+          ]
+        },
+        {
+          "archiveId": "opo1511h",
+          "name": "Galaxy",
+          "title": "Hubble galaxy at redshift z = 2.8",
+          "designation": null,
+          "candidates": [
+            "Hubble galaxy at redshift z = 2.8"
+          ]
+        },
+        {
+          "archiveId": "opo1511b",
+          "name": "The growth of Milky Way-like galaxies over time",
+          "title": "The growth of Milky Way-like galaxies over time",
+          "designation": null,
+          "candidates": [
+            "The growth of Milky Way-like galaxies over time"
+          ]
+        },
+        {
+          "archiveId": "opo1448b",
+          "name": "J0826+4305, J0944+0930, J1104+5946, J1359+5137, J1506+5402, J1506+6131, J1558+3957, J1613+2834, J1634+4619, J1713+2817, J2118+0017, J2140+1209",
+          "title": "Outflows from twelve merging galaxies",
+          "designation": null,
+          "candidates": [
+            "J0826+4305",
+            "J0944+0930",
+            "J1104+5946",
+            "J1359+5137",
+            "J1506+5402",
+            "J1506+6131",
+            "J1558+3957",
+            "J1613+2834",
+            "J1634+4619",
+            "J1713+2817",
+            "J2118+0017",
+            "J2140+1209"
+          ]
+        },
+        {
+          "archiveId": "opo1345c",
+          "name": "Milky Way",
+          "title": "Artist's illustration of the present Milky Way",
+          "designation": null,
+          "candidates": [
+            "Milky Way",
+            "Artist's illustration of the present Milky Way"
+          ]
+        },
+        {
+          "archiveId": "opo1928a",
+          "name": "Galaxies Used to Refine the Hubble Constant",
+          "title": "Galaxies Used to Refine the Hubble Constant",
+          "designation": null,
+          "candidates": [
+            "Galaxies Used to Refine the Hubble Constant"
+          ]
+        },
+        {
+          "archiveId": "opo1538a",
+          "name": "Milky Way Center , SWEEPS",
+          "title": "Hubble Spots White Dwarfs in Milky Way's Central Hub",
+          "designation": null,
+          "candidates": [
+            "Milky Way Center",
+            "SWEEPS"
+          ]
+        },
+        {
+          "archiveId": "opo1526a",
+          "name": "CLASH Survey Brightest Cluster Galaxies and Simulations",
+          "title": "CLASH Survey Brightest Cluster Galaxies and Simulations",
+          "designation": null,
+          "candidates": [
+            "CLASH Survey Brightest Cluster Galaxies and Simulations"
+          ]
+        },
+        {
+          "archiveId": "opo1526b",
+          "name": "Brightest Cluster Galaxies",
+          "title": "Brightest Cluster Galaxies",
+          "designation": null,
+          "candidates": [
+            "Brightest Cluster Galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo1448n",
+          "name": "J2140+1209",
+          "title": "Outflows from merging galaxy J2140+1209",
+          "designation": null,
+          "candidates": [
+            "J2140+1209",
+            "Outflows from merging galaxy J2140+1209"
+          ]
+        },
+        {
+          "archiveId": "heic2609c",
+          "name": "Galaxy MXDFz4.4 (Hubble and Webb compass image)",
+          "title": "Galaxy MXDFz4.4 (Hubble and Webb compass image)",
+          "designation": null,
+          "candidates": [
+            "Galaxy MXDFz4.4 (Hubble and Webb compass image)"
+          ]
+        },
+        {
+          "archiveId": "heic2402b",
+          "name": "Hubble photographs home of farthest fast radio burst (compass image)",
+          "title": "Hubble photographs home of farthest fast radio burst (compass image)",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "heic1409b",
+          "name": "Caracalla Supernova, MACSJ1720+35",
+          "title": "Cosmic lens MACS J1720+35 helps Hubble to find a distant supernova (annotated)",
+          "designation": null,
+          "candidates": [
+            "Caracalla Supernova",
+            "MACSJ1720+35"
+          ]
+        },
+        {
+          "archiveId": "opo1410a",
+          "name": "Development of massive elliptical galaxies",
+          "title": "Development of massive elliptical galaxies",
+          "designation": null,
+          "candidates": [
+            "Development of massive elliptical galaxies"
+          ]
+        },
+        {
+          "archiveId": "heic2605c",
+          "name": "Dark galaxy CDG-2 near Perseus Cluster (annotated compass image)",
+          "title": "Dark galaxy CDG-2 near Perseus Cluster (annotated compass image)",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "heic1315b",
+          "name": "Hubble Galaxy Classification",
+          "title": "The present day Universe",
+          "designation": null,
+          "candidates": [
+            "Hubble Galaxy Classification",
+            "The present day Universe"
+          ]
+        },
+        {
+          "archiveId": "heic0810aa",
+          "name": "Merging Galaxies",
+          "title": "Galaxies Gone Wild! - Top 12 images",
+          "designation": null,
+          "candidates": [
+            "Merging Galaxies",
+            "Galaxies Gone Wild! - Top 12 images"
+          ]
+        },
+        {
+          "archiveId": "heic0810ac",
+          "name": "Merging Galaxies",
+          "title": "Galaxies Gone Wild!",
+          "designation": null,
+          "candidates": [
+            "Merging Galaxies",
+            "Galaxies Gone Wild!"
+          ]
+        },
+        {
+          "archiveId": "galaxy",
+          "name": "Word Bank: Galaxy",
+          "title": "Word Bank: Galaxy",
+          "designation": null,
+          "candidates": [
+            "Word Bank: Galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo2110a",
+          "name": "Fast Radio Burst Galaxies",
+          "title": "Fast Radio Burst Galaxies",
+          "designation": null,
+          "candidates": [
+            "Fast Radio Burst Galaxies"
+          ]
+        },
+        {
+          "archiveId": "heic0810ab",
+          "name": "Merging Galaxies",
+          "title": "Galaxies Gone Wild!",
+          "designation": null,
+          "candidates": [
+            "Merging Galaxies",
+            "Galaxies Gone Wild!"
+          ]
+        },
+        {
+          "archiveId": "opo1526c",
+          "name": "Star Formation Triggered by Black-Hole Jets",
+          "title": "Star Formation Triggered by Black-Hole Jets",
+          "designation": null,
+          "candidates": [
+            "Star Formation Triggered by Black-Hole Jets"
+          ]
+        },
+        {
+          "archiveId": "heic1315c",
+          "name": "Hubble Galaxy Classification",
+          "title": "The Universe 4 billion years ago",
+          "designation": null,
+          "candidates": [
+            "Hubble Galaxy Classification",
+            "The Universe 4 billion years ago"
+          ]
+        },
+        {
+          "archiveId": "heic1315d",
+          "name": "Hubble Galaxy Classification",
+          "title": "The Universe 11 billion years ago",
+          "designation": null,
+          "candidates": [
+            "Hubble Galaxy Classification",
+            "The Universe 11 billion years ago"
+          ]
+        },
+        {
+          "archiveId": "jwst_simulation_halfsize",
+          "name": "James Webb Space Telescope , JWST",
+          "title": "Simulation of JWST performance",
+          "designation": null,
+          "candidates": [
+            "James Webb Space Telescope",
+            "JWST",
+            "Simulation of JWST performance"
+          ]
+        },
+        {
+          "archiveId": "opo0932g",
+          "name": "Doradus",
+          "title": "Doradus Constellation (ground-based image)",
+          "designation": null,
+          "candidates": [
+            "Doradus",
+            "Doradus Constellation (ground-based image)"
+          ]
+        },
+        {
+          "archiveId": "heic0901d",
+          "name": "Ursa Major",
+          "title": "A very wide-field view of the constellations of Ursa Major and Coma Berenices (ground-based image)",
+          "designation": null,
+          "candidates": [
+            "Ursa Major"
+          ]
+        },
+        {
+          "archiveId": "heic0811c",
+          "name": "Milky Way",
+          "title": "Comparison of Milky Way and compact galaxy",
+          "designation": null,
+          "candidates": [
+            "Milky Way",
+            "Comparison of Milky Way and compact galaxy"
+          ]
+        },
+        {
+          "archiveId": "heic0312d",
+          "name": "Lynx Cluster",
+          "title": "The Lynx Cluster (ground-based view, Digitized Sky Survey 2)",
+          "designation": null,
+          "candidates": [
+            "Lynx Cluster",
+            "The Lynx Cluster (ground-based view",
+            "Digitized Sky Survey 2)"
+          ]
+        },
+        {
+          "archiveId": "heic2310b",
+          "name": "Galaxy cluster MACS0416 with Mothra pullout",
+          "title": "Galaxy cluster MACS0416 with Mothra pullout",
+          "designation": null,
+          "candidates": [
+            "Galaxy cluster MACS0416 with Mothra pullout"
+          ]
+        },
+        {
+          "archiveId": "heic2309b",
+          "name": "Hubble image of a Luminous Fast Blue Optical Transient (LFBOT)",
+          "title": "Hubble image of a Luminous Fast Blue Optical Transient (LFBOT)",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "heic2203b",
+          "name": "The Sunrise Arc Galaxy with Lensed Star Earendel (Annotated)",
+          "title": "The Sunrise Arc Galaxy with Lensed Star Earendel (Annotated)",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "opo1534a",
+          "name": "SpARCS1049+56",
+          "title": "Signatures of the Earliest Galaxies",
+          "designation": null,
+          "candidates": [
+            "SpARCS1049+56",
+            "Signatures of the Earliest Galaxies"
+          ]
+        },
+        {
+          "archiveId": "heic1315e",
+          "name": "Hubble Galaxy Classification",
+          "title": "CANDELS galaxies reveal the Hubble Sequence throughout the Universe's history",
+          "designation": null,
+          "candidates": [
+            "Hubble Galaxy Classification"
+          ]
+        },
+        {
+          "archiveId": "opo0928h",
+          "name": "Milky Way Center",
+          "title": "Views of the Galactic Center region from NASA's Great Observatories",
+          "designation": null,
+          "candidates": [
+            "Milky Way Center"
+          ]
+        },
+        {
+          "archiveId": "opo1220f",
+          "name": "Galaxy Collisions",
+          "title": "Nighttime Sky View of Future Galaxy Merger: 3.85-3.9 Billion Years",
+          "designation": null,
+          "candidates": [
+            "Galaxy Collisions"
+          ]
+        },
+        {
+          "archiveId": "opo1220g",
+          "name": "Galaxy Collisions",
+          "title": "Nighttime Sky View of Future Galaxy Merger: 3.85-3.9 Billion Years",
+          "designation": null,
+          "candidates": [
+            "Galaxy Collisions"
+          ]
+        },
+        {
+          "archiveId": "heic2310d",
+          "name": "Galaxy cluster MACS1416 (Hubble and Webb images)",
+          "title": "Galaxy cluster MACS1416 (Hubble and Webb images)",
+          "designation": null,
+          "candidates": [
+            "Galaxy cluster MACS1416 (Hubble and Webb images)"
+          ]
+        },
+        {
+          "archiveId": "heic2310c",
+          "name": "Galaxy cluster MACS0416 (Hubble and Webb composite image, annotated)",
+          "title": "Galaxy cluster MACS0416 (Hubble and Webb composite image, annotated)",
+          "designation": null,
+          "candidates": [
+            "Galaxy cluster MACS0416 (Hubble and Webb composite image",
+            "annotated)"
+          ]
+        },
+        {
+          "archiveId": "heic2309c",
+          "name": "Hubble image of a Luminous Fast Blue Optical Transient (LFBOT) - annotated",
+          "title": "Hubble image of a Luminous Fast Blue Optical Transient (LFBOT) - annotated",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "opo1130a",
+          "name": "Merging galaxies in the Extended Groth Strip",
+          "title": "Merging galaxies in the Extended Groth Strip",
+          "designation": null,
+          "candidates": [
+            "Merging galaxies in the Extended Groth Strip"
+          ]
+        },
+        {
+          "archiveId": "opo1220j",
+          "name": "Galaxy Collisions",
+          "title": "Nighttime Sky View of Future Galaxy Merger: 7 Billion Years",
+          "designation": null,
+          "candidates": [
+            "Galaxy Collisions"
+          ]
+        },
+        {
+          "archiveId": "opo0652d",
+          "name": "Supernovae",
+          "title": "15 Distant Supernovae",
+          "designation": null,
+          "candidates": [
+            "Supernovae",
+            "15 Distant Supernovae"
+          ]
+        },
+        {
+          "archiveId": "opo0652e",
+          "name": "Supernovae",
+          "title": "39 distant Supernovae",
+          "designation": null,
+          "candidates": [
+            "Supernovae",
+            "39 distant Supernovae"
+          ]
+        },
+        {
+          "archiveId": "opo0652a",
+          "name": "Supernovae",
+          "title": "Host galaxies of distant Supernovae",
+          "designation": null,
+          "candidates": [
+            "Supernovae",
+            "Host galaxies of distant Supernovae"
+          ]
+        },
+        {
+          "archiveId": "opo0651e",
+          "name": "MS 0735.6+742",
+          "title": "Radio Image of Galaxy Cluster MS 0735",
+          "designation": null,
+          "candidates": [
+            "MS 0735.6+742",
+            "Radio Image of Galaxy Cluster MS 0735"
+          ]
+        },
+        {
+          "archiveId": "opo0651a",
+          "name": "MS 0735.6+742",
+          "title": "Galaxy cluster MS 0735",
+          "designation": null,
+          "candidates": [
+            "MS 0735.6+742",
+            "Galaxy cluster MS 0735"
+          ]
+        },
+        {
+          "archiveId": "opo0620j",
+          "name": "GOODS Supernovae",
+          "title": "GOODS Supernovae",
+          "designation": null,
+          "candidates": [
+            "GOODS Supernovae"
+          ]
+        },
+        {
+          "archiveId": "opo0532j",
+          "name": "Slacs gravitational lens candidates",
+          "title": "Slacs gravitational lens candidates",
+          "designation": null,
+          "candidates": [
+            "Slacs gravitational lens candidates"
+          ]
+        },
+        {
+          "archiveId": "opo0416b",
+          "name": "Galaxies",
+          "title": "Evolution of spiral galaxies",
+          "designation": null,
+          "candidates": [
+            "Evolution of spiral galaxies"
+          ]
+        },
+        {
+          "archiveId": "heic0312c",
+          "name": "Lynx Cluster",
+          "title": "The Lynx Cluster (ground-based view, Kitt Peak)",
+          "designation": null,
+          "candidates": [
+            "Lynx Cluster",
+            "The Lynx Cluster (ground-based view",
+            "Kitt Peak)"
+          ]
+        },
+        {
+          "archiveId": "opo9945b",
+          "name": "Galaxy Collisions",
+          "title": "Multiple Galaxy Collisions",
+          "designation": null,
+          "candidates": [
+            "Galaxy Collisions",
+            "Multiple Galaxy Collisions"
+          ]
+        },
+        {
+          "archiveId": "opo9930d",
+          "name": "Milky Way",
+          "title": "2 Micron all sky survey (2MASS) mosaic of the center of the Milky Way",
+          "designation": null,
+          "candidates": [
+            "Milky Way"
+          ]
+        },
+        {
+          "archiveId": "opo9827c",
+          "name": "HST 002013+28366",
+          "title": "Distant galaxy cluster HST002013+28366",
+          "designation": null,
+          "candidates": [
+            "HST 002013+28366",
+            "Distant galaxy cluster HST002013+28366"
+          ]
+        },
+        {
+          "archiveId": "opo9827b",
+          "name": "HST 133617-00529",
+          "title": "Distant galaxy cluster HST133617-00529",
+          "designation": null,
+          "candidates": [
+            "HST 133617-00529",
+            "Distant galaxy cluster HST133617-00529"
+          ]
+        },
+        {
+          "archiveId": "opo9629c",
+          "name": "Faint Galaxies",
+          "title": "Key to Location of Galactic Building Blocks in Hubble Field",
+          "designation": null,
+          "candidates": [
+            "Faint Galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo9629b",
+          "name": "Proto Galaxy",
+          "title": "Galaxy Building Blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy Building Blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9439e",
+          "name": "HST Medium Deep Survey",
+          "title": "Medium deep survey galaxy",
+          "designation": null,
+          "candidates": [
+            "HST Medium Deep Survey",
+            "Medium deep survey galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo9439c",
+          "name": "HST Medium Deep Survey",
+          "title": "Medium Deep Survey Galaxy",
+          "designation": null,
+          "candidates": [
+            "HST Medium Deep Survey",
+            "Medium Deep Survey Galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo9508a",
+          "name": "Faint Blue Galaxies",
+          "title": "Faint Blue Galaxies",
+          "designation": null,
+          "candidates": [
+            "Faint Blue Galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo9439b",
+          "name": "HST Medium Deep Survey",
+          "title": "Medium Deep Survey Galaxy",
+          "designation": null,
+          "candidates": [
+            "HST Medium Deep Survey",
+            "Medium Deep Survey Galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo9439d",
+          "name": "HST Medium Deep Survey",
+          "title": "Medium Deep Survey Galaxy",
+          "designation": null,
+          "candidates": [
+            "HST Medium Deep Survey",
+            "Medium Deep Survey Galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo9439a",
+          "name": "Galaxies , Medium Deep Survey",
+          "title": "Normal Galaxies from HST Medium Deep Survey",
+          "designation": null,
+          "candidates": [
+            "Medium Deep Survey",
+            "Normal Galaxies from HST Medium Deep Survey"
+          ]
+        },
+        {
+          "archiveId": "opo9441a",
+          "name": "Constellation Eridanus , Galactic halo",
+          "title": "Dark Matter Search",
+          "designation": null,
+          "candidates": [
+            "Constellation Eridanus",
+            "Galactic halo",
+            "Dark Matter Search"
+          ]
+        },
+        {
+          "archiveId": "opo9945a",
+          "name": "Ultra-Luminous Infrared Galaxies",
+          "title": "Multiple galaxy collisions",
+          "designation": null,
+          "candidates": [
+            "Ultra-Luminous Infrared Galaxies",
+            "Multiple galaxy collisions"
+          ]
+        },
+        {
+          "archiveId": "heic1412b",
+          "name": "GOODS field",
+          "title": "GOODS field containing distant dwarf galaxies forming stars at an incredible rate (annotated)",
+          "designation": null,
+          "candidates": [
+            "GOODS field"
+          ]
+        },
+        {
+          "archiveId": "dark-energy-wordbank",
+          "name": "Dark Energy - Word Bank thumbnail",
+          "title": "Dark Energy - Word Bank thumbnail",
+          "designation": null,
+          "candidates": [
+            "Dark Energy - Word Bank thumbnail"
+          ]
+        },
+        {
+          "archiveId": "ann1012a",
+          "name": "GOODS field",
+          "title": "Visualisation of galaxies from the ESO GOODS spectroscopic campaign",
+          "designation": null,
+          "candidates": [
+            "GOODS field"
+          ]
+        },
+        {
+          "archiveId": "opo9452c",
+          "name": "Galaxies",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452j",
+          "name": "Galaxies",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "heic1211d",
+          "name": "A swarm of dark matter around the Milky Way",
+          "title": "A swarm of dark matter around the Milky Way",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "opo0532a",
+          "name": "SDSS J073728.44+3216, SDSS J095629.78+5100, SDSS J120540.44+4910, SDSS J125028.26+5234, SDSS J140228.22+6321, SDSS J162746.45-5357, SDSS J163028.16+4520, SDSS J232120.93-9391",
+          "title": "A gallery of Einstein rings",
+          "designation": null,
+          "candidates": [
+            "SDSS J073728.44+3216",
+            "SDSS J095629.78+5100",
+            "SDSS J120540.44+4910",
+            "SDSS J125028.26+5234",
+            "SDSS J140228.22+6321",
+            "SDSS J162746.45-5357",
+            "SDSS J163028.16+4520",
+            "SDSS J232120.93-9391",
+            "A gallery of Einstein rings"
+          ]
+        },
+        {
+          "archiveId": "opo1130g",
+          "name": "Compass and scale image of merging galaxies in the Extended Groth Strip",
+          "title": "Compass and scale image of merging galaxies in the Extended Groth Strip",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "jwst_rendering_galaxies",
+          "name": "James Webb Space Telescope , JWST",
+          "title": "The James Webb Space Telescope",
+          "designation": null,
+          "candidates": [
+            "James Webb Space Telescope",
+            "JWST",
+            "The James Webb Space Telescope"
+          ]
+        },
+        {
+          "archiveId": "heic0606d",
+          "name": "SDSS J100434.05+4112",
+          "title": "Hubble captures a \"five-star\" rated gravitational lens",
+          "designation": null,
+          "candidates": [
+            "SDSS J100434.05+4112",
+            "Hubble captures a \"five-star\" rated gravitational lens"
+          ]
+        },
+        {
+          "archiveId": "opo0419j",
+          "name": "Red Galaxies",
+          "title": "A close-up look of two of the extremely red galaxies revealed By Spitzer",
+          "designation": null,
+          "candidates": [
+            "Red Galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo9946a",
+          "name": "Milky Way",
+          "title": "Gas clouds raining star stuff onto Milky Way Galaxy",
+          "designation": null,
+          "candidates": [
+            "Milky Way"
+          ]
+        },
+        {
+          "archiveId": "heic9902p",
+          "name": "Galaxy Evolution",
+          "title": "Possible galaxy evolution processes",
+          "designation": null,
+          "candidates": [
+            "Galaxy Evolution",
+            "Possible galaxy evolution processes"
+          ]
+        },
+        {
+          "archiveId": "heic9902o",
+          "name": "Hubble Galaxy Classification",
+          "title": "The Hubble tuning fork - classification of galaxies",
+          "designation": null,
+          "candidates": [
+            "Hubble Galaxy Classification",
+            "The Hubble tuning fork - classification of galaxies"
+          ]
+        },
+        {
+          "archiveId": "heic9902q",
+          "name": "Galaxy Evolution",
+          "title": "The growth of bulges in spiral galaxies",
+          "designation": null,
+          "candidates": [
+            "Galaxy Evolution",
+            "The growth of bulges in spiral galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo9734s",
+          "name": "Interacting galaxy",
+          "title": "Interacting galaxy (ground-based image)",
+          "designation": null,
+          "candidates": [
+            "Interacting galaxy",
+            "Interacting galaxy (ground-based image)"
+          ]
+        },
+        {
+          "archiveId": "opo9725d",
+          "name": "CL1358+62",
+          "title": "Gravitationally lensed image of highest redshift galaxy",
+          "designation": null,
+          "candidates": [
+            "CL1358+62",
+            "Gravitationally lensed image of highest redshift galaxy"
+          ]
+        },
+        {
+          "archiveId": "opo9629b18",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b03",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b06",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629d",
+          "name": "Galaxy Formation",
+          "title": "History of star formation",
+          "designation": null,
+          "candidates": [
+            "Galaxy Formation",
+            "History of star formation"
+          ]
+        },
+        {
+          "archiveId": "opo9629b07",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b01",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b14",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b04",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b17",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b02",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b11",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b16",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b15",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b10",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b13",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b05",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b09",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b12",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9629b08",
+          "name": "Proto Galaxy",
+          "title": "Galaxy building blocks",
+          "designation": null,
+          "candidates": [
+            "Proto Galaxy",
+            "Galaxy building blocks"
+          ]
+        },
+        {
+          "archiveId": "opo9452r",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452n",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452i",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452s",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: Snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: Snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452k",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: Snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: Snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452p",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452l",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: Snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: Snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452m",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452e",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452t",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452o",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452q",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452g",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9452h",
+          "name": "Galaxy snapshot",
+          "title": "Galaxies: snapshots in time",
+          "designation": null,
+          "candidates": [
+            "Galaxy snapshot",
+            "Galaxies: snapshots in time"
+          ]
+        },
+        {
+          "archiveId": "opo9219a",
+          "name": "Galaxies",
+          "title": "Hubble Space Telescope deep-sky survey reveals embryonic galaxies",
+          "designation": null,
+          "candidates": [
+            "Hubble Space Telescope deep-sky survey reveals embryonic galaxies"
+          ]
+        },
+        {
+          "archiveId": "opo9101a",
+          "name": "3C 668",
+          "title": "Braided galactic jet",
+          "designation": "3C 668",
+          "candidates": [
+            "3C 668",
+            "Braided galactic jet"
+          ]
+        },
+        {
+          "archiveId": "ann0704",
+          "name": "Extended Groth Strip (EGS)",
+          "title": "Hubble pans across heavens to harvest 50,000 evolving galaxies",
+          "designation": null,
+          "candidates": [
+            "Extended Groth Strip (EGS)",
+            "Hubble pans across heavens to harvest 50",
+            "000 evolving galaxies"
+          ]
+        },
+        {
+          "archiveId": "ann0602",
+          "name": "Galaxies",
+          "title": "Tracing the evolution of the first galaxies in the Universe",
+          "designation": null,
+          "candidates": []
+        },
+        {
+          "archiveId": "sci24007a",
+          "name": "Hubble and Webb’s views of the Sombrero Galaxy",
+          "title": "Hubble and Webb’s views of the Sombrero Galaxy",
+          "designation": null,
+          "candidates": [
+            "Hubble and Webb’s views of the Sombrero Galaxy"
+          ]
+        },
+        {
+          "archiveId": "elliptical-galaxy",
+          "name": "Word Bank: Elliptical Galaxy",
+          "title": "Word Bank: Elliptical Galaxy",
+          "designation": null,
+          "candidates": [
+            "Word Bank: Elliptical Galaxy"
+          ]
+        },
+        {
+          "archiveId": "dwarf-galaxy",
+          "name": "Word Bank: Dwarf Galaxy",
+          "title": "Word Bank: Dwarf Galaxy",
+          "designation": null,
+          "candidates": [
+            "Word Bank: Dwarf Galaxy"
+          ]
+        },
+        {
+          "archiveId": "spiral-galaxy",
+          "name": "Word Bank: Spiral Galaxy",
+          "title": "Word Bank: Spiral Galaxy",
+          "designation": null,
+          "candidates": [
+            "Word Bank: Spiral Galaxy"
+          ]
         }
       ]
     }
