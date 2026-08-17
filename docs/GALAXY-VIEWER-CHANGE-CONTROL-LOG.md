@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-246e371ddb70 — Promote beta 9I launcher links to 9I-M
+
+**Recorded:** 2026-08-16T21:02:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`246e371ddb70b47cf2bf8bda857bef52c81fb62b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/246e371ddb70b47cf2bf8bda857bef52c81fb62b)  
+**Parent/baseline:** `6d10bf8fb3392eb6c0ce82e53dea13a74818320d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6d10bf8fb3392eb6c0ce82e53dea13a74818320d...246e371ddb70b47cf2bf8bda857bef52c81fb62b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Promote beta 9I launcher links to 9I-M
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `78ae8a79b44e48bace19cf9dd56cf73e9bc6f8c2d0b6ac3c59da07ff60cd834a`
+- SHA-256 after: `a5079831641562a83e634962bc8184bbddae95a8fa3c0fc20d8781a85aa65c67`
+- Bytes: `6337` → `6336`
+- Lines: `57` → `57`
+- Characters: `6337` → `6336`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `5`
+- Deleted characters: `6`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `57 + 2 - 2 = 57` — **PASS**
+- Character balance: `6337 + 5 - 6 = 6336` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5fdd2994f20b — Fix beta 9I interim chooser and remove auto-launch
 
 **Recorded:** 2026-08-16T20:43:22-05:00  
