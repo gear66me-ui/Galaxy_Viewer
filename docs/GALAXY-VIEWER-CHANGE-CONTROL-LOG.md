@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-92dd044338d4 — Add generic 10D Android target pointer
+
+**Recorded:** 2026-08-17T12:27:41-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`92dd044338d4baea1b8300a515fd2d831866eb86`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/92dd044338d4baea1b8300a515fd2d831866eb86)  
+**Parent/baseline:** `0a3e7fc8ffb9a382f0fc4f9e91719221049f59dc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0a3e7fc8ffb9a382f0fc4f9e91719221049f59dc...92dd044338d4baea1b8300a515fd2d831866eb86)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add generic 10D Android target pointer
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/10D-app-target.json`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `ded1a3a6340a3c9f15c3ccc023e2a668990500d06b09c5b85b42ad6cef062687`
+- Bytes: `0` → `331`
+- Lines: `0` → `8`
+- Characters: `0` → `331`
+- Inserted lines: `8`
+- Deleted lines: `0`
+- Inserted characters: `331`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 8 - 0 = 8` — **PASS**
+- Character balance: `0 + 331 - 0 = 331` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-25a1371d3439 — Keep 10D build artifacts outside promotion workspace
 
 **Recorded:** 2026-08-17T12:05:50-05:00  
