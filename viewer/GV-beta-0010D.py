@@ -71,7 +71,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-apk-cover{flex-direction:column;gap:18px}#gv-apk-cover .gv-10d-version{color:#FFD85A;font:400 16px/1 "Space Age",sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55);white-space:nowrap}
 </style>
 <div id="aladin-cosmic-command-test"></div>
-<script>(()=>{const cover=document.getElementById('gv-apk-cover');if(!cover)return;const img=cover.querySelector('img');if(img)img.src='artwork/icon.svg';const version=document.createElement('div');version.className='gv-10c-version';version.textContent='VERSION 10D';cover.appendChild(version)})();</script>
+<script>(()=>{const cover=document.getElementById('gv-apk-cover');if(!cover)return;const img=cover.querySelector('img');if(img)img.src='artwork/icon.svg';const version=document.createElement('div');version.className='gv-10d-version';version.textContent='VERSION 10D';cover.appendChild(version)})();</script>
 """))
 
 display(Javascript(r"""
