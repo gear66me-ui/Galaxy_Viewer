@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-743fd915a80c — Speed surgical 10E Hubble preload repair checkout
+
+**Recorded:** 2026-08-17T15:07:33-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`743fd915a80c24e3f56f2a59fcbd7a2903ef5407`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/743fd915a80c24e3f56f2a59fcbd7a2903ef5407)  
+**Parent/baseline:** `a837faef25a2f86605bbbd0009dd5ee9643ce391`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a837faef25a2f86605bbbd0009dd5ee9643ce391...743fd915a80c24e3f56f2a59fcbd7a2903ef5407)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Speed surgical 10E Hubble preload repair checkout
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `bfb6f54cf0489420983b934206e212e9034e1298685d26cd6f2e9f8e499ffd32`
+- SHA-256 after: `867fb7648c23ad6791166f75c7f3204c2774d0bfa0ae2fedc52bbadc6a61dceb`
+- Bytes: `3554` → `3567`
+- Lines: `55` → `56`
+- Characters: `3554` → `3567`
+- Inserted lines: `7`
+- Deleted lines: `6`
+- Inserted characters: `136`
+- Deleted characters: `123`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `3`
+- Changed blocks: `3`
+- Line balance: `55 + 7 - 6 = 56` — **PASS**
+- Character balance: `3554 + 136 - 123 = 3567` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5da19a7a9d82 — Run surgical 10E Hubble preload retention repair
 
 **Recorded:** 2026-08-17T15:06:59-05:00  
