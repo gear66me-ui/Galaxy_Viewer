@@ -1,0 +1,131 @@
+name: Build Galaxy Viewer Android 10E Generic R4
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/build-galaxy-viewer-android-10E-generic-r4.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  APK_NAME: Galaxy-Viewer-10E-Generic.apk
+  RELEASE_TAG: galaxy-viewer-10e-generic
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Lock protected baselines
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "NINE_I_HTML=$(git hash-object mobile/beta/9I.html)" >> "$GITHUB_ENV"
+          echo "NINE_I_APP=$(git hash-object mobile/beta/9I-app.html)" >> "$GITHUB_ENV"
+          echo "NINE_I_VIEWER=$(git hash-object viewer/GV-beta-0009I.py)" >> "$GITHUB_ENV"
+          echo "TEN_D_VIEWER=$(git hash-object viewer/GV-beta-0010D.py)" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Reuse proven R3 generation block
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/build-galaxy-viewer-android-10E-generic-r3.yml')
+          lines=p.read_text(encoding='utf-8').splitlines()
+          marker='      - name: Generate standalone 10E source and Android project'
+          start=lines.index(marker)
+          run_i=next(i for i in range(start+1,len(lines)) if lines[i]=='        run: |')
+          out=[]
+          for line in lines[run_i+1:]:
+              if line.startswith('      - name:') or line.startswith('      - uses:'):
+                  break
+              if line.startswith('          '): out.append(line[10:])
+              elif line.strip(): raise SystemExit('Unexpected indentation in R3 generation block: '+line)
+              else: out.append('')
+          Path('/tmp/generate-10e.sh').write_text('\n'.join(out)+'\n',encoding='utf-8')
+          PY
+          bash /tmp/generate-10e.sh
+      - name: Audit 10E and protected files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          legacy=('9I-app.html','GV9I','gv9i','__gv9i','GV-9I','GALAXY VIEWER 9I','source=android-10d')
+          files=[Path('viewer/GV-beta-0010E.py')]+[p for p in Path('android/galaxy-viewer-10e').rglob('*') if p.is_file() and p.suffix.lower() in {'.html','.java','.gradle','.properties','.xml','.py'}]
+          hits=[(str(p),x) for p in files for x in legacy if x in p.read_text(encoding='utf-8')]
+          if hits: raise SystemExit('Legacy references remain: '+repr(hits))
+          PY
+          test "$(git hash-object mobile/beta/9I.html)" = "$NINE_I_HTML"
+          test "$(git hash-object mobile/beta/9I-app.html)" = "$NINE_I_APP"
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "$NINE_I_VIEWER"
+          test "$(git hash-object viewer/GV-beta-0010D.py)" = "$TEN_D_VIEWER"
+          test ! -d viewer/__pycache__
+      - name: Build APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
+      - name: Validate finished APK contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10e'" /tmp/badging.txt
+          grep -q "versionName='10E-generic'" /tmp/badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer10e.MainActivity'" /tmp/badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          unzip -l "$APK" | grep -q 'assets/index.html'
+          unzip -l "$APK" | grep -q 'assets/viewer/gv-current-viewer.json'
+          unzip -l "$APK" | grep -q 'assets/viewer/GV-beta-0010E.py'
+          rm -rf /tmp/apk10e; mkdir /tmp/apk10e; unzip -qq "$APK" -d /tmp/apk10e
+          ! grep -RInaE '9I-app\.html|GV9I|gv9i|__gv9i|GV-9I|GALAXY VIEWER 9I|source=android-10d' /tmp/apk10e
+          grep -RIna 'file:///android_asset/index.html' /tmp/apk10e >/dev/null
+          cp "$APK" "$APK_NAME"
+          sha256sum "$APK_NAME" | tee "${APK_NAME}.sha256"
+      - name: Final protected-file verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I.html)" = "$NINE_I_HTML"
+          test "$(git hash-object mobile/beta/9I-app.html)" = "$NINE_I_APP"
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "$NINE_I_VIEWER"
+          test "$(git hash-object viewer/GV-beta-0010D.py)" = "$TEN_D_VIEWER"
+      - name: Commit only 10E release sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010E.py viewer/gv-current-viewer.json android/galaxy-viewer-10e .github/workflows/galaxy-viewer-release-gate.yml
+          git diff --cached --name-only | tee /tmp/changed.txt
+          ! grep -E '^mobile/beta/9I|^viewer/GV-beta-0009I|^android/galaxy-viewer-9i|^viewer/GV-beta-0010D\.py$' /tmp/changed.txt
+          git commit -m 'Release standalone Galaxy Viewer 10E and generic APK shell'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          echo "RELEASE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10E-Generic
+          path: |
+            Galaxy-Viewer-10E-Generic.apk
+            Galaxy-Viewer-10E-Generic.apk.sha256
+          if-no-files-found: error
+      - name: Publish immutable APK release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! gh release view "$RELEASE_TAG" >/dev/null 2>&1
+          gh release create "$RELEASE_TAG" "$APK_NAME" "${APK_NAME}.sha256" --target "$RELEASE_COMMIT" --title 'Galaxy Viewer 10E — Generic APK' --notes 'Standalone 10E generic installer. Starts at file:///android_asset/index.html, reads viewer/gv-current-viewer.json and includes a bundled 10E fallback. Protected 9I website, 9I launcher, 9I Viewer, and 10D baseline were hash-verified unchanged.'
