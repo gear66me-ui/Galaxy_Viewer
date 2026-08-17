@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-018b403b3680 — Run surgical 10E Random Galaxy repair
+
+**Recorded:** 2026-08-17T14:48:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`018b403b368028953e7a9c658389225b011738f0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/018b403b368028953e7a9c658389225b011738f0)  
+**Parent/baseline:** `5debb5cf94cd80676413e9b8e7510a9617ea3f78`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5debb5cf94cd80676413e9b8e7510a9617ea3f78...018b403b368028953e7a9c658389225b011738f0)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run surgical 10E Random Galaxy repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `028db4a821516c7ba1fba8dacd79155970c1bc03ee77d26184d05ef60ce5552a`
+- SHA-256 after: `5ede65a54d34a662da89c5db9a1e9b2c6eba69c73cab6f2e6d6256bd32c61724`
+- Bytes: `4173` → `3871`
+- Lines: `77` → `61`
+- Characters: `4171` → `3867`
+- Inserted lines: `41`
+- Deleted lines: `57`
+- Inserted characters: `2772`
+- Deleted characters: `3076`
+- Unified diff hunks: `8`
+- Inserted blocks: `6`
+- Deleted blocks: `8`
+- Changed blocks: `8`
+- Line balance: `77 + 41 - 57 = 61` — **PASS**
+- Character balance: `4171 + 2772 - 3076 = 3867` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-dbc8ae46cf85 — Fix generic bootstrap RANDOM GALAXY readiness gate
 
 **Recorded:** 2026-08-17T14:34:50-05:00  
