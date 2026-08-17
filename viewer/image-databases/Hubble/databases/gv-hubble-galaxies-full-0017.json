@@ -94302,43 +94302,47 @@
       "decText": "-33 42 58.52",
       "distance": "500 million light years",
       "constellation": "Sculptor",
-      "fieldOfView": "EST. 1.33 x 0.89 arcminutes",
-      "orientation": null,
+      "fieldOfView": "2.13 x 1.64 arcminutes",
+      "orientation": "North is 40.4° left of vertical",
       "imageType": "Collage",
       "releaseDate": "10 January 1995, 23:00",
-      "pixelSize": "800 x 535 px",
-      "credit": "Kirk Borne (ST ScI), and",
-      "sourceUrl": "https://esahubble.org/images/opo9502a/",
+      "pixelSize": "1282 x 983 px",
+      "credit": "ESA/Hubble & NASA",
+      "sourceUrl": "https://esahubble.org/images/potw1036a/",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
-        "https://cdn.esahubble.org/archives/images/publicationjpg/opo9502a.jpg",
-        "https://cdn.esahubble.org/archives/images/large/opo9502a.jpg",
-        "https://cdn.esahubble.org/archives/images/screen/opo9502a.jpg",
-        "https://esahubble.org/media/archives/images/original/opo9502a.jpg"
+        "https://cdn.esahubble.org/archives/images/publicationjpg/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/large/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/screen/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper1/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper2/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper3/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper4/potw1036a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper5/potw1036a.jpg"
       ],
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9502a.jpg",
-      "assetName": "opo9502a.jpg",
-      "bytes": 110900,
-      "sha256": "836292d985791e4d551751674f72467692fc6cdb205c877fe481f3412b6e8c41",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/potw1036a.jpg",
+      "assetName": "potw1036a.jpg",
+      "bytes": 511655,
+      "sha256": "613fcc51089669d33af4fd75efa7ef1b6dd0f55be2e4ce901fdf5ba6bf3b029d",
       "downloadErrors": [
         {
-          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9502a.jpg",
-          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9502a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000b785ab14f331"
+          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/potw1036a.jpg",
+          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/potw1036a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx0000081494efce29"
         }
       ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9502a.jpg",
-      "releaseTag": "hubble-galaxies-0001-b",
+      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/potw1036a.jpg",
+      "releaseTag": "hubble-galaxies-0001-a",
       "science": {
         "distanceMly": 500.0,
         "distanceMethod": "esa",
         "sizeKly": [
-          193.028,
-          129.087
+          309.8,
+          238.53
         ],
-        "sizeMethod": "estimated_from_empirical_fov_and_light_travel_distance_0012",
+        "sizeMethod": "distance_fov_estimate",
         "ageGyr": 0.5,
         "ageMethod": "lookback_est_from_published_light_travel_distance",
         "ageMinGyr": null,
@@ -94354,7 +94358,7 @@
         "fieldOfViewConfidence0012": "medium",
         "pixelScaleArcsecPerPixel0012": 0.09953714,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 193.0 × 129.1 KLY",
+        "sizeDisplay": "EST. 310 x 239 KLY",
         "sizeConfidence0012": "medium"
       },
       "designation": "IRAS 00352-3359",
@@ -94365,7 +94369,12 @@
       ],
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "IRAS 00352-3359",
-      "constellationMethod": "iau_boundary_from_radec"
+      "constellationMethod": "iau_boundary_from_radec",
+      "imageReplacement0017": {
+        "replacementArchiveId": "potw1036a",
+        "reason": "Use the approved reprocessed wide Hubble Cartwheel image instead of the older presentation image.",
+        "preservedTargetArchiveId": "opo9502a"
+      }
     },
     {
       "archiveId": "opo9449d",
