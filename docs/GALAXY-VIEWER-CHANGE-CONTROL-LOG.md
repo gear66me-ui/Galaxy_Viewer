@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2a18583cc14f — Fix 9I-M Chromium WebGL smoke environment
+
+**Recorded:** 2026-08-16T20:15:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2a18583cc14f3531dc2e7e128ead4eff84ecbbaf`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2a18583cc14f3531dc2e7e128ead4eff84ecbbaf)  
+**Parent/baseline:** `6031754c9ae848e04ca4f222233c2c7cf1653a1e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6031754c9ae848e04ca4f222233c2c7cf1653a1e...2a18583cc14f3531dc2e7e128ead4eff84ecbbaf)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix 9I-M Chromium WebGL smoke environment
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I-M.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `44b5c101890e191fd119a8d7bfd1d1035725e260df7d8b58c51e5e2a95672fab`
+- SHA-256 after: `5120c4715bef501e8709c7d7777f8d5668538991ef1b68305895bbe08c9f440c`
+- Bytes: `8989` → `9390`
+- Lines: `186` → `194`
+- Characters: `8987` → `9388`
+- Inserted lines: `13`
+- Deleted lines: `5`
+- Inserted characters: `446`
+- Deleted characters: `45`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `186 + 13 - 5 = 194` — **PASS**
+- Character balance: `8987 + 446 - 45 = 9388` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7b471270db22 — Build Galaxy Viewer Android 9I-M with browser smoke test
 
 **Recorded:** 2026-08-16T20:14:40-05:00  
