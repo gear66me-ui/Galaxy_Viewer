@@ -200,7 +200,7 @@ function installRandomWaitComet(button) {
     document.head.appendChild(style);
   }
   if (!button.querySelector('.gvrg-random-star-wrap')) {
-    button.innerHTML='<span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>';
+    button.innerHTML='<span class="gvrg-random-label">RANDOM GALAXY  </span><span class="gvrg-random-star-wrap" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>';
     button.setAttribute('aria-label','RANDOM GALAXY');
   }
 }
