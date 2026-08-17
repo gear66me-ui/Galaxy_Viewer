@@ -1,0 +1,186 @@
+name: Build Galaxy Viewer Android 9I-M
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-M.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Guard frozen website surfaces and icon
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
+          MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
+          test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Archive exact 9I-L and generate standalone 9I-M
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "cdab230d7f4f7a9862508579563fdc316a0b3a72"
+          cp viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-L.py
+          test "$(git hash-object viewer/archive/GV-beta-0009I-L.py)" = "cdab230d7f4f7a9862508579563fdc316a0b3a72"
+          python .github/scripts/prepare_galaxy_viewer_9im.py
+          grep -q "DISPLAY_VERSION='9I-M'" viewer/GV-beta-0009I.py
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Static standalone verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-9i/app/src/main/assets/index.html')
+          s=p.read_text(encoding='utf-8')
+          assert "DISPLAY_VERSION='9I-M'" in s
+          for x in [
+              "await loadScript(HAMBURGER_URL,'gvHamburger0002')",
+              "await loadScript(COORDINATE_URL,'gvCoordinate0004')",
+              "await loadScript(TARGET_URL,'gvTarget0001')",
+              "await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0028')",
+          ]: assert x not in s, x
+          for x in ['GalaxyViewerHamburgerMenu','GalaxyCoordinateOverlay','GalaxyViewerTargetSimbad','GalaxyRandomGalaxy','gv-viewer-ready','gv-viewer-failed']:
+              assert x in s, x
+          assert 'data/gv-hubble-galaxies-full-0002.json' in s
+          assert 'artwork/GV-reticle-0001.svg' in s
+          splash=Path('android/galaxy-viewer-9i/app/src/main/assets/splash/index.html').read_text(encoding='utf-8')
+          assert splash.count("parent.postMessage('galaxy-splash-complete','*')") == 2
+          catalog=Path('android/galaxy-viewer-9i/app/src/main/assets/data/gv-hubble-galaxies-full-0002.json').read_text(encoding='utf-8')
+          assert '"categoryEntryCount": 1879' in catalog
+          PY
+
+      - name: Browser smoke test standalone Viewer
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo 'REFUSING 9I-M: no Chromium/Chrome executable available for smoke test' >&2
+            exit 1
+          fi
+          python -m http.server 8765 --bind 127.0.0.1 --directory android/galaxy-viewer-9i/app/src/main/assets >/tmp/gv-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
+          sleep 1
+          set +e
+          timeout 100s "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage --use-gl=swiftshader --enable-webgl --ignore-gpu-blocklist --virtual-time-budget=70000 --dump-dom http://127.0.0.1:8765/index.html >/tmp/gv-dom.html 2>/tmp/gv-chrome.log
+          CHROME_RC=$?
+          set -e
+          if ! grep -q 'data-viewer-status="ready"' /tmp/gv-dom.html; then
+            echo 'REFUSING 9I-M: standalone Viewer did not emit READY in real Chromium' >&2
+            echo '--- DOM diagnostic ---' >&2
+            grep -E 'data-viewer-status|APP FAILED TO LOAD|gv-apk-error' /tmp/gv-dom.html | tail -20 >&2 || true
+            echo '--- Chrome diagnostic ---' >&2
+            tail -80 /tmp/gv-chrome.log >&2 || true
+            echo '--- HTTP diagnostic ---' >&2
+            tail -80 /tmp/gv-http.log >&2 || true
+            exit 1
+          fi
+          echo "Browser smoke test PASS (chrome rc=$CHROME_RC)"
+
+      - name: Commit and safely rebase 9I-M Viewer source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-L.py
+          git diff --cached --check
+          git commit -m 'Archive 9I-L and rev beta Viewer to 9I-M'
+          git stash push --include-untracked -m 9im-android-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          git stash pop
+
+      - name: Reverify frozen surfaces after source push
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
+          MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
+          test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build 9I-M APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Inspect built APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from zipfile import ZipFile
+          apk='android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk'
+          with ZipFile(apk) as z:
+              names=set(z.namelist())
+              for required in ['assets/index.html','assets/splash/index.html','assets/data/gv-hubble-galaxies-full-0002.json','assets/artwork/GV-reticle-0001.svg','assets/app-icon.png']:
+                  assert required in names, required
+              s=z.read('assets/index.html').decode('utf-8')
+              assert "DISPLAY_VERSION='9I-M'" in s
+              for x in ["await loadScript(HAMBURGER_URL,'gvHamburger0002')","await loadScript(COORDINATE_URL,'gvCoordinate0004')","await loadScript(TARGET_URL,'gvTarget0001')","await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0028')"]:
+                  assert x not in s, x
+              for x in ['GalaxyViewerHamburgerMenu','GalaxyCoordinateOverlay','GalaxyViewerTargetSimbad','GalaxyRandomGalaxy','gv-viewer-ready','gv-viewer-failed']:
+                  assert x in s, x
+          PY
+
+      - name: Stage and hash APK
+        run: |
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-M.apk
+          sha256sum Galaxy-Viewer-9I-M.apk | tee Galaxy-Viewer-9I-M.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-9I-M
+          path: |
+            Galaxy-Viewer-9I-M.apk
+            Galaxy-Viewer-9I-M.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 9I-M release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view galaxy-viewer-9i-m >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-M release already exists; refusing overwrite.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-m Galaxy-Viewer-9I-M.apk Galaxy-Viewer-9I-M.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-M — Android' --notes '9I-M replaces runtime Python/Jupyter scraping with a build-time standalone Viewer. All four Galaxy Viewer modules are executed inline before Viewer startup; their dynamic loadScript calls are removed. The standalone Viewer must emit gv-viewer-ready in a real headless Chromium smoke test before APK compilation. Public launcher website, beta launcher template, and original icon are hash-guarded unchanged.'
