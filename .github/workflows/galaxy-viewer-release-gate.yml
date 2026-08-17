@@ -134,7 +134,11 @@ jobs:
           CANDIDATE_PATH: ${{ inputs.candidate_path }}
         run: |
           set -euo pipefail
-          python -m py_compile "$CANDIDATE_PATH"
+          python - <<'PY'
+          import os,pathlib
+          p=pathlib.Path(os.environ['CANDIDATE_PATH'])
+          compile(p.read_text(encoding='utf-8'),str(p),'exec')
+          PY
           python - <<'PY'
           import os,re,pathlib
           p=pathlib.Path(os.environ['CANDIDATE_PATH'])
