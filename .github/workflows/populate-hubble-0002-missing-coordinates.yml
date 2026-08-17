@@ -1,0 +1,138 @@
+name: Populate Hubble 0002 missing coordinates
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/populate-hubble-0002-missing-coordinates.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Install astronomy resolver
+        run: python -m pip install --quiet astropy
+      - name: Resolve missing coordinates and constellations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, math, pathlib, re, time
+          from astropy.coordinates import SkyCoord, get_constellation
+          import astropy.units as u
+
+          p = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          data = json.loads(p.read_text())
+          entries = data['entries']
+          assert len(entries) == 1879
+
+          def valid_coord(e):
+              ra, dec = e.get('ra'), e.get('dec')
+              return isinstance(ra,(int,float)) and isinstance(dec,(int,float)) and math.isfinite(ra) and math.isfinite(dec) and 0 <= ra < 360 and -90 <= dec <= 90
+
+          generic = re.compile(r'^(galaxy|galaxies|galaxy pair|galaxy group|galaxy cluster|cluster|group|field|deep field)$', re.I)
+          idlike = re.compile(r'^(?:M(?:ESSIER)?\s*\d+|NGC\s*\d+[A-Z]?|IC\s*\d+[A-Z]?|UGC\s*\d+|PGC\s*\d+|LEDA\s*\d+|ARP\s*\d+|HCG\s*\d+|ESO\s*[0-9A-Z+.-]+|ABELL\s*\d+|IRAS\s*[0-9A-Z+.-]+|2MASX?\s*J?[0-9A-Z+.-]+|SDSS\s*J?[0-9A-Z+.-]+|MRK\s*\d+|VV\s*\d+|MACS\s*J?[0-9A-Z+.-]+)$', re.I)
+
+          def candidates(e):
+              out=[]
+              def add(x):
+                  x=' '.join(str(x or '').replace('_',' ').split()).strip(' ,;/')
+                  if x and not generic.match(x) and x.lower() not in {v.lower() for v in out}:
+                      out.append(x)
+              des=e.get('designation')
+              if des:
+                  for part in re.split(r'\s*/\s*|\s*,\s*', str(des)):
+                      add(part)
+              name=e.get('name')
+              if name:
+                  parts=[x.strip() for x in str(name).split(',') if x.strip()]
+                  for part in parts:
+                      if idlike.match(part): add(part)
+                  for part in parts: add(part)
+              add(e.get('displayName'))
+              title=str(e.get('title') or '').strip()
+              if title and (idlike.match(title) or len(title.split()) <= 5): add(title)
+              return out
+
+          before=sum(valid_coord(e) for e in entries)
+          missing=[e for e in entries if not valid_coord(e)]
+          resolved=0; failed=0; attempts=0
+          samples=[]
+
+          for idx,e in enumerate(missing,1):
+              coord=None; used=None
+              for cand in candidates(e):
+                  attempts += 1
+                  try:
+                      coord=SkyCoord.from_name(cand)
+                      used=cand
+                      break
+                  except Exception:
+                      time.sleep(0.08)
+              if coord is None:
+                  failed += 1
+                  continue
+
+              c=coord.icrs
+              e['ra']=round(float(c.ra.deg),10)
+              e['dec']=round(float(c.dec.deg),10)
+              e['raText']=c.ra.to_string(unit=u.hour, sep=' ', precision=2, pad=False)
+              e['decText']=c.dec.to_string(unit=u.deg, sep=' ', precision=2, alwayssign=True, pad=False)
+              e['coordinateMethod']='cds_sesame_name_resolution'
+              e['coordinateResolvedFrom']=used
+              e['constellation']=get_constellation(c, short_name=False)
+              e['constellationMethod']='iau_boundary_from_radec'
+              resolved += 1
+              if len(samples)<20:
+                  samples.append({'archiveId':e.get('archiveId'),'resolvedFrom':used,'ra':e['ra'],'dec':e['dec'],'constellation':e['constellation']})
+              time.sleep(0.10)
+
+          after=sum(valid_coord(e) for e in entries)
+          constellations=sum(bool(str(e.get('constellation') or '').strip()) for e in entries)
+          stats={
+              'totalRecords':len(entries),
+              'coordinatesBefore':before,
+              'coordinatesMissingBefore':len(missing),
+              'coordinatesResolvedThisPass':resolved,
+              'coordinatesStillMissing':len(entries)-after,
+              'coordinatesAfter':after,
+              'constellationsAfter':constellations,
+              'resolverAttempts':attempts,
+              'unresolvedThisPass':failed,
+              'method':'CDS Sesame name/designation resolution + Astropy IAU constellation boundaries',
+              'samples':samples,
+          }
+          data.setdefault('manualEnrichment', {})['coordinateEnrichment'] = stats
+          p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+          chk=json.loads(p.read_text())
+          assert len(chk['entries'])==1879
+          assert sum(valid_coord(e) for e in chk['entries']) == after
+          print('COORDINATE_ENRICHMENT='+json.dumps(stats, sort_keys=True))
+          PY
+      - name: Commit catalog only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+          if git diff --cached --quiet; then
+            echo 'No catalog changes'
+            exit 0
+          fi
+          git commit -m 'Populate Hubble 0002 missing coordinates and constellations'
+          for i in 1 2 3 4 5; do
+            git fetch origin beta
+            git rebase origin/beta
+            if git push origin HEAD:beta; then exit 0; fi
+            sleep 2
+          done
+          exit 1
