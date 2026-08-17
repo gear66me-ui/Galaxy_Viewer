@@ -19,88 +19,69 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Verify frozen and protected baselines
+      - name: Verify protected baselines and committed 10D
         run: |
           set -euo pipefail
           test "$(git hash-object viewer/GV-beta-0010C.py)" = '762d3a25971ba245d868d484ac45d1cdfce930b2'
+          test "$(git hash-object viewer/GV-beta-0010D.py)" = '2c6fe45f647b21bcf7e024c0b6c9a6664c4fb0e1'
           test "$(git hash-object viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json)" = 'c30bd2648e6b96c586e5b81150b7743a881f1b23'
-          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java)" = '1c199391e02a4405f9753e376614fd732820d0c9'
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java)" = '55b478f9e932962ac01f65c3e305ad1d7a16e768'
           test "$(git hash-object .github/workflows/galaxy-viewer-release-gate.yml)" = 'e79db4e131891ecdc298f104f647dd78aa38f6c4'
           test "$(git hash-object mobile/beta/9I.html)" = '8075bef46a18c7b10401de140034fd56945d8c9c'
           test "$(git hash-object mobile/beta/9I-app.html)" = 'ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178'
           test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = '47b3e714053bfd64f835d3f1a2510e13618dbede'
 
-      - name: Create exact standalone 10D from frozen 10C
+      - name: Correct only stale 10C version class inside 10D
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-          src=Path('viewer/GV-beta-0010C.py')
-          dst=Path('viewer/GV-beta-0010D.py')
-          s=src.read_text(encoding='utf-8')
-          expected=s
-          changes=[
-            ('# GV-beta-0010C\n','# GV-beta-0010D\n',1),
-            ('.gv-10c-version','.gv-10d-version',1),
-            ("version.textContent='VERSION 10C'","version.textContent='VERSION 10D'",1),
-            ("const VERSION='10C';","const VERSION='10D';",1),
-            ("const DISPLAY_VERSION='10C';","const DISPLAY_VERSION='10D';",1),
-            ("const HUBBLE_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0006.json?v=74bae1c45befeefe73c3cc68771f531574c0c8e2';","const HUBBLE_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json?v=c30bd2648e6b96c586e5b81150b7743a881f1b23';",1),
-            ("presentationStyle.textContent='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #fff!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #fff!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}","presentationStyle.textContent='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}",1),
-            ('# GV-beta-0010C staged','# GV-beta-0010D staged',1),
-          ]
-          for old,new,count in changes:
-              actual=s.count(old)
-              if actual != count:
-                  raise SystemExit(f'REFUSING 10D: anchor count {actual} != {count}: {old[:90]}')
-              s=s.replace(old,new,count)
-          if dst.exists():
-              raise SystemExit('REFUSING 10D: destination already exists')
-          dst.write_text(s,encoding='utf-8')
-          # exact expected-transform proof
-          check=expected
-          for old,new,count in changes:
-              check=check.replace(old,new,count)
-          if s != check:
-              raise SystemExit('REFUSING 10D: candidate differs from exact authorized transform')
-          PY
-          python -m py_compile viewer/GV-beta-0010D.py
-          python - <<'PY'
-          import json,re,pathlib,subprocess
-          p=pathlib.Path('viewer/GV-beta-0010D.py')
+          p=Path('viewer/GV-beta-0010D.py')
           s=p.read_text(encoding='utf-8')
+          old="version.className='gv-10c-version';version.textContent='VERSION 10D'"
+          new="version.className='gv-10d-version';version.textContent='VERSION 10D'"
+          if s.count(old)!=1: raise SystemExit('REFUSING 10D CLASS FIX: exact stale class anchor count changed')
+          t=s.replace(old,new,1)
+          if t.count("version.className='gv-10d-version';version.textContent='VERSION 10D'")!=1: raise SystemExit('REFUSING 10D CLASS FIX: corrected anchor missing')
+          p.write_text(t,encoding='utf-8')
+          PY
+          git diff --check
+          test "$(git status --short | wc -l)" -eq 1
+          test "$(git status --short | awk '{print $2}')" = 'viewer/GV-beta-0010D.py'
+          test "$(git diff --numstat -- viewer/GV-beta-0010D.py | awk '{print $1,$2}')" = '1 1'
+          python -m py_compile viewer/GV-beta-0010D.py
+          rm -rf viewer/__pycache__
+          python - <<'PY'
+          import json,re,pathlib
+          s=pathlib.Path('viewer/GV-beta-0010D.py').read_text(encoding='utf-8')
           assert "const VERSION='10D';" in s
           assert "const DISPLAY_VERSION='10D';" in s
           assert s.count('border:2px solid #ABB3AA!important') == 2
           assert 'transform:scale(.8)' not in s
           assert 'gv-hubble-galaxies-full-0010.json?v=c30bd2648e6b96c586e5b81150b7743a881f1b23' in s
-          html=re.findall(r'display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)',s)
-          js=re.findall(r'display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)',s)
+          assert "version.className='gv-10c-version'" not in s
+          assert "version.className='gv-10d-version'" in s
+          html=re.findall(r'display\(HTML\("""([\s\S]*?)"""\)\)',s)
+          js=re.findall(r'display\(Javascript\(r"""([\s\S]*?)"""\)\)',s)
           assert len(html)==1 and len(js)==1
           pathlib.Path('/tmp/gv10d.js').write_text(js[0],encoding='utf-8')
           data=json.loads(pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json').read_text(encoding='utf-8'))
-          assert isinstance(data.get('entries'),list)
-          assert len(data['entries']) == data.get('categoryEntryCount') == 1879
-          print('10D catalog entries:',len(data['entries']))
+          assert len(data.get('entries',[])) == data.get('categoryEntryCount') == 1879
           PY
           node --check /tmp/gv10d.js
-          git diff --no-index -- viewer/GV-beta-0010C.py viewer/GV-beta-0010D.py || true
 
-      - name: Commit only new 10D candidate
+      - name: Commit only the one-line 10D class correction
         run: |
           set -euo pipefail
-          rm -rf viewer/__pycache__
-          test "$(git status --short | wc -l)" -eq 1
-          test "$(git status --short | awk '{print $2}')" = 'viewer/GV-beta-0010D.py'
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/GV-beta-0010D.py
-          git commit -m 'Create Galaxy Viewer 10D from frozen 10C'
+          git commit -m 'Correct Galaxy Viewer 10D version label class'
           git fetch origin beta
           git rebase origin/beta
           git push origin HEAD:beta
-          echo "CANDIDATE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-          echo "CANDIDATE_BLOB=$(git hash-object viewer/GV-beta-0010D.py)" >> "$GITHUB_ENV"
+          echo "TEN_D_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "TEN_D_BLOB=$(git hash-object viewer/GV-beta-0010D.py)" >> "$GITHUB_ENV"
 
       - name: Prepare disposable generic Android build tree
         run: |
@@ -111,8 +92,9 @@ jobs:
           rm -rf "$BUILD/app/src/main/assets"
           mkdir -p "$BUILD/app/src/main/assets/data" "$BUILD/app/src/main/assets/modules" "$BUILD/app/src/main/assets/artwork"
           cp android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png "$BUILD/app/src/main/assets/app-icon.png"
-          cp viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json "$BUILD/app/src/main/assets/data/gv-hubble-galaxies-full-0010.json"
+          cp viewer/artwork/icon.svg "$BUILD/app/src/main/assets/artwork/icon.svg"
           cp viewer/artwork/GV-reticle-0001.svg "$BUILD/app/src/main/assets/artwork/GV-reticle-0001.svg"
+          cp viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json "$BUILD/app/src/main/assets/data/gv-hubble-galaxies-full-0010.json"
           cp viewer/modules/gv-hamburger-menu-0002.js "$BUILD/app/src/main/assets/modules/"
           cp viewer/modules/gv-coordinate-overlay-0004.js "$BUILD/app/src/main/assets/modules/"
           cp viewer/modules/gv-target-simbad-0001.js "$BUILD/app/src/main/assets/modules/"
@@ -146,46 +128,31 @@ jobs:
           }
           for pattern,repl in replacements.items():
               fallback,n=re.subn(pattern,repl,fallback,count=1)
-              if n!=1: raise SystemExit('REFUSING 10D: fallback patch anchor missing '+pattern)
+              if n!=1: raise SystemExit('REFUSING 10D FALLBACK PATCH: '+pattern)
+          if "img.src='artwork/icon.svg'" not in fallback: raise SystemExit('REFUSING 10D: startup icon path changed')
           fallback_json=json.dumps(fallback)
-          html=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><title>GALAXY VIEWER</title><style>html,body{{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}}#gv-apk-cover{{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#000}}#gv-apk-cover img{{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}}#gv-apk-splash{{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}}#gv-apk-error{{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}}</style></head><body><div id="gv-apk-cover"><img src="app-icon.png" alt="GALAXY VIEWER"></div><iframe id="gv-apk-splash" title="GALAXY VIEWER SPLASH"></iframe><div id="gv-apk-error"></div><script>
-          (()=>{{
-          'use strict';
-          const MANIFEST_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json';
-          const VIEWER_RAW_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
-          const FALLBACK_SOURCE={fallback_json};
-          const params=new URLSearchParams(location.search),smoke=params.has('smoke'),forceFallback=params.has('forceFallback');
-          const root=document.documentElement,cover=document.getElementById('gv-apk-cover'),splash=document.getElementById('gv-apk-splash'),errorBox=document.getElementById('gv-apk-error');
-          root.dataset.gvStatus='booting';root.dataset.sourceOrigin='resolving';
-          const fetchText=async url=>{{const r=await fetch(url+(url.includes('?')?'&':'?')+'gv_launch='+Date.now(),{{cache:'no-store'}});if(!r.ok)throw new Error('HTTP '+r.status+' FOR '+url);return r.text()}};
-          const resolveSource=async()=>{{
-            if(forceFallback)return {{source:FALLBACK_SOURCE,origin:'fallback',viewer:'GV-beta-0010D.py',version:'10D'}};
-            try{{
-              const manifest=JSON.parse(await fetchText(MANIFEST_URL));
-              const viewer=String(manifest?.viewer||'');
-              if(!/^GV-beta-[A-Za-z0-9._-]+\\.py$/.test(viewer)||viewer.includes('/')||viewer.includes('..'))throw new Error('INVALID VIEWER MANIFEST TARGET');
-              const source=await fetchText(VIEWER_RAW_BASE+viewer);
-              return {{source,origin:'manifest',viewer,version:String(manifest?.version||'')}};
-            }}catch(error){{console.warn('GV GENERIC MANIFEST FALLBACK',error);return {{source:FALLBACK_SOURCE,origin:'fallback',viewer:'GV-beta-0010D.py',version:'10D'}}}}
-          }};
-          const executeViewer=source=>{{
-            const htmlMatches=[...source.matchAll(/display\\(HTML\\(\\\"\\\"\\\"([\\s\\S]*?)\\\"\\\"\\\"\\)\\)/g)];
-            const jsMatches=[...source.matchAll(/display\\(Javascript\\(r\\\"\\\"\\\"([\\s\\S]*?)\\\"\\\"\\\"\\)\\)/g)];
-            if(htmlMatches.length!==1||jsMatches.length!==1)throw new Error('VIEWER SOURCE MUST CONTAIN EXACTLY ONE HTML AND ONE JAVASCRIPT BLOCK');
-            const tpl=document.createElement('template');tpl.innerHTML=htmlMatches[0][1];
-            const embedded=[...tpl.content.querySelectorAll('script')].map(s=>s.textContent);tpl.content.querySelectorAll('script').forEach(s=>s.remove());document.body.appendChild(tpl.content);
-            embedded.forEach(code=>{{const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}});
-            const s=document.createElement('script');s.textContent=jsMatches[0][1];document.body.appendChild(s);
-          }};
-          const waitViewer=()=>new Promise((resolve,reject)=>{{let done=false;const t=setTimeout(()=>{{if(!done){{done=true;reject(new Error('GALAXY VIEWER READY EVENT TIMEOUT'))}}}},60000);const ok=e=>{{if(done)return;done=true;clearTimeout(t);resolve(e.detail||{{}})}};const bad=e=>{{if(done)return;done=true;clearTimeout(t);reject(new Error(e.detail?.message||'GALAXY VIEWER INITIALIZATION FAILED'))}};document.addEventListener('gv-viewer-ready',ok,{{once:true}});document.addEventListener('gv-viewer-failed',bad,{{once:true}})}});
-          const startSplash=()=>new Promise((resolve,reject)=>{{if(smoke){{splash.remove();cover.remove();resolve();return}}let settled=false;const onMessage=e=>{{if(e.source===splash.contentWindow&&e.data==='galaxy-splash-complete'&&!settled){{settled=true;window.removeEventListener('message',onMessage);resolve()}}}};window.addEventListener('message',onMessage);setTimeout(()=>{{splash.addEventListener('load',()=>requestAnimationFrame(()=>{{if(cover.isConnected)cover.remove()}}),{{once:true}});splash.addEventListener('error',()=>reject(new Error('FINAL SPLASH FAILED TO LOAD')),{{once:true}});splash.src='splash/index.html'}},3500);setTimeout(()=>{{if(!settled)reject(new Error('FINAL SPLASH COMPLETION TIMEOUT'))}},30000)}});
-          (async()=>{{let resolved;try{{resolved=await resolveSource();root.dataset.sourceOrigin=resolved.origin;root.dataset.viewerFile=resolved.viewer;const ready=waitViewer();const splashDone=startSplash();executeViewer(resolved.source);await Promise.all([ready,splashDone]);root.dataset.gvStatus='ready';if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove()}}catch(error){{console.error('GALAXY VIEWER GENERIC SHELL FAILURE',error);if(resolved?.origin==='manifest'&&!forceFallback){{location.replace('index.html?forceFallback=1'+(smoke?'&smoke=1':''));return}}root.dataset.gvStatus='failed';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\\n\\n'+String(error?.stack||error)}}}})();
-          }})();
-          </script></body></html>'''
+          html='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><title>GALAXY VIEWER</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-apk-cover{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#000}#gv-apk-cover img{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}#gv-apk-splash{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}#gv-apk-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}</style></head><body><div id="gv-apk-cover"><img src="app-icon.png" alt="GALAXY VIEWER"></div><iframe id="gv-apk-splash" title="GALAXY VIEWER SPLASH"></iframe><div id="gv-apk-error"></div><script>
+(()=>{
+'use strict';
+const MANIFEST_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json';
+const VIEWER_RAW_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+const FALLBACK_SOURCE=__FALLBACK__;
+const params=new URLSearchParams(location.search),smoke=params.has('smoke'),forceFallback=params.has('forceFallback');
+const root=document.documentElement,cover=document.getElementById('gv-apk-cover'),splash=document.getElementById('gv-apk-splash'),errorBox=document.getElementById('gv-apk-error');
+root.dataset.gvStatus='booting';root.dataset.sourceOrigin='resolving';
+const fetchText=async url=>{const r=await fetch(url+(url.includes('?')?'&':'?')+'gv_launch='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' FOR '+url);return r.text()};
+const resolveSource=async()=>{if(forceFallback)return {source:FALLBACK_SOURCE,origin:'fallback',viewer:'GV-beta-0010D.py',version:'10D'};try{const manifest=JSON.parse(await fetchText(MANIFEST_URL));const viewer=String(manifest?.viewer||'');if(!/^GV-beta-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||viewer.includes('..'))throw new Error('INVALID VIEWER MANIFEST TARGET');const source=await fetchText(VIEWER_RAW_BASE+viewer);return {source,origin:'manifest',viewer,version:String(manifest?.version||'')}}catch(error){console.warn('GV GENERIC MANIFEST FALLBACK',error);return {source:FALLBACK_SOURCE,origin:'fallback',viewer:'GV-beta-0010D.py',version:'10D'}}};
+const extract=(source,start,end)=>{const a=source.indexOf(start);if(a<0)throw new Error('VIEWER SOURCE START MARKER MISSING: '+start);const from=a+start.length;const b=source.indexOf(end,from);if(b<0)throw new Error('VIEWER SOURCE END MARKER MISSING: '+start);return source.slice(from,b)};
+const executeViewer=source=>{const htmlBlock=extract(source,'display(HTML("""','"""))');const jsBlock=extract(source,'display(Javascript(r"""','"""))');const tpl=document.createElement('template');tpl.innerHTML=htmlBlock;const embedded=[...tpl.content.querySelectorAll('script')].map(s=>s.textContent);tpl.content.querySelectorAll('script').forEach(s=>s.remove());document.body.appendChild(tpl.content);embedded.forEach(code=>{const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)});const s=document.createElement('script');s.textContent=jsBlock;document.body.appendChild(s)};
+const waitViewer=()=>new Promise((resolve,reject)=>{let done=false;const t=setTimeout(()=>{if(!done){done=true;reject(new Error('GALAXY VIEWER READY EVENT TIMEOUT'))}},60000);const ok=e=>{if(done)return;done=true;clearTimeout(t);resolve(e.detail||{})};const bad=e=>{if(done)return;done=true;clearTimeout(t);reject(new Error(e.detail?.message||'GALAXY VIEWER INITIALIZATION FAILED'))};document.addEventListener('gv-viewer-ready',ok,{once:true});document.addEventListener('gv-viewer-failed',bad,{once:true})});
+const startSplash=()=>new Promise((resolve,reject)=>{if(smoke){splash.remove();cover.remove();resolve();return}let settled=false;const onMessage=e=>{if(e.source===splash.contentWindow&&e.data==='galaxy-splash-complete'&&!settled){settled=true;window.removeEventListener('message',onMessage);resolve()}};window.addEventListener('message',onMessage);setTimeout(()=>{splash.addEventListener('load',()=>requestAnimationFrame(()=>{if(cover.isConnected)cover.remove()}),{once:true});splash.addEventListener('error',()=>reject(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});splash.src='splash/index.html'},3500);setTimeout(()=>{if(!settled)reject(new Error('FINAL SPLASH COMPLETION TIMEOUT'))},30000)});
+(async()=>{let resolved;try{resolved=await resolveSource();root.dataset.sourceOrigin=resolved.origin;root.dataset.viewerFile=resolved.viewer;const ready=waitViewer();const splashDone=startSplash();executeViewer(resolved.source);await Promise.all([ready,splashDone]);root.dataset.gvStatus='ready';if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove()}catch(error){console.error('GALAXY VIEWER GENERIC SHELL FAILURE',error);if(resolved?.origin==='manifest'&&!forceFallback){location.replace('index.html?forceFallback=1'+(smoke?'&smoke=1':''));return}root.dataset.gvStatus='failed';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)}})();
+})();
+</script></body></html>'''.replace('__FALLBACK__',fallback_json)
           Path('/tmp/gv10d-android/app/src/main/assets/index.html').write_text(html,encoding='utf-8')
           PY
 
-      - name: Patch disposable Android identity and adaptive launcher only
+      - name: Patch disposable Android identity and preserve adaptive launcher
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -194,26 +161,29 @@ jobs:
           root=Path('/tmp/gv10d-android')
           gradle=root/'app/build.gradle'
           s=gradle.read_text(encoding='utf-8')
-          s=re.sub(r'versionCode\s+\d+','versionCode 24',s,count=1)
-          s=re.sub(r"versionName\s+'[^']+'","versionName '10D'",s,count=1)
+          s,n1=re.subn(r'versionCode\s+\d+','versionCode 24',s,count=1)
+          s,n2=re.subn(r"versionName\s+'[^']+'","versionName '10D'",s,count=1)
+          if n1!=1 or n2!=1: raise SystemExit('REFUSING 10D: Android version anchors changed')
           gradle.write_text(s,encoding='utf-8')
           manifest=root/'app/src/main/AndroidManifest.xml'
           m=manifest.read_text(encoding='utf-8')
-          m=re.sub(r'android:label="[^"]+"','android:label="GALAXY VIEWER 10D"',m,count=1)
-          m=re.sub(r'android:icon="[^"]+"','android:icon="@mipmap/gv_app_icon_adaptive"',m,count=1)
+          m,n=re.subn(r'android:label="[^"]+"','android:label="GALAXY VIEWER 10D"',m,count=1)
+          if n!=1: raise SystemExit('REFUSING 10D: Android label anchor changed')
+          m,n=re.subn(r'android:icon="[^"]+"','android:icon="@mipmap/gv_app_icon_adaptive"',m,count=1)
+          if n!=1: raise SystemExit('REFUSING 10D: Android icon anchor changed')
           if 'android:roundIcon=' in m:m=re.sub(r'android:roundIcon="[^"]+"','android:roundIcon="@mipmap/gv_app_icon_adaptive"',m,count=1)
           else:m=m.replace('android:icon="@mipmap/gv_app_icon_adaptive"','android:icon="@mipmap/gv_app_icon_adaptive"\n        android:roundIcon="@mipmap/gv_app_icon_adaptive"',1)
           manifest.write_text(m,encoding='utf-8')
           values=root/'app/src/main/res/values';values.mkdir(parents=True,exist_ok=True)
           (values/'gv_launcher_colors.xml').write_text('<?xml version="1.0" encoding="utf-8"?><resources><color name="gv_launcher_black">#000000</color></resources>',encoding='utf-8')
           drawable=root/'app/src/main/res/drawable';drawable.mkdir(parents=True,exist_ok=True)
-          (drawable/'gv_app_icon_adaptive_foreground.xml').write_text('''<?xml version="1.0" encoding="utf-8"?>\n<inset xmlns:android="http://schemas.android.com/apk/res/android" android:insetLeft="20dp" android:insetTop="20dp" android:insetRight="20dp" android:insetBottom="20dp"><bitmap android:src="@drawable/gv_app_icon" android:gravity="center"/></inset>\n''',encoding='utf-8')
+          (drawable/'gv_app_icon_adaptive_foreground.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<inset xmlns:android="http://schemas.android.com/apk/res/android" android:insetLeft="20dp" android:insetTop="20dp" android:insetRight="20dp" android:insetBottom="20dp"><bitmap android:src="@drawable/gv_app_icon" android:gravity="center"/></inset>\n',encoding='utf-8')
           mip=root/'app/src/main/res/mipmap-anydpi-v26';mip.mkdir(parents=True,exist_ok=True)
-          (mip/'gv_app_icon_adaptive.xml').write_text('''<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/gv_launcher_black"/><foreground android:drawable="@drawable/gv_app_icon_adaptive_foreground"/></adaptive-icon>\n''',encoding='utf-8')
+          (mip/'gv_app_icon_adaptive.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/gv_launcher_black"/><foreground android:drawable="@drawable/gv_app_icon_adaptive_foreground"/></adaptive-icon>\n',encoding='utf-8')
           PY
           test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = '47b3e714053bfd64f835d3f1a2510e13618dbede'
 
-      - name: Browser smoke manifest path and fallback path
+      - name: Browser smoke current-manifest path and bundled fallback path
         run: |
           set -euo pipefail
           ASSETS=/tmp/gv10d-android/app/src/main/assets
@@ -225,18 +195,22 @@ jobs:
           from pathlib import Path
           p=Path('/tmp/gv10d-android/app/src/main/assets/index-manifest-test.html')
           s=p.read_text(encoding='utf-8')
-          s=s.replace("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json","http://127.0.0.1:8765/test-manifest.json",1)
-          s=s.replace("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/","http://127.0.0.1:8765/test-viewer/",1)
+          a='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json'
+          b='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/'
+          if s.count(a)!=1 or s.count(b)!=1: raise SystemExit('REFUSING 10D SMOKE: bootstrap URL anchors changed')
+          s=s.replace(a,'http://127.0.0.1:8765/test-manifest.json',1).replace(b,'http://127.0.0.1:8765/test-viewer/',1)
           p.write_text(s,encoding='utf-8')
           PY
           (cd "$ASSETS" && python -m http.server 8765 >/tmp/gv-http.log 2>&1 & echo $! >/tmp/gv-http.pid)
           sleep 2
-          google-chrome --headless=new --no-sandbox --disable-gpu --virtual-time-budget=70000 --dump-dom 'http://127.0.0.1:8765/index-manifest-test.html?smoke=1' > /tmp/manifest-dom.html
-          grep -q 'data-gv-status="ready"' /tmp/manifest-dom.html
+          google-chrome --headless=new --no-sandbox --disable-gpu --virtual-time-budget=80000 --dump-dom 'http://127.0.0.1:8765/index-manifest-test.html?smoke=1' > /tmp/manifest-dom.html
+          grep -q 'data-gv-status="ready"' /tmp/manifest-dom.html || { tail -80 /tmp/manifest-dom.html; exit 1; }
           grep -q 'data-source-origin="manifest"' /tmp/manifest-dom.html
-          google-chrome --headless=new --no-sandbox --disable-gpu --virtual-time-budget=70000 --dump-dom 'http://127.0.0.1:8765/index.html?smoke=1&forceFallback=1' > /tmp/fallback-dom.html
-          grep -q 'data-gv-status="ready"' /tmp/fallback-dom.html
+          grep -q 'data-viewer-file="GV-beta-0010D.py"' /tmp/manifest-dom.html
+          google-chrome --headless=new --no-sandbox --disable-gpu --virtual-time-budget=80000 --dump-dom 'http://127.0.0.1:8765/index.html?smoke=1&forceFallback=1' > /tmp/fallback-dom.html
+          grep -q 'data-gv-status="ready"' /tmp/fallback-dom.html || { tail -80 /tmp/fallback-dom.html; exit 1; }
           grep -q 'data-source-origin="fallback"' /tmp/fallback-dom.html
+          grep -q 'data-viewer-file="GV-beta-0010D.py"' /tmp/fallback-dom.html
           kill "$(cat /tmp/gv-http.pid)" || true
 
       - name: Set up Java 17
@@ -268,12 +242,13 @@ jobs:
           unzip -l "$APK" > /tmp/apk-list.txt
           grep -q 'assets/index.html' /tmp/apk-list.txt
           grep -q 'assets/data/gv-hubble-galaxies-full-0010.json' /tmp/apk-list.txt
+          grep -q 'assets/artwork/icon.svg' /tmp/apk-list.txt
           grep -q 'assets/splash/index.html' /tmp/apk-list.txt
           grep -q 'assets/app-icon.png' /tmp/apk-list.txt
           cp "$APK" Galaxy-Viewer-10D-Generic.apk
           sha256sum Galaxy-Viewer-10D-Generic.apk | tee Galaxy-Viewer-10D-Generic.sha256
 
-      - name: Promote 10D manifest only after tests and APK build pass
+      - name: Promote 10D manifest only after all gates pass
         run: |
           set -euo pipefail
           git fetch origin beta
