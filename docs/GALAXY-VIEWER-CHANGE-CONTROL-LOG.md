@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-307ff2f97e04 — Harden 10D generic bootstrap and resume guarded build
+
+**Recorded:** 2026-08-17T11:59:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`307ff2f97e047cce97d2f517e9a49843422161ce`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/307ff2f97e047cce97d2f517e9a49843422161ce)  
+**Parent/baseline:** `893407f7a95a8d33aae7f10624e8aeb42560d2c3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/893407f7a95a8d33aae7f10624e8aeb42560d2c3...307ff2f97e047cce97d2f517e9a49843422161ce)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Harden 10D generic bootstrap and resume guarded build
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10D-generic-apk.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `60f4831e5690b4a2da4a5ac19f540c818a613d9d384966ff58914c3ade5b8984`
+- SHA-256 after: `08371ca740803674b244b09d7ddd13bf08e73c9ae2526d7965e04dcef5e01f0c`
+- Bytes: `19439` → `21105`
+- Lines: `232` → `274`
+- Characters: `19439` → `21105`
+- Inserted lines: `56`
+- Deleted lines: `14`
+- Inserted characters: `2023`
+- Deleted characters: `357`
+- Unified diff hunks: `15`
+- Inserted blocks: `15`
+- Deleted blocks: `10`
+- Changed blocks: `15`
+- Line balance: `232 + 56 - 14 = 274` — **PASS**
+- Character balance: `19439 + 2023 - 357 = 21105` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4734d904b4c4 — Add files via upload
 
 **Recorded:** 2026-08-17T11:56:48-05:00  
