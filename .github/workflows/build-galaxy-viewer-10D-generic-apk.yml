@@ -89,6 +89,7 @@ jobs:
       - name: Commit only new 10D candidate
         run: |
           set -euo pipefail
+          rm -rf viewer/__pycache__
           test "$(git status --short | wc -l)" -eq 1
           test "$(git status --short | awk '{print $2}')" = 'viewer/GV-beta-0010D.py'
           git config user.name 'github-actions[bot]'
