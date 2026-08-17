@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-4575bdc0345b — Build repaired Galaxy Viewer 10E installer R2
+
+**Recorded:** 2026-08-17T14:06:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4575bdc0345bdcfef245cb1b5fa67fecbcbbbd54`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4575bdc0345bdcfef245cb1b5fa67fecbcbbbd54)  
+**Parent/baseline:** `c18329e38a61bb040967fb3d6dd3eff4b7713eeb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c18329e38a61bb040967fb3d6dd3eff4b7713eeb...4575bdc0345bdcfef245cb1b5fa67fecbcbbbd54)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build repaired Galaxy Viewer 10E installer R2
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r2.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `49a822cecc614c0346468c5a541a110065e10c961bcb49a3f33854be16005fe7`
+- Bytes: `0` → `22787`
+- Lines: `0` → `283`
+- Characters: `0` → `22785`
+- Inserted lines: `283`
+- Deleted lines: `0`
+- Inserted characters: `22785`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 283 - 0 = 283` — **PASS**
+- Character balance: `0 + 22785 - 0 = 22785` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a5783d7a1ef7 — Build corrected 10E splash handoff APK
 
 **Recorded:** 2026-08-17T14:00:20-05:00  
