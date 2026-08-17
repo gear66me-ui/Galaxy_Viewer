@@ -16,10 +16,10 @@ main{width:min(100%,960px);margin:0 auto;padding:18px 14px 28px}
 .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(100%,900px);margin:20px auto 0}
 .choice{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:78px;padding:10px 12px;border:2px solid #4f9dff;border-radius:8px;background:#081226;color:#eef7ff;text-decoration:none;box-shadow:0 0 14px rgba(69,231,255,.16),inset 0 0 10px rgba(79,157,255,.08);font:600 13px/1.2 system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase}
 .choice:active{transform:scale(.99)}
-.icon-square{position:relative;width:54px;height:54px;flex:0 0 54px;border:1.5px solid rgba(111,192,255,.78);background:#030b17;box-shadow:inset 0 0 10px rgba(69,231,255,.12)}
+.icon-square{position:relative;width:54px;height:54px;flex:0 0 54px;overflow:hidden;border:1.5px solid rgba(111,192,255,.78);background:#030b17;box-shadow:inset 0 0 10px rgba(69,231,255,.12)}
 .icon-square img{position:absolute;left:50%;top:50%;width:36px;height:36px;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 0 5px rgba(69,231,255,.75))}
-.comet-orbit{position:absolute;inset:-7px;border-radius:50%;animation:gv-orbit 3s linear infinite;pointer-events:none}
-.comet-orbit::before{content:"";position:absolute;left:50%;top:-1px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 5px #fff,0 0 10px #45e7ff,0 0 16px #4f9dff}
+.comet-orbit{position:absolute;inset:4px;border-radius:50%;animation:gv-orbit 3s linear infinite;pointer-events:none}
+.comet-orbit::before{content:"";position:absolute;left:50%;top:-1px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 4px #fff,0 0 8px #45e7ff,0 0 12px #4f9dff}
 .comet-orbit::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 240deg,transparent 0deg,rgba(79,157,255,.02) 18deg,rgba(79,157,255,.08) 48deg,rgba(69,231,255,.20) 82deg,rgba(69,231,255,.42) 112deg,rgba(255,255,255,.70) 120deg,transparent 121deg 360deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px))}
 .choice:nth-child(1) .comet-orbit{animation-delay:0s}
 .choice:nth-child(2) .comet-orbit{animation-delay:-1s}
