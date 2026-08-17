@@ -1,0 +1,107 @@
+name: Build Galaxy Viewer Android 9I-J
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-J.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Prepare deterministic 9I-J package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "be558dfbdcb4e0d44cfcb1afaae775071a8bc0a0"
+          cp viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-I.py
+          python .github/scripts/prepare_galaxy_viewer_9ij.py
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+          grep -q "DISPLAY_VERSION='9I-J'" viewer/GV-beta-0009I.py
+          grep -q "gv-viewer-ready" android/galaxy-viewer-9i/app/src/main/assets/index.html
+          grep -q "WebViewAssetLoader" android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java
+          test -s android/galaxy-viewer-9i/app/src/main/assets/data/gv-hubble-galaxies-full-0002.json
+
+      - name: Commit and safely rebase 9I-J Viewer source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-I.py
+          git diff --cached --check
+          git commit -m 'Archive 9I-I and rev beta Viewer to 9I-J deterministic readiness'
+          git stash push --include-untracked -m 9ij-android-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          git stash pop
+
+      - name: Verify package invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+          grep -q "gv-viewer-ready" android/galaxy-viewer-9i/app/src/main/assets/index.html
+          grep -q "gv-viewer-failed" android/galaxy-viewer-9i/app/src/main/assets/index.html
+          ! grep -q "homeReady" android/galaxy-viewer-9i/app/src/main/assets/index.html
+          grep -q "appassets.androidplatform.net/assets/index.html" android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java
+          grep -q "androidx.webkit:webkit:1.12.1" android/galaxy-viewer-9i/app/build.gradle
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build 9I-J APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Stage and hash APK
+        run: |
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-J.apk
+          sha256sum Galaxy-Viewer-9I-J.apk | tee Galaxy-Viewer-9I-J.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-9I-J
+          path: |
+            Galaxy-Viewer-9I-J.apk
+            Galaxy-Viewer-9I-J.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 9I-J release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view galaxy-viewer-9i-j >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-J release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-j Galaxy-Viewer-9I-J.apk Galaxy-Viewer-9I-J.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-J — Android' --notes 'Galaxy Viewer 9I-J beta test APK. Waits for the Viewer-owned gv-viewer-ready event before removing splash; reports gv-viewer-failed directly; serves bundled launcher/modules/catalog/reticle/splash from Android WebViewAssetLoader local HTTPS origin; original icon unchanged; main branch untouched.'
