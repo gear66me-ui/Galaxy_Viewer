@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a5783d7a1ef7 — Build corrected 10E splash handoff APK
+
+**Recorded:** 2026-08-17T14:00:20-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a5783d7a1ef7eef6ff1d044e703bdd0954d86423`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a5783d7a1ef7eef6ff1d044e703bdd0954d86423)  
+**Parent/baseline:** `a856f15a3d7975b4fe759a8e891d0b5d1e59d2e9`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a856f15a3d7975b4fe759a8e891d0b5d1e59d2e9...a5783d7a1ef7eef6ff1d044e703bdd0954d86423)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build corrected 10E splash handoff APK
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-10E-splash-fix.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `a8db5c0fd0e41392f8c8b8a0bbe795e655b93d178ce58e405a019218b399696a`
+- Bytes: `0` → `2796`
+- Lines: `0` → `72`
+- Characters: `0` → `2796`
+- Inserted lines: `72`
+- Deleted lines: `0`
+- Inserted characters: `2796`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 72 - 0 = 72` — **PASS**
+- Character balance: `0 + 2796 - 0 = 2796` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6df53d242512 — Let 10E splash finish before Viewer initialization
 
 **Recorded:** 2026-08-17T13:59:48-05:00  
