@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-af7f1f3476db — Run surgical 10E image-label and four Hubble image replacements
+
+**Recorded:** 2026-08-17T16:04:34-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`af7f1f3476dbf077a8a0d10b6f1f1f03d0d3b7d5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/af7f1f3476dbf077a8a0d10b6f1f1f03d0d3b7d5)  
+**Parent/baseline:** `cf079aa29f6b02fb8499bd2bdad4e8ccea39abfd`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/cf079aa29f6b02fb8499bd2bdad4e8ccea39abfd...af7f1f3476dbf077a8a0d10b6f1f1f03d0d3b7d5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run surgical 10E image-label and four Hubble image replacements
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `028db4a821516c7ba1fba8dacd79155970c1bc03ee77d26184d05ef60ce5552a`
+- SHA-256 after: `b98f14a4ee76f474543ef50a51fa620755d8627fbc1a8072f1b6e69ef031c52c`
+- Bytes: `4173` → `5603`
+- Lines: `77` → `105`
+- Characters: `4171` → `5603`
+- Inserted lines: `85`
+- Deleted lines: `57`
+- Inserted characters: `4562`
+- Deleted characters: `3130`
+- Unified diff hunks: `8`
+- Inserted blocks: `6`
+- Deleted blocks: `8`
+- Changed blocks: `8`
+- Line balance: `77 + 85 - 57 = 105` — **PASS**
+- Character balance: `4171 + 4562 - 3130 = 5603` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-730ce8349409 — Restore permanent generic 10E workflow
 
 **Recorded:** 2026-08-17T15:52:09-05:00  
