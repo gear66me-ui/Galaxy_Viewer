@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-80bb9286a3b2 — Build Galaxy Viewer Android 9I-K splash completion repair
+
+**Recorded:** 2026-08-16T19:43:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`80bb9286a3b2c475476c952fbf88aa6dd0aa4be5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/80bb9286a3b2c475476c952fbf88aa6dd0aa4be5)  
+**Parent/baseline:** `f60c0eb20a95d60091f18fbccc13e38e77bc0b23`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f60c0eb20a95d60091f18fbccc13e38e77bc0b23...80bb9286a3b2c475476c952fbf88aa6dd0aa4be5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build Galaxy Viewer Android 9I-K splash completion repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I-K.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `2da63e0fc68126650afc2da52210007f9a7fb704e1173739ea87731db0bad353`
+- Bytes: `0` → `6699`
+- Lines: `0` → `141`
+- Characters: `0` → `6697`
+- Inserted lines: `141`
+- Deleted lines: `0`
+- Inserted characters: `6697`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 141 - 0 = 141` — **PASS**
+- Character balance: `0 + 6697 - 0 = 6697` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-019d658a4793 — Add high-visibility Hubble Galaxy Viewer icon
 
 **Recorded:** 2026-08-16T19:36:20-05:00  
