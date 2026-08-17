@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-8da24e62005c — Prevent release-gate pycache pollution
+
+**Recorded:** 2026-08-17T13:02:18-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8da24e62005c1680f1e80fd04c29e5f95377060a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8da24e62005c1680f1e80fd04c29e5f95377060a)  
+**Parent/baseline:** `d4b9b49f6c4d122fa3579ca6a33b0b00f4617780`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d4b9b49f6c4d122fa3579ca6a33b0b00f4617780...8da24e62005c1680f1e80fd04c29e5f95377060a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Prevent release-gate pycache pollution
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/galaxy-viewer-release-gate.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `65061604b523262f0c58a25be103541ef9a9f45f0d4ad39c1c3661ad133b07df`
+- SHA-256 after: `5c5bd14d4bd7db1c61a541238bccee1071041743208d2b4f05c7fa1faf13d528`
+- Bytes: `10143` → `10279`
+- Lines: `225` → `229`
+- Characters: `10143` → `10279`
+- Inserted lines: `5`
+- Deleted lines: `1`
+- Inserted characters: `147`
+- Deleted characters: `11`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `225 + 5 - 1 = 229` — **PASS**
+- Character balance: `10143 + 147 - 11 = 10279` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-f857101fff9c — Run corrected guarded 10E generic release
 
 **Recorded:** 2026-08-17T12:59:20-05:00  
