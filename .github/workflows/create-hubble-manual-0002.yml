@@ -1,4 +1,4 @@
-name: Create Hubble manual catalog 0002
+name: Populate Hubble 0002 catalog designations
 
 on:
   push:
@@ -17,56 +17,137 @@ jobs:
         with:
           ref: beta
           fetch-depth: 0
-      - name: Create 0002 and patch Antennae
+
+      - name: Populate defensible astronomical designations
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, pathlib
-          src = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json')
-          dst = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
-          data = json.loads(src.read_text())
+          import json
+          import pathlib
+          import re
+          from collections import Counter
+
+          path = pathlib.Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json')
+          data = json.loads(path.read_text())
+          entries = data.get('entries', [])
           assert data.get('metadataRecordCount') == 1879
-          assert len(data.get('entries', [])) == 1879
-          matches = [e for e in data['entries'] if e.get('archiveId') == 'potw1345a']
-          assert len(matches) == 1
-          e = matches[0]
-          e['designation'] = 'NGC 4038 / NGC 4039'
-          e['displayName'] = 'Antennae Galaxies'
-          e['imageReview'] = 'PASS'
-          s = e.setdefault('science', {})
-          s['distanceMly'] = 65.0
-          s['distanceMethod'] = 'esa'
-          s['sizeKly'] = [53.0, 53.0]
-          s['sizeMethod'] = 'manual_rounded_fov'
-          s['ageGyr'] = None
-          s['ageMinGyr'] = 0.1
-          s['ageMaxGyr'] = 1.0
-          s['ageEstimated'] = True
-          s['ageMethod'] = 'manual_stellar_population_range'
-          s['ageDisplay'] = 'EST. 0.1-1 GYR'
-          data['version'] = 'full-0002'
-          data['manualEnrichment'] = {
-              'status': 'in_progress',
-              'completedRecords': 1,
-              'displayFields': ['designation','name','distance','constellation','age','size']
+          assert len(entries) == 1879
+
+          # Conservative whitelist of established astronomical catalogue/object
+          # identifier forms seen in galaxy/cluster literature.  We only harvest
+          # identifiers already present in ESA/Hubble source metadata; this pass
+          # does not infer an identity from coordinates and does not invent IDs.
+          patterns = [
+              ('MESSIER', re.compile(r'(?<![A-Z0-9])M\s*([0-9]{1,3})(?![A-Z0-9])', re.I), lambda m: f'M {int(m.group(1))}'),
+              ('NGC', re.compile(r'(?<![A-Z0-9])NGC\s*([0-9]{1,4}[A-Z]?)(?![A-Z0-9])', re.I), lambda m: f'NGC {m.group(1).upper()}'),
+              ('IC', re.compile(r'(?<![A-Z0-9])IC\s*([0-9]{1,4}[A-Z]?)(?![A-Z0-9])', re.I), lambda m: f'IC {m.group(1).upper()}'),
+              ('UGC', re.compile(r'(?<![A-Z0-9])UGC\s*([0-9]{1,5}[A-Z]?)(?![A-Z0-9])', re.I), lambda m: f'UGC {m.group(1).upper()}'),
+              ('PGC', re.compile(r'(?<![A-Z0-9])PGC\s*([0-9]{1,7})(?![A-Z0-9])', re.I), lambda m: f'PGC {m.group(1)}'),
+              ('LEDA', re.compile(r'(?<![A-Z0-9])LEDA\s*([0-9]{1,7})(?![A-Z0-9])', re.I), lambda m: f'LEDA {m.group(1)}'),
+              ('ARP', re.compile(r'(?<![A-Z0-9])ARP\s*([0-9]{1,3})(?![A-Z0-9])', re.I), lambda m: f'Arp {int(m.group(1))}'),
+              ('HCG', re.compile(r'(?<![A-Z0-9])HCG\s*([0-9]{1,3}[A-Z]?)(?![A-Z0-9])', re.I), lambda m: f'HCG {m.group(1).upper()}'),
+              ('ABELL', re.compile(r'(?<![A-Z0-9])(?:ABELL|ACO)\s*([0-9]{1,4})(?![A-Z0-9])', re.I), lambda m: f'Abell {int(m.group(1))}'),
+              ('ESO', re.compile(r'(?<![A-Z0-9])ESO\s*([0-9]{2,4}[-–][A-Z0-9-]{1,10})(?![A-Z0-9])', re.I), lambda m: 'ESO ' + m.group(1).upper().replace('–','-')),
+              ('MCG', re.compile(r'(?<![A-Z0-9])MCG\s*([+-]?[0-9]{1,2}[-–][0-9]{1,2}[-–][0-9]{1,3})(?![A-Z0-9])', re.I), lambda m: 'MCG ' + m.group(1).replace('–','-')),
+              ('CGCG', re.compile(r'(?<![A-Z0-9])CGCG\s*([0-9]{1,3}[-–][0-9]{1,3})(?![A-Z0-9])', re.I), lambda m: 'CGCG ' + m.group(1).replace('–','-')),
+              ('VV', re.compile(r'(?<![A-Z0-9])VV\s*([0-9]{1,4})(?![A-Z0-9])', re.I), lambda m: f'VV {int(m.group(1))}'),
+              ('MRK', re.compile(r'(?<![A-Z0-9])(?:MRK|MARKARIAN)\s*([0-9]{1,4})(?![A-Z0-9])', re.I), lambda m: f'Mrk {int(m.group(1))}'),
+              ('IRAS', re.compile(r'(?<![A-Z0-9])IRAS\s*([0-9]{4,6}[+-][0-9]{3,6})(?![A-Z0-9])', re.I), lambda m: 'IRAS ' + m.group(1).upper()),
+              ('2MASX', re.compile(r'(?<![A-Z0-9])2MASX\s*J?([0-9]{6,8}[+-][0-9]{5,8})(?![A-Z0-9])', re.I), lambda m: '2MASX J' + m.group(1).upper()),
+              ('SDSS', re.compile(r'(?<![A-Z0-9])SDSS\s*J([0-9]{6,10}(?:\.[0-9]+)?[+-][0-9]{6,10}(?:\.[0-9]+)?)(?![A-Z0-9])', re.I), lambda m: 'SDSS J' + m.group(1)),
+              ('3C', re.compile(r'(?<![A-Z0-9])3C\s*([0-9]{1,3}(?:\.[0-9]+)?)(?![A-Z0-9])', re.I), lambda m: '3C ' + m.group(1)),
+              ('4C', re.compile(r'(?<![A-Z0-9])4C\s*([+-][0-9]{1,2}\.[0-9]{1,2})(?![A-Z0-9])', re.I), lambda m: '4C ' + m.group(1)),
+              ('PKS', re.compile(r'(?<![A-Z0-9])PKS\s*([0-9]{3,4}[+-][0-9]{2,4})(?![A-Z0-9])', re.I), lambda m: 'PKS ' + m.group(1).upper()),
+              ('MACS', re.compile(r'(?<![A-Z0-9])MACS\s*J([0-9]{4,8}(?:\.[0-9]+)?[+-][0-9]{3,8}(?:\.[0-9]+)?)(?![A-Z0-9])', re.I), lambda m: 'MACS J' + m.group(1)),
+              ('CLASH', re.compile(r'(?<![A-Z0-9])CL\s*J([0-9]{4,8}(?:\.[0-9]+)?[+-][0-9]{3,8}(?:\.[0-9]+)?)(?![A-Z0-9])', re.I), lambda m: 'CL J' + m.group(1)),
+          ]
+
+          generic = {'GALAXY','GALAXIES','GALAXY PAIR','GALAXY GROUP','GALAXY CLUSTER','GROUP','CLUSTER','UNKNOWN','UNRESOLVED'}
+          populated = 0
+          preserved = 0
+          unresolved = 0
+          multi = 0
+          by_catalog = Counter()
+          examples = []
+
+          for e in entries:
+              existing = str(e.get('designation') or '').strip()
+              if existing and existing.upper() not in generic:
+                  preserved += 1
+                  continue
+
+              text = ' , '.join(str(e.get(k) or '') for k in ('name','title'))
+              found = []
+              found_catalogs = []
+              seen = set()
+              for catalog, rx, normalizer in patterns:
+                  for m in rx.finditer(text):
+                      value = normalizer(m)
+                      key = value.upper().replace(' ', '')
+                      if key not in seen:
+                          seen.add(key)
+                          found.append(value)
+                          found_catalogs.append(catalog)
+
+              if found:
+                  e['designation'] = ' / '.join(found)
+                  e['designationMethod'] = 'source_metadata_catalog_identifier'
+                  e['designationSourceFields'] = ['name', 'title']
+                  populated += 1
+                  if len(found) > 1:
+                      multi += 1
+                  for catalog in set(found_catalogs):
+                      by_catalog[catalog] += 1
+                  if len(examples) < 30:
+                      examples.append((e.get('archiveId'), e['designation'], e.get('name')))
+              else:
+                  # Do not synthesize a generic value into the persisted database.
+                  # If an earlier generic fallback had been persisted, remove it.
+                  if existing and existing.upper() in generic:
+                      e.pop('designation', None)
+                  unresolved += 1
+
+          designated_total = sum(1 for e in entries if str(e.get('designation') or '').strip())
+          data['designationEnrichment'] = {
+              'status': 'prototype_source_metadata_pass',
+              'method': 'recognized_catalog_identifiers_from_name_and_title',
+              'recordCount': len(entries),
+              'preservedExistingDesignations': preserved,
+              'newlyPopulatedDesignations': populated,
+              'designatedRecordCount': designated_total,
+              'unresolvedRecordCount': len(entries) - designated_total,
+              'multiDesignationRecordCount': multi,
+              'catalogRecordCounts': dict(sorted(by_catalog.items())),
+              'note': 'Identifiers are harvested only when explicitly present in ESA/Hubble source metadata; unresolved records are intentionally left without a designation.'
           }
-          dst.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
-          chk = json.loads(dst.read_text())
-          assert chk['version'] == 'full-0002'
+          if isinstance(data.get('manualEnrichment'), dict):
+              data['manualEnrichment']['designationSourceMetadataPassComplete'] = True
+
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+          chk = json.loads(path.read_text())
           assert len(chk['entries']) == 1879
-          m = [x for x in chk['entries'] if x.get('archiveId') == 'potw1345a'][0]
-          assert m['science']['ageDisplay'] == 'EST. 0.1-1 GYR'
-          assert m['science']['sizeKly'] == [53.0, 53.0]
-          print('PASS: 0002 created, 1879 records preserved, potw1345a patched')
+          assert chk['metadataRecordCount'] == 1879
+          assert len({e.get('archiveId') for e in chk['entries']}) == 1879
+          assert next(e for e in chk['entries'] if e.get('archiveId') == 'potw1345a')['designation'] == 'NGC 4038 / NGC 4039'
+
+          print(f'PASS records={len(entries)} preserved={preserved} newly_populated={populated} designated_total={designated_total} unresolved={len(entries)-designated_total} multi={multi}')
+          print('CATALOG_COUNTS', json.dumps(dict(sorted(by_catalog.items())), sort_keys=True))
+          print('EXAMPLES')
+          for row in examples:
+              print(' | '.join(str(x) for x in row))
           PY
-      - name: Commit catalog 0002
+
+      - name: Commit catalog 0002 designation enrichment
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
-          git commit -m 'Create Hubble full catalog 0002 with Antennae enrichment'
+          git diff --cached --check
+          git commit -m 'Populate Hubble 0002 catalog designations'
           git pull --rebase origin beta
           git push origin beta
+          echo "COMMIT=$(git rev-parse HEAD)"
