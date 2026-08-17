@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-cc97ce098e98 — Fix Gemini 15-record review workflow prompt formatting
+
+**Recorded:** 2026-08-16T22:52:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`cc97ce098e98635caa9b53cb267f1d7b4cf70a1c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/cc97ce098e98635caa9b53cb267f1d7b4cf70a1c)  
+**Parent/baseline:** `0c7066f7b48096daf258538d1c65db45b6b99787`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0c7066f7b48096daf258538d1c65db45b6b99787...cc97ce098e98635caa9b53cb267f1d7b4cf70a1c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix Gemini 15-record review workflow prompt formatting
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/recover-hubble-0002-gemini-jet.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `36cfcf5778f86ef95cf9cb92224187735b434021d2c0718e96584855044d4578`
+- SHA-256 after: `2cb066c3141e21768012a842e253c453cf56d7f4f18caea8d486b91c594ef7d8`
+- Bytes: `7010` → `7179`
+- Lines: `140` → `134`
+- Characters: `7010` → `7179`
+- Inserted lines: `18`
+- Deleted lines: `24`
+- Inserted characters: `300`
+- Deleted characters: `131`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `140 + 18 - 24 = 134` — **PASS**
+- Character balance: `7010 + 300 - 131 = 7179` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-eaa86fc01e17 — Run first 15 Hubble Gemini records for review
 
 **Recorded:** 2026-08-16T22:51:02-05:00  
