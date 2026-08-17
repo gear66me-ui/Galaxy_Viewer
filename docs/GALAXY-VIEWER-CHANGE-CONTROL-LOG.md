@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b8fc388979b5 — Use current Gemini Flash-Lite model for Hubble jet recovery
+
+**Recorded:** 2026-08-16T22:45:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b8fc388979b5e5ac7e1ef143a1e84289333d2b60`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b8fc388979b5e5ac7e1ef143a1e84289333d2b60)  
+**Parent/baseline:** `3736a07a7738938e8c9feb820df3b7c5f60c606d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3736a07a7738938e8c9feb820df3b7c5f60c606d...b8fc388979b5e5ac7e1ef143a1e84289333d2b60)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use current Gemini Flash-Lite model for Hubble jet recovery
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/recover-hubble-0002-gemini-jet.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `92393f859f3bfbcff87627fb41225662ec7eea1394bca451b4c883e2a34e9be9`
+- SHA-256 after: `105f4aa49291bf19916500d58dccd28ea5e97691328ac11e1edb51e986a82e13`
+- Bytes: `15842` → `15841`
+- Lines: `286` → `286`
+- Characters: `15842` → `15841`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `1`
+- Deleted characters: `2`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `286 + 2 - 2 = 286` — **PASS**
+- Character balance: `15842 + 1 - 2 = 15841` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-511f59916c93 — Add Gemini jet recovery for remaining Hubble targets
 
 **Recorded:** 2026-08-16T22:43:58-05:00  
