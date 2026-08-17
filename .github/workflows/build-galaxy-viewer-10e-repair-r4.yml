@@ -44,17 +44,14 @@ jobs:
           grep -Fq 'formatCompactHdScale' viewer/modules/gv-random-galaxy-0030.js
           grep -Fq 'G LY' viewer/modules/gv-random-galaxy-0030.js
           test "$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" = "c17d7c8d48e71b7e91ac3ed28ee3c55786a82385"
-      - name: Restore workflow and commit only effective 10E change
+      - name: Commit only 10E source
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git checkout HEAD^ -- .github/workflows/build-galaxy-viewer-10e-repair-r4.yml
-          git add viewer/GV-beta-0010E.py .github/workflows/build-galaxy-viewer-10e-repair-r4.yml
-          git diff --cached --name-only | sort | tee /tmp/staged.txt
-          printf '%s\n' .github/workflows/build-galaxy-viewer-10e-repair-r4.yml viewer/GV-beta-0010E.py | sort > /tmp/expected.txt
-          diff -u /tmp/expected.txt /tmp/staged.txt
+          git add viewer/GV-beta-0010E.py
+          test "$(git diff --cached --name-only)" = "viewer/GV-beta-0010E.py"
           git commit -m 'Restore 10E Random Galaxy control and add sparkle icon'
           git fetch origin beta
           git rebase origin/beta
