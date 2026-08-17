@@ -152,6 +152,8 @@ jobs:
           git diff --cached --name-only | tee /tmp/staged.txt
           diff -u <(printf '%s\n' android/galaxy-viewer-10e/app/build.gradle android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010E.py viewer/GV-beta-0010E.py viewer/modules/gv-random-galaxy-0030.js | sort) <(sort /tmp/staged.txt)
           git commit -m 'Refine 10E Hubble scale ruler typography'
+          git reset --hard HEAD
+          git clean -fd android/galaxy-viewer-10e/.gradle android/galaxy-viewer-10e/app/build
           git fetch origin beta
           git rebase origin/beta
           git push origin HEAD:beta
