@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-bb30d1842430 — Allow generic Galaxy Viewer asset shell to fetch current manifest
+
+**Recorded:** 2026-08-17T11:48:42-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`bb30d1842430481154c127f45b80a121b9b026af`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/bb30d1842430481154c127f45b80a121b9b026af)  
+**Parent/baseline:** `587ccc29b63ca7dca0b201a1183ad346e32b3192`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/587ccc29b63ca7dca0b201a1183ad346e32b3192...bb30d1842430481154c127f45b80a121b9b026af)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Allow generic Galaxy Viewer asset shell to fetch current manifest
+```
+
+### Complete changed-path accounting
+
+#### `android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java`
+
+- Status: **MODIFIED**
+- SHA-256 before: `84a575000738e1223f265a05a238fec743cb11ef4b523b85057ab52a0096359e`
+- SHA-256 after: `b905d1d149f9e7dc1ae3756d62d2ffdd983efd3d84d6d45abdda3fdadde6aed7`
+- Bytes: `6894` → `6954`
+- Lines: `150` → `151`
+- Characters: `6894` → `6954`
+- Inserted lines: `1`
+- Deleted lines: `0`
+- Inserted characters: `60`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `150 + 1 - 0 = 151` — **PASS**
+- Character balance: `6894 + 60 - 0 = 6954` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-27dd942422b3 — Restore exact temporary 10D workflow and keep corrected anchor count
 
 **Recorded:** 2026-08-17T11:42:45-05:00  
