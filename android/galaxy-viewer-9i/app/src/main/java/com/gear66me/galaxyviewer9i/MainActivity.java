@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 
 public final class MainActivity extends Activity {
-    private static final String APP_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/9I-app.html?source=android-app&release=9I-D";
+    private static final String APP_URL = "file:///android_asset/index.html";
     private static final String APP_HOST = "gear66me-ui.github.io";
     private static final String APP_PATH = "/Galaxy_Viewer/";
     private WebView webView;
@@ -49,7 +49,7 @@ public final class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setAllowFileAccess(false);
+        settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
@@ -59,8 +59,12 @@ public final class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             private boolean allowed(Uri uri) {
-                return uri != null
-                        && "https".equalsIgnoreCase(uri.getScheme())
+                if (uri == null) return false;
+                if ("file".equalsIgnoreCase(uri.getScheme())) {
+                    String path = uri.getPath();
+                    return path != null && path.startsWith("/android_asset/");
+                }
+                return "https".equalsIgnoreCase(uri.getScheme())
                         && APP_HOST.equalsIgnoreCase(uri.getHost())
                         && uri.getPath() != null
                         && uri.getPath().startsWith(APP_PATH);
