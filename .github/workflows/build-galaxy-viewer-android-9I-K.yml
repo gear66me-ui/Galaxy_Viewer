@@ -22,65 +22,23 @@ jobs:
           fetch-depth: 0
 
       - name: Guard frozen website surfaces
-        shell: bash
         run: |
           set -euo pipefail
           test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
           MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
           test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
 
-      - name: Prepare 9I-K from verified 9I-J
-        shell: bash
+      - name: Prepare verified 9I-K package
         run: |
           set -euo pipefail
           test "$(git hash-object viewer/GV-beta-0009I.py)" = "e5d768aee94f12b4d15e22d08443a6a1fbb796e4"
           cp viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-J.py
-          python - <<'PY'
-          from pathlib import Path
-          src=Path('.github/scripts/prepare_galaxy_viewer_9ij.py').read_text(encoding='utf-8')
-          src=src.replace("EXPECTED_VIEWER='be558dfbdcb4e0d44cfcb1afaae775071a8bc0a0'","EXPECTED_VIEWER='e5d768aee94f12b4d15e22d08443a6a1fbb796e4'")
-          src=src.replace('9I-J','9I-K')
-          src=src.replace('versionCode 16','versionCode 17')
-          start=src.index('def patch_viewer():')
-          end=src.index('\n\ndef build_assets():',start)
-          patch_viewer='''def patch_viewer():
-    if hash_object(VIEWER)!=EXPECTED_VIEWER:
-        raise SystemExit('REFUSING 9I-K: active beta Viewer blob is not verified 9I-J')
-    text=VIEWER.read_text(encoding='utf-8')
-    old="    const DISPLAY_VERSION='9I-J';"
-    if text.count(old)!=1:
-        raise SystemExit('REFUSING 9I-K: expected one 9I-J DISPLAY_VERSION')
-    text=text.replace(old,"    const DISPLAY_VERSION='9I-K';",1)
-    if "document.dispatchEvent(new CustomEvent('gv-viewer-ready'" not in text:
-        raise SystemExit('REFUSING 9I-K: Viewer READY event missing')
-    if "document.dispatchEvent(new CustomEvent('gv-viewer-failed'" not in text:
-        raise SystemExit('REFUSING 9I-K: Viewer FAILED event missing')
-    VIEWER.write_text(text,encoding='utf-8')
-'''
-          src=src[:start]+patch_viewer+src[end:]
-          Path('.github/scripts/prepare_galaxy_viewer_9ik_runtime.py').write_text(src,encoding='utf-8')
-          PY
-          python .github/scripts/prepare_galaxy_viewer_9ik_runtime.py
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('android/galaxy-viewer-9i/app/src/main/assets/splash/index.html')
-          s=p.read_text(encoding='utf-8')
-          needle="window.dispatchEvent(new CustomEvent('galaxy-splash-complete'))"
-          count=s.count(needle)
-          if count != 2:
-              raise SystemExit(f'REFUSING 9I-K: expected exactly 2 splash completion dispatches, found {count}')
-          replacement=needle+";try{parent.postMessage('galaxy-splash-complete','*')}catch(_){}"
-          s=s.replace(needle,replacement)
-          p.write_text(s,encoding='utf-8')
-          if s.count("parent.postMessage('galaxy-splash-complete','*')") != 2:
-              raise SystemExit('REFUSING 9I-K: packaged splash completion bridge missing')
-          PY
+          python .github/scripts/prepare_galaxy_viewer_9ik.py
           test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
           grep -q "DISPLAY_VERSION='9I-K'" viewer/GV-beta-0009I.py
-          grep -q "parent.postMessage('galaxy-splash-complete','\*')" android/galaxy-viewer-9i/app/src/main/assets/splash/index.html
+          test "$(grep -o "parent.postMessage('galaxy-splash-complete','\*')" android/galaxy-viewer-9i/app/src/main/assets/splash/index.html | wc -l)" -eq 2
 
       - name: Commit and safely rebase 9I-K Viewer source
-        shell: bash
         run: |
           set -euo pipefail
           git config user.name 'Galaxy Viewer Build Bot'
@@ -88,14 +46,13 @@ jobs:
           git add viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-J.py
           git diff --cached --check
           git commit -m 'Archive 9I-J and rev beta Viewer to 9I-K'
-          git stash push --include-untracked -m 9ik-build-working-tree -- android/galaxy-viewer-9i .github/scripts/prepare_galaxy_viewer_9ik_runtime.py
+          git stash push --include-untracked -m 9ik-build-working-tree -- android/galaxy-viewer-9i
           git fetch origin beta
           git rebase origin/beta
           git push origin HEAD:beta
           git stash pop
 
-      - name: Verify frozen surfaces and packaged splash bridge
-        shell: bash
+      - name: Verify frozen surfaces and APK package invariants
         run: |
           set -euo pipefail
           test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
@@ -150,4 +107,4 @@ jobs:
             echo 'Galaxy Viewer 9I-K release already exists; refusing to overwrite it.' >&2
             exit 1
           fi
-          gh release create galaxy-viewer-9i-k Galaxy-Viewer-9I-K.apk Galaxy-Viewer-9I-K.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-K — Android' --notes 'Galaxy Viewer 9I-K beta test APK. Packaging-only splash completion bridge added to both packaged splash completion exits. Viewer-owned READY/FAILED gate preserved. Public launcher website and beta launcher template hash-guarded unchanged. Original icon unchanged.'
+          gh release create galaxy-viewer-9i-k Galaxy-Viewer-9I-K.apk Galaxy-Viewer-9I-K.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-K — Android' --notes 'Galaxy Viewer 9I-K beta test APK. Packaging-only splash completion bridge added to both packaged splash completion exits. Viewer READY/FAILED gate preserved. Public launcher website and beta launcher template hash-guarded unchanged. Original icon unchanged.'
