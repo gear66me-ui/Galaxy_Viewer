@@ -1,0 +1,163 @@
+name: Build Galaxy Viewer Android 9I-L
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-L.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Guard frozen website surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
+          MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
+          test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Archive verified 9I-K and prepare 9I-L package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "d2a0b57e0aad3c47bfd6b224ea5da24a5632f35d"
+          cp viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-K.py
+          test "$(git hash-object viewer/archive/GV-beta-0009I-K.py)" = "d2a0b57e0aad3c47bfd6b224ea5da24a5632f35d"
+          python .github/scripts/prepare_galaxy_viewer_9il.py
+          grep -q "DISPLAY_VERSION='9I-L'" viewer/GV-beta-0009I.py
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Verify packaged module embedding before commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-9i/app/src/main/assets/index.html')
+          s=p.read_text(encoding='utf-8')
+          names=['gv-hamburger-menu-0002.js','gv-coordinate-overlay-0004.js','gv-target-simbad-0001.js','gv-random-galaxy-0028.js']
+          for name in names:
+              assert f'modules/{name}' not in s, name
+          assert s.count('data:text/javascript;base64,') >= 4
+          assert 'gv-viewer-ready' in s and 'gv-viewer-failed' in s
+          assert 'homeReady' not in s and 'root&&aladin&&canvas' not in s
+          splash=Path('android/galaxy-viewer-9i/app/src/main/assets/splash/index.html').read_text(encoding='utf-8')
+          assert splash.count("parent.postMessage('galaxy-splash-complete','*')") == 2
+          catalog=Path('android/galaxy-viewer-9i/app/src/main/assets/data/gv-hubble-galaxies-full-0002.json').read_text(encoding='utf-8')
+          assert '"categoryEntryCount": 1879' in catalog
+          PY
+
+      - name: Commit and safely rebase 9I-L Viewer source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-K.py
+          git diff --cached --check
+          git commit -m 'Archive 9I-K and rev beta Viewer to 9I-L'
+          git stash push --include-untracked -m 9il-build-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          git stash pop
+
+      - name: Reverify frozen surfaces after source push
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
+          MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
+          test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build 9I-L APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Inspect built APK invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk
+          python - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          apk=Path('android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk')
+          with ZipFile(apk) as z:
+              names=set(z.namelist())
+              required={
+                  'assets/index.html',
+                  'assets/splash/index.html',
+                  'assets/data/gv-hubble-galaxies-full-0002.json',
+                  'assets/app-icon.png',
+              }
+              missing=required-names
+              assert not missing, missing
+              index=z.read('assets/index.html').decode('utf-8')
+              for name in ['gv-hamburger-menu-0002.js','gv-coordinate-overlay-0004.js','gv-target-simbad-0001.js','gv-random-galaxy-0028.js']:
+                  assert f'modules/{name}' not in index, name
+              assert index.count('data:text/javascript;base64,') >= 4
+              assert 'gv-viewer-ready' in index and 'gv-viewer-failed' in index
+              splash=z.read('assets/splash/index.html').decode('utf-8')
+              assert splash.count("parent.postMessage('galaxy-splash-complete','*')") == 2
+              catalog=z.read('assets/data/gv-hubble-galaxies-full-0002.json').decode('utf-8')
+              assert '"categoryEntryCount": 1879' in catalog
+          PY
+
+      - name: Stage and hash APK
+        run: |
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-L.apk
+          sha256sum Galaxy-Viewer-9I-L.apk | tee Galaxy-Viewer-9I-L.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-9I-L
+          path: |
+            Galaxy-Viewer-9I-L.apk
+            Galaxy-Viewer-9I-L.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 9I-L release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view galaxy-viewer-9i-l >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-L release already exists; refusing overwrite.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-l Galaxy-Viewer-9I-L.apk Galaxy-Viewer-9I-L.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-L — Android' --notes 'Galaxy Viewer 9I-L beta test APK. Four Galaxy Viewer modules embedded as data-script payloads so Android WebView performs no local module-file requests. Viewer READY/FAILED and splash completion gates preserved. Public launcher website, beta launcher template, and original icon hash-guarded unchanged.'
