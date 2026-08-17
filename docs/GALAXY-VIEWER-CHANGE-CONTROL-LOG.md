@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9801604e28d0 — Add permanent Galaxy Viewer release gate
+
+**Recorded:** 2026-08-17T02:03:49-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9801604e28d084aaefce5e110f9db0eaa0d15e6e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9801604e28d084aaefce5e110f9db0eaa0d15e6e)  
+**Parent/baseline:** `5f6b6fd1b6059c043ecaa13e4892032134668a8a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5f6b6fd1b6059c043ecaa13e4892032134668a8a...9801604e28d084aaefce5e110f9db0eaa0d15e6e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add permanent Galaxy Viewer release gate
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/galaxy-viewer-release-gate.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `65061604b523262f0c58a25be103541ef9a9f45f0d4ad39c1c3661ad133b07df`
+- Bytes: `0` → `10143`
+- Lines: `0` → `225`
+- Characters: `0` → `10143`
+- Inserted lines: `225`
+- Deleted lines: `0`
+- Inserted characters: `10143`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 225 - 0 = 225` — **PASS**
+- Character balance: `0 + 10143 - 0 = 10143` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4c312a26d830 — Add files via upload
 
 **Recorded:** 2026-08-17T01:44:28-05:00  
