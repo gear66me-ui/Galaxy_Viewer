@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a0bad02c570f — Temporarily rebuild full-size Galaxy Viewer 10C APK
+
+**Recorded:** 2026-08-17T01:15:24-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a0bad02c570f716c806d4231e645c831e55dcfa7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a0bad02c570f716c806d4231e645c831e55dcfa7)  
+**Parent/baseline:** `d6f8350935b1a3d386be924cb622a0c901d3446f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d6f8350935b1a3d386be924cb622a0c901d3446f...a0bad02c570f716c806d4231e645c831e55dcfa7)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Temporarily rebuild full-size Galaxy Viewer 10C APK
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/rebuild-galaxy-viewer-10C-fullsize-apk.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `b088127ef854f1d665dba7d0735a48ab1402092abee729fc1aefded15ea0f2b5`
+- Bytes: `0` → `11664`
+- Lines: `0` → `205`
+- Characters: `0` → `11664`
+- Inserted lines: `205`
+- Deleted lines: `0`
+- Inserted characters: `11664`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 205 - 0 = 205` — **PASS**
+- Character balance: `0 + 11664 - 0 = 11664` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cf7ee9e1006b — Restore full-size RANDOM GALAXY button in 10C
 
 **Recorded:** 2026-08-17T01:13:13-05:00  
