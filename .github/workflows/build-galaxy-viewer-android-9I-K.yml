@@ -1,0 +1,141 @@
+name: Build Galaxy Viewer Android 9I-K
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-K.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Guard frozen website surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
+          MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
+          test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
+
+      - name: Prepare 9I-K from verified 9I-J
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "e5d768aee94f12b4d15e22d08443a6a1fbb796e4"
+          cp viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-J.py
+          python - <<'PY'
+          from pathlib import Path
+          src=Path('.github/scripts/prepare_galaxy_viewer_9ij.py').read_text(encoding='utf-8')
+          src=src.replace("EXPECTED_VIEWER='be558dfbdcb4e0d44cfcb1afaae775071a8bc0a0'","EXPECTED_VIEWER='e5d768aee94f12b4d15e22d08443a6a1fbb796e4'")
+          src=src.replace("const DISPLAY_VERSION='9I-I';","const DISPLAY_VERSION='9I-J';")
+          src=src.replace("const DISPLAY_VERSION='9I-J';","const DISPLAY_VERSION='9I-K';",1)
+          src=src.replace("versionCode 16","versionCode 17")
+          src=src.replace("versionName '9I-J'","versionName '9I-K'")
+          src=src.replace('GALAXY VIEWER 9I-J','GALAXY VIEWER 9I-K')
+          src=src.replace('VERSION 9I-J','VERSION 9I-K')
+          src=src.replace('GALAXY VIEWER VERSION 9I-J','GALAXY VIEWER VERSION 9I-K')
+          Path('.github/scripts/prepare_galaxy_viewer_9ik_runtime.py').write_text(src,encoding='utf-8')
+          PY
+          python .github/scripts/prepare_galaxy_viewer_9ik_runtime.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-9i/app/src/main/assets/splash/index.html')
+          s=p.read_text(encoding='utf-8')
+          needle="window.dispatchEvent(new CustomEvent('galaxy-splash-complete'))"
+          count=s.count(needle)
+          if count != 2:
+              raise SystemExit(f'REFUSING 9I-K: expected exactly 2 splash completion dispatches, found {count}')
+          replacement=needle+";try{parent.postMessage('galaxy-splash-complete','*')}catch(_){}"
+          s=s.replace(needle,replacement)
+          p.write_text(s,encoding='utf-8')
+          if s.count("parent.postMessage('galaxy-splash-complete','*')") != 2:
+              raise SystemExit('REFUSING 9I-K: packaged splash completion bridge missing')
+          PY
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+          grep -q "DISPLAY_VERSION='9I-K'" viewer/GV-beta-0009I.py
+          grep -q "parent.postMessage('galaxy-splash-complete','\*')" android/galaxy-viewer-9i/app/src/main/assets/splash/index.html
+
+      - name: Commit and safely rebase 9I-K Viewer source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-J.py
+          git diff --cached --check
+          git commit -m 'Archive 9I-J and rev beta Viewer to 9I-K'
+          git stash push --include-untracked -m 9ik-build-working-tree -- android/galaxy-viewer-9i .github/scripts/prepare_galaxy_viewer_9ik_runtime.py
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          git stash pop
+
+      - name: Verify frozen surfaces and packaged splash bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I-app.html)" = "ff7bf42b43f82188020c4fa3d7ebaef5fd1a4178"
+          MAIN_SITE_SHA="$(git show origin/main:launch/9I/index.html | git hash-object --stdin)"
+          test "$MAIN_SITE_SHA" = "661cb57a238bd4554b7f3bfa9f1ed68c1d6dfed7"
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+          test "$(grep -o "parent.postMessage('galaxy-splash-complete','\*')" android/galaxy-viewer-9i/app/src/main/assets/splash/index.html | wc -l)" -eq 2
+          grep -q 'gv-viewer-ready' android/galaxy-viewer-9i/app/src/main/assets/index.html
+          grep -q 'gv-viewer-failed' android/galaxy-viewer-9i/app/src/main/assets/index.html
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build 9I-K APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Stage and hash APK
+        run: |
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-K.apk
+          sha256sum Galaxy-Viewer-9I-K.apk | tee Galaxy-Viewer-9I-K.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-9I-K
+          path: |
+            Galaxy-Viewer-9I-K.apk
+            Galaxy-Viewer-9I-K.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 9I-K release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view galaxy-viewer-9i-k >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-K release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-k Galaxy-Viewer-9I-K.apk Galaxy-Viewer-9I-K.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-K — Android' --notes 'Galaxy Viewer 9I-K beta test APK. Packaging-only splash completion bridge added to both packaged splash completion exits. Viewer-owned READY/FAILED gate preserved. Public launcher website and beta launcher template hash-guarded unchanged. Original icon unchanged.'
