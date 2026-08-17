@@ -59,11 +59,13 @@ def embed_modules_as_data_urls():
     for name,const_name in replacements.items():
         source=(ROOT/'viewer/modules'/name).read_bytes()
         payload=base64.b64encode(source).decode('ascii')
+        data_url=f"data:text/javascript;base64,{payload}"
         old=f"const {const_name}='modules/{name}';"
-        new=f"const {const_name}='data:text/javascript;base64,{payload}';"
+        new=f"const {const_name}='{data_url}';"
         if s.count(old)!=1:
             raise SystemExit(f'REFUSING 9I-L: expected one generated local-module replacement for {name}')
         s=s.replace(old,new,1)
+        s=s.replace(f"modules/{name}",data_url)
     p.write_text(s,encoding='utf-8')
 
 
