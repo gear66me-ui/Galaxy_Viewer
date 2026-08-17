@@ -1,0 +1,232 @@
+name: Rebuild Corrected Galaxy Viewer 10C APK
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/rebuild-galaxy-viewer-10C-apk.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild-10c:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Verify frozen corrected 10C and protected inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0010C.py)" = "b7750a5240e67fa6d335e1997dbe53861e71e30e"
+          test "$(git hash-object viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0006.json)" = "74bae1c45befeefe73c3cc68771f531574c0c8e2"
+          test "$(git hash-object viewer/artwork/icon.svg)" = "829faf3594e85d4ff529d3c2b069a309d580b054"
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          s=Path('viewer/GV-beta-0010C.py').read_text(encoding='utf-8')
+          assert "const VERSION='10C';" in s
+          assert "const DISPLAY_VERSION='10C';" in s
+          assert "version.textContent='VERSION 10C'" in s
+          assert "border:2px solid #fff!important" in s
+          assert "transform:scale(.8)" in s
+          assert ".gv-galaxy-history{border:2px solid #fff!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}" in s
+          assert "border:3px solid #ff8214!important" not in s
+          assert "gv-hubble-galaxies-full-0006.json?v=74bae1c45befeefe73c3cc68771f531574c0c8e2" in s
+          cat=json.load(open('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0006.json',encoding='utf-8'))
+          assert cat['version']=='full-0006'
+          assert cat['categoryEntryCount']==1879
+          assert len(cat['entries'])==1879
+          print('Corrected 10C source and catalog verified')
+          PY
+
+      - name: Build disposable Android working tree from exact corrected 10C
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import importlib.util, json, re, shutil, subprocess, sys
+          root=Path('.').resolve()
+          sys.path.insert(0,str(root/'.github/scripts'))
+          spec=importlib.util.spec_from_file_location('gv9im',root/'.github/scripts/prepare_galaxy_viewer_9im.py')
+          mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+          mod.VIEWER=root/'viewer/GV-beta-0010C.py'
+
+          # Reuse the verified existing packager only inside this disposable runner working tree.
+          mod.copy_assets()
+          oldcat=mod.ASSETS/'data/gv-hubble-galaxies-full-0002.json'
+          if oldcat.exists(): oldcat.unlink()
+          shutil.copy2(root/'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0006.json',mod.ASSETS/'data/gv-hubble-galaxies-full-0006.json')
+          shutil.copy2(root/'viewer/artwork/icon.svg',mod.ASSETS/'artwork/icon.svg')
+          mod.patch_packaged_splash()
+          mod.build_standalone()
+
+          index=mod.ASSETS/'index.html'
+          s=index.read_text(encoding='utf-8')
+          if s.count('<title>GALAXY VIEWER 9I-M</title>')!=1: raise SystemExit('Unexpected packaged title baseline')
+          s=s.replace('<title>GALAXY VIEWER 9I-M</title>','<title>GALAXY VIEWER 10C</title>',1)
+          s=s.replace('data/gv-hubble-galaxies-full-0002.json','data/gv-hubble-galaxies-full-0006.json')
+          index.write_text(s,encoding='utf-8')
+
+          # Existing Android mechanical preparation, runner-only.
+          mod.base.patch_android()
+          gradle=mod.ANDROID/'app/build.gradle'
+          g=gradle.read_text(encoding='utf-8')
+          g=re.sub(r'versionCode\s+\d+','versionCode 23',g,count=1)
+          g=re.sub(r"versionName\s+'[^']+'","versionName '10C'",g,count=1)
+          gradle.write_text(g,encoding='utf-8')
+
+          # Launcher artwork bytes stay untouched. Only adaptive-icon layout changes.
+          values=mod.ANDROID/'app/src/main/res/values'
+          values.mkdir(parents=True,exist_ok=True)
+          (values/'gv_10c_launcher.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<resources><color name="gv_launcher_black">#000000</color></resources>\n',encoding='utf-8')
+
+          drawable=mod.ANDROID/'app/src/main/res/drawable'
+          (drawable/'gv_app_icon_10c_foreground.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<inset xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/gv_app_icon" android:insetLeft="20dp" android:insetTop="20dp" android:insetRight="20dp" android:insetBottom="20dp"/>\n',encoding='utf-8')
+
+          mip=mod.ANDROID/'app/src/main/res/mipmap-anydpi-v26'
+          mip.mkdir(parents=True,exist_ok=True)
+          (mip/'gv_app_icon_10c.xml').write_text('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/gv_launcher_black"/><foreground android:drawable="@drawable/gv_app_icon_10c_foreground"/></adaptive-icon>\n',encoding='utf-8')
+
+          manifest=mod.ANDROID/'app/src/main/AndroidManifest.xml'
+          m=manifest.read_text(encoding='utf-8')
+          m=re.sub(r'android:label="[^"]+"','android:label="GALAXY VIEWER 10C"',m,count=1)
+          m=re.sub(r'android:icon="[^"]+"','android:icon="@mipmap/gv_app_icon_10c"',m,count=1)
+          if 'android:roundIcon=' in m:
+              m=re.sub(r'android:roundIcon="[^"]+"','android:roundIcon="@mipmap/gv_app_icon_10c"',m,count=1)
+          else:
+              m=m.replace('android:icon="@mipmap/gv_app_icon_10c"','android:icon="@mipmap/gv_app_icon_10c"\n        android:roundIcon="@mipmap/gv_app_icon_10c"',1)
+          manifest.write_text(m,encoding='utf-8')
+
+          # Static assertions against the actual packaged Viewer and build-time icon resources.
+          s=index.read_text(encoding='utf-8')
+          for marker in [
+              "DISPLAY_VERSION='10C'",
+              "version.textContent='VERSION 10C'",
+              "border:2px solid #fff!important",
+              "transform:scale(.8)",
+              ".gv-galaxy-history{border:2px solid #fff!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}",
+              "data/gv-hubble-galaxies-full-0006.json",
+              "Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b",
+              ".gvrg-hd img{scale:1.052632}",
+              "splash.src='splash/index.html'",
+              "},3500);",
+          ]: assert marker in s, marker
+          assert 'border:3px solid #ff8214!important' not in s
+          assert 'data/gv-hubble-galaxies-full-0002.json' not in s
+          assert (mod.ASSETS/'artwork/icon.svg').read_bytes()==(root/'viewer/artwork/icon.svg').read_bytes()
+          assert subprocess.check_output(['git','hash-object',str(mod.ANDROID/'app/src/main/res/drawable/gv_app_icon.png')],text=True).strip()=='47b3e714053bfd64f835d3f1a2510e13618dbede'
+          fg=(drawable/'gv_app_icon_10c_foreground.xml').read_text(encoding='utf-8')
+          assert fg.count('20dp')==4
+          assert '@drawable/gv_app_icon' in fg
+          assert '#000000' in (values/'gv_10c_launcher.xml').read_text(encoding='utf-8')
+          assert '@drawable/gv_app_icon_10c_foreground' in (mip/'gv_app_icon_10c.xml').read_text(encoding='utf-8')
+          assert '@mipmap/gv_app_icon_10c' in manifest.read_text(encoding='utf-8')
+          print('Disposable Android 10C packaging verified')
+          PY
+
+      - name: Browser smoke test corrected packaged 10C
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$CHROME"
+          python -m http.server 8765 --bind 127.0.0.1 --directory android/galaxy-viewer-9i/app/src/main/assets >/tmp/gv10c-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
+          sleep 1
+          set +e
+          timeout 100s "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --enable-webgl --ignore-gpu-blocklist --virtual-time-budget=70000 --dump-dom 'http://127.0.0.1:8765/index.html?smoke=1' >/tmp/gv10c-dom.html 2>/tmp/gv10c-chrome.log
+          RC=$?
+          set -e
+          grep -q 'data-viewer-status="ready"' /tmp/gv10c-dom.html
+          echo "Corrected 10C browser smoke PASS rc=$RC"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build corrected 10C APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Inspect exact APK payload and launcher resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          apk='android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk'
+          with ZipFile(apk) as z:
+              names=set(z.namelist())
+              for required in ['assets/index.html','assets/splash/index.html','assets/data/gv-hubble-galaxies-full-0006.json','assets/artwork/icon.svg']:
+                  assert required in names, required
+              assert 'assets/data/gv-hubble-galaxies-full-0002.json' not in names
+              s=z.read('assets/index.html').decode('utf-8')
+              for marker in ["DISPLAY_VERSION='10C'","version.textContent='VERSION 10C'","border:2px solid #fff!important","transform:scale(.8)","data/gv-hubble-galaxies-full-0006.json"]:
+                  assert marker in s, marker
+              assert 'border:3px solid #ff8214!important' not in s
+              assert z.read('assets/artwork/icon.svg')==Path('viewer/artwork/icon.svg').read_bytes()
+          print('APK Viewer payload inspection PASS')
+          PY
+          grep -q '@mipmap/gv_app_icon_10c' android/galaxy-viewer-9i/app/src/main/AndroidManifest.xml
+          grep -q '#000000' android/galaxy-viewer-9i/app/src/main/res/values/gv_10c_launcher.xml
+          grep -q 'android:insetLeft="20dp"' android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon_10c_foreground.xml
+          grep -q 'android:insetTop="20dp"' android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon_10c_foreground.xml
+          grep -q 'android:insetRight="20dp"' android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon_10c_foreground.xml
+          grep -q 'android:insetBottom="20dp"' android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon_10c_foreground.xml
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Stage and hash corrected APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-10C-Corrected.apk
+          sha256sum Galaxy-Viewer-10C-Corrected.apk | tee Galaxy-Viewer-10C-Corrected.sha256
+
+      - name: Upload corrected 10C artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10C-Corrected
+          path: |
+            Galaxy-Viewer-10C-Corrected.apk
+            Galaxy-Viewer-10C-Corrected.sha256
+          if-no-files-found: error
+
+      - name: Remove temporary build workflow only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git stash push --include-untracked -m 10c-corrected-android-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
+          test "$(git hash-object viewer/GV-beta-0010C.py)" = "b7750a5240e67fa6d335e1997dbe53861e71e30e"
+          git rm .github/workflows/rebuild-galaxy-viewer-10C-apk.yml
+          git diff --cached --check
+          test "$(git diff --cached --name-only)" = ".github/workflows/rebuild-galaxy-viewer-10C-apk.yml"
+          git commit -m 'Remove temporary corrected 10C APK rebuild workflow'
+          git push origin HEAD:beta
