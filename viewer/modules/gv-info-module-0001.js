@@ -2,7 +2,7 @@
 (function(global){
 'use strict';
 const VERSION='0001';
-const PLACEHOLDER='Velora nymet axis-7 drifts beyond selaris while korven light folds through arden fields. Nexo-3 traces lumera arcs, quiet stellar knots, and distant veyra lanes across the frame. Orbis signals gather near talon ridges as meridian dust, ion haze, and pale nova threads cross the scene. Calyx forms remain unresolved; vector 12 marks a reference only. Sereph bands, miral clusters, and distant aster flows complete this temporary layout text for measuring readable information capacity inside the Galaxy Viewer panel.';
+const PLACEHOLDER='Velora nymet axis-7 drifts beyond selaris while korven light folds through arden fields. Nexo-3 traces lumera arcs, quiet stellar knots, and distant veyra lanes across the frame. Orbis signals gather near talon ridges as meridian dust, ion haze, and pale nova threads cross the scene. Calyx forms remain unresolved; vector 12 marks a reference only. Sereph bands, miral clusters, and distant aster flows complete this temporary layout text for measuring readable information capacity inside the Galaxy Viewer panel. Radian veils cross toren paths while echo-4 and silven markers remain deliberately synthetic for this first visual capacity test.';
 const PLACEHOLDER_CHARACTERS=PLACEHOLDER.length;
 const HUBBLE_ICON='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b';
 const MAX_DISPLAY_BYTES=2000000;
