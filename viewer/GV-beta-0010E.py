@@ -139,8 +139,6 @@ display(Javascript(r"""
     function suspendBackgroundWork(){
         if(backgroundWorkSuspended)return;
         backgroundWorkSuspended=true;
-        if(activePrefetchKey){const active=galaxyCatalog.find(item=>destinationKey(item)===activePrefetchKey);if(active)setHdStatus(active,'SUSPENDED')}
-        if(activePrefetchAbort)activePrefetchAbort.abort();
         if(prefetchRetryTimer){clearTimeout(prefetchRetryTimer);prefetchRetryTimer=0}
         if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
         if(aladinPrewarmWaitResolve){const resolve=aladinPrewarmWaitResolve;aladinPrewarmWaitResolve=null;resolve(false)}
@@ -326,7 +324,7 @@ display(Javascript(r"""
                 const response=await fetch(source.url,{cache:'force-cache',signal});
                 if(!response.ok)throw new Error('HUBBLE HD PRELOAD RETURNED HTTP '+response.status);
                 const blob=await response.blob();
-                if(backgroundWorkSuspended||signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');
+                if(signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');
                 setHdStatus(destination,'DECODING',source.kind);
                 const prepared=await decodePreparedBlob(blob);
                 setHdStatus(destination,'READY',source.kind);
@@ -591,7 +589,8 @@ display(Javascript(r"""
                 const ahead=chooseAladinAheadCandidates(destination,2);
                 const aladinPromise=(async()=>{
                     for(const candidate of [destination,...ahead]){
-                        if(backgroundWorkSuspended||controller.signal.aborted)throw abortError();
+                        if(controller.signal.aborted)throw abortError();
+                        if(backgroundWorkSuspended)return;
                         try{await prepareAladinDestination(candidate,priority&&candidate===destination)}catch(error){if(error?.name==='AbortError')throw error;console.warn('GV-10E ALADIN AHEAD PREWARM WARNING',error)}
                     }
                 })();
@@ -606,7 +605,13 @@ display(Javascript(r"""
                 }
                 item.destination=preparedDestination;
                 prefetchRetryAfter.delete(key);
-                if(backgroundWorkSuspended){releasePreparedItem(item);throw abortError()}
+                if(backgroundWorkSuspended){
+                    if(key===activeTargetKey&&!activePreparedItem){
+                        activePreparedItem=item;
+                        window.__gv10eRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
+                    }else if(prefetchReady.length<HUBBLE_PREFETCH_TARGET)prefetchReady.push(item);else releasePreparedItem(item);
+                    return;
+                }
                 if(key===activeTargetKey&&!activePreparedItem){
                     activePreparedItem=item;
                     window.__gv10eRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);
@@ -1100,7 +1105,7 @@ display(Javascript(r"""
     };
     bottom.random.addEventListener('click',launchRandomGalaxy);
     const presentationStyle=document.createElement('style');
-    presentationStyle.textContent='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport{box-sizing:border-box!important;width:min(620px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science{background:rgba(0,12,8,.88)!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-viewport{left:50%!important;right:auto!important;transform:translateX(-50%);background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd img{scale:1.052632}';
+    presentationStyle.textContent='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport{box-sizing:border-box!important;width:min(620px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science{background:rgba(0,12,8,.88)!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-viewport{left:50%!important;right:auto!important;transform:translateX(-50%);background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}.gvrg-hd img{scale:1.052632}';
     document.head.appendChild(presentationStyle);
     const hubbleIcon=randomGalaxy.hubbleIconButton?.querySelector('img');
     if(hubbleIcon)hubbleIcon.src='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b';
