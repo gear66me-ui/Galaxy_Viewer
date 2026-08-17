@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5da19a7a9d82 — Run surgical 10E Hubble preload retention repair
+
+**Recorded:** 2026-08-17T15:06:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5da19a7a9d82a8d16d46d4bd7057634de98d9fe5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5da19a7a9d82a8d16d46d4bd7057634de98d9fe5)  
+**Parent/baseline:** `c91c32d1db2ee53e1f4de5a35e13570f5633b61e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c91c32d1db2ee53e1f4de5a35e13570f5633b61e...5da19a7a9d82a8d16d46d4bd7057634de98d9fe5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run surgical 10E Hubble preload retention repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6e24a66f9b8b481e71a6174e7a8fa62cbf8357b7949e975a63434985a723d06e`
+- SHA-256 after: `bfb6f54cf0489420983b934206e212e9034e1298685d26cd6f2e9f8e499ffd32`
+- Bytes: `1860` → `3554`
+- Lines: `45` → `55`
+- Characters: `1860` → `3554`
+- Inserted lines: `20`
+- Deleted lines: `10`
+- Inserted characters: `2039`
+- Deleted characters: `345`
+- Unified diff hunks: `6`
+- Inserted blocks: `6`
+- Deleted blocks: `6`
+- Changed blocks: `6`
+- Line balance: `45 + 20 - 10 = 55` — **PASS**
+- Character balance: `1860 + 2039 - 345 = 3554` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2ef13e29f1c6 — Run surgical 10E HD scale font increase
 
 **Recorded:** 2026-08-17T15:05:43-05:00  
