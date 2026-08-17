@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5d9ae2ec1450 — Add isolated 9I-L Android module embedding repair
+
+**Recorded:** 2026-08-16T20:01:16-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5d9ae2ec1450b0e8bffe779d6b904816c6d9d693`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5d9ae2ec1450b0e8bffe779d6b904816c6d9d693)  
+**Parent/baseline:** `d9b1876659d14b1612309dbcefdc30397295f04d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d9b1876659d14b1612309dbcefdc30397295f04d...5d9ae2ec1450b0e8bffe779d6b904816c6d9d693)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add isolated 9I-L Android module embedding repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/scripts/prepare_galaxy_viewer_9il.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `22944c26b9d272d694dcba1ad291f65f3b106590b0f057a610eb856450832629`
+- Bytes: `0` → `4832`
+- Lines: `0` → `118`
+- Characters: `0` → `4832`
+- Inserted lines: `118`
+- Deleted lines: `0`
+- Inserted characters: `4832`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 118 - 0 = 118` — **PASS**
+- Character balance: `0 + 4832 - 0 = 4832` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6bddfe311ecd — Restore 9I square tiles and 120-degree comet phasing
 
 **Recorded:** 2026-08-16T19:58:17-05:00  
