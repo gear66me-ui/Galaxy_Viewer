@@ -1,66 +1,77 @@
-name: Surgical Galaxy Viewer 10E HD Scale + Preload
+name: Build Galaxy Viewer 10E Permanent Generic Shell
 on:
   push:
     branches: [beta]
     paths: ['.github/workflows/build-galaxy-viewer-10e-repair-r4.yml']
+  workflow_dispatch:
 permissions:
   contents: write
+env:
+  APK_NAME: Galaxy-Viewer-10E-Generic-Permanent.apk
+  RELEASE_TAG: galaxy-viewer-10e-generic-permanent-1
 jobs:
-  repair:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: beta
-          fetch-depth: 1
-          sparse-checkout: |
-            viewer/GV-beta-0010E.py
-            viewer/modules/gv-random-galaxy-0030.js
-      - name: Apply exact 10E HD scale and preload repair
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Validate permanent generic shell source
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object viewer/GV-beta-0010E.py)" = "bef86acce85b3d0fa3211b73412d2621ddffe734"
+          node --check viewer/bootstrap/gv-generic-bootstrap-current.js
+          node --check android/galaxy-viewer-10e/app/src/main/assets/bootstrap-fallback.js
+          cmp viewer/bootstrap/gv-generic-bootstrap-current.js android/galaxy-viewer-10e/app/src/main/assets/bootstrap-fallback.js
+          grep -q 'gv-generic-bootstrap-current.js' android/galaxy-viewer-10e/app/src/main/assets/index.html
+          grep -q 'bootstrap-fallback.js' android/galaxy-viewer-10e/app/src/main/assets/index.html
+          grep -q 'const viewerReadyPromise=startViewer(payloadPromise)' viewer/bootstrap/gv-generic-bootstrap-current.js
+          grep -q 'await runSplash();' viewer/bootstrap/gv-generic-bootstrap-current.js
+          grep -q 'await viewerReadyPromise;' viewer/bootstrap/gv-generic-bootstrap-current.js
+          grep -q "applicationId 'com.gear66me.galaxyviewer10e.generic'" android/galaxy-viewer-10e/app/build.gradle
+          grep -q "versionName '10E-generic-permanent-1'" android/galaxy-viewer-10e/app/build.gradle
           test "$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" = "c17d7c8d48e71b7e91ac3ed28ee3c55786a82385"
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('viewer/GV-beta-0010E.py')
-          s=p.read_text(encoding='utf-8')
-          old='.gvrg-hd img{scale:1.052632}'
-          new='.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}.gvrg-hd img{scale:1.052632}'
-          if s.count(old)!=1: raise SystemExit(f'HD scale insertion anchor count {s.count(old)}')
-          s=s.replace(old,new,1)
-          replacements=[
-            ("        if(activePrefetchKey){const active=galaxyCatalog.find(item=>destinationKey(item)===activePrefetchKey);if(active)setHdStatus(active,'SUSPENDED')}\n        if(activePrefetchAbort)activePrefetchAbort.abort();\n", ""),
-            ("                if(backgroundWorkSuspended||signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');", "                if(signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');"),
-            ("                        if(backgroundWorkSuspended||controller.signal.aborted)throw abortError();", "                        if(controller.signal.aborted)throw abortError();\n                        if(backgroundWorkSuspended)return;"),
-            ("                if(backgroundWorkSuspended){releasePreparedItem(item);throw abortError()}\n                if(key===activeTargetKey&&!activePreparedItem){", "                if(backgroundWorkSuspended){\n                    if(key===activeTargetKey&&!activePreparedItem){\n                        activePreparedItem=item;\n                        window.__gv10eRandomGalaxy?.setPreparedHdResource?.(key,item.objectUrl,item.sourceKind,item.image);\n                    }else if(prefetchReady.length<HUBBLE_PREFETCH_TARGET)prefetchReady.push(item);else releasePreparedItem(item);\n                    return;\n                }\n                if(key===activeTargetKey&&!activePreparedItem){")
-          ]
-          for old,new in replacements:
-              if s.count(old)!=1:
-                  raise SystemExit(f'preload repair anchor count {s.count(old)} for {old[:80]!r}')
-              s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-          PY
-          python -m py_compile viewer/GV-beta-0010E.py
-          grep -Fq '.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}' viewer/GV-beta-0010E.py
-          grep -Fq "if(signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');" viewer/GV-beta-0010E.py
-          count=$(grep -Fo 'if(activePrefetchAbort)activePrefetchAbort.abort();' viewer/GV-beta-0010E.py | wc -l || true)
-          test "$count" -eq 2
-          test "$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" = "c17d7c8d48e71b7e91ac3ed28ee3c55786a82385"
-      - name: Commit only 10E source
+          git diff --exit-code
+      - name: Build APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
+      - name: Validate APK
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/GV-beta-0010E.py
-          test "$(git diff --cached --name-only)" = "viewer/GV-beta-0010E.py"
-          git commit -m 'Increase HD scale label and preserve active Hubble preload'
-          for attempt in 1 2 3 4; do
-            git fetch --depth=20 origin beta
-            git rebase origin/beta || { git rebase --abort || true; exit 1; }
-            if git push origin HEAD:beta; then exit 0; fi
-            sleep 2
-          done
-          exit 1
+          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10e.generic'" /tmp/badging.txt
+          grep -q "versionName='10E-generic-permanent-1'" /tmp/badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer10e.MainActivity'" /tmp/badging.txt
+          unzip -l "$APK" | grep -q 'assets/artwork/Space-Age.otf'
+          unzip -l "$APK" | grep -q 'assets/bootstrap-fallback.js'
+          unzip -p "$APK" assets/index.html | grep -q 'gv-generic-bootstrap-current.js'
+          unzip -p "$APK" assets/bootstrap-fallback.js | grep -q 'viewerReadyPromise=startViewer'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" "$APK_NAME"
+          sha256sum "$APK_NAME" | tee "${APK_NAME}.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10E-Generic-Permanent
+          path: |
+            Galaxy-Viewer-10E-Generic-Permanent.apk
+            Galaxy-Viewer-10E-Generic-Permanent.apk.sha256
+          if-no-files-found: error
+      - name: Publish permanent generic installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" "$APK_NAME" "${APK_NAME}.sha256" --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10E — Permanent Generic Shell' --notes 'Permanent generic 10E shell. Viewer initialization starts during the icon period, the splash remains visible until Viewer readiness, and the startup controller is fetched from GitHub on every launch with a bundled offline fallback. Future Viewer and bootstrap timing changes can be delivered remotely without rebuilding the APK.'
