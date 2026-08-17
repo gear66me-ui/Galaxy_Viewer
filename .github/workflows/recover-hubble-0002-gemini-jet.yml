@@ -18,7 +18,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       CATALOG: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
       EXPECTED_CATALOG_BLOB: 2642f81084deb211e4f18cc8bdd874a878f6e4f0
-      GEMINI_MODEL: gemini-2.5-flash-lite
+      GEMINI_MODEL: gemini-3.5-flash-lite
       WORKFLOW_PATH: .github/workflows/recover-hubble-0002-gemini-jet.yml
     steps:
       - name: Checkout exact beta baseline
