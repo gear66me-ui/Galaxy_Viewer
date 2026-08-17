@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "channel": "beta",
-  "release": "9I-M",
-  "launchUrl": "https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/9I-app.html?source=android-10d",
-  "viewerPath": "viewer/GV-beta-0009I.py",
-  "notes": "Generic Android 10D runtime pointer. Future ECOs update this file only; the installed APK remains unchanged."
+  "release": "10G",
+  "launchUrl": "https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/10G-app.html?source=android-10d",
+  "viewerPath": "viewer/GV-beta-0010G.py",
+  "notes": "Generic Android 10D runtime pointer. Installed APK remains unchanged; this pointer advances the beta runtime to 10G."
 }
