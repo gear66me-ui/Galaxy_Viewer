@@ -877,7 +877,7 @@ display(Javascript(r"""
         const back=document.createElement('button');
         back.type='button';back.className='gv-galaxy-history gv-galaxy-history-back';back.textContent='';back.setAttribute('aria-label','PREVIOUS GALAXY');back.disabled=true;
         const random=document.createElement('button');
-        random.id='gv-random-galaxy';random.type='button';random.textContent='RANDOM GALAXY';random.setAttribute('aria-label','RANDOM GALAXY');
+        random.id='gv-random-galaxy';random.type='button';random.textContent='RANDOM GALAXY ✨';random.setAttribute('aria-label','RANDOM GALAXY');
         const forward=document.createElement('button');
         forward.type='button';forward.className='gv-galaxy-history gv-galaxy-history-forward';forward.textContent='';forward.setAttribute('aria-label','NEXT GALAXY');forward.disabled=true;
         nav.append(back,random,forward);root.appendChild(nav);
@@ -1072,7 +1072,7 @@ display(Javascript(r"""
     const randomGalaxy=window.GalaxyRandomGalaxy.mount(randomGalaxyHost,{
         aladin,
         randomButton:bottom.random,
-        bindClick:true,
+        bindClick:false,
         prefetch:false,
         hubbleProvider:randomHubbleProvider,
         currentGalaxy:HOME,
@@ -1091,6 +1091,14 @@ display(Javascript(r"""
     });
     window.__gv10eRandomGalaxy=randomGalaxy;
     await randomGalaxy.ready;
+    bottom.random.disabled=false;
+    const launchRandomGalaxy=()=>{
+        if(navigationPending||randomGalaxy.getState().busy)return;
+        randomGalaxy.travelToRandom().catch(error=>{
+            navigationPending=false;pendingHistoryIndex=null;forcedDestination=null;endTravelHud();setHistoryControls();resumeBackgroundWork();console.error('GV-10E RANDOM GALAXY CLICK FAILURE',error);
+        });
+    };
+    bottom.random.addEventListener('click',launchRandomGalaxy);
     const presentationStyle=document.createElement('style');
     presentationStyle.textContent='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport{box-sizing:border-box!important;width:min(620px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science{background:rgba(0,12,8,.88)!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-viewport{left:50%!important;right:auto!important;transform:translateX(-50%);background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd img{scale:1.052632}';
     document.head.appendChild(presentationStyle);
