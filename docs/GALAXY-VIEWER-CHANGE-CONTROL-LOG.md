@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-36591107426d — Point Galaxy Viewer 10E to Hubble catalog 0017
+
+**Recorded:** 2026-08-17T13:34:40-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`36591107426dc62063840b66078ee7054c28abde`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/36591107426dc62063840b66078ee7054c28abde)  
+**Parent/baseline:** `bce8dc78b78171c664cfc37c6448e245b0dbe488`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bce8dc78b78171c664cfc37c6448e245b0dbe488...36591107426dc62063840b66078ee7054c28abde)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Point Galaxy Viewer 10E to Hubble catalog 0017
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0010E.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `05d1424d2f4e3738a49bd8daa9570398966b1c9d5fcc495ba9cef45255499dcc`
+- SHA-256 after: `5606fa7b93ee9f9f52b88ab9d016c3bd0d460db935795a4b7581bd2179b97628`
+- Bytes: `70844` → `70844`
+- Lines: `1166` → `1166`
+- Characters: `70835` → `70835`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `32`
+- Deleted characters: `32`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1166 + 1 - 1 = 1166` — **PASS**
+- Character balance: `70835 + 32 - 32 = 70835` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-8da24e62005c — Prevent release-gate pycache pollution
 
 **Recorded:** 2026-08-17T13:02:18-05:00  
