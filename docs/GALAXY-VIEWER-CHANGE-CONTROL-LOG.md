@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5510f3416a3f — Retrigger 9I-L verified build after module path cleanup
+
+**Recorded:** 2026-08-16T20:03:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5510f3416a3ffbda0e597314aca8843a273caa1b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5510f3416a3ffbda0e597314aca8843a273caa1b)  
+**Parent/baseline:** `c9b818b2c5f225e9b8d6cbd48f71a705f43b96d6`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c9b818b2c5f225e9b8d6cbd48f71a705f43b96d6...5510f3416a3ffbda0e597314aca8843a273caa1b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Retrigger 9I-L verified build after module path cleanup
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-9I-L.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `445bd34ba6d09a30bc8401da819d3127653232085557eb9ace01bfb578efbbe2`
+- SHA-256 after: `ed7ab6d372910e879a1f3558770b27c7c1c2027a1832c17862703095150ccbb6`
+- Bytes: `7390` → `7272`
+- Lines: `163` → `158`
+- Characters: `7388` → `7270`
+- Inserted lines: `2`
+- Deleted lines: `7`
+- Inserted characters: `55`
+- Deleted characters: `173`
+- Unified diff hunks: `3`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `3`
+- Line balance: `163 + 2 - 7 = 158` — **PASS**
+- Character balance: `7388 + 55 - 173 = 7270` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a59a36929c4e — Eliminate all residual 9I-L local module paths
 
 **Recorded:** 2026-08-16T20:02:44-05:00  
