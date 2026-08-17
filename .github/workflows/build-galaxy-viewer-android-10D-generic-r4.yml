@@ -1,0 +1,81 @@
+name: Build Galaxy Viewer Android 10D Generic R4
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - 'android/galaxy-viewer-10d/**'
+      - '.github/workflows/build-galaxy-viewer-android-10D-generic-r4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build generic R4 APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10d :app:assembleDebug
+
+      - name: Validate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='android/galaxy-viewer-10d/app/build/outputs/apk/debug/app-debug.apk'
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/gv10d-r4-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10d'" /tmp/gv10d-r4-badging.txt
+          grep -q "versionCode='1007'" /tmp/gv10d-r4-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" Galaxy-Viewer-10D-Generic-R4.apk
+          sha256sum Galaxy-Viewer-10D-Generic-R4.apk > Galaxy-Viewer-10D-Generic-R4.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10D-Generic-R4
+          path: |
+            Galaxy-Viewer-10D-Generic-R4.apk
+            Galaxy-Viewer-10D-Generic-R4.sha256
+          if-no-files-found: error
+
+      - name: Create immutable R4 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG='galaxy-viewer-10d-generic-r4'
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "$TAG already exists; refusing to overwrite immutable APK release." >&2
+            exit 1
+          fi
+          gh release create "$TAG" \
+            Galaxy-Viewer-10D-Generic-R4.apk \
+            Galaxy-Viewer-10D-Generic-R4.sha256 \
+            --target "$(git rev-parse HEAD)" \
+            --title 'Galaxy Viewer 10D — Generic APK R4 No-Cache' \
+            --notes 'Install-once generic shell with strict fresh-pointer behavior. Every launch cache-busts 10D-app-target.json, disables URLConnection caches, uses WebSettings.LOAD_NO_CACHE, clears WebView cache/history, and adds a fresh nonce to the resolved launch URL. Last-good fallback is used only when the pointer fetch fails.'
