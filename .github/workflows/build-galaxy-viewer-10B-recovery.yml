@@ -61,7 +61,7 @@ jobs:
               text=text.replace(old,new,1)
               changes.append({'label':label,'requirement':req,'old':old,'new':new})
 
-          once('# GV-beta-0010A','# GV-beta-0010B','header identity',1)
+          once('# GV-beta-0010A\n','# GV-beta-0010B\n','header identity',1)
           once('.gv-10a-version','.gv-10b-version','startup CSS class',2)
           once("version.className='gv-10a-version';version.textContent='VERSION 10A'","version.className='gv-10b-version';version.textContent='VERSION 10B'",'startup label',2)
           once("    const VERSION='10A';\n    const DISPLAY_VERSION='10A';","    const VERSION='10B';\n    const DISPLAY_VERSION='10B';",'runtime identity',1)
