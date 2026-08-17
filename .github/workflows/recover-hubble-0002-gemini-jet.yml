@@ -1,0 +1,286 @@
+name: Recover Hubble 0002 Gemini jet
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/recover-hubble-0002-gemini-jet.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      CATALOG: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0002.json
+      EXPECTED_CATALOG_BLOB: 2642f81084deb211e4f18cc8bdd874a878f6e4f0
+      GEMINI_MODEL: gemini-2.5-flash-lite
+      WORKFLOW_PATH: .github/workflows/recover-hubble-0002-gemini-jet.yml
+    steps:
+      - name: Checkout exact beta baseline
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Verify authorized baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GEMINI_API_KEY:-}" || { echo 'GEMINI_API_KEY secret missing'; exit 1; }
+          ACTUAL="$(git hash-object "$CATALOG")"
+          test "$ACTUAL" = "$EXPECTED_CATALOG_BLOB" || { echo "Catalog blob mismatch: $ACTUAL"; exit 1; }
+          python3 - <<'PY'
+          import json, math, os
+          p=os.environ['CATALOG']
+          d=json.load(open(p,encoding='utf-8'))
+          e=d['entries']
+          def valid(x):
+              ra=x.get('ra'); dec=x.get('dec')
+              return isinstance(ra,(int,float)) and not isinstance(ra,bool) and isinstance(dec,(int,float)) and not isinstance(dec,bool) and math.isfinite(ra) and math.isfinite(dec) and 0 <= ra < 360 and -90 <= dec <= 90
+          assert len(e)==1879
+          assert len({x.get('archiveId') for x in e})==1879
+          assert sum(valid(x) for x in e)==1727
+          assert sum(not valid(x) for x in e)==152
+          print('BASELINE_PASS total=1879 resolved=1727 unresolved=152')
+          PY
+
+      - name: Gemini jet triage and authoritative verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet astropy astroquery
+          python3 - <<'PY'
+          import concurrent.futures as cf
+          import copy, json, math, os, pathlib, random, re, time, urllib.error, urllib.request
+          from astropy.coordinates import SkyCoord, get_constellation
+          import astropy.units as u
+          from astroquery.simbad import Simbad
+          from astroquery.ipac.ned import Ned
+
+          path=pathlib.Path(os.environ['CATALOG'])
+          key=os.environ['GEMINI_API_KEY']
+          model=os.environ['GEMINI_MODEL']
+          data=json.loads(path.read_text(encoding='utf-8'))
+          entries=data['entries']
+
+          def valid(e):
+              ra=e.get('ra'); dec=e.get('dec')
+              return isinstance(ra,(int,float)) and not isinstance(ra,bool) and isinstance(dec,(int,float)) and not isinstance(dec,bool) and math.isfinite(ra) and math.isfinite(dec) and 0 <= ra < 360 and -90 <= dec <= 90
+
+          frozen={e['archiveId']:json.dumps(e,sort_keys=True,ensure_ascii=False,separators=(',',':')) for e in entries if valid(e)}
+          missing=[e for e in entries if not valid(e)]
+          if len(frozen)!=1727 or len(missing)!=152:
+              raise SystemExit(f'Unexpected starting state resolved={len(frozen)} missing={len(missing)}')
+
+          def compact_record(e):
+              keep=('archiveId','name','title','designation','sourceUrl','imageType','credit','description','caption')
+              out={}
+              for k in keep:
+                  v=e.get(k)
+                  if v is not None and str(v).strip(): out[k]=v
+              return out
+
+          batches=[missing[i:i+8] for i in range(0,len(missing),8)]
+
+          def extract_json(text):
+              text=text.strip()
+              text=re.sub(r'^```(?:json)?\s*','',text,flags=re.I)
+              text=re.sub(r'\s*```$','',text)
+              a=text.find('{'); b=text.rfind('}')
+              if a<0 or b<a: raise ValueError('no JSON object')
+              return json.loads(text[a:b+1])
+
+          def call_gemini(batch):
+              records=[compact_record(e) for e in batch]
+              prompt='''You are doing forensic astronomical catalog triage for ESA/Hubble archive records. Research each supplied record using Google Search when useful. We need the REAL celestial target or field identity, not an instrument, mission, article title, or generic word. Do NOT invent coordinates. Return JSON only with key "records", one result per archiveId, in the same order. Each result must contain: archiveId; classification one of POSITIONAL, NON_POSITIONAL, UNRESOLVED; canonicalTarget string or null; aliases array of up to 5 exact astronomical identifiers; confidence one of HIGH, MEDIUM, LOW; reason concise string. POSITIONAL means a real celestial object/cluster/field whose sky coordinates can be independently resolved. NON_POSITIONAL means artwork/concept/diagram/mission image/non-celestial material or a composition with no single defensible sky position. UNRESOLVED means insufficient evidence. Never use ACS, HST, Hubble, Webb, NASA, ESA, galaxy, field, image, or constellation names alone as a canonical target. Prefer catalog identifiers such as NGC, IC, Messier, UGC, PGC, Abell, MACS, SDSS, 2MASS, RXJ, SpARCS, named survey fields, or specific galaxy/cluster designations.\n\nINPUT:\n'''+json.dumps(records,ensure_ascii=False)
+              url=f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+              body={
+                'contents':[{'parts':[{'text':prompt}]}],
+                'tools':[{'google_search':{}}],
+                'generationConfig':{'temperature':0.0,'maxOutputTokens':5000},
+              }
+              raw=json.dumps(body).encode()
+              last=None
+              for attempt in range(5):
+                  req=urllib.request.Request(url,data=raw,method='POST',headers={'Content-Type':'application/json','x-goog-api-key':key})
+                  try:
+                      with urllib.request.urlopen(req,timeout=120) as r:
+                          resp=json.loads(r.read().decode())
+                      cand=(resp.get('candidates') or [{}])[0]
+                      text=''.join(p.get('text','') for p in ((cand.get('content') or {}).get('parts') or []))
+                      payload=extract_json(text)
+                      got=payload.get('records') or []
+                      expected=[e['archiveId'] for e in batch]
+                      if [x.get('archiveId') for x in got] != expected:
+                          raise ValueError('archiveId/order mismatch')
+                      md=cand.get('groundingMetadata') or {}
+                      sources=[]; seen=set()
+                      for ch in md.get('groundingChunks') or []:
+                          web=(ch or {}).get('web') or {}; uri=web.get('uri')
+                          if uri and uri not in seen:
+                              seen.add(uri); sources.append(uri)
+                      return got,sources[:20]
+                  except urllib.error.HTTPError as exc:
+                      detail=exc.read().decode('utf-8','replace')[:500]
+                      last=f'HTTP {exc.code}: {detail}'
+                      if exc.code not in (429,500,502,503,504): break
+                  except Exception as exc:
+                      last=repr(exc)
+                  time.sleep(min(10,1.2*(2**attempt))+random.random())
+              raise RuntimeError(last or 'Gemini request failed')
+
+          print(f'JET_GEMINI batches={len(batches)} batch_size=8 concurrency=6')
+          triage={}; grounding={}
+          with cf.ThreadPoolExecutor(max_workers=6) as ex:
+              futs={ex.submit(call_gemini,b):b for b in batches}
+              for fut in cf.as_completed(futs):
+                  got,sources=fut.result()
+                  for item in got:
+                      aid=item['archiveId']; triage[aid]=item; grounding[aid]=sources
+                  print(f'GEMINI_PROGRESS {len(triage)}/152')
+          if len(triage)!=152:
+              raise SystemExit(f'Gemini accounting failed: {len(triage)}/152')
+
+          banned={'acs','hst','hubble','webb','nasa','esa','galaxy','galaxies','field','image','mars corona','pisces','milky way'}
+          def candidate_names(t):
+              out=[]
+              for s in [t.get('canonicalTarget'),*(t.get('aliases') or [])]:
+                  s=' '.join(str(s or '').split()).strip(' ,;/')
+                  if not s or s.lower() in banned or len(s)>120: continue
+                  if s.lower() not in {x.lower() for x in out}: out.append(s)
+              return out[:6]
+
+          def resolve_one(e):
+              t=triage[e['archiveId']]
+              if t.get('classification')!='POSITIONAL':
+                  return None
+              for name in candidate_names(t):
+                  # CDS Sesame
+                  try:
+                      c=SkyCoord.from_name(name).icrs
+                      if 0 <= float(c.ra.deg) < 360 and -90 <= float(c.dec.deg) <= 90:
+                          return name,'cds_sesame',c
+                  except Exception: pass
+                  # SIMBAD
+                  try:
+                      tab=Simbad.query_object(name)
+                      if tab is not None and len(tab):
+                          cols={x.lower():x for x in tab.colnames}
+                          if 'ra' in cols and 'dec' in cols:
+                              ra=tab[cols['ra']][0]; dec=tab[cols['dec']][0]
+                              try: c=SkyCoord(str(ra),str(dec),unit=(u.hourangle,u.deg),frame='icrs').icrs
+                              except Exception: c=SkyCoord(float(ra)*u.deg,float(dec)*u.deg,frame='icrs').icrs
+                              return name,'simbad',c
+                  except Exception: pass
+                  # NED
+                  try:
+                      tab=Ned.query_object(name)
+                      if tab is not None and len(tab):
+                          cols={x.lower():x for x in tab.colnames}
+                          rak=next((cols[k] for k in cols if k in ('ra','ra(deg)')),None)
+                          dek=next((cols[k] for k in cols if k in ('dec','dec(deg)')),None)
+                          if rak and dek:
+                              c=SkyCoord(float(tab[rak][0])*u.deg,float(tab[dek][0])*u.deg,frame='icrs').icrs
+                              return name,'ned',c
+                  except Exception: pass
+              return None
+
+          positional=[e for e in missing if triage[e['archiveId']].get('classification')=='POSITIONAL']
+          verified={}
+          print(f'JET_VERIFY positional_candidates={len(positional)} concurrency=12')
+          with cf.ThreadPoolExecutor(max_workers=12) as ex:
+              futs={ex.submit(resolve_one,e):e for e in positional}
+              done=0
+              for fut in cf.as_completed(futs):
+                  e=futs[fut]; done+=1
+                  r=fut.result()
+                  if r: verified[e['archiveId']]=r
+                  if done%10==0 or done==len(positional): print(f'VERIFY_PROGRESS {done}/{len(positional)} verified={len(verified)}')
+
+          counts={'resolved':0,'nonPositional':0,'unresolved':0}
+          methods={}
+          for e in missing:
+              aid=e['archiveId']; t=triage[aid]
+              r=verified.get(aid)
+              if r:
+                  name,method,c=r
+                  e['ra']=round(float(c.ra.deg),10); e['dec']=round(float(c.dec.deg),10)
+                  e['raText']=c.ra.to_string(unit=u.hour,sep=' ',precision=2,pad=False)
+                  e['decText']=c.dec.to_string(unit=u.deg,sep=' ',precision=2,alwayssign=True,pad=False)
+                  e['constellation']=get_constellation(c,short_name=False)
+                  e['coordinateMethod']='gemini_candidate_verified_'+method
+                  e['coordinateResolvedFrom']=name
+                  e['constellationMethod']='iau_boundary_from_radec'
+                  e['geminiCoordinateTriage']={
+                    'classification':t.get('classification'),'confidence':t.get('confidence'),
+                    'canonicalTarget':t.get('canonicalTarget'),'aliases':t.get('aliases') or [],
+                    'reason':t.get('reason'),'groundingSources':grounding.get(aid,[])[:8],
+                    'verificationDatabase':method,'status':'verified_resolved'
+                  }
+                  counts['resolved']+=1; methods[method]=methods.get(method,0)+1
+              else:
+                  cls=t.get('classification')
+                  status='non_positional' if cls=='NON_POSITIONAL' else 'unresolved'
+                  e['geminiCoordinateTriage']={
+                    'classification':cls,'confidence':t.get('confidence'),
+                    'canonicalTarget':t.get('canonicalTarget'),'aliases':t.get('aliases') or [],
+                    'reason':t.get('reason'),'groundingSources':grounding.get(aid,[])[:8],
+                    'status':status
+                  }
+                  if status=='non_positional': counts['nonPositional']+=1
+                  else: counts['unresolved']+=1
+
+          if sum(counts.values())!=152: raise SystemExit('152 accounting failed')
+
+          # Hard preservation gate: all 1,727 pre-resolved records must remain byte-equivalent as JSON objects.
+          for e in entries:
+              aid=e['archiveId']
+              if aid in frozen:
+                  now=json.dumps(e,sort_keys=True,ensure_ascii=False,separators=(',',':'))
+                  if now!=frozen[aid]: raise SystemExit(f'Protected resolved record changed: {aid}')
+
+          after=sum(valid(e) for e in entries)
+          if after != 1727+counts['resolved']:
+              raise SystemExit(f'Resolved count mismatch after={after} expected={1727+counts["resolved"]}')
+          constellations=sum(bool(str(e.get('constellation') or '').strip()) for e in entries)
+          report={
+            'startingUnresolved':152,'resolvedThisPass':counts['resolved'],
+            'nonPositionalThisPass':counts['nonPositional'],'stillUnresolved':counts['unresolved'],
+            'coordinatesAfter':after,'constellationsAfter':constellations,
+            'verificationMethodCounts':methods,'geminiModel':model,
+            'mode':'parallel_batched_grounded_jet','geminiBatchSize':8,'geminiConcurrency':6,'verificationConcurrency':12
+          }
+          data.setdefault('manualEnrichment',{})['geminiJetCoordinateRecovery']=report
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          reread=json.loads(path.read_text(encoding='utf-8'))
+          if len(reread['entries'])!=1879 or len({e['archiveId'] for e in reread['entries']})!=1879:
+              raise SystemExit('Catalog identity/count changed')
+          print('GEMINI_JET_RESULT='+json.dumps(report,sort_keys=True))
+          print('VERIFIED_SAMPLE='+json.dumps([{'archiveId':a,'target':r[0],'method':r[1]} for a,r in list(verified.items())[:30]],ensure_ascii=False))
+          PY
+
+      - name: Commit verified catalog and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$CATALOG"
+          git rm "$WORKFLOW_PATH"
+          git diff --cached --name-only
+          CHANGED="$(git diff --cached --name-only | sort)"
+          EXPECTED="$(printf '%s\n%s\n' "$WORKFLOW_PATH" "$CATALOG" | sort)"
+          test "$CHANGED" = "$EXPECTED" || { echo 'Unauthorized changed path'; exit 1; }
+          git commit -m 'Run Gemini jet recovery for remaining Hubble targets'
+          for i in 1 2 3 4 5; do
+            git fetch origin beta
+            git rebase origin/beta
+            if git push origin HEAD:beta; then exit 0; fi
+            sleep 2
+          done
+          exit 1
