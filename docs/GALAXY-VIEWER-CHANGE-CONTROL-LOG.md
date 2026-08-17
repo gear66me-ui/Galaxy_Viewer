@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a59a36929c4e — Eliminate all residual 9I-L local module paths
+
+**Recorded:** 2026-08-16T20:02:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a59a36929c4ef20988c0c9bcda8ee810c791df29`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a59a36929c4ef20988c0c9bcda8ee810c791df29)  
+**Parent/baseline:** `a8acccd329535fb2f83a4dbbabc432a4d6d6356c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a8acccd329535fb2f83a4dbbabc432a4d6d6356c...a59a36929c4ef20988c0c9bcda8ee810c791df29)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Eliminate all residual 9I-L local module paths
+```
+
+### Complete changed-path accounting
+
+#### `.github/scripts/prepare_galaxy_viewer_9il.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `22944c26b9d272d694dcba1ad291f65f3b106590b0f057a610eb856450832629`
+- SHA-256 after: `caf3acbe15b1ae63842c0f2b470ae267429a32d712295d1d1689cfffdfafed9e`
+- Bytes: `4832` → `4911`
+- Lines: `118` → `120`
+- Characters: `4832` → `4911`
+- Inserted lines: `3`
+- Deleted lines: `1`
+- Inserted characters: `109`
+- Deleted characters: `30`
+- Unified diff hunks: `3`
+- Inserted blocks: `3`
+- Deleted blocks: `1`
+- Changed blocks: `3`
+- Line balance: `118 + 3 - 1 = 120` — **PASS**
+- Character balance: `4832 + 109 - 30 = 4911` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5f4467d4a1d1 — Restore compact 9I comet tile layout
 
 **Recorded:** 2026-08-16T20:02:19-05:00  
