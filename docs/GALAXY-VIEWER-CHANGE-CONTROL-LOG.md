@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0256ba455f6d — Run 10E repair build R4
+
+**Recorded:** 2026-08-17T14:11:15-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0256ba455f6dc917093cfa5fa9aca81d1993924c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0256ba455f6dc917093cfa5fa9aca81d1993924c)  
+**Parent/baseline:** `7467a42b393658c4dbd88983ac788f8f3c72a18e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7467a42b393658c4dbd88983ac788f8f3c72a18e...0256ba455f6dc917093cfa5fa9aca81d1993924c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run 10E repair build R4
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `6f35b35c36b7a066b3fd0e2554632cb56b069366297bac033639a4d46fbb2eda`
+- Bytes: `0` → `5339`
+- Lines: `0` → `110`
+- Characters: `0` → `5337`
+- Inserted lines: `110`
+- Deleted lines: `0`
+- Inserted characters: `5337`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 110 - 0 = 110` — **PASS**
+- Character balance: `0 + 5337 - 0 = 5337` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-1e2c228b31f9 — Run guarded 10E repair build R3
 
 **Recorded:** 2026-08-17T14:08:18-05:00  
