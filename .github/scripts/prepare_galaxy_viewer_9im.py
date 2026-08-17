@@ -76,16 +76,21 @@ def build_standalone():
 (()=>{
 'use strict';
 const root=document.documentElement,cover=document.getElementById('gv-apk-cover'),splash=document.getElementById('gv-apk-splash'),errorBox=document.getElementById('gv-apk-error');
+const smoke=new URLSearchParams(location.search).has('smoke');
 let viewerReady=false,splashDone=false;
-root.dataset.viewerStatus='booting';root.dataset.splashStatus='waiting';
-const showError=error=>{root.dataset.viewerStatus='failed';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
-const reveal=()=>{if(viewerReady&&splashDone){root.dataset.gvStatus='ready';requestAnimationFrame(()=>{splash.remove();cover.remove()})}};
+root.dataset.viewerStatus='booting';root.dataset.splashStatus=smoke?'skipped':'waiting';
+const showViewerError=error=>{root.dataset.viewerStatus='failed';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
+const showSplashError=error=>{root.dataset.splashStatus='failed';errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
+const reveal=()=>{if(viewerReady&&(splashDone||smoke)){root.dataset.gvStatus='ready';requestAnimationFrame(()=>{if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove()})}};
 document.addEventListener('gv-viewer-ready',event=>{viewerReady=true;root.dataset.viewerStatus='ready';root.dataset.viewerVersion=String(event.detail?.displayVersion||'');reveal()},{once:true});
-document.addEventListener('gv-viewer-failed',event=>showError(new Error(event.detail?.message||'GALAXY VIEWER INITIALIZATION FAILED')),{once:true});
-window.addEventListener('message',event=>{if(event.source===splash.contentWindow&&event.data==='galaxy-splash-complete'){splashDone=true;root.dataset.splashStatus='ready';reveal()}});
-setTimeout(()=>{splash.addEventListener('load',()=>requestAnimationFrame(()=>cover.remove()),{once:true});splash.addEventListener('error',()=>showError(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});splash.src='splash/index.html'},3500);
-setTimeout(()=>{if(!viewerReady)showError(new Error('GALAXY VIEWER READY EVENT TIMEOUT'))},60000);
-setTimeout(()=>{if(!splashDone)showError(new Error('FINAL SPLASH COMPLETION TIMEOUT'))},30000);
+document.addEventListener('gv-viewer-failed',event=>showViewerError(new Error(event.detail?.message||'GALAXY VIEWER INITIALIZATION FAILED')),{once:true});
+if(smoke){splashDone=true;if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove();}
+else{
+  window.addEventListener('message',event=>{if(event.source===splash.contentWindow&&event.data==='galaxy-splash-complete'){splashDone=true;root.dataset.splashStatus='ready';reveal()}});
+  setTimeout(()=>{splash.addEventListener('load',()=>requestAnimationFrame(()=>{if(cover.isConnected)cover.remove()}),{once:true});splash.addEventListener('error',()=>showSplashError(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});splash.src='splash/index.html'},3500);
+  setTimeout(()=>{if(!splashDone)showSplashError(new Error('FINAL SPLASH COMPLETION TIMEOUT'))},30000);
+}
+setTimeout(()=>{if(!viewerReady)showViewerError(new Error('GALAXY VIEWER READY EVENT TIMEOUT'))},60000);
 })();
 </script>'''
     shell='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 9I-M</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-apk-cover{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#000}#gv-apk-cover img{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}#gv-apk-splash{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}#gv-apk-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}</style></head><body><div id="gv-apk-cover"><img src="app-icon.png" alt="GALAXY VIEWER"></div><iframe id="gv-apk-splash" title="GALAXY VIEWER SPLASH"></iframe><div id="gv-apk-error"></div>'''
@@ -116,6 +121,7 @@ def verify():
         if marker not in index: raise SystemExit('REFUSING 9I-M: embedded module export marker missing: '+marker)
     for marker in ['gv-viewer-ready','gv-viewer-failed','data/gv-hubble-galaxies-full-0002.json','artwork/GV-reticle-0001.svg']:
         if marker not in index: raise SystemExit('REFUSING 9I-M: standalone invariant missing: '+marker)
+    if "has('smoke')" not in index: raise SystemExit('REFUSING 9I-M: smoke isolation missing')
     splash=(ASSETS/'splash/index.html').read_text(encoding='utf-8')
     if splash.count("parent.postMessage('galaxy-splash-complete','*')")!=2: raise SystemExit('REFUSING 9I-M: packaged splash bridge missing')
     catalog=(ASSETS/'data/gv-hubble-galaxies-full-0002.json').read_text(encoding='utf-8')
