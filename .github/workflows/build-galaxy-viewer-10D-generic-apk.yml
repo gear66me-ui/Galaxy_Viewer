@@ -229,8 +229,8 @@ jobs:
           grep -q 'assets/artwork/icon.svg' /tmp/apk-list.txt
           grep -q 'assets/splash/index.html' /tmp/apk-list.txt
           grep -q 'assets/app-icon.png' /tmp/apk-list.txt
-          cp "$APK" Galaxy-Viewer-10D-Generic.apk
-          sha256sum Galaxy-Viewer-10D-Generic.apk | tee Galaxy-Viewer-10D-Generic.sha256
+          cp "$APK" /tmp/Galaxy-Viewer-10D-Generic.apk
+          sha256sum /tmp/Galaxy-Viewer-10D-Generic.apk | tee /tmp/Galaxy-Viewer-10D-Generic.sha256
 
       - name: Promote 10D manifest only after all gates pass
         run: |
@@ -256,8 +256,8 @@ jobs:
         with:
           name: Galaxy-Viewer-10D-Generic
           path: |
-            Galaxy-Viewer-10D-Generic.apk
-            Galaxy-Viewer-10D-Generic.sha256
+            /tmp/Galaxy-Viewer-10D-Generic.apk
+            /tmp/Galaxy-Viewer-10D-Generic.sha256
           if-no-files-found: error
 
       - name: Remove this temporary build workflow only
