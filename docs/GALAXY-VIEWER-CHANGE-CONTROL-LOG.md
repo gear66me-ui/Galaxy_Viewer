@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1c3f9dae00a0 — Make 10D smoke patch exact bootstrap declarations
+
+**Recorded:** 2026-08-17T11:54:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1c3f9dae00a04c776e8731576a6f8867fbd34b67`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1c3f9dae00a04c776e8731576a6f8867fbd34b67)  
+**Parent/baseline:** `8f6d659607e73f0d93db932a7d275a2057114290`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8f6d659607e73f0d93db932a7d275a2057114290...1c3f9dae00a04c776e8731576a6f8867fbd34b67)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Make 10D smoke patch exact bootstrap declarations
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10D-generic-apk.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `df0d41064d293f02209030d699c01a13b92a2e695c322ff58ddfc3163404539b`
+- SHA-256 after: `60f4831e5690b4a2da4a5ac19f540c818a613d9d384966ff58914c3ade5b8984`
+- Bytes: `19446` → `19439`
+- Lines: `232` → `232`
+- Characters: `19446` → `19439`
+- Inserted lines: `6`
+- Deleted lines: `6`
+- Inserted characters: `207`
+- Deleted characters: `214`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `232 + 6 - 6 = 232` — **PASS**
+- Character balance: `19446 + 207 - 214 = 19439` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-55eb4d5783c6 — Resume 10D build from corrected frozen candidate
 
 **Recorded:** 2026-08-17T11:53:25-05:00  
