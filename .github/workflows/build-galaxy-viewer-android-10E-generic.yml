@@ -1,0 +1,359 @@
+name: Build Galaxy Viewer Android 10E Generic
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-10E-generic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_TAG: galaxy-viewer-10e-generic
+  APK_NAME: Galaxy-Viewer-10E-Generic.apk
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Lock untouchable 9I files
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "NINE_I_HTML=$(git hash-object mobile/beta/9I.html)"
+            echo "NINE_I_APP=$(git hash-object mobile/beta/9I-app.html)"
+            echo "NINE_I_VIEWER=$(git hash-object viewer/GV-beta-0009I.py)"
+            echo "TEN_D_VIEWER=$(git hash-object viewer/GV-beta-0010D.py)"
+          } >> "$GITHUB_ENV"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Create standalone 10E Viewer and generic Android shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json, re, shutil
+
+          baseline=Path('viewer/GV-beta-0010D.py')
+          candidate=Path('viewer/GV-beta-0010E.py')
+          if candidate.exists():
+              raise SystemExit('REFUSING: viewer/GV-beta-0010E.py already exists')
+
+          s=baseline.read_text(encoding='utf-8')
+          s=s.replace('# GV-beta-0010D','# GV-beta-0010E',1)
+          s=s.replace('gv-10d-version','gv-10e-version')
+          s=s.replace('VERSION 10D','VERSION 10E')
+          s=s.replace("const VERSION='10D';","const VERSION='10E';")
+          s=s.replace("const DISPLAY_VERSION='10D';","const DISPLAY_VERSION='10E';")
+          s=s.replace('GV9I','GV10E').replace('gv9i','gv10e').replace('__gv9i','__gv10e')
+          s=s.replace('9I','10E').replace('9i','10e')
+          s=s.replace('source=android-10d','source=android-10e')
+          candidate.write_text(s,encoding='utf-8')
+
+          forbidden=('9I','9i','9I-app','GV9I','gv9i','__gv9i','GALAXY VIEWER 9I','source=android-10d')
+          for token in forbidden:
+              if token in s:
+                  raise SystemExit('REFUSING: legacy token remains in 10E Viewer: '+token)
+          if s.count("const VERSION='10E';") != 1 or s.count("const DISPLAY_VERSION='10E';") != 1:
+              raise SystemExit('REFUSING: 10E identity mismatch')
+
+          Path('viewer/gv-current-viewer.json').write_text(json.dumps({'version':'10E','viewer':'GV-beta-0010E.py'},indent=2)+'\n',encoding='utf-8')
+
+          gate=Path('.github/workflows/galaxy-viewer-release-gate.yml')
+          g=gate.read_text(encoding='utf-8')
+          old='          python -m py_compile "$CANDIDATE_PATH"\n'
+          replacement="          python - <<'PY'\n          import os,pathlib\n          p=pathlib.Path(os.environ['CANDIDATE_PATH'])\n          compile(p.read_text(encoding='utf-8'),str(p),'exec')\n          PY\n"
+          if old in g:
+              gate.write_text(g.replace(old,replacement,1),encoding='utf-8')
+          elif "compile(p.read_text(encoding='utf-8'),str(p),'exec')" not in g:
+              raise SystemExit('REFUSING: unexpected release-gate syntax check')
+
+          root=Path('android/galaxy-viewer-10e')
+          if root.exists():
+              raise SystemExit('REFUSING: android/galaxy-viewer-10e already exists')
+          java=root/'app/src/main/java/com/gear66me/galaxyviewer10e'
+          assets=root/'app/src/main/assets'
+          java.mkdir(parents=True)
+          (assets/'viewer').mkdir(parents=True)
+          (assets/'artwork').mkdir(parents=True)
+
+          (root/'settings.gradle').write_text("""pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
+          rootProject.name='GalaxyViewer10EGeneric'
+          include ':app'
+          """,encoding='utf-8')
+          (root/'build.gradle').write_text("""plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          """,encoding='utf-8')
+          (root/'gradle.properties').write_text("""org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=false
+          """,encoding='utf-8')
+          (root/'app/build.gradle').write_text("""plugins { id 'com.android.application' }
+          android {
+              namespace 'com.gear66me.galaxyviewer10e'
+              compileSdk 35
+              defaultConfig {
+                  applicationId 'com.gear66me.galaxyviewer10e'
+                  minSdk 29
+                  targetSdk 35
+                  versionCode 1007
+                  versionName '10E-generic'
+              }
+          }
+          """,encoding='utf-8')
+          (root/'app/src/main/AndroidManifest.xml').write_text("""<?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application android:allowBackup="false" android:label="Galaxy Viewer 10E" android:usesCleartextTraffic="false" android:theme="@android:style/Theme.Material.NoActionBar">
+              <activity android:name=".MainActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true" android:screenOrientation="portrait">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          """,encoding='utf-8')
+
+          (java/'MainActivity.java').write_text(r'''package com.gear66me.galaxyviewer10e;
+
+          import android.app.Activity;
+          import android.app.DownloadManager;
+          import android.content.Context;
+          import android.graphics.Color;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.view.View;
+          import android.webkit.DownloadListener;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceError;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.TextView;
+
+          public final class MainActivity extends Activity {
+              private WebView web;
+              @Override protected void onCreate(Bundle state){super.onCreate(state);immersive();open();}
+              private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
+              private void open(){
+                  web=new WebView(this); web.setBackgroundColor(Color.BLACK);
+                  WebSettings s=web.getSettings();
+                  s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true);
+                  s.setAllowFileAccess(true); s.setAllowContentAccess(false); s.setAllowFileAccessFromFileURLs(true); s.setAllowUniversalAccessFromFileURLs(true);
+                  s.setMediaPlaybackRequiresUserGesture(false); s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
+                  s.setUserAgentString(s.getUserAgentString()+" GalaxyViewer10E/10E-generic");
+                  web.setWebChromeClient(new WebChromeClient());
+                  web.setWebViewClient(new WebViewClient(){
+                      @Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){Uri u=r.getUrl();String q=u==null?"":u.getScheme();return !("https".equalsIgnoreCase(q)||"file".equalsIgnoreCase(q));}
+                      @Override public void onReceivedError(WebView v,WebResourceRequest r,WebResourceError e){if(r.isForMainFrame())fatal("LOAD ERROR: "+e.getDescription());}
+                  });
+                  web.setDownloadListener(new DownloadListener(){@Override public void onDownloadStart(String url,String ua,String cd,String mime,long len){try{Uri u=Uri.parse(url);if(!"https".equalsIgnoreCase(u.getScheme()))return;DownloadManager.Request q=new DownloadManager.Request(u);q.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);q.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,android.webkit.URLUtil.guessFileName(url,cd,mime));((DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(q);}catch(Exception ignored){}}});
+                  setContentView(web); web.loadUrl("file:///android_asset/index.html");
+              }
+              private void fatal(String m){runOnUiThread(()->{TextView t=new TextView(this);t.setText("GALAXY VIEWER 10E\n\n"+m);t.setTextColor(Color.WHITE);t.setBackgroundColor(Color.BLACK);t.setTextSize(16f);t.setPadding(40,40,40,40);setContentView(t);});}
+              @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
+          }
+          ''',encoding='utf-8')
+
+          index=r'''<!doctype html>
+          <html lang="en"><head>
+          <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000">
+          <title>GALAXY VIEWER 10E</title>
+          <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-apk-cover{position:fixed;inset:0;z-index:2147483646;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}#gv-apk-cover img{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}.gv-bootstrap-version{color:#FFD85A;font:16px/1 sans-serif;letter-spacing:1.2px}#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000;visibility:hidden}#gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}</style>
+          </head><body>
+          <div id="gv-apk-cover"><img src="artwork/icon.svg" alt="GALAXY VIEWER"><div class="gv-bootstrap-version">VERSION 10E</div></div>
+          <iframe id="gv-splash-frame" title="GALAXY VIEWER SPLASH"></iframe><div id="gv-launch-error" role="alert"></div>
+          <script>
+          (async()=>{
+            'use strict';
+            const REMOTE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+            const cover=document.getElementById('gv-apk-cover'), splash=document.getElementById('gv-splash-frame'), errorBox=document.getElementById('gv-launch-error');
+            const fail=e=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER 10E FAILED TO LOAD\n\n'+String(e?.stack||e)};
+            const readText=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(u+' returned HTTP '+r.status);return r.text()};
+            const parseViewer=source=>{
+              const html=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
+              const js=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
+              if(html.length!==1||js.length!==1)throw new Error('Viewer extraction failed: '+html.length+' HTML / '+js.length+' JS blocks');
+              return {html:html[0][1],js:js[0][1]};
+            };
+            const localManifest=async()=>JSON.parse(await readText('viewer/gv-current-viewer.json'));
+            const resolve=async()=>{
+              try{
+                const m=JSON.parse(await readText(REMOTE+'gv-current-viewer.json?t='+Date.now()));
+                if(!/^GV-beta-[A-Za-z0-9._-]+\.py$/.test(m.viewer))throw new Error('Invalid remote Viewer manifest');
+                return {manifest:m,source:await readText(REMOTE+m.viewer+'?t='+Date.now()),origin:'remote'};
+              }catch(primary){
+                const m=await localManifest();
+                if(!/^GV-beta-[A-Za-z0-9._-]+\.py$/.test(m.viewer))throw primary;
+                return {manifest:m,source:await readText('viewer/'+m.viewer),origin:'bundled'};
+              }
+            };
+            const waitViewer=()=>new Promise((resolve,reject)=>{const deadline=performance.now()+30000;const check=()=>{const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test){resolve();return}if(performance.now()>deadline){reject(new Error('10E Viewer readiness timeout'));return}setTimeout(check,100)};check()});
+            try{
+              const started=performance.now();
+              splash.src='viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
+              const result=await resolve();
+              if(result.manifest.version!=='10E'&&result.origin==='bundled')throw new Error('Bundled manifest is not 10E');
+              if(/9I|9i|9I-app|GV9I|gv9i|__gv9i|GALAXY VIEWER 9I|source=android-10d/.test(result.source))throw new Error('Legacy reference detected in selected Viewer');
+              const blocks=parseViewer(result.source);
+              document.body.insertAdjacentHTML('beforeend',blocks.html);
+              const script=document.createElement('script');script.textContent=blocks.js;document.body.appendChild(script);
+              const hold=Math.max(0,3500-(performance.now()-started));
+              await new Promise(r=>setTimeout(r,hold));
+              splash.style.visibility='visible'; cover.remove();
+              await Promise.all([waitViewer(),new Promise(r=>setTimeout(r,5000))]);
+              splash.remove();
+            }catch(e){console.error(e);fail(e)}
+          })();
+          </script></body></html>'''
+          (assets/'index.html').write_text(index,encoding='utf-8')
+          (assets/'viewer/gv-current-viewer.json').write_text(json.dumps({'version':'10E','viewer':'GV-beta-0010E.py'},indent=2)+'\n',encoding='utf-8')
+          shutil.copy2(candidate,assets/'viewer/GV-beta-0010E.py')
+          shutil.copy2('viewer/artwork/icon.svg',assets/'artwork/icon.svg')
+          shutil.copytree('viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL',assets/'viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL',dirs_exist_ok=True)
+
+          # Persist the exact current dependencies as fallback assets too.
+          fallback_files=[
+            'viewer/modules/gv-hamburger-menu-0002.js',
+            'viewer/modules/gv-coordinate-overlay-0004.js',
+            'viewer/modules/gv-target-simbad-0001.js',
+            'viewer/modules/gv-random-galaxy-0028.js',
+            'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0010.json',
+            'viewer/artwork/GV-reticle-0001.svg',
+          ]
+          for src in fallback_files:
+              p=Path(src); dst=assets/p
+              dst.parent.mkdir(parents=True,exist_ok=True); shutil.copy2(p,dst)
+          PY
+
+      - name: Surgical reference audit before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          bad=('9I','9i','9I-app','GV9I','gv9i','__gv9i','GALAXY VIEWER 9I','source=android-10d')
+          roots=[Path('viewer/GV-beta-0010E.py'),Path('android/galaxy-viewer-10e')]
+          hits=[]
+          for root in roots:
+              files=[root] if root.is_file() else [p for p in root.rglob('*') if p.is_file()]
+              for p in files:
+                  try:s=p.read_text(encoding='utf-8')
+                  except UnicodeDecodeError:continue
+                  for token in bad:
+                      if token in s:hits.append((str(p),token))
+          if hits: raise SystemExit('LEGACY REFERENCES REMAIN: '+repr(hits))
+          print('10E legacy-reference audit PASS')
+          PY
+          test "$(git hash-object mobile/beta/9I.html)" = "$NINE_I_HTML"
+          test "$(git hash-object mobile/beta/9I-app.html)" = "$NINE_I_APP"
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "$NINE_I_VIEWER"
+          test "$(git hash-object viewer/GV-beta-0010D.py)" = "$TEN_D_VIEWER"
+          test ! -d viewer/__pycache__
+
+      - name: Build 10E generic APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
+
+      - name: Inspect finished APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/10e-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10e'" /tmp/10e-badging.txt
+          grep -q "application-label:'Galaxy Viewer 10E'" /tmp/10e-badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer10e.MainActivity'" /tmp/10e-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          unzip -l "$APK" | grep -q 'assets/index.html'
+          unzip -l "$APK" | grep -q 'assets/viewer/gv-current-viewer.json'
+          unzip -l "$APK" | grep -q 'assets/viewer/GV-beta-0010E.py'
+          rm -rf /tmp/apk-10e && mkdir /tmp/apk-10e && unzip -qq "$APK" -d /tmp/apk-10e
+          if grep -RInaE '9I|9i|9I-app|GV9I|gv9i|__gv9i|GALAXY VIEWER 9I|source=android-10d' /tmp/apk-10e; then
+            echo 'REFUSING: legacy reference exists inside finished APK' >&2; exit 1
+          fi
+          cp "$APK" "$APK_NAME"
+          sha256sum "$APK_NAME" | tee "${APK_NAME}.sha256"
+
+      - name: Verify protected 9I and 10D remain byte-identical
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object mobile/beta/9I.html)" = "$NINE_I_HTML"
+          test "$(git hash-object mobile/beta/9I-app.html)" = "$NINE_I_APP"
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "$NINE_I_VIEWER"
+          test "$(git hash-object viewer/GV-beta-0010D.py)" = "$TEN_D_VIEWER"
+
+      - name: Commit 10E release sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010E.py viewer/gv-current-viewer.json android/galaxy-viewer-10e .github/workflows/galaxy-viewer-release-gate.yml
+          CHANGED="$(git diff --cached --name-only)"
+          printf '%s\n' "$CHANGED"
+          if printf '%s\n' "$CHANGED" | grep -E '(^|/)9I([^A-Za-z0-9]|$)|mobile/beta/9I|viewer/GV-beta-0009I'; then
+            echo 'REFUSING: protected 9I path entered commit' >&2; exit 1
+          fi
+          git commit -m 'Release standalone Galaxy Viewer 10E and generic APK shell'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          echo "RELEASE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10E-Generic
+          path: |
+            Galaxy-Viewer-10E-Generic.apk
+            Galaxy-Viewer-10E-Generic.apk.sha256
+          if-no-files-found: error
+
+      - name: Publish immutable 10E APK release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "$RELEASE_TAG already exists; refusing overwrite" >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" "$APK_NAME" "${APK_NAME}.sha256" --target "$RELEASE_COMMIT" --title 'Galaxy Viewer 10E — Generic APK' --notes 'Standalone 10E generic installer. Starts at file:///android_asset/index.html, reads viewer/gv-current-viewer.json, loads the selected Viewer directly, contains a bundled 10E fallback, and contains no 9I launcher/runtime references. Protected 9I website/launcher/Viewer and 10D baseline are byte-identity guarded and untouched.'
