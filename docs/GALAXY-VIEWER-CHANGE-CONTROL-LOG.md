@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-434a00e9ba2b — Restore permanent generic 10E workflow
+
+**Recorded:** 2026-08-17T15:44:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`434a00e9ba2b1ea05ec6a56cb7a0e738a52efa64`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/434a00e9ba2b1ea05ec6a56cb7a0e738a52efa64)  
+**Parent/baseline:** `11d80e6c8412a42b3f1ce84b55e697980c0c43ad`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/11d80e6c8412a42b3f1ce84b55e697980c0c43ad...434a00e9ba2b1ea05ec6a56cb7a0e738a52efa64)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore permanent generic 10E workflow
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `7ceac20628f25d06fdc38aba50d31c16dd34afb3842f769cefbfdc1f1204d8a9`
+- SHA-256 after: `028db4a821516c7ba1fba8dacd79155970c1bc03ee77d26184d05ef60ce5552a`
+- Bytes: `3468` → `4173`
+- Lines: `73` → `77`
+- Characters: `3468` → `4171`
+- Inserted lines: `60`
+- Deleted lines: `56`
+- Inserted characters: `3318`
+- Deleted characters: `2615`
+- Unified diff hunks: `5`
+- Inserted blocks: `5`
+- Deleted blocks: `4`
+- Changed blocks: `5`
+- Line balance: `73 + 60 - 56 = 77` — **PASS**
+- Character balance: `3468 + 3318 - 2615 = 4171` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-f995d23d2aa0 — Retry guarded Cartwheel catalog patch with rebase-safe push
 
 **Recorded:** 2026-08-17T15:43:46-05:00  
