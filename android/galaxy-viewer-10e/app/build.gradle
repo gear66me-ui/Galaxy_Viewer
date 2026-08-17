@@ -2,5 +2,5 @@ plugins { id 'com.android.application' }
 android {
  namespace 'com.gear66me.galaxyviewer10e'
  compileSdk 35
- defaultConfig { applicationId 'com.gear66me.galaxyviewer10e.r3'; minSdk 29; targetSdk 35; versionCode 1009; versionName '10E-generic-r3' }
+ defaultConfig { applicationId 'com.gear66me.galaxyviewer10e.generic'; minSdk 29; targetSdk 35; versionCode 1010; versionName '10E-generic-permanent-1' }
 }
