@@ -80,17 +80,25 @@ jobs:
           trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
           sleep 1
           set +e
-          timeout 100s "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage --use-gl=swiftshader --enable-webgl --ignore-gpu-blocklist --virtual-time-budget=70000 --dump-dom http://127.0.0.1:8765/index.html >/tmp/gv-dom.html 2>/tmp/gv-chrome.log
+          timeout 100s "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --virtual-time-budget=70000 --dump-dom http://127.0.0.1:8765/index.html >/tmp/gv-dom.html 2>/tmp/gv-chrome.log
           CHROME_RC=$?
           set -e
           if ! grep -q 'data-viewer-status="ready"' /tmp/gv-dom.html; then
             echo 'REFUSING 9I-M: standalone Viewer did not emit READY in real Chromium' >&2
-            echo '--- DOM diagnostic ---' >&2
-            grep -E 'data-viewer-status|APP FAILED TO LOAD|gv-apk-error' /tmp/gv-dom.html | tail -20 >&2 || true
+            echo '--- FULL APP ERROR ---' >&2
+            python - <<'PY'
+          from pathlib import Path
+          import re, html
+          s=Path('/tmp/gv-dom.html').read_text(encoding='utf-8',errors='replace')
+          m=re.search(r'<div id="gv-apk-error"[^>]*>([\s\S]*?)</div>',s)
+          print(html.unescape(re.sub(r'<[^>]+>','',m.group(1))) if m else 'No gv-apk-error text captured')
+          PY
+            echo '--- DOM status ---' >&2
+            grep -o 'data-viewer-status="[^"]*"' /tmp/gv-dom.html | tail -1 >&2 || true
             echo '--- Chrome diagnostic ---' >&2
-            tail -80 /tmp/gv-chrome.log >&2 || true
+            tail -100 /tmp/gv-chrome.log >&2 || true
             echo '--- HTTP diagnostic ---' >&2
-            tail -80 /tmp/gv-http.log >&2 || true
+            tail -100 /tmp/gv-http.log >&2 || true
             exit 1
           fi
           echo "Browser smoke test PASS (chrome rc=$CHROME_RC)"
