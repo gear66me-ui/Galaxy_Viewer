@@ -1,0 +1,122 @@
+name: Build Galaxy Viewer Android 9I-I
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-9I-I.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Prepare 9I-I from verified 9I-H
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0009I.py)" = "7072d7a5b8c095acc57608ce860f811ccd5d8117"
+          cp viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-H.py
+          python - <<'PY'
+          from pathlib import Path
+          src=Path('.github/scripts/prepare_galaxy_viewer_9ih.py').read_text(encoding='utf-8')
+          src=src.replace("expected='0e03879bb008d9e91fe5677949338126f1413df6'","expected='7072d7a5b8c095acc57608ce860f811ccd5d8117'")
+          src=src.replace("old=\"    const DISPLAY_VERSION='9I-G';\"","old=\"    const DISPLAY_VERSION='9I-H';\"")
+          src=src.replace("text.replace(old,\"    const DISPLAY_VERSION='9I-H';\",1)","text.replace(old,\"    const DISPLAY_VERSION='9I-I';\",1)")
+          src=src.replace('VERSION 9I-H','VERSION 9I-I').replace('GALAXY VIEWER VERSION 9I-H','GALAXY VIEWER VERSION 9I-I')
+          src=src.replace('GALAXY VIEWER 9I-H','GALAXY VIEWER 9I-I')
+          src=src.replace("versionCode 14","versionCode 15").replace("versionName '9I-H'","versionName '9I-I'")
+          marker="text=text.replace('settings.setAllowContentAccess(false);','settings.setAllowContentAccess(true);')"
+          replacement=marker+"\n    if 'settings.setAllowFileAccessFromFileURLs(true);' not in text:\n        text=text.replace('settings.setAllowContentAccess(true);','settings.setAllowContentAccess(true);\\n        settings.setAllowFileAccessFromFileURLs(true);\\n        settings.setAllowUniversalAccessFromFileURLs(true);',1)"
+          if marker not in src: raise SystemExit('Android WebSettings marker missing')
+          src=src.replace(marker,replacement,1)
+          Path('/tmp/prepare_9ii.py').write_text(src,encoding='utf-8')
+          PY
+          python /tmp/prepare_9ii.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-9i/app/src/main/assets/index.html')
+          s=p.read_text(encoding='utf-8')
+          start=s.index('  const waitForViewer=()=>')
+          end=s.index('  const initializeViewer=async()=>',start)
+          replacement="""  const waitForViewer=()=>new Promise((resolve,reject)=>{\n    const deadline=performance.now()+45000;\n    const check=()=>{\n      const root=document.getElementById('aladin-cosmic-command-test');\n      const aladin=window.aladin_cosmic_command_test;\n      const canvas=root?.querySelector('canvas');\n      if(root&&aladin&&canvas){requestAnimationFrame(()=>requestAnimationFrame(resolve));return}\n      if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 9I STARTUP TIMEOUT'));return}\n      setTimeout(check,100);\n    };\n    check();\n  });\n"""
+          s=s[:start]+replacement+s[end:]
+          p.write_text(s,encoding='utf-8')
+          if 'homeReady' in s: raise SystemExit('Old HOME readiness gate still present')
+          PY
+          test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+          grep -q "DISPLAY_VERSION='9I-I'" viewer/GV-beta-0009I.py
+          grep -q 'setAllowUniversalAccessFromFileURLs(true)' android/galaxy-viewer-9i/app/src/main/java/com/gear66me/galaxyviewer9i/MainActivity.java
+
+      - name: Commit and safely rebase 9I-I Viewer source
+        run: |
+          set -euo pipefail
+          git config user.name 'Galaxy Viewer Build Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0009I.py viewer/archive/GV-beta-0009I-H.py
+          git diff --cached --check
+          git commit -m 'Archive 9I-H and rev beta Viewer to 9I-I'
+          git stash push --include-untracked -m 9ii-build-working-tree -- android/galaxy-viewer-9i
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          git stash pop
+
+      - name: Verify existing icon is unchanged
+        run: test "$(git hash-object android/galaxy-viewer-9i/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build 9I-I APK
+        working-directory: android/galaxy-viewer-9i
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Stage and hash APK
+        run: |
+          cp android/galaxy-viewer-9i/app/build/outputs/apk/debug/app-debug.apk Galaxy-Viewer-9I-I.apk
+          sha256sum Galaxy-Viewer-9I-I.apk | tee Galaxy-Viewer-9I-I.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-9I-I
+          path: |
+            Galaxy-Viewer-9I-I.apk
+            Galaxy-Viewer-9I-I.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 9I-I release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TARGET="$(git rev-parse HEAD)"
+          if gh release view galaxy-viewer-9i-i >/dev/null 2>&1; then
+            echo 'Galaxy Viewer 9I-I release already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh release create galaxy-viewer-9i-i Galaxy-Viewer-9I-I.apk Galaxy-Viewer-9I-I.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-I — Android' --notes 'Galaxy Viewer 9I-I beta test APK. Fixes Android file-origin access to required HTTPS resources and removes the unrelated HOME-overlay startup gate. Existing icon unchanged. Splash/data-URI repair and single CONST field preserved.'
