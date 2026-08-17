@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-27dd942422b3 — Restore exact temporary 10D workflow and keep corrected anchor count
+
+**Recorded:** 2026-08-17T11:42:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`27dd942422b3544bcf6a8ddf9ce1dc335374670e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/27dd942422b3544bcf6a8ddf9ce1dc335374670e)  
+**Parent/baseline:** `20c03098fef643cdedb1c07e2cb36c793018b536`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/20c03098fef643cdedb1c07e2cb36c793018b536...27dd942422b3544bcf6a8ddf9ce1dc335374670e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore exact temporary 10D workflow and keep corrected anchor count
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10D-generic-apk.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `3f176483ea5273c9634e9fcd5013f4054880ed388a2d038d891d1544830bf85d`
+- SHA-256 after: `6afd135611c5c78a575505da8daa19b62e9fd139f202aeb5797c4e8beb6d5a0f`
+- Bytes: `22094` → `22096`
+- Lines: `312` → `312`
+- Characters: `22094` → `22096`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `2`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `312 + 1 - 1 = 312` — **PASS**
+- Character balance: `22094 + 2 - 0 = 22096` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-382ced8654fb — Fix 10D temporary workflow anchor count
 
 **Recorded:** 2026-08-17T11:36:43-05:00  
