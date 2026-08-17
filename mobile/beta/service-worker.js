@@ -1,4 +1,4 @@
-const CACHE_NAME='galaxy-viewer-beta-7AI-global-glow-001';
+const CACHE_NAME='galaxy-viewer-beta-9I-friends-fix-002';
 
 const clearAllCaches=()=>caches.keys().then(keys=>Promise.all(keys.map(key=>caches.delete(key))));
 
