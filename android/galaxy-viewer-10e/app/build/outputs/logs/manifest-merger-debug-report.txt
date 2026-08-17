@@ -1,0 +1,59 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:1-640
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:1-640
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:1-640
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:1-640
+	package
+		INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:70-131
+	android:name
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:87-129
+application
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:131-629
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:131-629
+	android:extractNativeLibs
+		INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+	android:label
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:172-205
+	android:allowBackup
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:144-171
+	android:theme
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:243-300
+	android:usesCleartextTraffic
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:206-242
+activity#com.gear66me.galaxyviewer10e.MainActivity
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:301-615
+	android:screenOrientation
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:426-462
+	android:exported
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:402-425
+	android:configChanges
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:340-401
+	android:name
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:311-339
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:463-604
+action#android.intent.action.MAIN
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:478-529
+	android:name
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:486-527
+category#android.intent.category.LAUNCHER
+ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:529-588
+	android:name
+		ADDED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:539-586
+uses-sdk
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml

@@ -1,0 +1,50 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.gear66me.galaxyviewer10e"
+4    android:versionCode="1007"
+5    android:versionName="10E-generic" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="29"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:70-131
+11-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:87-129
+12
+13    <application
+13-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:131-629
+14        android:allowBackup="false"
+14-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:144-171
+15        android:debuggable="true"
+16        android:extractNativeLibs="false"
+17        android:label="Galaxy Viewer 10E"
+17-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:172-205
+18        android:theme="@android:style/Theme.Material.NoActionBar"
+18-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:243-300
+19        android:usesCleartextTraffic="false" >
+19-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:206-242
+20        <activity
+20-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:301-615
+21            android:name="com.gear66me.galaxyviewer10e.MainActivity"
+21-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:311-339
+22            android:configChanges="keyboardHidden|orientation|screenSize"
+22-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:340-401
+23            android:exported="true"
+23-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:402-425
+24            android:screenOrientation="portrait" >
+24-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:426-462
+25            <intent-filter>
+25-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:463-604
+26                <action android:name="android.intent.action.MAIN" />
+26-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:478-529
+26-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:486-527
+27
+28                <category android:name="android.intent.category.LAUNCHER" />
+28-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:529-588
+28-->/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml:2:539-586
+29            </intent-filter>
+30        </activity>
+31    </application>
+32
+33</manifest>
