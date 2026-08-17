@@ -1,0 +1,43 @@
+name: Repair 10F Beta Module Path
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/repair-10f-beta-module-path.yml']
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Patch only 10F Random Galaxy delivery URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          P='viewer/GV-beta-0010F.py'
+          test "$(git hash-object "$P")" = '997d54f9e6458b76add78b22866d9148996187cc'
+          test "$(git hash-object viewer/GV-beta-0010E.py)" = '8e747b313963a14fbaf1676ff77ab7e71f906667'
+          test "$(git hash-object viewer/modules/gv-random-galaxy-0031.js)" = 'eaf76aa364853e1f997c5ec439bd8e0205a5e0c8'
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/GV-beta-0010F.py')
+          s=p.read_text()
+          old="const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-random-galaxy-0031.js?v=eaf76aa364853e1f997c5ec439bd8e0205a5e0c8';"
+          new="const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/modules/gv-random-galaxy-0031.js?v=eaf76aa364853e1f997c5ec439bd8e0205a5e0c8';"
+          assert s.count(old)==1
+          p.write_text(s.replace(old,new))
+          PY
+          test "$(git diff --name-only)" = "$P"
+          grep -Fq "raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/modules/gv-random-galaxy-0031.js" "$P"
+          python3 -m py_compile "$P"
+          rm -rf viewer/__pycache__
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$P"
+          git commit -m '10F: load Random Galaxy 0031 directly from beta'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
