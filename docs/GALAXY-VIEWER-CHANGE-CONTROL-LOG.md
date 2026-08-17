@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9f17b7670985 — Temporary recovery build for Galaxy Viewer 10A
+
+**Recorded:** 2026-08-16T23:02:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9f17b7670985aaafac54a765115899ce2d412483`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9f17b7670985aaafac54a765115899ce2d412483)  
+**Parent/baseline:** `deab066cf7aab033b424db98be7186788597b263`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/deab066cf7aab033b424db98be7186788597b263...9f17b7670985aaafac54a765115899ce2d412483)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Temporary recovery build for Galaxy Viewer 10A
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10A-recovery.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `8348a257a56a639e6ce7d0b9634ee19d6be9a00d37e8ecd3df7986ff7e47418e`
+- Bytes: `0` → `15547`
+- Lines: `0` → `257`
+- Characters: `0` → `15545`
+- Inserted lines: `257`
+- Deleted lines: `0`
+- Inserted characters: `15545`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 257 - 0 = 257` — **PASS**
+- Character balance: `0 + 15545 - 0 = 15545` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cc97ce098e98 — Fix Gemini 15-record review workflow prompt formatting
 
 **Recorded:** 2026-08-16T22:52:09-05:00  
