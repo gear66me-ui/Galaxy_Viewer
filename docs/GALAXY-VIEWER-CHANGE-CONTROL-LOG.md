@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b5d792e2f917 — Fix exact 10A header guard
+
+**Recorded:** 2026-08-16T23:03:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b5d792e2f917e0db685310619a8308bb39ea99ba`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b5d792e2f917e0db685310619a8308bb39ea99ba)  
+**Parent/baseline:** `5ddecba67b5deb7573194c10976a1c247f8ff315`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5ddecba67b5deb7573194c10976a1c247f8ff315...b5d792e2f917e0db685310619a8308bb39ea99ba)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix exact 10A header guard
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10A-recovery.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8348a257a56a639e6ce7d0b9634ee19d6be9a00d37e8ecd3df7986ff7e47418e`
+- SHA-256 after: `8adfa92feb5ee5924eafed12a29c4470df06c390bc8b1c9697505f18bcad9a11`
+- Bytes: `15547` → `15555`
+- Lines: `257` → `257`
+- Characters: `15545` → `15553`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `8`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `257 + 1 - 1 = 257` — **PASS**
+- Character balance: `15545 + 8 - 0 = 15553` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-9f17b7670985 — Temporary recovery build for Galaxy Viewer 10A
 
 **Recorded:** 2026-08-16T23:02:26-05:00  
