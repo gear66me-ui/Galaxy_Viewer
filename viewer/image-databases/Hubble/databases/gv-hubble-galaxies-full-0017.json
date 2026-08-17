@@ -80190,51 +80190,40 @@
       "decText": "34° 43' 41.78\"",
       "distance": "650 million light years",
       "constellation": "Leo Minor",
-      "fieldOfView": "2.21 x 1.75 arcminutes",
-      "orientation": "North is 13.0° left of vertical",
+      "fieldOfView": "0.79 x 1.11 arcminutes",
+      "orientation": "North is 17.8° right of vertical",
       "imageType": "Observation",
       "releaseDate": "10 January 2011, 21:45",
-      "pixelSize": "1673 x 1327 px",
-      "credit": "NASA, ESA, and the Hubble Heritage Team (STScI/AURA)",
-      "sourceUrl": "https://esahubble.org/images/heic1102b/",
+      "pixelSize": "1194 x 1674 px",
+      "credit": "NASA, ESA, William Keel (University of Alabama, Tuscaloosa), and the Galaxy Zoo team",
+      "sourceUrl": "https://esahubble.org/images/heic1102a/",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
-        "https://cdn.esahubble.org/archives/images/publicationjpg/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/large/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/screen/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper1/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper2/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper3/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper4/heic1102b.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper5/heic1102b.jpg"
+        "https://cdn.esahubble.org/archives/images/large/heic1102a.jpg",
+        "https://cdn.esahubble.org/archives/images/screen/heic1102a.jpg"
       ],
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/heic1102b.jpg",
-      "assetName": "heic1102b.jpg",
-      "bytes": 477955,
-      "sha256": "bbfce16fd65cf9f09b6a59304a746e584d026853f5631afc8f2833d9f476c4ee",
-      "downloadErrors": [
-        {
-          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/heic1102b.jpg",
-          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/heic1102b.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx0000025db5a6b30a"
-        }
-      ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/heic1102b.jpg",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/heic1102a.jpg",
+      "assetName": "heic1102a.jpg",
+      "bytes": 672163,
+      "sha256": "26f8faee07d0a45b974a981f339d5e6ec5980324f6bc694a860fcaa80668e57a",
+      "downloadErrors": [],
+      "githubImageUrl": "https://cdn.esahubble.org/archives/images/large/heic1102a.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
         "distanceMly": 650.0,
         "distanceMethod": "esa",
         "sizeKly": [
-          417.86,
-          330.89
+          149.371,
+          209.876
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "distance_fov_estimate_heic1102a_replacement_0017",
         "ageGyr": 0.65,
         "ageMethod": "lookback_est_from_published_light_travel_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 418 x 331 KLY",
+        "sizeDisplay": "EST. 149 x 210 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -80250,7 +80239,13 @@
       "designationSourceFields": [
         "name",
         "title"
-      ]
+      ],
+      "imageReplacement0017": {
+        "replacementArchiveId": "heic1102a",
+        "reason": "Use the user-approved Hubble composite showing IC 2497 and Hanny’s Voorwerp instead of the infrared-only heic1102b frame.",
+        "preservedTargetArchiveId": "heic1102b",
+        "uploadedImageMatchedToOfficialAsset": true
+      }
     },
     {
       "archiveId": "potw1014a",
