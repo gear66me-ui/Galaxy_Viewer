@@ -79,6 +79,16 @@ display(Javascript(r"""
     'use strict';
     const VERSION='10E';
     const DISPLAY_VERSION='10E';
+    const relabelImageSize=()=>{
+      document.querySelectorAll('.gvrg-field-label').forEach((el)=>{
+        if((el.textContent||'').trim().toUpperCase()==='SIZE'){
+          el.innerHTML='IMAGE SIZE<br><span style="font-size:.72em;letter-spacing:.25px">(FOV)</span>';
+        }
+      });
+    };
+    const imageSizeLabelObserver=new MutationObserver(relabelImageSize);
+    imageSizeLabelObserver.observe(document.documentElement,{subtree:true,childList:true});
+    relabelImageSize();
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';

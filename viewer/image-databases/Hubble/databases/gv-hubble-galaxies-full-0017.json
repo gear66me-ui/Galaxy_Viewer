@@ -5052,7 +5052,19 @@
       "designationSourceFields": [
         "name",
         "title"
-      ]
+      ],
+      "imageReplacement0017": {
+        "replacementArchiveId": "potw2116a",
+        "replacesPresentationForArchiveId": "potw2116a",
+        "reason": "user-approved color/full-frame Hubble presentation",
+        "copiedImageMetadataFields": [
+          "sourceUrl",
+          "selectedImageUrl",
+          "githubImageUrl",
+          "credit",
+          "orientation"
+        ]
+      }
     },
     {
       "archiveId": "potw2043a",
@@ -24069,7 +24081,19 @@
         "designationMethod0011": "extracted_from_existing_name_or_title"
       },
       "constellationMethod": "catalog_or_iau_consistent",
-      "designation": "Messier 65"
+      "designation": "Messier 65",
+      "imageReplacement0017": {
+        "replacementArchiveId": "potw1352a",
+        "replacesPresentationForArchiveId": "potw1352a",
+        "reason": "user-approved color/full-frame Hubble presentation",
+        "copiedImageMetadataFields": [
+          "sourceUrl",
+          "selectedImageUrl",
+          "githubImageUrl",
+          "credit",
+          "orientation"
+        ]
+      }
     },
     {
       "archiveId": "potw1151a",
@@ -52659,12 +52683,12 @@
       "distance": "10 million light years",
       "constellation": "Sculptor",
       "fieldOfView": "2.46 x 2.49 arcminutes",
-      "orientation": "North is 172.4° left of vertical",
+      "orientation": "North is 139.9° right of vertical",
       "imageType": "Observation",
       "releaseDate": "3 December 1998, 06:00",
       "pixelSize": "948 x 960 px",
-      "credit": "Hubble Heritage Team (",
-      "sourceUrl": "https://esahubble.org/images/opo9842a/",
+      "credit": "NASA, ESA, J. Dalcanton and B. Williams (University of Washington), T.A. Rector/University of Alaska Anchorage, T. Abbott and NOAO/AURA/NSF",
+      "sourceUrl": "https://esahubble.org/images/heic0819b/",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
         "https://cdn.esahubble.org/archives/images/publicationjpg/opo9842a.jpg",
@@ -52679,7 +52703,7 @@
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9842a.jpg",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/publicationjpg/heic0819b.jpg",
       "assetName": "opo9842a.jpg",
       "bytes": 520142,
       "sha256": "9c6adf2ddbc1210ec75fb98ffd100b05e1b34d1abc16951b653fd52b94d3580a",
@@ -52689,7 +52713,7 @@
           "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9842a.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000ff1aa71a613a"
         }
       ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/opo9842a.jpg",
+      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/heic0819b.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
         "distanceMly": 10.0,
@@ -52718,7 +52742,19 @@
       "designationSourceFields": [
         "name",
         "title"
-      ]
+      ],
+      "imageReplacement0017": {
+        "replacementArchiveId": "heic0819b",
+        "replacesPresentationForArchiveId": "opo9842a",
+        "reason": "user-approved color/full-frame Hubble presentation",
+        "copiedImageMetadataFields": [
+          "sourceUrl",
+          "selectedImageUrl",
+          "githubImageUrl",
+          "credit",
+          "orientation"
+        ]
+      }
     },
     {
       "archiveId": "heic2213a",
@@ -116131,12 +116167,12 @@
       "distance": "75 million light years",
       "constellation": "Corvus",
       "fieldOfView": "17.72 x 24.49 arcminutes",
-      "orientation": "North is 119.8° left of vertical",
+      "orientation": "North is 0.0° right of vertical",
       "imageType": "Observation",
       "releaseDate": "21 October 1997, 19:00",
       "pixelSize": "1500 x 2073 px",
-      "credit": "Brad Whitmore (",
-      "sourceUrl": "https://esahubble.org/images/opo9734c/",
+      "credit": "ESA/Hubble & NASA",
+      "sourceUrl": "https://esahubble.org/images/potw1345a/",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
         "https://cdn.esahubble.org/archives/images/publicationjpg/opo9734c.jpg",
@@ -116146,7 +116182,7 @@
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9734c.jpg",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/publicationjpg/potw1345a.jpg",
       "assetName": "opo9734c.jpg",
       "bytes": 779107,
       "sha256": "67ac1538240a512e965badd802abfe5b4d4cd89d8c79edc0adc21ad0efcdcdfe",
@@ -116156,7 +116192,7 @@
           "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9734c.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000778da9b28ccb"
         }
       ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9734c.jpg",
+      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/potw1345a.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
         "distanceMly": 75.0,
@@ -116185,7 +116221,19 @@
       "designationSourceFields": [
         "name",
         "title"
-      ]
+      ],
+      "imageReplacement0017": {
+        "replacementArchiveId": "potw1345a",
+        "replacesPresentationForArchiveId": "opo9734c",
+        "reason": "user-approved color/full-frame Hubble presentation",
+        "copiedImageMetadataFields": [
+          "sourceUrl",
+          "selectedImageUrl",
+          "githubImageUrl",
+          "credit",
+          "orientation"
+        ]
+      }
     },
     {
       "archiveId": "opo9728d",
