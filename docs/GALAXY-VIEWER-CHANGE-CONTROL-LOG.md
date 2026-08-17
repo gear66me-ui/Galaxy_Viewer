@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-25a1371d3439 — Keep 10D build artifacts outside promotion workspace
+
+**Recorded:** 2026-08-17T12:05:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`25a1371d34396c4f9229dec670210a13240390d8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/25a1371d34396c4f9229dec670210a13240390d8)  
+**Parent/baseline:** `e2abeeab2c608e6df1f88e484fe07fdd7ed1e872`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e2abeeab2c608e6df1f88e484fe07fdd7ed1e872...25a1371d34396c4f9229dec670210a13240390d8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Keep 10D build artifacts outside promotion workspace
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10D-generic-apk.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `08371ca740803674b244b09d7ddd13bf08e73c9ae2526d7965e04dcef5e01f0c`
+- SHA-256 after: `4e7e18812e45e3dd997ba90479197939d82e2287f7871191d7f70a53a2c35118`
+- Bytes: `21105` → `21130`
+- Lines: `274` → `274`
+- Characters: `21105` → `21130`
+- Inserted lines: `4`
+- Deleted lines: `4`
+- Inserted characters: `25`
+- Deleted characters: `0`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `274 + 4 - 4 = 274` — **PASS**
+- Character balance: `21105 + 25 - 0 = 21130` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a7c2f38e2139 — Add files via upload
 
 **Recorded:** 2026-08-17T12:02:46-05:00  
