@@ -1,0 +1,113 @@
+name: Build Galaxy Viewer 10E Repair R3
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/build-galaxy-viewer-10e-repair-r3.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  APK_NAME: Galaxy-Viewer-10E-Repair-R2.apk
+  RELEASE_TAG: galaxy-viewer-10e-repair-r2
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Apply guarded repairs
+        run: python tools/build_10e_repair_r2.py
+      - name: Validate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check viewer/modules/gv-random-galaxy-0029.js
+          python - <<'PY'
+          from pathlib import Path
+          compile(Path('viewer/GV-beta-0010E.py').read_text(encoding='utf-8'),'viewer/GV-beta-0010E.py','exec')
+          PY
+          grep -q 'color:#FFD85A' android/galaxy-viewer-10e/app/src/main/assets/index.html
+          grep -q 'font-family:"Space Age"' android/galaxy-viewer-10e/app/src/main/assets/index.html
+          grep -q 'android:icon="@mipmap/ic_launcher"' android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml
+          test -s android/galaxy-viewer-10e/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          test "$(git hash-object viewer/modules/gv-random-galaxy-0028.js)" = "625b8d889f67652fa19a39b8689e306ea1c1fb91"
+      - name: Verify change scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only | tee /tmp/changed.txt
+          python - <<'PY'
+          from pathlib import Path
+          allowed={
+            'viewer/modules/gv-random-galaxy-0029.js',
+            'viewer/GV-beta-0010E.py',
+            'android/galaxy-viewer-10e/app/src/main/assets/index.html',
+            'android/galaxy-viewer-10e/app/src/main/assets/artwork/icon.svg',
+            'android/galaxy-viewer-10e/app/src/main/assets/artwork/Space-Age.otf',
+            'android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010E.py',
+            'android/galaxy-viewer-10e/app/src/main/assets/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html',
+            'android/galaxy-viewer-10e/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
+            'android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml',
+            'android/galaxy-viewer-10e/app/build.gradle',
+            'android/galaxy-viewer-10e/app/src/main/java/com/gear66me/galaxyviewer10e/MainActivity.java'
+          }
+          changed=set(Path('/tmp/changed.txt').read_text().splitlines())
+          extra=changed-allowed
+          if extra: raise SystemExit('Unauthorized changed paths: '+repr(sorted(extra)))
+          required={'viewer/modules/gv-random-galaxy-0029.js','viewer/GV-beta-0010E.py','android/galaxy-viewer-10e/app/src/main/assets/index.html'}
+          missing=required-changed
+          if missing: raise SystemExit('Required paths did not change: '+repr(sorted(missing)))
+          PY
+      - name: Build APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
+      - name: Validate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10e.r2'" /tmp/badging.txt
+          grep -q "versionName='10E-generic-r2'" /tmp/badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer10e.MainActivity'" /tmp/badging.txt
+          unzip -l "$APK" | grep -q 'assets/artwork/Space-Age.otf'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" "$APK_NAME"
+          sha256sum "$APK_NAME" | tee "${APK_NAME}.sha256"
+      - name: Commit repaired 10E source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/modules/gv-random-galaxy-0029.js viewer/GV-beta-0010E.py android/galaxy-viewer-10e
+          git commit -m 'Repair 10E startup icon splash and HD scale'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+          echo "RELEASE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10E-Repair-R2
+          path: |
+            Galaxy-Viewer-10E-Repair-R2.apk
+            Galaxy-Viewer-10E-Repair-R2.apk.sha256
+          if-no-files-found: error
+      - name: Publish replacement installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" "$APK_NAME" "${APK_NAME}.sha256" --target "$RELEASE_COMMIT" --title 'Galaxy Viewer 10E — Repair R2' --notes '10E replacement installer with Space Age shell typography, centered approved app artwork, explicit launcher icon, corrected icon-to-splash-to-viewer sequence, isolated splash animation, and dynamic Hubble light-year scale.'
