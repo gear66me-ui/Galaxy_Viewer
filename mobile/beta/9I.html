@@ -17,12 +17,11 @@ main{width:min(560px,100%);text-align:center;padding:14px;border:1px solid rgba(
 .version{display:inline-block;margin:15px 0 8px;padding:5px 11px;border:1px solid rgba(91,151,255,.68);border-radius:999px;color:#9EC7FF;font-size:10px;letter-spacing:.12em;box-shadow:0 0 12px rgba(36,92,255,.22)}
 p{margin:7px auto 18px;max-width:390px;color:#B9D6FF;font-size:10px;line-height:1.65;letter-spacing:.065em}
 .actions{display:grid;gap:12px}
-.action{position:relative;display:grid;grid-template-columns:1fr 54px;align-items:center;min-height:68px;padding:8px 8px 8px 18px;border:1px solid #8EBBFF;border-radius:11px;background:linear-gradient(145deg,rgba(9,44,119,.98),rgba(20,82,190,.97));color:#F4F8FF;text-decoration:none;font-family:"Space Age",sans-serif;font-size:12px;font-weight:400;line-height:1.25;letter-spacing:.07em;text-transform:uppercase;text-shadow:0 0 5px rgba(223,236,255,.82);box-shadow:inset 0 0 12px rgba(117,167,255,.20),0 0 12px rgba(33,90,255,.28);-webkit-tap-highlight-color:transparent;cursor:pointer;width:100%}
-button.action{appearance:none;-webkit-appearance:none;text-align:inherit}
-.action.secondary{background:linear-gradient(145deg,rgba(6,27,74,.98),rgba(12,53,126,.97));border-color:#6FA8FF;box-shadow:inset 0 0 10px rgba(97,150,255,.14),0 0 10px rgba(31,77,222,.20)}
-.action:active{filter:brightness(1.12);transform:translateY(1px)}
+a.action{position:relative;display:grid;grid-template-columns:1fr 54px;align-items:center;min-height:68px;padding:8px 8px 8px 18px;border:1px solid #8EBBFF;border-radius:18px;background:linear-gradient(145deg,rgba(9,44,119,.98),rgba(20,82,190,.97));color:#F4F8FF;text-decoration:none;font-size:12px;font-weight:400;line-height:1.25;letter-spacing:.07em;text-transform:uppercase;text-shadow:0 0 5px rgba(223,236,255,.82);box-shadow:inset 0 0 12px rgba(117,167,255,.20),0 0 12px rgba(33,90,255,.28);-webkit-tap-highlight-color:transparent}
+a.action.secondary{background:linear-gradient(145deg,rgba(6,27,74,.98),rgba(12,53,126,.97));border-color:#6FA8FF;box-shadow:inset 0 0 10px rgba(97,150,255,.14),0 0 10px rgba(31,77,222,.20)}
+a.action:active{filter:brightness(1.12);transform:translateY(1px)}
 .action-label{text-align:center;padding-left:8px}
-.tile-target{position:relative;justify-self:end;width:46px;height:46px;border:1px solid rgba(137,187,255,.72);border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(4,17,49,.96),rgba(0,0,0,.96));box-shadow:0 0 12px rgba(28,93,255,.30),inset 0 0 10px rgba(66,124,255,.12);overflow:visible}
+.tile-target{position:relative;justify-self:end;width:46px;height:46px;border:1px solid rgba(137,187,255,.72);border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(4,17,49,.96),rgba(0,0,0,.96));box-shadow:0 0 12px rgba(28,93,255,.30),inset 0 0 10px rgba(66,124,255,.12);overflow:visible}
 .tile-target img{position:relative;z-index:2;display:block;width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(64,133,255,.75))}
 .tile-comet{position:absolute;left:50%;top:50%;width:0;height:0;animation:tile-comet-orbit 2.8s linear infinite;pointer-events:none;z-index:3}
 .actions .action:nth-child(1) .tile-comet{animation-delay:0s}
@@ -48,16 +47,11 @@ small{display:block;margin:17px 4px 3px;color:#739ACC;font-size:8px;line-height:
   <div class="version">9I FROZEN RELEASE</div>
   <p>CHOOSE HOW YOU WANT TO ENTER GALAXY VIEWER.</p>
   <div class="actions">
-    <button id="launch-app" class="action" type="button"><span class="action-label">LAUNCH GALAXY VIEWER APP</span><span class="tile-target"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt=""><span class="tile-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></button>
-    <a class="action secondary" href="https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-9i-frozen/Galaxy-Viewer-9I.apk"><span class="action-label">INSTALL ANDROID APP</span><span class="tile-target"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt=""><span class="tile-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></a>
+    <a class="action" href="https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-9i-frozen/Galaxy-Viewer-9I.apk"><span class="action-label">INSTALL ANDROID APP</span><span class="tile-target"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt=""><span class="tile-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></a>
     <a class="action secondary" href="./9I-app.html?source=9i-web-launch"><span class="action-label">LAUNCH IN BROWSER</span><span class="tile-target"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt=""><span class="tile-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></a>
+    <a class="action secondary" href="https://github.com/gear66me-ui/Galaxy_Viewer" target="_blank" rel="noopener"><span class="action-label">GALAXY VIEWER PROJECT</span><span class="tile-target"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-512.png" alt=""><span class="tile-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></a>
   </div>
-  <small>IF THE ANDROID APP IS NOT INSTALLED, USE INSTALL ANDROID APP FIRST.</small>
+  <small>THIS PAGE DOES NOT AUTO-LAUNCH THE APP. CHOOSE AN OPTION ABOVE.</small>
 </main>
-<script>
-document.getElementById('launch-app').addEventListener('click',()=>{
-  location.href='intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.gear66me.galaxyviewer9i/.MainActivity;end';
-});
-</script>
 </body>
 </html>
