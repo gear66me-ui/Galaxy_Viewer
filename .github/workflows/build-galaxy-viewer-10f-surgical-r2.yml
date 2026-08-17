@@ -1,0 +1,126 @@
+name: Build Galaxy Viewer 10F Surgical R2
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/build-galaxy-viewer-10f-surgical-r2.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: beta, fetch-depth: 0}
+      - name: Build exact 10F from frozen 10E
+        shell: bash
+        run: |
+          set -euo pipefail
+          E=viewer/GV-beta-0010E.py; F=viewer/GV-beta-0010F.py
+          M30=viewer/modules/gv-random-galaxy-0030.js; M31=viewer/modules/gv-random-galaxy-0031.js
+          T=viewer/modules/gv-target-simbad-0001.js
+          C=viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json
+          test "$(git hash-object "$E")" = 8e747b313963a14fbaf1676ff77ab7e71f906667
+          test "$(git hash-object "$M30")" = c17d7c8d48e71b7e91ac3ed28ee3c55786a82385
+          test "$(git hash-object "$T")" = 7b877f841f091f214d844bdc8ae2f933530f4592
+          test "$(git hash-object "$C")" = 94b25aee88fe6d456ef71fd2ce33fdf76bc933bc
+          test ! -e "$F"; test ! -e "$M31"
+          cp "$E" "$F"; cp "$M30" "$M31"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          f=Path('viewer/GV-beta-0010F.py'); s=f.read_text()
+          s=s.replace('# GV-beta-0010E','# GV-beta-0010F',1)
+          s=s.replace("const VERSION='10E';","const VERSION='10F';",1)
+          s=s.replace("const DISPLAY_VERSION='10E';","const DISPLAY_VERSION='10F';",1)
+          s=s.replace("version.textContent='VERSION 10E';","version.textContent='VERSION 10F';",1)
+          s,n=re.subn(r"\n    const relabelImageSize=\(\)=>\{.*?\n    relabelImageSize\(\);",'',s,count=1,flags=re.S); assert n==1
+          assert "const VERSION='10F';" in s and "const DISPLAY_VERSION='10F';" in s
+          f.write_text(s)
+
+          m=Path('viewer/modules/gv-random-galaxy-0031.js'); s=m.read_text()
+          s=s.replace("const VERSION = '0013';","const VERSION = '0031';",1)
+          a=s.index('  function formatPhysicalSize(size) {'); b=s.index('\n\n  async function ensureFonts()',a)
+          s=s[:a]+'''  function formatImageSpanValue(lightYears) {
+            const value = finiteNumber(lightYears);
+            if (value == null || value <= 0) return '';
+            if (value < 1_000) return `${Math.round(value)}`;
+            const scale = value >= 1_000_000_000 ? 1_000_000_000 : value >= 1_000_000 ? 1_000_000 : 1_000;
+            const suffix = scale === 1_000_000_000 ? 'B' : scale === 1_000_000 ? 'M' : 'K';
+            const q = value / scale;
+            const rounded = q >= 10 ? Math.round(q) : Math.round(q * 10) / 10;
+            return `${Number(rounded.toFixed(1))}${suffix}`;
+          }
+          function formatPhysicalSize(size) {
+            if (!size) return '';
+            if (Array.isArray(size) && size.length >= 2) {
+              const a = finiteNumber(size[0]), b = finiteNumber(size[1]);
+              if (a == null || b == null || a <= 0 || b <= 0) return '';
+              return `${formatImageSpanValue(a)} × ${formatImageSpanValue(b)} LIGHT-YEARS`;
+            }
+            const value = finiteNumber(size);
+            return value == null || value <= 0 ? '' : `${formatImageSpanValue(value)} LIGHT-YEARS`;
+          }'''+s[b:]
+          old="      const sizeRow = makeRow('SIZE');"
+          new="""      const sizeRow = makeRow('IMAGE SIZE');
+              const sizeFovSub = document.createElement('span');
+              sizeFovSub.className = 'gvrg-fov-sub';
+              sizeFovSub.textContent = '(FOV)';
+              sizeRow.row.querySelector('.gvrg-label').append(document.createElement('br'), sizeFovSub);"""
+          assert s.count(old)==1; s=s.replace(old,new,1)
+          old="      const hdSize = makeHdScienceItem('SIZE');"
+          new="""      const hdSize = makeHdScienceItem('IMAGE SIZE');
+              const hdSizeFovSub = document.createElement('span');
+              hdSizeFovSub.className = 'gvrg-fov-sub';
+              hdSizeFovSub.textContent = '(FOV)';
+              hdSize.item.querySelector('.gvrg-hd-science-label').append(document.createElement('br'), hdSizeFovSub);"""
+          assert s.count(old)==1; s=s.replace(old,new,1)
+          insert=s.index('\n  class FixedDistanceRenderer')
+          helper='''
+          function installRandomWaitComet(button) {
+            if (!(button instanceof Element)) return;
+            if (!document.getElementById('gvrg-random-wait-comet-0031-style')) {
+              const style=document.createElement('style'); style.id='gvrg-random-wait-comet-0031-style';
+              style.textContent=`#gv-random-galaxy .gvrg-random-label{display:inline-block}#gv-random-galaxy .gvrg-random-star-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:13px;flex:0 0 20px;line-height:20px}#gv-random-galaxy .gvrg-random-star{display:block;font:16px/20px system-ui,sans-serif;transform:translateY(-.5px)}#gv-random-galaxy .gvrg-random-comet{position:absolute;left:50%;top:50%;width:0;height:0;opacity:0;pointer-events:none;z-index:2;animation:gvrg-random-comet-orbit-0031 2.8s linear infinite;animation-play-state:paused}#gv-random-galaxy .gvrg-random-comet i{position:absolute;left:-1.5px;top:-1.5px;width:3px;height:3px;border-radius:50%;background:#62D8FF;transform:rotate(var(--a)) translateY(-8px) scale(var(--s));opacity:var(--o);box-shadow:0 0 3px rgba(98,216,255,.85)}#gv-random-galaxy .gvrg-random-comet i:nth-child(1){--a:0deg;--s:1;--o:1;background:#fff;box-shadow:0 0 2px 1px #fff,0 0 5px 1px #62D8FF}#gv-random-galaxy .gvrg-random-comet i:nth-child(2){--a:-15deg;--s:.88;--o:.84}#gv-random-galaxy .gvrg-random-comet i:nth-child(3){--a:-30deg;--s:.76;--o:.68}#gv-random-galaxy .gvrg-random-comet i:nth-child(4){--a:-45deg;--s:.64;--o:.52}#gv-random-galaxy .gvrg-random-comet i:nth-child(5){--a:-60deg;--s:.52;--o:.38}#gv-random-galaxy .gvrg-random-comet i:nth-child(6){--a:-75deg;--s:.42;--o:.26}#gv-random-galaxy .gvrg-random-comet i:nth-child(7){--a:-90deg;--s:.32;--o:.16}#gv-random-galaxy .gvrg-random-comet i:nth-child(8){--a:-105deg;--s:.24;--o:.08}#gv-random-galaxy.gvrg-random-busy .gvrg-random-comet{opacity:1;animation-play-state:running}.gvrg-fov-sub{font-size:.72em;letter-spacing:.25px;white-space:nowrap}@keyframes gvrg-random-comet-orbit-0031{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`;
+              document.head.appendChild(style);
+            }
+            if (!button.querySelector('.gvrg-random-star-wrap')) {
+              button.innerHTML='<span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>';
+              button.setAttribute('aria-label','RANDOM GALAXY');
+            }
+          }
+          function setRandomWaitComet(button,active){if(!(button instanceof Element))return;installRandomWaitComet(button);button.classList.toggle('gvrg-random-busy',Boolean(active));}
+          '''
+          s=s[:insert]+helper+s[insert:]
+          needle="      this.randomButton = options.randomButton instanceof Element ? options.randomButton : null;"; assert s.count(needle)==1
+          s=s.replace(needle,needle+"\n      installRandomWaitComet(this.randomButton);",1)
+          assert s.count('      this.busy = true;')==1
+          s=s.replace('      this.busy = true;','      this.busy = true;\n      setRandomWaitComet(this.randomButton, true);',1)
+          assert s.count('        this.busy = false;')==2
+          s=s.replace('        this.busy = false;','        this.busy = false;\n        setRandomWaitComet(this.randomButton, false);')
+          m.write_text(s)
+          PY
+          node --check "$M31"; python3 -m py_compile "$F"
+          grep -q "makeRow('IMAGE SIZE')" "$M31"; grep -q "makeHdScienceItem('IMAGE SIZE')" "$M31"
+          grep -q "sizeFovSub.textContent = '(FOV)'" "$M31"; grep -q 'formatImageSpanValue' "$M31"
+          grep -q 'gvrg-random-comet-orbit-0031 2.8s' "$M31"; grep -q 'translateY(-8px)' "$M31"
+          test "$(grep -c 'setRandomWaitComet(this.randomButton, false)' "$M31")" -eq 2
+          grep -q 'travelSeconds: 18' "$M31"; grep -q 'hdScaleSettleMs: 200' "$M31"; grep -q 'formatCompactHdScale' "$M31"
+          M31HASH=$(git hash-object "$M31"); export M31HASH
+          python3 - <<'PY'
+          from pathlib import Path
+          import os,re
+          p=Path('viewer/GV-beta-0010F.py'); s=p.read_text(); h=os.environ['M31HASH']
+          s,n=re.subn(r'viewer/modules/gv-random-galaxy-0030\.js\?v=c17d7c8d48e71b7e91ac3ed28ee3c55786a82385',f'viewer/modules/gv-random-galaxy-0031.js?v={h}',s,count=1); assert n==1
+          p.write_text(s)
+          PY
+          python3 -m py_compile "$F"
+          test "$(git hash-object "$E")" = 8e747b313963a14fbaf1676ff77ab7e71f906667
+          test "$(git hash-object "$M30")" = c17d7c8d48e71b7e91ac3ed28ee3c55786a82385
+          test "$(git hash-object "$T")" = 7b877f841f091f214d844bdc8ae2f933530f4592
+          test "$(git hash-object "$C")" = 94b25aee88fe6d456ef71fd2ce33fdf76bc933bc
+          mapfile -t P < <(git status --porcelain | awk '{print $2}' | grep '^viewer/' | sort)
+          test "${#P[@]}" -eq 2; test "${P[0]}" = viewer/GV-beta-0010F.py; test "${P[1]}" = viewer/modules/gv-random-galaxy-0031.js
+          echo "0031=$M31HASH"; printf 'CHANGED %s\n' "${P[@]}"
+          git config user.name github-actions[bot]; git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$F" "$M31"; git commit -m 'Galaxy Viewer 10F: comet wait indicator and image FOV formatting'
+          git fetch origin beta; git rebase origin/beta; git push origin HEAD:beta
