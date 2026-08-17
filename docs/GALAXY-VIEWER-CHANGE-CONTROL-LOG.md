@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-eaa86fc01e17 — Run first 15 Hubble Gemini records for review
+
+**Recorded:** 2026-08-16T22:51:02-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`eaa86fc01e17cda5c075fa6380253a2f93457352`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/eaa86fc01e17cda5c075fa6380253a2f93457352)  
+**Parent/baseline:** `f76b5b586736b4b5748e7a3b4aa188738f6654ca`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f76b5b586736b4b5748e7a3b4aa188738f6654ca...eaa86fc01e17cda5c075fa6380253a2f93457352)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Run first 15 Hubble Gemini records for review
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/recover-hubble-0002-gemini-jet.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `105f4aa49291bf19916500d58dccd28ea5e97691328ac11e1edb51e986a82e13`
+- SHA-256 after: `36cfcf5778f86ef95cf9cb92224187735b434021d2c0718e96584855044d4578`
+- Bytes: `15841` → `7010`
+- Lines: `286` → `140`
+- Characters: `15841` → `7010`
+- Inserted lines: `92`
+- Deleted lines: `238`
+- Inserted characters: `2543`
+- Deleted characters: `11374`
+- Unified diff hunks: `16`
+- Inserted blocks: `17`
+- Deleted blocks: `19`
+- Changed blocks: `19`
+- Line balance: `286 + 92 - 238 = 140` — **PASS**
+- Character balance: `15841 + 2543 - 11374 = 7010` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b8fc388979b5 — Use current Gemini Flash-Lite model for Hubble jet recovery
 
 **Recorded:** 2026-08-16T22:45:51-05:00  
