@@ -1,0 +1,225 @@
+name: Galaxy Viewer Release Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Promoted Viewer version, for example 10E'
+        required: true
+        type: string
+      baseline_path:
+        description: 'Frozen baseline Viewer path'
+        required: true
+        type: string
+      baseline_blob:
+        description: 'Exact Git blob SHA for frozen baseline Viewer'
+        required: true
+        type: string
+      candidate_path:
+        description: 'Candidate Viewer path to validate and promote'
+        required: true
+        type: string
+      candidate_blob:
+        description: 'Exact Git blob SHA for candidate Viewer'
+        required: true
+        type: string
+      catalog_path:
+        description: 'Authorized Hubble catalog path'
+        required: true
+        type: string
+      catalog_blob:
+        description: 'Exact Git blob SHA for authorized Hubble catalog'
+        required: true
+        type: string
+      release_commit_sha:
+        description: 'Commit containing the authorized candidate release changes'
+        required: true
+        type: string
+      expected_changed_paths:
+        description: 'Exact changed paths in release_commit_sha, one path per line'
+        required: true
+        type: string
+      release_classification:
+        description: 'Release class'
+        required: true
+        default: 'VIEWER-ONLY RELEASE'
+        type: choice
+        options:
+          - VIEWER-ONLY RELEASE
+          - NATIVE-SHELL RELEASE
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-viewer-release-promotion
+  cancel-in-progress: false
+
+jobs:
+  validate-and-promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta with history
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Lock release inputs and protected scope
+        env:
+          VERSION: ${{ inputs.version }}
+          BASELINE_PATH: ${{ inputs.baseline_path }}
+          BASELINE_BLOB: ${{ inputs.baseline_blob }}
+          CANDIDATE_PATH: ${{ inputs.candidate_path }}
+          CANDIDATE_BLOB: ${{ inputs.candidate_blob }}
+          CATALOG_PATH: ${{ inputs.catalog_path }}
+          CATALOG_BLOB: ${{ inputs.catalog_blob }}
+          RELEASE_COMMIT: ${{ inputs.release_commit_sha }}
+          EXPECTED_PATHS: ${{ inputs.expected_changed_paths }}
+          RELEASE_CLASS: ${{ inputs.release_classification }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, pathlib, re, subprocess, sys
+          baseline=os.environ['BASELINE_PATH'].strip()
+          candidate=os.environ['CANDIDATE_PATH'].strip()
+          catalog=os.environ['CATALOG_PATH'].strip()
+          version=os.environ['VERSION'].strip()
+          release_class=os.environ['RELEASE_CLASS'].strip()
+          if not re.fullmatch(r'viewer/GV-beta-[A-Za-z0-9._-]+\.py', baseline):
+              raise SystemExit('REFUSING RELEASE: invalid baseline Viewer path')
+          if not re.fullmatch(r'viewer/GV-beta-[A-Za-z0-9._-]+\.py', candidate):
+              raise SystemExit('REFUSING RELEASE: invalid candidate Viewer path')
+          if baseline == candidate:
+              raise SystemExit('REFUSING RELEASE: frozen baseline cannot be modified in place')
+          if not re.fullmatch(r'[A-Za-z0-9._-]+', version):
+              raise SystemExit('REFUSING RELEASE: invalid version token')
+          if not re.fullmatch(r'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-[0-9]{4}\.json', catalog):
+              raise SystemExit('REFUSING RELEASE: invalid Hubble catalog path')
+          for p in (baseline,candidate,catalog):
+              if not pathlib.Path(p).is_file():
+                  raise SystemExit('REFUSING RELEASE: missing authorized file '+p)
+          def blob(path):
+              return subprocess.check_output(['git','hash-object',path],text=True).strip()
+          checks=[
+              (baseline,os.environ['BASELINE_BLOB'].strip()),
+              (candidate,os.environ['CANDIDATE_BLOB'].strip()),
+              (catalog,os.environ['CATALOG_BLOB'].strip()),
+          ]
+          for path,expected in checks:
+              actual=blob(path)
+              if actual != expected:
+                  raise SystemExit(f'REFUSING RELEASE: blob mismatch for {path}: {actual} != {expected}')
+          commit=os.environ['RELEASE_COMMIT'].strip()
+          subprocess.run(['git','cat-file','-e',commit+'^{commit}'],check=True)
+          actual=set(subprocess.check_output(['git','diff-tree','--no-commit-id','--name-only','-r',commit],text=True).splitlines())
+          expected={line.strip() for line in os.environ['EXPECTED_PATHS'].splitlines() if line.strip()}
+          if actual != expected:
+              raise SystemExit('REFUSING RELEASE: release commit paths differ from ECO allow-list\nACTUAL='+repr(sorted(actual))+'\nEXPECTED='+repr(sorted(expected)))
+          if candidate not in expected:
+              raise SystemExit('REFUSING RELEASE: candidate path is not in authorized changed paths')
+          forbidden_prefixes=('mobile/beta/','viewer/artwork/','viewer/modules/','android/','.github/workflows/')
+          if release_class == 'VIEWER-ONLY RELEASE':
+              forbidden=[p for p in expected if p.startswith(forbidden_prefixes)]
+              if forbidden:
+                  raise SystemExit('REFUSING VIEWER-ONLY RELEASE: forbidden non-Viewer paths changed: '+repr(sorted(forbidden)))
+          else:
+              raise SystemExit('NATIVE-SHELL RELEASE requires its own explicitly authorized APK ECO/workflow; this gate will not build or silently alter an APK')
+          print('Scope lock PASS')
+          PY
+
+      - name: Validate candidate Viewer syntax and exact identity
+        env:
+          VERSION: ${{ inputs.version }}
+          CANDIDATE_PATH: ${{ inputs.candidate_path }}
+        run: |
+          set -euo pipefail
+          python -m py_compile "$CANDIDATE_PATH"
+          python - <<'PY'
+          import os,re,pathlib
+          p=pathlib.Path(os.environ['CANDIDATE_PATH'])
+          s=p.read_text(encoding='utf-8')
+          v=os.environ['VERSION']
+          if s.count("const VERSION='"+v+"';") != 1:
+              raise SystemExit('REFUSING RELEASE: VERSION identity mismatch')
+          if s.count("const DISPLAY_VERSION='"+v+"';") != 1:
+              raise SystemExit('REFUSING RELEASE: DISPLAY_VERSION identity mismatch')
+          html=re.findall(r'display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)',s)
+          js=re.findall(r'display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)',s)
+          if len(html)!=1 or len(js)!=1:
+              raise SystemExit(f'REFUSING RELEASE: expected one Viewer HTML and one Viewer JS block, got {len(html)} / {len(js)}')
+          pathlib.Path('/tmp/gv-candidate.js').write_text(js[0],encoding='utf-8')
+          PY
+          node --check /tmp/gv-candidate.js
+
+      - name: Validate authorized Hubble catalog
+        env:
+          CATALOG_PATH: ${{ inputs.catalog_path }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['CATALOG_PATH'])
+          payload=json.loads(p.read_text(encoding='utf-8'))
+          entries=payload.get('entries')
+          declared=payload.get('categoryEntryCount')
+          if not isinstance(entries,list) or not isinstance(declared,int):
+              raise SystemExit('REFUSING RELEASE: malformed catalog structure')
+          if len(entries) != declared:
+              raise SystemExit(f'REFUSING RELEASE: catalog count mismatch {len(entries)} != {declared}')
+          if len(entries) < 10:
+              raise SystemExit('REFUSING RELEASE: catalog contains fewer than ten entries')
+          print('Catalog validation PASS:',len(entries),'entries')
+          PY
+
+      - name: Verify manifest is not ahead of frozen baseline
+        env:
+          BASELINE_PATH: ${{ inputs.baseline_path }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib,os
+          manifest=pathlib.Path('viewer/gv-current-viewer.json')
+          if not manifest.exists():
+              print('Initial manifest promotion: no prior manifest exists')
+          else:
+              data=json.loads(manifest.read_text(encoding='utf-8'))
+              expected=pathlib.Path(os.environ['BASELINE_PATH']).name
+              if data.get('viewer') != expected:
+                  raise SystemExit(f'REFUSING RELEASE: current manifest is {data.get("viewer")!r}, expected frozen baseline {expected!r}')
+          PY
+
+      - name: Promote manifest only after all release gates pass
+        env:
+          VERSION: ${{ inputs.version }}
+          CANDIDATE_PATH: ${{ inputs.candidate_path }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib
+          manifest=pathlib.Path('viewer/gv-current-viewer.json')
+          payload={'version':os.environ['VERSION'].strip(),'viewer':pathlib.Path(os.environ['CANDIDATE_PATH']).name}
+          manifest.write_text(json.dumps(payload,indent=2)+'\n',encoding='utf-8')
+          PY
+          test "$(git status --short | wc -l)" -eq 1
+          test "$(git status --short | awk '{print $2}')" = 'viewer/gv-current-viewer.json'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/gv-current-viewer.json
+          git commit -m "Promote Galaxy Viewer ${VERSION}"
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
+
+      - name: Final promotion audit
+        env:
+          VERSION: ${{ inputs.version }}
+          CANDIDATE_PATH: ${{ inputs.candidate_path }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib
+          d=json.loads(pathlib.Path('viewer/gv-current-viewer.json').read_text(encoding='utf-8'))
+          assert d == {'version':os.environ['VERSION'].strip(),'viewer':pathlib.Path(os.environ['CANDIDATE_PATH']).name}
+          print('PROMOTION PASS:',d)
+          PY
