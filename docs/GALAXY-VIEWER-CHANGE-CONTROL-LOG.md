@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ae09384ddbfb — Temporary guarded Cartwheel catalog patch runner
+
+**Recorded:** 2026-08-17T15:42:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ae09384ddbfb2c857f3c8b9322341aa2d0a5c0c3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ae09384ddbfb2c857f3c8b9322341aa2d0a5c0c3)  
+**Parent/baseline:** `651d8901dbfceec28e52b23fecda387cedf06a63`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/651d8901dbfceec28e52b23fecda387cedf06a63...ae09384ddbfb2c857f3c8b9322341aa2d0a5c0c3)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Temporary guarded Cartwheel catalog patch runner
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `028db4a821516c7ba1fba8dacd79155970c1bc03ee77d26184d05ef60ce5552a`
+- SHA-256 after: `c9aaae53ad28f7b08dd0da484de6040b8f17bc50a3203113a64b2bc2e44464e8`
+- Bytes: `4173` → `3437`
+- Lines: `77` → `70`
+- Characters: `4171` → `3437`
+- Inserted lines: `53`
+- Deleted lines: `60`
+- Inserted characters: `2741`
+- Deleted characters: `3475`
+- Unified diff hunks: `5`
+- Inserted blocks: `4`
+- Deleted blocks: `5`
+- Changed blocks: `5`
+- Line balance: `77 + 53 - 60 = 70` — **PASS**
+- Character balance: `4171 + 2741 - 3475 = 3437` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5c81f723e4a2 — Restore permanent generic 10E workflow
 
 **Recorded:** 2026-08-17T15:27:56-05:00  
