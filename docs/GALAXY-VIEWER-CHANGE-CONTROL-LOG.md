@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-07d8460020ca — Resume guarded Galaxy Viewer 10D generic APK build
+
+**Recorded:** 2026-08-17T11:50:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`07d8460020ca578d903dd08b7d5ebd1362b87169`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/07d8460020ca578d903dd08b7d5ebd1362b87169)  
+**Parent/baseline:** `3fb0539a00de389b37db0b400009c9ded1e40999`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3fb0539a00de389b37db0b400009c9ded1e40999...07d8460020ca578d903dd08b7d5ebd1362b87169)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Resume guarded Galaxy Viewer 10D generic APK build
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10D-generic-apk.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `d1a1610d6de5572362936a27aea5e02726a78328f69294296983fefbf7269961`
+- SHA-256 after: `1f11051bf9534cb9b9b49f4e4ac4b502fe6011d5d369df5d2d78bb0a6d9ab8ad`
+- Bytes: `22132` → `21129`
+- Lines: `313` → `288`
+- Characters: `22132` → `21129`
+- Inserted lines: `73`
+- Deleted lines: `98`
+- Inserted characters: `2473`
+- Deleted characters: `3476`
+- Unified diff hunks: `31`
+- Inserted blocks: `28`
+- Deleted blocks: `25`
+- Changed blocks: `31`
+- Line balance: `313 + 73 - 98 = 288` — **PASS**
+- Character balance: `22132 + 2473 - 3476 = 21129` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-bb30d1842430 — Allow generic Galaxy Viewer asset shell to fetch current manifest
 
 **Recorded:** 2026-08-17T11:48:42-05:00  
