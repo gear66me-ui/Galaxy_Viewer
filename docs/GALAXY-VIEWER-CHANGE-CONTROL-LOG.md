@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5ef340a740b3 — Add deterministic standalone Android builder for 9I-M
+
+**Recorded:** 2026-08-16T20:14:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5ef340a740b32b9e0ecf8af2c35240d4617d135b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5ef340a740b32b9e0ecf8af2c35240d4617d135b)  
+**Parent/baseline:** `f496c3f7f29b6b725a549ccfafd770fe911dad5d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f496c3f7f29b6b725a549ccfafd770fe911dad5d...5ef340a740b32b9e0ecf8af2c35240d4617d135b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Add deterministic standalone Android builder for 9I-M
+```
+
+### Complete changed-path accounting
+
+#### `.github/scripts/prepare_galaxy_viewer_9im.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9fdfbe5adf69e0c751ccbcac1dd5335a5c43bf78255444a406337be6c4c00494`
+- Bytes: `0` → `8953`
+- Lines: `0` → `128`
+- Characters: `0` → `8953`
+- Inserted lines: `128`
+- Deleted lines: `0`
+- Inserted characters: `8953`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 128 - 0 = 128` — **PASS**
+- Character balance: `0 + 8953 - 0 = 8953` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-674fe352b5b9 — Contain 9I comets inside square icon tiles
 
 **Recorded:** 2026-08-16T20:05:38-05:00  
