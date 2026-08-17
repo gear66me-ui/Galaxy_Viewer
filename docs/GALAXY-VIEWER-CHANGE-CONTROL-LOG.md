@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-21a552d4ecf7 — Refine 10C Random Galaxy navigation button presentation
+
+**Recorded:** 2026-08-17T00:47:18-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`21a552d4ecf786c73c372fd9f48f4f1c6c7aa50d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/21a552d4ecf786c73c372fd9f48f4f1c6c7aa50d)  
+**Parent/baseline:** `0fa842cfa85d198d6eb860b8bcf6dfd39c3df2ec`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0fa842cfa85d198d6eb860b8bcf6dfd39c3df2ec...21a552d4ecf786c73c372fd9f48f4f1c6c7aa50d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Refine 10C Random Galaxy navigation button presentation
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0010C.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `3c168f027f879db4b07de06d5b79a12ee80bfbca23dd8ab497787a7c165e6887`
+- SHA-256 after: `c1ed744c7c9da3157f2b8d99632c7bf772465a2653ad6630db72c728ec8879d0`
+- Bytes: `70966` → `70818`
+- Lines: `1166` → `1166`
+- Characters: `70957` → `70809`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `48`
+- Deleted characters: `196`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1166 + 1 - 1 = 1166` — **PASS**
+- Character balance: `70957 + 48 - 196 = 70809` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2f066291ea9f — Temporary audited build workflow for Galaxy Viewer 10C
 
 **Recorded:** 2026-08-17T00:31:24-05:00  
