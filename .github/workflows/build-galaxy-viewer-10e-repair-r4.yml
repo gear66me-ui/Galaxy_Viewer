@@ -1,4 +1,4 @@
-name: Surgical Galaxy Viewer 10E Hubble Preload Retention
+name: Surgical Galaxy Viewer 10E HD Scale + Preload
 on:
   push:
     branches: [beta]
@@ -16,15 +16,20 @@ jobs:
           sparse-checkout: |
             viewer/GV-beta-0010E.py
             viewer/modules/gv-random-galaxy-0030.js
-      - name: Preserve active Hubble HD preload through travel
+      - name: Apply exact 10E HD scale and preload repair
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0010E.py)" = "bef86acce85b3d0fa3211b73412d2621ddffe734"
           test "$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" = "c17d7c8d48e71b7e91ac3ed28ee3c55786a82385"
           python - <<'PY'
           from pathlib import Path
           p=Path('viewer/GV-beta-0010E.py')
           s=p.read_text(encoding='utf-8')
+          old='.gvrg-hd img{scale:1.052632}'
+          new='.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}.gvrg-hd img{scale:1.052632}'
+          if s.count(old)!=1: raise SystemExit(f'HD scale insertion anchor count {s.count(old)}')
+          s=s.replace(old,new,1)
           replacements=[
             ("        if(activePrefetchKey){const active=galaxyCatalog.find(item=>destinationKey(item)===activePrefetchKey);if(active)setHdStatus(active,'SUSPENDED')}\n        if(activePrefetchAbort)activePrefetchAbort.abort();\n", ""),
             ("                if(backgroundWorkSuspended||signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');", "                if(signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');"),
@@ -38,10 +43,11 @@ jobs:
           p.write_text(s,encoding='utf-8')
           PY
           python -m py_compile viewer/GV-beta-0010E.py
+          grep -Fq '.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}' viewer/GV-beta-0010E.py
           grep -Fq "if(signal?.aborted)throw new DOMException('HUBBLE HD PRELOAD SUSPENDED','AbortError');" viewer/GV-beta-0010E.py
-          grep -Fq 'if(backgroundWorkSuspended)return;' viewer/GV-beta-0010E.py
           count=$(grep -Fo 'if(activePrefetchAbort)activePrefetchAbort.abort();' viewer/GV-beta-0010E.py | wc -l || true)
-          test "$count" -eq 1
+          test "$count" -eq 2
+          test "$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" = "c17d7c8d48e71b7e91ac3ed28ee3c55786a82385"
       - name: Commit only 10E source
         shell: bash
         run: |
@@ -50,7 +56,11 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/GV-beta-0010E.py
           test "$(git diff --cached --name-only)" = "viewer/GV-beta-0010E.py"
-          git commit -m 'Preserve active 10E Hubble preload through travel'
-          git fetch --depth=20 origin beta
-          git rebase origin/beta
-          git push origin HEAD:beta
+          git commit -m 'Increase HD scale label and preserve active Hubble preload'
+          for attempt in 1 2 3 4; do
+            git fetch --depth=20 origin beta
+            git rebase origin/beta || { git rebase --abort || true; exit 1; }
+            if git push origin HEAD:beta; then exit 0; fi
+            sleep 2
+          done
+          exit 1
