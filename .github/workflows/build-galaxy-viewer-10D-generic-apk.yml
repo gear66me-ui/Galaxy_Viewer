@@ -138,12 +138,12 @@ jobs:
           from pathlib import Path
           p=Path('/tmp/gv10d-android/app/src/main/assets/index-manifest-test.html')
           s=p.read_text(encoding='utf-8')
-          a='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json'
-          b='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/'
-          if s.count(a)!=1 or s.count(b)!=2: raise SystemExit('REFUSING 10D SMOKE: bootstrap URL anchors changed')
-          s=s.replace(a,'http://127.0.0.1:8765/test-manifest.json',1)
-          if s.count(b)!=1: raise SystemExit('REFUSING 10D SMOKE: viewer base anchor changed after manifest replacement')
-          p.write_text(s.replace(b,'http://127.0.0.1:8765/test-viewer/',1),encoding='utf-8')
+          a="const MANIFEST_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/gv-current-viewer.json';"
+          b="const VIEWER_RAW_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';"
+          if s.count(a)!=1 or s.count(b)!=1: raise SystemExit('REFUSING 10D SMOKE: exact bootstrap declarations changed')
+          s=s.replace(a,"const MANIFEST_URL='http://127.0.0.1:8765/test-manifest.json';",1)
+          s=s.replace(b,"const VIEWER_RAW_BASE='http://127.0.0.1:8765/test-viewer/';",1)
+          p.write_text(s,encoding='utf-8')
           PY
           (cd "$ASSETS" && python -m http.server 8765 >/tmp/gv-http.log 2>&1 & echo $! >/tmp/gv-http.pid)
           sleep 2
