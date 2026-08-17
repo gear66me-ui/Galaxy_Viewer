@@ -25,8 +25,7 @@ jobs:
           from pathlib import Path
           p=Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json')
           data=json.loads(p.read_text())
-          entries=data['entries']
-          byid={e.get('archiveId'):e for e in entries}
+          byid={e.get('archiveId'):e for e in data['entries']}
           target=byid['opo9502a']
           source=byid['potw1036a']
           assert 'Cartwheel' in (target.get('name') or '')
@@ -35,7 +34,6 @@ jobs:
           image_fields=['fieldOfView','orientation','pixelSize','credit','sourceUrl','esaPublicationJpeg','jpegCandidates','imageStatus','selectedImageUrl','assetName','bytes','sha256','downloadErrors','githubImageUrl','releaseTag']
           for k in image_fields:
               target[k]=source.get(k)
-          # Keep target identity/coordinates/distance/age. Carry source image geometry-derived size.
           for k in ['sizeKly','sizeMethod','sizeEstimated','sizeDisplay']:
               if k in source.get('science',{}):
                   target.setdefault('science',{})[k]=source['science'][k]
@@ -49,22 +47,27 @@ jobs:
           python3 -m json.tool "$FILE" >/dev/null
           python3 - <<'PY'
           import json
-          p='viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json'
-          d=json.load(open(p))
+          d=json.load(open('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json'))
           byid={e['archiveId']:e for e in d['entries']}
           t,s=byid['opo9502a'],byid['potw1036a']
-          assert t['selectedImageUrl']==s['selectedImageUrl']
-          assert t['assetName']==s['assetName']
-          assert t['fieldOfView']==s['fieldOfView']
-          assert t['pixelSize']==s['pixelSize']
+          assert t['selectedImageUrl']==s['selectedImageUrl']=='https://cdn.esahubble.org/archives/images/large/potw1036a.jpg'
+          assert t['assetName']==s['assetName']=='potw1036a.jpg'
+          assert t['fieldOfView']==s['fieldOfView']=='2.13 x 1.64 arcminutes'
+          assert t['pixelSize']==s['pixelSize']=='1282 x 983 px'
           assert t['science']['distanceMly']==500.0
           assert t['imageReplacement0017']['replacementArchiveId']=='potw1036a'
-          print('Cartwheel replacement verified:', t['selectedImageUrl'], t['fieldOfView'], t['pixelSize'])
+          print('Cartwheel replacement verified')
           PY
-          test "$(git status --porcelain | grep -v '^ M .github/workflows/build-galaxy-viewer-10e-repair-r4.yml$' | wc -l)" -eq 1
+          test "$(git status --porcelain | wc -l)" -eq 1
           git status --porcelain | grep -q " $FILE$"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$FILE"
           git commit -m 'Catalog 0017: use reprocessed Hubble Cartwheel image'
-          git push origin beta
+          for attempt in 1 2 3; do
+            git fetch origin beta
+            git rebase origin/beta
+            if git push origin beta; then exit 0; fi
+            sleep 2
+          done
+          exit 1
