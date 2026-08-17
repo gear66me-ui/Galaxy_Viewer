@@ -1,0 +1,111 @@
+name: TEMP Repair 10F Random Galaxy Verifier
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/repair-10f-random-verifier.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact beta head
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Audit and patch only 10F stale Random Galaxy verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='viewer/GV-beta-0010F.py'
+          TEN_E='viewer/GV-beta-0010E.py'
+          MOD30='viewer/modules/gv-random-galaxy-0030.js'
+          MOD31='viewer/modules/gv-random-galaxy-0031.js'
+          CATALOG='viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json'
+
+          BEFORE_10E=$(git hash-object "$TEN_E")
+          BEFORE_30=$(git hash-object "$MOD30")
+          BEFORE_31=$(git hash-object "$MOD31")
+          BEFORE_CAT=$(git hash-object "$CATALOG")
+          BEFORE_TARGET=$(git hash-object "$TARGET")
+
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/GV-beta-0010F.py')
+          s=p.read_text(encoding='utf-8')
+
+          old1="await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0030');"
+          new1="await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');"
+          old2="if(window.GalaxyRandomGalaxy?.VERSION!=='0013')throw new Error('RANDOM GALAXY 0030 PATH / 0013 VERIFIED CORE EXPORT MISSING');"
+          new2="if(window.GalaxyRandomGalaxy?.VERSION!=='0031')throw new Error('RANDOM GALAXY 0031 EXPORT MISSING OR VERSION MISMATCH');"
+
+          if s.count(old1) != 1:
+              raise SystemExit(f'ABORT: expected exactly one stale loader key, found {s.count(old1)}')
+          if s.count(old2) != 1:
+              raise SystemExit(f'ABORT: expected exactly one stale version guard, found {s.count(old2)}')
+
+          # Font integrity: frozen 10E and current 10F must retain the same approved Random Galaxy font declarations.
+          e=Path('viewer/GV-beta-0010E.py').read_text(encoding='utf-8')
+          base_rule='#gv-random-galaxy{appearance:none;-webkit-appearance:none;position:static;display:flex;flex:1 1 auto;min-width:0;align-items:center;justify-content:center;height:36px;margin:0;padding:0 12px;border:1px solid #B7FFD0;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.38px;'
+          override='#gv-random-galaxy{font-size:15.5px!important;border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}'
+          for name,text in [('10E',e),('10F',s)]:
+              if text.count(base_rule)!=1: raise SystemExit(f'ABORT: {name} base Random Galaxy font rule drift')
+              if text.count(override)!=1: raise SystemExit(f'ABORT: {name} approved 15.5px presentation rule drift')
+
+          s=s.replace(old1,new1,1).replace(old2,new2,1)
+          p.write_text(s,encoding='utf-8')
+          compile(s,str(p),'exec')
+          PY
+
+          test "$(git hash-object "$TEN_E")" = "$BEFORE_10E"
+          test "$(git hash-object "$MOD30")" = "$BEFORE_30"
+          test "$(git hash-object "$MOD31")" = "$BEFORE_31"
+          test "$(git hash-object "$CATALOG")" = "$BEFORE_CAT"
+          test "$(git hash-object "$TARGET")" != "$BEFORE_TARGET"
+
+          grep -Fq "await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');" "$TARGET"
+          grep -Fq "GalaxyRandomGalaxy?.VERSION!=='0031'" "$TARGET"
+          grep -Fq "bottom.random.addEventListener('click',launchRandomGalaxy);" "$TARGET"
+          grep -Fq "font-size:15.5px!important" "$TARGET"
+
+          mapfile -t CHANGED < <(git status --porcelain | sed -E 's/^.. //')
+          printf 'Changed paths before commit:\n%s\n' "${CHANGED[@]}"
+          if [ "${#CHANGED[@]}" -ne 1 ] || [ "${CHANGED[0]}" != "$TARGET" ]; then
+            echo 'ABORT: unauthorized production path detected'
+            exit 1
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$TARGET"
+          git diff --cached --check
+          git commit -m 'Repair 10F Random Galaxy 0031 verifier'
+          git push origin HEAD:beta
+
+      - name: Fetch-back verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          git reset --hard origin/beta
+          TARGET='viewer/GV-beta-0010F.py'
+          grep -Fq "await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');" "$TARGET"
+          grep -Fq "GalaxyRandomGalaxy?.VERSION!=='0031'" "$TARGET"
+          grep -Fq "bottom.random.addEventListener('click',launchRandomGalaxy);" "$TARGET"
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('viewer/GV-beta-0010F.py').read_text(encoding='utf-8')
+          compile(s,'viewer/GV-beta-0010F.py','exec')
+          print('10F chars:',len(s),'lines:',s.count('\n')+1)
+          print('0031 loader count:',s.count("await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');"))
+          print('0031 verifier count:',s.count("GalaxyRandomGalaxy?.VERSION!=='0031'"))
+          print('random click binding count:',s.count("bottom.random.addEventListener('click',launchRandomGalaxy);"))
+          print('15.5px font override count:',s.count('font-size:15.5px!important'))
+          PY
