@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5c81f723e4a2 — Restore permanent generic 10E workflow
+
+**Recorded:** 2026-08-17T15:27:56-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5c81f723e4a2f7db916a12fa6b889b226a2c061a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5c81f723e4a2f7db916a12fa6b889b226a2c061a)  
+**Parent/baseline:** `56cd05da852c7f68a04b73ddde959e1e2579d16a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/56cd05da852c7f68a04b73ddde959e1e2579d16a...5c81f723e4a2f7db916a12fa6b889b226a2c061a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore permanent generic 10E workflow
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10e-repair-r4.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `b6d3302e05318be248b685a1334f5f3bab9246d98ba8e5273e9707ecbe0b7a6a`
+- SHA-256 after: `028db4a821516c7ba1fba8dacd79155970c1bc03ee77d26184d05ef60ce5552a`
+- Bytes: `4844` → `4173`
+- Lines: `93` → `77`
+- Characters: `4844` → `4171`
+- Inserted lines: `58`
+- Deleted lines: `74`
+- Inserted characters: `3399`
+- Deleted characters: `4072`
+- Unified diff hunks: `7`
+- Inserted blocks: `7`
+- Deleted blocks: `5`
+- Changed blocks: `7`
+- Line balance: `93 + 58 - 74 = 77` — **PASS**
+- Character balance: `4844 + 3399 - 4072 = 4171` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d6bf39d97544 — Restore permanent generic 10E workflow
 
 **Recorded:** 2026-08-17T15:09:40-05:00  
