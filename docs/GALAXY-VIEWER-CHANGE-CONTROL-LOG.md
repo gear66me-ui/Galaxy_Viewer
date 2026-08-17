@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6bddfe311ecd — Restore 9I square tiles and 120-degree comet phasing
+
+**Recorded:** 2026-08-16T19:58:17-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6bddfe311ecd0e18950b588cea32cc1f1338c22e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6bddfe311ecd0e18950b588cea32cc1f1338c22e)  
+**Parent/baseline:** `cf10aa49ad1d72279969ee4641371831919f0b46`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/cf10aa49ad1d72279969ee4641371831919f0b46...6bddfe311ecd0e18950b588cea32cc1f1338c22e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore 9I square tiles and 120-degree comet phasing
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/9I.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `2841216e492229a776d4fa64ab870d57239fdf61475407e64dc0504379f5babb`
+- SHA-256 after: `3f08d48add160732efd0b4220154cea86bbb1e7e88777e79ce7d63aa5d24c095`
+- Bytes: `3386` → `3632`
+- Lines: `46` → `48`
+- Characters: `3384` → `3630`
+- Inserted lines: `14`
+- Deleted lines: `12`
+- Inserted characters: `433`
+- Deleted characters: `187`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `4`
+- Changed blocks: `4`
+- Line balance: `46 + 14 - 12 = 48` — **PASS**
+- Character balance: `3384 + 433 - 187 = 3630` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cd7f244dd45b — Simplify 9I-K Android build workflow
 
 **Recorded:** 2026-08-16T19:45:49-05:00  
