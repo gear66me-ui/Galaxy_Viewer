@@ -1,1 +1,0 @@
-com.gear66me.galaxyviewer10e.r2:mipmap/ic_launcher = 0x7f010000

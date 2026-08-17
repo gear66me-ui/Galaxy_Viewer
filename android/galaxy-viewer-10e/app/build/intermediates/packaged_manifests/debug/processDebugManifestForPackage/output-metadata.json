@@ -4,15 +4,15 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.gear66me.galaxyviewer10e.r2",
+  "applicationId": "com.gear66me.galaxyviewer10e",
   "variantName": "debug",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 1008,
-      "versionName": "10E-generic-r2",
+      "versionCode": 1007,
+      "versionName": "10E-generic",
       "outputFile": "AndroidManifest.xml"
     }
   ],
