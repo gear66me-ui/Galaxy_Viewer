@@ -1,0 +1,412 @@
+name: Build Galaxy Viewer Android 10D Generic
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/build-galaxy-viewer-android-10D-generic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35 SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Generate isolated generic 10D Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/galaxy-viewer-10d"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer10d"
+
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = 'GalaxyViewer10DGeneric'
+          include ':app'
+          EOF
+
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=false
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.gear66me.galaxyviewer10d'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.gear66me.galaxyviewer10d'
+                  minSdk 29
+                  targetSdk 35
+                  versionCode 1005
+                  versionName '10D-generic-r2'
+              }
+          }
+          EOF
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <application
+                  android:allowBackup="false"
+                  android:label="Galaxy Viewer 10D"
+                  android:usesCleartextTraffic="false"
+                  android:theme="@android:style/Theme.Material.NoActionBar">
+                  <activity
+                      android:name=".MainActivity"
+                      android:configChanges="keyboardHidden|orientation|screenSize"
+                      android:exported="true"
+                      android:screenOrientation="portrait">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer10d/MainActivity.java" <<'EOF'
+          package com.gear66me.galaxyviewer10d;
+
+          import android.app.Activity;
+          import android.app.DownloadManager;
+          import android.content.Context;
+          import android.content.SharedPreferences;
+          import android.graphics.Color;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.view.Gravity;
+          import android.view.View;
+          import android.webkit.DownloadListener;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceError;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebResourceResponse;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.Button;
+          import android.widget.LinearLayout;
+          import android.widget.TextView;
+
+          import org.json.JSONObject;
+
+          import java.io.BufferedReader;
+          import java.io.InputStream;
+          import java.io.InputStreamReader;
+          import java.net.HttpURLConnection;
+          import java.net.URL;
+          import java.nio.charset.StandardCharsets;
+
+          public final class MainActivity extends Activity {
+              private static final String POINTER_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/mobile/beta/10D-app-target.json";
+              private static final String PREFS = "gv10d";
+              private static final String LAST_URL = "last_good_launch_url";
+              private static final String ALLOWED_HOST = "gear66me-ui.github.io";
+              private static final String ALLOWED_PATH = "/Galaxy_Viewer/";
+              private LinearLayout statusPanel;
+              private TextView statusText;
+              private Button retryButton;
+              private WebView webView;
+              private String resolvedUrl;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  enterImmersive();
+                  buildStatusScreen();
+                  resolveAndLaunch();
+              }
+
+              private void enterImmersive() {
+                  getWindow().getDecorView().setSystemUiVisibility(
+                          View.SYSTEM_UI_FLAG_FULLSCREEN
+                                  | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                  | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                  | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                  | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                  | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+              }
+
+              private void buildStatusScreen() {
+                  statusPanel = new LinearLayout(this);
+                  statusPanel.setOrientation(LinearLayout.VERTICAL);
+                  statusPanel.setGravity(Gravity.CENTER);
+                  statusPanel.setPadding(48, 48, 48, 48);
+                  statusPanel.setBackgroundColor(Color.BLACK);
+
+                  statusText = new TextView(this);
+                  statusText.setTextColor(Color.WHITE);
+                  statusText.setTextSize(16f);
+                  statusText.setGravity(Gravity.CENTER);
+                  statusText.setText("GALAXY VIEWER 10D\n\nChecking current Viewer…");
+                  statusPanel.addView(statusText, new LinearLayout.LayoutParams(
+                          LinearLayout.LayoutParams.MATCH_PARENT,
+                          LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                  retryButton = new Button(this);
+                  retryButton.setText("RETRY");
+                  retryButton.setVisibility(View.GONE);
+                  retryButton.setOnClickListener(v -> resolveAndLaunch());
+                  LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
+                          LinearLayout.LayoutParams.WRAP_CONTENT,
+                          LinearLayout.LayoutParams.WRAP_CONTENT);
+                  buttonParams.topMargin = 32;
+                  statusPanel.addView(retryButton, buttonParams);
+                  setContentView(statusPanel);
+              }
+
+              private void setStatus(String text, boolean retry) {
+                  runOnUiThread(() -> {
+                      if (statusPanel.getParent() == null) setContentView(statusPanel);
+                      statusText.setText(text);
+                      retryButton.setVisibility(retry ? View.VISIBLE : View.GONE);
+                  });
+              }
+
+              private void resolveAndLaunch() {
+                  setStatus("GALAXY VIEWER 10D\n\nChecking current Viewer…", false);
+                  new Thread(() -> {
+                      try {
+                          String pointer = fetchText(POINTER_URL + "?t=" + System.currentTimeMillis());
+                          JSONObject json = new JSONObject(pointer);
+                          String launchUrl = json.optString("launchUrl", "").trim();
+                          validateLaunchUrl(launchUrl);
+                          resolvedUrl = launchUrl;
+                          getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(LAST_URL, launchUrl).apply();
+                          runOnUiThread(() -> openViewer(launchUrl));
+                      } catch (Exception primaryError) {
+                          SharedPreferences preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+                          String cached = preferences.getString(LAST_URL, "");
+                          if (cached != null && !cached.isEmpty()) {
+                              try {
+                                  validateLaunchUrl(cached);
+                                  resolvedUrl = cached;
+                                  runOnUiThread(() -> openViewer(cached));
+                                  return;
+                              } catch (Exception ignored) {
+                              }
+                          }
+                          setStatus(
+                                  "GALAXY VIEWER 10D — STARTUP ERROR\n\n"
+                                          + "Could not read the GitHub target file and no valid cached Viewer is available.\n\n"
+                                          + "Pointer:\n" + POINTER_URL + "\n\n"
+                                          + "Error:\n" + primaryError.getClass().getSimpleName() + ": " + primaryError.getMessage(),
+                                  true);
+                      }
+                  }, "gv10d-pointer").start();
+              }
+
+              private static String fetchText(String url) throws Exception {
+                  HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                  connection.setConnectTimeout(12000);
+                  connection.setReadTimeout(12000);
+                  connection.setInstanceFollowRedirects(true);
+                  connection.setRequestProperty("Accept", "application/json,text/plain,*/*");
+                  connection.setRequestProperty("Cache-Control", "no-cache");
+                  try {
+                      int code = connection.getResponseCode();
+                      if (code < 200 || code >= 300) throw new IllegalStateException("HTTP " + code);
+                      try (InputStream input = connection.getInputStream();
+                           BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                          StringBuilder out = new StringBuilder();
+                          String line;
+                          while ((line = reader.readLine()) != null) out.append(line).append('\n');
+                          return out.toString();
+                      }
+                  } finally {
+                      connection.disconnect();
+                  }
+              }
+
+              private static void validateLaunchUrl(String value) {
+                  Uri uri = Uri.parse(value);
+                  if (!"https".equalsIgnoreCase(uri.getScheme())) throw new IllegalArgumentException("Target must use HTTPS");
+                  if (!ALLOWED_HOST.equalsIgnoreCase(uri.getHost())) throw new IllegalArgumentException("Unexpected target host");
+                  String path = uri.getPath();
+                  if (path == null || !path.startsWith(ALLOWED_PATH)) throw new IllegalArgumentException("Unexpected target path");
+              }
+
+              private void openViewer(String url) {
+                  if (webView != null) webView.destroy();
+                  webView = new WebView(this);
+                  webView.setBackgroundColor(Color.BLACK);
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setDatabaseEnabled(true);
+                  settings.setAllowFileAccess(false);
+                  settings.setAllowContentAccess(false);
+                  settings.setMediaPlaybackRequiresUserGesture(false);
+                  settings.setBuiltInZoomControls(false);
+                  settings.setDisplayZoomControls(false);
+                  settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+                  settings.setUserAgentString(settings.getUserAgentString() + " GalaxyViewer10D/10D-generic-r2");
+                  webView.setWebChromeClient(new WebChromeClient());
+                  webView.setWebViewClient(new WebViewClient() {
+                      private boolean allowed(Uri uri) {
+                          return uri != null
+                                  && "https".equalsIgnoreCase(uri.getScheme())
+                                  && ALLOWED_HOST.equalsIgnoreCase(uri.getHost())
+                                  && uri.getPath() != null
+                                  && uri.getPath().startsWith(ALLOWED_PATH);
+                      }
+
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                          return !allowed(request.getUrl());
+                      }
+
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView view, String candidate) {
+                          return !allowed(Uri.parse(candidate));
+                      }
+
+                      @Override
+                      public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                          super.onReceivedError(view, request, error);
+                          if (request.isForMainFrame()) {
+                              showWebError("WebView load error " + error.getErrorCode() + ": " + error.getDescription());
+                          }
+                      }
+
+                      @Override
+                      public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse response) {
+                          super.onReceivedHttpError(view, request, response);
+                          if (request.isForMainFrame() && response.getStatusCode() >= 400) {
+                              showWebError("Viewer returned HTTP " + response.getStatusCode());
+                          }
+                      }
+                  });
+                  webView.setDownloadListener(new DownloadListener() {
+                      @Override
+                      public void onDownloadStart(String downloadUrl, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                          try {
+                              Uri uri = Uri.parse(downloadUrl);
+                              if (!"https".equalsIgnoreCase(uri.getScheme())) return;
+                              DownloadManager.Request request = new DownloadManager.Request(uri);
+                              request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                              String name = android.webkit.URLUtil.guessFileName(downloadUrl, contentDisposition, mimetype);
+                              request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, name);
+                              ((DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(request);
+                          } catch (Exception ignored) {
+                          }
+                      }
+                  });
+                  setContentView(webView);
+                  webView.loadUrl(url);
+              }
+
+              private void showWebError(String detail) {
+                  setStatus(
+                          "GALAXY VIEWER 10D — VIEWER LOAD ERROR\n\n"
+                                  + detail + "\n\n"
+                                  + "Resolved target:\n" + (resolvedUrl == null ? "(none)" : resolvedUrl) + "\n\n"
+                                  + "Pointer:\n" + POINTER_URL,
+                          true);
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) webView.goBack();
+                  else super.onBackPressed();
+              }
+          }
+          EOF
+
+          echo "GV10D_ROOT=$ROOT" >> "$GITHUB_ENV"
+
+      - name: Build repaired generic 10D APK
+        run: gradle --no-daemon -p "$GV10D_ROOT" :app:assembleDebug
+
+      - name: Validate package and signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$GV10D_ROOT/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/gv10d-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10d'" /tmp/gv10d-badging.txt
+          grep -q "application-label:'Galaxy Viewer 10D'" /tmp/gv10d-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" Galaxy-Viewer-10D-Generic-R2.apk
+          sha256sum Galaxy-Viewer-10D-Generic-R2.apk | tee Galaxy-Viewer-10D-Generic-R2.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10D-Generic-R2
+          path: |
+            Galaxy-Viewer-10D-Generic-R2.apk
+            Galaxy-Viewer-10D-Generic-R2.sha256
+          if-no-files-found: error
+
+      - name: Create immutable 10D generic R2 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG='galaxy-viewer-10d-generic-r2'
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "$TAG already exists; refusing to overwrite immutable APK release." >&2
+            exit 1
+          fi
+          gh release create "$TAG" \
+            Galaxy-Viewer-10D-Generic-R2.apk \
+            Galaxy-Viewer-10D-Generic-R2.sha256 \
+            --target "$(git rev-parse HEAD)" \
+            --title 'Galaxy Viewer 10D — Generic APK R2' \
+            --notes 'Repaired install-once Galaxy Viewer Android shell. New package ID avoids signature collision with older APKs. At every launch it reads mobile/beta/10D-app-target.json from GitHub and loads its validated launchUrl. It caches the last known good target and shows visible pointer/WebView diagnostics plus RETRY instead of a blank screen. Future ECOs update the pointer file only; this APK does not need to be rebuilt.'
