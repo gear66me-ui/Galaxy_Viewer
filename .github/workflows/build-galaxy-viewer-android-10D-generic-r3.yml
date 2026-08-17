@@ -1,0 +1,57 @@
+name: Build Galaxy Viewer Android 10D Generic R3
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - 'android/galaxy-viewer-10d/**'
+      - '.github/workflows/build-galaxy-viewer-android-10D-generic-r3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10d :app:assembleDebug
+      - name: Validate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-10d/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10d'" /tmp/badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer10d.MainActivity'" /tmp/badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          cp "$APK" Galaxy-Viewer-10D-Generic-R3.apk
+          sha256sum Galaxy-Viewer-10D-Generic-R3.apk | tee Galaxy-Viewer-10D-Generic-R3.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10D-Generic-R3
+          path: |
+            Galaxy-Viewer-10D-Generic-R3.apk
+            Galaxy-Viewer-10D-Generic-R3.sha256
+      - name: Publish immutable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-10d-generic-r3
+          ! gh release view "$TAG" >/dev/null 2>&1
+          gh release create "$TAG" Galaxy-Viewer-10D-Generic-R3.apk Galaxy-Viewer-10D-Generic-R3.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10D — Generic APK R3' --notes 'Install-once generic Galaxy Viewer shell. Reads mobile/beta/10D-app-target.json on every launch. Future ECOs update the pointer file rather than rebuilding the APK. Includes last-known-good fallback and visible startup/WebView diagnostics.'
