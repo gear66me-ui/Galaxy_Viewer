@@ -11,29 +11,30 @@
 html,body{margin:0;min-height:100%;background:#000;color:#fff}
 body{font-family:system-ui,sans-serif;text-align:center}
 main{width:min(100%,960px);margin:0 auto;padding:18px 14px 28px}
+.banner-wrap{width:100%;border:2px solid #4f9dff;background:#000;box-shadow:0 0 14px rgba(69,231,255,.18)}
 .banner{width:100%;aspect-ratio:3/1;border:0;display:block;background:#000}
-.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:min(100%,660px);margin:22px auto 0}
-.choice{aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px;border:2px solid #4f9dff;border-radius:12px;background:#081226;color:#eef7ff;text-decoration:none;box-shadow:0 0 16px rgba(69,231,255,.18),inset 0 0 12px rgba(79,157,255,.10);font:600 clamp(10px,2.2vw,14px)/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(100%,900px);margin:20px auto 0}
+.choice{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:78px;padding:10px 12px;border:2px solid #4f9dff;border-radius:8px;background:#081226;color:#eef7ff;text-decoration:none;box-shadow:0 0 14px rgba(69,231,255,.16),inset 0 0 10px rgba(79,157,255,.08);font:600 13px/1.2 system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase}
 .choice:active{transform:scale(.99)}
-.comet-icon{position:relative;width:min(58%,96px);aspect-ratio:1/1;flex:0 0 auto}
-.comet-icon img{position:absolute;left:50%;top:50%;width:64%;height:64%;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 0 7px rgba(69,231,255,.72))}
-.comet-orbit{position:absolute;inset:0;border:1px solid rgba(69,231,255,.22);border-radius:50%;animation:gv-orbit 3s linear infinite}
-.comet-orbit::before{content:"";position:absolute;left:50%;top:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#fff;box-shadow:0 0 5px #fff,0 0 10px #45e7ff,0 0 16px #4f9dff}
-.comet-orbit::after{content:"";position:absolute;left:50%;top:1px;width:24px;height:3px;transform-origin:0 50%;transform:rotate(18deg);border-radius:999px;background:linear-gradient(90deg,rgba(69,231,255,.9),rgba(79,157,255,.48),transparent);filter:blur(.3px)}
+.icon-square{position:relative;width:54px;height:54px;flex:0 0 54px;border:1.5px solid rgba(111,192,255,.78);background:#030b17;box-shadow:inset 0 0 10px rgba(69,231,255,.12)}
+.icon-square img{position:absolute;left:50%;top:50%;width:36px;height:36px;object-fit:contain;transform:translate(-50%,-50%);filter:drop-shadow(0 0 5px rgba(69,231,255,.75))}
+.comet-orbit{position:absolute;inset:-7px;border-radius:50%;animation:gv-orbit 3s linear infinite;pointer-events:none}
+.comet-orbit::before{content:"";position:absolute;left:50%;top:-1px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 5px #fff,0 0 10px #45e7ff,0 0 16px #4f9dff}
+.comet-orbit::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 240deg,transparent 0deg,rgba(79,157,255,.02) 18deg,rgba(79,157,255,.08) 48deg,rgba(69,231,255,.20) 82deg,rgba(69,231,255,.42) 112deg,rgba(255,255,255,.70) 120deg,transparent 121deg 360deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px))}
 .choice:nth-child(1) .comet-orbit{animation-delay:0s}
 .choice:nth-child(2) .comet-orbit{animation-delay:-1s}
 .choice:nth-child(3) .comet-orbit{animation-delay:-2s}
 @keyframes gv-orbit{to{transform:rotate(360deg)}}
-@media(max-width:520px){main{padding-left:10px;padding-right:10px}.choices{gap:10px}.choice{padding:8px;gap:8px;border-radius:9px}.comet-icon{width:min(64%,84px)}}
+@media(max-width:720px){.choices{grid-template-columns:1fr;width:min(100%,460px)}.choice{min-height:72px}.banner-wrap{border-width:1.5px}}
 </style>
 </head>
 <body>
 <main>
-  <iframe class="banner" src="../../launch/galaxy-viewer-banner-0002.html" title="Galaxy Viewer 9I banner"></iframe>
+  <div class="banner-wrap"><iframe class="banner" src="../../launch/galaxy-viewer-banner-0002.html" title="Galaxy Viewer 9I banner"></iframe></div>
   <div class="choices">
-    <a class="choice" href="./9I-app.html?source=9i-friends-app"><span>Launch App Version</span><span class="comet-icon" aria-hidden="true"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-192.png" alt=""><span class="comet-orbit"></span></span></a>
-    <a class="choice" href="./9I-app.html?source=9i-friends-web"><span>Launch Web Version</span><span class="comet-icon" aria-hidden="true"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-192.png" alt=""><span class="comet-orbit"></span></span></a>
-    <a class="choice" href="https://github.com/gear66me-ui/Galaxy_Viewer" target="_blank" rel="noopener"><span>Galaxy Viewer Project</span><span class="comet-icon" aria-hidden="true"><img src="../../viewer/artwork/App%20Icons/GV-app-icon-192.png" alt=""><span class="comet-orbit"></span></span></a>
+    <a class="choice" href="./9I-app.html?source=9i-friends-app"><span>Launch App Version</span><span class="icon-square" aria-hidden="true"><img src="../../viewer/artwork/icon_target_vector.svg" alt=""><span class="comet-orbit"></span></span></a>
+    <a class="choice" href="./9I-app.html?source=9i-friends-web"><span>Launch Web Version</span><span class="icon-square" aria-hidden="true"><img src="../../viewer/artwork/icon_target_vector.svg" alt=""><span class="comet-orbit"></span></span></a>
+    <a class="choice" href="https://github.com/gear66me-ui/Galaxy_Viewer" target="_blank" rel="noopener"><span>Galaxy Viewer Project</span><span class="icon-square" aria-hidden="true"><img src="../../viewer/artwork/icon_target_vector.svg" alt=""><span class="comet-orbit"></span></span></a>
   </div>
 </main>
 <script>
