@@ -1053,8 +1053,8 @@ display(Javascript(r"""
     if(window.GalaxyViewerTargetSimbad?.version!=='0001')throw new Error('TARGET / SIMBAD MODULE 0001 EXPORT MISSING');
     const target=window.GalaxyViewerTargetSimbad.init({host:targetHost,aladin,viewerRoot:root});
 
-    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0030');
-    if(window.GalaxyRandomGalaxy?.VERSION!=='0013')throw new Error('RANDOM GALAXY 0030 PATH / 0013 VERIFIED CORE EXPORT MISSING');
+    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');
+    if(window.GalaxyRandomGalaxy?.VERSION!=='0031')throw new Error('RANDOM GALAXY 0031 EXPORT MISSING OR VERSION MISMATCH');
     function historySnapshot(destination){
         const {preparedHdUrl,preparedSource,preparedHdImage,...snapshot}=destination||{};
         return Object.freeze({...snapshot});
