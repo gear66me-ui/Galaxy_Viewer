@@ -50,6 +50,7 @@ jobs:
           p=Path('android/galaxy-viewer-9i/app/src/main/assets/index.html')
           s=p.read_text(encoding='utf-8')
           assert "DISPLAY_VERSION='9I-M'" in s
+          assert "has('smoke')" in s
           for x in [
               "await loadScript(HAMBURGER_URL,'gvHamburger0002')",
               "await loadScript(COORDINATE_URL,'gvCoordinate0004')",
@@ -80,12 +81,12 @@ jobs:
           trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
           sleep 1
           set +e
-          timeout 100s "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --virtual-time-budget=70000 --dump-dom http://127.0.0.1:8765/index.html >/tmp/gv-dom.html 2>/tmp/gv-chrome.log
+          timeout 100s "$CHROME" --headless=new --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --enable-webgl --ignore-gpu-blocklist --virtual-time-budget=70000 --dump-dom 'http://127.0.0.1:8765/index.html?smoke=1' >/tmp/gv-dom.html 2>/tmp/gv-chrome.log
           CHROME_RC=$?
           set -e
           if ! grep -q 'data-viewer-status="ready"' /tmp/gv-dom.html; then
             echo 'REFUSING 9I-M: standalone Viewer did not emit READY in real Chromium' >&2
-            echo '--- FULL APP ERROR ---' >&2
+            echo '--- FULL VIEWER ERROR ---' >&2
             python - <<'PY'
           from pathlib import Path
           import re, html
@@ -101,7 +102,7 @@ jobs:
             tail -100 /tmp/gv-http.log >&2 || true
             exit 1
           fi
-          echo "Browser smoke test PASS (chrome rc=$CHROME_RC)"
+          echo "Browser Viewer smoke test PASS (chrome rc=$CHROME_RC)"
 
       - name: Commit and safely rebase 9I-M Viewer source
         shell: bash
@@ -161,6 +162,7 @@ jobs:
                   assert required in names, required
               s=z.read('assets/index.html').decode('utf-8')
               assert "DISPLAY_VERSION='9I-M'" in s
+              assert "has('smoke')" in s
               for x in ["await loadScript(HAMBURGER_URL,'gvHamburger0002')","await loadScript(COORDINATE_URL,'gvCoordinate0004')","await loadScript(TARGET_URL,'gvTarget0001')","await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0028')"]:
                   assert x not in s, x
               for x in ['GalaxyViewerHamburgerMenu','GalaxyCoordinateOverlay','GalaxyViewerTargetSimbad','GalaxyRandomGalaxy','gv-viewer-ready','gv-viewer-failed']:
@@ -191,4 +193,4 @@ jobs:
             echo 'Galaxy Viewer 9I-M release already exists; refusing overwrite.' >&2
             exit 1
           fi
-          gh release create galaxy-viewer-9i-m Galaxy-Viewer-9I-M.apk Galaxy-Viewer-9I-M.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-M — Android' --notes '9I-M replaces runtime Python/Jupyter scraping with a build-time standalone Viewer. All four Galaxy Viewer modules are executed inline before Viewer startup; their dynamic loadScript calls are removed. The standalone Viewer must emit gv-viewer-ready in a real headless Chromium smoke test before APK compilation. Public launcher website, beta launcher template, and original icon are hash-guarded unchanged.'
+          gh release create galaxy-viewer-9i-m Galaxy-Viewer-9I-M.apk Galaxy-Viewer-9I-M.sha256 --target "$TARGET" --title 'Galaxy Viewer 9I-M — Android' --notes '9I-M replaces runtime Python/Jupyter scraping with a build-time standalone Viewer. All four Galaxy Viewer modules execute inline before Viewer startup; their dynamic loadScript calls are removed. The standalone Viewer must emit gv-viewer-ready in a real Chromium smoke test before APK compilation. Public launcher website, beta launcher template, and original icon are hash-guarded unchanged.'
