@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6df53d242512 — Let 10E splash finish before Viewer initialization
+
+**Recorded:** 2026-08-17T13:59:48-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6df53d242512feaf822d2534c1605e44b4206ea8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6df53d242512feaf822d2534c1605e44b4206ea8)  
+**Parent/baseline:** `b67c9e9da76fc25a6308a8646516d7711f45a6af`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b67c9e9da76fc25a6308a8646516d7711f45a6af...6df53d242512feaf822d2534c1605e44b4206ea8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Let 10E splash finish before Viewer initialization
+```
+
+### Complete changed-path accounting
+
+#### `android/galaxy-viewer-10e/app/src/main/assets/index.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `962e498765d1ae34698048320a24e4bf9456a36ffee5dbb021ae9532e72771c7`
+- SHA-256 after: `8737b68d3149ae935529b94c92ce79fe9309784b2ceea2d6eaaed8aa39539c22`
+- Bytes: `2907` → `3363`
+- Lines: `1` → `1`
+- Characters: `2907` → `3363`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `639`
+- Deleted characters: `183`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 1 - 1 = 1` — **PASS**
+- Character balance: `2907 + 639 - 183 = 3363` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-36591107426d — Point Galaxy Viewer 10E to Hubble catalog 0017
 
 **Recorded:** 2026-08-17T13:34:40-05:00  
