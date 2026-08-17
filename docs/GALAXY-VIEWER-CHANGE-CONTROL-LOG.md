@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b3ca414cc776 — Separate Viewer smoke mode from splash timing in 9I-M
+
+**Recorded:** 2026-08-16T20:17:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b3ca414cc776f12450dea7312e2cd0466a9236be`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b3ca414cc776f12450dea7312e2cd0466a9236be)  
+**Parent/baseline:** `4edfb6cb7dce328c5be405a2413cd3aae788e902`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4edfb6cb7dce328c5be405a2413cd3aae788e902...b3ca414cc776f12450dea7312e2cd0466a9236be)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Separate Viewer smoke mode from splash timing in 9I-M
+```
+
+### Complete changed-path accounting
+
+#### `.github/scripts/prepare_galaxy_viewer_9im.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `9fdfbe5adf69e0c751ccbcac1dd5335a5c43bf78255444a406337be6c4c00494`
+- SHA-256 after: `a106579b8f88088f28050ffb758763ab01a961d21b80ca1e3a9a6ce489bec5aa`
+- Bytes: `8953` → `9520`
+- Lines: `128` → `134`
+- Characters: `8953` → `9520`
+- Inserted lines: `14`
+- Deleted lines: `8`
+- Inserted characters: `663`
+- Deleted characters: `96`
+- Unified diff hunks: `4`
+- Inserted blocks: `4`
+- Deleted blocks: `2`
+- Changed blocks: `4`
+- Line balance: `128 + 14 - 8 = 134` — **PASS**
+- Character balance: `8953 + 663 - 96 = 9520` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4383b1848bdc — Add black-and-white Hubble NASA ESA icon
 
 **Recorded:** 2026-08-16T20:16:33-05:00  
