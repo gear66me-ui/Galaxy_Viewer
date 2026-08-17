@@ -1,0 +1,44 @@
+name: Run Repair 10F Loader Once
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/run-repair-10f-loader-once.yml'
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Guard protected baselines
+        run: |
+          test "$(git hash-object viewer/GV-beta-0010F.py)" = "7e124b137faeb99992439b8aa4068997f7b1fc23"
+          test "$(git hash-object viewer/GV-beta-0010E.py)" = "8e747b313963a14fbaf1676ff77ab7e71f906667"
+          test "$(git hash-object viewer/modules/gv-random-galaxy-0030.js)" = "c17d7c8d48e71b7e91ac3ed28ee3c55786a82385"
+          test "$(git hash-object viewer/modules/gv-random-galaxy-0031.js)" = "eaf76aa364853e1f997c5ec439bd8e0205a5e0c8"
+      - name: Apply repair
+        run: python3 tools/repair_10f_loader_once.py
+      - name: Validate exact scope and syntax
+        run: |
+          python3 -m py_compile viewer/GV-beta-0010F.py
+          rm -rf viewer/__pycache__
+          curl -fsSL https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/1e6e2de79c24164003dd313132134b3866c2ca36/viewer/modules/gv-random-galaxy-0031.js -o /tmp/0031.js
+          node --check /tmp/0031.js
+          git diff --name-only | grep -qx 'viewer/GV-beta-0010F.py'
+          test "$(git diff --name-only | wc -l)" -eq 1
+          grep -Fq "script.textContent=source" viewer/GV-beta-0010F.py
+          grep -Fq "1e6e2de79c24164003dd313132134b3866c2ca36/viewer/modules/gv-random-galaxy-0031.js" viewer/GV-beta-0010F.py
+      - name: Commit repair
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add viewer/GV-beta-0010F.py
+          git commit -m '10F: load immutable 0031 through MIME-safe fetch injection'
+          git fetch origin beta
+          git rebase origin/beta
+          git push origin HEAD:beta
