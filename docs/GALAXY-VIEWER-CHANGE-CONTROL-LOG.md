@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ef3c4b388d92 — Format Galaxy Viewer 9I-M presentation only
+
+**Recorded:** 2026-08-16T21:44:13-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ef3c4b388d9252edbf6dc828ed9d8e5252863ec1`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ef3c4b388d9252edbf6dc828ed9d8e5252863ec1)  
+**Parent/baseline:** `6d3aa595e7fcf8678c8578177957e7a6633c5701`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6d3aa595e7fcf8678c8578177957e7a6633c5701...ef3c4b388d9252edbf6dc828ed9d8e5252863ec1)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Format Galaxy Viewer 9I-M presentation only
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `d9d95516d0de9fa3d386e2bdd3306b442d5560cb2a7debb6c2ce79e69b3ca369`
+- SHA-256 after: `e058dcafdf3aa7d04944f3cbf021d15ef85ad3c04f227ac0109d6219512f71da`
+- Bytes: `68823` → `70089`
+- Lines: `1159` → `1164`
+- Characters: `68814` → `70080`
+- Inserted lines: `5`
+- Deleted lines: `0`
+- Inserted characters: `1266`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `1159 + 5 - 0 = 1164` — **PASS**
+- Character balance: `68814 + 1266 - 0 = 70080` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-de5df70f2c4c — Add final Hubble coordinate recovery workflow
 
 **Recorded:** 2026-08-16T21:40:29-05:00  
