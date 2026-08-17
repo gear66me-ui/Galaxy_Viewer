@@ -305,6 +305,76 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-041e8f7e698a — Restore active 9I-G Viewer and archive exact baseline
+
+**Recorded:** 2026-08-16T19:09:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`041e8f7e698aea29d3552675ac603ac317d1f9bf`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/041e8f7e698aea29d3552675ac603ac317d1f9bf)  
+**Parent/baseline:** `ed0b6b4c19b2fc83a208441d396cac611812521c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ed0b6b4c19b2fc83a208441d396cac611812521c...041e8f7e698aea29d3552675ac603ac317d1f9bf)  
+**Author:** German Arciniegas  
+**Changed-path count:** `2`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore active 9I-G Viewer and archive exact baseline
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0009I.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4097889236a2af26c293033feb964c4cf118c0224e0d063fec0a89e9d0569ef2`
+- SHA-256 after: `afec6dbec929c61f1aa0cdf914541219e129da162adb141b555cb7e106eb0226`
+- Bytes: `11` → `68713`
+- Lines: `1` → `1159`
+- Characters: `11` → `68704`
+- Inserted lines: `1159`
+- Deleted lines: `1`
+- Inserted characters: `68693`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 1159 - 1 = 1159` — **PASS**
+- Character balance: `11 + 68693 - 0 = 68704` — **PASS**
+
+#### `viewer/archive/GV-beta-0009I-G.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `afec6dbec929c61f1aa0cdf914541219e129da162adb141b555cb7e106eb0226`
+- Bytes: `0` → `68713`
+- Lines: `0` → `1159`
+- Characters: `0` → `68704`
+- Inserted lines: `1159`
+- Deleted lines: `0`
+- Inserted characters: `68704`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1159 - 0 = 1159` — **PASS**
+- Character balance: `0 + 68704 - 0 = 68704` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-50210f2a57da — noop
 
 **Recorded:** 2026-08-16T19:09:15-05:00  
