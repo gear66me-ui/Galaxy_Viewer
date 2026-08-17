@@ -39,13 +39,25 @@ jobs:
           from pathlib import Path
           src=Path('.github/scripts/prepare_galaxy_viewer_9ij.py').read_text(encoding='utf-8')
           src=src.replace("EXPECTED_VIEWER='be558dfbdcb4e0d44cfcb1afaae775071a8bc0a0'","EXPECTED_VIEWER='e5d768aee94f12b4d15e22d08443a6a1fbb796e4'")
-          src=src.replace("const DISPLAY_VERSION='9I-I';","const DISPLAY_VERSION='9I-J';")
-          src=src.replace("const DISPLAY_VERSION='9I-J';","const DISPLAY_VERSION='9I-K';",1)
-          src=src.replace("versionCode 16","versionCode 17")
-          src=src.replace("versionName '9I-J'","versionName '9I-K'")
-          src=src.replace('GALAXY VIEWER 9I-J','GALAXY VIEWER 9I-K')
-          src=src.replace('VERSION 9I-J','VERSION 9I-K')
-          src=src.replace('GALAXY VIEWER VERSION 9I-J','GALAXY VIEWER VERSION 9I-K')
+          src=src.replace('9I-J','9I-K')
+          src=src.replace('versionCode 16','versionCode 17')
+          start=src.index('def patch_viewer():')
+          end=src.index('\n\ndef build_assets():',start)
+          patch_viewer='''def patch_viewer():
+    if hash_object(VIEWER)!=EXPECTED_VIEWER:
+        raise SystemExit('REFUSING 9I-K: active beta Viewer blob is not verified 9I-J')
+    text=VIEWER.read_text(encoding='utf-8')
+    old="    const DISPLAY_VERSION='9I-J';"
+    if text.count(old)!=1:
+        raise SystemExit('REFUSING 9I-K: expected one 9I-J DISPLAY_VERSION')
+    text=text.replace(old,"    const DISPLAY_VERSION='9I-K';",1)
+    if "document.dispatchEvent(new CustomEvent('gv-viewer-ready'" not in text:
+        raise SystemExit('REFUSING 9I-K: Viewer READY event missing')
+    if "document.dispatchEvent(new CustomEvent('gv-viewer-failed'" not in text:
+        raise SystemExit('REFUSING 9I-K: Viewer FAILED event missing')
+    VIEWER.write_text(text,encoding='utf-8')
+'''
+          src=src[:start]+patch_viewer+src[end:]
           Path('.github/scripts/prepare_galaxy_viewer_9ik_runtime.py').write_text(src,encoding='utf-8')
           PY
           python .github/scripts/prepare_galaxy_viewer_9ik_runtime.py
