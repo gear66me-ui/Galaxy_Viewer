@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.gear66me.galaxyviewer10d'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.gear66me.galaxyviewer10d'
+        minSdk 29
+        targetSdk 35
+        versionCode 1006
+        versionName '10D-generic-r3'
+    }
+}
