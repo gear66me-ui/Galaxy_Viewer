@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-546e144eaa58 — Fix TEMP Catalog 0018 one-word updater syntax
+
+**Recorded:** 2026-08-18T14:36:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`546e144eaa584565a3322d717c4c5e240b86b8c0`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/546e144eaa584565a3322d717c4c5e240b86b8c0)  
+**Parent/baseline:** `8eea5e8ea05d63b11d2c46bc36dd8ced0daa105e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8eea5e8ea05d63b11d2c46bc36dd8ced0daa105e...546e144eaa584565a3322d717c4c5e240b86b8c0)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix TEMP Catalog 0018 one-word updater syntax
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-catalog18-upgrade-oneword.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `b27df80a1e485e747d3416d1c818e80145b4934301d808bcd498dca1b289b809`
+- SHA-256 after: `dd7021c45aa66e3c1a8856c6d28c185913f7d3e56a378749c53ca55209bc6dca`
+- Bytes: `8302` → `8303`
+- Lines: `170` → `170`
+- Characters: `8302` → `8303`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `170 + 1 - 1 = 170` — **PASS**
+- Character balance: `8302 + 1 - 0 = 8303` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d6115f49556a — TEMP apply Catalog 0018 one-word pseudonym upgrades
 
 **Recorded:** 2026-08-18T14:35:01-05:00  
