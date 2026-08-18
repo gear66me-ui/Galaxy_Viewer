@@ -1,5 +1,5 @@
 name: Build Galaxy Viewer GENERIC APK
-# GENERIC build trigger 2026-08-18 white-black runtime fix
+# GENERIC build trigger 2026-08-18 white-black runtime fix v2
 
 on:
   push:
@@ -36,9 +36,6 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Install SVG rasterizer
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq librsvg2-bin
-
       - name: Build fresh revision-independent GENERIC APK
         shell: bash
         run: |
@@ -62,14 +59,12 @@ jobs:
               applicationId 'com.gear66me.galaxyviewergeneric'
               minSdk 23
               targetSdk 35
-              versionCode 2
+              versionCode 3
               versionName 'GENERIC'
             }
           }
           EOF
 
-          # Derive the approved target geometry from viewer/artwork/icon_target_vector.svg,
-          # but render the APK launcher/cover strictly white on black.
           test -s viewer/artwork/icon_target_vector.svg
           cat > "$ROOT/app/src/main/assets/artwork/target-icon.svg" <<'EOF'
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Galaxy Viewer target icon">
@@ -81,7 +76,42 @@ jobs:
             <path d="M16 2.5V7 M16 25V29.5 M2.5 16H7 M25 16H29.5" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
           EOF
-          rsvg-convert -w 512 -h 512 "$ROOT/app/src/main/assets/artwork/target-icon.svg" -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+
+          ICON_OUT="$ROOT/app/src/main/res/drawable/gv_target_launcher.png" python3 - <<'PY'
+          import math, os, struct, zlib
+          W=H=512
+          px=bytearray([0,0,0,255])*(W*H)
+          def white(x,y):
+              if 0<=x<W and 0<=y<H:
+                  i=(y*W+x)*4; px[i:i+4]=b'\xff\xff\xff\xff'
+          def line(x1,y1,x2,y2,w):
+              dx=x2-x1; dy=y2-y1; n=max(abs(dx),abs(dy),1)
+              r=max(1,w//2)
+              for k in range(n+1):
+                  x=round(x1+dx*k/n); y=round(y1+dy*k/n)
+                  for yy in range(y-r,y+r+1):
+                      for xx in range(x-r,x+r+1):
+                          if (xx-x)**2+(yy-y)**2<=r*r: white(xx,yy)
+          S=16
+          cx=cy=256
+          for y in range(H):
+              Y=(y+0.5)/S-16
+              for x in range(W):
+                  X=(x+0.5)/S-16
+                  rr=math.hypot(X,Y)
+                  on_circle=abs(rr-9.5)<=0.9
+                  a=math.radians(18); xr=X*math.cos(a)-Y*math.sin(a); yr=X*math.sin(a)+Y*math.cos(a)
+                  e1=abs(math.sqrt((xr/11.5)**2+(yr/4.2)**2)-1)<=0.26
+                  e2=abs(math.sqrt((xr/5.7)**2+(yr/2.2)**2)-1)<=0.29
+                  dot=rr<=1.6
+                  if on_circle or e1 or e2 or dot: white(x,y)
+          line(256,40,256,112,26); line(256,400,256,472,26); line(40,256,112,256,26); line(400,256,472,256,26)
+          raw=b''.join(b'\x00'+px[y*W*4:(y+1)*W*4] for y in range(H))
+          def chunk(t,d):
+              return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',W,H,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw,9))+chunk(b'IEND',b'')
+          open(os.environ['ICON_OUT'],'wb').write(png)
+          PY
           test -s "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
 
           cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
