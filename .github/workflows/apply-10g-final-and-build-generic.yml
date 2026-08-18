@@ -1,8 +1,10 @@
 name: Repair 10G HD Back To Viewer
 on:
   push:
-    branches: [beta]
-    paths: ['.github/workflows/apply-10g-final-and-build-generic.yml']
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/apply-10g-final-and-build-generic.yml'
   workflow_dispatch:
 permissions:
   contents: write
@@ -20,59 +22,53 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          import hashlib
+          import hashlib,re
           p=Path('viewer/GV-beta-0010G.py')
           frozen=Path('viewer/GV-beta-0010F.py')
           before=p.read_text(encoding='utf-8')
-          tenf=hashlib.sha256(frozen.read_bytes()).hexdigest()
+          frozen_sha=hashlib.sha256(frozen.read_bytes()).hexdigest()
           s=before
-          replacements=[
-            ('#gv-hd-info-more{flex:0 0 auto;margin-top:6px;padding-right:4px;color:#B7FFD0;font-size:10px;letter-spacing:.65px;text-align:right;white-space:nowrap}#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}',
-             '#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'),
-            ('    hdInfoPanel.innerHTML=\'<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div><div id="gv-hd-info-more">MORE INFO &gt;</div>\';\n',
-             '    hdInfoPanel.innerHTML=\'<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div>\';\n'),
-            ('''    const hdInfoLink=document.createElement('a');
-    hdInfoLink.id='gv-hd-info-link';
-    hdInfoLink.target='_blank';
-    hdInfoLink.rel='noopener noreferrer';
-    const hdInfoIcon=document.createElement('img');
-    hdInfoIcon.id='gv-hd-info-icon';
-    hdInfoIcon.alt='ARCHIVE SOURCE';
-    hdInfoLink.appendChild(hdInfoIcon);
-    randomGalaxy.hdViewport?.appendChild(hdInfoLink);
-''',
-             '''    const hdBackToViewer=randomGalaxy.backButton;
+
+          new_css='#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'
+          s,n=re.subn(r'#gv-hd-info-more\{[^}]*\}#gv-hd-info-link\{[^}]*\}#gv-hd-info-link img\{[^}]*\}',new_css,s,count=1)
+          if n!=1: raise SystemExit(f'HD CSS patch count={n}')
+
+          s=s.replace('<div id="gv-hd-info-more">MORE INFO &gt;</div>','')
+
+          replacement="""    const hdBackToViewer=randomGalaxy.backButton;
     if(hdBackToViewer){
         hdBackToViewer.id='gv-hd-back-to-viewer';
         hdBackToViewer.textContent='BACK TO VIEWER';
         hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
         randomGalaxy.hdViewport?.appendChild(hdBackToViewer);
     }
-'''),
-            ('''        if(hdInfoIcon){hdInfoIcon.src=iconUrl;hdInfoIcon.alt=`${provider} ARCHIVE SOURCE`}
-        if(hdInfoLink){hdInfoLink.href=String(destination.sourceUrl||'#');hdInfoLink.setAttribute('aria-label',`OPEN ${provider} SOURCE INFORMATION`)}
-''',
-             "        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');\n"),
-            ("        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents='auto';\n",
-             "        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}\n")
-          ]
-          for i,(old,new) in enumerate(replacements,1):
-              n=s.count(old)
-              if n!=1: raise SystemExit(f'10G repair replacement {i}: expected 1 match, found {n}')
-              s=s.replace(old,new,1)
+"""
+          s,n=re.subn(r"    const hdInfoLink=document\.createElement\('a'\);[\s\S]*?    randomGalaxy\.hdViewport\?\.appendChild\(hdInfoLink\);\n",replacement,s,count=1)
+          if n!=1: raise SystemExit(f'archive link block patch count={n}')
+
+          s,n=re.subn(r"        if\(hdInfoIcon\)\{[^\n]*\}\n        if\(hdInfoLink\)\{[^\n]*\}\n","        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');\n",s,count=1)
+          if n!=1: raise SystemExit(f'archive sync patch count={n}')
+
+          s,n=re.subn(r"        hdInfoLink\.style\.right=`\$\{HD_LAYOUT\.iconInset\}px`;hdInfoLink\.style\.bottom=`\$\{HD_LAYOUT\.iconInset\}px`;hdInfoLink\.style\.pointerEvents='auto';\n","        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}\n",s,count=1)
+          if n!=1: raise SystemExit(f'back position patch count={n}')
+
           compile(s,str(p),'exec')
-          assert "const VERSION='10G';" in s and "const DISPLAY_VERSION='10G';" in s
-          assert 'MORE INFO &gt;' not in s
-          assert 'gv-hd-info-link' not in s
-          assert "textContent='BACK TO VIEWER'" in s
-          assert "randomGalaxy.backButton" in s
-          assert "OPEN ${provider} SOURCE INFORMATION" not in s
-          assert hashlib.sha256(frozen.read_bytes()).hexdigest()==tenf
+          checks={
+            '10G identity': "const VERSION='10G';" in s and "const DISPLAY_VERSION='10G';" in s,
+            'MORE INFO removed': 'MORE INFO &gt;' not in s and 'gv-hd-info-more' not in s,
+            'archive link removed': 'gv-hd-info-link' not in s and 'hdInfoLink' not in s and 'hdInfoIcon' not in s,
+            'back button present': "textContent='BACK TO VIEWER'" in s and 'randomGalaxy.backButton' in s,
+            '10F frozen': hashlib.sha256(frozen.read_bytes()).hexdigest()==frozen_sha,
+          }
+          for k,v in checks.items():
+              print(k, 'PASS' if v else 'FAIL')
+              if not v: raise SystemExit(k+' failed')
           p.write_text(s,encoding='utf-8')
-          print('BEFORE',hashlib.sha256(before.encode()).hexdigest())
-          print('AFTER ',hashlib.sha256(s.encode()).hexdigest())
+          print('10G BEFORE',hashlib.sha256(before.encode()).hexdigest())
+          print('10G AFTER ',hashlib.sha256(s.encode()).hexdigest())
           PY
-      - name: Commit 10G repair
+      - name: Commit and push 10G repair
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -81,5 +77,10 @@ jobs:
           test "$(git diff --cached --name-only | wc -l)" -eq 1
           git diff --cached --name-only | grep -qx 'viewer/GV-beta-0010G.py'
           git commit -m '10G: replace MORE INFO with BACK TO VIEWER'
-          git pull --rebase origin beta
-          git push origin HEAD:beta
+          ok=0
+          for attempt in 1 2 3 4 5 6; do
+            git pull --rebase origin beta || { git rebase --abort >/dev/null 2>&1 || true; sleep 2; continue; }
+            if git push origin HEAD:beta; then ok=1; break; fi
+            sleep 2
+          done
+          test "$ok" -eq 1
