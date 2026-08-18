@@ -93,3 +93,42 @@ jobs:
             --target "$GITHUB_SHA" \
             --title 'Galaxy Viewer — Generic APK' \
             --notes "Verified generic Android launcher built from commit $GITHUB_SHA. Runtime Viewer is selected by viewer/gv-current-viewer.json; the Android wrapper does not hardcode a normal Galaxy Viewer revision."
+
+      - name: Record generic APK build metadata
+        if: always()
+        shell: bash
+        run: |
+          set -u
+          STATUS='${{ job.status }}'
+          SHA256=''
+          if [ -f Galaxy-Viewer-Generic.apk.sha256 ]; then
+            SHA256="$(awk '{print $1}' Galaxy-Viewer-Generic.apk.sha256)"
+          fi
+          cat > viewer/gv-generic-apk-build.json <<EOF
+          {
+            "status": "$STATUS",
+            "run_id": "${GITHUB_RUN_ID}",
+            "run_attempt": "${GITHUB_RUN_ATTEMPT}",
+            "artifact": "Galaxy-Viewer-Generic",
+            "apk": "Galaxy-Viewer-Generic.apk",
+            "sha256": "$SHA256",
+            "source_commit": "${GITHUB_SHA}"
+          }
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/gv-generic-apk-build.json
+          if ! git diff --cached --quiet; then
+            git commit -m "ECO-ID: GV-GENERIC-APK-10L-003C" \
+              -m "AUTHORIZED-PATHS: viewer/gv-generic-apk-build.json" \
+              -m "REQUIREMENTS: REQ-014" \
+              -m "ARCHIVE-AUTHORIZED: false" \
+              -m "USER-GO: true" \
+              -m "Record generic APK build ${GITHUB_RUN_ID}"
+            for attempt in 1 2 3 4 5; do
+              git pull --rebase origin beta && git push origin HEAD:beta && exit 0
+              git rebase --abort >/dev/null 2>&1 || true
+              sleep 2
+            done
+            exit 1
+          fi
