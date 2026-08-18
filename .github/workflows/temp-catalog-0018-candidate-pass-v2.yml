@@ -1,0 +1,116 @@
+name: Temporary generate safer Catalog 0018 pseudonym candidates
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-catalog-0018-candidate-pass-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  candidates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Generate candidates only
+        shell: bash
+        run: |
+          git fetch origin beta
+          git reset --hard origin/beta
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          p=Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          catalog=re.compile(r'\b(?:NGC|IC|UGC|UGCA|MACS|eMACS|RXC|RCS2?|Abell|ESO|SDSS|2XMM|PSZ1?|ACT-CL|IRAS|LMC|SMC|LEDA|MCG|AM|Arp|2MASX|WINGS|HerS|Messier|M\s*\d|PGC|ACO|HCG|DDO|Mrk|Markarian|Fornax\s*\d|GAMA|PLCK|ZwCl|VV|REP)\b',re.I)
+          forbidden=re.compile(r'\b(?:hubble|image|images|imaging|ground[- ]based|telescope|observatory|camera|instrument|exposure)\b',re.I)
+          bad_start=re.compile(r'^(?:explores?|views?|looks?|gazes?|focus(?:es|ing)?|photographs?|snaps?|sees?|inspects?|observes?|reveals?|shows?|captures?|spies|hunts?|celebrates?|identifies?|revisits?|traces?|illuminates?|gets?|finds?|discovers?)\b',re.I)
+          bad_end=re.compile(r'\b(?:of|in|at|on|for|with|from|to|the|a|an|and)\s*$',re.I)
+
+          def flagged(e):
+              n=(e.get('displayName') or '').strip(); des=(e.get('designation') or '').strip()
+              return (not n or bool(re.search(r'\d',n)) or forbidden.search(n) or catalog.search(n) or len(n.split())>8 or (des and des.lower() in n.lower() and n.lower()!=des.lower()))
+
+          known={
+            'NGC 1300':'Prototypical Barred Spiral','NGC 6217':'Barred Spiral Galaxy','NGC 7049':'Backlit Dust-Lane Galaxy','NGC 1672':'Spiral-Arm Stellar Nursery','NGC 1510 / NGC 1512':'Interacting Spiral and Dwarf','NGC 4526':'Whirling Lenticular Galaxy','UGC 8091':'Dwarf Irregular Galaxy','M 83':'Southern Pinwheel Galaxy','NGC 4449':'Stellar Fireworks Galaxy','NGC 660':'Polar Ring Galaxy','NGC 1132':'Fossil Group Giant','NGC 346':'Stellar Sculptors','LEDA 1313424':'Bullseye','NGC 2207 / IC 2163':'Interacting Spiral Pair','REP: M 87':'Black Hole Jet and Nova','IC 1954':'Asymmetric Spiral Galaxy','MCG -03-34-064':'Dual Active Nuclei','UGC 12158':'Asteroid-Photobombed Galaxy','NGC 3783':'Active Spiral Galaxy','AM 1054-325':'String-of-Pearls Galaxy','J020941.1+001557':'So Near, So Far','Abell 3192':'One Cluster or Two','MACS J0416.1-2403':'Christmas Tree Galaxy Cluster','IC 5332':'Weakly Barred Spiral','2MASX J05101744-4519179':'Clear-View Galaxy Cluster','Arp 263':'Starstruck Irregular Galaxy','eMACS J1353.7+4329':'Galactic Monster Mash','J211347.41+022834.9':'Under the Sea'
+          }
+          phrases=[
+            ('sunburst arc','Sunburst Arc'),('galactic wings','Galactic Wings'),('jellyfish','Jellyfish Galaxy'),('meathook','Meathook Galaxy'),('cosmic tadpole','Cosmic Tadpole'),('galactic seascape','Galactic Seascape'),('cosmic contortions','Cosmic Contortions'),('galactic soup','Galactic Soup'),('galactic monster mash','Galactic Monster Mash'),('cosmic optical illusion','Cosmic Optical Illusion'),('galactic fireflies','Galactic Fireflies'),('light bends from the beyond','Light Bends from Beyond'),('lure of the rings','Lure of the Rings'),('under the sea','Under the Sea'),('one cluster or two','One Cluster or Two'),('so near, or so far','So Near, So Far'),('one of the greats','One of the Greats'),('magnifying the distant universe','Magnifying the Distant Universe'),('explosive secret','Explosive Secret Galaxy'),('slashing smudge','Slashing Smudge Galaxy'),('stellar sculptors','Stellar Sculptors'),('colourful clouds','Colourful Clouds'),('polar ring','Polar Ring Galaxy'),('sleeping giant','Sleeping Giant Galaxy'),('messy star factory','Messy Star Factory'),('bizarre cosmic quartet','Bizarre Cosmic Quartet'),('galactic neighbourhood','Galactic Neighbourhood'),('galactic pioneer','Galactic Pioneer'),('galactic fireflies','Galactic Fireflies'),('galactic monster mash','Galactic Monster Mash'),('cosmic hair ruffling','Cosmic Hair Ruffling'),('cosmic optical illusion','Cosmic Optical Illusion'),('celestial composition','Celestial Composition'),('cosmic fireworks','Cosmic Fireworks'),('frontier field','Frontier Fields Cluster'),('ultraviolet light','Ultraviolet Galaxy'),('super-rich galactic neighbourhood','Super-Rich Galactic Neighbourhood'),('lucky galaxy alignment','Lucky Galaxy Alignment'),('menagerie of galaxies','Menagerie of Galaxies'),('mysteries of','Mysterious Galaxy'),('explosive aftermath','Explosive Aftermath Galaxy'),('jets and explosions','Jets and Explosions'),('string-of-pearls','String-of-Pearls Galaxy'),('grand design spiral','Grand Design Spiral'),('stellar nursery','Stellar Nursery'),('stellar fireworks','Stellar Fireworks Galaxy'),('beautiful whorl','Beautiful Whorl'),('galactic treasure chest','Galactic Treasure Chest')
+          ]
+
+          def normalize(s):
+              s=re.sub(r'\([^)]*\)',' ',s)
+              s=forbidden.sub(' ',s)
+              s=re.sub(r'\d+(?:[.,]\d+)*(?:st|nd|rd|th)?',' ',s)
+              s=re.sub(r'\s+',' ',s).strip(' -–—,:;.!?()[]{}\"“”‘’')
+              return s
+
+          def infer(text):
+              t=text.lower()
+              if 'globular cluster' in t: return 'Globular Cluster'
+              if 'galaxy cluster' in t or 'cluster of galaxies' in t or 'frontier field' in t: return 'Galaxy Cluster'
+              if 'gravitational lens' in t or 'lensing' in t or 'magnif' in t: return 'Gravitational Lens'
+              if 'jellyfish' in t: return 'Jellyfish Galaxy'
+              if 'polar ring' in t: return 'Polar Ring Galaxy'
+              if 'ring galaxy' in t: return 'Ring Galaxy'
+              if 'dwarf irregular' in t: return 'Dwarf Irregular Galaxy'
+              if 'dwarf spheroidal' in t: return 'Dwarf Spheroidal Galaxy'
+              if 'dwarf galaxy' in t or 'dwarf' in t: return 'Dwarf Galaxy'
+              if 'low-surface-brightness' in t or 'low surface brightness' in t: return 'Low-Surface-Brightness Galaxy'
+              if 'lenticular' in t: return 'Lenticular Galaxy'
+              if 'elliptical' in t: return 'Elliptical Galaxy'
+              if 'barred spiral' in t: return 'Barred Spiral Galaxy'
+              if 'grand design' in t: return 'Grand Design Spiral'
+              if 'spiral' in t: return 'Spiral Galaxy'
+              if 'starburst' in t: return 'Starburst Galaxy'
+              if 'merger remnant' in t: return 'Galaxy Merger Remnant'
+              if 'merger' in t or 'colliding' in t or 'collision' in t or 'interacting' in t: return 'Interacting Galaxies'
+              if 'triplet' in t or 'three galaxies' in t: return 'Galaxy Triplet'
+              if 'quartet' in t or 'four galaxies' in t: return 'Galaxy Quartet'
+              if 'pair' in t or 'two galaxies' in t: return 'Galaxy Pair'
+              if 'black hole' in t or 'active galaxy' in t or 'active galactic' in t: return 'Active Galaxy'
+              if 'supernova' in t: return 'Supernova Host Galaxy'
+              if 'star-forming' in t or 'star forming' in t or 'stellar nursery' in t: return 'Star-Forming Galaxy'
+              if 'galaxy' in t: return 'Galaxy Portrait'
+              if 'cluster' in t: return 'Star Cluster'
+              return 'Deep-Sky Object'
+
+          def candidate(e):
+              des=(e.get('designation') or '').strip()
+              if des in known: return known[des]
+              title=(e.get('title') or '').strip()
+              low=title.lower()
+              for key,val in phrases:
+                  if key in low: return val
+              # A short clean release title can be used intact only if grammatically self-contained.
+              s=normalize(title)
+              if s and len(s.split())<=8 and not re.search(r'\d',s) and not catalog.search(s) and not forbidden.search(s) and not bad_start.search(s) and not bad_end.search(s):
+                  # reject source/provenance or technical labels
+                  if not re.search(r'\b(?:composite|crop|wide-field|colour composite|finder chart|annotated|comparison|artist|concept|spectrum|infrared|ultraviolet-visible-infrared)\b',s,re.I):
+                      return s
+              return infer(' '.join(str(e.get(k) or '') for k in ('title','displayName','name','designation')))
+
+          rows=[]; seen=0
+          for i,e in enumerate(d['entries'],1):
+              if not flagged(e): continue
+              seen+=1
+              new=candidate(e).strip()
+              # final safety and grammar gates
+              if len(new.split())>8 or re.search(r'\d',new) or catalog.search(new) or forbidden.search(new) or bad_start.search(new) or bad_end.search(new):
+                  new=infer(' '.join(str(e.get(k) or '') for k in ('title','displayName','name','designation')))
+              rows.append((i,e.get('archiveId') or '',e.get('designation') or '',e.get('displayName') or '',new,e.get('title') or ''))
+          out=Path('viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-candidates-v2.tsv')
+          out.write_text('\n'.join('\t'.join(str(x).replace('\t',' ').replace('\n',' ') for x in r) for r in rows)+'\n',encoding='utf-8')
+          print('CANDIDATES',seen)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-candidates-v2.tsv
+          git commit -m 'TEMP Catalog 0018 safer pseudonym candidates v2'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
