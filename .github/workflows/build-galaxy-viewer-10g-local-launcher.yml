@@ -60,29 +60,38 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             set -euo pipefail
             APK=Galaxy-Viewer-10G-SMOKE-TESTED.apk
+            PKG=com.gear66me.galaxyviewer10g
+            ACT=com.gear66me.galaxyviewer10e.MainActivity
             adb install -r "$APK"
             adb logcat -c
-            adb shell am force-stop com.gear66me.galaxyviewer10g
-            adb shell am start -W -n com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10e.MainActivity | tee smoke-start.txt
+            adb shell am force-stop "$PKG" || true
+            adb shell am start -W -n "$PKG/$ACT" | tee smoke-start.txt
             grep -q 'Status: ok' smoke-start.txt
             sleep 65
+            adb shell pidof "$PKG" | tee smoke-pid.txt
+            test -s smoke-pid.txt
+            adb shell dumpsys activity activities > smoke-activity.txt
+            grep -q "$PKG/$ACT" smoke-activity.txt
             adb shell screencap -p /sdcard/10g-smoke.png
             adb pull /sdcard/10g-smoke.png 10g-smoke.png
-            adb logcat -d > 10g-logcat.txt
+            adb logcat -d -v threadtime > 10g-logcat.txt
             adb shell uiautomator dump /sdcard/10g-window.xml || true
             adb pull /sdcard/10g-window.xml 10g-window.xml || true
             if grep -Eqi 'FAILED TO LOAD|readiness timeout|Viewer startup failed' 10g-window.xml 2>/dev/null; then
-              echo 'Visible launcher failure detected'; exit 1
+              echo 'Visible launcher failure detected'; exit 21
             fi
-            if grep -Eqi 'FATAL EXCEPTION|AndroidRuntime.*FATAL' 10g-logcat.txt; then
-              echo 'Android runtime crash detected'; exit 1
+            if grep -Eqi 'FATAL EXCEPTION|Fatal signal|Process com\.gear66me\.galaxyviewer10g .* died|Render process.*gone|renderer.*crash|AwContents.*render.*gone|crashpad|OutOfMemoryError|low memory killer.*galaxyviewer10g' 10g-logcat.txt; then
+              echo 'Android/WebView crash signature detected'; exit 22
             fi
+            echo 'ANDROID SMOKE GATE PASSED: process and activity survived 65 seconds'
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: Galaxy-Viewer-10G-SMOKE-TESTED
+          name: Galaxy-Viewer-10G-SMOKE-DIAGNOSTICS
           path: |
             Galaxy-Viewer-10G-SMOKE-TESTED.apk
             Galaxy-Viewer-10G-SMOKE-TESTED.apk.sha256
@@ -90,7 +99,9 @@ jobs:
             10g-logcat.txt
             10g-window.xml
             smoke-start.txt
-          if-no-files-found: error
+            smoke-pid.txt
+            smoke-activity.txt
+          if-no-files-found: ignore
           retention-days: 30
       - name: Mark smoke test successful
         if: success()
