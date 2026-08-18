@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-dd05567b45a5 — Apply final 10G ECO and build permanent generic APK
+
+**Recorded:** 2026-08-18T00:49:55-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dd05567b45a5f447c22ea556168e9502c8d1b961`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dd05567b45a5f447c22ea556168e9502c8d1b961)  
+**Parent/baseline:** `371cb7a392e577f03b2d6d4ee5b585feae6b8edc`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/371cb7a392e577f03b2d6d4ee5b585feae6b8edc...dd05567b45a5f447c22ea556168e9502c8d1b961)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Apply final 10G ECO and build permanent generic APK
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/apply-10g-final-and-build-generic.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `88b88a0cc1c42f600414b02db22fb30ff8d7b18ba44fef33f4eedad7be4a6ac9`
+- Bytes: `0` → `24895`
+- Lines: `0` → `246`
+- Characters: `0` → `24895`
+- Inserted lines: `246`
+- Deleted lines: `0`
+- Inserted characters: `24895`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 246 - 0 = 246` — **PASS**
+- Character balance: `0 + 24895 - 0 = 24895` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e726afb21f16 — Trigger APK for current 10G
 
 **Recorded:** 2026-08-18T00:30:34-05:00  
