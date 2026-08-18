@@ -20,6 +20,16 @@ jobs:
           ref: beta
           fetch-depth: 0
 
+      - name: Expose fresh build run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state=pending \
+            -f context='galaxy-viewer-10g-fresh-apk' \
+            -f description="Fresh APK build ${GITHUB_RUN_ID}" \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -101,3 +111,14 @@ jobs:
           TAG=galaxy-viewer-10g-fresh
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" Galaxy-Viewer-10G-FRESH.apk Galaxy-Viewer-10G-FRESH.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G — Fresh APK' --notes 'Fresh Android project generated from authoritative GV-beta-0010G.py only. No prior Android release tree is copied.'
+
+      - name: Mark fresh build successful
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state=success \
+            -f context='galaxy-viewer-10g-fresh-apk' \
+            -f description="Fresh APK ready in run ${GITHUB_RUN_ID}" \
+            -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
