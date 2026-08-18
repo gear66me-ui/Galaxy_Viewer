@@ -19,7 +19,7 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          import json, re, difflib, hashlib
+          import json, difflib, hashlib
 
           gpath=Path('viewer/GV-beta-0010G.py')
           hpath=Path('viewer/GV-beta-0010H.py')
@@ -35,7 +35,7 @@ jobs:
               return s.replace(old,new,1)
 
           h=g
-          h=one(h,'# GV-beta-0010G','# GV-beta-0010H','header version')
+          h=one(h,'# GV-beta-0010G\n','# GV-beta-0010H\n','header version')
           h=one(h,"const VERSION='10G';","const VERSION='10H';",'VERSION')
           h=one(h,"const DISPLAY_VERSION='10G';","const DISPLAY_VERSION='10H';",'DISPLAY_VERSION')
           h=one(h,"version.textContent='VERSION 10G';","version.textContent='VERSION 10H';",'visible version')
@@ -119,7 +119,6 @@ jobs:
 """
           h=one(h,marker,replacement,'credit removal hook')
 
-          # Required invariants.
           assert 'gv-hubble-galaxies-full-0018.json' in h
           assert 'gv-hubble-galaxies-full-0017.json' not in h
           assert "const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';" in h
@@ -137,7 +136,6 @@ jobs:
 
           ppath.write_text(json.dumps({'version':'10H','viewer':'GV-beta-0010H.py'},indent=2)+'\n')
 
-          # Final invariants before pointer promotion commit.
           assert hashlib.sha256(gpath.read_bytes()).hexdigest()==g_sha, '10G changed'
           assert json.loads(ppath.read_text())['viewer']=='GV-beta-0010H.py'
           assert Path('viewer/artwork/icon_target_vector.svg').exists(), 'target SVG missing'
@@ -154,14 +152,13 @@ jobs:
           added=sum(1 for x in diff if x.startswith('+ ')); deleted=sum(1 for x in diff if x.startswith('- '))
           print('GV10H_AUDIT='+json.dumps({'baseline_10G_sha256':g_sha,'before':before,'after':after,'10G_to_10H_line_delta':{'added':added,'deleted':deleted,'net':after['viewer/GV-beta-0010H.py']['lines']-before['viewer/GV-beta-0010G.py']['lines']}},sort_keys=True))
 
-          # Temporary executor must not remain in final tree.
           wpath.unlink()
           PY
           git diff --check
           test ! -e .github/workflows/temp-10h-surgical.yml
           test -f viewer/GV-beta-0010H.py
           test -f mobile/beta/GV-10H-app.html
-          git diff -- viewer/GV-beta-0010G.py | test ! -s /dev/stdin
+          test -z "$(git diff -- viewer/GV-beta-0010G.py)"
           git status --short
       - name: Commit verified 10H release
         shell: bash
