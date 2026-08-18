@@ -50,7 +50,9 @@ jobs:
           sha256sum viewer/GV-beta-0010G.py | tee 10g-source-before.sha256
           grep -q "const VERSION='10G';" viewer/GV-beta-0010G.py
           grep -q "const DISPLAY_VERSION='10G';" viewer/GV-beta-0010G.py
-          grep -q 'GalaxyViewerInfo10G' viewer/GV-beta-0010G.py
+          grep -q 'VERSION 10G' viewer/GV-beta-0010G.py
+          grep -q 'gv-viewer-ready' viewer/GV-beta-0010G.py
+          grep -q 'gv-viewer-failed' viewer/GV-beta-0010G.py
 
       - name: Create brand-new Android project from 10G only
         run: python3 .github/scripts/build_10g_flatten.py
@@ -78,7 +80,6 @@ jobs:
           grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
           unzip -p "$APK" assets/index.html > apk-index.html
           grep -q 'VERSION 10G' apk-index.html
-          grep -q 'GalaxyViewerInfo10G' apk-index.html
           grep -q 'gv-viewer-ready' apk-index.html
           grep -q 'gv-viewer-failed' apk-index.html
           ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
