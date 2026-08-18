@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5275336d65dd — Build permanent Galaxy Viewer GENERIC APK with target icon
+
+**Recorded:** 2026-08-18T11:14:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5275336d65dd0a740480fc4851dff3b4f6fd367e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5275336d65dd0a740480fc4851dff3b4f6fd367e)  
+**Parent/baseline:** `c7f6e6b4c002dd455cf9fdad49eef8a9d392056a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c7f6e6b4c002dd455cf9fdad49eef8a9d392056a...5275336d65dd0a740480fc4851dff3b4f6fd367e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build permanent Galaxy Viewer GENERIC APK with target icon
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-10E-generic-r2.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `f37a72203b1e309a66f3bb036848c1c032f35bca7cdd86d2c437e77d23aaf408`
+- SHA-256 after: `d33fd1d0335342e7d4abb80adabdd627882babd515894b17254b468d4417cb7b`
+- Bytes: `16681` → `10850`
+- Lines: `204` → `217`
+- Characters: `16679` → `10850`
+- Inserted lines: `173`
+- Deleted lines: `160`
+- Inserted characters: `3973`
+- Deleted characters: `9802`
+- Unified diff hunks: `15`
+- Inserted blocks: `17`
+- Deleted blocks: `15`
+- Changed blocks: `18`
+- Line balance: `204 + 173 - 160 = 217` — **PASS**
+- Character balance: `16679 + 3973 - 9802 = 10850` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e8602641e040 — Point generic Galaxy Viewer launcher to 10G
 
 **Recorded:** 2026-08-18T11:13:30-05:00  
