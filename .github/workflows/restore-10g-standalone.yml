@@ -6,6 +6,7 @@ on:
       - beta
     paths:
       - '.github/workflows/restore-10g-standalone.yml'
+      - 'viewer/GV-beta-0010G.py'
 
 permissions:
   contents: write
