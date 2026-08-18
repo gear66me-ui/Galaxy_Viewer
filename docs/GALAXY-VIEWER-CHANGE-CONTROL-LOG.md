@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0e787403eb9b — Fix 10G fresh APK verification gate
+
+**Recorded:** 2026-08-17T23:36:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0e787403eb9b31d989e2baa804b8c3f41561619a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0e787403eb9b31d989e2baa804b8c3f41561619a)  
+**Parent/baseline:** `e355ecde984318727f2f908f420c1e06ceb3e939`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e355ecde984318727f2f908f420c1e06ceb3e939...0e787403eb9b31d989e2baa804b8c3f41561619a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix 10G fresh APK verification gate
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `d00c0a94f2022a193682987a8a72dc5a81c4abc84f4cdbfcc628c9c72531ef14`
+- SHA-256 after: `48f7cce0661a2cf059fb16efb1ec4eefbc411b7565a0024cc7c16fae41a716d6`
+- Bytes: `4896` → `4954`
+- Lines: `125` → `126`
+- Characters: `4894` → `4952`
+- Inserted lines: `3`
+- Deleted lines: `2`
+- Inserted characters: `123`
+- Deleted characters: `65`
+- Unified diff hunks: `2`
+- Inserted blocks: `1`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `125 + 3 - 2 = 126` — **PASS**
+- Character balance: `4894 + 123 - 65 = 4952` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a2837bd276a9 — Trigger fresh Galaxy Viewer 10G APK build
 
 **Recorded:** 2026-08-17T23:31:49-05:00  
