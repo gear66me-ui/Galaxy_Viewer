@@ -1,3 +1,4 @@
+# black-icon generic APK build trigger
 name: Build Galaxy Viewer Generic APK
 
 on:
@@ -66,7 +67,6 @@ jobs:
           result = Image.new('RGBA', original.size, (0, 0, 0, 255))
           result.alpha_composite(original)
 
-          # Preserve every fully opaque artwork pixel exactly.
           src = original.load()
           dst = result.load()
           changed_opaque = 0
