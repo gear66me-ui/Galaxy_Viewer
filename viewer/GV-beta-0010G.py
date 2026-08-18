@@ -605,7 +605,7 @@ display(Javascript(r"""
 
     function blockedPrefetchKeys(){
         const keys=new Set(prefetchReady.map(item=>item.key));
-        for(const key of prefetchLoading.keys())keys.add(key);
+        for(const key of prefetchLoading.keys())keys.add(destinationKey({archiveId:key,name:key}));
         if(priorityPrefetchDestination)keys.add(destinationKey(priorityPrefetchDestination));
         if(activePreparedItem?.key)keys.add(activePreparedItem.key);
         if(historyPreparedItem?.key)keys.add(historyPreparedItem.key);
@@ -1205,7 +1205,7 @@ display(Javascript(r"""
     };
     bottom.random.addEventListener('click',launchRandomGalaxy);
     const presentationStyle=document.createElement('style');
-    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 8px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}#gv-hd-info-more{flex:0 0 auto;margin-top:6px;padding-right:4px;color:#B7FFD0;font-size:10px;letter-spacing:.65px;text-align:right;white-space:nowrap}#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}';
+    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 8px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}';
     document.head.appendChild(presentationStyle);
     const hdScience=randomGalaxy.hdScience;
     if(hdScience){
@@ -1239,18 +1239,16 @@ display(Javascript(r"""
 
     const hdInfoPanel=document.createElement('div');
     hdInfoPanel.id='gv-hd-info-panel';
-    hdInfoPanel.innerHTML='<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div><div id="gv-hd-info-more">MORE INFO &gt;</div>';
+    hdInfoPanel.innerHTML='<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div>';
     randomGalaxy.hdOverlay?.appendChild(hdInfoPanel);
     const hdInfoBody=hdInfoPanel.querySelector('#gv-hd-info-body');
-    const hdInfoLink=document.createElement('a');
-    hdInfoLink.id='gv-hd-info-link';
-    hdInfoLink.target='_blank';
-    hdInfoLink.rel='noopener noreferrer';
-    const hdInfoIcon=document.createElement('img');
-    hdInfoIcon.id='gv-hd-info-icon';
-    hdInfoIcon.alt='ARCHIVE SOURCE';
-    hdInfoLink.appendChild(hdInfoIcon);
-    randomGalaxy.hdViewport?.appendChild(hdInfoLink);
+    const hdBackToViewer=randomGalaxy.backButton;
+    if(hdBackToViewer){
+        hdBackToViewer.id='gv-hd-back-to-viewer';
+        hdBackToViewer.textContent='BACK TO VIEWER';
+        hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
+        randomGalaxy.hdViewport?.appendChild(hdBackToViewer);
+    }
 
     function currentArchiveDestination(){return randomGalaxy.getState?.().activeDestination||randomGalaxy.activeDestination||null}
     function providerFor(destination){return destination?.provider==='JWST'?'JWST':'HUBBLE'}
@@ -1289,8 +1287,7 @@ display(Javascript(r"""
         if(randomGalaxy.viewHdButton){randomGalaxy.viewHdButton.textContent=`VIEW ${provider} IN HD`;randomGalaxy.viewHdButton.setAttribute('aria-label',`VIEW ${provider} IN HD`)}
         const buttonIcon=randomGalaxy.hubbleIconButton?.querySelector('img');
         if(buttonIcon){buttonIcon.src=iconUrl;buttonIcon.alt=`${provider} ARCHIVE`}
-        if(hdInfoIcon){hdInfoIcon.src=iconUrl;hdInfoIcon.alt=`${provider} ARCHIVE SOURCE`}
-        if(hdInfoLink){hdInfoLink.href=String(destination.sourceUrl||'#');hdInfoLink.setAttribute('aria-label',`OPEN ${provider} SOURCE INFORMATION`)}
+        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
         if(randomGalaxy.hdLoading&&provider==='JWST'&&/HUBBLE/i.test(randomGalaxy.hdLoading.textContent||''))randomGalaxy.hdLoading.textContent=String(randomGalaxy.hdLoading.textContent||'').replace(/HUBBLE/gi,'JWST');
         fitHdInfoText(destination);
     }
@@ -1324,7 +1321,7 @@ display(Javascript(r"""
         set(hdInfoPanel,'top',`${infoTop}px`);set(hdInfoPanel,'height',`${bannerHeight}px`);set(hdInfoPanel,'max-height',`${bannerHeight}px`);
         randomGalaxy.hdOverlay.style.pointerEvents='none';
         randomGalaxy.hdViewport.style.pointerEvents='auto';
-        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents='auto';
+        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}
         randomGalaxy.hdOverlay.querySelectorAll('button,a').forEach(element=>{element.style.pointerEvents='auto'});
         fitHdInfoText();
     }
