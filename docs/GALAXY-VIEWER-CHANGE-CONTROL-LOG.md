@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9f5798c8d5c9 — Delete viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.jsonk
+
+**Recorded:** 2026-08-18T12:08:20-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9f5798c8d5c99426cff6fe2646b05c22a3016b71`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9f5798c8d5c99426cff6fe2646b05c22a3016b71)  
+**Parent/baseline:** `48c0f3f43e90feba324797b726d2125f680b5baf`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/48c0f3f43e90feba324797b726d2125f680b5baf...9f5798c8d5c99426cff6fe2646b05c22a3016b71)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Delete viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.jsonk
+```
+
+### Complete changed-path accounting
+
+#### `viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json`
+
+- Status: **DELETED**
+- SHA-256 before: `cd263786ed17ac1d5c58e4a6848500c87606b9cc54f9c2712671dca7a20702e9`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `6304440` → `0`
+- Lines: `138349` → `0`
+- Characters: `6297000` → `0`
+- Inserted lines: `0`
+- Deleted lines: `138349`
+- Inserted characters: `0`
+- Deleted characters: `6297000`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `138349 + 0 - 138349 = 0` — **PASS**
+- Character balance: `6297000 + 0 - 6297000 = 0` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2eb8e502bf9e — Remove GENERIC rasterizer delay; keep white-black icon and remote base fix
 
 **Recorded:** 2026-08-18T12:02:12-05:00  
