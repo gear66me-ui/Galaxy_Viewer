@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-cdb65a76cd62 — Fix GENERIC loader execution and force adaptive black icon
+
+**Recorded:** 2026-08-18T12:09:45-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`cdb65a76cd6242c1719419eb0052d099127c174f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/cdb65a76cd6242c1719419eb0052d099127c174f)  
+**Parent/baseline:** `a9d50c7f4d820e87089b942479309b0b6d7f9ea6`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a9d50c7f4d820e87089b942479309b0b6d7f9ea6...cdb65a76cd6242c1719419eb0052d099127c174f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix GENERIC loader execution and force adaptive black icon
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e27103410c9a58bc4fdb4ea8bfb7c41846ad4ba94d637e3e4b9d141334169cf0`
+- SHA-256 after: `e97c5a4e5f470f454afbfb0de046aa491b073e5ab2a02c63936febc0ea3c3250`
+- Bytes: `12536` → `12555`
+- Lines: `199` → `153`
+- Characters: `12536` → `12555`
+- Inserted lines: `56`
+- Deleted lines: `102`
+- Inserted characters: `1985`
+- Deleted characters: `1966`
+- Unified diff hunks: `32`
+- Inserted blocks: `22`
+- Deleted blocks: `32`
+- Changed blocks: `32`
+- Line balance: `199 + 56 - 102 = 153` — **PASS**
+- Character balance: `12536 + 1985 - 1966 = 12555` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-480cfadd8682 — Add files via upload
 
 **Recorded:** 2026-08-18T12:08:42-05:00  
