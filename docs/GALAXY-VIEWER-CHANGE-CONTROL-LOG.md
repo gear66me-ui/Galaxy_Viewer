@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b984fc8e34a5 — Ignore expected 10G background AbortError in web launcher
+
+**Recorded:** 2026-08-18T13:09:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b984fc8e34a55e32914f050c4edd6eff0362d8a2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b984fc8e34a55e32914f050c4edd6eff0362d8a2)  
+**Parent/baseline:** `ac4235ff18177d8b54750ac7326760b01eb109a8`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ac4235ff18177d8b54750ac7326760b01eb109a8...b984fc8e34a55e32914f050c4edd6eff0362d8a2)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Ignore expected 10G background AbortError in web launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/GV-GENERIC-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `896f669ff1b93cd12039c92a65af3e04a0444cc2ade8f6b44fa7023e7b107983`
+- SHA-256 after: `a528ca446668a0cdb93d5fc946b615e9f136d9b6edd635522d0dfcd3d01e17bd`
+- Bytes: `4751` → `4861`
+- Lines: `1` → `1`
+- Characters: `4751` → `4861`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `117`
+- Deleted characters: `7`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 1 - 1 = 1` — **PASS**
+- Character balance: `4751 + 117 - 7 = 4861` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-43f49ef19869 — Fix generic web launcher Aladin browser build
 
 **Recorded:** 2026-08-18T13:06:33-05:00  
