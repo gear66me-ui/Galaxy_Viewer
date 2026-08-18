@@ -77,14 +77,14 @@ html.gv-launching #aladin-cosmic-command-test{width:100%!important;height:100vh!
   errorBox.setAttribute('role','alert');
   document.body.append(cover,splash,errorBox);
 
-  const VIEWER_URL='../../viewer/GV-beta-0010F.py?v=10f-a145cd619e8d1327a5e6a73e268a3972ea48d405';
+  const VIEWER_URL='../../viewer/GV-beta-0010F.py?v=10f-9e0f012b0f13833b9fca33fe4f9fc8e1ab319432';
   const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
   const VIEWER_TIMEOUT_MS=20000;
   const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
   const ICON_MIN_HOLD_MS=3500;
   const launchStartedAt=performance.now();
   const showError=error=>{errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(error?.stack||error)};
-  const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'force-cache'}).then(async response=>{if(!response.ok)throw new Error('GV-BETA-0010F.PY RETURNED HTTP '+response.status);return response.blob()});
+  const viewerDownloadPromise=fetch(VIEWER_URL,{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('GV-BETA-0010F.PY RETURNED HTTP '+response.status);return response.blob()});
   const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))));
 
   const splashPreload=document.createElement('iframe');
