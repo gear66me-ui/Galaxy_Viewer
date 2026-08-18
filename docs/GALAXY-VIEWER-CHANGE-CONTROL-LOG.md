@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-00e774208c46 — Trigger one-shot 10G repair
+
+**Recorded:** 2026-08-18T01:29:15-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`00e774208c468449c793d47dd57bfffe7dcdf9f4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/00e774208c468449c793d47dd57bfffe7dcdf9f4)  
+**Parent/baseline:** `2f214acf45fff44cd9c47d81ecaa0f9c3aac5f2e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/2f214acf45fff44cd9c47d81ecaa0f9c3aac5f2e...00e774208c468449c793d47dd57bfffe7dcdf9f4)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Trigger one-shot 10G repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/10g-repair-trigger.txt`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9f6632b6e9abf1fb6bd2f14d1e09fd092be08aa82fbe2d14b57f01dccffb8dc3`
+- Bytes: `0` → `61`
+- Lines: `0` → `2`
+- Characters: `0` → `61`
+- Inserted lines: `2`
+- Deleted lines: `0`
+- Inserted characters: `61`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 2 - 0 = 2` — **PASS**
+- Character balance: `0 + 61 - 0 = 61` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-2f214acf45ff — Allow explicit one-shot trigger for 10G repair
 
 **Recorded:** 2026-08-18T01:29:06-05:00  
