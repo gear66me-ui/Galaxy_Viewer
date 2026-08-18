@@ -1,0 +1,32 @@
+name: Temporary revert broken Catalog 0018 bulk pass
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-revert-catalog-0018-bulk-pass.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  revert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Restore pre-bulk Catalog 0018 exactly
+        shell: bash
+        run: |
+          git fetch origin beta
+          git reset --hard origin/beta
+          git checkout daa22ed0b12df2b04e0b5dbd8965967c5f79332f -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json
+          git rm -f viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-completion-audit.txt || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json
+          git commit -m 'Restore Catalog 0018 after rejected bulk pseudonym pass'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
