@@ -5,6 +5,7 @@ on:
       - beta
     paths:
       - '.github/workflows/apply-10g-final-and-build-generic.yml'
+      - '.github/10g-repair-trigger.txt'
   workflow_dispatch:
 permissions:
   contents: write
@@ -28,13 +29,10 @@ jobs:
           before=p.read_text(encoding='utf-8')
           frozen_sha=hashlib.sha256(frozen.read_bytes()).hexdigest()
           s=before
-
           new_css='#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'
           s,n=re.subn(r'#gv-hd-info-more\{[^}]*\}#gv-hd-info-link\{[^}]*\}#gv-hd-info-link img\{[^}]*\}',new_css,s,count=1)
           if n!=1: raise SystemExit(f'HD CSS patch count={n}')
-
           s=s.replace('<div id="gv-hd-info-more">MORE INFO &gt;</div>','')
-
           replacement="""    const hdBackToViewer=randomGalaxy.backButton;
     if(hdBackToViewer){
         hdBackToViewer.id='gv-hd-back-to-viewer';
@@ -45,24 +43,16 @@ jobs:
 """
           s,n=re.subn(r"    const hdInfoLink=document\.createElement\('a'\);[\s\S]*?    randomGalaxy\.hdViewport\?\.appendChild\(hdInfoLink\);\n",replacement,s,count=1)
           if n!=1: raise SystemExit(f'archive link block patch count={n}')
-
           s,n=re.subn(r"        if\(hdInfoIcon\)\{[^\n]*\}\n        if\(hdInfoLink\)\{[^\n]*\}\n","        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');\n",s,count=1)
           if n!=1: raise SystemExit(f'archive sync patch count={n}')
-
           s,n=re.subn(r"        hdInfoLink\.style\.right=`\$\{HD_LAYOUT\.iconInset\}px`;hdInfoLink\.style\.bottom=`\$\{HD_LAYOUT\.iconInset\}px`;hdInfoLink\.style\.pointerEvents='auto';\n","        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}\n",s,count=1)
           if n!=1: raise SystemExit(f'back position patch count={n}')
-
           compile(s,str(p),'exec')
-          checks={
-            '10G identity': "const VERSION='10G';" in s and "const DISPLAY_VERSION='10G';" in s,
-            'MORE INFO removed': 'MORE INFO &gt;' not in s and 'gv-hd-info-more' not in s,
-            'archive link removed': 'gv-hd-info-link' not in s and 'hdInfoLink' not in s and 'hdInfoIcon' not in s,
-            'back button present': "textContent='BACK TO VIEWER'" in s and 'randomGalaxy.backButton' in s,
-            '10F frozen': hashlib.sha256(frozen.read_bytes()).hexdigest()==frozen_sha,
-          }
-          for k,v in checks.items():
-              print(k, 'PASS' if v else 'FAIL')
-              if not v: raise SystemExit(k+' failed')
+          assert "const VERSION='10G';" in s and "const DISPLAY_VERSION='10G';" in s
+          assert 'MORE INFO &gt;' not in s and 'gv-hd-info-more' not in s
+          assert 'gv-hd-info-link' not in s and 'hdInfoLink' not in s and 'hdInfoIcon' not in s
+          assert "textContent='BACK TO VIEWER'" in s and 'randomGalaxy.backButton' in s
+          assert hashlib.sha256(frozen.read_bytes()).hexdigest()==frozen_sha
           p.write_text(s,encoding='utf-8')
           print('10G BEFORE',hashlib.sha256(before.encode()).hexdigest())
           print('10G AFTER ',hashlib.sha256(s.encode()).hexdigest())
