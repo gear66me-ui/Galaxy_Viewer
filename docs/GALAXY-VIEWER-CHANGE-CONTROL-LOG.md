@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c91d148f3f5e — Use preinstalled rasterizer for GENERIC target icon
+
+**Recorded:** 2026-08-18T11:24:33-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c91d148f3f5e91a80c4bce23047b46b870782ba8`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c91d148f3f5e91a80c4bce23047b46b870782ba8)  
+**Parent/baseline:** `79b8210686939a16113398fc00098ad40e05b3bd`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/79b8210686939a16113398fc00098ad40e05b3bd...c91d148f3f5e91a80c4bce23047b46b870782ba8)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use preinstalled rasterizer for GENERIC target icon
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e020c652b3d0586fe041273f06fe7540bbf466c974b52f374fbf03c469f6c8a0`
+- SHA-256 after: `7022d66aee38913ffc03cdb12cba100c5856b0cb97988291f77988ac4900c414`
+- Bytes: `11173` → `11086`
+- Lines: `190` → `188`
+- Characters: `11173` → `11086`
+- Inserted lines: `2`
+- Deleted lines: `4`
+- Inserted characters: `56`
+- Deleted characters: `143`
+- Unified diff hunks: `2`
+- Inserted blocks: `1`
+- Deleted blocks: `2`
+- Changed blocks: `2`
+- Line balance: `190 + 2 - 4 = 188` — **PASS**
+- Character balance: `11173 + 56 - 143 = 11086` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0294a6231e58 — Build permanent Galaxy Viewer GENERIC APK from proven builder
 
 **Recorded:** 2026-08-18T11:21:31-05:00  
