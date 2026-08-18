@@ -1,5 +1,5 @@
 name: Build Fresh Galaxy Viewer 10G APK
-# Trigger: 2026-08-18 fresh 10G APK build
+# Trigger: 2026-08-18 corrected fresh 10G APK build
 
 on:
   push:
@@ -80,6 +80,8 @@ jobs:
           grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
           unzip -p "$APK" assets/index.html > apk-index.html
           grep -q 'VERSION 10G' apk-index.html
+          grep -q "const VERSION='10G';" apk-index.html
+          grep -q "const DISPLAY_VERSION='10G';" apk-index.html
           grep -q 'gv-viewer-ready' apk-index.html
           grep -q 'gv-viewer-failed' apk-index.html
           ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
