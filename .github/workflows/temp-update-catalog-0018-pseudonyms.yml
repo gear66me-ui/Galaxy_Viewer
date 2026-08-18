@@ -1,0 +1,265 @@
+name: Temporary Catalog 0018 pseudonym updater
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-update-catalog-0018-pseudonyms.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Update first 100 display names only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json')
+          expected = [
+            'Galaxy NGC 2525',
+            'Antennae',
+            'Magnetic monster NGC 1275',
+            'Ultra Deep Field',
+            'The Stellar Forge',
+            'Sombrero Galaxy',
+            'Spirals and supernovae',
+            'Whirlpool Galaxy',
+            'Fornax A',
+            'Mice Galaxies',
+            'Tadpole Galaxy',
+            'of Messier 106',
+            'Flocculent spiral NGC 2841',
+            'Hickson Compact Group 92',
+            'Phantom Galaxy',
+            'ACS of NGC 5866',
+            'Cigar Galaxy',
+            'Pinwheel Galaxy',
+            'Spiral Snapshot',
+            'Eye in the Sky',
+            'of ESO 381-12',
+            'Galaxy playing twister',
+            'Large Magellanic Cloud',
+            'of Messier 77',
+            'Centaurus A',
+            'Abell 2218',
+            'Twins with differences',
+            'Starburst galaxy Messier 94',
+            'Cosmic Fireworks',
+            'Bucking the trend',
+            '25 years of definition',
+            'Coma Cluster',
+            'Peculiar galaxy NGC 3256',
+            'A green cosmic arc',
+            'of NGC 7714',
+            'Andromeda Galaxy',
+            'Spiral galaxy M81',
+            'Abell 1703',
+            'UGCA 193',
+            'Open Arms',
+            'A Spiral in Profile',
+            'Spiral, elliptical, irregular',
+            'ACT-CL J0102-4915',
+            'RCS2 J2327',
+            'RCS2 J2327',
+            'side of IC 335',
+            'views NGC 4522',
+            'Luminous in Lepus',
+            'Cluster in the cloud',
+            'eMACS J1823.1+7822',
+            'Cosmic Cinnamon Bun',
+            'Birds of a Feather',
+            'In Bloom',
+            'Bedin I',
+            'SPD2011] 1227',
+            'Monster in the deep',
+            'MACS J0138.0 -2155',
+            'Galactic Close-Up',
+            'Beauty From Chaos',
+            'A Smudged Fingerprint',
+            'UGC 2885',
+            'PSZ1 G311.65-18.48',
+            'A Whorl',
+            'RXC J0142.9+4438',
+            'RXC J0032.1+1808',
+            'A red, metal-rich relic',
+            'Cosmic Snake Galaxy',
+            'The Hockey Stick Galaxy',
+            '2XMM J143450.5+033843',
+            'A close galactic pair',
+            'shears a "woolly" galaxy',
+            'A mysterious old spiral',
+            "Mayall's object",
+            'Gone but not forgotten',
+            'Centuries Before',
+            'Up and Over',
+            'Abell S1063',
+            'J022633.98',
+            'Spiral in Serpens',
+            'of NGC 922',
+            'views NGC 4402',
+            'One-sided spiral',
+            'Circumstellar disc IRAS 23077+6707',
+            'Long-distance relationship',
+            'Markarian 178',
+            'LMC N159',
+            'A disruptive neighbour',
+            'Revisiting an unusual spiral',
+            'Spiralling star factory',
+            'Focusing on NGC 3370',
+            'A well-studied spiral',
+            'Starbursting centre',
+            'Spiral, elliptical or neither?',
+            'Taking a third look',
+            'Noteworthy nearby spiral',
+            'Low brightness, high interest',
+            'A supernova-rich spiral',
+            'IMBH near NGC 6099',
+            'Swirling spiral in Hydra',
+            'Abell 209',
+          ]
+          proposed = [
+            'Fading Supernova Galaxy',
+            'Antennae Galaxies',
+            'Perseus A',
+            'Ultra Deep Field',
+            'Stellar Forge',
+            'Sombrero Galaxy',
+            'Spirals and Supernovae',
+            'Whirlpool Galaxy',
+            'Fornax A',
+            'Mice Galaxies',
+            'Tadpole Galaxy',
+            'Active Spiral Galaxy',
+            'Flocculent Spiral',
+            "Stephan's Quintet",
+            'Phantom Galaxy',
+            'Edge-On Lenticular Galaxy',
+            'Cigar Galaxy',
+            'Pinwheel Galaxy',
+            'Spiral Snapshot',
+            'Black Eye Galaxy',
+            'Extended Spiral Galaxy',
+            'Twisted Galaxy',
+            'Large Magellanic Cloud',
+            'Squid Galaxy',
+            'Centaurus A',
+            'Gravitational Lens Cluster',
+            'Milky Way Twin',
+            'Starburst Ring Galaxy',
+            'Cosmic Fireworks',
+            'Bucking the Trend',
+            'Grand Design Spiral',
+            'Coma Cluster',
+            'Peculiar Merger Galaxy',
+            'Green Cosmic Arc',
+            'Distorted Starburst Galaxy',
+            'Andromeda Galaxy',
+            "Bode's Galaxy",
+            'Gravitational Lens Cluster',
+            'Waterfall of Stars',
+            'Open Arms',
+            'Spiral in Profile',
+            'Irregular Starburst Galaxy',
+            'El Gordo',
+            'Cosmic Heavyweight',
+            'Two-Quadrillion-Sun Cluster',
+            'Edge-On Lenticular',
+            'Stripped Spiral Galaxy',
+            'Luminous in Lepus',
+            'Cluster in the Cloud',
+            'Cosmic Leviathan',
+            'Cosmic Cinnamon Bun',
+            'Birds of a Feather',
+            'Galaxy in Bloom',
+            'Bedin I',
+            'Between Local and Laniakea',
+            'Monster in the Deep',
+            'Cosmic Lens Flare',
+            'Galactic Close-Up',
+            'Beauty from Chaos',
+            'Smudged Fingerprint Galaxy',
+            "Rubin's Galaxy",
+            'Sunburst Arc',
+            'Beautiful Whorl',
+            'Galactic Treasure Chest',
+            'Cosmic Nursery',
+            'Red Relic Galaxy',
+            'Cosmic Snake Galaxy',
+            'Hockey Stick Galaxy',
+            'Unnamed Dwarf Galaxy',
+            'Close Galactic Pair',
+            'Woolly Galaxy',
+            'Mysterious Old Spiral',
+            "Mayall's Object",
+            'Gone but Not Forgotten',
+            'Ancient Spiral',
+            'Up and Over',
+            'Frontier Fields Cluster',
+            'Ultra-Bright Galaxy Gallery',
+            'Spiral in Serpens',
+            'Collisional Ring Galaxy',
+            'Dust-Stripped Spiral',
+            'One-Sided Spiral',
+            'Circumstellar Disc',
+            'Long-Distance Relationship',
+            'Starburst Dwarf Galaxy',
+            'Baby Stars Blowing Bubbles',
+            'Disruptive Neighbour',
+            'Unusual Spiral',
+            'Spiralling Star Factory',
+            'Supernova Host Galaxy',
+            'Well-Studied Spiral',
+            'Starbursting Centre',
+            'Ambiguous Spiral',
+            'Third Look',
+            'Noteworthy Nearby Spiral',
+            'Low-Brightness Spiral',
+            'Supernova-Rich Spiral',
+            'Intermediate-Mass Black Hole',
+            'Swirling Spiral in Hydra',
+            'Massive Galaxy Cluster',
+          ]
+
+          data = json.loads(path.read_text(encoding='utf-8'))
+          entries = data['entries']
+          assert len(expected) == len(proposed) == 100
+          assert len(entries) >= 100
+
+          mismatches = []
+          for i, old in enumerate(expected):
+              actual = entries[i].get('displayName')
+              if actual != old:
+                  mismatches.append((i + 1, old, actual))
+          if mismatches:
+              raise SystemExit('Baseline mismatch; refusing to write: ' + repr(mismatches[:10]))
+
+          changed = 0
+          for i, new in enumerate(proposed):
+              if entries[i].get('displayName') != new:
+                  entries[i]['displayName'] = new
+                  changed += 1
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(f'Validated 100 records; changed {changed} displayName values')
+          PY
+
+          test "$(git diff --name-only | wc -l)" -eq 1
+          test "$(git diff --name-only)" = "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json"
+          git diff --check
+      - name: Commit catalog only
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json
+          git commit -m 'Catalog 0018: shorten first 100 pseudonyms'
+          git push origin HEAD:beta
