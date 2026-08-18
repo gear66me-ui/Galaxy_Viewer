@@ -1,5 +1,4 @@
-# trigger-r4-20260817
-name: Build Galaxy Viewer 10G R4 Proven Shell
+name: Build and Smoke-Test Galaxy Viewer 10G
 on:
   push:
     branches: [beta]
@@ -22,8 +21,8 @@ jobs:
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state=pending \
-            -f context='galaxy-viewer-10g-r4-apk' \
-            -f description="Actions run ${GITHUB_RUN_ID}" \
+            -f context='galaxy-viewer-10g-smoke' \
+            -f description="Android smoke test run ${GITHUB_RUN_ID}" \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
       - uses: actions/setup-java@v4
         with:
@@ -34,90 +33,72 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Prepare surgical 10G R4 shell
-        shell: bash
-        run: |
-          set -euo pipefail
-          P=android/galaxy-viewer-10e
-          A="$P/app/src/main/assets"
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('android/galaxy-viewer-10e/app/build.gradle')
-          s=p.read_text().replace("applicationId 'com.gear66me.galaxyviewer10e.generic'", "applicationId 'com.gear66me.galaxyviewer10g'").replace("versionCode 1010", "versionCode 1014").replace("versionName '10E-generic-permanent-1'", "versionName '10G-proven-shell-4'")
-          p.write_text(s)
-          p=Path('android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml')
-          p.write_text(p.read_text().replace('android:label="Galaxy Viewer 10E"','android:label="Galaxy Viewer 10G"'))
-          p=Path('android/galaxy-viewer-10e/app/src/main/java/com/gear66me/galaxyviewer10e/MainActivity.java')
-          s=p.read_text().replace('GalaxyViewer10E/10E-generic','GalaxyViewer10G/10G-proven-shell-4').replace('GALAXY VIEWER 10E\\n\\n','GALAXY VIEWER 10G\\n\\n')
-          p.write_text(s)
-          PY
-          cat > "$A/index.html" <<'HTML'
-          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 10G</title><style>@font-face{font-family:"Space Age";src:url("artwork/Space-Age.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}*{box-sizing:border-box;font-family:"Space Age",sans-serif!important}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-apk-cover{position:fixed;inset:0;z-index:2147483646;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}#gv-apk-cover img{display:block;width:min(58vw,280px);height:min(58vw,280px);max-width:280px;max-height:280px;object-fit:contain;object-position:center;background:transparent}.v{color:#FFD85A;font:400 16px/1 "Space Age",sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55);white-space:nowrap}#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000;visibility:hidden}#gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD85A;white-space:pre-wrap;font:400 14px/1.45 "Space Age",sans-serif}</style></head><body><div id="gv-apk-cover"><img src="artwork/icon.svg" alt="GALAXY VIEWER"><div class="v">VERSION 10G</div></div><iframe id="gv-splash-frame"></iframe><div id="gv-launch-error"></div><script src="bootstrap-10g-r4.js"></script></body></html>
-          HTML
-          cat > "$A/bootstrap-10g-r4.js" <<'JS'
-          (async()=>{'use strict';
-          const BASELINE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/a88b56749bd73efe166e0a849749f15d03fed47d/viewer/GV-beta-0010F.py';
-          const INFO='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/modules/gv-info-module-0001.js';
-          const c=document.getElementById('gv-apk-cover'),p=document.getElementById('gv-splash-frame'),e=document.getElementById('gv-launch-error');
-          const delay=ms=>new Promise(r=>setTimeout(r,ms));
-          const text=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+u);return r.text()};
-          const run=s=>{const x=document.createElement('script');x.textContent=s;document.body.appendChild(x)};
-          const set10G=()=>{document.querySelectorAll('#gv-apk-cover .v,#gv-apk-cover .gv-10e-version').forEach((n,i)=>{if(i===0)n.textContent='VERSION 10G';else n.remove()});const v=document.getElementById('gv-version-label');if(v){v.textContent='VERSION 10G';v.setAttribute('aria-label','GALAXY VIEWER VERSION 10G')}};
-          const extract=s=>{const h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw new Error('10F Viewer extraction failed');return[h[0][1],j[0][1]]};
-          const waitViewer=()=>new Promise((ok,no)=>{const d=performance.now()+45000;let done=false;const fail=err=>{if(done)return;done=true;document.removeEventListener('gv-viewer-failed',vf);no(err)};const pass=()=>{if(done)return;done=true;document.removeEventListener('gv-viewer-failed',vf);ok()};const vf=x=>fail(new Error(String(x?.detail?.message||'10F Viewer startup failed')));document.addEventListener('gv-viewer-failed',vf,{once:true});const q=()=>{try{const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test)return pass();if(performance.now()>d)return fail(new Error('10G Viewer readiness timeout'));setTimeout(q,50)}catch(z){fail(z)}};q()});
-          const startViewer=async()=>{const source=await text(BASELINE);const[h,j]=extract(source);document.body.insertAdjacentHTML('beforeend',h);set10G();run(j);set10G();await waitViewer();run(await text(INFO));set10G();setTimeout(set10G,500);setTimeout(set10G,1800);if(window.GalaxyViewerInfo10G)window.GalaxyViewerInfo10G.refresh();};
-          const splash=()=>new Promise((ok,no)=>{let t=0,done=false;const fin=()=>{if(done)return;done=true;if(t)clearTimeout(t);ok()};p.addEventListener('load',()=>{try{p.contentWindow.addEventListener('galaxy-splash-complete',fin,{once:true});p.style.visibility='visible';c?.remove();t=setTimeout(()=>no(new Error('10G splash completion timeout')),22000)}catch(z){no(z)}},{once:true});p.addEventListener('error',()=>no(new Error('10G splash failed to load')),{once:true});p.src='viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html'});
-          try{const started=performance.now();const vr=startViewer();await delay(Math.max(0,3500-(performance.now()-started)));await splash();await vr;p.remove();c?.remove();set10G()}catch(z){e.style.display='block';e.textContent='GALAXY VIEWER 10G FAILED TO LOAD\n\n'+String(z?.stack||z)}})();
-          JS
-          grep -q '@font-face{font-family:"Space Age"' "$A/index.html"
-          grep -q 'font-family:"Space Age",sans-serif!important' "$A/index.html"
-          grep -q 'GV-beta-0010F.py' "$A/bootstrap-10g-r4.js"
-          grep -q 'gv-info-module-0001.js' "$A/bootstrap-10g-r4.js"
-          ! grep -q 'GV-beta-0010G.py' "$A/bootstrap-10g-r4.js"
-      - name: Build APK
+      - name: Prepare proven-shell 10G payload
+        run: python3 .github/scripts/build_10g_flatten.py
+      - name: Build exact test APK
         run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
-      - name: Validate APK
+      - name: Static validation
         shell: bash
         run: |
           set -euo pipefail
           APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-10G-R4.apk
-          test -s "$APK"
+          cp "$APK" Galaxy-Viewer-10G-SMOKE-TESTED.apk
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
           grep -q "package: name='com.gear66me.galaxyviewer10g'" /tmp/badging.txt
-          grep -q "versionName='10G-proven-shell-4'" /tmp/badging.txt
           grep -q "application-label:'Galaxy Viewer 10G'" /tmp/badging.txt
           unzip -p "$APK" assets/index.html | grep -q 'font-family:"Space Age",sans-serif!important'
           unzip -p "$APK" assets/index.html | grep -q 'VERSION 10G'
-          unzip -p "$APK" assets/bootstrap-10g-r4.js | grep -q 'GV-beta-0010F.py'
-          unzip -p "$APK" assets/bootstrap-10g-r4.js | grep -q 'gv-info-module-0001.js'
+          unzip -p "$APK" assets/index.html | grep -q 'GV-beta-0010F.py'
+          unzip -p "$APK" assets/index.html | grep -q 'gv-info-module-0001.js'
           unzip -l "$APK" | grep -q 'assets/artwork/Space-Age.otf'
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
-          cp "$APK" "$OUT"
-          sha256sum "$OUT" | tee "$OUT.sha256"
+          sha256sum Galaxy-Viewer-10G-SMOKE-TESTED.apk | tee Galaxy-Viewer-10G-SMOKE-TESTED.apk.sha256
+      - name: Android emulator launch test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            APK=Galaxy-Viewer-10G-SMOKE-TESTED.apk
+            adb install -r "$APK"
+            adb logcat -c
+            adb shell am force-stop com.gear66me.galaxyviewer10g
+            adb shell am start -W -n com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10e.MainActivity | tee smoke-start.txt
+            grep -q 'Status: ok' smoke-start.txt
+            sleep 65
+            adb shell screencap -p /sdcard/10g-smoke.png
+            adb pull /sdcard/10g-smoke.png 10g-smoke.png
+            adb logcat -d > 10g-logcat.txt
+            adb shell uiautomator dump /sdcard/10g-window.xml || true
+            adb pull /sdcard/10g-window.xml 10g-window.xml || true
+            if grep -Eqi 'FAILED TO LOAD|readiness timeout|Viewer startup failed' 10g-window.xml 2>/dev/null; then
+              echo 'Visible launcher failure detected'; exit 1
+            fi
+            if grep -Eqi 'FATAL EXCEPTION|AndroidRuntime.*FATAL' 10g-logcat.txt; then
+              echo 'Android runtime crash detected'; exit 1
+            fi
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-10G-R4
+          name: Galaxy-Viewer-10G-SMOKE-TESTED
           path: |
-            Galaxy-Viewer-10G-R4.apk
-            Galaxy-Viewer-10G-R4.apk.sha256
+            Galaxy-Viewer-10G-SMOKE-TESTED.apk
+            Galaxy-Viewer-10G-SMOKE-TESTED.apk.sha256
+            10g-smoke.png
+            10g-logcat.txt
+            10g-window.xml
+            smoke-start.txt
           if-no-files-found: error
           retention-days: 30
-      - name: Publish installer
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          TAG=galaxy-viewer-10g-r4-proven-shell
-          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-10G-R4.apk Galaxy-Viewer-10G-R4.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G R4 — Proven Shell' --notes 'Surgical APK launcher repair. Reuses the proven 10E generic Android shell behavior, loads frozen 10F directly, attaches the 10G INFO module, and enforces the bundled Space Age font globally. No Viewer source files were modified.'
-      - name: Mark build successful
+      - name: Mark smoke test successful
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state=success \
-            -f context='galaxy-viewer-10g-r4-apk' \
-            -f description="APK ready in run ${GITHUB_RUN_ID}" \
+            -f context='galaxy-viewer-10g-smoke' \
+            -f description="APK installed and survived Android launch test" \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
