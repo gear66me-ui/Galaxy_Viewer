@@ -27,6 +27,7 @@ jobs:
           test "$(git hash-object viewer/GV-beta-0010L.py)" = "9852017513867ee0cd6994d312f495a5525df2ad"
           test "$(git hash-object viewer/gv-current-viewer.json)" = "c148173001db1a6029d4d4b00e62c50968ac70bf"
           test "$(git hash-object mobile/beta/generic-app.html)" = "15ea8552737762c47606227b21f618171320d5a4"
+          test "$(git hash-object android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
           grep -F '"version": "10L"' viewer/gv-current-viewer.json
           grep -F '"viewer": "GV-beta-0010L.py"' viewer/gv-current-viewer.json
           grep -F 'mobile/beta/generic-app.html?source=android-app' android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java
@@ -51,6 +52,43 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Apply solid black launcher-icon background
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow
+          python3 <<'PY'
+          from PIL import Image
+          from pathlib import Path
+
+          path = Path('android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png')
+          original = Image.open(path).convert('RGBA')
+          result = Image.new('RGBA', original.size, (0, 0, 0, 255))
+          result.alpha_composite(original)
+
+          # Preserve every fully opaque artwork pixel exactly.
+          src = original.load()
+          dst = result.load()
+          changed_opaque = 0
+          for y in range(original.height):
+              for x in range(original.width):
+                  if src[x, y][3] == 255 and src[x, y] != dst[x, y]:
+                      changed_opaque += 1
+          if changed_opaque != 0:
+              raise SystemExit(f'opaque artwork changed: {changed_opaque} pixels')
+
+          result.save(path)
+          check = Image.open(path).convert('RGBA')
+          if check.size != (512, 512):
+              raise SystemExit(f'unexpected icon size: {check.size}')
+          if check.getchannel('A').getextrema() != (255, 255):
+              raise SystemExit('launcher icon is not fully opaque')
+          corners = [check.getpixel((0,0)), check.getpixel((511,0)), check.getpixel((0,511)), check.getpixel((511,511))]
+          if any(pixel != (0, 0, 0, 255) for pixel in corners):
+              raise SystemExit(f'launcher icon corners are not solid black: {corners}')
+          print('BLACK_ICON_OK 512x512 opaque black background; opaque artwork pixels unchanged')
+          PY
+
       - name: Build generic APK
         shell: bash
         run: gradle --no-daemon -p android/galaxy-viewer :app:assembleDebug
@@ -67,6 +105,19 @@ jobs:
           grep -q "launchable-activity: name='com.gear66me.galaxyviewer.MainActivity'" /tmp/gv-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           unzip -t "$APK"
+          unzip -p "$APK" res/drawable/gv_app_icon.png > /tmp/gv_app_icon.png
+          python3 <<'PY'
+          from PIL import Image
+          im = Image.open('/tmp/gv_app_icon.png').convert('RGBA')
+          if im.size != (512, 512):
+              raise SystemExit(f'packaged icon size mismatch: {im.size}')
+          if im.getchannel('A').getextrema() != (255, 255):
+              raise SystemExit('packaged launcher icon is not fully opaque')
+          corners = [im.getpixel((0,0)), im.getpixel((511,0)), im.getpixel((0,511)), im.getpixel((511,511))]
+          if any(pixel != (0, 0, 0, 255) for pixel in corners):
+              raise SystemExit(f'packaged launcher icon corners are not black: {corners}')
+          print('PACKAGED_BLACK_ICON_OK')
+          PY
           cp "$APK" Galaxy-Viewer-Generic.apk
           sha256sum Galaxy-Viewer-Generic.apk | tee Galaxy-Viewer-Generic.apk.sha256
 
@@ -92,7 +143,7 @@ jobs:
             Galaxy-Viewer-Generic.apk.sha256 \
             --target "$GITHUB_SHA" \
             --title 'Galaxy Viewer — Generic APK' \
-            --notes "Verified generic Android launcher built from commit $GITHUB_SHA. Runtime Viewer is selected by viewer/gv-current-viewer.json; the Android wrapper does not hardcode a normal Galaxy Viewer revision."
+            --notes "Verified generic Android launcher with opaque black launcher-icon background built from commit $GITHUB_SHA. Runtime Viewer is selected by viewer/gv-current-viewer.json; the Android wrapper does not hardcode a normal Galaxy Viewer revision."
 
       - name: Record generic APK build metadata
         if: always()
@@ -119,12 +170,12 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/gv-generic-apk-build.json
           if ! git diff --cached --quiet; then
-            git commit -m "ECO-ID: GV-GENERIC-APK-10L-003C" \
+            git commit -m "ECO-ID: GV-GENERIC-APK-BLACK-ICON-004" \
               -m "AUTHORIZED-PATHS: viewer/gv-generic-apk-build.json" \
-              -m "REQUIREMENTS: REQ-014" \
+              -m "REQUIREMENTS: REQ-005,REQ-006" \
               -m "ARCHIVE-AUTHORIZED: false" \
               -m "USER-GO: true" \
-              -m "Record generic APK build ${GITHUB_RUN_ID}"
+              -m "Record black-icon generic APK build ${GITHUB_RUN_ID}"
             for attempt in 1 2 3 4 5; do
               git pull --rebase origin beta && git push origin HEAD:beta && exit 0
               git rebase --abort >/dev/null 2>&1 || true
