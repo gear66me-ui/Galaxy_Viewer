@@ -4,7 +4,7 @@
     <application
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
-        android:icon="@drawable/gv_app_icon"
+        android:icon="@drawable/gv_app_icon_black"
         android:label="GALAXY VIEWER"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
         <activity
