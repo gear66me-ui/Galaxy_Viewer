@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-fad3f450b294 — 10J verification launcher pinned to exact viewer blob
+
+**Recorded:** 2026-08-18T15:13:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`fad3f450b2947655890c6f277fd247d71513422f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/fad3f450b2947655890c6f277fd247d71513422f)  
+**Parent/baseline:** `5dbf79843aca213ef0f8f4bc5a90718c52b5c1d5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5dbf79843aca213ef0f8f4bc5a90718c52b5c1d5...fad3f450b2947655890c6f277fd247d71513422f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+10J verification launcher pinned to exact viewer blob
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/10J.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `59855c3f1a713873a21f7d436ef0f5a5726df985adc50359ddc68681724b140b`
+- Bytes: `0` → `5323`
+- Lines: `0` → `20`
+- Characters: `0` → `5323`
+- Inserted lines: `20`
+- Deleted lines: `0`
+- Inserted characters: `5323`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 20 - 0 = 20` — **PASS**
+- Character balance: `0 + 5323 - 0 = 5323` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cbb21cc252e9 — 10J restore HD archive icon and Galaxy Info aperture
 
 **Recorded:** 2026-08-18T15:12:47-05:00  
