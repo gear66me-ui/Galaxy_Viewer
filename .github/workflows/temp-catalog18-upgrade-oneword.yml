@@ -144,7 +144,7 @@ jobs:
           open(p,'a',encoding='utf-8').write('\n')
           wc=collections.Counter(len((e.get('displayName') or '').strip().split()) for e in entries)
           one=sum(1 for e in entries if len((e.get('displayName') or '').strip().split())==1)
-          nums=sum(1 for e in entries if re.search(r'\d',(e.get('displayName') or ''))
+          nums=sum(1 for e in entries if re.search(r'\d',(e.get('displayName') or '')))
           over8=sum(1 for e in entries if len((e.get('displayName') or '').strip().split())>8)
           empty=sum(1 for e in entries if not (e.get('displayName') or '').strip())
           audit='UPDATED=96\nTOTAL='+str(len(entries))+'\nCOUNTS='+','.join(f'{k}:{wc[k]}' for k in sorted(wc))+'\nONE_WORD='+str(one)+'\nNUMBERS='+str(nums)+'\nOVER8='+str(over8)+'\nEMPTY='+str(empty)+'\n'
