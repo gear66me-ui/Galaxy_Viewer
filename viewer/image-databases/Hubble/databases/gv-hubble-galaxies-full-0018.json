@@ -96551,52 +96551,47 @@
       "decText": "-30° 24' 5.40\"",
       "distance": null,
       "constellation": "Sculptor",
-      "fieldOfView": "0.05 x 0.05 arcminutes",
-      "orientation": "North is 12.0° right of vertical",
+      "fieldOfView": "1.96 x 2.18 arcminutes",
+      "orientation": "North is 8.0° right of vertical",
       "imageType": "Observation",
-      "releaseDate": "16 October 2014, 19:00",
-      "pixelSize": "900 x 900 px",
-      "credit": "NASA",
-      "sourceUrl": "https://esahubble.org/images/heic1423d/",
-      "esaPublicationJpeg": null,
+      "releaseDate": "7 January 2014, 20:15",
+      "pixelSize": "3909 x 4360 px",
+      "credit": "N",
+      "sourceUrl": "https://esahubble.org/images/heic1401a/",
+      "esaPublicationJpeg": "https://cdn.esahubble.org/archives/images/publicationjpg/heic1401a.jpg",
       "jpegCandidates": [
-        "https://cdn.esahubble.org/archives/images/publicationjpg/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/large/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/screen/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper1/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper2/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper3/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper4/heic1423d.jpg",
-        "https://cdn.esahubble.org/archives/images/wallpaper5/heic1423d.jpg"
+        "https://cdn.esahubble.org/archives/images/publicationjpg/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/large/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/screen/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper1/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper2/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper3/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper4/heic1401a.jpg",
+        "https://cdn.esahubble.org/archives/images/wallpaper5/heic1401a.jpg"
       ],
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/heic1423d.jpg",
-      "assetName": "heic1423d.jpg",
-      "bytes": 204927,
-      "sha256": "9295144f2a42518b3ebc40a34e30ae5086eb0acbd2f7f3f8ff7f456d37a44c56",
-      "downloadErrors": [
-        {
-          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/heic1423d.jpg",
-          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/heic1423d.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000d2dacead6b0"
-        }
-      ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/heic1423d.jpg",
-      "releaseTag": "hubble-galaxies-0001-b",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/publicationjpg/heic1401a.jpg",
+      "assetName": "heic1401a.jpg",
+      "bytes": 11445660,
+      "sha256": "46faeee1819bd0649405a19f66c3325a486b67398dbeb0673f7984e6b870ea37",
+      "downloadErrors": [],
+      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/heic1401a.jpg",
+      "releaseTag": "hubble-galaxies-0001-a",
       "science": {
         "distanceMly": 4000.0,
         "distanceMethod": "estimate_xref",
         "sizeKly": [
-          58.18,
-          58.18
+          2280.56,
+          2536.55
         ],
         "sizeMethod": "distance_fov_estimate",
         "ageGyr": 4.0,
         "ageMethod": "lookback_est_from_crossref_light_travel_distance",
         "distanceSourceArchiveId": "opo1443a",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 58 x 58 KLY",
+        "sizeDisplay": "EST. 2281 x 2537 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -96613,7 +96608,11 @@
         "name",
         "title"
       ],
-      "displayName": "Pandora's Cluster"
+      "displayName": "Pandora's Cluster",
+      "imageReplacement0018": {
+        "sourceArchiveId": "heic1401a",
+        "reason": "Replace noisy magnified cutout with full Hubble Frontier Fields view of Abell 2744."
+      }
     },
     {
       "archiveId": "heic1423e",
@@ -107057,7 +107056,7 @@
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo0532f.jpg",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/wallpaper5/opo0532f.jpg",
       "assetName": "opo0532f.jpg",
       "bytes": 189979,
       "sha256": "af077e5a1e0ab2ef68e68bb4531f618689c92ec5e1868772e0a13f807cff693a",
@@ -107067,7 +107066,7 @@
           "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo0532f.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000749ab66c6014"
         }
       ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo0532f.jpg",
+      "githubImageUrl": "https://cdn.esahubble.org/archives/images/wallpaper5/opo0532f.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
         "distanceMly": 2474.066,
@@ -107102,7 +107101,11 @@
         "name",
         "title"
       ],
-      "displayName": "Gravitational Lens"
+      "displayName": "Gravitational Lens",
+      "imageReplacement0018": {
+        "sourceArchiveId": "opo0532f",
+        "reason": "Use official ESA/Hubble 2048x1536 wallpaper derivative instead of the small catalog JPEG."
+      }
     },
     {
       "archiveId": "opo0532h",
@@ -136559,43 +136562,43 @@
       "decText": "-40 58 35.06",
       "distance": "120 million light years",
       "constellation": "Centaurus",
-      "fieldOfView": "EST. 0.30 x 0.30 arcminutes",
-      "orientation": null,
+      "fieldOfView": "2.47 x 2.45 arcminutes",
+      "orientation": "North is 143.4° right of vertical",
       "imageType": "Observation",
       "releaseDate": "25 May 1999, 17:00",
-      "pixelSize": "255 x 255 px",
+      "pixelSize": "1501 x 1492 px",
       "credit": "NASA & ESA",
-      "sourceUrl": "https://esahubble.org/images/opo9919e/",
+      "sourceUrl": "https://esahubble.org/images/opo9919b/",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
-        "https://cdn.esahubble.org/archives/images/publicationjpg/opo9919e.jpg",
-        "https://cdn.esahubble.org/archives/images/large/opo9919e.jpg",
-        "https://cdn.esahubble.org/archives/images/screen/opo9919e.jpg",
-        "https://esahubble.org/media/archives/images/original/opo9919e.jpg"
+        "https://cdn.esahubble.org/archives/images/publicationjpg/opo9919b.jpg",
+        "https://cdn.esahubble.org/archives/images/large/opo9919b.jpg",
+        "https://cdn.esahubble.org/archives/images/screen/opo9919b.jpg",
+        "https://esahubble.org/media/archives/images/original/opo9919b.jpg"
       ],
       "license": "CC BY 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "imageStatus": "downloaded",
-      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9919e.jpg",
-      "assetName": "opo9919e.jpg",
-      "bytes": 33737,
-      "sha256": "32f808a2a22b4e12521ea0cb995044e06050e1f70a326134144eabd9dab0d358",
+      "selectedImageUrl": "https://cdn.esahubble.org/archives/images/large/opo9919b.jpg",
+      "assetName": "opo9919b.jpg",
+      "bytes": 336475,
+      "sha256": "e81a63f14778d379a5913384a37ecf5b23e50a8bfa477cf67b852752e4c48384",
       "downloadErrors": [
         {
-          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9919e.jpg",
-          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9919e.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000b4c714ab2122"
+          "url": "https://cdn.esahubble.org/archives/images/publicationjpg/opo9919b.jpg",
+          "error": "GET https://cdn.esahubble.org/archives/images/publicationjpg/opo9919b.jpg -> HTTP 404: <html>\n <head><title>404 Not Found</title></head>\n <body>\n  <h1>404 Not Found</h1>\n  <ul>\n   <li>Code: NoSuchKey</li>\n   <li>Message: </li>\n   <li>BucketName: hubble-prod</li>\n   <li>RequestId: tx00000382250adc935"
         }
       ],
-      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9919e.jpg",
+      "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/opo9919b.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
         "distanceMly": 120.0,
         "distanceMethod": "esa",
         "sizeKly": [
-          10.614,
-          10.614
+          86.22,
+          85.52
         ],
-        "sizeMethod": "estimated_from_empirical_fov_and_light_travel_distance_0012",
+        "sizeMethod": "distance_fov_estimate",
         "ageGyr": 0.12,
         "ageMethod": "lookback_est_from_published_light_travel_distance",
         "ageMinGyr": null,
@@ -136606,13 +136609,8 @@
         "redshiftDisplay": "EST. z 0.00835",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_0011",
-        "fieldOfViewEstimated0012": true,
-        "fieldOfViewMethod0012": "same_release_sibling_fov_pixel_scale",
-        "fieldOfViewConfidence0012": "medium",
-        "pixelScaleArcsecPerPixel0012": 0.07154766,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 10.6 × 10.6 KLY",
-        "sizeConfidence0012": "medium"
+        "sizeDisplay": "EST. 86 x 86 KLY"
       },
       "designation": "NGC 4603 / IRAS 12382-4042",
       "designationMethod": "source_metadata_catalog_identifier",
@@ -136623,7 +136621,11 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4603",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheids"
+      "displayName": "Cepheids",
+      "imageReplacement0018": {
+        "sourceArchiveId": "opo9919b",
+        "reason": "Replace pixelated Cepheid cutout with full Hubble NGC 4603 field."
+      }
     },
     {
       "archiveId": "opo9919f",
