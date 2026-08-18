@@ -1,208 +1,219 @@
-name: Automatic Change Control Log
+name: Galaxy Viewer Controlled Engineering Change
 
-# ================================================================
-# GALAXY VIEWER — MANDATORY RUNTIME AND VISUAL VERIFICATION POLICY
-# ================================================================
+# ============================================================================
+# GALAXY VIEWER — STANDING ENGINEERING CHANGE CONTROL ORDER
+# ============================================================================
 #
-# This policy is a standing requirement for every future Galaxy Viewer
-# Engineering Change Order.
+# PURPOSE
+# -------
+# Prevent scope creep, collateral edits, silent cleanup, accidental file
+# changes, stale launchers, archive misuse, and unverifiable release changes.
+#
+# CORE RULE
+# ---------
+# DEFAULT DENY. A repository mutation is forbidden unless it is affirmatively
+# authorized by the current Engineering Change Order (ECO).
+#
+# This file is both:
+# 1. the permanent standing procedure ChatGPT must follow before writing; and
+# 2. an executable GitHub audit that fails closed when repository changes do
+#    not carry the minimum required ECO metadata or violate protected rules.
+#
+# IMPORTANT LIMITATION
+# --------------------
+# GitHub Actions cannot read the private ChatGPT conversation. Therefore the
+# chat-to-requirements transcription and explicit user GO are procedural gates
+# enforced by ChatGPT before a write. The executable workflow independently
+# verifies what GitHub can verify after a push: commit metadata, changed paths,
+# archive protection, launcher/runtime path rules, and forensic accounting.
+#
+# ============================================================================
+# SECTION 1 — CHAT -> REQUIREMENTS -> ECO -> GO
+# ============================================================================
+#
+# Before ANY repository write, ChatGPT MUST:
+#
+# A. Translate the user's current chat request into numbered requirements.
+#    Use stable IDs such as REQ-001, REQ-002, etc.
+#
+# B. For every requirement, record:
+#    - requested behavior;
+#    - acceptance criterion;
+#    - exact file(s) expected to change;
+#    - exact function/class/element/record/source region when identifiable;
+#    - behavior and paths that must remain unchanged.
+#
+# C. Publish a pre-change ECO containing:
+#    - ECO ID;
+#    - repository and branch;
+#    - exact current baseline blob SHA for every existing authorized file;
+#    - authorized operations: create / modify / move / delete;
+#    - authorized paths;
+#    - authorized source regions or anchors;
+#    - expected replacement/occurrence counts when search-and-replace is used;
+#    - expected diff-hunk count when reasonably knowable;
+#    - protected paths;
+#    - prohibited collateral operations;
+#    - acceptance tests;
+#    - uncertainties or items explicitly NOT authorized.
+#
+# D. Obtain explicit user GO for that ECO before implementation.
+#
+# E. Treat GO as authorization ONLY for that specific ECO. GO does not grant
+#    permission for adjacent fixes, cleanup, refactoring, formatting, renames,
+#    archive work, launcher work, dependency changes, artwork changes, catalog
+#    changes, manifest changes, service-worker changes, or any other work not
+#    already declared.
+#
+# F. Immediately before the first write, fetch the authorized baseline again.
+#    If any baseline blob differs from the approved ECO baseline, STOP with
+#    BASELINE DRIFT. Do not overwrite concurrent work and do not silently
+#    rebase the ECO.
+#
+# ============================================================================
+# SECTION 2 — NO OPPORTUNISTIC CHANGES
+# ============================================================================
+#
+# Finding a defect does not authorize fixing it.
+# Finding obsolete code does not authorize removing it.
+# Finding prettier formatting does not authorize formatting it.
+# Finding a better architecture does not authorize refactoring it.
+# Finding an adjacent launcher problem does not authorize changing it.
+# Finding an unused file does not authorize deleting it.
+# Finding an archive inconsistency does not authorize repairing the archive.
+#
+# Any additional needed change must be reported as a proposed ECO amendment or
+# future ECO and must receive explicit authorization before any write.
+#
+# ============================================================================
+# SECTION 3 — ACTIVE VIEWER LOCATION IS ABSOLUTE
+# ============================================================================
+#
+# The ONLY runtime location from which an HTML launcher or Android APK launcher
+# may fetch/load a Galaxy Viewer release is the repository root Viewer directory:
+#
+#     viewer/
+#
+# Runtime launchers MUST NOT fetch/load/reference a Viewer from:
+#
+#     viewer/archive/
+#
+# or from any alternate copy, mirror, historical folder, generated cache,
+# embedded stale release, or reconstructed Viewer implementation.
+#
+# A release launcher may reference the current approved root Viewer only.
+#
+# The active root Viewer MUST NOT reference another GV-beta Viewer release.
+# The active root Viewer MUST NOT reference viewer/archive/.
+#
+# ============================================================================
+# SECTION 4 — ARCHIVE IS APPEND-ONLY, READ-ONLY HISTORY
+# ============================================================================
+#
+# viewer/archive/ is protected historical evidence.
+#
+# Existing files already inside viewer/archive/ MUST NEVER be:
+# - modified;
+# - deleted;
+# - renamed;
+# - reformatted;
+# - regenerated;
+# - used as runtime dependencies;
+# - referenced by an HTML launcher;
+# - referenced by an APK launcher;
+# - referenced by an active Viewer.
+#
+# The ONLY permitted archive write is the FINAL RELEASE RETIREMENT STEP:
+#
+# 1. The new Viewer is created/updated in viewer/.
+# 2. The new Viewer is committed.
+# 3. The committed new Viewer is fetched back and verified.
+# 4. Runtime/visual verification is performed to the extent technically
+#    possible and required by the ECO.
+# 5. Only after steps 1-4 pass, the immediately retired previous root Viewer
+#    may be moved into viewer/archive/ under a separately declared archive
+#    operation.
+# 6. The archive move must preserve the retired file byte-for-byte.
+# 7. The destination archive path must not already exist with different bytes.
+# 8. Existing archive history remains untouched.
+#
+# Archive work is NEVER implied by a Viewer change. It must be explicitly
+# identified in the ECO and commit metadata as an archive-authorized operation.
+#
+# ============================================================================
+# SECTION 5 — IMPLEMENTATION CONTAINMENT
+# ============================================================================
+#
+# During implementation ChatGPT MUST:
+#
+# - modify only authorized paths;
+# - modify only authorized source regions unless whole-file replacement was
+#   expressly approved;
+# - count whitespace, comments, line endings and formatting as real changes;
+# - stop if a search anchor occurs a different number of times than declared;
+# - stop if a replacement would touch an undeclared occurrence;
+# - stop if the edit expands into undeclared files or regions;
+# - never silently repair a failed test;
+# - never silently archive, delete, rename, move, or regenerate files.
+#
+# ============================================================================
+# SECTION 6 — REQUIRED COMMIT METADATA
+# ============================================================================
+#
+# Every non-bot repository mutation must use a commit message containing:
+#
+#     ECO-ID: <identifier>
+#     AUTHORIZED-PATHS: <comma-separated exact repository paths>
+#     REQUIREMENTS: <requirement IDs or range>
+#     ARCHIVE-AUTHORIZED: true|false
+#     USER-GO: true
+#
+# AUTHORIZED-PATHS must enumerate every path intentionally changed by that
+# commit. The executable audit compares the declaration to the actual diff.
+# Any unexpected changed path fails the workflow.
+#
+# An archive-changing commit must additionally state:
+#
+#     ARCHIVE-AUTHORIZED: true
+#
+# and its AUTHORIZED-PATHS must explicitly include every archive destination
+# and retired root Viewer path involved in that move.
+#
+# ============================================================================
+# SECTION 7 — POST-COMMIT FORENSIC RECONCILIATION
+# ============================================================================
+#
+# After every implementation commit, ChatGPT MUST fetch each changed file back
+# from GitHub and compare the committed result against the ECO.
+#
+# The completion report must include:
+# - ECO ID;
+# - requirement count;
+# - authorized paths;
+# - actual changed paths;
+# - unexpected paths;
+# - baseline commit/blob SHA(s);
+# - result commit/blob SHA(s);
+# - bytes before/after;
+# - lines before/after for UTF-8 text;
+# - characters before/after for UTF-8 text;
+# - inserted/deleted lines;
+# - inserted/deleted characters;
+# - unified diff-hunk count;
+# - requirement-to-diff mapping;
+# - unmapped hunks;
+# - source, syntax, runtime, visual, live-site and physical-device status.
+#
+# Every actual diff hunk must map to at least one authorized requirement.
+# Any unexplained or unmapped hunk is a FAIL even when the feature works.
+#
+# ============================================================================
+# SECTION 8 — VERIFICATION LEVELS MUST NEVER BE CONFUSED
+# ============================================================================
 #
 # IMPLEMENTATION IS NOT VERIFICATION.
 #
-# A source-code change is not considered successful merely because:
-#
-# - the requested lines were changed;
-# - formulas appear correct;
-# - telemetry values change;
-# - JavaScript parses;
-# - GLSL source appears valid;
-# - a commit succeeded;
-# - a blob SHA matches;
-# - a static/source comparison passes.
-#
-# Every Engineering Change Order must verify BOTH:
-#
-# 1. IMPLEMENTATION:
-#    The authorized source changes were made exactly and no unauthorized
-#    content changed.
-#
-# 2. BEHAVIOR:
-#    The resulting artifact actually performs the requested behavior.
-#
-#
-# ------------------------------------------------
-# MANDATORY HTML RUNTIME TEST
-# ------------------------------------------------
-#
-# After every authorized HTML creation or modification, ChatGPT MUST:
-#
-# 1. Fetch the committed HTML back from the repository.
-#
-# 2. Verify that the fetched bytes are the exact bytes intended for
-#    testing.
-#
-# 3. Run/open that exact HTML.
-#
-# 4. Load the actual production assets referenced by that HTML.
-#
-# 5. Verify that JavaScript/runtime initialization succeeds.
-#
-# 6. Check for visible/runtime errors.
-#
-# 7. Exercise the relevant controls, timing, states and interactions
-#    required by the ECO.
-#
-# 8. Observe the actual rendered result.
-#
-# 9. Compare the observed result directly against every behavioral
-#    acceptance criterion in the ECO.
-#
-# 10. Record which criteria visibly passed and which visibly failed.
-#
-#
-# ------------------------------------------------
-# MANDATORY VISUAL TEST
-# ------------------------------------------------
-#
-# Any requirement describing appearance, movement, animation, timing,
-# geometry, positioning, deformation, rotation, smear, fade, color,
-# size, alignment, visibility or interaction requires actual visual
-# observation.
-#
-# Source inspection alone MUST NOT be classified as a visual PASS.
-#
-# Mathematical calculations alone MUST NOT be classified as a visual
-# PASS.
-#
-# Telemetry alone MUST NOT be classified as a visual PASS.
-#
-# Multiple shader/history samples alone MUST NOT be classified as proof
-# that a visible smear exists.
-#
-# A changing rotation variable alone MUST NOT be classified as proof
-# that an object visibly rotates.
-#
-# The behavior itself must be visible in the rendered artifact.
-#
-#
-# ------------------------------------------------
-# ANIMATION-SPECIFIC TESTING
-# ------------------------------------------------
-#
-# For animation changes, ChatGPT MUST inspect the actual requested
-# timeline.
-#
-# If an ECO specifies frames, times or milestones, those exact regions
-# must be inspected.
-#
-# Example:
-#
-# If the ECO requires behavior between frames 314 and 330, ChatGPT must
-# actually inspect frames 314 through 330, or their exact corresponding
-# times, in the rendered artifact.
-#
-# It is insufficient to calculate what should occur at those frames.
-#
-# Frame controls supplied for inspection must be exercised when they are
-# relevant to acceptance testing.
-#
-#
-# ------------------------------------------------
-# LIVE-SITE VERIFICATION
-# ------------------------------------------------
-#
-# When the artifact is served through GitHub Pages and live-site testing
-# is technically possible, ChatGPT MUST open the actual GitHub Pages
-# artifact after the repository write.
-#
-# Use a cache-busting query based on the exact verified commit SHA when
-# appropriate so stale content is not mistaken for the current release.
-#
-# The committed/fetch-back repository artifact and the artifact being
-# visually tested must represent the same release.
-#
-#
-# ------------------------------------------------
-# ACTUAL ASSETS REQUIRED
-# ------------------------------------------------
-#
-# Visual acceptance testing must use the actual production assets.
-#
-# A synthetic image, mock target, simplified drawing or reconstructed
-# scene may be used only as a diagnostic aid.
-#
-# It MUST NOT substitute for testing the real HTML with its real assets.
-#
-#
-# ------------------------------------------------
-# FAILURE / UNAVAILABLE-TEST RULE
-# ------------------------------------------------
-#
-# If ChatGPT cannot run, open, render or visually inspect the actual
-# artifact:
-#
-# - do not claim visual success;
-# - do not claim runtime success;
-# - do not claim the behavioral requirement passed;
-# - do not call the ECO fully complete;
-# - explicitly state what could not be tested;
-# - classify affected requirements as UNVERIFIED,
-#   REQUIRES VISUAL TESTING, or REQUIRES LIVE-SITE TESTING.
-#
-# A lower level of evidence must never be promoted into a higher level
-# of verification.
-#
-#
-# ------------------------------------------------
-# OBSERVED FAILURE RULE
-# ------------------------------------------------
-#
-# If actual runtime or visual behavior does not satisfy an authorized
-# acceptance criterion, classify that requirement as FAIL.
-#
-# A mathematically plausible implementation does not override an
-# observed visual failure.
-#
-# Do not silently repair a failed test.
-#
-# Any additional repository modification requires authorization under
-# the controlled Engineering Change Order process.
-#
-#
-# ------------------------------------------------
-# COMPLETION GATE
-# ------------------------------------------------
-#
-# Before calling any ECO complete, ChatGPT must ask internally:
-#
-# A. Did I verify the exact committed/fetch-back source?
-#
-# B. Did I run the actual executable artifact where the request requires
-#    runtime behavior?
-#
-# C. Did I use the real production assets?
-#
-# D. Did I inspect the exact relevant frames/states/interactions?
-#
-# E. Did I visually observe every visual acceptance requirement?
-#
-# F. Did I check for runtime errors?
-#
-# G. Does the observed behavior actually match the user's request?
-#
-# H. Am I clearly distinguishing source, syntax, runtime, visual,
-#    live-site and device testing?
-#
-# If any required answer is NO, the ECO may not be reported as a full
-# PASS.
-#
-#
-# ------------------------------------------------
-# REQUIRED COMPLETION REPORT LANGUAGE
-# ------------------------------------------------
-#
-# Every completion report must separately identify:
-#
+# Completion reporting must distinguish:
 # - SOURCE INSPECTION
 # - EXACT TEXT/BLOB COMPARISON
 # - SYNTAX VALIDATION
@@ -211,104 +222,52 @@ name: Automatic Change Control Log
 # - LIVE-SITE TESTING
 # - PHYSICAL-DEVICE TESTING
 #
-# Only testing actually performed may receive PASS.
+# Only a test actually performed may receive PASS.
+# A source review is not a visual PASS.
+# Syntax success is not a runtime PASS.
+# Runtime success is not a physical-device PASS.
 #
-# CORE RULE:
+# If a required test cannot be performed, report UNVERIFIED rather than
+# promoting weaker evidence into a stronger claim.
 #
-# DO NOT VERIFY ONLY THAT THE CODE CHANGED.
-# VERIFY THAT THE RESULT ACTUALLY WORKS.
+# A failed test does not authorize a repair. The repair requires authorization.
 #
+# ============================================================================
+# SECTION 9 — HTML / APK / BOTH RELEASE HANDOFF
+# ============================================================================
 #
-# ------------------------------------------------
-# MANDATORY VERSIONED APP LAUNCHER + CURRENT-BETA UPDATE
-# ------------------------------------------------
+# At the end of a Viewer ECO, after source reconciliation and verification,
+# ChatGPT must present the release-delivery choice:
 #
-# Every software change that creates or modifies a Galaxy Viewer app/Viewer
-# release MUST create a new dedicated versioned app launcher in
-# `mobile/beta/` whose version matches that Viewer release.
+#     HTML
+#     APK
+#     BOTH
 #
-# Example lineage:
-# `viewer/GV-beta-0008A.py` -> `mobile/beta/8A.html`
-# `viewer/GV-beta-0008B.py` -> `mobile/beta/8B.html`
+# HTML release rule:
+# - the HTML/runtime launcher may fetch only the approved Viewer in viewer/;
+# - it must never fetch viewer/archive/.
 #
-# A dedicated versioned launcher MUST load the exact verified Viewer
-# revision for its matching release. It MUST remain a launcher shell and
-# MUST NOT duplicate or reconstruct the full Viewer implementation.
+# GENERIC APK rule:
+# - the Android wrapper should use one stable launcher/entrypoint;
+# - it must not hardcode a normal Galaxy Viewer revision such as 10F/10G/10H;
+# - promoting a Viewer normally updates the controlled web/root Viewer path,
+#   not the APK binary;
+# - rebuild the APK only when the Android wrapper itself changes;
+# - APK source/configuration must never point to viewer/archive/.
 #
-# A new Viewer version MUST NOT reuse, overwrite, rename, or modify an
-# older dedicated versioned launcher. Previous launchers are frozen release
-# history unless a separate ECO explicitly authorizes otherwise.
+# ============================================================================
+# SECTION 10 — FAIL-CLOSED RULE
+# ============================================================================
 #
-# Every Viewer-affecting ECO MUST explicitly authorize all three release
-# elements before GO:
-# 1. the exact new or modified Viewer version;
-# 2. the matching new versioned launcher path;
-# 3. `mobile/beta/index.html` synchronization to that newest launcher.
+# If authorization, baseline identity, path scope, archive state, source region,
+# requirement mapping, or test evidence is ambiguous, STOP rather than widen
+# authority.
 #
-# `mobile/beta/index.html` remains the rolling current-beta app entrypoint.
-# It MUST route to or otherwise launch the newest approved dedicated
-# versioned launcher and MUST NOT remain an independent second Viewer.
+# Completion requires ZERO unexplained repository changes.
 #
-# The Viewer, matching versioned launcher, and current-beta entrypoint MUST
-# each be committed and fetch-back verified. When technically possible,
-# the actual app launcher path must be runtime/visually tested against the
-# exact Viewer revision it launches.
-#
-# Inspection-only changes that do not create or modify a Viewer release do
-# not require inventing a new Viewer or launcher version unless the ECO
-# itself says they affect the released app/Viewer.
-#
-# Do not silently modify manifests, service workers, install launchers,
-# PWA files, artwork, dependencies, or other delivery paths. If any such
-# path is actually necessary, name it in the ECO and obtain GO before
-# modifying it.
-#
-# A Viewer-affecting ECO is incomplete if the new Viewer version, its
-# matching new dedicated launcher, or current-beta synchronization is
-# missing, stale, or points to a different Viewer revision.
-#
-# ------------------------------------------------
-# ENGINEERING CHANGE ORDER — AP SELF-PROMPT
-# ------------------------------------------------
-#
-# USER REQUEST:
-# Carry forward a fresh procedural self-prompt for the next AP
-# implementation under the Galaxy Viewer controlled-engineering rules.
-# This comment block does not authorize AP implementation.
-#
-# AUTHORIZED CHANGES:
-# - This workflow file may receive only this comment/instruction block.
-# - Existing executable workflow behavior must remain unchanged.
-# - The abandoned uncommitted workflow candidates are not baselines and
-#   must not be reproduced.
-#
-# AP EXECUTION GATE:
-# Before any AP write, ChatGPT must publish a separate AP Engineering
-# Change Order identifying the exact repository, branch, baseline,
-# authorized paths, protected paths, uncertainties, and acceptance tests,
-# and must receive a new explicit GO for that AP ECO.
-#
-# After AP GO, fetch the exact current baselines from GitHub, modify only
-# authorized files for authorized requirements, fetch every result back,
-# verify the exact changed blocks, record returned commit/blob SHAs, audit
-# every changed path, and distinguish source inspection, exact comparison,
-# syntax validation, runtime testing, visual testing, live-site testing,
-# and physical-device testing.
-#
-# PRESERVED BEHAVIOR:
-# No trigger, permission, concurrency, job, Python audit, commit, push,
-# launcher, Viewer, AP release, asset, documentation, dependency,
-# configuration, manifest, service worker, artwork, or other repository
-# behavior/path is changed or authorized by this block.
-#
-# CORE RULE:
-# This workflow self-prompt is procedural context only. AP remains
-# protected until its own Engineering Change Order receives GO.
-#
-# ================================================================
-# END MANDATORY RUNTIME AND VISUAL VERIFICATION POLICY
-# ================================================================
-
+# ============================================================================
+# EXECUTABLE ENFORCEMENT
+# ============================================================================
 
 on:
   push:
@@ -323,8 +282,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  record-change:
-    if: github.actor != 'github-actions[bot]'
+  controlled-audit:
     runs-on: ubuntu-latest
 
     steps:
@@ -334,12 +292,13 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Forensic account every changed file
+      - name: Enforce ECO scope, archive protection, runtime-path rules and forensic accounting
         env:
           REPOSITORY: ${{ github.repository }}
           BRANCH_NAME: ${{ github.ref_name }}
           COMMIT_SHA: ${{ github.sha }}
           BEFORE_SHA: ${{ github.event.before }}
+          ACTOR: ${{ github.actor }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
           COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
@@ -355,11 +314,13 @@ jobs:
           import sys
           from datetime import datetime, timezone
 
-          log_path = pathlib.Path('docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md')
-          log_path.parent.mkdir(parents=True, exist_ok=True)
           commit_sha = os.environ['COMMIT_SHA']
           before_sha = os.environ.get('BEFORE_SHA', '')
+          actor = os.environ.get('ACTOR', '')
+          message = os.environ.get('COMMIT_MESSAGE', '') or ''
           zero_sha = '0' * 40
+          log_path = pathlib.Path('docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md')
+          log_path.parent.mkdir(parents=True, exist_ok=True)
 
           def git_text(*args):
               return subprocess.check_output(['git', *args], text=True).rstrip('\n')
@@ -373,18 +334,22 @@ jobs:
               except subprocess.CalledProcessError:
                   before_sha = commit_sha
 
+          def exists_at(ref, path):
+              return subprocess.run(
+                  ['git', 'cat-file', '-e', f'{ref}:{path}'],
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+              ).returncode == 0
+
           def blob_at(ref, path):
-              if not path:
+              if not path or not exists_at(ref, path):
                   return b''
-              try:
-                  return git_bytes('show', f'{ref}:{path}')
-              except subprocess.CalledProcessError:
-                  return b''
+              return git_bytes('show', f'{ref}:{path}')
 
           def sha256(data):
               return hashlib.sha256(data).hexdigest()
 
-          def utf8_text(data):
+          def utf8(data):
               if b'\x00' in data:
                   return None
               try:
@@ -392,124 +357,224 @@ jobs:
               except UnicodeDecodeError:
                   return None
 
-          def audit_text(old_text, new_text):
-              old_lines = old_text.splitlines(keepends=True)
-              new_lines = new_text.splitlines(keepends=True)
-              matcher = difflib.SequenceMatcher(a=old_lines, b=new_lines, autojunk=False)
-              inserted_lines = deleted_lines = inserted_blocks = deleted_blocks = changed_blocks = 0
-              for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-                  if tag == 'equal':
-                      continue
-                  changed_blocks += 1
-                  if tag in ('insert', 'replace'):
-                      inserted_lines += j2 - j1
-                      inserted_blocks += 1
-                  if tag in ('delete', 'replace'):
-                      deleted_lines += i2 - i1
-                      deleted_blocks += 1
-              chars = difflib.SequenceMatcher(a=old_text, b=new_text, autojunk=False)
-              inserted_chars = deleted_chars = 0
-              for tag, i1, i2, j1, j2 in chars.get_opcodes():
-                  if tag in ('insert', 'replace'):
-                      inserted_chars += j2 - j1
-                  if tag in ('delete', 'replace'):
-                      deleted_chars += i2 - i1
-              return {
-                  'old_lines': len(old_text.splitlines()),
-                  'new_lines': len(new_text.splitlines()),
-                  'old_chars': len(old_text),
-                  'new_chars': len(new_text),
-                  'inserted_lines': inserted_lines,
-                  'deleted_lines': deleted_lines,
-                  'inserted_chars': inserted_chars,
-                  'deleted_chars': deleted_chars,
-                  'inserted_blocks': inserted_blocks,
-                  'deleted_blocks': deleted_blocks,
-                  'changed_blocks': changed_blocks,
-              }
+          def field(name):
+              m = re.search(rf'(?mi)^\s*{re.escape(name)}\s*:\s*(.+?)\s*$', message)
+              return m.group(1).strip() if m else None
 
-          def hunk_count(old_path, new_path):
-              path = new_path or old_path
-              if not path:
-                  return 0
-              try:
-                  patch = git_text('diff', '--no-ext-diff', '--unified=0', before_sha, commit_sha, '--', path)
-              except subprocess.CalledProcessError:
-                  return 0
-              return sum(1 for line in patch.splitlines() if line.startswith('@@'))
+          eco_id = field('ECO-ID')
+          paths_field = field('AUTHORIZED-PATHS')
+          reqs = field('REQUIREMENTS')
+          archive_authorized = (field('ARCHIVE-AUTHORIZED') or '').lower()
+          user_go = (field('USER-GO') or '').lower()
 
           name_status = git_text('diff', '--name-status', '-M', before_sha, commit_sha)
           changed = []
+          actual_paths = set()
           for raw in name_status.splitlines():
-              parts = raw.split('\t')
-              if not parts:
+              if not raw.strip():
                   continue
+              parts = raw.split('\t')
               code = parts[0]
               kind = code[0]
-              if kind == 'R' and len(parts) >= 3:
-                  changed.append((f'RENAMED {code[1:]}%', parts[1], parts[2]))
-              elif kind == 'C' and len(parts) >= 3:
-                  changed.append((f'COPIED {code[1:]}%', parts[1], parts[2]))
+              if kind in ('R', 'C') and len(parts) >= 3:
+                  old_path, new_path = parts[1], parts[2]
+                  changed.append((code, old_path, new_path))
+                  actual_paths.update([old_path, new_path])
               elif len(parts) >= 2:
-                  status = {'A':'ADDED','M':'MODIFIED','D':'DELETED','T':'TYPE CHANGED','U':'UNMERGED'}.get(kind, code)
                   path = parts[1]
-                  changed.append((status, path if kind == 'D' else None, path if kind != 'D' else None))
+                  changed.append((code, path if kind == 'D' else None, path if kind != 'D' else None))
+                  actual_paths.add(path)
 
-          marker_terms = (
-              'GALAXY VIEWER CHANGE ORDER', 'ENGINEERING CHANGE ORDER', 'CHANGE ORDER:',
-              'USER REQUEST:', 'USER INSTRUCTION:', 'AUTHORIZED CHANGES:', 'AUTHORIZED PATHS:',
-              'PRESERVED BEHAVIOR:', 'PURPOSE:'
+          # The forensic-log bot commit is the ONLY narrow bot exception.
+          # It may change exactly one path and no source/application content.
+          bot_log_only = (
+              actor == 'github-actions[bot]' and
+              actual_paths == {'docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md'}
           )
 
-          audits = []
           failures = []
-          evidence = []
 
-          for status, old_path, new_path in changed:
-              display_path = f'{old_path} → {new_path}' if old_path and new_path and old_path != new_path else (new_path or old_path)
-              old_data = b'' if status == 'ADDED' else blob_at(before_sha, old_path or new_path)
-              new_data = b'' if status == 'DELETED' else blob_at(commit_sha, new_path or old_path)
-              old_text = utf8_text(old_data)
-              new_text = utf8_text(new_data)
+          if not bot_log_only:
+              if not eco_id:
+                  failures.append('missing ECO-ID')
+              if not paths_field:
+                  failures.append('missing AUTHORIZED-PATHS')
+              if not reqs:
+                  failures.append('missing REQUIREMENTS')
+              if archive_authorized not in {'true', 'false'}:
+                  failures.append('ARCHIVE-AUTHORIZED must be true or false')
+              if user_go != 'true':
+                  failures.append('USER-GO must be true')
+
+              declared_paths = {
+                  p.strip() for p in (paths_field or '').split(',') if p.strip()
+              }
+              unexpected = sorted(actual_paths - declared_paths)
+              missing = sorted(declared_paths - actual_paths)
+              if unexpected:
+                  failures.append('UNAUTHORIZED CHANGED PATHS: ' + ', '.join(unexpected))
+              if missing:
+                  failures.append('DECLARED PATHS NOT CHANGED: ' + ', '.join(missing))
+          else:
+              declared_paths = set(actual_paths)
+              unexpected = []
+              missing = []
+
+          # ------------------------------------------------------------------
+          # ARCHIVE PROTECTION
+          # Existing archive files are immutable. The only permitted archive
+          # change is ADDING a new archive destination during an explicitly
+          # archive-authorized commit. Modification/deletion/rename of an
+          # existing archive file is always forbidden.
+          # ------------------------------------------------------------------
+          archive_touched = [p for p in actual_paths if p.startswith('viewer/archive/')]
+          if archive_touched and not bot_log_only:
+              if archive_authorized != 'true':
+                  failures.append('viewer/archive/ changed without ARCHIVE-AUTHORIZED: true')
+
+              for code, old_path, new_path in changed:
+                  old_is_archive = bool(old_path and old_path.startswith('viewer/archive/'))
+                  new_is_archive = bool(new_path and new_path.startswith('viewer/archive/'))
+
+                  if old_is_archive:
+                      failures.append(
+                          f'EXISTING ARCHIVE HISTORY IS IMMUTABLE: {old_path} ({code})'
+                      )
+
+                  if new_is_archive and exists_at(before_sha, new_path):
+                      failures.append(
+                          f'ARCHIVE DESTINATION ALREADY EXISTED AND MAY NOT BE REPLACED: {new_path}'
+                      )
+
+          # ------------------------------------------------------------------
+          # RUNTIME PATH PROTECTION
+          # Launchers and active Viewers may never reference viewer/archive/.
+          # Scan all relevant committed text, not just changed files, so a
+          # promotion cannot legitimize a stale archive dependency.
+          # ------------------------------------------------------------------
+          tracked = git_text('ls-tree', '-r', '--name-only', commit_sha).splitlines()
+          scan_paths = [
+              p for p in tracked
+              if (
+                  p.startswith('mobile/') or
+                  p.startswith('viewer/')
+              ) and p.lower().endswith(('.html', '.htm', '.js', '.mjs', '.py', '.json', '.yml', '.yaml'))
+          ]
+
+          archive_ref_re = re.compile(r'viewer/archive/|\.\./archive/|/archive/GV-beta-', re.I)
+          viewer_release_ref_re = re.compile(r'GV-beta-[A-Za-z0-9-]+\.py')
+
+          for path in scan_paths:
+              data = blob_at(commit_sha, path)
+              text = utf8(data)
+              if text is None:
+                  continue
+
+              if archive_ref_re.search(text):
+                  # This workflow file itself necessarily contains policy text
+                  # naming viewer/archive/. Do not treat the control policy as a
+                  # runtime dependency.
+                  if path != '.github/workflows/automatic-change-control-log.yml':
+                      failures.append(f'FORBIDDEN RUNTIME/ACTIVE REFERENCE TO ARCHIVE: {path}')
+
+              # Active root Viewer releases may not depend on another Viewer.
+              if re.fullmatch(r'viewer/GV-beta-[A-Za-z0-9-]+\.py', path):
+                  own = pathlib.PurePosixPath(path).name
+                  refs = set(viewer_release_ref_re.findall(text)) - {own}
+                  if refs:
+                      failures.append(
+                          f'ACTIVE ROOT VIEWER REFERENCES ANOTHER VIEWER: {path}: ' +
+                          ', '.join(sorted(refs))
+                      )
+
+          # ------------------------------------------------------------------
+          # FORENSIC ACCOUNTING
+          # ------------------------------------------------------------------
+          audits = []
+          arithmetic_failures = []
+
+          for code, old_path, new_path in changed:
+              display = (
+                  f'{old_path} -> {new_path}'
+                  if old_path and new_path and old_path != new_path
+                  else (new_path or old_path)
+              )
+              old_data = blob_at(before_sha, old_path or new_path)
+              new_data = blob_at(commit_sha, new_path or old_path)
+              old_text = utf8(old_data)
+              new_text = utf8(new_data)
               text_mode = old_text is not None and new_text is not None
+
               item = {
-                  'status': status,
-                  'path': display_path,
+                  'code': code,
+                  'path': display,
                   'old_bytes': len(old_data),
                   'new_bytes': len(new_data),
-                  'old_sha': sha256(old_data),
-                  'new_sha': sha256(new_data),
+                  'old_sha256': sha256(old_data),
+                  'new_sha256': sha256(new_data),
                   'text': text_mode,
               }
+
               if text_mode:
-                  delta = audit_text(old_text, new_text)
-                  item.update(delta)
-                  item['hunks'] = hunk_count(old_path, new_path)
-                  item['line_ok'] = delta['old_lines'] + delta['inserted_lines'] - delta['deleted_lines'] == delta['new_lines']
-                  item['char_ok'] = delta['old_chars'] + delta['inserted_chars'] - delta['deleted_chars'] == delta['new_chars']
-                  if not (item['line_ok'] and item['char_ok']):
-                      failures.append(display_path)
-                  if new_text:
-                      matches = []
-                      for line in new_text.splitlines():
-                          stripped = line.strip()
-                          if any(term in stripped.upper() for term in marker_terms):
-                              matches.append(stripped[:500])
-                          if len(matches) >= 30:
-                              break
-                      if matches:
-                          evidence.append((display_path, matches))
+                  old_lines = old_text.splitlines(keepends=True)
+                  new_lines = new_text.splitlines(keepends=True)
+                  lm = difflib.SequenceMatcher(a=old_lines, b=new_lines, autojunk=False)
+                  ins_l = del_l = hunks = 0
+                  for tag, i1, i2, j1, j2 in lm.get_opcodes():
+                      if tag == 'equal':
+                          continue
+                      hunks += 1
+                      if tag in ('insert', 'replace'):
+                          ins_l += j2 - j1
+                      if tag in ('delete', 'replace'):
+                          del_l += i2 - i1
+
+                  cm = difflib.SequenceMatcher(a=old_text, b=new_text, autojunk=False)
+                  ins_c = del_c = 0
+                  for tag, i1, i2, j1, j2 in cm.get_opcodes():
+                      if tag in ('insert', 'replace'):
+                          ins_c += j2 - j1
+                      if tag in ('delete', 'replace'):
+                          del_c += i2 - i1
+
+                  old_line_count = len(old_text.splitlines())
+                  new_line_count = len(new_text.splitlines())
+                  old_char_count = len(old_text)
+                  new_char_count = len(new_text)
+                  line_ok = old_line_count + ins_l - del_l == new_line_count
+                  char_ok = old_char_count + ins_c - del_c == new_char_count
+                  if not line_ok or not char_ok:
+                      arithmetic_failures.append(display)
+
+                  item.update({
+                      'old_lines': old_line_count,
+                      'new_lines': new_line_count,
+                      'old_chars': old_char_count,
+                      'new_chars': new_char_count,
+                      'inserted_lines': ins_l,
+                      'deleted_lines': del_l,
+                      'inserted_chars': ins_c,
+                      'deleted_chars': del_c,
+                      'changed_blocks': hunks,
+                      'line_ok': line_ok,
+                      'char_ok': char_ok,
+                  })
               audits.append(item)
 
+          if arithmetic_failures:
+              failures.append(
+                  'FORENSIC LINE/CHARACTER RECONCILIATION FAILURE: ' +
+                  ', '.join(arithmetic_failures)
+              )
+
+          status = 'PASS' if not failures else 'FAIL'
           timestamp = os.environ.get('COMMIT_TIMESTAMP') or datetime.now(timezone.utc).isoformat()
           author = os.environ.get('COMMIT_AUTHOR') or 'Not recorded'
-          message = os.environ.get('COMMIT_MESSAGE') or 'No commit message recorded'
           commit_url = os.environ.get('COMMIT_URL') or f"https://github.com/{os.environ['REPOSITORY']}/commit/{commit_sha}"
           compare_url = f"https://github.com/{os.environ['REPOSITORY']}/compare/{before_sha}...{commit_sha}"
-          overall = 'PASS' if not failures else 'FAIL'
 
           entry = [
-              f'## AUTO-{commit_sha[:12]} — {message.splitlines()[0]}', '',
+              f'## AUTO-{commit_sha[:12]} — {eco_id or "BOT-FORENSIC-LOG"}', '',
               f'**Recorded:** {timestamp}  ',
               f"**Repository:** `{os.environ['REPOSITORY']}`  ",
               f"**Branch:** `{os.environ['BRANCH_NAME']}`  ",
@@ -517,53 +582,60 @@ jobs:
               f'**Parent/baseline:** `{before_sha}`  ',
               f'**Comparison:** [View exact diff]({compare_url})  ',
               f'**Author:** {author}  ',
-              f'**Changed-path count:** `{len(audits)}`  ',
-              f'**Forensic reconciliation:** **{overall}**', '',
-              '### Commit message', '', '```text', *message.splitlines(), '```', '',
+              f'**Actor:** `{actor}`  ',
+              f'**ECO ID:** `{eco_id or "BOT-FORENSIC-LOG"}`  ',
+              f'**Requirements:** `{reqs or "bot log only"}`  ',
+              f'**Archive authorized:** `{archive_authorized or "n/a"}`  ',
+              f'**Declared changed paths:** `{len(declared_paths)}`  ',
+              f'**Actual changed paths:** `{len(actual_paths)}`  ',
+              f'**Unexpected changed paths:** `{len(unexpected)}`  ',
+              f'**Forensic result:** **{status}**', '',
+              '### Path reconciliation', '',
+              f'- Declared: `{", ".join(sorted(declared_paths)) or "none"}`',
+              f'- Actual: `{", ".join(sorted(actual_paths)) or "none"}`',
+              f'- Unexpected: `{", ".join(unexpected) or "none"}`',
+              f'- Declared but absent: `{", ".join(missing) or "none"}`', '',
               '### Complete changed-path accounting', ''
           ]
-
-          if not audits:
-              entry.append('- No changed paths detected.')
 
           for a in audits:
               entry.extend([
                   f"#### `{a['path']}`", '',
-                  f"- Status: **{a['status']}**",
-                  f"- SHA-256 before: `{a['old_sha']}`",
-                  f"- SHA-256 after: `{a['new_sha']}`",
-                  f"- Bytes: `{a['old_bytes']}` → `{a['new_bytes']}`",
+                  f"- Git status: `{a['code']}`",
+                  f"- SHA-256 before: `{a['old_sha256']}`",
+                  f"- SHA-256 after: `{a['new_sha256']}`",
+                  f"- Bytes: `{a['old_bytes']}` -> `{a['new_bytes']}`",
               ])
               if a['text']:
                   entry.extend([
-                      f"- Lines: `{a['old_lines']}` → `{a['new_lines']}`",
-                      f"- Characters: `{a['old_chars']}` → `{a['new_chars']}`",
+                      f"- Lines: `{a['old_lines']}` -> `{a['new_lines']}`",
+                      f"- Characters: `{a['old_chars']}` -> `{a['new_chars']}`",
                       f"- Inserted lines: `{a['inserted_lines']}`",
                       f"- Deleted lines: `{a['deleted_lines']}`",
                       f"- Inserted characters: `{a['inserted_chars']}`",
                       f"- Deleted characters: `{a['deleted_chars']}`",
-                      f"- Unified diff hunks: `{a['hunks']}`",
-                      f"- Inserted blocks: `{a['inserted_blocks']}`",
-                      f"- Deleted blocks: `{a['deleted_blocks']}`",
-                      f"- Changed blocks: `{a['changed_blocks']}`",
-                      f"- Line balance: `{a['old_lines']} + {a['inserted_lines']} - {a['deleted_lines']} = {a['new_lines']}` — **{'PASS' if a['line_ok'] else 'FAIL'}**",
-                      f"- Character balance: `{a['old_chars']} + {a['inserted_chars']} - {a['deleted_chars']} = {a['new_chars']}` — **{'PASS' if a['char_ok'] else 'FAIL'}**",
+                      f"- Changed diff blocks: `{a['changed_blocks']}`",
+                      f"- Line arithmetic: **{'PASS' if a['line_ok'] else 'FAIL'}**",
+                      f"- Character arithmetic: **{'PASS' if a['char_ok'] else 'FAIL'}**",
                   ])
               else:
-                  entry.append('- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.')
+                  entry.append('- Binary/non-UTF-8 file: accounted by byte count and SHA-256.')
               entry.append('')
 
-          entry.extend(['### Recorded instruction evidence', ''])
-          if evidence:
-              for path, lines in evidence:
-                  entry.extend([f'**`{path}`**', '', '```text', *lines, '```', ''])
+          entry.extend(['### Enforcement findings', ''])
+          if failures:
+              for failure in failures:
+                  entry.append(f'- **FAIL:** {failure}')
           else:
-              entry.extend(['No supported change-order marker was found in the changed text files.', 'The commit message and exact diff remain authoritative; intent has not been invented.', ''])
+              entry.append('- **PASS:** No executable-policy violation detected.')
 
           entry.extend([
-              '### Audit rule', '',
-              'Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.',
-              'A reconciliation failure fails this workflow before the automated log commit is created.', '', '---', ''
+              '',
+              '### Standing completion rule', '',
+              'This automated PASS proves only the checks GitHub can perform.',
+              'ChatGPT must still perform the requirement-to-hunk reconciliation and',
+              'the applicable source/syntax/runtime/visual/live-site/device tests before',
+              'calling the ECO complete.', '', '---', ''
           ])
 
           new_entry = '\n'.join(entry).rstrip() + '\n'
@@ -571,35 +643,52 @@ jobs:
           first_auto = re.search(r'(?m)^## AUTO-', existing)
           if first_auto:
               fixed_header = existing[:first_auto.start()].rstrip()
-              automated_text = existing[first_auto.start():].strip()
-              automated_entries = [b.strip() for b in re.split(r'(?m)(?=^## AUTO-)', automated_text) if b.strip()]
+              automated = existing[first_auto.start():].strip()
+              blocks = [
+                  b.strip() for b in re.split(r'(?m)(?=^## AUTO-)', automated)
+                  if b.strip()
+              ]
           else:
               fixed_header = existing.rstrip()
-              automated_entries = []
-          automated_entries = [b for b in automated_entries if not b.startswith(f'## AUTO-{commit_sha[:12]} ')]
-          automated_entries.insert(0, new_entry.strip())
-          log_path.write_text(fixed_header + '\n\n' + '\n\n'.join(automated_entries).rstrip() + '\n', encoding='utf-8', newline='\n')
+              blocks = []
+
+          blocks = [b for b in blocks if not b.startswith(f'## AUTO-{commit_sha[:12]} ')]
+          blocks.insert(0, new_entry.strip())
+          prefix = (fixed_header + '\n\n') if fixed_header else ''
+          log_path.write_text(
+              prefix + '\n\n'.join(blocks).rstrip() + '\n',
+              encoding='utf-8',
+              newline='\n'
+          )
 
           summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
           if summary_path:
               with open(summary_path, 'a', encoding='utf-8') as summary:
-                  summary.write('# Galaxy Viewer forensic change audit\n\n')
-                  summary.write(f'- Commit: `{commit_sha}`\n- Baseline: `{before_sha}`\n- Changed paths: `{len(audits)}`\n- Reconciliation: **{overall}**\n\n')
-                  for a in audits:
-                      summary.write(f"## `{a['path']}`\n- Status: {a['status']}\n- Bytes: {a['old_bytes']} → {a['new_bytes']}\n")
-                      if a['text']:
-                          summary.write(f"- Lines: {a['old_lines']} → {a['new_lines']}\n- Characters: {a['old_chars']} → {a['new_chars']}\n- Blocks +/−: {a['inserted_blocks']}/{a['deleted_blocks']}\n- Balance: {'PASS' if a['line_ok'] and a['char_ok'] else 'FAIL'}\n")
-                      summary.write('\n')
+                  summary.write('# Galaxy Viewer controlled ECO audit\n\n')
+                  summary.write(f'- ECO: `{eco_id or "BOT-FORENSIC-LOG"}`\n')
+                  summary.write(f'- Commit: `{commit_sha}`\n')
+                  summary.write(f'- Baseline: `{before_sha}`\n')
+                  summary.write(f'- Declared paths: `{len(declared_paths)}`\n')
+                  summary.write(f'- Actual paths: `{len(actual_paths)}`\n')
+                  summary.write(f'- Unexpected paths: `{len(unexpected)}`\n')
+                  summary.write(f'- Result: **{status}**\n')
+                  if failures:
+                      summary.write('\n## Failures\n')
+                      for failure in failures:
+                          summary.write(f'- {failure}\n')
 
           if failures:
-              print('FORENSIC RECONCILIATION FAILURE: ' + ', '.join(failures), file=sys.stderr)
+              print('CONTROLLED ECO AUDIT FAILED:', file=sys.stderr)
+              for failure in failures:
+                  print(' - ' + failure, file=sys.stderr)
               sys.exit(1)
           PY
 
       - name: Commit only the forensic log
+        if: success() && github.actor != 'github-actions[bot]'
         run: |
           if git diff --quiet -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md; then
-            echo "No log change detected."
+            echo "No forensic log change detected."
             exit 0
           fi
 
@@ -615,226 +704,3 @@ jobs:
           git add -- docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md
           git commit -m "Forensic log for ${{ github.sha }}"
           git push origin HEAD:beta
-
-      # ------------------------------------------------
-      # STANDALONE VIEWER ENFORCEMENT + AUTOMATIC ROLL-UP ARCHIVAL
-      # ------------------------------------------------
-      #
-      # Every current Viewer must be a standalone root release. It may load
-      # explicitly authorized resources beneath viewer/ such as modules,
-      # artwork and fonts, but it may not load another GV-beta Viewer or
-      # anything beneath viewer/archive/.
-      #
-      # Automatic archival occurs only when mobile/beta/index.html changes
-      # from one dedicated versioned launcher to a newer matching launcher.
-      # The newly current Viewer remains in viewer/. The immediately previous
-      # Viewer is copied byte-for-byte to viewer/archive/, blob identity is
-      # verified, and only then is the previous root copy removed.
-      #
-      # Releases 8A and 8B predate this standing archive rule and are not
-      # retroactively archived by this workflow.
-      - name: Enforce standalone Viewer and archive previous roll-up
-        env:
-          COMMIT_SHA: ${{ github.sha }}
-          BEFORE_SHA: ${{ github.event.before }}
-        run: |
-          python3 <<'PY'
-          import hashlib
-          import os
-          import pathlib
-          import re
-          import subprocess
-          import sys
-
-          commit_sha = os.environ['COMMIT_SHA']
-          before_sha = os.environ.get('BEFORE_SHA', '')
-          zero_sha = "0" * 40
-
-          def git_text(*args):
-              return subprocess.check_output(["git", *args], text=True).rstrip("\n")
-
-          def git_bytes(*args):
-              return subprocess.check_output(["git", *args])
-
-          def exists_at(ref, path):
-              return subprocess.run(
-                  ["git", "cat-file", "-e", f"{ref}:{path}"],
-                  stdout=subprocess.DEVNULL,
-                  stderr=subprocess.DEVNULL,
-              ).returncode == 0
-
-          def text_at(ref, path):
-              return git_bytes("show", f"{ref}:{path}").decode("utf-8")
-
-          if not before_sha or before_sha == zero_sha:
-              try:
-                  before_sha = git_text("rev-parse", f"{commit_sha}^")
-              except subprocess.CalledProcessError:
-                  before_sha = commit_sha
-
-          index_path = "mobile/beta/index.html"
-          if not exists_at(commit_sha, index_path):
-              raise SystemExit("CURRENT-BETA INDEX IS MISSING.")
-
-          current_index = text_at(commit_sha, index_path)
-          route_re = re.compile(r"window\.location\.replace\('\./([0-9A-Z]+)\.html")
-          current_match = route_re.search(current_index)
-          if not current_match:
-              raise SystemExit("CURRENT-BETA INDEX DOES NOT NAME A VERSIONED LAUNCHER.")
-
-          current_version = current_match.group(1)
-          launcher_path = f"mobile/beta/{current_version}.html"
-          viewer_path = f"viewer/GV-beta-000{current_version}.py"
-
-          if not exists_at(commit_sha, launcher_path):
-              raise SystemExit(f"MATCHING LAUNCHER IS MISSING: {launcher_path}")
-          if not exists_at(commit_sha, viewer_path):
-              raise SystemExit(f"MATCHING VIEWER IS MISSING: {viewer_path}")
-
-          launcher_text = text_at(commit_sha, launcher_path)
-          viewer_text = text_at(commit_sha, viewer_path)
-
-          if "viewer/archive/" in launcher_text or "viewer/archive/" in viewer_text:
-              raise SystemExit("ACTIVE RELEASE REFERENCES viewer/archive/.")
-
-          viewer_refs = re.findall(r"GV-beta-[A-Za-z0-9-]+\.py", viewer_text)
-          if viewer_refs:
-              raise SystemExit(
-                  "CURRENT VIEWER REFERENCES ANOTHER VIEWER RELEASE: " +
-                  ", ".join(sorted(set(viewer_refs)))
-              )
-
-          launch_re = re.compile(
-              r"const VIEWER_URL='\.\./\.\./viewer/"
-              r"(GV-beta-000([0-9A-Z]+)\.py)\?v=([0-9a-f]{40})';"
-          )
-          launch_match = launch_re.search(launcher_text)
-          if not launch_match:
-              raise SystemExit("MATCHING LAUNCHER DOES NOT CONTAIN AN EXACT VIEWER PIN.")
-
-          launch_filename, launch_version, pinned_blob = launch_match.groups()
-          if launch_version != current_version:
-              raise SystemExit("CURRENT-BETA VERSION AND LAUNCHER VIEWER VERSION DO NOT MATCH.")
-          if launch_filename != pathlib.PurePosixPath(viewer_path).name:
-              raise SystemExit("LAUNCHER VIEWER PATH DOES NOT MATCH CURRENT VIEWER.")
-
-          actual_blob = git_text("rev-parse", f"{commit_sha}:{viewer_path}")
-          if pinned_blob != actual_blob:
-              raise SystemExit(
-                  f"LAUNCHER PIN MISMATCH: expected {actual_blob}, found {pinned_blob}"
-              )
-
-          launcher_viewer_refs = re.findall(r"GV-beta-[A-Za-z0-9-]+\.py", launcher_text)
-          if set(launcher_viewer_refs) != {launch_filename}:
-              raise SystemExit("LAUNCHER REFERENCES A VIEWER OTHER THAN ITS MATCHING CURRENT VIEWER.")
-
-          changed_paths = set(
-              git_text("diff", "--name-only", before_sha, commit_sha).splitlines()
-          )
-          if index_path not in changed_paths:
-              print(
-                  f"Standalone Viewer verification PASS for {current_version}; "
-                  "current-beta did not change, so no archive action is permitted."
-              )
-              raise SystemExit(0)
-
-          if not exists_at(before_sha, index_path):
-              raise SystemExit("PREVIOUS CURRENT-BETA INDEX IS MISSING.")
-
-          previous_index = text_at(before_sha, index_path)
-          previous_match = route_re.search(previous_index)
-          if not previous_match:
-              raise SystemExit("PREVIOUS CURRENT-BETA INDEX DOES NOT NAME A VERSIONED LAUNCHER.")
-
-          previous_version = previous_match.group(1)
-          if previous_version == current_version:
-              print("Current-beta route did not change version; no archive action.")
-              raise SystemExit(0)
-
-          if previous_version in {"8A", "8B"}:
-              print(f"Legacy {previous_version} is protected from retroactive archival.")
-              raise SystemExit(0)
-
-          previous_viewer = f"viewer/GV-beta-000{previous_version}.py"
-          archive_viewer = f"viewer/archive/GV-beta-000{previous_version}.py"
-
-          if not exists_at(commit_sha, previous_viewer):
-              raise SystemExit(f"EXPECTED PREVIOUS VIEWER IS MISSING: {previous_viewer}")
-
-          original_blob = git_text("rev-parse", f"{commit_sha}:{previous_viewer}")
-          original_bytes = git_bytes("show", f"{commit_sha}:{previous_viewer}")
-
-          archive_path = pathlib.Path(archive_viewer)
-          if archive_path.exists():
-              archived_existing = archive_path.read_bytes()
-              existing_blob = hashlib.sha1(
-                  f"blob {len(archived_existing)}\0".encode() + archived_existing
-              ).hexdigest()
-              if existing_blob != original_blob:
-                  raise SystemExit(
-                      f"ARCHIVE COLLISION: {archive_viewer} exists with blob "
-                      f"{existing_blob}, expected {original_blob}"
-                  )
-          else:
-              archive_path.parent.mkdir(parents=True, exist_ok=True)
-              archive_path.write_bytes(original_bytes)
-
-          archived_bytes = archive_path.read_bytes()
-          archived_blob = hashlib.sha1(
-              f"blob {len(archived_bytes)}\0".encode() + archived_bytes
-          ).hexdigest()
-          if archived_blob != original_blob or archived_bytes != original_bytes:
-              raise SystemExit("ARCHIVE BYTE/BLOB VERIFICATION FAILED; ROOT VIEWER NOT REMOVED.")
-
-          pathlib.Path(previous_viewer).unlink()
-
-          log_path = pathlib.Path("docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md")
-          existing_log = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
-          archive_record = (
-              f"## ARCHIVE-{commit_sha[:12]} — {previous_version} → {current_version} roll-up\n\n"
-              f"**Source current-beta commit:** `{commit_sha}`  \n"
-              f"**Previous Viewer:** `{previous_viewer}`  \n"
-              f"**Archive Viewer:** `{archive_viewer}`  \n"
-              f"**Original Git blob:** `{original_blob}`  \n"
-              f"**Archived Git blob:** `{archived_blob}`  \n"
-              f"**Blob/byte equality:** **PASS**  \n"
-              f"**Current Viewer retained in root:** `{viewer_path}`  \n\n"
-              "---\n\n"
-          )
-          first_auto = re.search(r"(?m)^## AUTO-", existing_log)
-          if first_auto:
-              updated_log = (
-                  existing_log[:first_auto.start()] +
-                  archive_record +
-                  existing_log[first_auto.start():]
-              )
-          else:
-              updated_log = existing_log.rstrip() + "\n\n" + archive_record
-          log_path.write_text(updated_log, encoding="utf-8", newline="\n")
-
-          subprocess.check_call(
-              ["git", "add", "-A", "--", previous_viewer, archive_viewer, str(log_path)]
-          )
-          staged = set(git_text("diff", "--cached", "--no-renames", "--name-only").splitlines())
-          expected = {previous_viewer, archive_viewer, str(log_path)}
-          if staged != expected:
-              raise SystemExit(
-                  "UNEXPECTED ARCHIVE-SIDE PATHS: " +
-                  ", ".join(sorted(staged.symmetric_difference(expected)))
-              )
-
-          subprocess.check_call(["git", "config", "user.name", "github-actions[bot]"])
-          subprocess.check_call([
-              "git", "config", "user.email",
-              "41898282+github-actions[bot]@users.noreply.github.com"
-          ])
-          subprocess.check_call([
-              "git", "commit", "-m",
-              f"Archive Galaxy Viewer {previous_version} after {current_version} roll-up"
-          ])
-          subprocess.check_call(["git", "push", "origin", "HEAD:beta"])
-          print(
-              f"Archived {previous_viewer} → {archive_viewer}; "
-              f"blob equality PASS: {original_blob}"
-          )
-          PY
