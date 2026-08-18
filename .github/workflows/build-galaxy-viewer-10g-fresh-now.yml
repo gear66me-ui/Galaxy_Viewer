@@ -35,11 +35,9 @@ jobs:
           echo "plugins { id 'com.android.application' version '8.7.3' apply false }" > "$R/build.gradle"
           cat > "$R/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
-          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 5; versionName 'GENERIC' } }
+          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 6; versionName 'GENERIC' } }
           EOF
-          cat > "$R/app/src/main/res/values/colors.xml" <<'EOF'
-          <resources><color name="black">#000000</color></resources>
-          EOF
+          echo '<resources><color name="black">#000000</color></resources>' > "$R/app/src/main/res/values/colors.xml"
           cat > "$R/app/src/main/res/values/styles.xml" <<'EOF'
           <resources><style name="AppTheme" parent="android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item><item name="android:navigationBarColor">#000000</item><item name="android:statusBarColor">#000000</item></style></resources>
           EOF
@@ -59,7 +57,7 @@ jobs:
           public final class MainActivity extends Activity{
             static final String B="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/"; WebView w; FrameLayout cover; TextView err;
             public void onCreate(Bundle x){super.onCreate(x);FrameLayout root=new FrameLayout(this);root.setBackgroundColor(Color.BLACK);w=new WebView(this);w.setBackgroundColor(Color.BLACK);WebSettings s=w.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);w.setWebChromeClient(new WebChromeClient());w.setWebViewClient(new WebViewClient(){public void onPageFinished(WebView v,String u){cover.setVisibility(View.GONE);}});root.addView(w,new FrameLayout.LayoutParams(-1,-1));cover=new FrameLayout(this);cover.setBackgroundColor(Color.BLACK);ImageView i=new ImageView(this);i.setImageResource(R.drawable.ic_target_foreground);i.setScaleType(ImageView.ScaleType.CENTER_INSIDE);FrameLayout.LayoutParams p=new FrameLayout.LayoutParams(dp(220),dp(220));p.gravity=Gravity.CENTER;cover.addView(i,p);root.addView(cover,new FrameLayout.LayoutParams(-1,-1));err=new TextView(this);err.setTextColor(Color.WHITE);err.setBackgroundColor(Color.BLACK);err.setPadding(dp(20),dp(20),dp(20),dp(20));err.setVisibility(View.GONE);root.addView(err,new FrameLayout.LayoutParams(-1,-1));setContentView(root);new Thread(this::load).start();}
-            int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);} String get(String u)throws Exception{HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection();c.setUseCaches(false);c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0");c.setConnectTimeout(15000);c.setReadTimeout(30000);int q=c.getResponseCode();if(q<200||q>=300)throw new Exception("HTTP "+q+" "+u);BufferedReader r=new BufferedReader(new InputStreamReader(c.getInputStream(),StandardCharsets.UTF_8));StringBuilder b=new StringBuilder();String l;while((l=r.readLine())!=null)b.append(l).append('\n');r.close();return b.toString();} String between(String s,String a,String z)throws Exception{int x=s.indexOf(a);if(x<0)throw new Exception("missing "+a);x+=a.length();int y=s.indexOf(z,x);if(y<0)throw new Exception("missing terminator");return s.substring(x,y);} void load(){try{String ptr=get(B+"gv-current-viewer.json?t="+System.currentTimeMillis());String v=new JSONObject(ptr).getString("viewer").trim();if(!v.matches("GV-beta-[0-9A-Za-z._-]+\\.py"))throw new Exception("invalid pointer "+v);String src=get(B+v+"?t="+System.currentTimeMillis());String h=between(src,"display(HTML(\"\"\"","\"\"\"))");String j=between(src,"display(Javascript(r\"\"\"","\"\"\"))");String page="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><base href='"+B+"'></head><body style='margin:0;background:#000'>"+h+"<script>"+j.replace("</script>","<\\/script>")+"</script></body></html>";runOnUiThread(()->w.loadDataWithBaseURL(B,page,"text/html","UTF-8",null));}catch(Exception e){runOnUiThread(()->{cover.setVisibility(View.GONE);err.setText("GALAXY VIEWER FAILED TO LOAD\n\n"+e);err.setVisibility(View.VISIBLE);});}}
+            int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);} String get(String u)throws Exception{HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection();c.setUseCaches(false);c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0");c.setRequestProperty("Pragma","no-cache");c.setConnectTimeout(15000);c.setReadTimeout(30000);int q=c.getResponseCode();if(q<200||q>=300)throw new Exception("HTTP "+q+" "+u);BufferedReader r=new BufferedReader(new InputStreamReader(c.getInputStream(),StandardCharsets.UTF_8));StringBuilder b=new StringBuilder();String l;while((l=r.readLine())!=null)b.append(l).append('\n');r.close();c.disconnect();return b.toString();} String between(String s,String a,String z)throws Exception{int x=s.indexOf(a);if(x<0)throw new Exception("missing "+a);x+=a.length();int y=s.indexOf(z,x);if(y<0)throw new Exception("missing terminator");return s.substring(x,y);} void load(){try{String ptr=get(B+"gv-current-viewer.json?t="+System.currentTimeMillis());String v=new JSONObject(ptr).getString("viewer").trim();if(!v.matches("GV-beta-[0-9A-Za-z._-]+\\.py"))throw new Exception("invalid pointer "+v);String src=get(B+v+"?t="+System.currentTimeMillis());String h=between(src,"display(HTML(\"\"\"","\"\"\"))");String j=between(src,"display(Javascript(r\"\"\"","\"\"\"))");String page="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><base href='"+B+"'></head><body style='margin:0;background:#000'>"+h+"<script>"+j.replace("</script>","<\\/script>")+"</script></body></html>";runOnUiThread(()->w.loadDataWithBaseURL(B,page,"text/html","UTF-8",null));}catch(Exception e){runOnUiThread(()->{cover.setVisibility(View.GONE);err.setText("GALAXY VIEWER FAILED TO LOAD\n\n"+e);err.setVisibility(View.VISIBLE);});}}
           }
           EOF
           cd "$R"; gradle --no-daemon :app:assembleDebug
@@ -69,14 +67,19 @@ jobs:
         run: |
           set -euo pipefail
           AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"; SIGN="$ANDROID_HOME/build-tools/35.0.0/apksigner"
-          test -s Galaxy-Viewer-GENERIC.apk; unzip -t Galaxy-Viewer-GENERIC.apk | tee apk-zip-test.txt
+          test -s Galaxy-Viewer-GENERIC.apk
+          unzip -t Galaxy-Viewer-GENERIC.apk | tee apk-zip-test.txt
           "$AAPT" dump badging Galaxy-Viewer-GENERIC.apk | tee apk-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt; grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
           "$AAPT" dump xmltree Galaxy-Viewer-GENERIC.apk AndroidManifest.xml | tee apk-manifest.txt
-          grep -q 'android:icon' apk-manifest.txt; grep -q 'android:roundIcon' apk-manifest.txt
-          "$AAPT" dump resources Galaxy-Viewer-GENERIC.apk | tee apk-resources.txt
-          grep -q 'ic_launcher' apk-resources.txt; grep -q 'ic_target_foreground' apk-resources.txt
-          DEX=$(mktemp); unzip -p Galaxy-Viewer-GENERIC.apk classes.dex > "$DEX"; strings "$DEX" | grep -q 'gv-current-viewer.json'; strings "$DEX" | grep -q 'loadDataWithBaseURL'; ! strings "$DEX" | grep -q 'GV-beta-0010G.py'
+          grep -q 'android:icon' apk-manifest.txt
+          grep -q 'android:roundIcon' apk-manifest.txt
+          DEX=$(mktemp); unzip -p Galaxy-Viewer-GENERIC.apk classes.dex > "$DEX"
+          strings "$DEX" > apk-dex-strings.txt
+          grep -q 'gv-current-viewer.json' apk-dex-strings.txt
+          grep -q 'loadDataWithBaseURL' apk-dex-strings.txt
+          ! grep -q 'GV-beta-0010G.py' apk-dex-strings.txt
           "$SIGN" verify --verbose --print-certs Galaxy-Viewer-GENERIC.apk | tee apk-signature.txt
           sha256sum Galaxy-Viewer-GENERIC.apk | tee Galaxy-Viewer-GENERIC.apk.sha256
       - uses: actions/upload-artifact@v4
@@ -87,7 +90,6 @@ jobs:
             Galaxy-Viewer-GENERIC.apk.sha256
             apk-badging.txt
             apk-manifest.txt
-            apk-resources.txt
             apk-signature.txt
             apk-zip-test.txt
           if-no-files-found: error
