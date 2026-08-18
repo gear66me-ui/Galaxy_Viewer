@@ -1,3 +1,4 @@
+# trigger-r4-20260817
 name: Build Galaxy Viewer 10G R4 Proven Shell
 on:
   push:
