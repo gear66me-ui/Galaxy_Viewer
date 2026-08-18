@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-0294a6231e58 — Build permanent Galaxy Viewer GENERIC APK from proven builder
+
+**Recorded:** 2026-08-18T11:21:31-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0294a6231e5889c671c2927150f00dd3de00f2e3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0294a6231e5889c671c2927150f00dd3de00f2e3)  
+**Parent/baseline:** `7b95a251ca2170aece3df10565ea1e66b32e6a3c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/7b95a251ca2170aece3df10565ea1e66b32e6a3c...0294a6231e5889c671c2927150f00dd3de00f2e3)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build permanent Galaxy Viewer GENERIC APK from proven builder
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `6e3ad9ba2cd40d699132709e2d82f5222dbf96300e80af692394489f5ed627d7`
+- SHA-256 after: `e020c652b3d0586fe041273f06fe7540bbf466c974b52f374fbf03c469f6c8a0`
+- Bytes: `5991` → `11173`
+- Lines: `144` → `190`
+- Characters: `5989` → `11173`
+- Inserted lines: `116`
+- Deleted lines: `70`
+- Inserted characters: `7471`
+- Deleted characters: `2287`
+- Unified diff hunks: `16`
+- Inserted blocks: `18`
+- Deleted blocks: `18`
+- Changed blocks: `19`
+- Line balance: `144 + 116 - 70 = 190` — **PASS**
+- Character balance: `5989 + 7471 - 2287 = 11173` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-851bb3a40334 — Make GENERIC APK build self-report run metadata
 
 **Recorded:** 2026-08-18T11:17:32-05:00  
