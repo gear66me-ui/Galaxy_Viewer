@@ -43,9 +43,6 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Install target-icon rasterizer
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq librsvg2-bin
-
       - name: Create permanent pointer-driven GENERIC Android project
         shell: bash
         run: |
@@ -88,7 +85,8 @@ jobs:
           EOF
 
           cp viewer/artwork/icon_target_vector.svg "$ROOT/app/src/main/assets/artwork/target-icon.svg"
-          rsvg-convert -w 512 -h 512 viewer/artwork/icon_target_vector.svg -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+          command -v convert
+          convert -background none viewer/artwork/icon_target_vector.svg -resize 512x512 "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
 
           cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
