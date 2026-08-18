@@ -12,210 +12,73 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: beta
+        with: {ref: beta}
       - name: Expose build run ID
-        env:
-          GH_TOKEN: ${{ github.token }}
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=pending -f context='galaxy-viewer-generic-apk' -f description="GENERIC build ${GITHUB_RUN_ID}" -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
       - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+        with: {distribution: temurin, java-version: '17'}
       - uses: android-actions/setup-android@v3
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
+        with: {gradle-version: '8.9'}
       - name: Build GENERIC APK
         shell: bash
         run: |
           set -euo pipefail
-          ROOT="$RUNNER_TEMP/gv-generic"
-          rm -rf "$ROOT"
-          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric" \
-                   "$ROOT/app/src/main/res/values" \
-                   "$ROOT/app/src/main/res/drawable" \
-                   "$ROOT/app/src/main/res/mipmap-anydpi-v26"
-
-          cat > "$ROOT/settings.gradle" <<'EOF'
+          R="$RUNNER_TEMP/gv"; rm -rf "$R"; mkdir -p "$R/app/src/main/java/com/gear66me/galaxyviewergeneric" "$R/app/src/main/res/values" "$R/app/src/main/res/drawable" "$R/app/src/main/res/mipmap-anydpi-v26"
+          cat > "$R/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
-          rootProject.name='GalaxyViewerGeneric'
-          include ':app'
+          rootProject.name='GVGeneric'; include ':app'
           EOF
-
-          cat > "$ROOT/build.gradle" <<'EOF'
-          plugins { id 'com.android.application' version '8.7.3' apply false }
-          EOF
-
-          cat > "$ROOT/app/build.gradle" <<'EOF'
+          echo "plugins { id 'com.android.application' version '8.7.3' apply false }" > "$R/build.gradle"
+          cat > "$R/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
-          android {
-            namespace 'com.gear66me.galaxyviewergeneric'
-            compileSdk 35
-            defaultConfig {
-              applicationId 'com.gear66me.galaxyviewergeneric'
-              minSdk 23
-              targetSdk 35
-              versionCode 4
-              versionName 'GENERIC'
-            }
-          }
+          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 5; versionName 'GENERIC' } }
           EOF
-
-          cat > "$ROOT/app/src/main/res/values/colors.xml" <<'EOF'
-          <resources><color name="black">#000000</color><color name="white">#FFFFFF</color></resources>
+          cat > "$R/app/src/main/res/values/colors.xml" <<'EOF'
+          <resources><color name="black">#000000</color></resources>
           EOF
-
-          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          cat > "$R/app/src/main/res/values/styles.xml" <<'EOF'
           <resources><style name="AppTheme" parent="android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item><item name="android:navigationBarColor">#000000</item><item name="android:statusBarColor">#000000</item></style></resources>
           EOF
-
-          cat > "$ROOT/app/src/main/res/drawable/ic_target_foreground.xml" <<'EOF'
-          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:pathData="M54,22 A32,32 0,1 1,53.9 22"/>
-            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="6" android:pathData="M18,61 C32,38 77,36 90,49 C77,72 32,74 18,61"/>
-            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:pathData="M37,59 C43,49 65,48 72,54 C66,64 44,65 37,59"/>
-            <path android:fillColor="#FFFFFF" android:pathData="M54,49 A5,5 0,1 1,53.9 49"/>
-            <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round" android:pathData="M54,8 L54,20 M54,88 L54,100 M8,54 L20,54 M88,54 L100,54"/>
-          </vector>
+          cat > "$R/app/src/main/res/drawable/ic_target_foreground.xml" <<'EOF'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:pathData="M54,22 A32,32 0,1 1,53.9 22"/><path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="6" android:pathData="M18,61 C32,38 77,36 90,49 C77,72 32,74 18,61"/><path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:pathData="M37,59 C43,49 65,48 72,54 C66,64 44,65 37,59"/><path android:fillColor="#FFFFFF" android:pathData="M54,49 A5,5 0,1 1,53.9 49"/><path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round" android:pathData="M54,8 L54,20 M54,88 L54,100 M8,54 L20,54 M88,54 L100,54"/></vector>
           EOF
-
-          cat > "$ROOT/app/src/main/res/drawable/ic_launcher_legacy.xml" <<'EOF'
-          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-            <item android:drawable="@color/black"/>
-            <item android:drawable="@drawable/ic_target_foreground" android:gravity="center"/>
-          </layer-list>
+          cat > "$R/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/black"/><foreground android:drawable="@drawable/ic_target_foreground"/></adaptive-icon>
           EOF
-
-          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-            <background android:drawable="@color/black"/>
-            <foreground android:drawable="@drawable/ic_target_foreground"/>
-          </adaptive-icon>
+          cp "$R/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$R/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+          cat > "$R/app/src/main/AndroidManifest.xml" <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@style/AppTheme"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>
           EOF
-
-          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" <<'EOF'
-          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-            <background android:drawable="@color/black"/>
-            <foreground android:drawable="@drawable/ic_target_foreground"/>
-          </adaptive-icon>
-          EOF
-
-          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-            <uses-permission android:name="android.permission.INTERNET"/>
-            <application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@style/AppTheme" android:usesCleartextTraffic="false">
-              <activity android:name=".MainActivity" android:exported="true" android:configChanges="keyboardHidden|orientation|screenSize">
-                <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
-              </activity>
-            </application>
-          </manifest>
-          EOF
-
-          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric/MainActivity.java" <<'EOF'
+          cat > "$R/app/src/main/java/com/gear66me/galaxyviewergeneric/MainActivity.java" <<'EOF'
           package com.gear66me.galaxyviewergeneric;
-
-          import android.app.Activity;
-          import android.graphics.Color;
-          import android.os.Bundle;
-          import android.view.Gravity;
-          import android.view.View;
-          import android.webkit.WebChromeClient;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          import android.widget.FrameLayout;
-          import android.widget.ImageView;
-          import android.widget.TextView;
-          import java.io.BufferedReader;
-          import java.io.InputStreamReader;
-          import java.net.HttpURLConnection;
-          import java.net.URL;
-          import java.nio.charset.StandardCharsets;
-          import org.json.JSONObject;
-
-          public final class MainActivity extends Activity {
-            private static final String BASE="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/";
-            private WebView web;
-            private FrameLayout cover;
-            private TextView error;
-
-            @Override protected void onCreate(Bundle state){
-              super.onCreate(state);
-              FrameLayout root=new FrameLayout(this); root.setBackgroundColor(Color.BLACK);
-              web=new WebView(this); web.setBackgroundColor(Color.BLACK);
-              WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true); s.setCacheMode(WebSettings.LOAD_NO_CACHE); s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-              web.setWebChromeClient(new WebChromeClient());
-              web.setWebViewClient(new WebViewClient(){@Override public void onPageFinished(WebView v,String u){if(cover!=null)cover.setVisibility(View.GONE);}});
-              root.addView(web,new FrameLayout.LayoutParams(-1,-1));
-
-              cover=new FrameLayout(this); cover.setBackgroundColor(Color.BLACK);
-              ImageView icon=new ImageView(this); icon.setImageResource(com.gear66me.galaxyviewergeneric.R.drawable.ic_target_foreground); icon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-              FrameLayout.LayoutParams ip=new FrameLayout.LayoutParams(dp(220),dp(220)); ip.gravity=Gravity.CENTER; cover.addView(icon,ip);
-              root.addView(cover,new FrameLayout.LayoutParams(-1,-1));
-
-              error=new TextView(this); error.setTextColor(Color.WHITE); error.setBackgroundColor(Color.BLACK); error.setTextSize(14); error.setPadding(dp(20),dp(20),dp(20),dp(20)); error.setVisibility(View.GONE); root.addView(error,new FrameLayout.LayoutParams(-1,-1));
-              setContentView(root);
-              new Thread(this::loadCurrentViewer).start();
-            }
-
-            private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
-
-            private String get(String url) throws Exception {
-              HttpURLConnection c=(HttpURLConnection)new URL(url).openConnection();
-              c.setUseCaches(false); c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache"); c.setConnectTimeout(15000); c.setReadTimeout(30000);
-              int code=c.getResponseCode(); if(code<200||code>=300)throw new Exception("HTTP "+code+" "+url);
-              BufferedReader r=new BufferedReader(new InputStreamReader(c.getInputStream(),StandardCharsets.UTF_8)); StringBuilder b=new StringBuilder(); String line; while((line=r.readLine())!=null)b.append(line).append('\n'); r.close(); c.disconnect(); return b.toString();
-            }
-
-            private String between(String src,String start,String end) throws Exception {
-              int a=src.indexOf(start); if(a<0)throw new Exception("missing "+start); a+=start.length(); int b=src.indexOf(end,a); if(b<0)throw new Exception("missing block terminator"); return src.substring(a,b);
-            }
-
-            private void loadCurrentViewer(){
-              try{
-                String pointer=get(BASE+"gv-current-viewer.json?t="+System.currentTimeMillis());
-                String viewer=new JSONObject(pointer).getString("viewer").trim();
-                if(!viewer.matches("GV-beta-[0-9A-Za-z._-]+\\.py"))throw new Exception("invalid viewer pointer: "+viewer);
-                String src=get(BASE+viewer+"?t="+System.currentTimeMillis());
-                String html=between(src,"display(HTML(\"\"\"","\"\"\"))");
-                String js=between(src,"display(Javascript(r\"\"\"","\"\"\"))");
-                String page="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><base href='"+BASE+"'></head><body style='margin:0;background:#000'>"+html+"<script>"+js.replace("</script>","<\\/script>")+"</script></body></html>";
-                runOnUiThread(()->web.loadDataWithBaseURL(BASE,page,"text/html","UTF-8",null));
-              }catch(Exception e){
-                runOnUiThread(()->{cover.setVisibility(View.GONE); error.setText("GALAXY VIEWER FAILED TO LOAD\n\n"+e.toString()); error.setVisibility(View.VISIBLE);});
-              }
-            }
+          import android.app.*;import android.graphics.Color;import android.os.Bundle;import android.view.*;import android.webkit.*;import android.widget.*;import java.io.*;import java.net.*;import java.nio.charset.StandardCharsets;import org.json.JSONObject;
+          public final class MainActivity extends Activity{
+            static final String B="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/"; WebView w; FrameLayout cover; TextView err;
+            public void onCreate(Bundle x){super.onCreate(x);FrameLayout root=new FrameLayout(this);root.setBackgroundColor(Color.BLACK);w=new WebView(this);w.setBackgroundColor(Color.BLACK);WebSettings s=w.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);w.setWebChromeClient(new WebChromeClient());w.setWebViewClient(new WebViewClient(){public void onPageFinished(WebView v,String u){cover.setVisibility(View.GONE);}});root.addView(w,new FrameLayout.LayoutParams(-1,-1));cover=new FrameLayout(this);cover.setBackgroundColor(Color.BLACK);ImageView i=new ImageView(this);i.setImageResource(R.drawable.ic_target_foreground);i.setScaleType(ImageView.ScaleType.CENTER_INSIDE);FrameLayout.LayoutParams p=new FrameLayout.LayoutParams(dp(220),dp(220));p.gravity=Gravity.CENTER;cover.addView(i,p);root.addView(cover,new FrameLayout.LayoutParams(-1,-1));err=new TextView(this);err.setTextColor(Color.WHITE);err.setBackgroundColor(Color.BLACK);err.setPadding(dp(20),dp(20),dp(20),dp(20));err.setVisibility(View.GONE);root.addView(err,new FrameLayout.LayoutParams(-1,-1));setContentView(root);new Thread(this::load).start();}
+            int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);} String get(String u)throws Exception{HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection();c.setUseCaches(false);c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0");c.setConnectTimeout(15000);c.setReadTimeout(30000);int q=c.getResponseCode();if(q<200||q>=300)throw new Exception("HTTP "+q+" "+u);BufferedReader r=new BufferedReader(new InputStreamReader(c.getInputStream(),StandardCharsets.UTF_8));StringBuilder b=new StringBuilder();String l;while((l=r.readLine())!=null)b.append(l).append('\n');r.close();return b.toString();} String between(String s,String a,String z)throws Exception{int x=s.indexOf(a);if(x<0)throw new Exception("missing "+a);x+=a.length();int y=s.indexOf(z,x);if(y<0)throw new Exception("missing terminator");return s.substring(x,y);} void load(){try{String ptr=get(B+"gv-current-viewer.json?t="+System.currentTimeMillis());String v=new JSONObject(ptr).getString("viewer").trim();if(!v.matches("GV-beta-[0-9A-Za-z._-]+\\.py"))throw new Exception("invalid pointer "+v);String src=get(B+v+"?t="+System.currentTimeMillis());String h=between(src,"display(HTML(\"\"\"","\"\"\"))");String j=between(src,"display(Javascript(r\"\"\"","\"\"\"))");String page="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><base href='"+B+"'></head><body style='margin:0;background:#000'>"+h+"<script>"+j.replace("</script>","<\\/script>")+"</script></body></html>";runOnUiThread(()->w.loadDataWithBaseURL(B,page,"text/html","UTF-8",null));}catch(Exception e){runOnUiThread(()->{cover.setVisibility(View.GONE);err.setText("GALAXY VIEWER FAILED TO LOAD\n\n"+e);err.setVisibility(View.VISIBLE);});}}
           }
           EOF
-
-          cd "$ROOT"
-          gradle --no-daemon :app:assembleDebug
+          cd "$R"; gradle --no-daemon :app:assembleDebug
           cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/Galaxy-Viewer-GENERIC.apk"
-
       - name: Verify GENERIC APK
         shell: bash
         run: |
           set -euo pipefail
-          test -s Galaxy-Viewer-GENERIC.apk
-          unzip -t Galaxy-Viewer-GENERIC.apk | tee apk-zip-test.txt
-          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
-          SIGN="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"; SIGN="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -s Galaxy-Viewer-GENERIC.apk; unzip -t Galaxy-Viewer-GENERIC.apk | tee apk-zip-test.txt
           "$AAPT" dump badging Galaxy-Viewer-GENERIC.apk | tee apk-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt
-          grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
-          grep -q "application-icon" apk-badging.txt
-          unzip -l Galaxy-Viewer-GENERIC.apk | grep -q 'res/mipmap-anydpi-v26/ic_launcher.xml'
-          unzip -l Galaxy-Viewer-GENERIC.apk | grep -q 'res/mipmap-anydpi-v26/ic_launcher_round.xml'
-          unzip -l Galaxy-Viewer-GENERIC.apk | grep -q 'res/drawable/ic_target_foreground.xml'
-          ! unzip -p Galaxy-Viewer-GENERIC.apk classes.dex | strings | grep -q 'GV-beta-0010G.py'
-          unzip -p Galaxy-Viewer-GENERIC.apk classes.dex | strings | grep -q 'gv-current-viewer.json'
-          unzip -p Galaxy-Viewer-GENERIC.apk classes.dex | strings | grep -q 'loadDataWithBaseURL'
+          grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt; grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
+          "$AAPT" dump xmltree Galaxy-Viewer-GENERIC.apk AndroidManifest.xml | tee apk-manifest.txt
+          grep -q 'android:icon' apk-manifest.txt; grep -q 'android:roundIcon' apk-manifest.txt
+          "$AAPT" dump resources Galaxy-Viewer-GENERIC.apk | tee apk-resources.txt
+          grep -q 'ic_launcher' apk-resources.txt; grep -q 'ic_target_foreground' apk-resources.txt
+          DEX=$(mktemp); unzip -p Galaxy-Viewer-GENERIC.apk classes.dex > "$DEX"; strings "$DEX" | grep -q 'gv-current-viewer.json'; strings "$DEX" | grep -q 'loadDataWithBaseURL'; ! strings "$DEX" | grep -q 'GV-beta-0010G.py'
           "$SIGN" verify --verbose --print-certs Galaxy-Viewer-GENERIC.apk | tee apk-signature.txt
           sha256sum Galaxy-Viewer-GENERIC.apk | tee Galaxy-Viewer-GENERIC.apk.sha256
-
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-GENERIC
@@ -223,24 +86,20 @@ jobs:
             Galaxy-Viewer-GENERIC.apk
             Galaxy-Viewer-GENERIC.apk.sha256
             apk-badging.txt
+            apk-manifest.txt
+            apk-resources.txt
             apk-signature.txt
             apk-zip-test.txt
           if-no-files-found: error
       - name: Publish direct-download release
-        env:
-          GH_TOKEN: ${{ github.token }}
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: |
-          set -euo pipefail
-          TAG=galaxy-viewer-generic
-          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-GENERIC.apk Galaxy-Viewer-GENERIC.apk.sha256 --target "$GITHUB_SHA" --title 'Galaxy Viewer GENERIC' --notes 'Native pointer-driven generic launcher. Fetches gv-current-viewer.json fresh on every launch and renders the selected Viewer through WebView.loadDataWithBaseURL.'
+          TAG=galaxy-viewer-generic; gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true; gh release create "$TAG" Galaxy-Viewer-GENERIC.apk Galaxy-Viewer-GENERIC.apk.sha256 --target "$GITHUB_SHA" --title 'Galaxy Viewer GENERIC' --notes 'Native pointer-driven generic launcher.'
       - name: Report success
         if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=success -f context='galaxy-viewer-generic-apk' -f description="GENERIC APK ready ${GITHUB_RUN_ID}" -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
       - name: Report failure
         if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=failure -f context='galaxy-viewer-generic-apk' -f description="GENERIC build failed ${GITHUB_RUN_ID}" -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
