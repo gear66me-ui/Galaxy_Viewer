@@ -57,9 +57,12 @@ A = BUILD_PROJECT / 'app/src/main/assets'
 # Dedicated 10G Android package identity in the disposable build tree.
 p = BUILD_PROJECT / 'app/build.gradle'
 s = p.read_text(encoding='utf-8')
+s = re.sub(r"namespace\s+'[^']+'", "namespace 'com.gear66me.galaxyviewer10g'", s, count=1)
 s = re.sub(r"applicationId\s+'[^']+'", "applicationId 'com.gear66me.galaxyviewer10g'", s, count=1)
 s = re.sub(r'versionCode\s+\d+', 'versionCode 1015', s, count=1)
 s = re.sub(r"versionName\s+'[^']+'", "versionName '10G-standalone-apk-2'", s, count=1)
+assert "namespace 'com.gear66me.galaxyviewer10g'" in s
+assert "applicationId 'com.gear66me.galaxyviewer10g'" in s
 p.write_text(s, encoding='utf-8')
 
 p = BUILD_PROJECT / 'app/src/main/AndroidManifest.xml'
