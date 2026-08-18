@@ -1,0 +1,103 @@
+name: Temporary apply conservative Catalog 0018 pseudonyms
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-apply-catalog-0018-pseudonyms-v3.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Apply verified compact pseudonyms
+        shell: bash
+        run: |
+          git fetch origin beta
+          git reset --hard origin/beta
+          python - <<'PY'
+          import csv,json,re
+          from pathlib import Path
+          cat=Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json')
+          cand=Path('viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-candidates-v3.tsv')
+          d=json.loads(cat.read_text(encoding='utf-8'))
+          entries=d['entries']
+
+          rows=[]
+          with cand.open(encoding='utf-8',newline='') as f:
+              for r in csv.reader(f,delimiter='\t'):
+                  if not r: continue
+                  if len(r)!=6: raise SystemExit(f'Bad candidate row: {r!r}')
+                  rows.append((int(r[0]),r[1],r[2],r[3],r[4],r[5]))
+
+          # High-confidence overrides from established names or release-family context.
+          by_designation={
+              'Abell 2744':"Pandora's Cluster",
+              'Abell 2667':'Comet Galaxy',
+              '3C 321':'Death Star Galaxy',
+              'Messier 89':'Virgo Elliptical Galaxy',
+              'REP: Hubble Space Telescope':'Space Observatory',
+          }
+          preserve_current={'Fornax A'}
+
+          forbidden=re.compile(r'\b(?:hubble|image|images|imaging|ground[- ]based|telescope|observatory|camera|instrument|exposure)\b',re.I)
+          # 'Space Observatory' is intentionally allowed: it is descriptive, not provenance.
+          forbidden_final=re.compile(r'\b(?:hubble|image|images|imaging|ground[- ]based|telescope|camera|instrument|exposure)\b',re.I)
+          catalog_tokens=re.compile(r'\b(?:NGC|IC|UGC|UGCA|MACS|eMACS|RXC|RCS2?|Abell|ESO|SDSS|2XMM|PSZ1?|ACT-CL|IRAS|LMC|SMC|LEDA|MCG|AM|Arp|2MASX|WINGS|HerS|Messier|PGC|ACO|HCG|DDO|Mrk|Markarian|GAMA|PLCK|ZwCl|VV|HST|MS\s*\d|3C\s*\d)\b',re.I)
+
+          changed=[]
+          for row,aid,des,old,new,title in rows:
+              if row<1 or row>len(entries): raise SystemExit(f'Row out of range: {row}')
+              e=entries[row-1]
+              if (e.get('archiveId') or '')!=aid or (e.get('designation') or '')!=des or (e.get('displayName') or '')!=old:
+                  raise SystemExit('Baseline mismatch at row %d: %r' % (row,(aid,des,old,e.get('archiveId'),e.get('designation'),e.get('displayName'))))
+              if old in preserve_current:
+                  continue
+              # Family-level science context validated from ESA releases.
+              if aid.startswith('heic0810'):
+                  new='Interacting Galaxies'
+              elif aid.startswith('topo9918'):
+                  new='Gravitational Lens'
+              elif aid.startswith('topo9928') or aid.startswith('topo9827'):
+                  new='Distant Galaxy Cluster'
+              elif aid.startswith('topo9910'):
+                  new='Infrared Galaxy'
+              if des in by_designation:
+                  new=by_designation[des]
+              # Hard contract on replacement text.
+              if not new or len(new.split())>8 or re.search(r'\d',new) or forbidden_final.search(new) or catalog_tokens.search(new):
+                  raise SystemExit(f'Invalid replacement row {row}: {new!r}')
+              if old!=new:
+                  e['displayName']=new
+                  changed.append((row,aid,des,old,new))
+
+          # Validate all previously-targeted rows after application; explicit preserved established names exempt catalog-token test.
+          failures=[]
+          targeted={r[0] for r in rows}
+          for row in sorted(targeted):
+              e=entries[row-1]; n=(e.get('displayName') or '').strip()
+              if n in preserve_current:
+                  continue
+              if not n or len(n.split())>8 or re.search(r'\d',n) or forbidden_final.search(n) or catalog_tokens.search(n):
+                  failures.append((row,e.get('archiveId'),e.get('designation'),n))
+          if failures:
+              raise SystemExit('FINAL TARGET VALIDATION FAILED: '+repr(failures[:30]))
+
+          cat.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          report=Path('viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-final-audit.txt')
+          report.write_text('changed='+str(len(changed))+'\n'+'\n'.join(f'{r}\t{a}\t{de}\t{o} -> {n}' for r,a,de,o,n in changed)+'\n',encoding='utf-8')
+          print('CHANGED',len(changed),'TARGETED',len(rows),'TOTAL',len(entries))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-final-audit.txt
+          git commit -m 'Catalog 0018: complete remaining compact pseudonyms'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
