@@ -29,8 +29,6 @@ for forbidden in (
 ):
     assert forbidden not in standalone, f'forbidden prior-release dependency in 10G: {forbidden}'
 
-# Any explicit Viewer .py URL in the standalone release is a release-boundary
-# violation. Ordinary module/service URLs remain allowed.
 viewer_py_urls = re.findall(r'https?://[^\s\"\']*GV-beta-[^\s\"\']+\.py[^\s\"\']*', standalone, flags=re.I)
 assert not viewer_py_urls, f'forbidden runtime Viewer .py URL(s): {viewer_py_urls}'
 
@@ -45,7 +43,33 @@ js_blocks = re.findall(r'display\(Javascript\(r"""([\s\S]*?)"""\)\)', standalone
 assert html_blocks, '10G HTML extraction failed'
 assert js_blocks, '10G JavaScript extraction failed'
 viewer_html = ''.join(html_blocks)
-viewer_js = js_blocks
+viewer_js = list(js_blocks)
+
+# FORENSIC-ONLY instrumentation. This modifies only the disposable APK copy;
+# viewer/GV-beta-0010G.py remains byte-for-byte untouched. No timing, state,
+# geometry, splash, Random Galaxy, or Viewer behavior is intentionally changed.
+def replace_once(source, old, new, label):
+    assert old in source, f'forensic marker target missing: {label}'
+    return source.replace(old, new, 1)
+
+main = viewer_js[0]
+main = replace_once(main, "    'use strict';", "    'use strict';\n    const __gvTrace=(name,data='')=>console.info('[GV10G_TRACE]',Math.round(performance.now()),name,data);\n    __gvTrace('VIEWER_MAIN_JS_START');", 'viewer main start')
+main = replace_once(main, "    const A=await ensureAladin();", "    __gvTrace('ALADIN_SCRIPT_LOAD_START');\n    const A=await ensureAladin();\n    __gvTrace('ALADIN_SCRIPT_LOAD_COMPLETE');", 'Aladin load')
+main = replace_once(main, "    window.aladin_cosmic_command_test=aladin;", "    window.aladin_cosmic_command_test=aladin;\n    __gvTrace('ALADIN_INSTANCE_CREATED');", 'Aladin instance')
+main = replace_once(main, "    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');", "    __gvTrace('RANDOM_MODULE_LOAD_START');\n    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');\n    __gvTrace('RANDOM_MODULE_LOAD_COMPLETE',{version:window.GalaxyRandomGalaxy?.VERSION||null});", 'Random module load')
+main = replace_once(main, "    const randomGalaxy=window.GalaxyRandomGalaxy.mount(randomGalaxyHost,{", "    __gvTrace('RANDOM_MOUNT_START');\n    const randomGalaxy=window.GalaxyRandomGalaxy.mount(randomGalaxyHost,{", 'Random mount')
+main = replace_once(main, "    window.__gv10eRandomGalaxy=randomGalaxy;\n    await randomGalaxy.ready;\n    bottom.random.disabled=false;", "    window.__gv10eRandomGalaxy=randomGalaxy;\n    __gvTrace('RANDOM_CONSTRUCTED',{hasReady:!!randomGalaxy?.ready});\n    __gvTrace('RANDOM_READY_START');\n    try{await randomGalaxy.ready;__gvTrace('RANDOM_READY_RESOLVED',randomGalaxy.getState?.()||null)}catch(error){__gvTrace('RANDOM_READY_REJECTED',String(error?.stack||error));throw error}\n    bottom.random.disabled=false;\n    __gvTrace('RANDOM_BUTTON_ENABLED',{disabled:bottom.random.disabled});", 'Random ready')
+main = replace_once(main, "    const launchRandomGalaxy=()=>{\n        if(navigationPending||randomGalaxy.getState().busy)return;\n        randomGalaxy.travelToRandom().catch(error=>{", "    const launchRandomGalaxy=()=>{\n        const __state=randomGalaxy.getState?.()||{};\n        __gvTrace('RANDOM_CLICK_HANDLER_ENTER',{navigationPending,busy:!!__state.busy,disabled:bottom.random.disabled});\n        if(navigationPending||__state.busy){__gvTrace('RANDOM_CLICK_BLOCKED',{navigationPending,busy:!!__state.busy});return;}\n        __gvTrace('TRAVEL_TO_RANDOM_START');\n        randomGalaxy.travelToRandom().then(()=>__gvTrace('TRAVEL_TO_RANDOM_RESOLVED')).catch(error=>{\n            __gvTrace('TRAVEL_TO_RANDOM_REJECTED',String(error?.stack||error));", 'Random click path')
+main = replace_once(main, "    bottom.random.addEventListener('click',launchRandomGalaxy);", "    bottom.random.addEventListener('pointerdown',()=>__gvTrace('POINTER_EVENT_RECEIVED'),{capture:true});\n    bottom.random.addEventListener('click',launchRandomGalaxy);\n    __gvTrace('RANDOM_CLICK_LISTENER_ATTACHED');", 'Random listener')
+main = replace_once(main, "    document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length}}));", "    __gvTrace('AUTHORITATIVE_VIEWER_READY',{randomReady:true,randomDisabled:bottom.random.disabled,state:randomGalaxy.getState?.()||null});\n    document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length}}));", 'Authoritative Viewer ready')
+main = replace_once(main, "})().catch(error=>{console.error('GALAXY VIEWER 10E STARTUP FAILURE:',error);document.dispatchEvent(new CustomEvent('gv-viewer-failed',{detail:{message:String(error?.stack||error)}}));});", "})().catch(error=>{console.info('[GV10G_TRACE]',Math.round(performance.now()),'VIEWER_MAIN_REJECTED',String(error?.stack||error));console.error('GALAXY VIEWER 10E STARTUP FAILURE:',error);document.dispatchEvent(new CustomEvent('gv-viewer-failed',{detail:{message:String(error?.stack||error)}}));});", 'Viewer failure')
+viewer_js[0] = main
+
+if len(viewer_js) > 1:
+    info = viewer_js[1]
+    info = "console.info('[GV10G_TRACE]',Math.round(performance.now()),'INFO_JS_START');\n" + info
+    info = replace_once(info, "global.GalaxyViewerInfo10G=Object.freeze({", "console.info('[GV10G_TRACE]',Math.round(performance.now()),'INFO_MODULE_READY');\nglobal.GalaxyViewerInfo10G=Object.freeze({", 'Info ready')
+    viewer_js[1] = info
 
 # Build in a disposable copy. Existing repository Android projects remain
 # byte-for-byte untouched by packaging.
@@ -54,9 +78,6 @@ if BUILD_PROJECT.exists():
 shutil.copytree(SOURCE_PROJECT, BUILD_PROJECT)
 A = BUILD_PROJECT / 'app/src/main/assets'
 
-# The source Android shell is historical 10E infrastructure. Its old fallback
-# delivery chain must NOT ride inside a standalone 10G APK, even unused.
-# Strip only those legacy delivery assets from the disposable build copy.
 for legacy in (
     A / 'bootstrap-fallback.js',
     A / 'viewer/gv-current-viewer.json',
@@ -93,7 +114,6 @@ s = s.replace('GALAXY VIEWER 10E\\n\\n', 'GALAXY VIEWER 10G\\n\\n')
 new_java.write_text(s, encoding='utf-8')
 old_java.unlink()
 
-# Remove now-empty legacy Java package directories from the disposable copy.
 legacy_dir = old_java.parent
 while legacy_dir != BUILD_PROJECT / 'app/src/main/java' and legacy_dir.exists():
     try:
@@ -102,42 +122,47 @@ while legacy_dir != BUILD_PROJECT / 'app/src/main/java' and legacy_dir.exists():
         break
     legacy_dir = legacy_dir.parent
 
-# HTML parses raw script text before JavaScript parses string literals. A
-# literal </script> inside embedded Viewer data terminates the host bootstrap.
-# Escape only that HTML-parser sentinel; JavaScript restores the runtime value.
+# HTML parses raw script text before JavaScript parses string literals. Escape
+# only that parser sentinel; JavaScript restores the runtime value.
 vh = json.dumps(viewer_html).replace('</script', '<\\/script')
 vj = json.dumps(viewer_js).replace('</script', '<\\/script')
 
-# APK startup deliberately mirrors the approved dedicated 10G launcher:
-# Viewer initialization begins immediately in parallel with the icon/splash
-# sequence. The splash receives a bounded completion escape so a decorative
-# animation fallback can never deadlock an already-ready Viewer.
+# Forensic baseline: preserve the pre-timeout startup behavior exactly. No
+# splash deadlock workaround is active while the shared initialization race is
+# being measured.
 bootstrap = f'''(async()=>{{'use strict';
 const VIEWER_HTML={vh};
 const VIEWER_JS={vj};
-const VIEWER_TIMEOUT_MS=45000,SPLASH_FIRST_FRAME_TIMEOUT_MS=5000,SPLASH_COMPLETION_TIMEOUT_MS=15000,ICON_MIN_HOLD_MS=3500,launchStartedAt=performance.now();
+const VIEWER_TIMEOUT_MS=45000,SPLASH_FIRST_FRAME_TIMEOUT_MS=5000,ICON_MIN_HOLD_MS=3500,launchStartedAt=performance.now();
+const trace=(name,data='')=>console.info('[GV10G_TRACE]',Math.round(performance.now()),name,data);
+trace('APK_BOOTSTRAP_START');
 const launchCover=document.getElementById('gv-apk-cover');
 const splashFrame=document.getElementById('gv-splash-frame');
 const errorBox=document.getElementById('gv-launch-error');
-const showError=e=>{{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER 10G FAILED TO LOAD\\n\\n'+String(e?.stack||e)}};
-const run=s=>{{const x=document.createElement('script');x.textContent=s;document.body.appendChild(x)}};
+const showError=e=>{{trace('APK_FAILURE',String(e?.stack||e));errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER 10G FAILED TO LOAD\\n\\n'+String(e?.stack||e)}};
+const run=(s,index)=>{{trace('EMBEDDED_JS_EXECUTE',index);const x=document.createElement('script');x.textContent=s;document.body.appendChild(x)}};
 const mountViewerHtml=()=>{{
+  trace('VIEWER_HTML_MOUNT_START');
   const t=document.createElement('template');t.innerHTML=VIEWER_HTML;
+  let embeddedIndex=0;
   for(const old of [...t.content.querySelectorAll('script')]){{
     const fresh=document.createElement('script');
     for(const a of [...old.attributes])fresh.setAttribute(a.name,a.value);
     fresh.textContent=old.textContent;
     old.replaceWith(fresh);
+    trace('EMBEDDED_HTML_SCRIPT_PREPARED',embeddedIndex++);
   }}
   document.body.appendChild(t.content);
+  trace('VIEWER_HTML_MOUNT_COMPLETE',{scripts:embeddedIndex});
 }};
 const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))));
 const waitForViewer=()=>new Promise((resolve,reject)=>{{
   const deadline=performance.now()+VIEWER_TIMEOUT_MS;let settled=false;
   const fail=err=>{{if(settled)return;settled=true;document.removeEventListener('gv-viewer-failed',viewerFailed);reject(err)}};
-  const pass=()=>{{if(settled)return;settled=true;document.removeEventListener('gv-viewer-failed',viewerFailed);requestAnimationFrame(()=>requestAnimationFrame(resolve))}};
-  const viewerFailed=event=>fail(new Error(String(event?.detail?.message||'10G Viewer startup failed')));
+  const pass=()=>{{if(settled)return;settled=true;trace('APK_WEAK_READY_CONDITION_PASS',{hasGV10E:!!window.GV10E,randomReady:!!window.__gv10eRandomGalaxy,randomDisabled:document.getElementById('gv-random-galaxy')?.disabled});document.removeEventListener('gv-viewer-failed',viewerFailed);requestAnimationFrame(()=>requestAnimationFrame(resolve))}};
+  const viewerFailed=event=>{{trace('GV_VIEWER_FAILED_EVENT',event?.detail||'');fail(new Error(String(event?.detail?.message||'10G Viewer startup failed')))}};
   document.addEventListener('gv-viewer-failed',viewerFailed,{{once:true}});
+  document.addEventListener('gv-viewer-ready',event=>trace('GV_VIEWER_READY_EVENT',event?.detail||''),{{once:true}});
   const check=()=>{{
     if(settled)return;
     try{{
@@ -150,26 +175,29 @@ const waitForViewer=()=>new Promise((resolve,reject)=>{{
   check();
 }});
 const initializeViewer=async()=>{{
+  trace('VIEWER_INIT_START');
   mountViewerHtml();
-  for(const source of VIEWER_JS)run(source);
+  VIEWER_JS.forEach((source,index)=>run(source,index));
   await waitForViewer();
+  trace('VIEWER_INIT_WEAK_READY_RETURNED');
 }};
 const startSplash=async()=>{{
+  trace('SPLASH_WAIT_ICON_START');
   await waitForIconMinimum();
+  trace('SPLASH_START');
   return new Promise((resolve,reject)=>{{
-    let done=false,completionTimer=0;
-    const finish=reason=>{{if(done)return;done=true;if(completionTimer)clearTimeout(completionTimer);if(reason==='deadline')console.warn('GALAXY VIEWER 10G SPLASH DEADLINE ESCAPE');resolve()}};
-    const fail=e=>{{if(done)return;done=true;if(completionTimer)clearTimeout(completionTimer);reject(e)}};
+    let done=false;
+    const fail=e=>{{if(done)return;done=true;trace('SPLASH_FAILED',String(e?.stack||e));reject(e)}};
     splashFrame.addEventListener('load',()=>{{
+      trace('SPLASH_IFRAME_LOAD');
       try{{
         const w=splashFrame.contentWindow;if(!w)throw new Error('SPLASH WINDOW UNAVAILABLE');
-        completionTimer=setTimeout(()=>finish('deadline'),SPLASH_COMPLETION_TIMEOUT_MS);
-        w.addEventListener('galaxy-splash-complete',()=>finish('event'),{{once:true}});
+        w.addEventListener('galaxy-splash-complete',()=>{{if(done)return;done=true;trace('SPLASH_COMPLETE_EVENT');resolve()}},{{once:true}});
         const deadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
         const reveal=()=>{{
           try{{
             const d=w.document,scene=d.getElementById('scene'),poster=d.getElementById('poster');
-            if(scene?.style.opacity==='1'||poster?.style.visibility==='visible'){{if(launchCover?.isConnected)launchCover.remove();return}}
+            if(scene?.style.opacity==='1'||poster?.style.visibility==='visible'){{trace('SPLASH_FIRST_FRAME',{sceneOpacity:scene?.style.opacity||'',posterVisibility:poster?.style.visibility||''});if(launchCover?.isConnected)launchCover.remove();return}}
             if(performance.now()>=deadline)return fail(new Error('SPLASH FIRST FRAME TIMEOUT'));
             requestAnimationFrame(reveal);
           }}catch(e){{fail(e)}}
@@ -183,7 +211,8 @@ const startSplash=async()=>{{
 }};
 try{{
   await Promise.all([initializeViewer(),startSplash()]);
-  requestAnimationFrame(()=>{{if(splashFrame?.isConnected)splashFrame.remove();if(launchCover?.isConnected)launchCover.remove()}});
+  trace('PROMISE_ALL_RESOLVED');
+  requestAnimationFrame(()=>{{if(splashFrame?.isConnected)splashFrame.remove();if(launchCover?.isConnected)launchCover.remove();trace('HOME_REVEALED')}});
 }}catch(e){{console.error('GALAXY VIEWER 10G APK FAILURE',e);showError(e)}}
 }})();'''
 
@@ -191,7 +220,9 @@ head = '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=
 out = head + '<script>' + bootstrap + '</script></body></html>'
 (A / 'index.html').write_text(out, encoding='utf-8')
 
-# Packaging assertions: positive 10G identity, negative prior-release boundary.
+# Packaging assertions: positive identity, negative release boundary, and
+# forensic-only instrumentation. The functional splash workaround is
+# deliberately absent during this audit.
 text_out = (A / 'index.html').read_text(encoding='utf-8')
 assert 'VERSION 10G' in text_out
 assert 'GalaxyViewerInfo10G' in text_out
@@ -201,11 +232,14 @@ assert 'GV-beta-0010E.py' not in text_out
 assert 'BASELINE_URL=' not in text_out
 assert not re.search(r'GV-beta-[0-9A-Z-]+\.py', text_out, flags=re.I)
 assert 'Promise.all([initializeViewer(),startSplash()])' in text_out
-assert 'SPLASH_COMPLETION_TIMEOUT_MS=15000' in text_out
-assert "finish('deadline')" in text_out
+assert '[GV10G_TRACE]' in text_out
+assert 'AUTHORITATIVE_VIEWER_READY' in text_out
+assert 'APK_WEAK_READY_CONDITION_PASS' in text_out
+assert 'SPLASH_COMPLETION_TIMEOUT_MS' not in text_out
 assert text_out.lower().count('</script>') == 1
 
 print('AUTHORITATIVE 10G SOURCE READ-ONLY:', TEN_G)
 print('10G source bytes:', TEN_G.stat().st_size)
 print('Disposable Android build:', BUILD_PROJECT)
 print('Embedded APK index bytes:', len(text_out.encode('utf-8')))
+print('FORENSIC TRACE MODE: initialization ordering only; no functional workaround')
