@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-d6f4e76b7333 — Build and publish permanent Galaxy Viewer GENERIC APK only
+
+**Recorded:** 2026-08-18T11:44:07-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`d6f4e76b7333f167893e245409fd394f72c2ee97`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/d6f4e76b7333f167893e245409fd394f72c2ee97)  
+**Parent/baseline:** `1f30e4e8979b0e481408400a988979304305c62e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/1f30e4e8979b0e481408400a988979304305c62e...d6f4e76b7333f167893e245409fd394f72c2ee97)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build and publish permanent Galaxy Viewer GENERIC APK only
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `7022d66aee38913ffc03cdb12cba100c5856b0cb97988291f77988ac4900c414`
+- SHA-256 after: `2ff315f0a6e386a5b9545989fe78779b6f65ff1b9f82c0d0c814581020456256`
+- Bytes: `11086` → `8577`
+- Lines: `188` → `156`
+- Characters: `11086` → `8577`
+- Inserted lines: `42`
+- Deleted lines: `74`
+- Inserted characters: `1499`
+- Deleted characters: `4008`
+- Unified diff hunks: `25`
+- Inserted blocks: `17`
+- Deleted blocks: `24`
+- Changed blocks: `25`
+- Line balance: `188 + 42 - 74 = 156` — **PASS**
+- Character balance: `11086 + 1499 - 4008 = 8577` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c91d148f3f5e — Use preinstalled rasterizer for GENERIC target icon
 
 **Recorded:** 2026-08-18T11:24:33-05:00  
