@@ -1,0 +1,68 @@
+name: Restore 10G as standalone Viewer
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/restore-10g-standalone.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Recreate standalone 10G from frozen 10F control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('viewer/GV-beta-0010F.py')
+          target = Path('viewer/GV-beta-0010G.py')
+          text = source.read_text(encoding='utf-8')
+
+          text = text.replace('# GV-beta-0010F', '# GV-beta-0010G', 1)
+          text = text.replace("version.textContent='VERSION 10F'", "version.textContent='VERSION 10G'", 1)
+          text = text.replace("const VERSION='10F';", "const VERSION='10G';", 1)
+          text = text.replace("const DISPLAY_VERSION='10F';", "const DISPLAY_VERSION='10G';", 1)
+
+          if 'GALAXY VIEWER 10G — isolated INFO module' in text:
+              raise SystemExit('Forbidden isolated INFO block detected')
+          if text.count('display(Javascript(') != 1:
+              raise SystemExit(f'Expected exactly one Javascript execution block; found {text.count("display(Javascript(")}')
+          if "const VERSION='10G';" not in text or "const DISPLAY_VERSION='10G';" not in text:
+              raise SystemExit('10G version labels were not established')
+
+          target.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Verify 10F untouched and 10G standalone
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code -- viewer/GV-beta-0010F.py
+          test -f viewer/GV-beta-0010G.py
+          test "$(grep -c "display(Javascript(" viewer/GV-beta-0010G.py)" -eq 1
+          ! grep -Fq 'isolated INFO module' viewer/GV-beta-0010G.py
+          grep -Fq "const VERSION='10G';" viewer/GV-beta-0010G.py
+          grep -Fq "const DISPLAY_VERSION='10G';" viewer/GV-beta-0010G.py
+
+      - name: Commit standalone 10G and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/restore-10g-standalone.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010G.py .github/workflows/restore-10g-standalone.yml
+          git commit -m 'Restore 10G as single standalone Viewer'
+          git push origin beta
