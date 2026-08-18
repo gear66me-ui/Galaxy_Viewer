@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-6a379702c12b — Fix 10H surgical executor header assertion
+
+**Recorded:** 2026-08-18T13:28:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`6a379702c12b959da8a7f8ba5d2c7ab023fec1a9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/6a379702c12b959da8a7f8ba5d2c7ab023fec1a9)  
+**Parent/baseline:** `912fe0ca4072615c9255ad3fa80a089bdb6bd038`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/912fe0ca4072615c9255ad3fa80a089bdb6bd038...6a379702c12b959da8a7f8ba5d2c7ab023fec1a9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix 10H surgical executor header assertion
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-10h-surgical.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `854f2fc032a3df42a2cbe2161d4863752daecfdf08b346792bd21c12de63ca73`
+- SHA-256 after: `a28b1aa613fa7bae0b685a8d7b9be648740fc89c0811e94a981cf9ebba08e192`
+- Bytes: `12059` → `11892`
+- Lines: `175` → `172`
+- Characters: `12055` → `11888`
+- Inserted lines: `3`
+- Deleted lines: `6`
+- Inserted characters: `17`
+- Deleted characters: `184`
+- Unified diff hunks: `6`
+- Inserted blocks: `3`
+- Deleted blocks: `6`
+- Changed blocks: `6`
+- Line balance: `175 + 3 - 6 = 172` — **PASS**
+- Character balance: `12055 + 17 - 184 = 11888` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-a4255e525a42 — TEMP execute 10H surgical restoration
 
 **Recorded:** 2026-08-18T13:24:25-05:00  
