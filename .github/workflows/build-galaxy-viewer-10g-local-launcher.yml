@@ -1,0 +1,113 @@
+name: Build Galaxy Viewer 10G Local Launcher
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/build-galaxy-viewer-10g-local-launcher.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Prepare isolated 10G APK source
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=android/galaxy-viewer-10e
+          A="$P/app/src/main/assets"
+
+          # Reuse the proven 10E Android shell, but identify this APK as 10G.
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-10e/app/build.gradle')
+          s=p.read_text()
+          s=s.replace("applicationId 'com.gear66me.galaxyviewer10e.generic'", "applicationId 'com.gear66me.galaxyviewer10g'")
+          s=s.replace("versionCode 1010", "versionCode 1011")
+          s=s.replace("versionName '10E-generic-permanent-1'", "versionName '10G-local-launcher-1'")
+          p.write_text(s)
+
+          p=Path('android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml')
+          s=p.read_text().replace('android:label="Galaxy Viewer 10E"','android:label="Galaxy Viewer 10G"')
+          s=s.replace('android:name=".MainActivity"','android:name="com.gear66me.galaxyviewer10e.MainActivity"')
+          p.write_text(s)
+          PY
+
+          mkdir -p "$A/viewer/modules"
+          cp viewer/GV-beta-0010F.py "$A/viewer/GV-beta-0010F.py"
+          cp viewer/GV-beta-0010G.py "$A/viewer/GV-beta-0010G.py"
+          cp viewer/modules/gv-info-module-0001.js "$A/viewer/modules/gv-info-module-0001.js"
+
+          # The APK copy of 10G points to local bundled 10F + INFO instead of GitHub Pages/raw startup dependencies.
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010G.py')
+          s=p.read_text()
+          s=s.replace("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/a88b56749bd73efe166e0a849749f15d03fed47d/viewer/GV-beta-0010F.py", "viewer/GV-beta-0010F.py")
+          s=s.replace("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-info-module-0001.js?v=90dbdbfad10e92435e5da284aaea0d3f5da7c61d", "viewer/modules/gv-info-module-0001.js")
+          p.write_text(s)
+          PY
+
+          cat > "$A/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 10G</title>
+          <style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-launch-cover{position:fixed;inset:0;z-index:2147483646;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}#gv-launch-cover img{display:block;width:min(58vw,280px);height:min(58vw,280px);object-fit:contain}.v{color:#FFD85A;font:16px/1 sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55)}#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000;visibility:hidden}#gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD85A;white-space:pre-wrap;font:14px/1.45 monospace}#aladin-cosmic-command-test{width:100%!important;height:100dvh!important}</style></head><body>
+          <div id="gv-launch-cover"><img src="artwork/icon.svg" alt="GALAXY VIEWER"><div class="v">VERSION 10G</div></div><iframe id="gv-splash-frame"></iframe><div id="gv-launch-error"></div>
+          <script>(async()=>{'use strict';
+          const VIEWER_URL='viewer/GV-beta-0010G.py';
+          const SPLASH_URL='viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
+          const cover=document.getElementById('gv-launch-cover'),frame=document.getElementById('gv-splash-frame'),err=document.getElementById('gv-launch-error');
+          const started=performance.now(),delay=ms=>new Promise(r=>setTimeout(r,ms));
+          const fail=e=>{err.style.display='block';err.textContent='GALAXY VIEWER 10G FAILED TO LOAD\n\n'+String(e?.stack||e)};
+          const loadViewer=async()=>{const r=await fetch(VIEWER_URL,{cache:'no-store'});if(!r.ok)throw new Error('Bundled 10G Viewer HTTP '+r.status);const source=await r.text();const js=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(!js.length)throw new Error('Could not extract bundled 10G Viewer');for(const m of js){const s=document.createElement('script');s.textContent=m[1];document.body.appendChild(s)}const deadline=performance.now()+30000;while(performance.now()<deadline){if(document.getElementById('aladin-cosmic-command-test')?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GalaxyViewerInfo10G)return;await delay(75)}throw new Error('10G interactive Viewer readiness timeout')};
+          const splash=async()=>{await delay(Math.max(0,3500-(performance.now()-started)));return new Promise((resolve,reject)=>{let done=false,timer=0;const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve()};frame.addEventListener('load',()=>{try{const w=frame.contentWindow;w.addEventListener('galaxy-splash-complete',finish,{once:true});frame.style.visibility='visible';cover?.remove();timer=setTimeout(()=>reject(new Error('10G splash completion timeout')),22000)}catch(e){reject(e)}},{once:true});frame.addEventListener('error',()=>reject(new Error('10G splash failed to load')),{once:true});frame.src=SPLASH_URL})};
+          try{const viewerReady=loadViewer();await splash();await viewerReady;frame.remove();cover?.remove()}catch(e){console.error(e);fail(e)}})();</script></body></html>
+          HTML
+
+          grep -q 'viewer/GV-beta-0010F.py' "$A/viewer/GV-beta-0010G.py"
+          grep -q 'viewer/modules/gv-info-module-0001.js' "$A/viewer/GV-beta-0010G.py"
+          ! grep -q 'gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/10G-app.html' "$A/index.html"
+          grep -q 'VERSION 10G' "$A/index.html"
+
+      - name: Build 10G APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
+
+      - name: Validate and package APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-10G.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10g'" /tmp/badging.txt
+          grep -q "versionName='10G-local-launcher-1'" /tmp/badging.txt
+          grep -q "application-label:'Galaxy Viewer 10G'" /tmp/badging.txt
+          unzip -p "$APK" assets/index.html | grep -q 'VERSION 10G'
+          unzip -l "$APK" | grep -q 'assets/viewer/GV-beta-0010G.py'
+          unzip -l "$APK" | grep -q 'assets/viewer/GV-beta-0010F.py'
+          unzip -l "$APK" | grep -q 'assets/viewer/modules/gv-info-module-0001.js'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          cp "$APK" "$OUT"
+          sha256sum "$OUT" | tee "$OUT.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10G
+          path: |
+            Galaxy-Viewer-10G.apk
+            Galaxy-Viewer-10G.apk.sha256
+          if-no-files-found: error
+          retention-days: 30
