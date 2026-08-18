@@ -24,7 +24,8 @@ standalone = TEN_G.read_text(encoding='utf-8')
 assert "const VERSION='10G';" in standalone
 assert "const DISPLAY_VERSION='10G';" in standalone
 assert 'VERSION 10G' in standalone
-assert 'GalaxyViewerInfo10G' in standalone
+assert 'gv-viewer-ready' in standalone
+assert 'gv-viewer-failed' in standalone
 
 # Runtime release-boundary gate: 10G may not fetch another Viewer release.
 viewer_py_urls = re.findall(r'https?://[^\s\"\']*GV-beta-[^\s\"\']+\.py[^\s\"\']*', standalone, flags=re.I)
@@ -292,7 +293,8 @@ out = head + '<script>' + bootstrap + '</script></body></html>'
 
 text_out = (A / 'index.html').read_text(encoding='utf-8')
 assert 'VERSION 10G' in text_out
-assert 'GalaxyViewerInfo10G' in text_out
+assert "const VERSION='10G';" in text_out
+assert "const DISPLAY_VERSION='10G';" in text_out
 assert 'font-family:"Space Age",sans-serif!important' in text_out
 assert 'gv-viewer-ready' in text_out
 assert 'gv-viewer-failed' in text_out
