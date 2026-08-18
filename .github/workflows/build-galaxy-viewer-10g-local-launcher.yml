@@ -62,17 +62,19 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            set -euo pipefail
+            set -eu
             APK=Galaxy-Viewer-10G-SMOKE-TESTED.apk
             PKG=com.gear66me.galaxyviewer10g
             ACT=com.gear66me.galaxyviewer10e.MainActivity
             adb install -r "$APK"
             adb logcat -c
             adb shell am force-stop "$PKG" || true
-            adb shell am start -W -n "$PKG/$ACT" | tee smoke-start.txt
+            adb shell am start -W -n "$PKG/$ACT" > smoke-start.txt
+            cat smoke-start.txt
             grep -q 'Status: ok' smoke-start.txt
             sleep 65
-            adb shell pidof "$PKG" | tee smoke-pid.txt
+            adb shell pidof "$PKG" > smoke-pid.txt
+            cat smoke-pid.txt
             test -s smoke-pid.txt
             adb shell dumpsys activity activities > smoke-activity.txt
             grep -q "$PKG/$ACT" smoke-activity.txt
