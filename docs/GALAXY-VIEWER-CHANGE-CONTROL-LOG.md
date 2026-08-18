@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5bcbedc830f0 — Pin 10I verification launcher to repaired 10I blob
+
+**Recorded:** 2026-08-18T14:59:34-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5bcbedc830f090f5af43a2836d833af811be807d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5bcbedc830f090f5af43a2836d833af811be807d)  
+**Parent/baseline:** `5f5232f45aca669f4fd97fc2a0eeeefdf8963f9e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5f5232f45aca669f4fd97fc2a0eeeefdf8963f9e...5bcbedc830f090f5af43a2836d833af811be807d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Pin 10I verification launcher to repaired 10I blob
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/10I-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `74c8b17b668414a73b00d8d893348c3f9388d4c8dfcf7366a19566b10a5c18de`
+- SHA-256 after: `e5a2802b8d67edec308df30ddd52c7222047fed56baacbed4581f0dd59c8491e`
+- Bytes: `5325` → `5325`
+- Lines: `20` → `20`
+- Characters: `5325` → `5325`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `29`
+- Deleted characters: `29`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `20 + 1 - 1 = 20` — **PASS**
+- Character balance: `5325 + 29 - 29 = 5325` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-55a8928a2ffc — 10I repair HD back navigation and restore archive source icon
 
 **Recorded:** 2026-08-18T14:59:09-05:00  
