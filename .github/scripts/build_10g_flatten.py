@@ -88,8 +88,13 @@ while legacy_dir != BUILD_PROJECT / 'app/src/main/java' and legacy_dir.exists():
         break
     legacy_dir = legacy_dir.parent
 
-vh = json.dumps(viewer_html)
-vj = json.dumps(viewer_js)
+# HTML parses raw script text before JavaScript parses string literals.  A
+# literal </script> inside the embedded Viewer HTML would therefore terminate
+# this APK bootstrap script early. Escape only that HTML-parser sentinel while
+# preserving the exact runtime string value (JavaScript interprets <\/script>
+# as </script>).
+vh = json.dumps(viewer_html).replace('</script', '<\\/script')
+vj = json.dumps(viewer_js).replace('</script', '<\\/script')
 
 # APK startup deliberately mirrors the approved dedicated 10G launcher:
 # Viewer initialization begins immediately in parallel with the icon/splash
@@ -181,6 +186,9 @@ assert 'GV-beta-0010E.py' not in text_out
 assert 'BASELINE_URL=' not in text_out
 assert not re.search(r'GV-beta-[0-9A-Z-]+\.py', text_out, flags=re.I)
 assert 'Promise.all([initializeViewer(),startSplash()])' in text_out
+# The only literal closing-script sentinel must be the bootstrap's own final
+# closing tag. Embedded payload sentinels must remain escaped.
+assert text_out.lower().count('</script>') == 1
 
 print('AUTHORITATIVE 10G SOURCE READ-ONLY:', TEN_G)
 print('10G source bytes:', TEN_G.stat().st_size)
