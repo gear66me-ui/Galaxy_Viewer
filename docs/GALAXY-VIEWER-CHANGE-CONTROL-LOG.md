@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c2329ec8bea4 — Build native GENERIC APK with live Viewer preflight
+
+**Recorded:** 2026-08-18T12:26:20-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c2329ec8bea49e2834ad81d443e88053bbc9b137`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c2329ec8bea49e2834ad81d443e88053bbc9b137)  
+**Parent/baseline:** `bbcf8192bb048b85f90033fe826c9b2e49e66674`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bbcf8192bb048b85f90033fe826c9b2e49e66674...c2329ec8bea49e2834ad81d443e88053bbc9b137)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Build native GENERIC APK with live Viewer preflight
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `fce9c347c27585b3637e07a0f0a398578a143193705ea0358afeff8887499ef9`
+- SHA-256 after: `27c5d1c5f9b34dc4cea34faea9e4c2c0394c99f2fdd549c76872064107f56b0c`
+- Bytes: `11267` → `12732`
+- Lines: `107` → `132`
+- Characters: `11267` → `12732`
+- Inserted lines: `40`
+- Deleted lines: `15`
+- Inserted characters: `2019`
+- Deleted characters: `554`
+- Unified diff hunks: `12`
+- Inserted blocks: `10`
+- Deleted blocks: `8`
+- Changed blocks: `12`
+- Line balance: `107 + 40 - 15 = 132` — **PASS**
+- Character balance: `11267 + 2019 - 554 = 12732` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-281ce9ba48ad — Use robust GENERIC APK verification
 
 **Recorded:** 2026-08-18T12:22:26-05:00  
