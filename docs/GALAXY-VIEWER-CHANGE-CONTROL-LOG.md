@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-5bcfba784021 — Use Hubble catalog 0018 in generic launcher
+
+**Recorded:** 2026-08-18T12:58:53-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`5bcfba784021006b0e69fd23465d9ecb3d57634c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/5bcfba784021006b0e69fd23465d9ecb3d57634c)  
+**Parent/baseline:** `32ddc752473f848477ff9f386c65919a72f87cb3`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/32ddc752473f848477ff9f386c65919a72f87cb3...5bcfba784021006b0e69fd23465d9ecb3d57634c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use Hubble catalog 0018 in generic launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/GV-GENERIC-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `d9269d727fcdd9634228f70c16d296a0604dd7c06929337e4c5356d6863ba492`
+- SHA-256 after: `cbdad2abc0d93bff48abb02b82fad1c7548dc113a3c0706481548427d7ec526b`
+- Bytes: `4589` → `4678`
+- Lines: `1` → `1`
+- Characters: `4589` → `4678`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `93`
+- Deleted characters: `4`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 1 - 1 = 1` — **PASS**
+- Character balance: `4589 + 93 - 4 = 4678` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e10b293fa6d3 — Add files via upload
 
 **Recorded:** 2026-08-18T12:44:30-05:00  
