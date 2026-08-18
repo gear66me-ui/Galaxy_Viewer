@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-c5851314fa64 — Harden 10H surgical executor substitutions
+
+**Recorded:** 2026-08-18T13:30:43-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`c5851314fa64f57e062a3a7477f6d93f6a108cac`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/c5851314fa64f57e062a3a7477f6d93f6a108cac)  
+**Parent/baseline:** `c12b9863906a331e0983d7f5338f9badf13da265`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/c12b9863906a331e0983d7f5338f9badf13da265...c5851314fa64f57e062a3a7477f6d93f6a108cac)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Harden 10H surgical executor substitutions
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-10h-surgical.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `a28b1aa613fa7bae0b685a8d7b9be648740fc89c0811e94a981cf9ebba08e192`
+- SHA-256 after: `5b23656bbdd9845d9e9824da93d608758992c53a1f6a14ee500cb33c7b1a64a7`
+- Bytes: `11892` → `10831`
+- Lines: `172` → `140`
+- Characters: `11888` → `10827`
+- Inserted lines: `39`
+- Deleted lines: `71`
+- Inserted characters: `1481`
+- Deleted characters: `2542`
+- Unified diff hunks: `25`
+- Inserted blocks: `18`
+- Deleted blocks: `20`
+- Changed blocks: `23`
+- Line balance: `172 + 39 - 71 = 140` — **PASS**
+- Character balance: `11888 + 1481 - 2542 = 10827` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6a379702c12b — Fix 10H surgical executor header assertion
 
 **Recorded:** 2026-08-18T13:28:06-05:00  
