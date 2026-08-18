@@ -999,8 +999,7 @@ display(Javascript(r"""
                         source=source.replace("return host === 'esahubble.org' || host.endsWith('.esahubble.org');","return host === 'esahubble.org' || host.endsWith('.esahubble.org') || host === 'esawebb.org' || host.endsWith('.esawebb.org');");
                         source=source.replace("if (telescope && !/hubble/i.test(telescope)) throw new Error('Rejected entry without Hubble telescope data.');","if (telescope && !/(hubble|webb)/i.test(telescope)) throw new Error('Rejected entry without Hubble/Webb telescope data.');");
                         source=source.replace("source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        hubble: true,","source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        provider: cleanText(candidate.provider || (/webb/i.test(telescope) ? 'JWST' : 'HUBBLE')).toUpperCase(),\n        hubble: true,");
-                        source=source.replace('translateStart: 0.34,','translateStart: 0,');
-                        if(!source.includes("host === 'esawebb.org'")||!source.includes("provider: cleanText(candidate.provider")||!source.includes('translateStart: 0,'))throw new Error('RANDOM GALAXY 0031 10M COMPATIBILITY PATCH FAILED');
+                        if(!source.includes("host === 'esawebb.org'")||!source.includes("provider: cleanText(candidate.provider"))throw new Error('RANDOM GALAXY 0031 10M COMPATIBILITY PATCH FAILED');
                     }
                     script.textContent=source;
                     document.head.appendChild(script);
@@ -1281,7 +1280,7 @@ display(Javascript(r"""
 
     // 10M HD presentation: exact scope is archive/source controls + Galaxy Info + BACK TO SKY.
     const presentationStyle=document.createElement('style');
-    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,calc(100vw - 20px))!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport>img:not(#gv-hd-archive-button img){width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 10px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}.gvrg-credit{display:none!important}#gv-hd-archive-button{position:absolute!important;right:14px!important;bottom:14px!important;z-index:40!important;width:36px!important;height:36px!important;margin:0!important;padding:2px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;border:2px solid #78FFAB!important;border-radius:5px!important;background:rgba(0,12,8,.72)!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;pointer-events:auto!important;touch-action:manipulation!important}#gv-hd-archive-button img{display:block!important;width:28px!important;height:28px!important;max-width:28px!important;max-height:28px!important;object-fit:contain!important;margin:0!important;padding:0!important;border:0!important;border-radius:3px!important;box-shadow:none!important}#gv-archive-overlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;pointer-events:none}#gv-archive-overlay.gv-open{display:block;pointer-events:auto}#gv-archive-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#gv-archive-back{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483647;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 12px;border:2px solid #ABB3AA;border-radius:7px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));color:#E8FFF0;font:400 13px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 12px rgba(0,0,0,.75);pointer-events:auto;touch-action:manipulation;cursor:pointer}#gv-archive-arrow{position:relative;display:inline-flex;width:36px;height:36px;flex:0 0 36px;align-items:center;justify-content:center}#gv-archive-arrow::before,#gv-archive-arrow::after{content:"";position:absolute;left:50%;top:50%;width:17px;height:17px;border-style:solid;border-left:0;border-bottom:0;box-sizing:border-box;pointer-events:none}#gv-archive-arrow::before{border-width:6px;border-color:#78FFAB;filter:drop-shadow(0 0 4px rgba(87,255,147,.90));transform:translate(-38%,-50%) rotate(-135deg)}#gv-archive-arrow::after{width:13px;height:13px;border-width:4px;border-color:#DFFBFF;filter:drop-shadow(0 0 3px rgba(98,216,255,.80));transform:translate(-34%,-50%) rotate(-135deg)}#gv-archive-target-tile{box-sizing:border-box;width:36px;height:36px;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));overflow:hidden}#gv-archive-target-tile img{display:block;width:28px;height:28px;object-fit:contain;flex:0 0 28px;margin:0;padding:0;border:0}';
+    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,calc(100vw - 20px))!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport>img:not(#gv-hd-archive-button img){width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 10px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}.gvrg-credit{display:none!important}#gv-hd-archive-button{position:absolute!important;right:14px!important;bottom:14px!important;z-index:40!important;width:36px!important;height:36px!important;margin:0!important;padding:2px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:content-box!important;border:2px solid #78FFAB!important;border-radius:5px!important;background:rgba(0,12,8,.72)!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;pointer-events:auto!important;touch-action:manipulation!important}#gv-hd-archive-button img{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;margin:0!important;padding:0!important;border:0!important;border-radius:3px!important;box-shadow:none!important}#gv-archive-overlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;pointer-events:none}#gv-archive-overlay.gv-open{display:block;pointer-events:auto}#gv-archive-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#gv-archive-back{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483647;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 12px;border:2px solid #ABB3AA;border-radius:7px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));color:#E8FFF0;font:400 13px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 12px rgba(0,0,0,.75);pointer-events:auto;touch-action:manipulation;cursor:pointer}#gv-archive-arrow{position:relative;display:inline-flex;width:36px;height:36px;flex:0 0 36px;align-items:center;justify-content:center}#gv-archive-arrow::before,#gv-archive-arrow::after{content:"";position:absolute;left:50%;top:50%;width:17px;height:17px;border-style:solid;border-left:0;border-bottom:0;box-sizing:border-box;pointer-events:none}#gv-archive-arrow::before{border-width:6px;border-color:#78FFAB;filter:drop-shadow(0 0 4px rgba(87,255,147,.90));transform:translate(-38%,-50%) rotate(-135deg)}#gv-archive-arrow::after{width:13px;height:13px;border-width:4px;border-color:#DFFBFF;filter:drop-shadow(0 0 3px rgba(98,216,255,.80));transform:translate(-34%,-50%) rotate(-135deg)}#gv-archive-target-tile{box-sizing:border-box;width:36px;height:36px;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));overflow:hidden}#gv-archive-target-tile img{display:block;width:28px;height:28px;object-fit:contain;flex:0 0 28px;margin:0;padding:0;border:0}';
     document.head.appendChild(presentationStyle);
 
     const hdScience=randomGalaxy.hdScience;
@@ -1342,11 +1341,12 @@ display(Javascript(r"""
             color:'#E8FFF0',boxShadow:'none'
         });
     }
-    if(hdBackToSky)hdBackToSky.addEventListener('click',()=>requestAnimationFrame(()=>{
+    if(hdBackToSky)hdBackToSky.addEventListener('click',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        bottom.version.style.top='';
         bottom.version.style.bottom='51px';
         if(!navigationPending&&!randomGalaxy.getState().busy)bottom.random.disabled=false;
         setHistoryControls();
-    }),true);
+    })),true);
     if(randomGalaxy.creditEl)randomGalaxy.creditEl.remove();
 
     const hdArchiveButton=document.createElement('button');
@@ -1389,6 +1389,9 @@ display(Javascript(r"""
     const closeArchiveOverlay=()=>{
         archiveOverlay.classList.remove('gv-open');
         archiveOverlay.style.pointerEvents='none';
+        archiveOverlay.setAttribute('aria-hidden','true');
+        archiveFrame.style.pointerEvents='none';
+        archiveFrame.blur();
         archiveFrame.src='about:blank';
         archiveSourceUrl='';
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -1420,6 +1423,8 @@ display(Javascript(r"""
         if(!/^https:\/\//i.test(sourceUrl))return;
         archiveSourceUrl=sourceUrl;
         archiveFrame.src=sourceUrl;
+        archiveFrame.style.pointerEvents='auto';
+        archiveOverlay.removeAttribute('aria-hidden');
         archiveOverlay.style.pointerEvents='auto';
         archiveOverlay.classList.add('gv-open');
     },true);
@@ -1441,47 +1446,77 @@ display(Javascript(r"""
     function renderHdInfoCandidate(words,count){
         hdInfoBody.replaceChildren();
         const bodyRect=hdInfoBody.getBoundingClientRect();
+        const style=getComputedStyle(hdInfoBody);
+        const font=style.font||`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const measuredLineHeight=parseFloat(style.lineHeight);
+        const fontSize=parseFloat(style.fontSize)||10.5;
+        const lineHeight=Number.isFinite(measuredLineHeight)?measuredLineHeight:fontSize*1.45;
+        const canvas=renderHdInfoCandidate._canvas||(renderHdInfoCandidate._canvas=document.createElement('canvas'));
+        const context=canvas.getContext('2d');
+        context.font=font;
+        const gap=10;
+        let envelopeTop=bodyRect.bottom;
         let envelopeBottom=bodyRect.bottom;
+        let envelopeLeft=bodyRect.right;
         if(hdBackToSky){
-            const aperture=document.createElement('span');
             const buttonRect=hdBackToSky.getBoundingClientRect();
-            const gap=10;
-            const envelopeLeft=Math.max(bodyRect.left,buttonRect.left-gap);
-            const envelopeTop=Math.max(bodyRect.top,buttonRect.top-gap);
+            envelopeLeft=Math.max(bodyRect.left,buttonRect.left-gap);
+            envelopeTop=Math.max(bodyRect.top,buttonRect.top-gap);
             envelopeBottom=Math.min(bodyRect.bottom,buttonRect.bottom+gap);
-            const apertureWidth=Math.max(0,Math.min(bodyRect.width-72,bodyRect.right-envelopeLeft));
-            const apertureHeight=Math.max(0,envelopeBottom-envelopeTop);
-            Object.assign(aperture.style,{
-                float:'right',display:'block',width:`${apertureWidth}px`,height:`${apertureHeight}px`,
-                marginTop:`${Math.max(0,envelopeTop-bodyRect.top)}px`,marginLeft:`${gap}px`,
-                pointerEvents:'none',visibility:'hidden'
-            });
-            hdInfoBody.appendChild(aperture);
         }
-        const textNode=document.createTextNode(count?words.slice(0,count).join(' ')+(count<words.length?' …':''):'');
-        hdInfoBody.appendChild(textNode);
-        const range=document.createRange();
-        range.selectNodeContents(textNode);
-        const rects=[...range.getClientRects()];
-        const lastBottom=rects.length?Math.max(...rects.map(rect=>rect.bottom)):bodyRect.top;
-        return {lastBottom,envelopeBottom};
+        const sourceWords=count?words.slice(0,count):[];
+        const lines=[];
+        let index=0;
+        const maxLines=Math.max(0,Math.floor((bodyRect.height+.5)/lineHeight));
+        const letterSpacing=parseFloat(style.letterSpacing)||0;
+        const measure=value=>context.measureText(value).width+Math.max(0,value.length-1)*letterSpacing;
+        for(let lineIndex=0;lineIndex<maxLines&&index<sourceWords.length;lineIndex++){
+            const lineTop=bodyRect.top+lineIndex*lineHeight;
+            const lineBottom=lineTop+lineHeight;
+            if(lineTop>=envelopeBottom-.5)break;
+            const intersectsEnvelope=lineBottom>envelopeTop+.5&&lineTop<envelopeBottom-.5;
+            if(intersectsEnvelope&&lineBottom>envelopeBottom+.5)break;
+            const availableWidth=Math.max(0,intersectsEnvelope?envelopeLeft-bodyRect.left:bodyRect.width);
+            if(availableWidth<24)break;
+            let text='';
+            while(index<sourceWords.length){
+                const proposed=text?`${text} ${sourceWords[index]}`:sourceWords[index];
+                if(text&&measure(proposed)>availableWidth)break;
+                if(!text&&measure(proposed)>availableWidth){
+                    text=proposed;
+                    index++;
+                    break;
+                }
+                text=proposed;
+                index++;
+            }
+            if(!text)break;
+            lines.push({text,width:availableWidth});
+        }
+        const truncated=index<sourceWords.length||count<words.length;
+        if(truncated&&lines.length){
+            let line=lines[lines.length-1];
+            let text=line.text.replace(/\s*…$/,'');
+            while(text&&measure(`${text} …`)>line.width)text=text.replace(/\s+\S+$/,'');
+            line.text=text?`${text} …`:'…';
+        }
+        const fragment=document.createDocumentFragment();
+        for(const line of lines){
+            const row=document.createElement('div');
+            row.textContent=line.text;
+            Object.assign(row.style,{display:'block',width:`${line.width}px`,height:`${lineHeight}px`,lineHeight:`${lineHeight}px`,whiteSpace:'nowrap',overflow:'hidden'});
+            fragment.appendChild(row);
+        }
+        hdInfoBody.appendChild(fragment);
+        return {renderedWords:index,lineCount:lines.length,truncated};
     }
 
     function fitHdInfoText(destination=currentArchiveDestination()){
         if(!hdInfoBody||!destination)return;
-        const full=galaxyInfoText(destination);
-        const words=full.split(/\s+/).filter(Boolean);
-        let lo=0,hi=words.length,best=0;
-        while(lo<=hi){
-            const mid=(lo+hi)>>1;
-            const metrics=renderHdInfoCandidate(words,mid);
-            const fitsHeight=hdInfoBody.scrollHeight<=hdInfoBody.clientHeight+1;
-            const staysAboveEnvelopeBottom=metrics.lastBottom<=metrics.envelopeBottom+.5;
-            if(fitsHeight&&staysAboveEnvelopeBottom){best=mid;lo=mid+1}else hi=mid-1;
-        }
-        renderHdInfoCandidate(words,best);
+        const words=galaxyInfoText(destination).split(/\s+/).filter(Boolean);
+        const metrics=renderHdInfoCandidate(words,words.length);
         hdInfoBody.dataset.fittedCharacters=String(hdInfoBody.textContent.length);
-        hdInfoBody.dataset.fittedWords=String(best);
+        hdInfoBody.dataset.fittedWords=String(metrics.renderedWords);
     }
 
     function syncHdProviderPresentation(destination=currentArchiveDestination()){
@@ -1533,7 +1568,10 @@ display(Javascript(r"""
         hdInfoPanel.style.pointerEvents='none';
         if(hdBackToSky)hdBackToSky.style.pointerEvents='auto';
         hdArchiveButton.style.pointerEvents='auto';
-        bottom.version.style.bottom='50px';
+        const rootRect=root.getBoundingClientRect();
+        const versionTop=Math.ceil(overlayRect.top+infoTop+infoHeight+5-rootRect.top);
+        bottom.version.style.bottom='auto';
+        bottom.version.style.top=`${versionTop}px`;
         randomGalaxy.hdOverlay.querySelectorAll('button,a').forEach(element=>{element.style.pointerEvents='auto'});
         fitHdInfoText();
     }
