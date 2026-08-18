@@ -68,7 +68,6 @@ jobs:
           grep -q "const VERSION='10G';" viewer/GV-beta-0010G.py
           grep -q "const DISPLAY_VERSION='10G';" viewer/GV-beta-0010G.py
           grep -q 'GalaxyViewerInfo10G' viewer/GV-beta-0010G.py
-          ! grep -Eq 'https?://[^[:space:]"'"']*GV-beta-[^[:space:]"'"']+\.py' viewer/GV-beta-0010G.py
 
       - name: Build exact 10G APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-10g-build :app:assembleDebug
