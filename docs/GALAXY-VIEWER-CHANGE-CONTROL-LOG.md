@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e3765c63137a — TEMP direct 10H surgical execution
+
+**Recorded:** 2026-08-18T13:38:52-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e3765c63137a4575bb5e2105499c3f5c1228a552`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e3765c63137a4575bb5e2105499c3f5c1228a552)  
+**Parent/baseline:** `3940204268ccf52bab502f2d327d72bcb9b5358f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3940204268ccf52bab502f2d327d72bcb9b5358f...e3765c63137a4575bb5e2105499c3f5c1228a552)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+TEMP direct 10H surgical execution
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-10h-direct.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `58a4c23e511c6d93fe766a5f7bb893513f076272ece8f0a6d39d0165862c3b91`
+- Bytes: `0` → `11031`
+- Lines: `0` → `147`
+- Characters: `0` → `11027`
+- Inserted lines: `147`
+- Deleted lines: `0`
+- Inserted characters: `11027`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 147 - 0 = 147` — **PASS**
+- Character balance: `0 + 11027 - 0 = 11027` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c5851314fa64 — Harden 10H surgical executor substitutions
 
 **Recorded:** 2026-08-18T13:30:43-05:00  
