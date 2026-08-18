@@ -54,6 +54,20 @@ if BUILD_PROJECT.exists():
 shutil.copytree(SOURCE_PROJECT, BUILD_PROJECT)
 A = BUILD_PROJECT / 'app/src/main/assets'
 
+# The source Android shell is historical 10E infrastructure. Its old fallback
+# delivery chain must NOT ride inside a standalone 10G APK, even unused.
+# Strip only those legacy delivery assets from the disposable build copy.
+for legacy in (
+    A / 'bootstrap-fallback.js',
+    A / 'viewer/gv-current-viewer.json',
+    A / 'viewer/GV-beta-0010E.py',
+):
+    if legacy.exists():
+        legacy.unlink()
+assert not list((A / 'viewer').glob('GV-beta-*.py')), 'prior-release Viewer .py asset remains in disposable APK tree'
+assert not (A / 'bootstrap-fallback.js').exists()
+assert not (A / 'viewer/gv-current-viewer.json').exists()
+
 # Dedicated 10G Android package identity in the disposable build tree.
 p = BUILD_PROJECT / 'app/build.gradle'
 s = p.read_text(encoding='utf-8')
@@ -88,11 +102,9 @@ while legacy_dir != BUILD_PROJECT / 'app/src/main/java' and legacy_dir.exists():
         break
     legacy_dir = legacy_dir.parent
 
-# HTML parses raw script text before JavaScript parses string literals.  A
-# literal </script> inside the embedded Viewer HTML would therefore terminate
-# this APK bootstrap script early. Escape only that HTML-parser sentinel while
-# preserving the exact runtime string value (JavaScript interprets <\/script>
-# as </script>).
+# HTML parses raw script text before JavaScript parses string literals. A
+# literal </script> inside embedded Viewer data terminates the host bootstrap.
+# Escape only that HTML-parser sentinel; JavaScript restores the runtime value.
 vh = json.dumps(viewer_html).replace('</script', '<\\/script')
 vj = json.dumps(viewer_js).replace('</script', '<\\/script')
 
@@ -186,8 +198,6 @@ assert 'GV-beta-0010E.py' not in text_out
 assert 'BASELINE_URL=' not in text_out
 assert not re.search(r'GV-beta-[0-9A-Z-]+\.py', text_out, flags=re.I)
 assert 'Promise.all([initializeViewer(),startSplash()])' in text_out
-# The only literal closing-script sentinel must be the bootstrap's own final
-# closing tag. Embedded payload sentinels must remain escaped.
 assert text_out.lower().count('</script>') == 1
 
 print('AUTHORITATIVE 10G SOURCE READ-ONLY:', TEN_G)
