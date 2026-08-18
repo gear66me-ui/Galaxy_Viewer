@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-185e2816e3ef — Temporary audit remaining Catalog 0018 pseudonyms
+
+**Recorded:** 2026-08-18T14:00:32-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`185e2816e3ef5b7883167ade879c8a8010d022d6`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/185e2816e3ef5b7883167ade879c8a8010d022d6)  
+**Parent/baseline:** `4e0a6b9ef4a16776acbc3ee379b119f0003348fb`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4e0a6b9ef4a16776acbc3ee379b119f0003348fb...185e2816e3ef5b7883167ade879c8a8010d022d6)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Temporary audit remaining Catalog 0018 pseudonyms
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-catalog-0018-audit-remaining.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `3e019c33006e3fa52d21d3a7a9c378728524bf56ca983fd2b7271efd3df2e1ce`
+- Bytes: `0` → `2576`
+- Lines: `0` → `55`
+- Characters: `0` → `2576`
+- Inserted lines: `55`
+- Deleted lines: `0`
+- Inserted characters: `2576`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 55 - 0 = 55` — **PASS**
+- Character balance: `0 + 2576 - 0 = 2576` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c474a85e2f5b — TRIGGER 10H verified surgical release
 
 **Recorded:** 2026-08-18T13:54:12-05:00  
