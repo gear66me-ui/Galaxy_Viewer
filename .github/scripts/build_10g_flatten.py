@@ -110,11 +110,12 @@ vj = json.dumps(viewer_js).replace('</script', '<\\/script')
 
 # APK startup deliberately mirrors the approved dedicated 10G launcher:
 # Viewer initialization begins immediately in parallel with the icon/splash
-# sequence. This packaging repair does not redesign splash choreography.
+# sequence. The splash receives a bounded completion escape so a decorative
+# animation fallback can never deadlock an already-ready Viewer.
 bootstrap = f'''(async()=>{{'use strict';
 const VIEWER_HTML={vh};
 const VIEWER_JS={vj};
-const VIEWER_TIMEOUT_MS=45000,SPLASH_FIRST_FRAME_TIMEOUT_MS=5000,ICON_MIN_HOLD_MS=3500,launchStartedAt=performance.now();
+const VIEWER_TIMEOUT_MS=45000,SPLASH_FIRST_FRAME_TIMEOUT_MS=5000,SPLASH_COMPLETION_TIMEOUT_MS=15000,ICON_MIN_HOLD_MS=3500,launchStartedAt=performance.now();
 const launchCover=document.getElementById('gv-apk-cover');
 const splashFrame=document.getElementById('gv-splash-frame');
 const errorBox=document.getElementById('gv-launch-error');
@@ -156,12 +157,14 @@ const initializeViewer=async()=>{{
 const startSplash=async()=>{{
   await waitForIconMinimum();
   return new Promise((resolve,reject)=>{{
-    let done=false;
-    const fail=e=>{{if(done)return;done=true;reject(e)}};
+    let done=false,completionTimer=0;
+    const finish=reason=>{{if(done)return;done=true;if(completionTimer)clearTimeout(completionTimer);if(reason==='deadline')console.warn('GALAXY VIEWER 10G SPLASH DEADLINE ESCAPE');resolve()}};
+    const fail=e=>{{if(done)return;done=true;if(completionTimer)clearTimeout(completionTimer);reject(e)}};
     splashFrame.addEventListener('load',()=>{{
       try{{
         const w=splashFrame.contentWindow;if(!w)throw new Error('SPLASH WINDOW UNAVAILABLE');
-        w.addEventListener('galaxy-splash-complete',()=>{{if(done)return;done=true;resolve()}},{{once:true}});
+        completionTimer=setTimeout(()=>finish('deadline'),SPLASH_COMPLETION_TIMEOUT_MS);
+        w.addEventListener('galaxy-splash-complete',()=>finish('event'),{{once:true}});
         const deadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
         const reveal=()=>{{
           try{{
@@ -198,6 +201,8 @@ assert 'GV-beta-0010E.py' not in text_out
 assert 'BASELINE_URL=' not in text_out
 assert not re.search(r'GV-beta-[0-9A-Z-]+\.py', text_out, flags=re.I)
 assert 'Promise.all([initializeViewer(),startSplash()])' in text_out
+assert 'SPLASH_COMPLETION_TIMEOUT_MS=15000' in text_out
+assert "finish('deadline')" in text_out
 assert text_out.lower().count('</script>') == 1
 
 print('AUTHORITATIVE 10G SOURCE READ-ONLY:', TEN_G)
