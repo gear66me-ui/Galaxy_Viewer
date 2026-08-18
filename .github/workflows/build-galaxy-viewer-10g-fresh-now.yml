@@ -1,5 +1,4 @@
-name: Build Fresh Galaxy Viewer 10G APK
-# Trigger: 2026-08-18 current committed 10G after Galaxy Info/JWST update
+name: Build Galaxy Viewer GENERIC APK
 
 on:
   push:
@@ -21,14 +20,14 @@ jobs:
           ref: beta
           fetch-depth: 0
 
-      - name: Expose fresh build run
+      - name: Expose GENERIC build run
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state=pending \
-            -f context='galaxy-viewer-10g-fresh-apk' \
-            -f description="Fresh APK build ${GITHUB_RUN_ID}" \
+            -f context='galaxy-viewer-generic-apk' \
+            -f description="GENERIC APK build ${GITHUB_RUN_ID}" \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
       - uses: actions/setup-java@v4
@@ -37,108 +36,155 @@ jobs:
           java-version: '17'
 
       - uses: android-actions/setup-android@v3
+
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Verify frozen 10G source before packaging
+      - name: Install target-icon rasterizer
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq librsvg2-bin
+
+      - name: Create permanent pointer-driven GENERIC Android project
+        shell: bash
         run: |
           set -euo pipefail
-          test -s viewer/GV-beta-0010G.py
-          sha256sum viewer/GV-beta-0010G.py | tee 10g-source-before.sha256
-          grep -q "const VERSION='10G';" viewer/GV-beta-0010G.py
-          grep -q "const DISPLAY_VERSION='10G';" viewer/GV-beta-0010G.py
-          grep -q 'VERSION 10G' viewer/GV-beta-0010G.py
-          grep -q 'gv-viewer-ready' viewer/GV-beta-0010G.py
-          grep -q 'gv-viewer-failed' viewer/GV-beta-0010G.py
+          ROOT=/tmp/galaxy-viewer-generic
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric"
+          mkdir -p "$ROOT/app/src/main/assets/artwork"
+          mkdir -p "$ROOT/app/src/main/res/drawable"
 
-      - name: Create brand-new Android project from 10G only
-        run: python3 .github/scripts/build_10g_flatten.py
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewerGeneric'
+          include ':app'
+          EOF
 
-      - name: Preload official Aladin Lite 3.8.2 in APK shell
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('/tmp/galaxy-viewer-10g-build/app/src/main/assets/index.html')
-          s=p.read_text(encoding='utf-8')
-          needle='<title>GALAXY VIEWER 10G</title>'
-          inject=needle+'<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>'
-          assert needle in s
-          assert 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' not in s
-          s=s.replace(needle,inject,1)
-          p.write_text(s,encoding='utf-8')
-          assert 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' in p.read_text(encoding='utf-8')
-          PY
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
 
-      - name: Verify 10G source unchanged
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=false
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.gear66me.galaxyviewergeneric'
+            compileSdk 35
+            defaultConfig {
+              applicationId 'com.gear66me.galaxyviewergeneric'
+              minSdk 29
+              targetSdk 35
+              versionCode 1
+              versionName 'GENERIC-1'
+            }
+          }
+          EOF
+
+          cp viewer/artwork/icon_target_vector.svg "$ROOT/app/src/main/assets/artwork/target-icon.svg"
+          rsvg-convert -w 512 -h 512 viewer/artwork/icon_target_vector.svg -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application android:allowBackup="false" android:hardwareAccelerated="true" android:icon="@drawable/gv_target_launcher" android:roundIcon="@drawable/gv_target_launcher" android:label="Galaxy Viewer GENERIC" android:theme="@android:style/Theme.Material.NoActionBar" android:usesCleartextTraffic="false">
+              <activity android:name=".MainActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true" android:screenOrientation="fullSensor">
+                <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric/MainActivity.java" <<'EOF'
+          package com.gear66me.galaxyviewergeneric;
+          import android.app.Activity;
+          import android.graphics.Color;
+          import android.os.Bundle;
+          import android.view.View;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          public final class MainActivity extends Activity {
+            private WebView web;
+            @Override protected void onCreate(Bundle state){super.onCreate(state);getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowContentAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setMediaPlaybackRequiresUserGesture(false);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebViewClient(new WebViewClient());web.setWebChromeClient(new WebChromeClient());setContentView(web);web.loadUrl("file:///android_asset/index.html");}
+            @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
+            @Override protected void onDestroy(){if(web!=null){web.destroy();web=null;}super.onDestroy();}
+          }
+          EOF
+
+          cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
+          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><title>GALAXY VIEWER GENERIC</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover,#error{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#cover img{width:min(46vw,260px);height:min(46vw,260px);object-fit:contain}.name{margin-top:18px;font:16px sans-serif;letter-spacing:2px;color:#fff}#error{display:none;padding:28px;white-space:pre-wrap;color:#ffd85a;font:14px monospace}</style></head><body><div id="cover"><img src="artwork/target-icon.svg" alt="Galaxy Viewer target icon"><div class="name">GALAXY VIEWER</div></div><div id="error"></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const cover=document.getElementById('cover'),error=document.getElementById('error');const read=async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+url);return r.text()};const extract=source=>{const h=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw new Error('VIEWER EXTRACTION FAILED');return[h[0][1],j[0][1]]};try{const manifest=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));if(!manifest||!/^GV-beta-[0-9A-Z._-]+\.py$/i.test(String(manifest.viewer||'')))throw new Error('INVALID VIEWER POINTER');const source=await read(BASE+manifest.viewer+'?t='+Date.now());const [html,js]=extract(source);document.body.insertAdjacentHTML('beforeend',html);const script=document.createElement('script');script.textContent=js;document.body.appendChild(script);cover.remove()}catch(e){cover.remove();error.style.display='flex';error.textContent='GALAXY VIEWER GENERIC FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
+          EOF
+
+          test -s "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+          grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
+          ! grep -q 'GV-beta-0010G.py' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'android:icon="@drawable/gv_target_launcher"' "$ROOT/app/src/main/AndroidManifest.xml"
+          grep -q 'android:roundIcon="@drawable/gv_target_launcher"' "$ROOT/app/src/main/AndroidManifest.xml"
+
+      - name: Build GENERIC APK
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-generic :app:assembleDebug
+
+      - name: Verify and stage GENERIC installer
+        shell: bash
         run: |
           set -euo pipefail
-          sha256sum viewer/GV-beta-0010G.py | tee 10g-source-after.sha256
-          cmp 10g-source-before.sha256 10g-source-after.sha256
-          git diff --exit-code -- viewer/GV-beta-0010G.py
-
-      - name: Build fresh APK
-        run: gradle --no-daemon -p /tmp/galaxy-viewer-10g-build :app:assembleDebug
-
-      - name: Validate and stage installer
-        run: |
-          set -euo pipefail
-          APK=/tmp/galaxy-viewer-10g-build/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-10G-FRESH.apk
+          APK=/tmp/galaxy-viewer-generic/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-GENERIC.apk
           test -s "$APK"
           cp "$APK" "$OUT"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer10g'" apk-badging.txt
-          grep -q "versionName='10G-standalone-apk-3'" apk-badging.txt
-          grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
-          unzip -p "$APK" assets/index.html > apk-index.html
-          grep -q 'VERSION 10G' apk-index.html
-          grep -q "const VERSION='10G';" apk-index.html
-          grep -q "const DISPLAY_VERSION='10G';" apk-index.html
-          grep -q 'gv-viewer-ready' apk-index.html
-          grep -q 'gv-viewer-failed' apk-index.html
-          grep -q 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' apk-index.html
-          ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
-          unzip -l "$APK" | tee apk-files.txt
-          grep -q 'assets/artwork/Space-Age.otf' apk-files.txt
-          grep -q 'assets/artwork/icon.svg' apk-files.txt
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
-          unzip -t "$APK" | tee apk-zip-test.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt
+          grep -q "versionName='GENERIC-1'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer GENERIC'" apk-badging.txt
+          grep -q 'application-icon-' apk-badging.txt
+          unzip -l "$OUT" | tee apk-files.txt
+          grep -q 'res/drawable/gv_target_launcher.png' apk-files.txt
+          grep -q 'assets/artwork/target-icon.svg' apk-files.txt
+          unzip -p "$OUT" assets/index.html > apk-index.html
+          grep -q 'gv-current-viewer.json' apk-index.html
+          ! grep -q 'GV-beta-0010G.py' apk-index.html
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-signature.txt
+          unzip -t "$OUT" | tee apk-zip-test.txt
           grep -q 'No errors detected' apk-zip-test.txt
           sha256sum "$OUT" | tee "$OUT.sha256"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-10G-FRESH
+          name: Galaxy-Viewer-GENERIC
           path: |
-            Galaxy-Viewer-10G-FRESH.apk
-            Galaxy-Viewer-10G-FRESH.apk.sha256
+            Galaxy-Viewer-GENERIC.apk
+            Galaxy-Viewer-GENERIC.apk.sha256
             apk-badging.txt
             apk-signature.txt
             apk-zip-test.txt
-            10g-source-before.sha256
-            10g-source-after.sha256
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish direct installer release
+      - name: Publish GENERIC installer release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-10g-fresh
+          TAG=galaxy-viewer-generic
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-10G-FRESH.apk Galaxy-Viewer-10G-FRESH.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G — Fresh APK' --notes 'Fresh Android project generated from authoritative GV-beta-0010G.py only. APK shell preloads official Aladin Lite 3.8.2 before 10G executes.'
+          gh release create "$TAG" Galaxy-Viewer-GENERIC.apk Galaxy-Viewer-GENERIC.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer GENERIC' --notes 'Permanent pointer-driven APK. Reads viewer/gv-current-viewer.json every launch. Uses the approved Galaxy Viewer target icon.'
 
-      - name: Mark fresh build successful
+      - name: Mark GENERIC build successful
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state=success \
-            -f context='galaxy-viewer-10g-fresh-apk' \
-            -f description="Fresh APK ready in run ${GITHUB_RUN_ID}" \
+            -f context='galaxy-viewer-generic-apk' \
+            -f description="GENERIC APK ready in run ${GITHUB_RUN_ID}" \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
