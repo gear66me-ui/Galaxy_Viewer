@@ -153,13 +153,13 @@ const mountViewerHtml=()=>{{
     trace('EMBEDDED_HTML_SCRIPT_PREPARED',embeddedIndex++);
   }}
   document.body.appendChild(t.content);
-  trace('VIEWER_HTML_MOUNT_COMPLETE',{scripts:embeddedIndex});
+  trace('VIEWER_HTML_MOUNT_COMPLETE',{{scripts:embeddedIndex}});
 }};
 const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))));
 const waitForViewer=()=>new Promise((resolve,reject)=>{{
   const deadline=performance.now()+VIEWER_TIMEOUT_MS;let settled=false;
   const fail=err=>{{if(settled)return;settled=true;document.removeEventListener('gv-viewer-failed',viewerFailed);reject(err)}};
-  const pass=()=>{{if(settled)return;settled=true;trace('APK_WEAK_READY_CONDITION_PASS',{hasGV10E:!!window.GV10E,randomReady:!!window.__gv10eRandomGalaxy,randomDisabled:document.getElementById('gv-random-galaxy')?.disabled});document.removeEventListener('gv-viewer-failed',viewerFailed);requestAnimationFrame(()=>requestAnimationFrame(resolve))}};
+  const pass=()=>{{if(settled)return;settled=true;trace('APK_WEAK_READY_CONDITION_PASS',{{hasGV10E:!!window.GV10E,randomReady:!!window.__gv10eRandomGalaxy,randomDisabled:document.getElementById('gv-random-galaxy')?.disabled}});document.removeEventListener('gv-viewer-failed',viewerFailed);requestAnimationFrame(()=>requestAnimationFrame(resolve))}};
   const viewerFailed=event=>{{trace('GV_VIEWER_FAILED_EVENT',event?.detail||'');fail(new Error(String(event?.detail?.message||'10G Viewer startup failed')))}};
   document.addEventListener('gv-viewer-failed',viewerFailed,{{once:true}});
   document.addEventListener('gv-viewer-ready',event=>trace('GV_VIEWER_READY_EVENT',event?.detail||''),{{once:true}});
@@ -197,7 +197,7 @@ const startSplash=async()=>{{
         const reveal=()=>{{
           try{{
             const d=w.document,scene=d.getElementById('scene'),poster=d.getElementById('poster');
-            if(scene?.style.opacity==='1'||poster?.style.visibility==='visible'){{trace('SPLASH_FIRST_FRAME',{sceneOpacity:scene?.style.opacity||'',posterVisibility:poster?.style.visibility||''});if(launchCover?.isConnected)launchCover.remove();return}}
+            if(scene?.style.opacity==='1'||poster?.style.visibility==='visible'){{trace('SPLASH_FIRST_FRAME',{{sceneOpacity:scene?.style.opacity||'',posterVisibility:poster?.style.visibility||''}});if(launchCover?.isConnected)launchCover.remove();return}}
             if(performance.now()>=deadline)return fail(new Error('SPLASH FIRST FRAME TIMEOUT'));
             requestAnimationFrame(reveal);
           }}catch(e){{fail(e)}}
