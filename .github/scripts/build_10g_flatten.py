@@ -8,6 +8,7 @@ BUILD_PROJECT = Path('/tmp/galaxy-viewer-10g-build')
 TEN_G = ROOT / 'viewer/GV-beta-0010G.py'
 SPLASH_SRC = ROOT / 'viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL'
 ICON_SRC = ROOT / 'viewer/artwork/icon.svg'
+LAUNCHER_ICON_SRC = ROOT / 'viewer/artwork/App Icons/GV-app-icon-512.png'
 FONT_SRC = ROOT / 'viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf'
 
 # GALAXY VIEWER 10G APK PACKAGER
@@ -18,6 +19,7 @@ FONT_SRC = ROOT / 'viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf'
 assert TEN_G.is_file(), 'authoritative standalone 10G source is missing'
 assert SPLASH_SRC.is_dir(), 'approved splash asset is missing'
 assert ICON_SRC.is_file(), 'approved Galaxy Viewer icon is missing'
+assert LAUNCHER_ICON_SRC.is_file(), 'approved Galaxy Viewer launcher icon is missing'
 assert FONT_SRC.is_file(), 'approved Space Age font is missing'
 
 standalone = TEN_G.read_text(encoding='utf-8')
@@ -88,6 +90,8 @@ manifest.write_text('''<manifest xmlns:android="http://schemas.android.com/apk/r
     <application
         android:allowBackup="false"
         android:hardwareAccelerated="true"
+        android:icon="@drawable/gv_launcher"
+        android:roundIcon="@drawable/gv_launcher"
         android:label="Galaxy Viewer 10G"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
@@ -104,6 +108,10 @@ manifest.write_text('''<manifest xmlns:android="http://schemas.android.com/apk/r
     </application>
 </manifest>
 ''', encoding='utf-8')
+
+drawable = BUILD_PROJECT / 'app/src/main/res/drawable'
+drawable.mkdir(parents=True)
+shutil.copy2(LAUNCHER_ICON_SRC, drawable / 'gv_launcher.png')
 
 values = BUILD_PROJECT / 'app/src/main/res/values'
 values.mkdir(parents=True)
@@ -299,6 +307,9 @@ assert 'font-family:"Space Age",sans-serif!important' in text_out
 assert 'gv-viewer-ready' in text_out
 assert 'gv-viewer-failed' in text_out
 assert 'SPLASH_COMPLETION_GRACE_MS=15000' in text_out
+assert (BUILD_PROJECT / 'app/src/main/res/drawable/gv_launcher.png').is_file()
+assert 'android:icon="@drawable/gv_launcher"' in manifest.read_text(encoding='utf-8')
+assert 'android:roundIcon="@drawable/gv_launcher"' in manifest.read_text(encoding='utf-8')
 assert 'APK_WEAK_READY_CONDITION_PASS' not in text_out
 assert not re.search(r'GV-beta-[0-9A-Z-]+\.py', text_out, flags=re.I)
 assert text_out.lower().count('</script>') == 1
@@ -307,4 +318,5 @@ print('AUTHORITATIVE 10G SOURCE READ-ONLY:', TEN_G)
 print('10G source bytes:', TEN_G.stat().st_size)
 print('Fresh disposable Android build:', BUILD_PROJECT)
 print('Embedded APK index bytes:', len(text_out.encode('utf-8')))
+print('ANDROID LAUNCHER ICON:', LAUNCHER_ICON_SRC)
 print('STARTUP CONTRACT: authoritative 10G ready/fail; bounded splash after 10G readiness')
