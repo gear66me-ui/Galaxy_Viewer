@@ -5,7 +5,7 @@ on:
     paths: ['.github/workflows/build-galaxy-viewer-10g-local-launcher.yml']
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,8 +28,6 @@ jobs:
           set -euo pipefail
           P=android/galaxy-viewer-10e
           A="$P/app/src/main/assets"
-
-          # Reuse the proven 10E Android shell, but identify this APK as 10G.
           python3 - <<'PY'
           from pathlib import Path
           p=Path('android/galaxy-viewer-10e/app/build.gradle')
@@ -38,19 +36,15 @@ jobs:
           s=s.replace("versionCode 1010", "versionCode 1011")
           s=s.replace("versionName '10E-generic-permanent-1'", "versionName '10G-local-launcher-1'")
           p.write_text(s)
-
           p=Path('android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml')
           s=p.read_text().replace('android:label="Galaxy Viewer 10E"','android:label="Galaxy Viewer 10G"')
           s=s.replace('android:name=".MainActivity"','android:name="com.gear66me.galaxyviewer10e.MainActivity"')
           p.write_text(s)
           PY
-
           mkdir -p "$A/viewer/modules"
           cp viewer/GV-beta-0010F.py "$A/viewer/GV-beta-0010F.py"
           cp viewer/GV-beta-0010G.py "$A/viewer/GV-beta-0010G.py"
           cp viewer/modules/gv-info-module-0001.js "$A/viewer/modules/gv-info-module-0001.js"
-
-          # The APK copy of 10G points to local bundled 10F + INFO instead of GitHub Pages/raw startup dependencies.
           python3 - <<'PY'
           from pathlib import Path
           p=Path('android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010G.py')
@@ -59,7 +53,6 @@ jobs:
           s=s.replace("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-info-module-0001.js?v=90dbdbfad10e92435e5da284aaea0d3f5da7c61d", "viewer/modules/gv-info-module-0001.js")
           p.write_text(s)
           PY
-
           cat > "$A/index.html" <<'HTML'
           <!doctype html>
           <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 10G</title>
@@ -75,15 +68,12 @@ jobs:
           const splash=async()=>{await delay(Math.max(0,3500-(performance.now()-started)));return new Promise((resolve,reject)=>{let done=false,timer=0;const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve()};frame.addEventListener('load',()=>{try{const w=frame.contentWindow;w.addEventListener('galaxy-splash-complete',finish,{once:true});frame.style.visibility='visible';cover?.remove();timer=setTimeout(()=>reject(new Error('10G splash completion timeout')),22000)}catch(e){reject(e)}},{once:true});frame.addEventListener('error',()=>reject(new Error('10G splash failed to load')),{once:true});frame.src=SPLASH_URL})};
           try{const viewerReady=loadViewer();await splash();await viewerReady;frame.remove();cover?.remove()}catch(e){console.error(e);fail(e)}})();</script></body></html>
           HTML
-
           grep -q 'viewer/GV-beta-0010F.py' "$A/viewer/GV-beta-0010G.py"
           grep -q 'viewer/modules/gv-info-module-0001.js' "$A/viewer/GV-beta-0010G.py"
           ! grep -q 'gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/10G-app.html' "$A/index.html"
           grep -q 'VERSION 10G' "$A/index.html"
-
       - name: Build 10G APK
         run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
-
       - name: Validate and package APK
         shell: bash
         run: |
@@ -102,7 +92,6 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           cp "$APK" "$OUT"
           sha256sum "$OUT" | tee "$OUT.sha256"
-
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-10G
@@ -111,3 +100,12 @@ jobs:
             Galaxy-Viewer-10G.apk.sha256
           if-no-files-found: error
           retention-days: 30
+      - name: Publish 10G installer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-10g-local-launcher-1
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" Galaxy-Viewer-10G.apk Galaxy-Viewer-10G.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G — Local Launcher' --notes '10G APK with embedded launcher, bundled 10G Viewer composition, frozen 10F baseline, 10G INFO module, and local splash startup chain. Does not depend on mobile/beta/10G-app.html.'
