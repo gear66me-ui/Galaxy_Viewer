@@ -305,6 +305,78 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7d8e21e45686 — Delete viewer/image-database/Hubble directory
+
+**Recorded:** 2026-08-18T00:13:26-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7d8e21e45686706a443b2726f085c876e39b45a9`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7d8e21e45686706a443b2726f085c876e39b45a9)  
+**Parent/baseline:** `4f248d92aea783aece59cb9f404b8297ef024d59`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4f248d92aea783aece59cb9f404b8297ef024d59...7d8e21e45686706a443b2726f085c876e39b45a9)  
+**Author:** German Arciniegas  
+**Changed-path count:** `5`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Delete viewer/image-database/Hubble directory
+```
+
+### Complete changed-path accounting
+
+#### `viewer/image-database/Hubble/NGC-1300.jpg`
+
+- Status: **DELETED**
+- SHA-256 before: `631d0559f5c772c6490f760b2f574e8a81da6bc43e422da589986d9f2d0b839b`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `3825103` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `viewer/image-database/Hubble/Phantom-Galaxy-M74.jpg`
+
+- Status: **DELETED**
+- SHA-256 before: `3b669a19b611eb237c6d5382ea68e5fcc1dcd8e6e5942d22a03811cb6e2ee53e`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `8387861` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `viewer/image-database/Hubble/Pinwheel-Galaxy-M101.jpg`
+
+- Status: **DELETED**
+- SHA-256 before: `dd357e7843fc2d8a3c8050668c9605f61bd9ffd1d731d05b8cc5d5a811c9775d`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `5824085` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `viewer/image-database/Hubble/Sombrero-Galaxy-M104.jpg`
+
+- Status: **DELETED**
+- SHA-256 before: `c6b10a6188fdcf104b572932bd6867f6aa49c06022287811748dda94fb6be005`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `1636885` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+#### `viewer/image-database/Hubble/Whirlpool-Galaxy-M51.jpg`
+
+- Status: **DELETED**
+- SHA-256 before: `7b13a932bcf54653c591d369e8d1c4cbdbeb693ecc468242facb239fde52e4c2`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `4060187` → `0`
+- Binary/non-UTF-8 file: accounted by byte count and SHA-256 before/after.
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-493752dba105 — Delete viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json
 
 **Recorded:** 2026-08-18T00:08:42-05:00  
