@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer 10G Local Launcher
+name: Build Galaxy Viewer 10G Flattened APK
 on:
   push:
     branches: [beta]
@@ -32,7 +32,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Prepare isolated 10G APK source
+
+      - name: Prepare flattened 10G APK
         shell: bash
         run: |
           set -euo pipefail
@@ -44,8 +45,8 @@ jobs:
           p=Path('android/galaxy-viewer-10e/app/build.gradle')
           s=p.read_text()
           s=s.replace("applicationId 'com.gear66me.galaxyviewer10e.generic'", "applicationId 'com.gear66me.galaxyviewer10g'")
-          s=s.replace("versionCode 1010", "versionCode 1012")
-          s=s.replace("versionName '10E-generic-permanent-1'", "versionName '10G-local-launcher-2'")
+          s=s.replace("versionCode 1010", "versionCode 1013")
+          s=s.replace("versionName '10E-generic-permanent-1'", "versionName '10G-flattened-3'")
           p.write_text(s)
           p=Path('android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml')
           s=p.read_text().replace('android:label="Galaxy Viewer 10E"','android:label="Galaxy Viewer 10G"')
@@ -55,151 +56,40 @@ jobs:
 
           cat > "$P/app/src/main/java/com/gear66me/galaxyviewer10e/MainActivity.java" <<'JAVA'
           package com.gear66me.galaxyviewer10e;
-
-          import android.app.Activity;
-          import android.app.DownloadManager;
-          import android.content.Context;
-          import android.graphics.Color;
-          import android.graphics.Typeface;
-          import android.net.Uri;
-          import android.os.Bundle;
-          import android.os.Environment;
-          import android.view.View;
-          import android.webkit.MimeTypeMap;
-          import android.webkit.URLUtil;
-          import android.webkit.WebChromeClient;
-          import android.webkit.WebResourceError;
-          import android.webkit.WebResourceRequest;
-          import android.webkit.WebResourceResponse;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          import android.widget.TextView;
-          import java.io.InputStream;
-
+          import android.app.*; import android.content.*; import android.graphics.*; import android.net.*; import android.os.*; import android.view.*; import android.webkit.*; import android.widget.*; import java.io.*;
           public final class MainActivity extends Activity {
-            private static final String ASSET_HOST = "appassets.androidplatform.net";
-            private WebView web;
-
-            @Override protected void onCreate(Bundle b) {
-              super.onCreate(b);
-              getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-              open();
-            }
-
-            private WebResourceResponse localAsset(Uri u) {
-              try {
-                if (u == null || !"https".equalsIgnoreCase(u.getScheme()) || !ASSET_HOST.equalsIgnoreCase(u.getHost())) return null;
-                String path = u.getPath();
-                if (path == null || !path.startsWith("/assets/")) return null;
-                path = path.substring(8);
-                if (path.isEmpty() || path.contains("..")) return null;
-                InputStream in = getAssets().open(path);
-                String ext = MimeTypeMap.getFileExtensionFromUrl(path);
-                String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-                if (mime == null) {
-                  if (path.endsWith(".py")) mime = "text/plain";
-                  else if (path.endsWith(".js")) mime = "application/javascript";
-                  else if (path.endsWith(".json")) mime = "application/json";
-                  else if (path.endsWith(".svg")) mime = "image/svg+xml";
-                  else mime = "application/octet-stream";
-                }
-                return new WebResourceResponse(mime, "UTF-8", in);
-              } catch (Exception ignored) {
-                return null;
-              }
-            }
-
-            private void open() {
-              web = new WebView(this);
-              web.setBackgroundColor(Color.BLACK);
-              WebSettings s = web.getSettings();
-              s.setJavaScriptEnabled(true);
-              s.setDomStorageEnabled(true);
-              s.setDatabaseEnabled(true);
-              s.setAllowFileAccess(false);
-              s.setAllowContentAccess(false);
-              s.setMediaPlaybackRequiresUserGesture(false);
-              s.setCacheMode(WebSettings.LOAD_DEFAULT);
-              s.setUserAgentString(s.getUserAgentString() + " GalaxyViewer10G/10G-local-2");
-              web.setWebChromeClient(new WebChromeClient());
-              web.setWebViewClient(new WebViewClient() {
-                @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
-                  WebResourceResponse local = localAsset(r.getUrl());
-                  return local != null ? local : super.shouldInterceptRequest(v, r);
-                }
-                @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
-                  Uri u = r.getUrl();
-                  String q = u == null ? "" : u.getScheme();
-                  return !("https".equalsIgnoreCase(q));
-                }
-                @Override public void onReceivedError(WebView v, WebResourceRequest r, WebResourceError e) {
-                  if (r.isForMainFrame()) fatal("LOAD ERROR: " + e.getDescription());
-                }
-              });
-              web.setDownloadListener((url, ua, cd, mime, len) -> {
-                try {
-                  Uri u = Uri.parse(url);
-                  if (!"https".equalsIgnoreCase(u.getScheme())) return;
-                  DownloadManager.Request q = new DownloadManager.Request(u);
-                  q.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                  q.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, cd, mime));
-                  ((DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(q);
-                } catch (Exception ignored) {}
-              });
-              setContentView(web);
-              web.loadUrl("https://" + ASSET_HOST + "/assets/index.html");
-            }
-
-            private void fatal(String m) {
-              runOnUiThread(() -> {
-                TextView t = new TextView(this);
-                t.setTypeface(Typeface.createFromAsset(getAssets(), "artwork/Space-Age.otf"));
-                t.setText("GALAXY VIEWER 10G\n\n" + m);
-                t.setTextColor(Color.WHITE);
-                t.setBackgroundColor(Color.BLACK);
-                t.setTextSize(16);
-                t.setPadding(40,40,40,40);
-                setContentView(t);
-              });
-            }
-
-            @Override public void onBackPressed() {
-              if (web != null && web.canGoBack()) web.goBack(); else super.onBackPressed();
-            }
+            private static final String H="appassets.androidplatform.net"; private WebView w;
+            private WebResourceResponse asset(Uri u){try{if(u==null||!"https".equalsIgnoreCase(u.getScheme())||!H.equalsIgnoreCase(u.getHost()))return null;String p=u.getPath();if(p==null||!p.startsWith("/assets/"))return null;p=p.substring(8);if(p.isEmpty()||p.contains(".."))return null;InputStream in=getAssets().open(p);String e=MimeTypeMap.getFileExtensionFromUrl(p),m=MimeTypeMap.getSingleton().getMimeTypeFromExtension(e);if(m==null){if(p.endsWith(".js"))m="application/javascript";else if(p.endsWith(".json"))m="application/json";else if(p.endsWith(".svg"))m="image/svg+xml";else if(p.endsWith(".html"))m="text/html";else m="application/octet-stream";}return new WebResourceResponse(m,"UTF-8",in);}catch(Exception x){return null;}}
+            @Override protected void onCreate(Bundle b){super.onCreate(b);getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);w=new WebView(this);w.setBackgroundColor(Color.BLACK);WebSettings s=w.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setAllowFileAccess(false);s.setAllowContentAccess(false);s.setMediaPlaybackRequiresUserGesture(false);s.setCacheMode(WebSettings.LOAD_DEFAULT);s.setUserAgentString(s.getUserAgentString()+" GalaxyViewer10G/flattened-3");w.setWebChromeClient(new WebChromeClient());w.setWebViewClient(new WebViewClient(){@Override public WebResourceResponse shouldInterceptRequest(WebView v,WebResourceRequest r){WebResourceResponse a=asset(r.getUrl());return a!=null?a:super.shouldInterceptRequest(v,r);}@Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){Uri u=r.getUrl();return u==null||!"https".equalsIgnoreCase(u.getScheme());}@Override public void onReceivedError(WebView v,WebResourceRequest r,WebResourceError e){if(r.isForMainFrame())fatal("LOAD ERROR: "+e.getDescription());}});setContentView(w);w.loadUrl("https://"+H+"/assets/index.html");}
+            private void fatal(String m){runOnUiThread(()->{TextView t=new TextView(this);t.setText("GALAXY VIEWER 10G\n\n"+m);t.setTextColor(Color.WHITE);t.setBackgroundColor(Color.BLACK);t.setTextSize(16);t.setPadding(40,40,40,40);setContentView(t);});}
+            @Override public void onBackPressed(){if(w!=null&&w.canGoBack())w.goBack();else super.onBackPressed();}
           }
           JAVA
 
-          mkdir -p "$A/viewer/modules"
-          cp viewer/GV-beta-0010F.py "$A/viewer/GV-beta-0010F.py"
-          cp viewer/GV-beta-0010G.py "$A/viewer/GV-beta-0010G.py"
-          cp viewer/modules/gv-info-module-0001.js "$A/viewer/modules/gv-info-module-0001.js"
-
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('android/galaxy-viewer-10e/app/src/main/assets/viewer/GV-beta-0010G.py')
-          s=p.read_text()
-          s=s.replace("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/a88b56749bd73efe166e0a849749f15d03fed47d/viewer/GV-beta-0010F.py", "GV-beta-0010F.py")
-          s=s.replace("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-info-module-0001.js?v=90dbdbfad10e92435e5da284aaea0d3f5da7c61d", "modules/gv-info-module-0001.js")
-          p.write_text(s)
+          import re
+          src=Path('viewer/GV-beta-0010F.py').read_text()
+          hs=re.findall(r'display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)',src)
+          js=re.findall(r'display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)',src)
+          assert len(hs)==1, len(hs)
+          assert len(js)==1, len(js)
+          info=Path('viewer/modules/gv-info-module-0001.js').read_text()
+          splash='viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html'
+          head='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 10G</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-apk-cover{position:fixed;inset:0;z-index:2147483646;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}#gv-apk-cover img{display:block;width:min(58vw,280px);height:min(58vw,280px);object-fit:contain}.gv-apk-v{color:#FFD85A;font:16px/1 sans-serif;letter-spacing:1.2px}#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000;visibility:hidden}#gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD85A;white-space:pre-wrap;font:14px/1.45 monospace}</style></head><body><div id="gv-apk-cover"><img src="artwork/icon.svg" alt="GALAXY VIEWER"><div class="gv-apk-v">VERSION 10G</div></div><iframe id="gv-splash-frame"></iframe><div id="gv-launch-error"></div>'''
+          stamp='''<script>(()=>{const f=()=>{const v=document.getElementById('gv-version-label');if(v){v.textContent='VERSION 10G';v.setAttribute('aria-label','GALAXY VIEWER VERSION 10G')}const c=document.getElementById('gv-apk-cover');if(c){const n=c.querySelector('.gv-10e-version');if(n)n.remove();const x=c.querySelector('.gv-apk-v');if(x)x.textContent='VERSION 10G'}if(window.GalaxyViewerInfo10G)window.GalaxyViewerInfo10G.refresh()};f();setTimeout(f,400);setTimeout(f,1500)})();</script>'''
+          monitor=f'''<script>(async()=>{{'use strict';const c=document.getElementById('gv-apk-cover'),p=document.getElementById('gv-splash-frame'),e=document.getElementById('gv-launch-error'),start=performance.now(),delay=ms=>new Promise(r=>setTimeout(r,ms));let firstError='';window.addEventListener('error',x=>{{if(!firstError)firstError=String(x.message||x.error||'window error')}});window.addEventListener('unhandledrejection',x=>{{if(!firstError)firstError=String(x.reason?.stack||x.reason||'unhandled rejection')}});const ready=()=>document.getElementById('aladin-cosmic-command-test')?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GalaxyViewerInfo10G;const wait=async()=>{{const d=performance.now()+60000;while(performance.now()<d){{if(ready())return true;await delay(75)}}throw new Error('10G Viewer did not become interactive'+(firstError?'\\n\\nFIRST JAVASCRIPT ERROR:\\n'+firstError:''))}};const splash=async()=>{{await delay(Math.max(0,3500-(performance.now()-start)));return new Promise((ok,no)=>{{let done=false,t=0;const fin=()=>{{if(done)return;done=true;clearTimeout(t);ok()}};p.addEventListener('load',()=>{{try{{p.contentWindow.addEventListener('galaxy-splash-complete',fin,{{once:true}});p.style.visibility='visible';c?.remove();t=setTimeout(()=>no(new Error('10G splash completion timeout')),22000)}}catch(z){{no(z)}}}},{{once:true}});p.addEventListener('error',()=>no(new Error('10G splash failed to load')),{{once:true}});p.src='{splash}'}})}};try{{const rp=wait();await splash();await rp;p.remove();c?.remove()}}catch(z){{e.style.display='block';e.textContent='GALAXY VIEWER 10G FAILED TO LOAD\\n\\n'+String(z?.stack||z)}}}})();</script>'''
+          out=head+hs[0]+'<script>'+js[0]+'</script><script>'+info+'</script>'+stamp+monitor+'</body></html>'
+          Path('android/galaxy-viewer-10e/app/src/main/assets/index.html').write_text(out)
           PY
 
-          cat > "$A/index.html" <<'HTML'
-          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 10G</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#gv-launch-cover{position:fixed;inset:0;z-index:2147483646;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}#gv-launch-cover img{display:block;width:min(58vw,280px);height:min(58vw,280px);object-fit:contain}.v{color:#FFD85A;font:16px/1 sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55)}#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000;visibility:hidden}#gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;background:#000;color:#FFD85A;white-space:pre-wrap;font:14px/1.45 monospace}#aladin-cosmic-command-test{width:100%!important;height:100dvh!important}</style></head><body><div id="gv-launch-cover"><img src="artwork/icon.svg" alt="GALAXY VIEWER"><div class="v">VERSION 10G</div></div><iframe id="gv-splash-frame"></iframe><div id="gv-launch-error"></div><script>(async()=>{'use strict';const VIEWER_URL='viewer/GV-beta-0010G.py',SPLASH_URL='viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html',cover=document.getElementById('gv-launch-cover'),frame=document.getElementById('gv-splash-frame'),err=document.getElementById('gv-launch-error'),started=performance.now(),delay=ms=>new Promise(r=>setTimeout(r,ms));const fail=e=>{err.style.display='block';err.textContent='GALAXY VIEWER 10G FAILED TO LOAD\n\n'+String(e?.stack||e)};const loadViewer=async()=>{const r=await fetch(VIEWER_URL,{cache:'no-store'});if(!r.ok)throw new Error('Bundled 10G Viewer HTTP '+r.status);const source=await r.text(),js=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(!js.length)throw new Error('Could not extract bundled 10G Viewer');for(const m of js){const s=document.createElement('script');s.textContent=m[1];document.body.appendChild(s)}const deadline=performance.now()+30000;while(performance.now()<deadline){if(document.getElementById('aladin-cosmic-command-test')?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.GalaxyViewerInfo10G)return;await delay(75)}throw new Error('10G interactive Viewer readiness timeout')};const splash=async()=>{await delay(Math.max(0,3500-(performance.now()-started)));return new Promise((resolve,reject)=>{let done=false,timer=0;const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve()};frame.addEventListener('load',()=>{try{const w=frame.contentWindow;w.addEventListener('galaxy-splash-complete',finish,{once:true});frame.style.visibility='visible';cover?.remove();timer=setTimeout(()=>reject(new Error('10G splash completion timeout')),22000)}catch(e){reject(e)}},{once:true});frame.addEventListener('error',()=>reject(new Error('10G splash failed to load')),{once:true});frame.src=SPLASH_URL})};try{const viewerReady=loadViewer();await splash();await viewerReady;frame.remove();cover?.remove()}catch(e){console.error(e);fail(e)}})();</script></body></html>
-          HTML
+          grep -q 'VERSION 10G' "$A/index.html"
+          grep -q 'GalaxyViewerInfo10G' "$A/index.html"
+          grep -q 'const VERSION=' "$A/index.html"
+          ! grep -q "GV-beta-0010G.py" "$A/index.html"
+          ! grep -q "fetch(VIEWER_URL" "$A/index.html"
 
-          grep -q 'appassets.androidplatform.net' "$P/app/src/main/java/com/gear66me/galaxyviewer10e/MainActivity.java"
-          ! grep -q 'file:///android_asset/index.html' "$P/app/src/main/java/com/gear66me/galaxyviewer10e/MainActivity.java"
-          grep -q 'GV-beta-0010F.py' "$A/viewer/GV-beta-0010G.py"
-          grep -q 'modules/gv-info-module-0001.js' "$A/viewer/GV-beta-0010G.py"
-
-      - name: Build 10G APK
+      - name: Build 10G R3 APK
         run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
 
       - name: Validate and package APK
@@ -207,37 +97,36 @@ jobs:
         run: |
           set -euo pipefail
           APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-10G-R2.apk
+          OUT=Galaxy-Viewer-10G-R3.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
           grep -q "package: name='com.gear66me.galaxyviewer10g'" /tmp/badging.txt
-          grep -q "versionName='10G-local-launcher-2'" /tmp/badging.txt
+          grep -q "versionName='10G-flattened-3'" /tmp/badging.txt
           grep -q "application-label:'Galaxy Viewer 10G'" /tmp/badging.txt
+          unzip -p "$APK" assets/index.html | grep -q 'GalaxyViewerInfo10G'
           unzip -p "$APK" assets/index.html | grep -q 'VERSION 10G'
-          unzip -l "$APK" | grep -q 'assets/viewer/GV-beta-0010G.py'
-          unzip -l "$APK" | grep -q 'assets/viewer/GV-beta-0010F.py'
-          unzip -l "$APK" | grep -q 'assets/viewer/modules/gv-info-module-0001.js'
+          ! unzip -p "$APK" assets/index.html | grep -q 'fetch(VIEWER_URL'
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           cp "$APK" "$OUT"
           sha256sum "$OUT" | tee "$OUT.sha256"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-10G-R2
+          name: Galaxy-Viewer-10G-R3
           path: |
-            Galaxy-Viewer-10G-R2.apk
-            Galaxy-Viewer-10G-R2.apk.sha256
+            Galaxy-Viewer-10G-R3.apk
+            Galaxy-Viewer-10G-R3.apk.sha256
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish 10G R2 installer release
+      - name: Publish 10G R3 installer release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-10g-local-launcher-2
+          TAG=galaxy-viewer-10g-flattened-3
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-10G-R2.apk Galaxy-Viewer-10G-R2.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G R2 — Local HTTPS Asset Origin' --notes '10G APK repaired to serve embedded Android assets through an internal HTTPS origin so relative fetch and iframe requests work in WebView.'
+          gh release create "$TAG" Galaxy-Viewer-10G-R3.apk Galaxy-Viewer-10G-R3.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G R3 — Flattened Viewer' --notes 'R3 removes the runtime 10G-to-10F composition chain. Frozen 10F HTML/JS and the 10G INFO module are flattened into one APK-local document at build time.'
 
       - name: Mark build successful
         if: success()
