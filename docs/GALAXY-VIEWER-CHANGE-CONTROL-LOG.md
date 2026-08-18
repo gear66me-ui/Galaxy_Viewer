@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-8bc90f4ba0a0 — Restore coordinate font workflow after one-shot repair
+
+**Recorded:** 2026-08-18T01:46:04-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8bc90f4ba0a0ecc8bedde0416787489ab27ac248`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8bc90f4ba0a0ecc8bedde0416787489ab27ac248)  
+**Parent/baseline:** `d6e6d3ea1ce87e7a4a183b86bbb8693e0988c3ba`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d6e6d3ea1ce87e7a4a183b86bbb8693e0988c3ba...8bc90f4ba0a0ecc8bedde0416787489ab27ac248)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Restore coordinate font workflow after one-shot repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-coordinate-font-0005.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `48c53a437d12faf1e3c2c6c8a2eb0c3ae6627f4da7c4e56f39a3515e1c635541`
+- SHA-256 after: `60eddcca25f1a973124c53a11a990ad7e3fd2b44b2c53b732bb0de38c9655029`
+- Bytes: `10063` → `1614`
+- Lines: `181` → `52`
+- Characters: `10061` → `1614`
+- Inserted lines: `28`
+- Deleted lines: `157`
+- Inserted characters: `740`
+- Deleted characters: `9187`
+- Unified diff hunks: `10`
+- Inserted blocks: `9`
+- Deleted blocks: `9`
+- Changed blocks: `9`
+- Line balance: `181 + 28 - 157 = 52` — **PASS**
+- Character balance: `10061 + 740 - 9187 = 1614` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b49e3e9b8873 — 10G APK: use approved Galaxy Viewer launcher icon
 
 **Recorded:** 2026-08-18T01:45:35-05:00  
