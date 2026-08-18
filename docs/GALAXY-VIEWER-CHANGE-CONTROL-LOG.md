@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ab2856f17c0f — Repair 10G HD back control and APK launcher icon
+
+**Recorded:** 2026-08-18T01:21:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ab2856f17c0fd4482d6f90be9a0506e651843a3e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ab2856f17c0fd4482d6f90be9a0506e651843a3e)  
+**Parent/baseline:** `b7085e1fec42e389dcfd8513c599f83b31b21f3b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/b7085e1fec42e389dcfd8513c599f83b31b21f3b...ab2856f17c0fd4482d6f90be9a0506e651843a3e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Repair 10G HD back control and APK launcher icon
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/apply-10g-final-and-build-generic.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `88b88a0cc1c42f600414b02db22fb30ff8d7b18ba44fef33f4eedad7be4a6ac9`
+- SHA-256 after: `fbf1d0fe9950a0991d08f606a07d1ed61f7eed75f4740c26808c621c32917a6c`
+- Bytes: `24895` → `11581`
+- Lines: `246` → `196`
+- Characters: `24895` → `11579`
+- Inserted lines: `139`
+- Deleted lines: `189`
+- Inserted characters: `6193`
+- Deleted characters: `19509`
+- Unified diff hunks: `21`
+- Inserted blocks: `20`
+- Deleted blocks: `18`
+- Changed blocks: `21`
+- Line balance: `246 + 139 - 189 = 196` — **PASS**
+- Character balance: `24895 + 6193 - 19509 = 11579` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-dd05567b45a5 — Apply final 10G ECO and build permanent generic APK
 
 **Recorded:** 2026-08-18T00:49:55-05:00  
