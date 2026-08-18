@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2ecc7438890c — Temporary Catalog 0018 pseudonym updater
+
+**Recorded:** 2026-08-18T13:54:10-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2ecc7438890ce5a90c1366721f56174df4087f04`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2ecc7438890ce5a90c1366721f56174df4087f04)  
+**Parent/baseline:** `d9a17e6067a1edfbfca0a0092f5f9621caf8aa8c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d9a17e6067a1edfbfca0a0092f5f9621caf8aa8c...2ecc7438890ce5a90c1366721f56174df4087f04)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Temporary Catalog 0018 pseudonym updater
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-update-catalog-0018-pseudonyms.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `3d2807564c7477bac7d495441caf7c5714566bd1c3f3bf7fefacc60af780a8cd`
+- Bytes: `0` → `8915`
+- Lines: `0` → `265`
+- Characters: `0` → `8915`
+- Inserted lines: `265`
+- Deleted lines: `0`
+- Inserted characters: `8915`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 265 - 0 = 265` — **PASS**
+- Character balance: `0 + 8915 - 0 = 8915` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-1a8b35690ad5 — TEMP execute verified 10H through recognized workflow
 
 **Recorded:** 2026-08-18T13:41:17-05:00  
