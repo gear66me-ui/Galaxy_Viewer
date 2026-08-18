@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a4255e525a42 — TEMP execute 10H surgical restoration
+
+**Recorded:** 2026-08-18T13:24:25-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a4255e525a422d30bd8aed5c412987fe52754e2f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a4255e525a422d30bd8aed5c412987fe52754e2f)  
+**Parent/baseline:** `86c584e30aeb18c4336eea98ddb154829b759f5d`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/86c584e30aeb18c4336eea98ddb154829b759f5d...a4255e525a422d30bd8aed5c412987fe52754e2f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+TEMP execute 10H surgical restoration
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-10h-surgical.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `854f2fc032a3df42a2cbe2161d4863752daecfdf08b346792bd21c12de63ca73`
+- Bytes: `0` → `12059`
+- Lines: `0` → `175`
+- Characters: `0` → `12055`
+- Inserted lines: `175`
+- Deleted lines: `0`
+- Inserted characters: `12055`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 175 - 0 = 175` — **PASS**
+- Character balance: `0 + 12055 - 0 = 12055` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-4f1c3b30c48d — Add generic launcher 0003 with same-origin bootstrap
 
 **Recorded:** 2026-08-18T13:14:20-05:00  
