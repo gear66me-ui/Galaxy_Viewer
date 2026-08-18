@@ -85,12 +85,7 @@ async function initializeViewer(){
   throw new Error('ACTIVE VIEWER STARTUP TIMEOUT: '+viewer);
 }
 async function runSplash(){
-  splash.src=SPLASH_URL+'?t='+Date.now();
-  const remaining=Math.max(0,ICON_HOLD_MS-(performance.now()-launchStartedAt));
-  await sleep(remaining);
-  splash.style.visibility='visible';
-  if(cover.isConnected)cover.remove();
-  await new Promise((resolve,reject)=>{
+  const splashCompletion=new Promise((resolve,reject)=>{
     let settled=false;
     const done=()=>{if(settled)return;settled=true;resolve()};
     const timer=setTimeout(()=>{if(settled)return;settled=true;reject(new Error('SPLASH COMPLETION TIMEOUT'))},30000);
@@ -102,6 +97,12 @@ async function runSplash(){
     },{once:true});
     splash.addEventListener('error',()=>{clearTimeout(timer);reject(new Error('SPLASH FAILED TO LOAD'))},{once:true});
   });
+  splash.src=SPLASH_URL+'?t='+Date.now();
+  const remaining=Math.max(0,ICON_HOLD_MS-(performance.now()-launchStartedAt));
+  await sleep(remaining);
+  splash.style.visibility='visible';
+  if(cover.isConnected)cover.remove();
+  await splashCompletion;
 }
 try{
   const viewerPromise=initializeViewer();
