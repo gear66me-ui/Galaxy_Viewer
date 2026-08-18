@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-69db87355b11 — Remove unauthorized 10G viewer block
+
+**Recorded:** 2026-08-17T22:35:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`69db87355b118e799af8e0af250638d28b9bcedc`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/69db87355b118e799af8e0af250638d28b9bcedc)  
+**Parent/baseline:** `f9a10aa5b212189df6b2cb7afb3b75e00cebdfe7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/f9a10aa5b212189df6b2cb7afb3b75e00cebdfe7...69db87355b118e799af8e0af250638d28b9bcedc)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Remove unauthorized 10G viewer block
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0010G.py`
+
+- Status: **DELETED**
+- SHA-256 before: `b0f764a0c30689479d282c2022a1c16bf0787b9a9cd2105be41fc70720c02100`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `79736` → `0`
+- Lines: `1228` → `0`
+- Characters: `79719` → `0`
+- Inserted lines: `0`
+- Deleted lines: `1228`
+- Inserted characters: `0`
+- Deleted characters: `79719`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1228 + 0 - 1228 = 0` — **PASS**
+- Character balance: `79719 + 0 - 79719 = 0` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-258bb6e3c6a6 — Expose fresh 10G APK build run
 
 **Recorded:** 2026-08-17T22:15:09-05:00  
