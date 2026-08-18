@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2eb8e502bf9e — Remove GENERIC rasterizer delay; keep white-black icon and remote base fix
+
+**Recorded:** 2026-08-18T12:02:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2eb8e502bf9e9c03e1f483677b26d7be03be4a52`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2eb8e502bf9e9c03e1f483677b26d7be03be4a52)  
+**Parent/baseline:** `16c91a36279b8dc75699f33eb07bedd0c4999a29`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/16c91a36279b8dc75699f33eb07bedd0c4999a29...2eb8e502bf9e9c03e1f483677b26d7be03be4a52)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Remove GENERIC rasterizer delay; keep white-black icon and remote base fix
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4746d37c022fd30a8226b39b2c49128adf483ba153d6e5985ee26f0211bcbbc4`
+- SHA-256 after: `e27103410c9a58bc4fdb4ea8bfb7c41846ad4ba94d637e3e4b9d141334169cf0`
+- Bytes: `11183` → `12536`
+- Lines: `169` → `199`
+- Characters: `11183` → `12536`
+- Inserted lines: `38`
+- Deleted lines: `8`
+- Inserted characters: `1715`
+- Deleted characters: `362`
+- Unified diff hunks: `5`
+- Inserted blocks: `3`
+- Deleted blocks: `5`
+- Changed blocks: `5`
+- Line balance: `169 + 38 - 8 = 199` — **PASS**
+- Character balance: `11183 + 1715 - 362 = 12536` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-b6759db739af — Fix GENERIC runtime base and white-on-black target icon
 
 **Recorded:** 2026-08-18T11:58:22-05:00  
