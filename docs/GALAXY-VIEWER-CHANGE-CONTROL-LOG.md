@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-1a8b35690ad5 — TEMP execute verified 10H through recognized workflow
+
+**Recorded:** 2026-08-18T13:41:17-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1a8b35690ad55f46418303874466ba9eb290ff24`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1a8b35690ad55f46418303874466ba9eb290ff24)  
+**Parent/baseline:** `ac2107df2daafef0d362e4647b4a98872464630a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ac2107df2daafef0d362e4647b4a98872464630a...1a8b35690ad55f46418303874466ba9eb290ff24)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+TEMP execute verified 10H through recognized workflow
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/apply-10g-final-and-build-generic.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `88b88a0cc1c42f600414b02db22fb30ff8d7b18ba44fef33f4eedad7be4a6ac9`
+- SHA-256 after: `62ff1667f27e495c07077d72c1272b6a68c78cd4191d73c65e255af4f260ce6a`
+- Bytes: `24895` → `10786`
+- Lines: `246` → `106`
+- Characters: `24895` → `10782`
+- Inserted lines: `83`
+- Deleted lines: `223`
+- Inserted characters: `7639`
+- Deleted characters: `21752`
+- Unified diff hunks: `10`
+- Inserted blocks: `8`
+- Deleted blocks: `8`
+- Changed blocks: `9`
+- Line balance: `246 + 83 - 223 = 106` — **PASS**
+- Character balance: `24895 + 7639 - 21752 = 10782` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e3765c63137a — TEMP direct 10H surgical execution
 
 **Recorded:** 2026-08-18T13:38:52-05:00  
