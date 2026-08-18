@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-9c1e278016a2 — ECO: integrate JWST HD presentation into standalone 10G
+
+**Recorded:** 2026-08-17T23:05:46-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`9c1e278016a273aaf665434f2c741d0534b0be8b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/9c1e278016a273aaf665434f2c741d0534b0be8b)  
+**Parent/baseline:** `ac25b1a86daa0a1103df3e34faab1a6591676e26`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ac25b1a86daa0a1103df3e34faab1a6591676e26...9c1e278016a273aaf665434f2c741d0534b0be8b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO: integrate JWST HD presentation into standalone 10G
+```
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0010G.py`
+
+- Status: **MODIFIED**
+- SHA-256 before: `bf5f5de2860d53ead0446a3b2bbc813aeb6ff145fad5da7057ad45e2b7c3e731`
+- SHA-256 after: `9fd4215c59a955485eee0fca3038b39fe6f995368e558f0dd4b2934306813b1e`
+- Bytes: `72841` → `83489`
+- Lines: `1191` → `1325`
+- Characters: `72826` → `83473`
+- Inserted lines: `165`
+- Deleted lines: `31`
+- Inserted characters: `10993`
+- Deleted characters: `346`
+- Unified diff hunks: `35`
+- Inserted blocks: `34`
+- Deleted blocks: `27`
+- Changed blocks: `35`
+- Line balance: `1191 + 165 - 31 = 1325` — **PASS**
+- Character balance: `72826 + 10993 - 346 = 83473` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7671141bd936 — ECO: sanitize 10G standalone and restore local Aladin mirror
 
 **Recorded:** 2026-08-17T22:42:15-05:00  
