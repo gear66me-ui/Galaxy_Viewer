@@ -85,11 +85,11 @@ display(Javascript(r"""
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
     const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/559dfd10c0c3dafa7f7a5c3f7fe2c76337f26066/viewer/modules/gv-random-galaxy-0031.js?v=4abd2d76e717c0f4abbb61777154b7db14f49cf8';
     const HUBBLE_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json?v=e8009928f12dfc4138f215e2144edd16a0974fd4';
-    const JWST_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json?v=bcc37a66bc5bb697b57530d07daee5886c63338a';
+    const JWST_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/948867116a8f35e5265c4cecf887c60c1df0cd77/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json?v=bcc37a66bc5bb697b57530d07daee5886c63338a';
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
     const HUBBLE_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b';
     const JWST_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/JWST/esa-jwst-logo.png?v=7169a77e4b56dc582f9b0fb0b76bf389bcf337ce';
-    const INFO_PLACEHOLDER=Array.from({length:600},(_,index)=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ '[index%27]).join('');
+    const HD_LAYOUT=Object.freeze({bannerRatio:366/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});
     const HOME=Object.freeze({name:'EARTH — MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
     const ARRIVAL_OCCUPANCY=Object.freeze({target:0.35,max:0.40,minFov:0.05,maxFov:8});
     const HUBBLE_PREFETCH_TARGET=10;
@@ -101,6 +101,7 @@ display(Javascript(r"""
 
     let galaxyCatalog=[];
     let catalogRecordCount=0;
+    let catalogDatabaseCounts=Object.freeze({hubble:0,jwst:0,total:0,eligibleHubble:0,eligibleJwst:0,eligibleTotal:0});
     const prefetchReady=[];
     const prefetchLoading=new Map();
     const prefetchRetryAfter=new Map();
@@ -325,11 +326,10 @@ display(Javascript(r"""
         const payload=await response.json();
         const raw=payload?.entries;
         const declared=Number(payload?.categoryEntryCount);
-        if(!Array.isArray(raw)||raw.length!==1879||declared!==1879)throw new Error('FULL HUBBLE CATALOG MUST CONTAIN EXACTLY 1879 ENTRIES');
-        catalogRecordCount=raw.length;
+        if(!Array.isArray(raw)||!raw.length||!Number.isFinite(declared)||declared!==raw.length)throw new Error('FULL HUBBLE CATALOG COUNT MISMATCH');
         const eligible=raw.map(normalizeCatalogGalaxy).filter(Boolean);
         if(eligible.length<HUBBLE_PREFETCH_TARGET)throw new Error('FULL HUBBLE CATALOG HAS FEWER THAN TEN TRUTHFULLY TARGETABLE GALAXIES');
-        return Object.freeze(eligible);
+        return Object.freeze({rawCount:raw.length,eligible:Object.freeze(eligible)});
     }
 
     async function loadJwstCatalog(){
@@ -338,16 +338,21 @@ display(Javascript(r"""
         const payload=await response.json();
         const raw=payload?.entries;
         const declared=Number(payload?.categoryEntryCount);
-        if(!Array.isArray(raw)||raw.length!==60||declared!==60)throw new Error('FULL JWST CATALOG MUST CONTAIN EXACTLY 60 ENTRIES');
+        if(payload?.version!=='full-0002')throw new Error('JWST CATALOG MUST BE FULL-0002');
+        if(!Array.isArray(raw)||!raw.length||!Number.isFinite(declared)||declared!==raw.length)throw new Error('FULL JWST CATALOG COUNT MISMATCH');
         const eligible=raw.map(normalizeJwstGalaxy).filter(Boolean);
         if(!eligible.length)throw new Error('FULL JWST CATALOG HAS NO TARGETABLE GALAXIES');
-        return Object.freeze(eligible);
+        return Object.freeze({rawCount:raw.length,eligible:Object.freeze(eligible)});
     }
 
     async function loadCombinedGalaxyCatalog(){
-        const [hubble,jwst]=await Promise.all([loadGalaxyCatalog(),loadJwstCatalog()]);
-        catalogRecordCount=1879+60;
-        return Object.freeze([...hubble,...jwst]);
+        const [hubbleData,jwstData]=await Promise.all([loadGalaxyCatalog(),loadJwstCatalog()]);
+        const hubble=hubbleData.eligible,jwst=jwstData.eligible;
+        const combined=Object.freeze([...hubble,...jwst]);
+        catalogRecordCount=combined.length;
+        catalogDatabaseCounts=Object.freeze({hubble:hubbleData.rawCount,jwst:jwstData.rawCount,total:hubbleData.rawCount+jwstData.rawCount,eligibleHubble:hubble.length,eligibleJwst:jwst.length,eligibleTotal:combined.length});
+        console.info('GV-10G CATALOG COUNTS',catalogDatabaseCounts);
+        return combined;
     }
 
     function destinationKey(destination){return String(destination?.archiveId||destination?.name||'').trim().toLowerCase()}
@@ -860,14 +865,12 @@ display(Javascript(r"""
             const requested=forcedDestination;
             forcedDestination=null;
             destination=consumeReady(requested,excludeName);
-            if(!destination){destination=setUnpreparedActive(requested)}
+            if(!destination)destination=setUnpreparedActive(requested);
         }else{
-            destination=consumeReady(null,excludeName);
-            if(!destination){
-                const inFlight=inFlightDestination(excludeName);
-                if(inFlight)destination=setUnpreparedActive(inFlight);
-                else destination=setUnpreparedActive(chooseGalaxy(galaxyCatalog,excludeName));
-            }
+            if(!galaxyCatalog.length)throw new Error('COMBINED GALAXY CATALOG IS EMPTY');
+            const requested=galaxyCatalog[Math.floor(Math.random()*galaxyCatalog.length)];
+            destination=consumeReady(requested,excludeName);
+            if(!destination)destination=setUnpreparedActive(requested);
         }
         activeTargetKey=destinationKey(destination);
         if(Number.isFinite(Number(destination.aladinRotation))&&typeof window.aladin_cosmic_command_test?.setRotation==='function'){
@@ -919,6 +922,12 @@ display(Javascript(r"""
                     if(!response.ok)throw new Error('SCRIPT FETCH RETURNED HTTP '+response.status+': '+url);
                     return response.text();
                 }).then(source=>{
+                    if(datasetKey==='gvRandomGalaxy0031'){
+                        source=source.replace("return host === 'esahubble.org' || host.endsWith('.esahubble.org');","return host === 'esahubble.org' || host.endsWith('.esahubble.org') || host === 'esawebb.org' || host.endsWith('.esawebb.org');");
+                        source=source.replace("if (telescope && !/hubble/i.test(telescope)) throw new Error('Rejected entry without Hubble telescope data.');","if (telescope && !/(hubble|webb)/i.test(telescope)) throw new Error('Rejected entry without Hubble/Webb telescope data.');");
+                        source=source.replace("source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        hubble: true,","source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        provider: cleanText(candidate.provider || (/webb/i.test(telescope) ? 'JWST' : 'HUBBLE')).toUpperCase(),\n        hubble: true,");
+                        if(!source.includes("host === 'esawebb.org'")||!source.includes("provider: cleanText(candidate.provider"))throw new Error('RANDOM GALAXY 0031 JWST COMPATIBILITY PATCH FAILED');
+                    }
                     script.textContent=source;
                     document.head.appendChild(script);
                     script.dataset.gvLoaded='true';
@@ -1196,7 +1205,7 @@ display(Javascript(r"""
     };
     bottom.random.addEventListener('click',launchRandomGalaxy);
     const presentationStyle=document.createElement('style');
-    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:rgba(0,12,8,.88)!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-viewport{left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:17/12!important;height:auto!important;max-height:none!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important}.gvrg-hd-viewport img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 8px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);pointer-events:auto}#gv-hd-info-title{margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{overflow-wrap:anywhere}#gv-hd-info-source{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:8px;color:#B7FFD0;font-size:9px;letter-spacing:.55px}#gv-hd-info-link{display:inline-flex;width:38px;height:38px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:5px;background:rgba(12,70,43,.72);overflow:hidden}#gv-hd-info-link img{display:block;max-width:34px;max-height:34px;object-fit:contain}';
+    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,96vw)!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-icon-button{background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;border:2px solid #ff8214!important;border-radius:5px!important;box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 8px rgba(255,130,20,.38),0 0 14px rgba(255,130,20,.18)!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 8px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}#gv-hd-info-more{flex:0 0 auto;margin-top:6px;padding-right:4px;color:#B7FFD0;font-size:10px;letter-spacing:.65px;text-align:right;white-space:nowrap}#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}';
     document.head.appendChild(presentationStyle);
     const hdScience=randomGalaxy.hdScience;
     if(hdScience){
@@ -1230,15 +1239,49 @@ display(Javascript(r"""
 
     const hdInfoPanel=document.createElement('div');
     hdInfoPanel.id='gv-hd-info-panel';
-    hdInfoPanel.innerHTML='<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div><div id="gv-hd-info-source"><span>FOR MORE INFO, TAP THE ICON</span><a id="gv-hd-info-link" target="_blank" rel="noopener noreferrer"><img id="gv-hd-info-icon" alt="ARCHIVE SOURCE"></a></div>';
+    hdInfoPanel.innerHTML='<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div><div id="gv-hd-info-more">MORE INFO &gt;</div>';
     randomGalaxy.hdOverlay?.appendChild(hdInfoPanel);
     const hdInfoBody=hdInfoPanel.querySelector('#gv-hd-info-body');
-    const hdInfoLink=hdInfoPanel.querySelector('#gv-hd-info-link');
-    const hdInfoIcon=hdInfoPanel.querySelector('#gv-hd-info-icon');
-    if(hdInfoBody)hdInfoBody.textContent=INFO_PLACEHOLDER;
+    const hdInfoLink=document.createElement('a');
+    hdInfoLink.id='gv-hd-info-link';
+    hdInfoLink.target='_blank';
+    hdInfoLink.rel='noopener noreferrer';
+    const hdInfoIcon=document.createElement('img');
+    hdInfoIcon.id='gv-hd-info-icon';
+    hdInfoIcon.alt='ARCHIVE SOURCE';
+    hdInfoLink.appendChild(hdInfoIcon);
+    randomGalaxy.hdViewport?.appendChild(hdInfoLink);
 
     function currentArchiveDestination(){return randomGalaxy.getState?.().activeDestination||randomGalaxy.activeDestination||null}
     function providerFor(destination){return destination?.provider==='JWST'?'JWST':'HUBBLE'}
+    function galaxyInfoText(destination){
+        if(!destination)return '';
+        const provider=providerFor(destination);
+        const telescope=provider==='JWST'?'JAMES WEBB SPACE TELESCOPE':'HUBBLE SPACE TELESCOPE';
+        const identity=String(destination.commonName||destination.designation||destination.name||'THIS GALAXY').trim().toUpperCase();
+        const parts=[`${identity} — ${telescope} IMAGERY.`];
+        if(destination.constellation)parts.push(`CONSTELLATION ${String(destination.constellation).trim().toUpperCase()}.`);
+        const distance=Number(destination.distance);
+        if(Number.isFinite(distance)&&distance>0)parts.push(`DISTANCE ${distance>=1000?(distance/1000).toFixed(2)+' BILLION':distance.toFixed(distance>=100?0:1)+' MILLION'} LIGHT-YEARS.`);
+        if(destination.age)parts.push(`AGE ${String(destination.age).trim().toUpperCase()}.`);
+        if(destination.imageType)parts.push(`${String(destination.imageType).trim().toUpperCase()} IMAGE.`);
+        return parts.join(' ');
+    }
+    function fitHdInfoText(destination=currentArchiveDestination()){
+        if(!hdInfoBody||!destination)return;
+        const full=galaxyInfoText(destination);
+        const words=full.split(/\s+/).filter(Boolean);
+        let lo=0,hi=words.length,best='';
+        while(lo<=hi){
+            const mid=(lo+hi)>>1;
+            const candidate=words.slice(0,mid).join(' ')+(mid<words.length?' …':'');
+            hdInfoBody.textContent=candidate;
+            if(hdInfoBody.scrollHeight<=hdInfoBody.clientHeight+1){best=candidate;lo=mid+1}else hi=mid-1;
+        }
+        hdInfoBody.textContent=best||full;
+        hdInfoBody.dataset.fittedCharacters=String(hdInfoBody.textContent.length);
+        hdInfoBody.dataset.fittedWords=String((hdInfoBody.textContent.match(/\S+/g)||[]).length);
+    }
     function syncHdProviderPresentation(destination=currentArchiveDestination()){
         if(!destination)return;
         const provider=providerFor(destination);
@@ -1249,6 +1292,7 @@ display(Javascript(r"""
         if(hdInfoIcon){hdInfoIcon.src=iconUrl;hdInfoIcon.alt=`${provider} ARCHIVE SOURCE`}
         if(hdInfoLink){hdInfoLink.href=String(destination.sourceUrl||'#');hdInfoLink.setAttribute('aria-label',`OPEN ${provider} SOURCE INFORMATION`)}
         if(randomGalaxy.hdLoading&&provider==='JWST'&&/HUBBLE/i.test(randomGalaxy.hdLoading.textContent||''))randomGalaxy.hdLoading.textContent=String(randomGalaxy.hdLoading.textContent||'').replace(/HUBBLE/gi,'JWST');
+        fitHdInfoText(destination);
     }
     function applySmartHdCrop(){
         const image=randomGalaxy.hdImage;
@@ -1260,11 +1304,29 @@ display(Javascript(r"""
         image.style.objectPosition=`${x.toFixed(2)}% ${y.toFixed(2)}%`;
     }
     function positionHdInfoPanel(){
-        if(!randomGalaxy.hdOverlay||!randomGalaxy.hdViewport)return;
+        if(!randomGalaxy.hdOverlay||!randomGalaxy.hdViewport||!randomGalaxy.hdScience)return;
         const overlayRect=randomGalaxy.hdOverlay.getBoundingClientRect();
-        const viewportRect=randomGalaxy.hdViewport.getBoundingClientRect();
-        if(!overlayRect.height||!viewportRect.height)return;
-        hdInfoPanel.style.top=`${Math.max(6,Math.round(viewportRect.bottom-overlayRect.top+6))}px`;
+        const navRect=bottom.nav.getBoundingClientRect();
+        if(!overlayRect.height||!overlayRect.width)return;
+        const safeBottom=Math.min(overlayRect.bottom-HD_LAYOUT.edge,navRect.top-HD_LAYOUT.edge);
+        const available=Math.max(1,safeBottom-overlayRect.top-HD_LAYOUT.edge-HD_LAYOUT.gap*2);
+        const bannerTarget=overlayRect.height*HD_LAYOUT.bannerRatio;
+        const imageTarget=overlayRect.height*HD_LAYOUT.imageRatio;
+        const scale=Math.min(1,available/Math.max(1,bannerTarget*2+imageTarget));
+        const bannerHeight=Math.max(1,Math.floor(bannerTarget*scale));
+        const imageHeight=Math.max(1,Math.floor(imageTarget*scale));
+        const scienceTop=HD_LAYOUT.edge;
+        const imageTop=scienceTop+bannerHeight+HD_LAYOUT.gap;
+        const infoTop=imageTop+imageHeight+HD_LAYOUT.gap;
+        const set=(element,name,value)=>element.style.setProperty(name,value,'important');
+        set(randomGalaxy.hdScience,'top',`${scienceTop}px`);set(randomGalaxy.hdScience,'height',`${bannerHeight}px`);set(randomGalaxy.hdScience,'max-height',`${bannerHeight}px`);
+        set(randomGalaxy.hdViewport,'top',`${imageTop}px`);set(randomGalaxy.hdViewport,'bottom','auto');set(randomGalaxy.hdViewport,'height',`${imageHeight}px`);set(randomGalaxy.hdViewport,'max-height',`${imageHeight}px`);
+        set(hdInfoPanel,'top',`${infoTop}px`);set(hdInfoPanel,'height',`${bannerHeight}px`);set(hdInfoPanel,'max-height',`${bannerHeight}px`);
+        randomGalaxy.hdOverlay.style.pointerEvents='none';
+        randomGalaxy.hdViewport.style.pointerEvents='auto';
+        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents='auto';
+        randomGalaxy.hdOverlay.querySelectorAll('button,a').forEach(element=>{element.style.pointerEvents='auto'});
+        fitHdInfoText();
     }
     function settleHdPresentation(){
         syncHdProviderPresentation();
@@ -1317,7 +1379,7 @@ display(Javascript(r"""
     bottom.back.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex-1));
     bottom.forward.addEventListener('click',()=>navigateHistory(galaxyHistoryIndex+1));
     setHistoryControls();
-    window.GV10E=Object.freeze({version:VERSION,displayVersion:DISPLAY_VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,universeContext,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,getHubblePrefetchState,getHubbleDownloadStatus,getAladinPrewarmState,startHubblePrefetch:fillPrefetchQueue,getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId,provider:item.provider||'HUBBLE'}))})});
+    window.GV10E=Object.freeze({version:VERSION,displayVersion:DISPLAY_VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,universeContext,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,catalogDatabaseCounts,getHubblePrefetchState,getHubbleDownloadStatus,getAladinPrewarmState,startHubblePrefetch:fillPrefetchQueue,getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId,provider:item.provider||'HUBBLE'}))})});
     document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length}}));
 })().catch(error=>{console.error('GALAXY VIEWER 10G STARTUP FAILURE:',error);document.dispatchEvent(new CustomEvent('gv-viewer-failed',{detail:{message:String(error?.stack||error)}}));});
 """))
