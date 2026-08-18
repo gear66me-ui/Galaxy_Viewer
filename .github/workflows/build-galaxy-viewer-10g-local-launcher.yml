@@ -30,6 +30,10 @@ jobs:
           java-version: '17'
       - uses: android-actions/setup-android@v3
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Enable KVM acceleration for emulator
+        run: |
+          if [ -e /dev/kvm ]; then sudo chmod 666 /dev/kvm; fi
+          ls -l /dev/kvm || true
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
