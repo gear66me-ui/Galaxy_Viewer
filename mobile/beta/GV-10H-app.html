@@ -38,7 +38,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
         const jsMatch=source.match(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/);
         if(!htmlMatch||!jsMatch)throw new Error('10H VIEWER EXTRACTION FAILED');
         const safeJs=jsMatch[1].replace(/<\/script/gi,'<\\/script');
-        const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"></head><body>'+htmlMatch[1]+'<script>'+safeJs+'<\\/script></body></html>';
+        const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"></head><body>'+htmlMatch[1]+'<script>'+safeJs+'</scr'+'ipt></body></html>';
         document.open();
         document.write(page);
         document.close();
