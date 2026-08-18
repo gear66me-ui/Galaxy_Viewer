@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-30f30b31fc2f — Harden direct 10G repair against match and push races
+
+**Recorded:** 2026-08-18T01:28:07-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`30f30b31fc2f5c64a7f50ff5d7910c66b1d1a07c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/30f30b31fc2f5c64a7f50ff5d7910c66b1d1a07c)  
+**Parent/baseline:** `dfbc17c4dd1553034557911c27e4c78dd32fbe62`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/dfbc17c4dd1553034557911c27e4c78dd32fbe62...30f30b31fc2f5c64a7f50ff5d7910c66b1d1a07c)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Harden direct 10G repair against match and push races
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/apply-10g-final-and-build-generic.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `42f2b3ea1407e3e29e169a62f5834b7258c8870bfd727de45ff07f887de259f7`
+- SHA-256 after: `8e402e447203079625b0497c91316f26e0050b4b769ee3bfda7cbc31874a0080`
+- Bytes: `5045` → `4594`
+- Lines: `85` → `86`
+- Characters: `5045` → `4594`
+- Inserted lines: `45`
+- Deleted lines: `44`
+- Inserted characters: `1220`
+- Deleted characters: `1671`
+- Unified diff hunks: `9`
+- Inserted blocks: `9`
+- Deleted blocks: `9`
+- Changed blocks: `9`
+- Line balance: `85 + 45 - 44 = 86` — **PASS**
+- Character balance: `5045 + 1220 - 1671 = 4594` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-c12d32d6d964 — Run direct 10G HD back-to-viewer repair
 
 **Recorded:** 2026-08-18T01:25:10-05:00  
