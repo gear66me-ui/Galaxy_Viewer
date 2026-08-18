@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-a4a0987c276b — Use librsvg for GENERIC target icon rasterization
+
+**Recorded:** 2026-08-18T11:49:38-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`a4a0987c276b8d016e23eefbbc99cf77ff016485`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/a4a0987c276b8d016e23eefbbc99cf77ff016485)  
+**Parent/baseline:** `bbc53344c9cee81cc72b8c5a788a64e8417edcc2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bbc53344c9cee81cc72b8c5a788a64e8417edcc2...a4a0987c276b8d016e23eefbbc99cf77ff016485)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use librsvg for GENERIC target icon rasterization
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `5669d3948619b63ae8587c6d3c28c233847a84f160dc95e6c1aa1bf7036bd845`
+- SHA-256 after: `1ed8a7517cda534aa17f7682361e6eaf0629582f14ecb12485e6bd4a3f279202`
+- Bytes: `9582` → `9639`
+- Lines: `159` → `150`
+- Characters: `9582` → `9639`
+- Inserted lines: `5`
+- Deleted lines: `14`
+- Inserted characters: `135`
+- Deleted characters: `78`
+- Unified diff hunks: `13`
+- Inserted blocks: `3`
+- Deleted blocks: `12`
+- Changed blocks: `13`
+- Line balance: `159 + 5 - 14 = 150` — **PASS**
+- Character balance: `9582 + 135 - 78 = 9639` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-78100628052f — Expose GENERIC APK build status and publish installer
 
 **Recorded:** 2026-08-18T11:48:01-05:00  
