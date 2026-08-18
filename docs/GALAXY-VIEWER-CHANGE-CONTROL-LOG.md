@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-b6759db739af — Fix GENERIC runtime base and white-on-black target icon
+
+**Recorded:** 2026-08-18T11:58:22-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b6759db739afaa30ea72e088a58e6c9afab91538`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b6759db739afaa30ea72e088a58e6c9afab91538)  
+**Parent/baseline:** `671ef3622fc386d7603f505a76b2cb4d4d324d9b`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/671ef3622fc386d7603f505a76b2cb4d4d324d9b...b6759db739afaa30ea72e088a58e6c9afab91538)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix GENERIC runtime base and white-on-black target icon
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e4764fcea87358f473235a7104eb65427bfc9168551dd7e6e99c0d0acb511895`
+- SHA-256 after: `4746d37c022fd30a8226b39b2c49128adf483ba153d6e5985ee26f0211bcbbc4`
+- Bytes: `9674` → `11183`
+- Lines: `151` → `169`
+- Characters: `9674` → `11183`
+- Inserted lines: `26`
+- Deleted lines: `8`
+- Inserted characters: `1616`
+- Deleted characters: `107`
+- Unified diff hunks: `10`
+- Inserted blocks: `9`
+- Deleted blocks: `7`
+- Changed blocks: `10`
+- Line balance: `151 + 26 - 8 = 169` — **PASS**
+- Character balance: `9674 + 1616 - 107 = 11183` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-98cf96866db9 — Trigger corrected GENERIC APK build
 
 **Recorded:** 2026-08-18T11:50:55-05:00  
