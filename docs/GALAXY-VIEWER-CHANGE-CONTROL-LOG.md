@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-2f214acf45ff — Allow explicit one-shot trigger for 10G repair
+
+**Recorded:** 2026-08-18T01:29:06-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`2f214acf45fff44cd9c47d81ecaa0f9c3aac5f2e`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/2f214acf45fff44cd9c47d81ecaa0f9c3aac5f2e)  
+**Parent/baseline:** `ea8abf2604fa39c3eda961f25537d935408cc942`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ea8abf2604fa39c3eda961f25537d935408cc942...2f214acf45fff44cd9c47d81ecaa0f9c3aac5f2e)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Allow explicit one-shot trigger for 10G repair
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/apply-10g-final-and-build-generic.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `8e402e447203079625b0497c91316f26e0050b4b769ee3bfda7cbc31874a0080`
+- SHA-256 after: `0ade4e5b5cfb0d391a8207eee26af874cebee44b6adb5613746e38347e3d6884`
+- Bytes: `4594` → `4381`
+- Lines: `86` → `76`
+- Characters: `4594` → `4381`
+- Inserted lines: `6`
+- Deleted lines: `16`
+- Inserted characters: `61`
+- Deleted characters: `274`
+- Unified diff hunks: `8`
+- Inserted blocks: `2`
+- Deleted blocks: `7`
+- Changed blocks: `8`
+- Line balance: `86 + 6 - 16 = 76` — **PASS**
+- Character balance: `4594 + 61 - 274 = 4381` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-30f30b31fc2f — Harden direct 10G repair against match and push races
 
 **Recorded:** 2026-08-18T01:28:07-05:00  
