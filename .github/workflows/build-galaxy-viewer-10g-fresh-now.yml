@@ -1,16 +1,13 @@
 name: Build Galaxy Viewer GENERIC APK
-# GENERIC build trigger 2026-08-18 white-black runtime fix v2
-
+# GENERIC runtime repair: parsed Viewer execution + adaptive black icon
 on:
   push:
     branches: [beta]
     paths: ['.github/workflows/build-galaxy-viewer-10g-fresh-now.yml']
   workflow_dispatch:
-
 permissions:
   contents: write
   statuses: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,154 +15,115 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: beta
-
       - name: Expose build run ID
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=pending -f context='galaxy-viewer-generic-apk' -f description="GENERIC build ${GITHUB_RUN_ID}" -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - uses: android-actions/setup-android@v3
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-
-      - name: Build fresh revision-independent GENERIC APK
+      - name: Build GENERIC APK
         shell: bash
         run: |
           set -euo pipefail
           ROOT="$RUNNER_TEMP/gv-generic"
           rm -rf "$ROOT"
-          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric" "$ROOT/app/src/main/assets/artwork" "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/values"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric" "$ROOT/app/src/main/assets/artwork" "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values"
           cat > "$ROOT/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
           rootProject.name='GalaxyViewerGeneric'
           include ':app'
           EOF
-          echo "plugins { id 'com.android.application' version '8.7.3' apply false }" > "$ROOT/build.gradle"
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
           cat > "$ROOT/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
           android {
             namespace 'com.gear66me.galaxyviewergeneric'
             compileSdk 35
-            defaultConfig {
-              applicationId 'com.gear66me.galaxyviewergeneric'
-              minSdk 23
-              targetSdk 35
-              versionCode 3
-              versionName 'GENERIC'
-            }
+            defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 4; versionName 'GENERIC' }
           }
           EOF
-
-          test -s viewer/artwork/icon_target_vector.svg
           cat > "$ROOT/app/src/main/assets/artwork/target-icon.svg" <<'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Galaxy Viewer target icon">
-            <rect width="32" height="32" fill="#000000"/>
-            <circle cx="16" cy="16" r="9.5" fill="#000000" stroke="#FFFFFF" stroke-width="1.8"/>
-            <ellipse cx="16" cy="16" rx="11.5" ry="4.2" fill="none" stroke="#FFFFFF" stroke-width="2.2" transform="rotate(-18 16 16)"/>
-            <ellipse cx="16" cy="16" rx="5.7" ry="2.2" fill="none" stroke="#FFFFFF" stroke-width="1.6" transform="rotate(-18 16 16)"/>
-            <circle cx="16" cy="16" r="1.6" fill="#FFFFFF"/>
-            <path d="M16 2.5V7 M16 25V29.5 M2.5 16H7 M25 16H29.5" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="#000000"/><circle cx="16" cy="16" r="9.5" fill="#000000" stroke="#FFFFFF" stroke-width="1.8"/><ellipse cx="16" cy="16" rx="11.5" ry="4.2" fill="none" stroke="#FFFFFF" stroke-width="2.2" transform="rotate(-18 16 16)"/><ellipse cx="16" cy="16" rx="5.7" ry="2.2" fill="none" stroke="#FFFFFF" stroke-width="1.6" transform="rotate(-18 16 16)"/><circle cx="16" cy="16" r="1.6" fill="#FFFFFF"/><path d="M16 2.5V7 M16 25V29.5 M2.5 16H7 M25 16H29.5" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/></svg>
           EOF
-
-          ICON_OUT="$ROOT/app/src/main/res/drawable/gv_target_launcher.png" python3 - <<'PY'
-          import math, os, struct, zlib
+          LEGACY="$ROOT/app/src/main/res/mipmap/gv_target_launcher.png" FORE="$ROOT/app/src/main/res/drawable/gv_target_foreground.png" python3 - <<'PY'
+          import math,os,struct,zlib
           W=H=512
-          px=bytearray([0,0,0,255])*(W*H)
-          def white(x,y):
+          def make(bg_alpha,out):
+            px=bytearray([0,0,0,bg_alpha])*(W*H)
+            def white(x,y):
               if 0<=x<W and 0<=y<H:
-                  i=(y*W+x)*4; px[i:i+4]=b'\xff\xff\xff\xff'
-          def line(x1,y1,x2,y2,w):
-              dx=x2-x1; dy=y2-y1; n=max(abs(dx),abs(dy),1)
-              r=max(1,w//2)
+                i=(y*W+x)*4; px[i:i+4]=b'\xff\xff\xff\xff'
+            def line(x1,y1,x2,y2,w):
+              dx=x2-x1;dy=y2-y1;n=max(abs(dx),abs(dy),1);r=w//2
               for k in range(n+1):
-                  x=round(x1+dx*k/n); y=round(y1+dy*k/n)
-                  for yy in range(y-r,y+r+1):
-                      for xx in range(x-r,x+r+1):
-                          if (xx-x)**2+(yy-y)**2<=r*r: white(xx,yy)
-          S=16
-          cx=cy=256
-          for y in range(H):
-              Y=(y+0.5)/S-16
+                x=round(x1+dx*k/n);y=round(y1+dy*k/n)
+                for yy in range(y-r,y+r+1):
+                  for xx in range(x-r,x+r+1):
+                    if (xx-x)**2+(yy-y)**2<=r*r:white(xx,yy)
+            S=16;a=math.radians(18)
+            for y in range(H):
+              Y=(y+.5)/S-16
               for x in range(W):
-                  X=(x+0.5)/S-16
-                  rr=math.hypot(X,Y)
-                  on_circle=abs(rr-9.5)<=0.9
-                  a=math.radians(18); xr=X*math.cos(a)-Y*math.sin(a); yr=X*math.sin(a)+Y*math.cos(a)
-                  e1=abs(math.sqrt((xr/11.5)**2+(yr/4.2)**2)-1)<=0.26
-                  e2=abs(math.sqrt((xr/5.7)**2+(yr/2.2)**2)-1)<=0.29
-                  dot=rr<=1.6
-                  if on_circle or e1 or e2 or dot: white(x,y)
-          line(256,40,256,112,26); line(256,400,256,472,26); line(40,256,112,256,26); line(400,256,472,256,26)
-          raw=b''.join(b'\x00'+px[y*W*4:(y+1)*W*4] for y in range(H))
-          def chunk(t,d):
-              return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
-          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',W,H,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw,9))+chunk(b'IEND',b'')
-          open(os.environ['ICON_OUT'],'wb').write(png)
+                X=(x+.5)/S-16;rr=math.hypot(X,Y);xr=X*math.cos(a)-Y*math.sin(a);yr=X*math.sin(a)+Y*math.cos(a)
+                if abs(rr-9.5)<=.9 or abs(math.sqrt((xr/11.5)**2+(yr/4.2)**2)-1)<=.26 or abs(math.sqrt((xr/5.7)**2+(yr/2.2)**2)-1)<=.29 or rr<=1.6:white(x,y)
+            line(256,40,256,112,26);line(256,400,256,472,26);line(40,256,112,256,26);line(400,256,472,256,26)
+            raw=b''.join(b'\0'+px[y*W*4:(y+1)*W*4] for y in range(H))
+            def ch(t,d):return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+            png=b'\x89PNG\r\n\x1a\n'+ch(b'IHDR',struct.pack('>IIBBBBB',W,H,8,6,0,0,0))+ch(b'IDAT',zlib.compress(raw,9))+ch(b'IEND',b'')
+            open(out,'wb').write(png)
+          make(255,os.environ['LEGACY']);make(0,os.environ['FORE'])
           PY
-          test -s "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
-
+          cat > "$ROOT/app/src/main/res/values/colors.xml" <<'EOF'
+          <resources><color name="icon_black">#000000</color></resources>
+          EOF
+          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/gv_target_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/icon_black"/><foreground android:drawable="@drawable/gv_target_foreground"/></adaptive-icon>
+          EOF
           cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
-          <resources><style name="AppTheme" parent="android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item><item name="android:colorAccent">#FFFFFF</item></style></resources>
+          <resources><style name="AppTheme" parent="android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item><item name="android:navigationBarColor">#000000</item><item name="android:statusBarColor">#000000</item></style></resources>
           EOF
           cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-            <uses-permission android:name="android.permission.INTERNET"/>
-            <application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer" android:icon="@drawable/gv_target_launcher" android:roundIcon="@drawable/gv_target_launcher" android:theme="@style/AppTheme" android:usesCleartextTraffic="false">
-              <activity android:name=".MainActivity" android:exported="true" android:configChanges="keyboardHidden|orientation|screenSize">
-                <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
-              </activity>
-            </application>
-          </manifest>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer" android:icon="@mipmap/gv_target_launcher" android:roundIcon="@mipmap/gv_target_launcher" android:theme="@style/AppTheme" android:usesCleartextTraffic="false"><activity android:name=".MainActivity" android:exported="true" android:configChanges="keyboardHidden|orientation|screenSize"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>
           EOF
           cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric/MainActivity.java" <<'EOF'
           package com.gear66me.galaxyviewergeneric;
-          import android.app.Activity;import android.graphics.Color;import android.os.Bundle;import android.webkit.WebChromeClient;import android.webkit.WebSettings;import android.webkit.WebView;import android.webkit.WebViewClient;
-          public final class MainActivity extends Activity {
-            private WebView web;
-            @Override protected void onCreate(Bundle state){super.onCreate(state);web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setAllowFileAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebViewClient(new WebViewClient());web.setWebChromeClient(new WebChromeClient());setContentView(web);web.loadUrl("file:///android_asset/index.html");}
-            @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
-          }
+          import android.app.Activity;import android.graphics.Color;import android.os.Bundle;import android.webkit.*;
+          public final class MainActivity extends Activity{private WebView web;@Override protected void onCreate(Bundle b){super.onCreate(b);web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setAllowFileAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebChromeClient(new WebChromeClient());web.setWebViewClient(new WebViewClient());setContentView(web);web.loadUrl("file:///android_asset/index.html");}@Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}}
           EOF
           cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><base href="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:999999}#cover img{width:min(46vw,260px);height:auto}#err{white-space:pre-wrap;padding:24px;font:14px monospace;color:#fff;background:#000}</style></head><body><div id="cover"><img src="file:///android_asset/artwork/target-icon.svg"></div><div id="err"></div><script>(async()=>{'use strict';const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const read=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};try{const p=JSON.parse(await read(B+'gv-current-viewer.json?t='+Date.now()));const v=String(p.viewer||'').trim();if(!/^GV-beta-[0-9A-Z._-]+\.py$/i.test(v))throw Error('INVALID VIEWER POINTER');const source=await read(B+v+'?t='+Date.now());const h=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('VIEWER EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);const s=document.createElement('script');s.textContent=j[0][1];document.body.appendChild(s);document.getElementById('cover')?.remove()}catch(e){document.getElementById('cover')?.remove();document.getElementById('err').textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
+          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#boot{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:2147483647}#boot img{width:min(46vw,260px)}#err{white-space:pre-wrap;padding:24px;font:14px monospace;color:#fff;background:#000}</style></head><body><div id="boot"><img src="artwork/target-icon.svg"></div><div id="err"></div><script>(async()=>{'use strict';const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const get=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};try{const p=JSON.parse(await get(B+'gv-current-viewer.json?t='+Date.now()));const v=String(p.viewer||'').trim();if(!/^GV-beta-[0-9A-Z._-]+\.py$/i.test(v))throw Error('INVALID VIEWER POINTER');const src=await get(B+v+'?t='+Date.now());const H=[...src.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],J=[...src.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(H.length!==1||J.length!==1)throw Error('VIEWER EXTRACTION FAILED');const js=J[0][1].replace(/<\/script/gi,'<\\/script');const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><base href="'+B+'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}#generic-cover{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:2147483647}#generic-cover img{width:min(46vw,260px)}</style></head><body><div id="generic-cover"><img src="file:///android_asset/artwork/target-icon.svg"></div>'+H[0][1]+'<script>document.getElementById("generic-cover")?.remove()<\\/script><script>'+js+'<\\/script></body></html>';document.open();document.write(page);document.close()}catch(e){document.getElementById('boot')?.remove();document.getElementById('err').textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
           EOF
-          cd "$ROOT"
-          gradle --no-daemon :app:assembleDebug
-          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/Galaxy-Viewer-GENERIC.apk"
-
+          gradle --no-daemon -p "$ROOT" :app:assembleDebug
+          cp "$ROOT/app/build/outputs/apk/debug/app-debug.apk" Galaxy-Viewer-GENERIC.apk
       - name: Verify GENERIC APK
         shell: bash
         run: |
           set -euo pipefail
-          test -s Galaxy-Viewer-GENERIC.apk
-          unzip -t Galaxy-Viewer-GENERIC.apk | tee apk-zip-test.txt
-          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
-          SIGN="$ANDROID_HOME/build-tools/35.0.0/apksigner"
-          "$AAPT" dump badging Galaxy-Viewer-GENERIC.apk | tee apk-badging.txt
+          APK=Galaxy-Viewer-GENERIC.apk; AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"; SIGN="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -s "$APK"; unzip -t "$APK" | tee apk-zip-test.txt
+          "$AAPT" dump badging "$APK" | tee apk-badging.txt
           grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt
           grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
-          unzip -p Galaxy-Viewer-GENERIC.apk assets/index.html > apk-index.html
+          unzip -p "$APK" assets/index.html > apk-index.html
           grep -q 'gv-current-viewer.json' apk-index.html
-          grep -q '<base href="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/">' apk-index.html
+          grep -q 'document.write(page)' apk-index.html
+          ! grep -q 'insertAdjacentHTML' apk-index.html
           ! grep -q 'GV-beta-0010G.py' apk-index.html
-          unzip -p Galaxy-Viewer-GENERIC.apk assets/artwork/target-icon.svg > apk-target-icon.svg
-          grep -q '#000000' apk-target-icon.svg
-          grep -q '#FFFFFF' apk-target-icon.svg
-          ! grep -Eq '#45E7FF|#4F9DFF|#7575FF|#FF6B2D' apk-target-icon.svg
-          unzip -l Galaxy-Viewer-GENERIC.apk | grep -q 'res/drawable/gv_target_launcher.png'
-          "$SIGN" verify --verbose --print-certs Galaxy-Viewer-GENERIC.apk | tee apk-signature.txt
-          sha256sum Galaxy-Viewer-GENERIC.apk | tee Galaxy-Viewer-GENERIC.apk.sha256
-
+          unzip -l "$APK" | grep -q 'mipmap-anydpi-v26/gv_target_launcher.xml'
+          unzip -p "$APK" assets/artwork/target-icon.svg | grep -q '#000000'
+          unzip -p "$APK" assets/artwork/target-icon.svg | grep -q '#FFFFFF'
+          "$SIGN" verify --verbose --print-certs "$APK" | tee apk-signature.txt
+          sha256sum "$APK" | tee Galaxy-Viewer-GENERIC.apk.sha256
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-GENERIC
@@ -176,22 +134,18 @@ jobs:
             apk-signature.txt
             apk-zip-test.txt
           if-no-files-found: error
-
       - name: Publish direct-download release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
           TAG=galaxy-viewer-generic
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-GENERIC.apk Galaxy-Viewer-GENERIC.apk.sha256 --target "$GITHUB_SHA" --title 'Galaxy Viewer GENERIC' --notes 'Permanent revision-independent Galaxy Viewer launcher. Reads viewer/gv-current-viewer.json fresh on every launch.'
-
+          gh release create "$TAG" Galaxy-Viewer-GENERIC.apk Galaxy-Viewer-GENERIC.apk.sha256 --target "$GITHUB_SHA" --title 'Galaxy Viewer GENERIC' --notes 'Permanent revision-independent launcher. Correct parsed Viewer execution. Adaptive black background with white target icon.'
       - name: Report success
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=success -f context='galaxy-viewer-generic-apk' -f description="GENERIC APK ready ${GITHUB_RUN_ID}" -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
       - name: Report failure
         if: failure()
         env:
