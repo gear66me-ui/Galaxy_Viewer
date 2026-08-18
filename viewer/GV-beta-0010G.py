@@ -605,7 +605,7 @@ display(Javascript(r"""
 
     function blockedPrefetchKeys(){
         const keys=new Set(prefetchReady.map(item=>item.key));
-        for(const key of prefetchLoading.keys())keys.add(destinationKey({archiveId:key,name:key}));
+        for(const key of prefetchLoading.keys())keys.add(key);
         if(priorityPrefetchDestination)keys.add(destinationKey(priorityPrefetchDestination));
         if(activePreparedItem?.key)keys.add(activePreparedItem.key);
         if(historyPreparedItem?.key)keys.add(historyPreparedItem.key);
