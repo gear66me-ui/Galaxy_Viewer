@@ -37,8 +37,9 @@ jobs:
           print('POINTER='+v)
           PY
           grep -q 'gv-current-viewer.json' mobile/beta/GV-GENERIC-app.html
-          grep -q 'const \[html,js\]=extract(source)' mobile/beta/GV-GENERIC-app.html
+          grep -q 'const \[html,js\]=extract(src)' mobile/beta/GV-GENERIC-app.html
           grep -q 'background:#000' mobile/beta/GV-GENERIC-app.html
+          grep -q 'gv-hubble-galaxies-full-0018.json' mobile/beta/GV-GENERIC-app.html
       - name: Build GENERIC APK
         shell: bash
         run: |
@@ -53,7 +54,7 @@ jobs:
           echo "plugins { id 'com.android.application' version '8.7.3' apply false }" > "$R/build.gradle"
           cat > "$R/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
-          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 10; versionName 'GENERIC' } }
+          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 11; versionName 'GENERIC' } }
           EOF
           echo '<resources><color name="black">#000000</color></resources>' > "$R/app/src/main/res/values/colors.xml"
           cat > "$R/app/src/main/res/values/styles.xml" <<'EOF'
