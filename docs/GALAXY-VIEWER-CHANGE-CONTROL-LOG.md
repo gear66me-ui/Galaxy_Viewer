@@ -305,6 +305,76 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-ab22f4b752ba — Delete viewer/data directoryf
+
+**Recorded:** 2026-08-18T01:24:54-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ab22f4b752ba2fd45238af616c981d8122c23518`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ab22f4b752ba2fd45238af616c981d8122c23518)  
+**Parent/baseline:** `9d9f20bff7df8b74240e8742358c6a2d029e592a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9d9f20bff7df8b74240e8742358c6a2d029e592a...ab22f4b752ba2fd45238af616c981d8122c23518)  
+**Author:** German Arciniegas  
+**Changed-path count:** `2`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Delete viewer/data directoryf
+```
+
+### Complete changed-path accounting
+
+#### `viewer/data/gv-hubble-galaxies-0001.json`
+
+- Status: **DELETED**
+- SHA-256 before: `1468dd42042b44770e2400894339fd1848d3e45dbfc07b4c4d80122deab272d1`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `5316` → `0`
+- Lines: `156` → `0`
+- Characters: `5316` → `0`
+- Inserted lines: `0`
+- Deleted lines: `156`
+- Inserted characters: `0`
+- Deleted characters: `5316`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `156 + 0 - 156 = 0` — **PASS**
+- Character balance: `5316 + 0 - 5316 = 0` — **PASS**
+
+#### `viewer/data/gv-hubble-galaxies-0002.json`
+
+- Status: **DELETED**
+- SHA-256 before: `3b924f14f6444c39dd8c29399b76d24f74e8f089d358d4670113da8215d7f132`
+- SHA-256 after: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- Bytes: `24349` → `0`
+- Lines: `1` → `0`
+- Characters: `24339` → `0`
+- Inserted lines: `0`
+- Deleted lines: `1`
+- Inserted characters: `0`
+- Deleted characters: `24339`
+- Unified diff hunks: `1`
+- Inserted blocks: `0`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 0 - 1 = 0` — **PASS**
+- Character balance: `24339 + 0 - 24339 = 0` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ab2856f17c0f — Repair 10G HD back control and APK launcher icon
 
 **Recorded:** 2026-08-18T01:21:06-05:00  
