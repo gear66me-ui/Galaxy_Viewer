@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GALAXY VIEWER</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
+#gv-generic-cover{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#000}
+#gv-generic-cover img{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}
+#gv-generic-splash{position:fixed;inset:0;z-index:2147483646;width:100%;height:100%;border:0;background:#000;visibility:hidden}
+#gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
+</style>
+</head>
+<body>
+<div id="gv-generic-cover"><img src="../../viewer/artwork/icon_target_vector.svg" alt="GALAXY VIEWER"></div>
+<iframe id="gv-generic-splash" title="GALAXY VIEWER SPLASH"></iframe>
+<div id="gv-generic-error" role="alert"></div>
+<script>
+(async()=>{
+'use strict';
+const POINTER_URL='../../viewer/gv-current-viewer.json';
+const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
+const ICON_HOLD_MS=3500;
+const POST_SPLASH_HOLD_MS=2000;
+const VIEWER_TIMEOUT_MS=30000;
+const launchStartedAt=performance.now();
+const cover=document.getElementById('gv-generic-cover');
+const splash=document.getElementById('gv-generic-splash');
+const errorBox=document.getElementById('gv-generic-error');
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
+const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
+function installCatalogImagePolicy(){
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=async(input,init)=>{
+    const raw=typeof input==='string'?input:String(input?.url||'');
+    const response=await nativeFetch(input,init);
+    if(!/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i.test(raw))return response;
+    if(!response.ok)return response;
+    const payload=await response.clone().json();
+    if(Array.isArray(payload?.entries)){
+      payload.entries=payload.entries.map(entry=>{
+        if(!entry||typeof entry!=='object')return entry;
+        const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];
+        const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));
+        if(!screen)return entry;
+        return {...entry,selectedImageUrl:screen,githubImageUrl:''};
+      });
+    }
+    const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');
+    return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers});
+  };
+}
+function mountHtml(html){
+  const template=document.createElement('template');template.innerHTML=html;
+  for(const node of [...template.content.childNodes]){
+    if(node.nodeName==='SCRIPT'){
+      const script=document.createElement('script');
+      for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);
+      script.textContent=node.textContent;document.body.appendChild(script);
+    }else document.body.appendChild(node);
+  }
+}
+async function initializeViewer(){
+  const pointer=JSON.parse(await text(POINTER_URL));
+  const viewer=String(pointer.viewer||'').trim();
+  if(!/^GV-beta-[A-Za-z0-9.-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
+  const source=await text('../../viewer/'+viewer);
+  const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
+  const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
+  if(!htmlMatch||!jsMatches.length)throw new Error('ACTIVE VIEWER EXTRACTION FAILED: '+viewer);
+  installCatalogImagePolicy();
+  mountHtml(htmlMatch[1]);
+  for(const match of jsMatches){const script=document.createElement('script');script.textContent=match[1];document.body.appendChild(script)}
+  const deadline=performance.now()+VIEWER_TIMEOUT_MS;
+  while(performance.now()<deadline){
+    const root=document.getElementById('aladin-cosmic-command-test');
+    if(root?.querySelector('canvas'))return viewer;
+    await sleep(100);
+  }
+  throw new Error('ACTIVE VIEWER STARTUP TIMEOUT: '+viewer);
+}
+async function runSplash(){
+  splash.src=SPLASH_URL+'?t='+Date.now();
+  const remaining=Math.max(0,ICON_HOLD_MS-(performance.now()-launchStartedAt));
+  await sleep(remaining);
+  splash.style.visibility='visible';
+  if(cover.isConnected)cover.remove();
+  await new Promise((resolve,reject)=>{
+    let settled=false;
+    const done=()=>{if(settled)return;settled=true;resolve()};
+    const timer=setTimeout(()=>{if(settled)return;settled=true;reject(new Error('SPLASH COMPLETION TIMEOUT'))},30000);
+    splash.addEventListener('load',()=>{
+      try{
+        const w=splash.contentWindow;if(!w)throw new Error('SPLASH WINDOW UNAVAILABLE');
+        w.addEventListener('galaxy-splash-complete',()=>{clearTimeout(timer);done()},{once:true});
+      }catch(error){clearTimeout(timer);reject(error)}
+    },{once:true});
+    splash.addEventListener('error',()=>{clearTimeout(timer);reject(new Error('SPLASH FAILED TO LOAD'))},{once:true});
+  });
+}
+try{
+  const viewerPromise=initializeViewer();
+  const splashPromise=runSplash();
+  await Promise.all([viewerPromise,splashPromise]);
+  await sleep(POST_SPLASH_HOLD_MS);
+  if(splash.isConnected)splash.remove();
+  if(cover.isConnected)cover.remove();
+}catch(error){console.error(error);fail(error)}
+})();
+</script>
+</body>
+</html>
