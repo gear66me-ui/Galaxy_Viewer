@@ -1,4 +1,4 @@
-name: Build Coordinate Font 0005
+name: One-Shot 10G Repair and Fixed APK
 
 on:
   workflow_dispatch:
@@ -10,43 +10,172 @@ permissions:
   contents: write
 
 jobs:
-  build-coordinate-font:
+  repair-build:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out beta
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: beta
           fetch-depth: 0
 
-      - name: Install FontForge
+      - name: Repair authoritative 10G and APK launcher icon
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y fontforge python3-fontforge
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,re
+          ten_g=Path('viewer/GV-beta-0010G.py')
+          ten_f=Path('viewer/GV-beta-0010F.py')
+          packager=Path('.github/scripts/build_10g_flatten.py')
+          launcher=Path('viewer/artwork/App Icons/GV-app-icon-512.png')
+          assert ten_g.is_file() and ten_f.is_file() and packager.is_file() and launcher.is_file()
+          tenf_sha=hashlib.sha256(ten_f.read_bytes()).hexdigest()
 
-      - name: Build and capture audit
-        id: build
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          /usr/bin/python3 viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py 2>&1 | tee viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.log
+          s=ten_g.read_text(encoding='utf-8')
+          before=s
+          if "textContent='BACK TO VIEWER'" not in s:
+              new_css='#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'
+              s,n=re.subn(r'#gv-hd-info-more\{[^}]*\}#gv-hd-info-link\{[^}]*\}#gv-hd-info-link img\{[^}]*\}',new_css,s,count=1)
+              if n!=1: raise SystemExit(f'HD CSS patch count={n}')
+              s=s.replace('<div id="gv-hd-info-more">MORE INFO &gt;</div>','')
+              back="""    const hdBackToViewer=randomGalaxy.backButton;
+    if(hdBackToViewer){
+        hdBackToViewer.id='gv-hd-back-to-viewer';
+        hdBackToViewer.textContent='BACK TO VIEWER';
+        hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
+        randomGalaxy.hdViewport?.appendChild(hdBackToViewer);
+    }
+"""
+              s,n=re.subn(r"    const hdInfoLink=document\.createElement\('a'\);[\s\S]*?    randomGalaxy\.hdViewport\?\.appendChild\(hdInfoLink\);\n",back,s,count=1)
+              if n!=1: raise SystemExit(f'archive link patch count={n}')
+              s,n=re.subn(r"        if\(hdInfoIcon\)\{[^\n]*\}\n        if\(hdInfoLink\)\{[^\n]*\}\n","        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');\n",s,count=1)
+              if n!=1: raise SystemExit(f'archive sync patch count={n}')
+              s,n=re.subn(r"        hdInfoLink\.style\.right=`\$\{HD_LAYOUT\.iconInset\}px`;hdInfoLink\.style\.bottom=`\$\{HD_LAYOUT\.iconInset\}px`;hdInfoLink\.style\.pointerEvents='auto';\n","        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}\n",s,count=1)
+              if n!=1: raise SystemExit(f'back positioning patch count={n}')
+          compile(s,str(ten_g),'exec')
+          assert "const VERSION='10G';" in s and "const DISPLAY_VERSION='10G';" in s
+          assert "textContent='BACK TO VIEWER'" in s
+          assert 'randomGalaxy.backButton' in s
+          assert 'MORE INFO &gt;' not in s and 'gv-hd-info-more' not in s
+          assert 'gv-hd-info-link' not in s and 'hdInfoLink' not in s and 'hdInfoIcon' not in s
+          if s!=before: ten_g.write_text(s,encoding='utf-8')
 
-      - name: Commit font or diagnostic log
+          p=packager.read_text(encoding='utf-8')
+          pb=p
+          if 'LAUNCHER_ICON_SRC' not in p:
+              old="ICON_SRC = ROOT / 'viewer/artwork/icon.svg'\nFONT_SRC = ROOT / 'viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf'\n"
+              new="ICON_SRC = ROOT / 'viewer/artwork/icon.svg'\nLAUNCHER_ICON_SRC = ROOT / 'viewer/artwork/App Icons/GV-app-icon-512.png'\nFONT_SRC = ROOT / 'viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf'\n"
+              assert p.count(old)==1
+              p=p.replace(old,new,1)
+              old="assert ICON_SRC.is_file(), 'approved Galaxy Viewer icon is missing'\nassert FONT_SRC.is_file(), 'approved Space Age font is missing'\n"
+              new="assert ICON_SRC.is_file(), 'approved Galaxy Viewer icon is missing'\nassert LAUNCHER_ICON_SRC.is_file(), 'approved Galaxy Viewer launcher icon is missing'\nassert FONT_SRC.is_file(), 'approved Space Age font is missing'\n"
+              assert p.count(old)==1
+              p=p.replace(old,new,1)
+              old='        android:hardwareAccelerated="true"\n        android:label="Galaxy Viewer 10G"\n'
+              new='        android:hardwareAccelerated="true"\n        android:icon="@drawable/gv_launcher"\n        android:roundIcon="@drawable/gv_launcher"\n        android:label="Galaxy Viewer 10G"\n'
+              assert p.count(old)==1
+              p=p.replace(old,new,1)
+              old="values = BUILD_PROJECT / 'app/src/main/res/values'\nvalues.mkdir(parents=True)\n"
+              new="drawable = BUILD_PROJECT / 'app/src/main/res/drawable'\ndrawable.mkdir(parents=True)\nshutil.copy2(LAUNCHER_ICON_SRC, drawable / 'gv_launcher.png')\n\nvalues = BUILD_PROJECT / 'app/src/main/res/values'\nvalues.mkdir(parents=True)\n"
+              assert p.count(old)==1
+              p=p.replace(old,new,1)
+          compile(p,str(packager),'exec')
+          assert "LAUNCHER_ICON_SRC = ROOT / 'viewer/artwork/App Icons/GV-app-icon-512.png'" in p
+          assert 'android:icon="@drawable/gv_launcher"' in p
+          assert 'android:roundIcon="@drawable/gv_launcher"' in p
+          assert "shutil.copy2(LAUNCHER_ICON_SRC, drawable / 'gv_launcher.png')" in p
+          if p!=pb: packager.write_text(p,encoding='utf-8')
+          assert hashlib.sha256(ten_f.read_bytes()).hexdigest()==tenf_sha, '10F CHANGED'
+          print('10G',hashlib.sha256(ten_g.read_bytes()).hexdigest())
+          print('PACKAGER',hashlib.sha256(packager.read_bytes()).hexdigest())
+          print('10F UNCHANGED',tenf_sha)
+          PY
+
+      - name: Commit repaired source files
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.log"
-          if test -f "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"; then
-            git add -- "viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010G.py .github/scripts/build_10g_flatten.py
+          if ! git diff --cached --quiet; then
+            git commit -m '10G: HD BACK TO VIEWER and Galaxy Viewer launcher icon'
+            ok=0
+            for attempt in 1 2 3 4 5 6; do
+              git pull --rebase origin beta || { git rebase --abort >/dev/null 2>&1 || true; sleep 2; continue; }
+              if git push origin HEAD:beta; then ok=1; break; fi
+              sleep 2
+            done
+            test "$ok" -eq 1
           fi
-          if git diff --cached --quiet; then
-            echo "No generated output changed."
-          else
-            git commit -m "Record coordinate font 0005 build result"
-            git push origin beta
-          fi
 
-      - name: Fail if build failed
-        if: steps.build.outcome == 'failure'
-        run: exit 1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build fresh fixed APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/build_10g_flatten.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/galaxy-viewer-10g-build/app/src/main/assets/index.html')
+          s=p.read_text(encoding='utf-8')
+          needle='<title>GALAXY VIEWER 10G</title>'
+          url='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js'
+          if url not in s: s=s.replace(needle,needle+f'<script src="{url}"></script>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          gradle --no-daemon -p /tmp/galaxy-viewer-10g-build :app:assembleDebug
+
+      - name: Verify and stage fixed APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=/tmp/galaxy-viewer-10g-build/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-10G-FIXED.apk
+          test -s "$APK"
+          cp "$APK" "$OUT"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10g'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
+          grep -q 'application-icon-' apk-badging.txt
+          unzip -p "$APK" assets/index.html > apk-index.html
+          grep -q 'BACK TO VIEWER' apk-index.html
+          ! grep -q 'MORE INFO &gt;' apk-index.html
+          unzip -l "$APK" | tee apk-files.txt
+          grep -q 'res/drawable/gv_launcher.png' apk-files.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
+          unzip -t "$APK" | tee apk-zip-test.txt
+          grep -q 'No errors detected' apk-zip-test.txt
+          sha256sum "$OUT" | tee "$OUT.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10G-FIXED
+          path: |
+            Galaxy-Viewer-10G-FIXED.apk
+            Galaxy-Viewer-10G-FIXED.apk.sha256
+            apk-badging.txt
+            apk-signature.txt
+            apk-zip-test.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish fixed installer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-10g-fixed
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" Galaxy-Viewer-10G-FIXED.apk Galaxy-Viewer-10G-FIXED.apk.sha256 --target beta --title 'Galaxy Viewer 10G — Fixed APK' --notes 'HD view: MORE INFO/source link removed and built-in back control moved onto HD image as BACK TO VIEWER. Android launcher: approved Galaxy Viewer 512px app icon.'
