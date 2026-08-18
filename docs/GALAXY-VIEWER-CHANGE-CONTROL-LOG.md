@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-74e3eb3bf066 — Rebuild GENERIC launcher with native Viewer loading
+
+**Recorded:** 2026-08-18T12:18:36-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`74e3eb3bf066bdf4b8f1eca2b59306006ccdf36a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/74e3eb3bf066bdf4b8f1eca2b59306006ccdf36a)  
+**Parent/baseline:** `6e27d9babcd8b53f9b2139680922b8a94daecbf7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6e27d9babcd8b53f9b2139680922b8a94daecbf7...74e3eb3bf066bdf4b8f1eca2b59306006ccdf36a)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Rebuild GENERIC launcher with native Viewer loading
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `e97c5a4e5f470f454afbfb0de046aa491b073e5ab2a02c63936febc0ea3c3250`
+- SHA-256 after: `0beefdc0080e139faf0332460ec48a847be0319a16c2ba5844834f60be3354e0`
+- Bytes: `12555` → `14459`
+- Lines: `153` → `246`
+- Characters: `12555` → `14459`
+- Inserted lines: `154`
+- Deleted lines: `61`
+- Inserted characters: `7569`
+- Deleted characters: `5665`
+- Unified diff hunks: `17`
+- Inserted blocks: `15`
+- Deleted blocks: `11`
+- Changed blocks: `16`
+- Line balance: `153 + 154 - 61 = 246` — **PASS**
+- Character balance: `12555 + 7569 - 5665 = 14459` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cdb65a76cd62 — Fix GENERIC loader execution and force adaptive black icon
 
 **Recorded:** 2026-08-18T12:09:45-05:00  
