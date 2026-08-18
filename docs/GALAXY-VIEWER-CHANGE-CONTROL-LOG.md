@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-258bb6e3c6a6 — Expose fresh 10G APK build run
+
+**Recorded:** 2026-08-17T22:15:09-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`258bb6e3c6a60a48adfd43e74e9118362ac6efc7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/258bb6e3c6a60a48adfd43e74e9118362ac6efc7)  
+**Parent/baseline:** `0fc530b295349b764f60a3b7c24cf8b930158e92`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0fc530b295349b764f60a3b7c24cf8b930158e92...258bb6e3c6a60a48adfd43e74e9118362ac6efc7)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Expose fresh 10G APK build run
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `526e8c7916338745bc3eb90d458bb91aa3f5e82feaa9887ca657a8de9fb0b4b4`
+- SHA-256 after: `d30ae17bbce7ad6d9798b890e47bd3e89e729aab961ad8c3da4d53d3c7d0663d`
+- Bytes: `3954` → `4854`
+- Lines: `103` → `124`
+- Characters: `3952` → `4852`
+- Inserted lines: `21`
+- Deleted lines: `0`
+- Inserted characters: `900`
+- Deleted characters: `0`
+- Unified diff hunks: `2`
+- Inserted blocks: `2`
+- Deleted blocks: `0`
+- Changed blocks: `2`
+- Line balance: `103 + 21 - 0 = 124` — **PASS**
+- Character balance: `3952 + 900 - 0 = 4852` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-6fe267afbdc8 — Run surgical Galaxy Viewer 10F build
 
 **Recorded:** 2026-08-17T16:20:00-05:00  
