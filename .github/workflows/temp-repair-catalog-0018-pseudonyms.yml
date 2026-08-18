@@ -1,0 +1,68 @@
+name: Repair Catalog 0018 pseudonym mapping by exact name
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-repair-catalog-0018-pseudonyms.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Restore pre-update catalog and apply exact displayName mapping
+        shell: bash
+        run: |
+          set -euo pipefail
+          P='viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
+          git show 4b5d3fd914ec1287ba742e19f85590e514fe9dc6:"$P" > "$P"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json')
+          pairs=[
+          ('Galaxy NGC 2525','Fading Supernova Galaxy'),('Antennae','Antennae Galaxies'),('Magnetic monster NGC 1275','Perseus A'),('Ultra Deep Field','Ultra Deep Field'),('The Stellar Forge','Stellar Forge'),('Sombrero Galaxy','Sombrero Galaxy'),('Spirals and supernovae','Spirals and Supernovae'),('Whirlpool Galaxy','Whirlpool Galaxy'),('Fornax A','Fornax A'),('Mice Galaxies','Mice Galaxies'),
+          ('Tadpole Galaxy','Tadpole Galaxy'),('of Messier 106','Active Spiral Galaxy'),('Flocculent spiral NGC 2841','Flocculent Spiral'),('Hickson Compact Group 92',"Stephan's Quintet"),('Phantom Galaxy','Phantom Galaxy'),('ACS of NGC 5866','Edge-On Lenticular Galaxy'),('Cigar Galaxy','Cigar Galaxy'),('Pinwheel Galaxy','Pinwheel Galaxy'),('Spiral Snapshot','Spiral Snapshot'),('Eye in the Sky','Black Eye Galaxy'),
+          ('of ESO 381-12','Extended Spiral Galaxy'),('Galaxy playing twister','Twisted Galaxy'),('Large Magellanic Cloud','Large Magellanic Cloud'),('of Messier 77','Squid Galaxy'),('Centaurus A','Centaurus A'),('Abell 2218','Gravitational Lens Cluster'),('Twins with differences','Milky Way Twin'),('Starburst galaxy Messier 94','Starburst Ring Galaxy'),('Cosmic Fireworks','Cosmic Fireworks'),('Bucking the trend','Bucking the Trend'),
+          ('25 years of definition','Grand Design Spiral'),('Coma Cluster','Coma Cluster'),('Peculiar galaxy NGC 3256','Peculiar Merger Galaxy'),('A green cosmic arc','Green Cosmic Arc'),('of NGC 7714','Distorted Starburst Galaxy'),('Andromeda Galaxy','Andromeda Galaxy'),('Spiral galaxy M81',"Bode's Galaxy"),('Abell 1703','Gravitational Lens Cluster'),('UGCA 193','Waterfall of Stars'),('Open Arms','Open Arms'),
+          ('A Spiral in Profile','Spiral in Profile'),('Spiral, elliptical, irregular','Irregular Starburst Galaxy'),('ACT-CL J0102-4915','El Gordo'),('RCS2 J2327','Cosmic Heavyweight'),('RCS2 J2327','Two-Quadrillion-Sun Cluster'),('side of IC 335','Edge-On Lenticular'),('views NGC 4522','Stripped Spiral Galaxy'),('Luminous in Lepus','Luminous in Lepus'),('Cluster in the cloud','Cluster in the Cloud'),('eMACS J1823.1+7822','Cosmic Leviathan'),
+          ('Cosmic Cinnamon Bun','Cosmic Cinnamon Bun'),('Birds of a Feather','Birds of a Feather'),('In Bloom','Galaxy in Bloom'),('Bedin I','Bedin I'),('SPD2011] 1227','Between Local and Laniakea'),('Monster in the deep','Monster in the Deep'),('MACS J0138.0 -2155','Cosmic Lens Flare'),('Galactic Close-Up','Galactic Close-Up'),('Beauty From Chaos','Beauty from Chaos'),('A Smudged Fingerprint','Smudged Fingerprint Galaxy'),
+          ('UGC 2885',"Rubin's Galaxy"),('PSZ1 G311.65-18.48','Sunburst Arc'),('A Whorl','Beautiful Whorl'),('RXC J0142.9+4438','Galactic Treasure Chest'),('RXC J0032.1+1808','Cosmic Nursery'),('A red, metal-rich relic','Red Relic Galaxy'),('Cosmic Snake Galaxy','Cosmic Snake Galaxy'),('The Hockey Stick Galaxy','Hockey Stick Galaxy'),('2XMM J143450.5+033843','Unnamed Dwarf Galaxy'),('A close galactic pair','Close Galactic Pair'),
+          ('shears a "woolly" galaxy','Woolly Galaxy'),('A mysterious old spiral','Mysterious Old Spiral'),("Mayall's object","Mayall's Object"),('Gone but not forgotten','Gone but Not Forgotten'),('Centuries Before','Ancient Spiral'),('Up and Over','Up and Over'),('Abell S1063','Frontier Fields Cluster'),('J022633.98','Ultra-Bright Galaxy Gallery'),('Spiral in Serpens','Spiral in Serpens'),('of NGC 922','Collisional Ring Galaxy'),
+          ('views NGC 4402','Dust-Stripped Spiral'),('One-sided spiral','One-Sided Spiral'),('Circumstellar disc IRAS 23077+6707','Circumstellar Disc'),('Long-distance relationship','Long-Distance Relationship'),('Markarian 178','Starburst Dwarf Galaxy'),('LMC N159','Baby Stars Blowing Bubbles'),('A disruptive neighbour','Disruptive Neighbour'),('Revisiting an unusual spiral','Unusual Spiral'),('Spiralling star factory','Spiralling Star Factory'),('Focusing on NGC 3370','Supernova Host Galaxy'),
+          ('A well-studied spiral','Well-Studied Spiral'),('Starbursting centre','Starbursting Centre'),('Spiral, elliptical or neither?','Ambiguous Spiral'),('Taking a third look','Third Look'),('Noteworthy nearby spiral','Noteworthy Nearby Spiral'),('Low brightness, high interest','Low-Brightness Spiral'),('A supernova-rich spiral','Supernova-Rich Spiral'),('IMBH near NGC 6099','Intermediate-Mass Black Hole'),('Swirling spiral in Hydra','Swirling Spiral in Hydra'),('Abell 209','Massive Galaxy Cluster')]
+          data=json.loads(p.read_text(encoding='utf-8'))
+          entries=data['entries']
+          used=set(); matched=[]; changed=0
+          for n,(old,new) in enumerate(pairs,1):
+              hit=None
+              for i,e in enumerate(entries):
+                  if i not in used and e.get('displayName')==old:
+                      hit=i; break
+              if hit is None:
+                  raise SystemExit(f'Missing audited displayName #{n}: {old!r}; refusing write')
+              used.add(hit)
+              if entries[hit]['displayName'] != new:
+                  entries[hit]['displayName']=new; changed += 1
+              matched.append((n,hit+1,old,new))
+          assert len(matched)==100 and len(used)==100
+          p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(f'Exact audited names matched: {len(matched)}; values changed: {changed}')
+          for row in matched: print(row)
+          PY
+          test "$(git diff --name-only | wc -l)" -eq 1
+          test "$(git diff --name-only)" = "$P"
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$P"
+          git commit -m 'Catalog 0018: repair pseudonyms by exact display name'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
