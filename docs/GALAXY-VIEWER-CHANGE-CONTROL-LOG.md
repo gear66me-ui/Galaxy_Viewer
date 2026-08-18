@@ -305,6 +305,95 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e4b484cb6aa1 — 10H standalone surgical HD restoration and HTML launcher
+
+**Recorded:** 2026-08-18T14:22:28-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e4b484cb6aa17337c1dd267ae6e7236209cc681d`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e4b484cb6aa17337c1dd267ae6e7236209cc681d)  
+**Parent/baseline:** `19ea17ff57c45e7042b6b29ba0bb3208343aa146`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/19ea17ff57c45e7042b6b29ba0bb3208343aa146...e4b484cb6aa17337c1dd267ae6e7236209cc681d)  
+**Author:** German Arciniegas  
+**Changed-path count:** `3`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+10H standalone surgical HD restoration and HTML launcher
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/GV-10H-app.html`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `2b940eaba2e8afb693edabbcfacfbbd490e188429cfb7452a669da9772b2afd5`
+- Bytes: `0` → `2445`
+- Lines: `0` → `49`
+- Characters: `0` → `2445`
+- Inserted lines: `49`
+- Deleted lines: `0`
+- Inserted characters: `2445`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 49 - 0 = 49` — **PASS**
+- Character balance: `0 + 2445 - 0 = 2445` — **PASS**
+
+#### `viewer/GV-beta-0010H.py`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `44a39df41c4fdc828c1004f786b7614308d217f69b30feb369e623ee56bfeee9`
+- Bytes: `0` → `91236`
+- Lines: `0` → `1421`
+- Characters: `0` → `91214`
+- Inserted lines: `1421`
+- Deleted lines: `0`
+- Inserted characters: `91214`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 1421 - 0 = 1421` — **PASS**
+- Character balance: `0 + 91214 - 0 = 91214` — **PASS**
+
+#### `viewer/gv-current-viewer.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `75ab6d40a2d8b5017b0424bd95e7ce40c129f26fa5b73910454a9770bb237e40`
+- SHA-256 after: `17d9eae5e226baa30d9f6910e78e765f166e1d39d3e4dab3b0f48157eed120d0`
+- Bytes: `55` → `55`
+- Lines: `4` → `4`
+- Characters: `55` → `55`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `2`
+- Deleted characters: `2`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `4 + 2 - 2 = 4` — **PASS**
+- Character balance: `55 + 2 - 2 = 55` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-ead300976c9c — Remove temporary Catalog 0018 audit workflow
 
 **Recorded:** 2026-08-18T14:19:14-05:00  
