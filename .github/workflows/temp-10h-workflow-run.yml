@@ -1,0 +1,192 @@
+name: TEMP 10H verified surgical release
+on:
+  workflow_run:
+    workflows: ["Automatic Change Control Log"]
+    types: [completed]
+    branches: [beta]
+permissions:
+  contents: write
+jobs:
+  release:
+    if: github.event.workflow_run.conclusion == 'success' && contains(github.event.workflow_run.head_commit.message, 'TRIGGER 10H')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Build verify audit and commit 10H
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --rebase origin beta
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re,hashlib,difflib,subprocess
+
+          G=Path('viewer/GV-beta-0010G.py')
+          H=Path('viewer/GV-beta-0010H.py')
+          L=Path('mobile/beta/GV-10H-app.html')
+          P=Path('viewer/gv-current-viewer.json')
+          g=G.read_text(encoding='utf-8')
+          baseline_blob=subprocess.check_output(['git','hash-object',str(G)],text=True).strip()
+          baseline_sha256=hashlib.sha256(g.encode()).hexdigest()
+          assert baseline_blob=='e7a02d7acba2f21ac4108fa4818ce2b2547f82f6',f'10G baseline moved: {baseline_blob}'
+
+          def one(s,old,new,label):
+              n=s.count(old)
+              assert n==1,f'{label}: expected exactly one match, got {n}'
+              return s.replace(old,new,1)
+
+          h=g
+          h=one(h,'# GV-beta-0010G\n','# GV-beta-0010H\n','header version')
+          h=one(h,"const VERSION='10G';","const VERSION='10H';",'VERSION')
+          h=one(h,"const DISPLAY_VERSION='10G';","const DISPLAY_VERSION='10H';",'DISPLAY_VERSION')
+          h=one(h,"version.textContent='VERSION 10G';","version.textContent='VERSION 10H';",'visible version')
+          h=h.replace('GV-10G','GV-10H').replace('GALAXY VIEWER 10G','GALAXY VIEWER 10H')
+          h=h.replace('# GV-beta-0010G staged','# GV-beta-0010H staged')
+          h=one(h,"if(img)img.src='artwork/icon.svg';","if(img)img.src='artwork/icon_target_vector.svg';",'target trademark icon')
+          h=one(h,"const ALADIN_URL='https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js';","const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';",'browser-safe Aladin')
+
+          old_css='#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'
+          new_css='#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation;cursor:pointer}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}#gv-archive-overlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none}#gv-archive-overlay.gv-open{display:block}#gv-archive-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#gv-archive-back{position:absolute;left:50%;bottom:18px;z-index:2147483647;transform:translateX(-50%);height:44px;padding:0 18px;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 12px rgba(0,0,0,.75);pointer-events:auto;touch-action:manipulation;cursor:pointer}'
+          h=one(h,old_css,new_css,'HD regression CSS')
+
+          old_block="""    const hdBackToViewer=randomGalaxy.backButton;
+    if(hdBackToViewer){
+        hdBackToViewer.id='gv-hd-back-to-viewer';
+        hdBackToViewer.textContent='BACK TO VIEWER';
+        hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
+        randomGalaxy.hdViewport?.appendChild(hdBackToViewer);
+    }
+"""
+          new_block="""    const hdInfoLink=document.createElement('button');
+    hdInfoLink.id='gv-hd-info-link';
+    hdInfoLink.type='button';
+    hdInfoLink.setAttribute('aria-label','OPEN ARCHIVE SOURCE INFORMATION');
+    const hdInfoIcon=document.createElement('img');
+    hdInfoIcon.id='gv-hd-info-icon';
+    hdInfoIcon.alt='ARCHIVE SOURCE';
+    hdInfoLink.appendChild(hdInfoIcon);
+    randomGalaxy.hdViewport?.appendChild(hdInfoLink);
+
+    const archiveOverlay=document.createElement('div');
+    archiveOverlay.id='gv-archive-overlay';
+    archiveOverlay.setAttribute('aria-hidden','true');
+    const archiveFrame=document.createElement('iframe');
+    archiveFrame.id='gv-archive-frame';
+    archiveFrame.title='GALAXY ARCHIVE SOURCE';
+    const archiveBack=document.createElement('button');
+    archiveBack.id='gv-archive-back';
+    archiveBack.type='button';
+    archiveBack.textContent='← BACK TO GALAXY VIEWER';
+    archiveBack.setAttribute('aria-label','BACK TO GALAXY VIEWER');
+    archiveOverlay.append(archiveFrame,archiveBack);
+    document.body.appendChild(archiveOverlay);
+    const closeArchiveOverlay=()=>{
+        archiveOverlay.classList.remove('gv-open');
+        archiveOverlay.setAttribute('aria-hidden','true');
+        archiveFrame.src='about:blank';
+    };
+    archiveBack.addEventListener('click',closeArchiveOverlay);
+    hdInfoLink.addEventListener('click',()=>{
+        const destination=currentArchiveDestination();
+        const sourceUrl=String(destination?.sourceUrl||'').trim();
+        if(!sourceUrl)return;
+        archiveFrame.src=sourceUrl;
+        archiveOverlay.setAttribute('aria-hidden','false');
+        archiveOverlay.classList.add('gv-open');
+    });
+"""
+          h=one(h,old_block,new_block,'restore archive icon and external overlay')
+          h=one(h,"        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');","        if(hdInfoIcon){hdInfoIcon.src=iconUrl;hdInfoIcon.alt=`${provider} ARCHIVE SOURCE`}\n        if(hdInfoLink)hdInfoLink.setAttribute('aria-label',`OPEN ${provider} SOURCE INFORMATION`);",'dynamic provider archive icon')
+          h=one(h,"        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}","        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents='auto';",'archive icon positioning')
+
+          credit_hook="""    function removeHdCredit(){
+        randomGalaxy.creditEl?.remove?.();
+        randomGalaxy.hdOverlay?.querySelectorAll('*').forEach(element=>{
+            if(element.children.length===0&&/^CREDIT\\b/i.test(String(element.textContent||'').trim()))element.remove();
+        });
+    }
+"""
+          marker='    function settleHdPresentation(){\n'
+          assert marker in h and 'function removeHdCredit()' not in h
+          h=h.replace(marker,credit_hook+marker,1)
+          h=one(h,"    function settleHdPresentation(){\n        syncHdProviderPresentation();\n","    function settleHdPresentation(){\n        syncHdProviderPresentation();\n        removeHdCredit();\n",'credit removal invocation')
+
+          # 10H invariants.
+          assert '# GV-beta-0010H' in h
+          assert "const VERSION='10H';" in h and "const DISPLAY_VERSION='10H';" in h
+          assert 'gv-hubble-galaxies-full-0018.json' in h
+          assert 'gv-hubble-galaxies-full-0017.json' not in h
+          assert "const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';" in h
+          assert 'aladin-source-clone/dist/aladin.js' not in h
+          assert "if(img)img.src='artwork/icon_target_vector.svg';" in h
+          assert 'gv-hd-back-to-viewer' not in h
+          assert 'const hdBackToViewer=' not in h
+          assert "archiveBack.textContent='← BACK TO GALAXY VIEWER';" in h
+          assert 'hdInfoIcon.src=iconUrl' in h
+          assert 'function removeHdCredit()' in h
+          compile(h,str(H),'exec')
+          H.write_text(h,encoding='utf-8')
+
+          launcher='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><title>Galaxy Viewer 10H</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#boot{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#000}#boot img{width:min(42vw,240px);height:auto}#err{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}</style></head><body><div id="boot"><img src="../../viewer/artwork/icon_target_vector.svg" alt="Galaxy Viewer"></div><div id="err"></div><script>(async()=>{'use strict';const text=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+u);return r.text()};const extract=s=>{const h=[...s.matchAll(/display\\(HTML\\(\\"\\"\\"([\\s\\S]*?)\\"\\"\\"\\)\\)/g)],j=[...s.matchAll(/display\\(Javascript\\(r\\"\\"\\"([\\s\\S]*?)\\"\\"\\"\\)\\)/g)];if(h.length!==1||j.length!==1)throw new Error('Viewer extraction mismatch HTML='+h.length+' JS='+j.length);return[h[0][1],j[0][1]]};try{const p=JSON.parse(await text('../../viewer/gv-current-viewer.json?t='+Date.now()));const v=String(p.viewer||'').trim();if(v!=='GV-beta-0010H.py')throw new Error('10H pointer mismatch: '+v);const src=await text('../../viewer/'+v+'?t='+Date.now());const [html,js]=extract(src);const safeJs=js.replace(/<\\/script/gi,'<\\\\/script');const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"></head><body>'+html+'<script>'+safeJs+'<\\/script></body></html>';document.open();document.write(page);document.close()}catch(e){document.getElementById('boot')?.remove();const x=document.getElementById('err');x.style.display='block';x.textContent='GALAXY VIEWER 10H FAILED TO LOAD\\n\\n'+String(e?.stack||e)}})();</script></body></html>'''
+          assert 'icon_target_vector.svg' in launcher
+          assert 'raw.githubusercontent.com' not in launcher
+          assert 'aladin-source-clone' not in launcher
+          assert "cache:'no-store'" in launcher
+          L.write_text(launcher,encoding='utf-8')
+          pointer=json.dumps({'version':'10H','viewer':'GV-beta-0010H.py'},indent=2)+'\n'
+          P.write_text(pointer,encoding='utf-8')
+
+          # Restore and clean all temporary workflow changes made during this 10H attempt.
+          restored=subprocess.check_output(['git','show','86c584e30aeb18c4336eea98ddb154829b759f5d:.github/workflows/apply-10g-final-and-build-generic.yml'])
+          Path('.github/workflows/apply-10g-final-and-build-generic.yml').write_bytes(restored)
+          for tmp in ['.github/workflows/temp-10h-surgical.yml','.github/workflows/temp-10h-workflow-run.yml','.github/workflows/temp-direct-10h.yml']:
+              Path(tmp).unlink(missing_ok=True)
+
+          # Baseline protection after all writes.
+          assert subprocess.check_output(['git','hash-object',str(G)],text=True).strip()==baseline_blob
+          assert hashlib.sha256(G.read_bytes()).hexdigest()==baseline_sha256
+
+          def metrics(s):
+              return {'bytes':len(s.encode()),'characters':len(s),'spaces':s.count(' '),'lines':len(s.splitlines()),'newlines':s.count('\n'),'tabs':s.count('\t')}
+          gm=metrics(g); hm=metrics(h); lm=metrics(launcher); pm=metrics(pointer)
+          d=list(difflib.ndiff(g.splitlines(),h.splitlines()))
+          added=sum(1 for x in d if x.startswith('+ ')); deleted=sum(1 for x in d if x.startswith('- '))
+          audit={
+              'baseline_10G_blob':baseline_blob,
+              'baseline_10G_sha256':baseline_sha256,
+              'product_files':3,
+              '10G':gm,'10H':hm,'launcher':lm,'pointer':pm,
+              '10G_to_10H':{
+                  'bytes_delta':hm['bytes']-gm['bytes'],
+                  'characters_delta':hm['characters']-gm['characters'],
+                  'spaces_delta':hm['spaces']-gm['spaces'],
+                  'lines_delta':hm['lines']-gm['lines'],
+                  'newlines_delta':hm['newlines']-gm['newlines'],
+                  'tabs_delta':hm['tabs']-gm['tabs'],
+                  'diff_added_lines':added,'diff_deleted_lines':deleted
+              }
+          }
+          Path('/tmp/10h-audit.json').write_text(json.dumps(audit,sort_keys=True),encoding='utf-8')
+          print('GV10H_AUDIT='+json.dumps(audit,sort_keys=True))
+          PY
+
+          git diff --check
+          test -z "$(git diff -- viewer/GV-beta-0010G.py)"
+          git add -A
+          changed="$(git diff --cached --name-only | sort)"
+          printf '%s\n' "$changed"
+          printf '%s\n' "$changed" | grep -qx 'viewer/GV-beta-0010H.py'
+          printf '%s\n' "$changed" | grep -qx 'mobile/beta/GV-10H-app.html'
+          printf '%s\n' "$changed" | grep -qx 'viewer/gv-current-viewer.json'
+          AUDIT="$(cat /tmp/10h-audit.json)"
+          git commit -m "10H surgical HD restoration and HTML launcher" -m "GV10H_AUDIT=$AUDIT"
+          for attempt in 1 2 3 4; do
+            if git push origin HEAD:beta; then exit 0; fi
+            git pull --rebase origin beta
+          done
+          exit 1
