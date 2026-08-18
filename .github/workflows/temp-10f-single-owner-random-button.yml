@@ -1,0 +1,84 @@
+name: TEMP 10F single-owner Random Galaxy repair
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-10f-single-owner-random-button.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Make 10F native Random Galaxy markup symmetric
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/GV-beta-0010F.py')
+          s=p.read_text()
+          old="random.id='gv-random-galaxy';random.type='button';random.textContent='RANDOM GALAXY ✨';random.setAttribute('aria-label','RANDOM GALAXY');"
+          new="random.id='gv-random-galaxy';random.type='button';random.innerHTML='<span class=\"gvrg-random-layout\"><span class=\"gvrg-random-star-wrap gvrg-random-star-wrap-left\" aria-hidden=\"true\"><span class=\"gvrg-random-star\">✨</span><span class=\"gvrg-random-comet gvrg-random-comet-left\"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class=\"gvrg-random-label\">RANDOM GALAXY</span><span class=\"gvrg-random-star-wrap gvrg-random-star-wrap-right\" aria-hidden=\"true\"><span class=\"gvrg-random-star\">✨</span><span class=\"gvrg-random-comet\"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></span>';random.setAttribute('aria-label','RANDOM GALAXY');"
+          assert s.count(old)==1, f'expected one native one-star button definition, found {s.count(old)}'
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add viewer/GV-beta-0010F.py
+          git commit -m '10F make symmetric Random Galaxy markup native'
+          VIEWER_BLOB=$(git hash-object viewer/GV-beta-0010F.py)
+          echo "VIEWER_BLOB=$VIEWER_BLOB" >> "$GITHUB_ENV"
+
+      - name: Remove launcher DOM workaround and refresh 10F identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import os,re
+          p=Path('mobile/beta/9I.html')
+          s=p.read_text()
+          start=s.find("  const normalizeRandomGalaxyButton=()=>{")
+          if start!=-1:
+              end=s.find("\n\n  const splashPreload=",start)
+              assert end!=-1, 'launcher workaround end marker missing'
+              s=s[:start]+s[end+2:]
+          s=s.replace("      normalizeRandomGalaxyButton();\n","")
+          s=s.replace("{normalizeRandomGalaxyButton();requestAnimationFrame(()=>requestAnimationFrame(resolve));return}","{requestAnimationFrame(()=>requestAnimationFrame(resolve));return}")
+          s=s.replace("    normalizeRandomGalaxyButton();\n","")
+          s=s.replace("    normalizeRandomGalaxyButton();\n    requestAnimationFrame(()=>{normalizeRandomGalaxyButton();splash.remove();cover.remove()});","    requestAnimationFrame(()=>{splash.remove();cover.remove()});")
+          s=s.replace("requestAnimationFrame(()=>{normalizeRandomGalaxyButton();splash.remove();cover.remove()})","requestAnimationFrame(()=>{splash.remove();cover.remove()})")
+          pattern=r"const VIEWER_URL='\.\./\.\./viewer/GV-beta-0010F\.py\?v=10f-[0-9a-f]{40}';"
+          repl=f"const VIEWER_URL='../../viewer/GV-beta-0010F.py?v=10f-{os.environ['VIEWER_BLOB']}';"
+          s,n=re.subn(pattern,repl,s,count=1)
+          assert n==1, f'expected one viewer URL identity, found {n}'
+          assert "normalizeRandomGalaxyButton" not in s, 'launcher workaround still present'
+          assert "fetch(VIEWER_URL,{cache:'no-store'})" in s
+          p.write_text(s)
+          PY
+          git add mobile/beta/9I.html
+          git commit -m 'Remove launcher Random Galaxy workaround and repoint to repaired 10F'
+
+      - name: Verify only intended production files changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff HEAD~2..HEAD --name-only | sort
+          test "$(git diff HEAD~2..HEAD --name-only | sort | tr '\n' ' ')" = "mobile/beta/9I.html viewer/GV-beta-0010F.py "
+          grep -F "gvrg-random-star-wrap-left" viewer/GV-beta-0010F.py >/dev/null
+          grep -F "gvrg-random-star-wrap-right" viewer/GV-beta-0010F.py >/dev/null
+          grep -F "gvrg-random-comet-left" viewer/GV-beta-0010F.py >/dev/null
+          ! grep -F "random.textContent='RANDOM GALAXY ✨'" viewer/GV-beta-0010F.py
+          ! grep -F "normalizeRandomGalaxyButton" mobile/beta/9I.html
+          git push origin HEAD:beta
