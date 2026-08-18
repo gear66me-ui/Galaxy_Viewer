@@ -107,7 +107,6 @@ jobs:
 
           cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric/MainActivity.java" <<'EOF'
           package com.gear66me.galaxyviewergeneric;
-
           import android.app.Activity;
           import android.graphics.Color;
           import android.os.Bundle;
@@ -116,46 +115,15 @@ jobs:
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
-
           public final class MainActivity extends Activity {
             private WebView web;
-
             @Override protected void onCreate(Bundle state) {
               super.onCreate(state);
-              getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-              );
-              web = new WebView(this);
-              web.setBackgroundColor(Color.BLACK);
-              WebSettings s = web.getSettings();
-              s.setJavaScriptEnabled(true);
-              s.setDomStorageEnabled(true);
-              s.setAllowFileAccess(true);
-              s.setAllowContentAccess(true);
-              s.setAllowFileAccessFromFileURLs(true);
-              s.setAllowUniversalAccessFromFileURLs(true);
-              s.setMediaPlaybackRequiresUserGesture(false);
-              s.setCacheMode(WebSettings.LOAD_NO_CACHE);
-              web.setWebViewClient(new WebViewClient());
-              web.setWebChromeClient(new WebChromeClient());
-              setContentView(web);
-              web.loadUrl("file:///android_asset/index.html");
+              getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+              web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowContentAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setMediaPlaybackRequiresUserGesture(false);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebViewClient(new WebViewClient());web.setWebChromeClient(new WebChromeClient());setContentView(web);web.loadUrl("file:///android_asset/index.html");
             }
-
-            @Override public void onBackPressed() {
-              if (web != null && web.canGoBack()) web.goBack();
-              else super.onBackPressed();
-            }
-
-            @Override protected void onDestroy() {
-              if (web != null) { web.destroy(); web = null; }
-              super.onDestroy();
-            }
+            @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
+            @Override protected void onDestroy(){if(web!=null){web.destroy();web=null;}super.onDestroy();}
           }
           EOF
 
@@ -215,3 +183,35 @@ jobs:
           TAG=galaxy-viewer-generic
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" Galaxy-Viewer-GENERIC.apk Galaxy-Viewer-GENERIC.apk.sha256 --target beta --title 'Galaxy Viewer GENERIC' --notes 'Permanent pointer-driven Galaxy Viewer APK. Reads viewer/gv-current-viewer.json every launch. Uses the approved Galaxy Viewer target icon.'
+
+      - name: Publish GENERIC build metadata
+        if: always()
+        shell: bash
+        run: |
+          set -u
+          STATUS='${{ job.status }}'
+          SHA256=''
+          if [ -f Galaxy-Viewer-GENERIC.apk.sha256 ]; then SHA256="$(awk '{print $1}' Galaxy-Viewer-GENERIC.apk.sha256)"; fi
+          cat > viewer/gv-generic-apk-latest.json <<EOF
+          {
+            "status": "$STATUS",
+            "run_id": "${GITHUB_RUN_ID}",
+            "run_attempt": "${GITHUB_RUN_ATTEMPT}",
+            "artifact": "Galaxy-Viewer-GENERIC",
+            "apk": "Galaxy-Viewer-GENERIC.apk",
+            "sha256": "$SHA256",
+            "source_commit": "${GITHUB_SHA}"
+          }
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/gv-generic-apk-latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record GENERIC APK build ${GITHUB_RUN_ID}"
+            for attempt in 1 2 3 4 5; do
+              git pull --rebase origin beta && git push origin HEAD:beta && exit 0
+              git rebase --abort >/dev/null 2>&1 || true
+              sleep 2
+            done
+            exit 1
+          fi
