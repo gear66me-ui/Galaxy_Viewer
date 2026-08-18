@@ -10708,7 +10708,7 @@
         "name",
         "title"
       ],
-      "displayName": "Bullseye"
+      "displayName": "Bullseye Ring Galaxy"
     },
     {
       "archiveId": "potw2505a",
@@ -16826,7 +16826,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "JO175",
-      "displayName": "Galaxy"
+      "displayName": "Ghostly Jellyfish Galaxy"
     },
     {
       "archiveId": "potw2317a",
@@ -17983,7 +17983,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "N/A"
+      "displayName": "DART Impact Debris"
     },
     {
       "archiveId": "potw2239a",
@@ -18507,7 +18507,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SGAS 0033+02",
-      "displayName": "Galaxies"
+      "displayName": "Triply Lensed Galaxy"
     },
     {
       "archiveId": "potw2143a",
@@ -24764,7 +24764,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "CGCG 396-2 / PGC 17532",
-      "displayName": "Galaxies"
+      "displayName": "Orion Galactic Gem"
     },
     {
       "archiveId": "potw2132a",
@@ -24839,7 +24839,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "2M1310-1714",
-      "displayName": "Galaxies"
+      "displayName": "Quintuple Quasar Mirage"
     },
     {
       "archiveId": "potw2120a",
@@ -30163,7 +30163,7 @@
         "name",
         "title"
       ],
-      "displayName": "Strike!"
+      "displayName": "Interacting Spiral Pair"
     },
     {
       "archiveId": "potw2203a",
@@ -33310,7 +33310,7 @@
       "designation": "SGAS J143845+145407",
       "designationMethod": "targeted_authoritative_background_lensed_source_0017",
       "designationContext0017": "LEDA 1470080 is foreground-lens context and is not treated as an alias of SGAS J143845+145407.",
-      "displayName": "Galaxy"
+      "displayName": "Lensed Arc Galaxy"
     },
     {
       "archiveId": "potw2150a",
@@ -35141,7 +35141,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Quasar"
+      "displayName": "First Stars Ashes"
     },
     {
       "archiveId": "opo0014a",
@@ -43433,7 +43433,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SDSS J0915+3826",
-      "displayName": "Helping"
+      "displayName": "Gravitational Lens Helper"
     },
     {
       "archiveId": "potw1843a",
@@ -47694,7 +47694,7 @@
         "name",
         "title"
       ],
-      "displayName": "Astro-pointillism"
+      "displayName": "Stellar Pointillist Galaxy"
     },
     {
       "archiveId": "potw1650a",
@@ -57317,7 +57317,7 @@
         "name",
         "title"
       ],
-      "displayName": "Circinus"
+      "displayName": "Active Circinus Galaxy"
     },
     {
       "archiveId": "heic1911b",
@@ -57855,7 +57855,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Himiko",
-      "displayName": "Himiko"
+      "displayName": "Primordial Himiko Galaxy"
     },
     {
       "archiveId": "opo1353a",
@@ -57927,7 +57927,7 @@
       "coordinateResolvedFrom": "Himiko",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Himiko",
-      "displayName": "Himiko"
+      "displayName": "Primordial Himiko Gas Bubble"
     },
     {
       "archiveId": "opo1345b",
@@ -60445,7 +60445,7 @@
       "coordinateRepairNote0004": "Collage contains Pisces A and Pisces B at different positions. Navigation coordinate intentionally represents the left-panel target Pisces A.",
       "coordinateReference0004": "ESA/Hubble opo1629a + opo1629b",
       "designation": "REP: Pisces A / Pisces B",
-      "displayName": "Pisces"
+      "displayName": "Pisces Dwarf Galaxies"
     },
     {
       "archiveId": "opo1629c",
@@ -60925,7 +60925,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxy"
+      "displayName": "Distant Redshift Galaxy"
     },
     {
       "archiveId": "opo1511c",
@@ -61028,7 +61028,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxy"
+      "displayName": "Nearby Redshift Galaxy"
     },
     {
       "archiveId": "opo1511e",
@@ -61131,7 +61131,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxy"
+      "displayName": "Intermediate Redshift Galaxy"
     },
     {
       "archiveId": "opo1511d",
@@ -61234,7 +61234,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxy"
+      "displayName": "Moderate Redshift Galaxy"
     },
     {
       "archiveId": "opo1511g",
@@ -61337,7 +61337,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxy"
+      "displayName": "Ancient Redshift Galaxy"
     },
     {
       "archiveId": "opo1511h",
@@ -61440,7 +61440,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxy"
+      "displayName": "Early Universe Galaxy"
     },
     {
       "archiveId": "opo1511b",
@@ -63293,7 +63293,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Sagittarius",
-      "displayName": "Sagittarius"
+      "displayName": "Near Infrared Galactic Centre"
     },
     {
       "archiveId": "opo0928b",
@@ -63352,7 +63352,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Sagittarius",
-      "displayName": "Sagittarius"
+      "displayName": "Multiwavelength Galactic Centre"
     },
     {
       "archiveId": "opo0928f",
@@ -63411,7 +63411,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Sagittarius",
-      "displayName": "Sagittarius"
+      "displayName": "X Ray Galactic Centre"
     },
     {
       "archiveId": "opo0928d",
@@ -63470,7 +63470,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Sagittarius",
-      "displayName": "Sagittarius"
+      "displayName": "Infrared Galactic Centre"
     },
     {
       "archiveId": "opo0929c",
@@ -68893,7 +68893,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SagDIG",
-      "displayName": "SagDIG"
+      "displayName": "Sagittarius Dwarf Irregular"
     },
     {
       "archiveId": "opo0413c",
@@ -77334,7 +77334,7 @@
         "name",
         "title"
       ],
-      "displayName": "Antennae"
+      "displayName": "Colliding Antennae Galaxies"
     },
     {
       "archiveId": "opo9734x",
@@ -77863,7 +77863,7 @@
         "name",
         "title"
       ],
-      "displayName": "Iconic"
+      "displayName": "Barred Spiral Portrait"
     },
     {
       "archiveId": "heic1315b",
@@ -80638,7 +80638,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Himiko",
-      "displayName": "Himiko"
+      "displayName": "Himiko Multiwavelength Closeup"
     },
     {
       "archiveId": "opo1353c",
@@ -80707,7 +80707,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Himiko",
-      "displayName": "Himiko"
+      "displayName": "Himiko Galaxy Closeup"
     },
     {
       "archiveId": "heic1011d",
@@ -81951,7 +81951,7 @@
       "coordinateReferenceArchiveId0003": "heic0706a",
       "coordinateEstimated0003": true,
       "designation": "N/A",
-      "displayName": "Doradus"
+      "displayName": "Doradus Constellation Field"
     },
     {
       "archiveId": "heic0912b",
@@ -83343,7 +83343,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel X Ray View"
     },
     {
       "archiveId": "opo0907b",
@@ -83406,7 +83406,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Multiwavelength Composite"
     },
     {
       "archiveId": "opo0907h",
@@ -83469,7 +83469,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Galaxy Portrait"
     },
     {
       "archiveId": "opo0907i",
@@ -83532,7 +83532,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel X Ray Image"
     },
     {
       "archiveId": "opo0907g",
@@ -83595,7 +83595,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Infrared View"
     },
     {
       "archiveId": "opo0907d",
@@ -83663,7 +83663,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Optical Component"
     },
     {
       "archiveId": "opo0907a",
@@ -83815,7 +83815,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "M 101",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Great Observatories"
     },
     {
       "archiveId": "opo0907c",
@@ -83883,7 +83883,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Infrared Component"
     },
     {
       "archiveId": "heic0901c",
@@ -86621,7 +86621,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galaxies"
+      "displayName": "Spiral Galaxy Detail"
     },
     {
       "archiveId": "heic0710f",
@@ -86825,7 +86825,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galaxies"
+      "displayName": "Bode And Cigar Galaxies"
     },
     {
       "archiveId": "heic0710g",
@@ -88900,7 +88900,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "REP: Galaxies",
-      "displayName": "Galaxies"
+      "displayName": "Galactic Life Sequence"
     },
     {
       "archiveId": "opo0413a",
@@ -90287,7 +90287,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF-N"
+      "displayName": "Deep Field North Mosaic"
     },
     {
       "archiveId": "opo0318a",
@@ -90361,7 +90361,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Young Deep Field Galaxies"
     },
     {
       "archiveId": "opo0318e",
@@ -90425,7 +90425,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "CDF-S , Chandra Deep Field South",
-      "displayName": "CDF-S"
+      "displayName": "Deep Field South Mosaic"
     },
     {
       "archiveId": "opo0315h",
@@ -94479,7 +94479,7 @@
         "name",
         "title"
       ],
-      "displayName": "Antennae"
+      "displayName": "Antennae Star Formation Closeup"
     },
     {
       "archiveId": "opo9734e",
@@ -94547,7 +94547,7 @@
         "name",
         "title"
       ],
-      "displayName": "Antennae"
+      "displayName": "Antennae Star Formation Closeup"
     },
     {
       "archiveId": "opo9734a",
@@ -94622,7 +94622,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4038",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Antennae"
+      "displayName": "Colliding Antennae Galaxies"
     },
     {
       "archiveId": "opo9734f",
@@ -94690,7 +94690,7 @@
         "name",
         "title"
       ],
-      "displayName": "Antennae"
+      "displayName": "Antennae Star Formation Closeup"
     },
     {
       "archiveId": "opo9734b",
@@ -94766,7 +94766,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4038",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Antennae"
+      "displayName": "Antennae Star Formation Closeup"
     },
     {
       "archiveId": "opo9725b",
@@ -95221,7 +95221,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Distant Deep Field Galaxy"
     },
     {
       "archiveId": "opo9621a",
@@ -104025,7 +104025,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Supernovae"
+      "displayName": "Distant Supernova Sample"
     },
     {
       "archiveId": "opo0652e",
@@ -104109,7 +104109,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Supernovae"
+      "displayName": "Expanded Supernova Sample"
     },
     {
       "archiveId": "opo0652a",
@@ -104198,7 +104198,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Supernovae"
+      "displayName": "Distant Supernova Host Galaxies"
     },
     {
       "archiveId": "opo0651e",
@@ -108245,7 +108245,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxies"
+      "displayName": "Spiral Galaxy Evolution"
     },
     {
       "archiveId": "opo0415b",
@@ -109619,7 +109619,7 @@
         "name",
         "title"
       ],
-      "displayName": "Stars"
+      "displayName": "Galaxy Stellar Field Detail"
     },
     {
       "archiveId": "opo0324d",
@@ -109773,7 +109773,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galaxy"
+      "displayName": "Spiral Galaxy Detail"
     },
     {
       "archiveId": "opo0324h",
@@ -109847,7 +109847,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galaxies"
+      "displayName": "Galaxy Outer Field Detail"
     },
     {
       "archiveId": "opo0324e",
@@ -110762,7 +110762,7 @@
         "name",
         "title"
       ],
-      "displayName": "ULIRG"
+      "displayName": "Galactic Wreckage Starbirth"
     },
     {
       "archiveId": "heic0207o",
@@ -113568,7 +113568,7 @@
       "coordinateResolvedFrom": "Large Magellanic Cloud",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Large Magellanic Cloud",
-      "displayName": "Doradus"
+      "displayName": "Doradus Starforming Region"
     },
     {
       "archiveId": "opo9933i",
@@ -115803,7 +115803,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Infrared Deep Field"
     },
     {
       "archiveId": "opo9832i",
@@ -115880,7 +115880,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Deep Field Infrared Footprint"
     },
     {
       "archiveId": "opo9832b",
@@ -115957,7 +115957,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Infrared Deep Field"
     },
     {
       "archiveId": "opo9832g",
@@ -116092,7 +116092,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Infrared Deep Field"
     },
     {
       "archiveId": "opo9832k",
@@ -116169,7 +116169,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Blue Deep Field Galaxies"
     },
     {
       "archiveId": "opo9832c",
@@ -116242,7 +116242,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Deep Field Stellar Populations"
     },
     {
       "archiveId": "opo9832j",
@@ -116319,7 +116319,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "High Redshift Candidates"
     },
     {
       "archiveId": "opo9832h",
@@ -116384,7 +116384,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Deep Field Stellar Populations"
     },
     {
       "archiveId": "opo9832f",
@@ -116453,7 +116453,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Infrared Deep Field"
     },
     {
       "archiveId": "opo9827a",
@@ -117732,7 +117732,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4038",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Antennae"
+      "displayName": "Antennae Star Formation Closeup"
     },
     {
       "archiveId": "opo9734c",
@@ -117800,7 +117800,7 @@
         "name",
         "title"
       ],
-      "displayName": "Antennae"
+      "displayName": "Ground View Antennae Galaxies"
     },
     {
       "archiveId": "opo9728d",
@@ -118554,7 +118554,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Distant Deep Field Galaxy"
     },
     {
       "archiveId": "opo9624a2",
@@ -118630,7 +118630,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Distant Deep Field Galaxy"
     },
     {
       "archiveId": "opo9624a3",
@@ -118706,7 +118706,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Distant Deep Field Galaxy"
     },
     {
       "archiveId": "opo9624b",
@@ -118782,7 +118782,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Faint Deep Field Galaxy"
     },
     {
       "archiveId": "opo9624a1",
@@ -118858,7 +118858,7 @@
       "coordinateResolvedFrom": "HDF",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "Hubble Deep Field",
-      "displayName": "HDF"
+      "displayName": "Distant Deep Field Galaxy"
     },
     {
       "archiveId": "opo9621a2",
@@ -119602,7 +119602,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxies"
+      "displayName": "Normal Medium Survey Galaxies"
     },
     {
       "archiveId": "opo9510b",
@@ -121710,7 +121710,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "M 101",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Pinwheel"
+      "displayName": "Pinwheel Compass Field"
     },
     {
       "archiveId": "opo0916h",
@@ -123676,7 +123676,7 @@
       "coordinateResolvedFrom": "QSO J0003-2603",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "J0003-2603",
-      "displayName": "Galaxies"
+      "displayName": "Young Universe Galaxies"
     },
     {
       "archiveId": "opo9452c",
@@ -123771,7 +123771,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxies"
+      "displayName": "Galactic Time Snapshots"
     },
     {
       "archiveId": "opo9452a",
@@ -123922,7 +123922,7 @@
       },
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "REP: Snapshots in Time galaxy set",
-      "displayName": "Galaxies"
+      "displayName": "Galactic Time Snapshots"
     },
     {
       "archiveId": "opo9452j",
@@ -124016,7 +124016,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxies"
+      "displayName": "Galactic Time Snapshots"
     },
     {
       "archiveId": "opo9452d",
@@ -126390,7 +126390,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "M 100",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheid"
+      "displayName": "Cepheid Variable Star"
     },
     {
       "archiveId": "opo9449b3",
@@ -128455,7 +128455,7 @@
       "coordinateResolvedFrom": "ACS",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "N/A",
-      "displayName": "ACS"
+      "displayName": "Deep Field Red Band"
     },
     {
       "archiveId": "opo0206k",
@@ -128533,7 +128533,7 @@
       "coordinateResolvedFrom": "ACS",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "REP: ACS",
-      "displayName": "ACS"
+      "displayName": "Distant Galaxy Survey"
     },
     {
       "archiveId": "opo0206e",
@@ -128599,7 +128599,7 @@
       "coordinateResolvedFrom": "ACS",
       "constellationMethod": "iau_boundary_from_radec",
       "designation": "N/A",
-      "displayName": "ACS"
+      "displayName": "Deep Field I Band"
     },
     {
       "archiveId": "opo0122i",
@@ -129735,7 +129735,7 @@
         "name",
         "title"
       ],
-      "displayName": "Atoms-for-peace"
+      "displayName": "Atoms For Peace Galaxy"
     },
     {
       "archiveId": "opo9734r",
@@ -129880,7 +129880,7 @@
         "name",
         "title"
       ],
-      "displayName": "Antennae"
+      "displayName": "Antennae Colliding Galaxies"
     },
     {
       "archiveId": "opo9734v",
@@ -135095,7 +135095,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxies"
+      "displayName": "Embryonic Deep Sky Galaxies"
     },
     {
       "archiveId": "opo9217b",
@@ -136621,7 +136621,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4603",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheids",
+      "displayName": "Second Cepheid Variable",
       "imageReplacement0018": {
         "sourceArchiveId": "opo9919b",
         "reason": "Replace pixelated Cepheid cutout with full Hubble NGC 4603 field."
@@ -136701,7 +136701,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4603",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheids"
+      "displayName": "Third Cepheid Variable"
     },
     {
       "archiveId": "opo9919g",
@@ -136777,7 +136777,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4603",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheids"
+      "displayName": "Fourth Cepheid Variable"
     },
     {
       "archiveId": "opo9919d",
@@ -136853,7 +136853,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4603",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheids"
+      "displayName": "First Cepheid Variable"
     },
     {
       "archiveId": "opo9919c",
@@ -136929,7 +136929,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 4603",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "Cepheids"
+      "displayName": "Cepheid Location Field"
     },
     {
       "archiveId": "JADES2",
@@ -137283,7 +137283,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Sagittarius",
-      "displayName": "Sagittarius"
+      "displayName": "Milky Way Galactic Centre"
     },
     {
       "archiveId": "ann0910a",
@@ -137601,7 +137601,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Galaxies"
+      "displayName": "First Galaxy Evolution"
     },
     {
       "archiveId": "sci24007a",
