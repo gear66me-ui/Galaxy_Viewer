@@ -1,0 +1,81 @@
+name: Build Galaxy Viewer Generic APK
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-generic-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 1
+
+      - name: Verify protected runtime inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0010L.py)" = "9852017513867ee0cd6994d312f495a5525df2ad"
+          test "$(git hash-object viewer/gv-current-viewer.json)" = "c148173001db1a6029d4d4b00e62c50968ac70bf"
+          test "$(git hash-object mobile/beta/generic-app.html)" = "15ea8552737762c47606227b21f618171320d5a4"
+          grep -F '"version": "10L"' viewer/gv-current-viewer.json
+          grep -F '"viewer": "GV-beta-0010L.py"' viewer/gv-current-viewer.json
+          grep -F 'mobile/beta/generic-app.html?source=android-app' android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java
+          ! grep -RIna 'viewer/archive/' android/galaxy-viewer mobile/beta/generic-app.html
+          ! grep -RInaE 'GV-beta-0010L\.py|GV-beta-0010[FGHIJK]\.py' android/galaxy-viewer/app/src/main/java
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform and build tools
+        shell: bash
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build generic APK
+        shell: bash
+        run: gradle --no-daemon -p android/galaxy-viewer :app:assembleDebug
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='android/galaxy-viewer/app/build/outputs/apk/debug/app-debug.apk'
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/gv-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer'" /tmp/gv-badging.txt
+          grep -q "versionName='generic-1'" /tmp/gv-badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer.MainActivity'" /tmp/gv-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          unzip -t "$APK"
+          cp "$APK" Galaxy-Viewer-Generic.apk
+          sha256sum Galaxy-Viewer-Generic.apk | tee Galaxy-Viewer-Generic.apk.sha256
+
+      - name: Upload generic APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-Generic
+          path: |
+            Galaxy-Viewer-Generic.apk
+            Galaxy-Viewer-Generic.apk.sha256
+          if-no-files-found: error
+          retention-days: 30
