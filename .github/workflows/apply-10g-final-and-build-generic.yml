@@ -1,4 +1,4 @@
-name: Repair 10G HD Back Control and APK Launcher Icon
+name: Repair 10G HD Back To Viewer
 on:
   push:
     branches: [beta]
@@ -7,44 +7,31 @@ on:
 permissions:
   contents: write
 jobs:
-  repair-build:
+  repair-10g:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: beta
           fetch-depth: 0
-
-      - name: Apply surgical 10G and packager repair
+      - name: Patch authoritative 10G only
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
-
-          ten_g=Path('viewer/GV-beta-0010G.py')
-          ten_f=Path('viewer/GV-beta-0010F.py')
-          packager=Path('.github/scripts/build_10g_flatten.py')
-          icon=Path('viewer/artwork/App Icons/GV-app-icon-512.png')
-          assert ten_g.is_file() and ten_f.is_file() and packager.is_file() and icon.is_file()
-          ten_f_sha=hashlib.sha256(ten_f.read_bytes()).hexdigest()
-
-          s=ten_g.read_text(encoding='utf-8')
-          def one(text, old, new, label):
-              n=text.count(old)
-              if n != 1:
-                  raise SystemExit(f'{label}: expected exactly 1 match, found {n}')
-              return text.replace(old,new,1)
-
-          old_css='#gv-hd-info-more{flex:0 0 auto;margin-top:6px;padding-right:4px;color:#B7FFD0;font-size:10px;letter-spacing:.65px;text-align:right;white-space:nowrap}#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}'
-          new_css='#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'
-          s=one(s,old_css,new_css,'HD back button CSS')
-          s=one(s,
-              '    hdInfoPanel.innerHTML=\'<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div><div id="gv-hd-info-more">MORE INFO &gt;</div>\';\n',
-              '    hdInfoPanel.innerHTML=\'<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div>\';\n',
-              'remove MORE INFO')
-          old_link='''    const hdInfoLink=document.createElement('a');
+          p=Path('viewer/GV-beta-0010G.py')
+          frozen=Path('viewer/GV-beta-0010F.py')
+          before=p.read_text(encoding='utf-8')
+          tenf=hashlib.sha256(frozen.read_bytes()).hexdigest()
+          s=before
+          replacements=[
+            ('#gv-hd-info-more{flex:0 0 auto;margin-top:6px;padding-right:4px;color:#B7FFD0;font-size:10px;letter-spacing:.65px;text-align:right;white-space:nowrap}#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}',
+             '#gv-hd-back-to-viewer{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;min-width:132px;height:40px;padding:0 12px;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));color:#E8FFF0;font:400 11px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 4px rgba(229,255,239,.76);box-shadow:none;pointer-events:auto;touch-action:manipulation;cursor:pointer}'),
+            ('    hdInfoPanel.innerHTML=\'<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div><div id="gv-hd-info-more">MORE INFO &gt;</div>\';\n',
+             '    hdInfoPanel.innerHTML=\'<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div>\';\n'),
+            ('''    const hdInfoLink=document.createElement('a');
     hdInfoLink.id='gv-hd-info-link';
     hdInfoLink.target='_blank';
     hdInfoLink.rel='noopener noreferrer';
@@ -53,144 +40,46 @@ jobs:
     hdInfoIcon.alt='ARCHIVE SOURCE';
     hdInfoLink.appendChild(hdInfoIcon);
     randomGalaxy.hdViewport?.appendChild(hdInfoLink);
-'''
-          new_link='''    const hdBackToViewer=randomGalaxy.backButton;
+''',
+             '''    const hdBackToViewer=randomGalaxy.backButton;
     if(hdBackToViewer){
         hdBackToViewer.id='gv-hd-back-to-viewer';
         hdBackToViewer.textContent='BACK TO VIEWER';
         hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
         randomGalaxy.hdViewport?.appendChild(hdBackToViewer);
     }
-'''
-          s=one(s,old_link,new_link,'replace archive source link with back-to-viewer control')
-          old_sync="""        if(hdInfoIcon){hdInfoIcon.src=iconUrl;hdInfoIcon.alt=`${provider} ARCHIVE SOURCE`}
+'''),
+            ('''        if(hdInfoIcon){hdInfoIcon.src=iconUrl;hdInfoIcon.alt=`${provider} ARCHIVE SOURCE`}
         if(hdInfoLink){hdInfoLink.href=String(destination.sourceUrl||'#');hdInfoLink.setAttribute('aria-label',`OPEN ${provider} SOURCE INFORMATION`)}
-"""
-          new_sync="""        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');
-"""
-          s=one(s,old_sync,new_sync,'remove external source navigation')
-          s=one(s,
-              '        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents=\'auto\';\n',
-              '        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents=\'auto\'}\n',
-              'position HD back control')
-
-          compile(s,str(ten_g),'exec')
+''',
+             "        if(hdBackToViewer)hdBackToViewer.setAttribute('aria-label','BACK TO GALAXY VIEWER');\n"),
+            ("        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents='auto';\n",
+             "        if(hdBackToViewer){hdBackToViewer.style.right=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.bottom=`${HD_LAYOUT.iconInset}px`;hdBackToViewer.style.pointerEvents='auto'}\n")
+          ]
+          for i,(old,new) in enumerate(replacements,1):
+              n=s.count(old)
+              if n!=1: raise SystemExit(f'10G repair replacement {i}: expected 1 match, found {n}')
+              s=s.replace(old,new,1)
+          compile(s,str(p),'exec')
           assert "const VERSION='10G';" in s and "const DISPLAY_VERSION='10G';" in s
           assert 'MORE INFO &gt;' not in s
-          assert 'gv-hd-info-more' not in s
+          assert 'gv-hd-info-link' not in s
           assert "textContent='BACK TO VIEWER'" in s
           assert "randomGalaxy.backButton" in s
           assert "OPEN ${provider} SOURCE INFORMATION" not in s
-          ten_g.write_text(s,encoding='utf-8')
-          assert hashlib.sha256(ten_f.read_bytes()).hexdigest()==ten_f_sha, '10F CHANGED'
-
-          p=packager.read_text(encoding='utf-8')
-          p=one(p,
-              "ICON_SRC = ROOT / 'viewer/artwork/icon.svg'\nFONT_SRC = ROOT / 'viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf'\n",
-              "ICON_SRC = ROOT / 'viewer/artwork/icon.svg'\nLAUNCHER_ICON_SRC = ROOT / 'viewer/artwork/App Icons/GV-app-icon-512.png'\nFONT_SRC = ROOT / 'viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf'\n",
-              'launcher icon source constant')
-          p=one(p,
-              "assert ICON_SRC.is_file(), 'approved Galaxy Viewer icon is missing'\nassert FONT_SRC.is_file(), 'approved Space Age font is missing'\n",
-              "assert ICON_SRC.is_file(), 'approved Galaxy Viewer icon is missing'\nassert LAUNCHER_ICON_SRC.is_file(), 'approved Galaxy Viewer launcher icon is missing'\nassert FONT_SRC.is_file(), 'approved Space Age font is missing'\n",
-              'launcher icon assertion')
-          p=one(p,
-              '        android:hardwareAccelerated="true"\n        android:label="Galaxy Viewer 10G"\n        android:theme="@style/AppTheme"\n',
-              '        android:hardwareAccelerated="true"\n        android:icon="@drawable/gv_launcher"\n        android:roundIcon="@drawable/gv_launcher"\n        android:label="Galaxy Viewer 10G"\n        android:theme="@style/AppTheme"\n',
-              'manifest launcher icon')
-          p=one(p,
-              "values = BUILD_PROJECT / 'app/src/main/res/values'\nvalues.mkdir(parents=True)\n",
-              "drawable = BUILD_PROJECT / 'app/src/main/res/drawable'\ndrawable.mkdir(parents=True)\nshutil.copy2(LAUNCHER_ICON_SRC, drawable / 'gv_launcher.png')\n\nvalues = BUILD_PROJECT / 'app/src/main/res/values'\nvalues.mkdir(parents=True)\n",
-              'copy launcher icon resource')
-          p=one(p,
-              "assert 'gv-viewer-failed' in text_out\nassert 'SPLASH_COMPLETION_GRACE_MS=15000' in text_out\n",
-              "assert 'gv-viewer-failed' in text_out\nassert \"textContent='BACK TO VIEWER'\" in text_out\nassert 'MORE INFO &gt;' not in text_out\nassert (BUILD_PROJECT / 'app/src/main/res/drawable/gv_launcher.png').is_file()\nassert 'android:icon=\"@drawable/gv_launcher\"' in manifest.read_text(encoding='utf-8')\nassert 'SPLASH_COMPLETION_GRACE_MS=15000' in text_out\n",
-              'packager verification')
-          compile(p,str(packager),'exec')
-          packager.write_text(p,encoding='utf-8')
-          print('10G SHA256',hashlib.sha256(ten_g.read_bytes()).hexdigest())
-          print('PACKAGER SHA256',hashlib.sha256(packager.read_bytes()).hexdigest())
-          print('10F SHA256 UNCHANGED',ten_f_sha)
+          assert hashlib.sha256(frozen.read_bytes()).hexdigest()==tenf
+          p.write_text(s,encoding='utf-8')
+          print('BEFORE',hashlib.sha256(before.encode()).hexdigest())
+          print('AFTER ',hashlib.sha256(s.encode()).hexdigest())
           PY
-
-      - name: Commit exactly the two repaired source files
+      - name: Commit 10G repair
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/GV-beta-0010G.py .github/scripts/build_10g_flatten.py
-          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git add viewer/GV-beta-0010G.py
+          test "$(git diff --cached --name-only | wc -l)" -eq 1
           git diff --cached --name-only | grep -qx 'viewer/GV-beta-0010G.py'
-          git diff --cached --name-only | grep -qx '.github/scripts/build_10g_flatten.py'
-          git commit -m '10G: HD back to Viewer and Android launcher icon'
+          git commit -m '10G: replace MORE INFO with BACK TO VIEWER'
           git pull --rebase origin beta
           git push origin HEAD:beta
-          echo "REPAIR_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
-
-      - name: Build repaired fresh 10G APK
-        run: |
-          set -euo pipefail
-          python3 .github/scripts/build_10g_flatten.py
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('/tmp/galaxy-viewer-10g-build/app/src/main/assets/index.html')
-          s=p.read_text(encoding='utf-8')
-          needle='<title>GALAXY VIEWER 10G</title>'
-          inject=needle+'<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>'
-          if 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' not in s:
-              s=s.replace(needle,inject,1)
-          p.write_text(s,encoding='utf-8')
-          PY
-          gradle --no-daemon -p /tmp/galaxy-viewer-10g-build :app:assembleDebug
-
-      - name: Verify APK and stage installer
-        run: |
-          set -euo pipefail
-          APK=/tmp/galaxy-viewer-10g-build/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-10G-FIXED.apk
-          test -s "$APK"
-          cp "$APK" "$OUT"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer10g'" apk-badging.txt
-          grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
-          grep -q "application-icon-" apk-badging.txt
-          unzip -p "$APK" assets/index.html > apk-index.html
-          grep -q 'BACK TO VIEWER' apk-index.html
-          ! grep -q 'MORE INFO &gt;' apk-index.html
-          ! grep -q 'OPEN .* SOURCE INFORMATION' apk-index.html
-          unzip -l "$APK" | tee apk-files.txt
-          grep -q 'res/drawable/gv_launcher.png' apk-files.txt
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
-          unzip -t "$APK" | tee apk-zip-test.txt
-          grep -q 'No errors detected' apk-zip-test.txt
-          sha256sum "$OUT" | tee "$OUT.sha256"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Galaxy-Viewer-10G-FIXED
-          path: |
-            Galaxy-Viewer-10G-FIXED.apk
-            Galaxy-Viewer-10G-FIXED.apk.sha256
-            apk-badging.txt
-            apk-signature.txt
-            apk-zip-test.txt
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Publish repaired installer release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          TAG=galaxy-viewer-10g-fixed
-          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-10G-FIXED.apk Galaxy-Viewer-10G-FIXED.apk.sha256 --target "$REPAIR_COMMIT" --title 'Galaxy Viewer 10G — Fixed APK' --notes '10G HD view now uses BACK TO VIEWER with MORE INFO/source navigation removed. Android launcher uses the approved Galaxy Viewer app icon.'
