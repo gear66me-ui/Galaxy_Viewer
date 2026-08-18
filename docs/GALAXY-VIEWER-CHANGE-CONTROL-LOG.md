@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7d555950ceb8 — One-shot: restore 10G as single standalone Viewer
+
+**Recorded:** 2026-08-17T22:38:23-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7d555950ceb8a0ff77dbc4077269b6ec0bfcae7f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7d555950ceb8a0ff77dbc4077269b6ec0bfcae7f)  
+**Parent/baseline:** `bccdc8049cb57c14f966eb5a220e45803c7fcb0c`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/bccdc8049cb57c14f966eb5a220e45803c7fcb0c...7d555950ceb8a0ff77dbc4077269b6ec0bfcae7f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+One-shot: restore 10G as single standalone Viewer
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/restore-10g-standalone.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `48eeec026b7138f1f25609f4cf808b81cf4edb24357249bc63c54ef7b589eb0a`
+- Bytes: `0` → `2603`
+- Lines: `0` → `68`
+- Characters: `0` → `2601`
+- Inserted lines: `68`
+- Deleted lines: `0`
+- Inserted characters: `2601`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 68 - 0 = 68` — **PASS**
+- Character balance: `0 + 2601 - 0 = 2601` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-69db87355b11 — Remove unauthorized 10G viewer block
 
 **Recorded:** 2026-08-17T22:35:50-05:00  
