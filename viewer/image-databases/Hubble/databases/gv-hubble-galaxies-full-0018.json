@@ -779,7 +779,7 @@
         "name",
         "title"
       ],
-      "displayName": "Mice Galaxies"
+      "displayName": "A poster-size of barred spiral galaxy NGC 1300"
     },
     {
       "archiveId": "heic0206b",
@@ -860,7 +860,7 @@
         "name",
         "title"
       ],
-      "displayName": "Tadpole Galaxy"
+      "displayName": "Mice Galaxies"
     },
     {
       "archiveId": "heic0206a",
@@ -937,7 +937,7 @@
         "name",
         "title"
       ],
-      "displayName": "Active Spiral Galaxy"
+      "displayName": "Tadpole Galaxy"
     },
     {
       "archiveId": "heic1302a",
@@ -1013,7 +1013,7 @@
         "name",
         "title"
       ],
-      "displayName": "Flocculent Spiral"
+      "displayName": "Active Spiral Galaxy"
     },
     {
       "archiveId": "heic1104a",
@@ -1094,7 +1094,7 @@
         "name",
         "title"
       ],
-      "displayName": "Stephan's Quintet"
+      "displayName": "Flocculent Spiral"
     },
     {
       "archiveId": "heic0910s",
@@ -1175,7 +1175,7 @@
         "name",
         "title"
       ],
-      "displayName": "Phantom Galaxy"
+      "displayName": "Barred spiral galaxy NGC 6217"
     },
     {
       "archiveId": "heic0910i",
@@ -1247,7 +1247,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Stephan's Quintet",
-      "displayName": "Edge-On Lenticular Galaxy"
+      "displayName": "Stephan's Quintet"
     },
     {
       "archiveId": "heic0905a",
@@ -1329,7 +1329,7 @@
         "name",
         "title"
       ],
-      "displayName": "Cigar Galaxy"
+      "displayName": "Dramatically backlit dust lanes in NGC 7049"
     },
     {
       "archiveId": "heic0719a",
@@ -1406,7 +1406,7 @@
         "name",
         "title"
       ],
-      "displayName": "Pinwheel Galaxy"
+      "displayName": "Phantom Galaxy"
     },
     {
       "archiveId": "heic0706a",
@@ -1483,7 +1483,7 @@
         "name",
         "title"
       ],
-      "displayName": "Spiral Snapshot"
+      "displayName": "Stellar nursery in the arms of NGC 1672"
     },
     {
       "archiveId": "opo0624a",
@@ -1564,7 +1564,7 @@
         "name",
         "title"
       ],
-      "displayName": "Black Eye Galaxy"
+      "displayName": "Edge-On Lenticular Galaxy"
     },
     {
       "archiveId": "heic0604a",
@@ -1629,7 +1629,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Messier 82",
-      "displayName": "Extended Spiral Galaxy"
+      "displayName": "Cigar Galaxy"
     },
     {
       "archiveId": "heic0602a",
@@ -1702,7 +1702,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Messier 101",
-      "displayName": "Twisted Galaxy"
+      "displayName": "Pinwheel Galaxy"
     },
     {
       "archiveId": "opo9941a",
@@ -1783,7 +1783,7 @@
         "name",
         "title"
       ],
-      "displayName": "Large Magellanic Cloud"
+      "displayName": "A grazing encounter between two spiral galaxies"
     },
     {
       "archiveId": "potw2114a",
@@ -1852,7 +1852,7 @@
         "name",
         "title"
       ],
-      "displayName": "Squid Galaxy"
+      "displayName": "Spiral Snapshot"
     },
     {
       "archiveId": "potw2108a",
@@ -1921,7 +1921,7 @@
         "name",
         "title"
       ],
-      "displayName": "Centaurus A"
+      "displayName": "Black Eye Galaxy"
     },
     {
       "archiveId": "heic1516a",
@@ -2002,7 +2002,7 @@
         "name",
         "title"
       ],
-      "displayName": "Gravitational Lens Cluster"
+      "displayName": "Extended Spiral Galaxy"
     },
     {
       "archiveId": "opo0123a",
@@ -2083,7 +2083,7 @@
         "name",
         "title"
       ],
-      "displayName": "Milky Way Twin"
+      "displayName": "Twisted Galaxy"
     },
     {
       "archiveId": "potw1441a",
@@ -2160,7 +2160,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Large Magellanic Cloud",
-      "displayName": "Starburst Ring Galaxy"
+      "displayName": "Large Magellanic Cloud"
     },
     {
       "archiveId": "heic1305a",
@@ -2229,7 +2229,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Messier 77",
-      "displayName": "Cosmic Fireworks"
+      "displayName": "Squid Galaxy"
     },
     {
       "archiveId": "heic1110a",
@@ -2297,7 +2297,7 @@
         "name",
         "title"
       ],
-      "displayName": "Bucking the Trend"
+      "displayName": "Centaurus A"
     },
     {
       "archiveId": "heic0814a",
@@ -2366,7 +2366,7 @@
         "name",
         "title"
       ],
-      "displayName": "Grand Design Spiral"
+      "displayName": "Gravitational Lens Cluster"
     },
     {
       "archiveId": "potw1805a",
@@ -2434,7 +2434,7 @@
         "name",
         "title"
       ],
-      "displayName": "Coma Cluster"
+      "displayName": "Milky Way Twin"
     },
     {
       "archiveId": "potw1542a",
@@ -2507,7 +2507,7 @@
         "name",
         "title"
       ],
-      "displayName": "Peculiar Merger Galaxy"
+      "displayName": "Starburst Ring Galaxy"
     },
     {
       "archiveId": "potw2144a",
@@ -2581,7 +2581,7 @@
         "name",
         "title"
       ],
-      "displayName": "Green Cosmic Arc"
+      "displayName": "Cosmic Fireworks"
     },
     {
       "archiveId": "potw1921a",
@@ -2654,7 +2654,7 @@
         "name",
         "title"
       ],
-      "displayName": "Distorted Starburst Galaxy"
+      "displayName": "Bucking the Trend"
     },
     {
       "archiveId": "potw1850a",
@@ -2728,7 +2728,7 @@
         "name",
         "title"
       ],
-      "displayName": "Andromeda Galaxy"
+      "displayName": "Grand Design Spiral"
     },
     {
       "archiveId": "potw1849a",
@@ -2792,7 +2792,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Coma Cluster",
-      "displayName": "Bode's Galaxy"
+      "displayName": "Coma Cluster"
     },
     {
       "archiveId": "heic1811a",
@@ -2865,7 +2865,7 @@
         "name",
         "title"
       ],
-      "displayName": "Gravitational Lens Cluster"
+      "displayName": "Peculiar Merger Galaxy"
     },
     {
       "archiveId": "potw1822a",
@@ -2934,7 +2934,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SDSS J1156+1911",
-      "displayName": "Waterfall of Stars"
+      "displayName": "Green Cosmic Arc"
     },
     {
       "archiveId": "heic1806a",
@@ -3007,7 +3007,7 @@
         "name",
         "title"
       ],
-      "displayName": "Open Arms"
+      "displayName": "A ghostly galaxy lacking dark matter"
     },
     {
       "archiveId": "heic1712a",
@@ -3075,7 +3075,7 @@
         "name",
         "title"
       ],
-      "displayName": "Spiral in Profile"
+      "displayName": "NGC 1512 and NGC 1510"
     },
     {
       "archiveId": "heic1503a",
@@ -3148,7 +3148,7 @@
         "name",
         "title"
       ],
-      "displayName": "Irregular Starburst Galaxy"
+      "displayName": "Distorted Starburst Galaxy"
     },
     {
       "archiveId": "heic1502a",
@@ -3216,7 +3216,7 @@
         "name",
         "title"
       ],
-      "displayName": "El Gordo"
+      "displayName": "Andromeda Galaxy"
     },
     {
       "archiveId": "opo1438b",
@@ -3284,7 +3284,7 @@
         "name",
         "title"
       ],
-      "displayName": "Cosmic Heavyweight"
+      "displayName": "Bode's Galaxy"
     },
     {
       "archiveId": "heic0814b",
@@ -3352,7 +3352,7 @@
         "name",
         "title"
       ],
-      "displayName": "Two-Quadrillion-Sun Cluster"
+      "displayName": "Gravitational Lens Cluster"
     },
     {
       "archiveId": "potw2044a",
@@ -3421,7 +3421,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "UGCA 193",
-      "displayName": "Edge-On Lenticular"
+      "displayName": "Waterfall of Stars"
     },
     {
       "archiveId": "potw2006a",
@@ -3494,7 +3494,7 @@
         "name",
         "title"
       ],
-      "displayName": "Stripped Spiral Galaxy"
+      "displayName": "Open Arms"
     },
     {
       "archiveId": "potw1940a",
@@ -3562,7 +3562,7 @@
         "name",
         "title"
       ],
-      "displayName": "Luminous in Lepus"
+      "displayName": "Spiral in Profile"
     },
     {
       "archiveId": "potw1924a",
@@ -3630,7 +3630,7 @@
         "name",
         "title"
       ],
-      "displayName": "Cluster in the Cloud"
+      "displayName": "Irregular Starburst Galaxy"
     },
     {
       "archiveId": "potw1802a",
@@ -3696,7 +3696,7 @@
         "name",
         "title"
       ],
-      "displayName": "Cosmic Leviathan"
+      "displayName": "El Gordo"
     },
     {
       "archiveId": "potw1752b",
@@ -3760,7 +3760,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "RCS2 J2327",
-      "displayName": "Cosmic Cinnamon Bun"
+      "displayName": "Cosmic Heavyweight"
     },
     {
       "archiveId": "potw1752a",
@@ -3824,7 +3824,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "RCS2 J2327",
-      "displayName": "Birds of a Feather"
+      "displayName": "Two-Quadrillion-Sun Cluster"
     },
     {
       "archiveId": "heic1716a",
@@ -3892,7 +3892,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galaxy in Bloom"
+      "displayName": "Result of a galactic crash"
     },
     {
       "archiveId": "potw1451a",
@@ -3965,7 +3965,7 @@
         "name",
         "title"
       ],
-      "displayName": "Bedin I"
+      "displayName": "Edge-On Lenticular"
     },
     {
       "archiveId": "potw1442a",
@@ -4039,7 +4039,7 @@
         "name",
         "title"
       ],
-      "displayName": "Between Local and Laniakea"
+      "displayName": "The whirling disc of NGC 4526"
     },
     {
       "archiveId": "heic0911b",
@@ -4112,7 +4112,7 @@
         "name",
         "title"
       ],
-      "displayName": "Monster in the Deep"
+      "displayName": "Stripped Spiral Galaxy"
     },
     {
       "archiveId": "potw2404a",
@@ -4185,7 +4185,7 @@
         "name",
         "title"
       ],
-      "displayName": "Cosmic Lens Flare"
+      "displayName": "Luminous in Lepus"
     },
     {
       "archiveId": "heic2313a",
@@ -4253,7 +4253,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galactic Close-Up"
+      "displayName": "Dwarf irregular galaxy UGC 8091"
     },
     {
       "archiveId": "potw2349a",
@@ -4321,7 +4321,7 @@
         "name",
         "title"
       ],
-      "displayName": "Beauty from Chaos"
+      "displayName": "Cluster in the Cloud"
     },
     {
       "archiveId": "potw2319a",
@@ -4390,7 +4390,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "eMACS J1823.1+7822",
-      "displayName": "Smudged Fingerprint Galaxy"
+      "displayName": "Cosmic Leviathan"
     },
     {
       "archiveId": "potw2046a",
@@ -4468,7 +4468,7 @@
         "name",
         "title"
       ],
-      "displayName": "Rubin's Galaxy"
+      "displayName": "Cosmic Cinnamon Bun"
     },
     {
       "archiveId": "potw2026a",
@@ -4541,7 +4541,7 @@
         "name",
         "title"
       ],
-      "displayName": "Sunburst Arc"
+      "displayName": "Birds of a Feather"
     },
     {
       "archiveId": "potw1926a",
@@ -4614,7 +4614,7 @@
         "name",
         "title"
       ],
-      "displayName": "Beautiful Whorl"
+      "displayName": "Galaxy in Bloom"
     },
     {
       "archiveId": "heic1903a",
@@ -4687,7 +4687,7 @@
         "name",
         "title"
       ],
-      "displayName": "Galactic Treasure Chest"
+      "displayName": "Bedin I"
     },
     {
       "archiveId": "potw1821a",
@@ -4761,7 +4761,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SDSS J0333+0651",
-      "displayName": "Cosmic Nursery"
+      "displayName": "Between Local and Laniakea"
     },
     {
       "archiveId": "potw1818a",
@@ -4830,7 +4830,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SDSSJ0150+2725",
-      "displayName": "Red Relic Galaxy"
+      "displayName": "Monster in the Deep"
     },
     {
       "archiveId": "potw1443a",
@@ -4903,7 +4903,7 @@
         "name",
         "title"
       ],
-      "displayName": "Cosmic Snake Galaxy"
+      "displayName": "A galaxy on the edge"
     },
     {
       "archiveId": "heic1006a",
@@ -4973,7 +4973,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Messier 66",
-      "displayName": "Hockey Stick Galaxy"
+      "displayName": "snaps heavyweight of the Leo Triplet"
     },
     {
       "archiveId": "potw2129a",
@@ -5045,7 +5045,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M0138",
-      "displayName": "Unnamed Dwarf Galaxy"
+      "displayName": "Cosmic Lens Flare"
     },
     {
       "archiveId": "potw2116a",
@@ -5121,7 +5121,7 @@
         "name",
         "title"
       ],
-      "displayName": "Close Galactic Pair"
+      "displayName": "Galactic Close-Up"
     },
     {
       "archiveId": "potw2043a",
@@ -5194,7 +5194,7 @@
         "name",
         "title"
       ],
-      "displayName": "Woolly Galaxy"
+      "displayName": "Beauty from Chaos"
     },
     {
       "archiveId": "potw2007a",
@@ -5268,7 +5268,7 @@
         "name",
         "title"
       ],
-      "displayName": "Mysterious Old Spiral"
+      "displayName": "Smudged Fingerprint Galaxy"
     },
     {
       "archiveId": "heic2002a",
@@ -5336,7 +5336,7 @@
         "name",
         "title"
       ],
-      "displayName": "Mayall's Object"
+      "displayName": "Rubin's Galaxy"
     },
     {
       "archiveId": "heic1920a",
@@ -5400,7 +5400,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "PSZ1 G311.65-18.48",
-      "displayName": "Gone but Not Forgotten"
+      "displayName": "Sunburst Arc"
     },
     {
       "archiveId": "potw1928a",
@@ -5473,7 +5473,7 @@
         "name",
         "title"
       ],
-      "displayName": "Ancient Spiral"
+      "displayName": "Beautiful Whorl"
     },
     {
       "archiveId": "potw1833a",
@@ -5542,7 +5542,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "RXC J0142.9+4438",
-      "displayName": "Up and Over"
+      "displayName": "Galactic Treasure Chest"
     },
     {
       "archiveId": "potw1819a",
@@ -5606,7 +5606,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "RXC J0032.1+1808",
-      "displayName": "Frontier Fields Cluster"
+      "displayName": "Cosmic Nursery"
     },
     {
       "archiveId": "potw1812a",
@@ -5684,7 +5684,7 @@
         "name",
         "title"
       ],
-      "displayName": "Ultra-Bright Galaxy Gallery"
+      "displayName": "Red Relic Galaxy"
     },
     {
       "archiveId": "potw1747a",
@@ -5758,7 +5758,7 @@
         "name",
         "title"
       ],
-      "displayName": "Spiral in Serpens"
+      "displayName": "Cosmic Snake Galaxy"
     },
     {
       "archiveId": "potw1731a",
@@ -5826,7 +5826,7 @@
         "name",
         "title"
       ],
-      "displayName": "Collisional Ring Galaxy"
+      "displayName": "Hockey Stick Galaxy"
     },
     {
       "archiveId": "potw1726a",
@@ -5895,7 +5895,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "2XMM J143450.5+033843",
-      "displayName": "Dust-Stripped Spiral"
+      "displayName": "Unnamed Dwarf Galaxy"
     },
     {
       "archiveId": "heic1709a",
@@ -5963,7 +5963,7 @@
         "name",
         "title"
       ],
-      "displayName": "One-Sided Spiral"
+      "displayName": "Close Galactic Pair"
     },
     {
       "archiveId": "potw1538a",
@@ -6036,7 +6036,7 @@
         "name",
         "title"
       ],
-      "displayName": "Circumstellar Disc"
+      "displayName": "Woolly Galaxy"
     },
     {
       "archiveId": "potw1502a",
@@ -6109,7 +6109,7 @@
         "name",
         "title"
       ],
-      "displayName": "Long-Distance Relationship"
+      "displayName": "The third way of galaxies"
     },
     {
       "archiveId": "heic1403a",
@@ -6177,7 +6177,7 @@
         "name",
         "title"
       ],
-      "displayName": "Starburst Dwarf Galaxy"
+      "displayName": "of barred spiral galaxy Messier 83"
     },
     {
       "archiveId": "potw1329a",
@@ -6250,7 +6250,7 @@
         "name",
         "title"
       ],
-      "displayName": "Baby Stars Blowing Bubbles"
+      "displayName": "Mysterious Old Spiral"
     },
     {
       "archiveId": "heic0810ae",
@@ -6318,7 +6318,7 @@
         "name",
         "title"
       ],
-      "displayName": "Disruptive Neighbour"
+      "displayName": "Mayall's Object"
     },
     {
       "archiveId": "heic0711a",
@@ -6387,7 +6387,7 @@
         "name",
         "title"
       ],
-      "displayName": "Unusual Spiral"
+      "displayName": "Stellar fireworks are ablaze in galaxy NGC 4449"
     },
     {
       "archiveId": "potw2423a",
@@ -6455,7 +6455,7 @@
         "name",
         "title"
       ],
-      "displayName": "Spiralling Star Factory"
+      "displayName": "A broad and narrow galactic"
     },
     {
       "archiveId": "potw2403a",
@@ -6528,7 +6528,7 @@
         "name",
         "title"
       ],
-      "displayName": "Supernova Host Galaxy"
+      "displayName": "Gone but Not Forgotten"
     },
     {
       "archiveId": "potw2008a",
@@ -6601,7 +6601,7 @@
         "name",
         "title"
       ],
-      "displayName": "Well-Studied Spiral"
+      "displayName": "Ancient Spiral"
     },
     {
       "archiveId": "potw1929a",
@@ -6674,7 +6674,7 @@
         "name",
         "title"
       ],
-      "displayName": "Starbursting Centre"
+      "displayName": "Up and Over"
     },
     {
       "archiveId": "heic1901a",
@@ -6742,7 +6742,7 @@
         "name",
         "title"
       ],
-      "displayName": "Ambiguous Spiral"
+      "displayName": "The sharpest ever of the Triangulum Galaxy"
     },
     {
       "archiveId": "heic1820a",
@@ -6811,7 +6811,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Abell S1063",
-      "displayName": "Third Look"
+      "displayName": "Frontier Fields Cluster"
     },
     {
       "archiveId": "opo1724a",
@@ -6904,7 +6904,7 @@
       "coordinateMethod0017": "quarantined_from_primary_fields",
       "coordinateRepairNote0017": "0016 representative/unverified coordinate retained only as context; primary RA/Dec/constellation cleared to prevent false target navigation.",
       "constellationMethod": "unresolved_after_coordinate_quarantine_0017",
-      "displayName": "Noteworthy Nearby Spiral"
+      "displayName": "Ultra-Bright Galaxy Gallery"
     },
     {
       "archiveId": "potw1435a",
@@ -6972,7 +6972,7 @@
         "name",
         "title"
       ],
-      "displayName": "Low-Brightness Spiral"
+      "displayName": "Spiral in Serpens"
     },
     {
       "archiveId": "potw1348a",
@@ -7045,7 +7045,7 @@
         "name",
         "title"
       ],
-      "displayName": "Supernova-Rich Spiral"
+      "displayName": "A bizarre cosmic rarity NGC 660"
     },
     {
       "archiveId": "heic1218a",
@@ -7118,7 +7118,7 @@
         "name",
         "title"
       ],
-      "displayName": "Intermediate-Mass Black Hole"
+      "displayName": "Collisional Ring Galaxy"
     },
     {
       "archiveId": "heic0911c",
@@ -7191,7 +7191,7 @@
         "name",
         "title"
       ],
-      "displayName": "Swirling Spiral in Hydra"
+      "displayName": "Dust-Stripped Spiral"
     },
     {
       "archiveId": "heic0804a",
@@ -7265,7 +7265,7 @@
         "name",
         "title"
       ],
-      "displayName": "Massive Galaxy Cluster"
+      "displayName": "The gargantuan galaxy NGC 1132"
     },
     {
       "archiveId": "potm2607a",
@@ -7346,7 +7346,7 @@
         "name",
         "title"
       ],
-      "displayName": "One-sided spiral"
+      "displayName": "One-Sided Spiral"
     },
     {
       "archiveId": "potm2605a",
@@ -7734,7 +7734,7 @@
         "name",
         "title"
       ],
-      "displayName": "Circumstellar disc IRAS 23077+6707"
+      "displayName": "Circumstellar Disc"
     },
     {
       "archiveId": "potw2551a",
@@ -7815,7 +7815,7 @@
         "name",
         "title"
       ],
-      "displayName": "Long-distance relationship"
+      "displayName": "Long-Distance Relationship"
     },
     {
       "archiveId": "potw2550a",
@@ -7972,7 +7972,7 @@
         "name",
         "title"
       ],
-      "displayName": "Markarian 178"
+      "displayName": "Starburst Dwarf Galaxy"
     },
     {
       "archiveId": "potw2548a",
@@ -8125,7 +8125,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "LMC N159",
-      "displayName": "LMC N159"
+      "displayName": "Baby Stars Blowing Bubbles"
     },
     {
       "archiveId": "potw2546a",
@@ -8261,7 +8261,7 @@
         "name",
         "title"
       ],
-      "displayName": "A disruptive neighbour"
+      "displayName": "Disruptive Neighbour"
     },
     {
       "archiveId": "potw2544a",
@@ -8334,7 +8334,7 @@
         "name",
         "title"
       ],
-      "displayName": "Revisiting an unusual spiral"
+      "displayName": "Unusual Spiral"
     },
     {
       "archiveId": "potw2543a",
@@ -8402,7 +8402,7 @@
         "name",
         "title"
       ],
-      "displayName": "Spiralling star factory"
+      "displayName": "Spiralling Star Factory"
     },
     {
       "archiveId": "potw2542a",
@@ -8470,7 +8470,7 @@
         "name",
         "title"
       ],
-      "displayName": "Focusing on NGC 3370"
+      "displayName": "Supernova Host Galaxy"
     },
     {
       "archiveId": "potw2541a",
@@ -8538,7 +8538,7 @@
         "name",
         "title"
       ],
-      "displayName": "A well-studied spiral"
+      "displayName": "Well-Studied Spiral"
     },
     {
       "archiveId": "potw2540a",
@@ -8606,7 +8606,7 @@
         "name",
         "title"
       ],
-      "displayName": "Starbursting centre"
+      "displayName": "Starbursting Centre"
     },
     {
       "archiveId": "potw2539a",
@@ -8747,7 +8747,7 @@
         "name",
         "title"
       ],
-      "displayName": "Spiral, elliptical or neither?"
+      "displayName": "Ambiguous Spiral"
     },
     {
       "archiveId": "potw2537a",
@@ -8957,7 +8957,7 @@
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Messier 96",
-      "displayName": "Taking a third look"
+      "displayName": "Third Look"
     },
     {
       "archiveId": "potw2533a",
@@ -9025,7 +9025,7 @@
         "name",
         "title"
       ],
-      "displayName": "Noteworthy nearby spiral"
+      "displayName": "Noteworthy Nearby Spiral"
     },
     {
       "archiveId": "potw2532a",
@@ -9093,7 +9093,7 @@
         "name",
         "title"
       ],
-      "displayName": "Low brightness, high interest"
+      "displayName": "Low-Brightness Spiral"
     },
     {
       "archiveId": "potw2530a",
@@ -9161,7 +9161,7 @@
         "name",
         "title"
       ],
-      "displayName": "A supernova-rich spiral"
+      "displayName": "Supernova-Rich Spiral"
     },
     {
       "archiveId": "opo2519",
@@ -9241,7 +9241,7 @@
       "coordinateMethod": "cds_sesame_name_resolution",
       "coordinateResolvedFrom": "NGC 6099",
       "constellationMethod": "iau_boundary_from_radec",
-      "displayName": "IMBH near NGC 6099"
+      "displayName": "Intermediate-Mass Black Hole"
     },
     {
       "archiveId": "potw2529a",
@@ -9314,7 +9314,7 @@
         "name",
         "title"
       ],
-      "displayName": "Swirling spiral in Hydra"
+      "displayName": "Swirling Spiral in Hydra"
     },
     {
       "archiveId": "potw2527a",
@@ -9382,7 +9382,7 @@
         "name",
         "title"
       ],
-      "displayName": "Abell 209"
+      "displayName": "Massive Galaxy Cluster"
     },
     {
       "archiveId": "potw2525a",
