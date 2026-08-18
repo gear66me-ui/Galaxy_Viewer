@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-78100628052f — Expose GENERIC APK build status and publish installer
+
+**Recorded:** 2026-08-18T11:48:01-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`78100628052f338c3c273125342defb9bf934bd5`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/78100628052f338c3c273125342defb9bf934bd5)  
+**Parent/baseline:** `53708217dd7d0aa6c4751a967926caad873fc151`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/53708217dd7d0aa6c4751a967926caad873fc151...78100628052f338c3c273125342defb9bf934bd5)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Expose GENERIC APK build status and publish installer
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `2ff315f0a6e386a5b9545989fe78779b6f65ff1b9f82c0d0c814581020456256`
+- SHA-256 after: `5669d3948619b63ae8587c6d3c28c233847a84f160dc95e6c1aa1bf7036bd845`
+- Bytes: `8577` → `9582`
+- Lines: `156` → `159`
+- Characters: `8577` → `9582`
+- Inserted lines: `24`
+- Deleted lines: `21`
+- Inserted characters: `1277`
+- Deleted characters: `272`
+- Unified diff hunks: `8`
+- Inserted blocks: `8`
+- Deleted blocks: `3`
+- Changed blocks: `8`
+- Line balance: `156 + 24 - 21 = 159` — **PASS**
+- Character balance: `8577 + 1277 - 272 = 9582` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-d6f4e76b7333 — Build and publish permanent Galaxy Viewer GENERIC APK only
 
 **Recorded:** 2026-08-18T11:44:07-05:00  
