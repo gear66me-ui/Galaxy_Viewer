@@ -1,0 +1,9 @@
+{
+  "status": "cancelled",
+  "run_id": "32159507540",
+  "run_attempt": "1",
+  "artifact": "Galaxy-Viewer-GENERIC",
+  "apk": "Galaxy-Viewer-GENERIC.apk",
+  "sha256": "",
+  "source_commit": "851bb3a403344a329ffaa31dd816bfcf0e30c663"
+}
