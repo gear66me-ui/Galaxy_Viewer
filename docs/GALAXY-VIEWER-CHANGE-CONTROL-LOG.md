@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-03237490586d — Use robust APK verification and always publish artifact
+
+**Recorded:** 2026-08-18T12:42:00-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`03237490586db4f2a4ebb21e372a765051c120ff`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/03237490586db4f2a4ebb21e372a765051c120ff)  
+**Parent/baseline:** `3ecf2dd6d5ce2f4a618a1f8f7adbd757ba1edfe0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/3ecf2dd6d5ce2f4a618a1f8f7adbd757ba1edfe0...03237490586db4f2a4ebb21e372a765051c120ff)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Use robust APK verification and always publish artifact
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-10g-fresh-now.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `68a539e0800f99af5280ef26ea52881e68cf0299aad086084ecb4a154c28b307`
+- SHA-256 after: `7141b370d7d8e1e0760c96314f05037f0accc1095722ae3a4a9a797da699fcd4`
+- Bytes: `11272` → `11100`
+- Lines: `127` → `126`
+- Characters: `11272` → `11100`
+- Inserted lines: `4`
+- Deleted lines: `5`
+- Inserted characters: `67`
+- Deleted characters: `239`
+- Unified diff hunks: `5`
+- Inserted blocks: `4`
+- Deleted blocks: `3`
+- Changed blocks: `5`
+- Line balance: `127 + 4 - 5 = 126` — **PASS**
+- Character balance: `11272 + 67 - 239 = 11100` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-0190fe5d4219 — Build GENERIC APK on stable Pages launcher
 
 **Recorded:** 2026-08-18T12:40:05-05:00  
