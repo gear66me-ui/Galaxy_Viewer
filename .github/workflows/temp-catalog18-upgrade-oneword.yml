@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: {ref: beta}
+        with:
+          ref: beta
       - shell: bash
         run: |
           python - <<'PY'
@@ -18,118 +19,20 @@ jobs:
           p='viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
           d=json.load(open(p,encoding='utf-8'))
           before=copy.deepcopy(d)
-          replacements={
-  "opo2506": "Bullseye Ring Galaxy",
-  "potw2318a": "Ghostly Jellyfish Galaxy",
-  "heic2212a": "DART Impact Debris",
-  "potw2147a": "Triply Lensed Galaxy",
-  "potw2227a": "Orion Galactic Gem",
-  "potw2132a": "Quintuple Quasar Mirage",
-  "potw2204a": "Interacting Spiral Pair",
-  "potw2229a": "Lensed Arc Galaxy",
-  "heic0306a": "First Stars Ashes",
-  "potw1844a": "Gravitational Lens Helper",
-  "potw1651a": "Stellar Pointillist Galaxy",
-  "opo0037a": "Active Circinus Galaxy",
-  "opo1353b": "Primordial Himiko Galaxy",
-  "opo1353a": "Primordial Himiko Gas Bubble",
-  "opo1629a": "Pisces Dwarf Galaxies",
-  "opo1511f": "Distant Redshift Galaxy",
-  "opo1511c": "Nearby Redshift Galaxy",
-  "opo1511e": "Intermediate Redshift Galaxy",
-  "opo1511d": "Moderate Redshift Galaxy",
-  "opo1511g": "Ancient Redshift Galaxy",
-  "opo1511h": "Early Universe Galaxy",
-  "opo0928e": "Near Infrared Galactic Centre",
-  "opo0928b": "Multiwavelength Galactic Centre",
-  "opo0928f": "X Ray Galactic Centre",
-  "opo0928d": "Infrared Galactic Centre",
-  "opo0431b": "Sagittarius Dwarf Irregular",
-  "opo9734w": "Colliding Antennae Galaxies",
-  "potw1917a": "Barred Spiral Portrait",
-  "opo1353d": "Himiko Multiwavelength Closeup",
-  "opo1353c": "Himiko Galaxy Closeup",
-  "opo0932g": "Doradus Constellation Field",
-  "opo0907e": "Pinwheel X Ray View",
-  "opo0907b": "Pinwheel Multiwavelength Composite",
-  "opo0907h": "Pinwheel Galaxy Portrait",
-  "opo0907i": "Pinwheel X Ray Image",
-  "opo0907g": "Pinwheel Infrared View",
-  "opo0907d": "Pinwheel Optical Component",
-  "opo0907f": "Pinwheel Great Observatories",
-  "opo0907c": "Pinwheel Infrared Component",
-  "heic0710j": "Spiral Galaxy Detail",
-  "heic0710k": "Bode And Cigar Galaxies",
-  "opo0421a": "Galactic Life Sequence",
-  "opo0318d": "Deep Field North Mosaic",
-  "opo0318a": "Young Deep Field Galaxies",
-  "opo0318e": "Deep Field South Mosaic",
-  "opo9734g": "Antennae Star Formation Closeup",
-  "opo9734e": "Antennae Star Formation Closeup",
-  "opo9734a": "Colliding Antennae Galaxies",
-  "opo9734f": "Antennae Star Formation Closeup",
-  "opo9734b": "Antennae Star Formation Closeup",
-  "opo9624a": "Distant Deep Field Galaxy",
-  "opo0652d": "Distant Supernova Sample",
-  "opo0652e": "Expanded Supernova Sample",
-  "opo0652a": "Distant Supernova Host Galaxies",
-  "opo0416b": "Spiral Galaxy Evolution",
-  "opo0324j": "Galaxy Stellar Field Detail",
-  "opo0324i": "Spiral Galaxy Detail",
-  "opo0324h": "Galaxy Outer Field Detail",
-  "heic0207h": "Galactic Wreckage Starbirth",
-  "opo9933j": "Doradus Starforming Region",
-  "opo9832d": "Infrared Deep Field",
-  "opo9832i": "Deep Field Infrared Footprint",
-  "opo9832b": "Infrared Deep Field",
-  "opo9832e": "Infrared Deep Field",
-  "opo9832k": "Blue Deep Field Galaxies",
-  "opo9832c": "Deep Field Stellar Populations",
-  "opo9832j": "High Redshift Candidates",
-  "opo9832h": "Deep Field Stellar Populations",
-  "opo9832f": "Infrared Deep Field",
-  "opo9734z": "Antennae Star Formation Closeup",
-  "opo9734c": "Ground View Antennae Galaxies",
-  "opo9624a4": "Distant Deep Field Galaxy",
-  "opo9624a2": "Distant Deep Field Galaxy",
-  "opo9624a3": "Distant Deep Field Galaxy",
-  "opo9624b": "Faint Deep Field Galaxy",
-  "opo9624a1": "Distant Deep Field Galaxy",
-  "opo9439a": "Normal Medium Survey Galaxies",
-  "opo0907j": "Pinwheel Compass Field",
-  "opo9452b": "Young Universe Galaxies",
-  "opo9452c": "Galactic Time Snapshots",
-  "opo9452f": "Galactic Time Snapshots",
-  "opo9452j": "Galactic Time Snapshots",
-  "opo9449b1": "Cepheid Variable Star",
-  "opo0206f": "Deep Field Red Band",
-  "opo0206k": "Distant Galaxy Survey",
-  "opo0206e": "Deep Field I Band",
-  "opo9734q": "Atoms For Peace Galaxy",
-  "opo9734p": "Antennae Colliding Galaxies",
-  "opo9219a": "Embryonic Deep Sky Galaxies",
-  "opo9919e": "Second Cepheid Variable",
-  "opo9919f": "Third Cepheid Variable",
-  "opo9919g": "Fourth Cepheid Variable",
-  "opo9919d": "First Cepheid Variable",
-  "opo9919c": "Cepheid Location Field",
-  "ann0912a": "Milky Way Galactic Centre",
-  "ann0602": "First Galaxy Evolution"
-}
+          replacements=json.loads(r'''{"opo2506":"Bullseye Ring Galaxy","potw2318a":"Ghostly Jellyfish Galaxy","heic2212a":"DART Impact Debris","potw2147a":"Triply Lensed Galaxy","potw2227a":"Orion Galactic Gem","potw2132a":"Quintuple Quasar Mirage","potw2204a":"Interacting Spiral Pair","potw2229a":"Lensed Arc Galaxy","heic0306a":"First Stars Ashes","potw1844a":"Gravitational Lens Helper","potw1651a":"Stellar Pointillist Galaxy","opo0037a":"Active Circinus Galaxy","opo1353b":"Primordial Himiko Galaxy","opo1353a":"Primordial Himiko Gas Bubble","opo1629a":"Pisces Dwarf Galaxies","opo1511f":"Distant Redshift Galaxy","opo1511c":"Nearby Redshift Galaxy","opo1511e":"Intermediate Redshift Galaxy","opo1511d":"Moderate Redshift Galaxy","opo1511g":"Ancient Redshift Galaxy","opo1511h":"Early Universe Galaxy","opo0928e":"Near Infrared Galactic Centre","opo0928b":"Multiwavelength Galactic Centre","opo0928f":"X Ray Galactic Centre","opo0928d":"Infrared Galactic Centre","opo0431b":"Sagittarius Dwarf Irregular","opo9734w":"Colliding Antennae Galaxies","potw1917a":"Barred Spiral Portrait","opo1353d":"Himiko Multiwavelength Closeup","opo1353c":"Himiko Galaxy Closeup","opo0932g":"Doradus Constellation Field","opo0907e":"Pinwheel X Ray View","opo0907b":"Pinwheel Multiwavelength Composite","opo0907h":"Pinwheel Galaxy Portrait","opo0907i":"Pinwheel X Ray Image","opo0907g":"Pinwheel Infrared View","opo0907d":"Pinwheel Optical Component","opo0907f":"Pinwheel Great Observatories","opo0907c":"Pinwheel Infrared Component","heic0710j":"Spiral Galaxy Detail","heic0710k":"Bode And Cigar Galaxies","opo0421a":"Galactic Life Sequence","opo0318d":"Deep Field North Mosaic","opo0318a":"Young Deep Field Galaxies","opo0318e":"Deep Field South Mosaic","opo9734g":"Antennae Star Formation Closeup","opo9734e":"Antennae Star Formation Closeup","opo9734a":"Colliding Antennae Galaxies","opo9734f":"Antennae Star Formation Closeup","opo9734b":"Antennae Star Formation Closeup","opo9624a":"Distant Deep Field Galaxy","opo0652d":"Distant Supernova Sample","opo0652e":"Expanded Supernova Sample","opo0652a":"Distant Supernova Host Galaxies","opo0416b":"Spiral Galaxy Evolution","opo0324j":"Galaxy Stellar Field Detail","opo0324i":"Spiral Galaxy Detail","opo0324h":"Galaxy Outer Field Detail","heic0207h":"Galactic Wreckage Starbirth","opo9933j":"Doradus Starforming Region","opo9832d":"Infrared Deep Field","opo9832i":"Deep Field Infrared Footprint","opo9832b":"Infrared Deep Field","opo9832e":"Infrared Deep Field","opo9832k":"Blue Deep Field Galaxies","opo9832c":"Deep Field Stellar Populations","opo9832j":"High Redshift Candidates","opo9832h":"Deep Field Stellar Populations","opo9832f":"Infrared Deep Field","opo9734z":"Antennae Star Formation Closeup","opo9734c":"Ground View Antennae Galaxies","opo9624a4":"Distant Deep Field Galaxy","opo9624a2":"Distant Deep Field Galaxy","opo9624a3":"Distant Deep Field Galaxy","opo9624b":"Faint Deep Field Galaxy","opo9624a1":"Distant Deep Field Galaxy","opo9439a":"Normal Medium Survey Galaxies","opo0907j":"Pinwheel Compass Field","opo9452b":"Young Universe Galaxies","opo9452c":"Galactic Time Snapshots","opo9452f":"Galactic Time Snapshots","opo9452j":"Galactic Time Snapshots","opo9449b1":"Cepheid Variable Star","opo0206f":"Deep Field Red Band","opo0206k":"Distant Galaxy Survey","opo0206e":"Deep Field I Band","opo9734q":"Atoms For Peace Galaxy","opo9734p":"Antennae Colliding Galaxies","opo9219a":"Embryonic Deep Sky Galaxies","opo9919e":"Second Cepheid Variable","opo9919f":"Third Cepheid Variable","opo9919g":"Fourth Cepheid Variable","opo9919d":"First Cepheid Variable","opo9919c":"Cepheid Location Field","ann0912a":"Milky Way Galactic Centre","ann0602":"First Galaxy Evolution"}''')
           entries=d['entries']
           targets=[e for e in entries if (e.get('displayName') or '').strip() and len((e.get('displayName') or '').strip().split())==1]
           assert len(targets)==96, f'expected 96 one-word entries, found {len(targets)}'
           ids=[e.get('archiveId') for e in targets]
-          assert len(ids)==len(set(ids))==96, 'one-word archiveIds must be unique'
+          assert len(ids)==len(set(ids))==96
           assert set(ids)==set(replacements), f'mapping mismatch missing={set(ids)-set(replacements)} extra={set(replacements)-set(ids)}'
           changed=0
           for e in entries:
               aid=e.get('archiveId')
               if aid in replacements:
                   new=replacements[aid].strip()
-                  assert 2 <= len(new.split()) <= 8, (aid,new)
-                  assert not re.search(r'\d',new), (aid,new)
-                  assert e.get('displayName') != new
+                  assert 2 <= len(new.split()) <= 8
+                  assert not re.search(r'\d',new)
                   e['displayName']=new
                   changed+=1
           assert changed==96
@@ -139,15 +42,11 @@ jobs:
               od=o.pop('displayName',None); nd=n.pop('displayName',None)
               assert o==n, f'non-displayName mutation at {old.get("archiveId")}'
               if old.get('archiveId') not in replacements:
-                  assert od==nd, f'unauthorized displayName mutation at {old.get("archiveId")}'
+                  assert od==nd
           json.dump(d,open(p,'w',encoding='utf-8'),ensure_ascii=False,indent=2)
           open(p,'a',encoding='utf-8').write('\n')
           wc=collections.Counter(len((e.get('displayName') or '').strip().split()) for e in entries)
-          one=sum(1 for e in entries if len((e.get('displayName') or '').strip().split())==1)
-          nums=sum(1 for e in entries if re.search(r'\d',(e.get('displayName') or '')))
-          over8=sum(1 for e in entries if len((e.get('displayName') or '').strip().split())>8)
-          empty=sum(1 for e in entries if not (e.get('displayName') or '').strip())
-          audit='UPDATED=96\nTOTAL='+str(len(entries))+'\nCOUNTS='+','.join(f'{k}:{wc[k]}' for k in sorted(wc))+'\nONE_WORD='+str(one)+'\nNUMBERS='+str(nums)+'\nOVER8='+str(over8)+'\nEMPTY='+str(empty)+'\n'
+          audit='UPDATED=96\nTOTAL='+str(len(entries))+'\nCOUNTS='+','.join(f'{k}:{wc[k]}' for k in sorted(wc))+'\nONE_WORD='+str(wc[1])+'\nNUMBERS='+str(sum(bool(re.search(r'\d',(e.get('displayName') or ''))) for e in entries))+'\nOVER8='+str(sum(len((e.get('displayName') or '').strip().split())>8 for e in entries))+'\nEMPTY='+str(sum(not (e.get('displayName') or '').strip() for e in entries))+'\n'
           q='viewer/image-databases/Hubble/databases/temp-catalog18-post-oneword-audit.txt'
           open(q,'w',encoding='utf-8').write(audit)
           print(audit)
@@ -155,16 +54,6 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json viewer/image-databases/Hubble/databases/temp-catalog18-post-oneword-audit.txt
-          git rm -f \
-            .github/workflows/temp-catalog18-oneword-extract.yml \
-            .github/workflows/temp-catalog18-oneword-summary.yml \
-            .github/workflows/temp-catalog18-oneword-chunks.yml \
-            .github/workflows/temp-catalog18-upgrade-oneword.yml \
-            viewer/image-databases/Hubble/databases/temp-catalog18-oneword.json \
-            viewer/image-databases/Hubble/databases/temp-catalog18-oneword-summary.tsv \
-            viewer/image-databases/Hubble/databases/temp-catalog18-oneword-1.tsv \
-            viewer/image-databases/Hubble/databases/temp-catalog18-oneword-2.tsv \
-            viewer/image-databases/Hubble/databases/temp-catalog18-oneword-3.tsv \
-            viewer/image-databases/Hubble/databases/temp-catalog18-oneword-4.tsv
+          git rm -f --ignore-unmatch .github/workflows/temp-catalog18-oneword-extract.yml .github/workflows/temp-catalog18-oneword-summary.yml .github/workflows/temp-catalog18-oneword-chunks.yml .github/workflows/temp-catalog18-upgrade-oneword.yml viewer/image-databases/Hubble/databases/temp-catalog18-oneword.json viewer/image-databases/Hubble/databases/temp-catalog18-oneword-summary.tsv viewer/image-databases/Hubble/databases/temp-catalog18-oneword-1.tsv viewer/image-databases/Hubble/databases/temp-catalog18-oneword-2.tsv viewer/image-databases/Hubble/databases/temp-catalog18-oneword-3.tsv viewer/image-databases/Hubble/databases/temp-catalog18-oneword-4.tsv
           git commit -m 'Catalog 0018: upgrade all one-word pseudonyms'
           git push origin HEAD:beta
