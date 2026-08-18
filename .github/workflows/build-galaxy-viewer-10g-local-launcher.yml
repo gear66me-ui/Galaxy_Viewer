@@ -1,4 +1,5 @@
 name: Build and Smoke-Test Galaxy Viewer 10G
+
 on:
   push:
     branches: [beta]
@@ -6,9 +7,11 @@ on:
       - '.github/workflows/build-galaxy-viewer-10g-local-launcher.yml'
       - '.github/scripts/build_10g_flatten.py'
   workflow_dispatch:
+
 permissions:
-  contents: write
+  contents: read
   statuses: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,6 +20,7 @@ jobs:
         with:
           ref: beta
           fetch-depth: 0
+
       - name: Expose build run
         env:
           GH_TOKEN: ${{ github.token }}
@@ -24,66 +28,89 @@ jobs:
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state=pending \
             -f context='galaxy-viewer-10g-smoke' \
-            -f description="Android smoke test run ${GITHUB_RUN_ID}" \
+            -f description="10G standalone Android verification ${GITHUB_RUN_ID}" \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - uses: android-actions/setup-android@v3
+
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
       - name: Enable KVM acceleration for emulator
         run: |
           if [ -e /dev/kvm ]; then sudo chmod 666 /dev/kvm; fi
           ls -l /dev/kvm || true
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Materialize standalone 10G and APK payload
-        run: python3 .github/scripts/build_10g_flatten.py
-      - name: Verify standalone 10G release boundary
+
+      - name: Snapshot protected 10G source
         shell: bash
         run: |
           set -euo pipefail
-          test -s viewer/GV-beta-0010G.py
+          sha256sum viewer/GV-beta-0010G.py | tee 10g-source-before.sha256
+          git diff --exit-code -- viewer/GV-beta-0010G.py android/
+
+      - name: Package authoritative standalone 10G read-only
+        run: python3 .github/scripts/build_10g_flatten.py
+
+      - name: Verify package step did not mutate protected repository source
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum viewer/GV-beta-0010G.py | tee 10g-source-after.sha256
+          cmp 10g-source-before.sha256 10g-source-after.sha256
+          git diff --exit-code -- viewer/GV-beta-0010G.py android/
           grep -q "const VERSION='10G';" viewer/GV-beta-0010G.py
+          grep -q "const DISPLAY_VERSION='10G';" viewer/GV-beta-0010G.py
           grep -q 'GalaxyViewerInfo10G' viewer/GV-beta-0010G.py
           ! grep -q 'GV-beta-0010F.py' viewer/GV-beta-0010G.py
+          ! grep -q 'GV-beta-0010E.py' viewer/GV-beta-0010G.py
           ! grep -q 'BASELINE_URL=' viewer/GV-beta-0010G.py
-          echo 'STANDALONE 10G SOURCE GATE PASSED'
-      - name: Commit corrected standalone 10G source
-        shell: bash
-        run: |
-          set -euo pipefail
-          if ! git diff --quiet -- viewer/GV-beta-0010G.py; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add viewer/GV-beta-0010G.py
-            git commit -m '10G standalone: remove prior-release runtime dependency'
-            git push origin HEAD:beta
-          fi
+          echo '10G READ-ONLY RELEASE BOUNDARY PASSED'
+
       - name: Build exact 10G APK
-        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
-      - name: Static validation
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-10g-build :app:assembleDebug
+
+      - name: Static APK validation
         shell: bash
         run: |
           set -euo pipefail
-          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
-          cp "$APK" Galaxy-Viewer-10G-STANDALONE.apk
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer10g'" /tmp/badging.txt
-          grep -q "application-label:'Galaxy Viewer 10G'" /tmp/badging.txt
-          unzip -p "$APK" assets/index.html > /tmp/index.html
-          grep -q 'font-family:"Space Age",sans-serif!important' /tmp/index.html
-          grep -q 'VERSION 10G' /tmp/index.html
-          grep -q 'GalaxyViewerInfo10G' /tmp/index.html
-          ! grep -q 'GV-beta-0010F.py' /tmp/index.html
-          ! grep -q 'BASELINE_URL=' /tmp/index.html
-          ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' /tmp/index.html
-          unzip -l "$APK" | grep -q 'assets/artwork/Space-Age.otf'
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
-          sha256sum Galaxy-Viewer-10G-STANDALONE.apk | tee Galaxy-Viewer-10G-STANDALONE.apk.sha256
-      - name: Android emulator launch test
+          APK=/tmp/galaxy-viewer-10g-build/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-10G-STANDALONE-VERIFIED.apk
+          test -s "$APK"
+          cp "$APK" "$OUT"
+
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10g'" apk-badging.txt
+          grep -q "versionName='10G-standalone-apk-2'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
+          grep -q "launchable-activity: name='com.gear66me.galaxyviewer10g.MainActivity'" apk-badging.txt
+
+          unzip -p "$APK" assets/index.html > apk-index.html
+          grep -q 'font-family:"Space Age",sans-serif!important' apk-index.html
+          grep -q 'VERSION 10G' apk-index.html
+          grep -q 'GalaxyViewerInfo10G' apk-index.html
+          grep -q 'Promise.all(\[initializeViewer(),startSplash()\])' apk-index.html
+          ! grep -q 'GV-beta-0010F.py' apk-index.html
+          ! grep -q 'GV-beta-0010E.py' apk-index.html
+          ! grep -q 'BASELINE_URL=' apk-index.html
+          ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
+
+          unzip -l "$APK" | tee apk-files.txt
+          grep -q 'assets/artwork/Space-Age.otf' apk-files.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
+          unzip -t "$APK" | tee apk-zip-test.txt
+          grep -q 'No errors detected' apk-zip-test.txt
+          sha256sum "$OUT" | tee "$OUT.sha256"
+          echo 'APK STATIC VALIDATION PASSED'
+
+      - name: Android runtime and interaction gate
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -92,41 +119,73 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            adb install -r Galaxy-Viewer-10G-STANDALONE.apk
+            adb install -r Galaxy-Viewer-10G-STANDALONE-VERIFIED.apk
             adb logcat -c
             adb shell am force-stop com.gear66me.galaxyviewer10g || true
-            adb shell am start -W -n com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10e.MainActivity > smoke-start.txt
+            adb shell am start -W -n com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity > smoke-start.txt
             cat smoke-start.txt
             grep -q 'Status: ok' smoke-start.txt
-            sleep 50
-            adb shell pidof com.gear66me.galaxyviewer10g > smoke-pid.txt
-            cat smoke-pid.txt
-            test -s smoke-pid.txt
-            adb shell dumpsys activity activities > smoke-activity.txt
-            grep -q 'com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10e.MainActivity' smoke-activity.txt
-            adb shell screencap -p /sdcard/10g-smoke.png
-            adb pull /sdcard/10g-smoke.png 10g-smoke.png
+
+            sleep 65
+
+            adb shell pidof com.gear66me.galaxyviewer10g > smoke-pid-before.txt
+            cat smoke-pid-before.txt
+            test -s smoke-pid-before.txt
+            adb shell dumpsys activity activities > smoke-activity-before.txt
+            grep -q 'com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity' smoke-activity-before.txt
+
+            adb shell screencap -p /sdcard/10g-before-tap.png
+            adb pull /sdcard/10g-before-tap.png 10g-before-tap.png
+            adb shell uiautomator dump /sdcard/10g-window-before.xml || true
+            adb pull /sdcard/10g-window-before.xml 10g-window-before.xml || true
+
+            # Pixel 6 emulator: bottom-center is the approved RANDOM GALAXY control region.
+            adb shell input tap 540 2200
+            sleep 15
+
+            adb shell pidof com.gear66me.galaxyviewer10g > smoke-pid-after.txt
+            cat smoke-pid-after.txt
+            test -s smoke-pid-after.txt
+            adb shell dumpsys activity activities > smoke-activity-after.txt
+            grep -q 'com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity' smoke-activity-after.txt
+            adb shell screencap -p /sdcard/10g-after-tap.png
+            adb pull /sdcard/10g-after-tap.png 10g-after-tap.png
+
             adb logcat -d -v threadtime > 10g-logcat.txt
-            adb shell uiautomator dump /sdcard/10g-window.xml || true
-            adb pull /sdcard/10g-window.xml 10g-window.xml || true
-            grep -Eqi 'FAILED TO LOAD|readiness timeout|Viewer startup failed' 10g-window.xml 2>/dev/null && exit 21 || true
-            grep -Eqi 'FATAL EXCEPTION|Fatal signal|Process com\.gear66me\.galaxyviewer10g .* died|Render process.*gone|renderer.*crash|AwContents.*render.*gone|crashpad|OutOfMemoryError|low memory killer.*galaxyviewer10g' 10g-logcat.txt && exit 22 || true
-            echo 'ANDROID SMOKE GATE PASSED: 10G process and activity survived 50 seconds'
+            adb shell uiautomator dump /sdcard/10g-window-after.xml || true
+            adb pull /sdcard/10g-window-after.xml 10g-window-after.xml || true
+
+            grep -Eqi 'FAILED TO LOAD|STARTUP TIMEOUT|readiness timeout|Viewer startup failed|APP FAILED TO LOAD' 10g-window-before.xml 10g-window-after.xml 2>/dev/null && exit 21 || true
+            grep -Eqi 'FATAL EXCEPTION|Fatal signal|Process com\.gear66me\.galaxyviewer10g .* died|Render process.*gone|renderer.*crash|AwContents.*render.*gone|OutOfMemoryError|low memory killer.*galaxyviewer10g' 10g-logcat.txt && exit 22 || true
+            echo 'ANDROID RUNTIME GATE PASSED: 10G survived startup and interaction'
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Galaxy-Viewer-10G-STANDALONE
+          name: Galaxy-Viewer-10G-STANDALONE-VERIFIED
           path: |
-            Galaxy-Viewer-10G-STANDALONE.apk
-            Galaxy-Viewer-10G-STANDALONE.apk.sha256
-            10g-smoke.png
+            Galaxy-Viewer-10G-STANDALONE-VERIFIED.apk
+            Galaxy-Viewer-10G-STANDALONE-VERIFIED.apk.sha256
+            10g-source-before.sha256
+            10g-source-after.sha256
+            apk-badging.txt
+            apk-index.html
+            apk-files.txt
+            apk-signature.txt
+            apk-zip-test.txt
+            10g-before-tap.png
+            10g-after-tap.png
             10g-logcat.txt
-            10g-window.xml
+            10g-window-before.xml
+            10g-window-after.xml
             smoke-start.txt
-            smoke-pid.txt
-            smoke-activity.txt
+            smoke-pid-before.txt
+            smoke-pid-after.txt
+            smoke-activity-before.txt
+            smoke-activity-after.txt
           if-no-files-found: ignore
           retention-days: 30
+
       - name: Mark smoke test successful
         if: success()
         env:
@@ -135,5 +194,5 @@ jobs:
           gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state=success \
             -f context='galaxy-viewer-10g-smoke' \
-            -f description="Standalone 10G APK installed and survived Android launch test" \
+            -f description="Standalone 10G APK passed Android startup + interaction gate" \
             -f target_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
