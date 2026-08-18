@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 
 public final class MainActivity extends Activity {
-    private static final String APP_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=android-app&v=8W-app-launcher-001";
+    private static final String APP_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/generic-app.html?source=android-app";
     private static final String APP_HOST = "gear66me-ui.github.io";
     private static final String APP_PATH = "/Galaxy_Viewer/";
     private WebView webView;
