@@ -1,0 +1,94 @@
+name: TEMP 10F dual-icon startup install
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-10f-dual-icon-startup-install.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install symmetric Random Galaxy layout at module startup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/modules/gv-random-galaxy-0031.js')
+          s=p.read_text()
+          anchor="function setRandomWaitComet(button,active){if(!(button instanceof Element))return;installRandomWaitComet(button);button.classList.toggle('gvrg-random-busy',Boolean(active));}"
+          assert s.count(anchor)==1, f'expected one startup anchor, found {s.count(anchor)}'
+          startup=r'''function installRandomWaitCometAtStartup(){
+  const existing=document.getElementById('gv-random-galaxy');
+  if(existing){installRandomWaitComet(existing);return;}
+  const observer=new MutationObserver(()=>{
+    const button=document.getElementById('gv-random-galaxy');
+    if(!button)return;
+    observer.disconnect();
+    installRandomWaitComet(button);
+  });
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+}
+queueMicrotask(installRandomWaitCometAtStartup);'''
+          s=s.replace(anchor,anchor+'\n'+startup,1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add viewer/modules/gv-random-galaxy-0031.js
+          git commit -m '10F install symmetric Random Galaxy layout at startup'
+          MODULE_COMMIT=$(git rev-parse HEAD)
+          MODULE_BLOB=$(git hash-object viewer/modules/gv-random-galaxy-0031.js)
+          echo "MODULE_COMMIT=$MODULE_COMMIT" >> "$GITHUB_ENV"
+          echo "MODULE_BLOB=$MODULE_BLOB" >> "$GITHUB_ENV"
+
+      - name: Repin 10F to startup-safe 0031
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import os,re
+          p=Path('viewer/GV-beta-0010F.py')
+          s=p.read_text()
+          pattern=r"const RANDOM_GALAXY_URL='https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/[0-9a-f]{40}/viewer/modules/gv-random-galaxy-0031\.js\?v=[0-9a-f]{40}';"
+          repl=f"const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/{os.environ['MODULE_COMMIT']}/viewer/modules/gv-random-galaxy-0031.js?v={os.environ['MODULE_BLOB']}';"
+          ns,n=re.subn(pattern,repl,s,count=1)
+          assert n==1, f'expected one 10F pin, found {n}'
+          p.write_text(ns)
+          PY
+          git add viewer/GV-beta-0010F.py
+          git commit -m '10F pin startup-safe symmetric Random Galaxy module'
+          VIEWER_BLOB=$(git hash-object viewer/GV-beta-0010F.py)
+          echo "VIEWER_BLOB=$VIEWER_BLOB" >> "$GITHUB_ENV"
+
+      - name: Refresh website 10F identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import os,re
+          p=Path('mobile/beta/9I.html')
+          s=p.read_text()
+          pattern=r"const VIEWER_URL='\.\./\.\./viewer/GV-beta-0010F\.py\?v=10f-[0-9a-f]{40}';"
+          repl=f"const VIEWER_URL='../../viewer/GV-beta-0010F.py?v=10f-{os.environ['VIEWER_BLOB']}';"
+          s,n=re.subn(pattern,repl,s,count=1)
+          assert n==1, f'expected one launcher identity, found {n}'
+          assert "fetch(VIEWER_URL,{cache:'no-store'})" in s
+          p.write_text(s)
+          PY
+          git add mobile/beta/9I.html
+          git commit -m 'Refresh 10F browser identity for startup dual-icon repair'
+          git push origin HEAD:beta
