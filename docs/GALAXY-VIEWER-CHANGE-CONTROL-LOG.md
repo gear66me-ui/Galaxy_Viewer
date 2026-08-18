@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e8602641e040 — Point generic Galaxy Viewer launcher to 10G
+
+**Recorded:** 2026-08-18T11:13:30-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e8602641e0400cf20b6c794762ce9392f473dce4`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e8602641e0400cf20b6c794762ce9392f473dce4)  
+**Parent/baseline:** `5f6224ee363751227c0b4c4ade198dd0cdbaa4ec`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/5f6224ee363751227c0b4c4ade198dd0cdbaa4ec...e8602641e0400cf20b6c794762ce9392f473dce4)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Point generic Galaxy Viewer launcher to 10G
+```
+
+### Complete changed-path accounting
+
+#### `viewer/gv-current-viewer.json`
+
+- Status: **MODIFIED**
+- SHA-256 before: `4e1114e6a8c0e07fd98891605f2555e6a3766a27170d43faf52f0609490fafec`
+- SHA-256 after: `75ab6d40a2d8b5017b0424bd95e7ce40c129f26fa5b73910454a9770bb237e40`
+- Bytes: `55` → `55`
+- Lines: `4` → `4`
+- Characters: `55` → `55`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `2`
+- Deleted characters: `2`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `4 + 2 - 2 = 4` — **PASS**
+- Character balance: `55 + 2 - 2 = 55` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-add273641f96 — Restore pre-repair 10G workflow
 
 **Recorded:** 2026-08-18T01:47:26-05:00  
