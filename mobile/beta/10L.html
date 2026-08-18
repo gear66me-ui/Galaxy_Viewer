@@ -1,0 +1,166 @@
+<!doctype html>
+<!-- GALAXY VIEWER 10L DIRECT VERIFICATION LAUNCHER. Loads exactly one Viewer: GV-beta-0010L.py. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GALAXY VIEWER 10L</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
+#gv-launch-error{display:none;position:fixed;inset:0;z-index:2147483647;padding:24px;box-sizing:border-box;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.5 monospace}
+#gv-launch-cover{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#000}
+#gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}
+#gv-opening-poster{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}
+#aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
+</style>
+</head>
+<body>
+<div id="gv-launch-cover"><img id="gv-opening-poster" src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="GALAXY VIEWER"></div>
+<iframe id="gv-splash-frame" title="GALAXY VIEWER SPLASH"></iframe>
+<div id="gv-launch-error" role="alert"></div>
+
+<script>
+(async()=>{'use strict';
+
+const VIEWER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/9852017513867ee0cd6994d312f495a5525df2ad/viewer/GV-beta-0010L.py';
+const SPLASH_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
+
+const VIEWER_TIMEOUT_MS=30000;
+const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
+const ICON_MIN_HOLD_MS=3500;
+const launchStartedAt=performance.now();
+
+const launchCover=document.getElementById('gv-launch-cover');
+const splashFrame=document.getElementById('gv-splash-frame');
+const errorBox=document.getElementById('gv-launch-error');
+
+const showError=e=>{
+  errorBox.style.display='block';
+  errorBox.textContent='APP FAILED TO LOAD\n\n'+String(e?.stack||e);
+};
+
+const fetchText=async(url,label)=>{
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok)throw new Error(label+' HTTP '+r.status);
+  return r.text();
+};
+
+const extractAndRun=source=>{
+  const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
+  htmlMatches.forEach(m=>document.body.insertAdjacentHTML('beforeend',m[1]));
+  const jsMatches=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
+  jsMatches.forEach(m=>{
+    const s=document.createElement('script');
+    s.textContent=m[1];
+    document.body.appendChild(s);
+  });
+  return jsMatches.length;
+};
+
+const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(
+  resolve,
+  Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))
+));
+
+const preload=document.createElement('iframe');
+Object.assign(preload.style,{
+  position:'fixed',left:'-10000px',top:'0',width:'1px',height:'1px',
+  border:'0',opacity:'0',pointerEvents:'none'
+});
+preload.src=SPLASH_URL;
+document.body.appendChild(preload);
+
+const startSplash=async()=>{
+  await waitForIconMinimum();
+  if(preload.isConnected)preload.remove();
+
+  return new Promise((resolve,reject)=>{
+    let done=false;
+    const fail=e=>{if(done)return;done=true;reject(e)};
+
+    splashFrame.addEventListener('load',()=>{
+      try{
+        const w=splashFrame.contentWindow;
+        if(!w)throw new Error('SPLASH WINDOW UNAVAILABLE');
+
+        w.addEventListener('galaxy-splash-complete',()=>{
+          if(done)return;
+          done=true;
+          resolve();
+        },{once:true});
+
+        const deadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
+        const reveal=()=>{
+          try{
+            const d=w.document;
+            const scene=d.getElementById('scene');
+            const poster=d.getElementById('poster');
+
+            if(scene?.style.opacity==='1'||poster?.style.visibility==='visible'){
+              if(launchCover.isConnected)launchCover.remove();
+              return;
+            }
+            if(performance.now()>=deadline){
+              fail(new Error('SPLASH FIRST FRAME TIMEOUT'));
+              return;
+            }
+            requestAnimationFrame(reveal);
+          }catch(e){fail(e)}
+        };
+        requestAnimationFrame(reveal);
+      }catch(e){fail(e)}
+    },{once:true});
+
+    splashFrame.addEventListener('error',()=>fail(new Error('SPLASH FAILED TO LOAD')),{once:true});
+    splashFrame.src=SPLASH_URL;
+  });
+};
+
+const waitForViewer=()=>new Promise((resolve,reject)=>{
+  const deadline=performance.now()+VIEWER_TIMEOUT_MS;
+
+  const check=()=>{
+    const root=document.getElementById('aladin-cosmic-command-test');
+
+    if(
+      root?.querySelector('canvas') &&
+      window.aladin_cosmic_command_test &&
+      window.__gv10eRandomGalaxy &&
+      window.GV10E?.version==='10L'
+    ){
+      requestAnimationFrame(()=>requestAnimationFrame(resolve));
+      return;
+    }
+
+    if(performance.now()>=deadline){
+      reject(new Error('GALAXY VIEWER 10L STARTUP TIMEOUT'));
+      return;
+    }
+    setTimeout(check,100);
+  };
+  check();
+});
+
+const initializeViewer=async()=>{
+  const source=await fetchText(VIEWER_URL,'GV-BETA-0010L.PY');
+  if(!extractAndRun(source))throw new Error('COULD NOT EXTRACT STANDALONE 10L VIEWER');
+  await waitForViewer();
+};
+
+try{
+  await Promise.all([initializeViewer(),startSplash()]);
+  requestAnimationFrame(()=>{
+    if(splashFrame.isConnected)splashFrame.remove();
+    if(launchCover.isConnected)launchCover.remove();
+  });
+}catch(e){
+  console.error('GALAXY VIEWER 10L LAUNCHER FAILURE',e);
+  showError(e);
+}
+})();
+</script>
+</body>
+</html>
