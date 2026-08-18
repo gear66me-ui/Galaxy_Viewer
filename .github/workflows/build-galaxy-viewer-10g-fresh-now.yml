@@ -1,5 +1,5 @@
 name: Build Fresh Galaxy Viewer 10G APK
-# Trigger: 2026-08-18 corrected fresh 10G APK build
+# Trigger: 2026-08-18 preload official Aladin Lite 3.8.2 in APK shell
 
 on:
   push:
@@ -57,6 +57,21 @@ jobs:
       - name: Create brand-new Android project from 10G only
         run: python3 .github/scripts/build_10g_flatten.py
 
+      - name: Preload official Aladin Lite 3.8.2 in APK shell
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/galaxy-viewer-10g-build/app/src/main/assets/index.html')
+          s=p.read_text(encoding='utf-8')
+          needle='<title>GALAXY VIEWER 10G</title>'
+          inject=needle+'<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>'
+          assert needle in s
+          assert 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' not in s
+          s=s.replace(needle,inject,1)
+          p.write_text(s,encoding='utf-8')
+          assert 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' in p.read_text(encoding='utf-8')
+          PY
+
       - name: Verify 10G source unchanged
         run: |
           set -euo pipefail
@@ -84,6 +99,7 @@ jobs:
           grep -q "const DISPLAY_VERSION='10G';" apk-index.html
           grep -q 'gv-viewer-ready' apk-index.html
           grep -q 'gv-viewer-failed' apk-index.html
+          grep -q 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js' apk-index.html
           ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
           unzip -l "$APK" | tee apk-files.txt
           grep -q 'assets/artwork/Space-Age.otf' apk-files.txt
@@ -114,7 +130,7 @@ jobs:
           set -euo pipefail
           TAG=galaxy-viewer-10g-fresh
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-10G-FRESH.apk Galaxy-Viewer-10G-FRESH.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G — Fresh APK' --notes 'Fresh Android project generated from authoritative GV-beta-0010G.py only. No prior Android release tree is copied.'
+          gh release create "$TAG" Galaxy-Viewer-10G-FRESH.apk Galaxy-Viewer-10G-FRESH.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G — Fresh APK' --notes 'Fresh Android project generated from authoritative GV-beta-0010G.py only. APK shell preloads official Aladin Lite 3.8.2 before 10G executes.'
 
       - name: Mark fresh build successful
         if: success()
