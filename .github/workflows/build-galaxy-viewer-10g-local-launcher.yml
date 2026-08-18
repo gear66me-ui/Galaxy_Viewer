@@ -105,6 +105,9 @@ jobs:
 
           unzip -l "$APK" | tee apk-files.txt
           grep -q 'assets/artwork/Space-Age.otf' apk-files.txt
+          ! grep -Eq 'assets/viewer/GV-beta-[^ ]+\.py' apk-files.txt
+          ! grep -q 'assets/bootstrap-fallback.js' apk-files.txt
+          ! grep -q 'assets/viewer/gv-current-viewer.json' apk-files.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
           unzip -t "$APK" | tee apk-zip-test.txt
           grep -q 'No errors detected' apk-zip-test.txt
@@ -126,35 +129,23 @@ jobs:
             adb shell am start -W -n com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity > smoke-start.txt
             cat smoke-start.txt
             grep -q 'Status: ok' smoke-start.txt
-
-            # Android shows a one-time immersive-mode teaching overlay on a fresh
-            # emulator. Dismiss it so screenshots and interaction exercise the
-            # actual Galaxy Viewer rather than the operating-system overlay.
             sleep 2
             adb shell uiautomator dump /sdcard/immersive-window.xml || true
             adb pull /sdcard/immersive-window.xml immersive-window.xml || true
-            if grep -q 'resource-id="android:id/ok"' immersive-window.xml 2>/dev/null; then
-              adb shell input tap 926 627
-              sleep 2
-            fi
-
+            grep -q 'resource-id="android:id/ok"' immersive-window.xml 2>/dev/null && adb shell input tap 926 627 || true
+            sleep 2
             sleep 65
-
             adb shell pidof com.gear66me.galaxyviewer10g > smoke-pid-before.txt
             cat smoke-pid-before.txt
             test -s smoke-pid-before.txt
             adb shell dumpsys activity activities > smoke-activity-before.txt
             grep -q 'com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity' smoke-activity-before.txt
-
             adb shell screencap -p /sdcard/10g-before-tap.png
             adb pull /sdcard/10g-before-tap.png 10g-before-tap.png
             adb shell uiautomator dump /sdcard/10g-window-before.xml || true
             adb pull /sdcard/10g-window-before.xml 10g-window-before.xml || true
-
-            # Pixel 6 emulator: bottom-center is the approved RANDOM GALAXY control region.
             adb shell input tap 540 2200
             sleep 15
-
             adb shell pidof com.gear66me.galaxyviewer10g > smoke-pid-after.txt
             cat smoke-pid-after.txt
             test -s smoke-pid-after.txt
@@ -162,11 +153,9 @@ jobs:
             grep -q 'com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity' smoke-activity-after.txt
             adb shell screencap -p /sdcard/10g-after-tap.png
             adb pull /sdcard/10g-after-tap.png 10g-after-tap.png
-
             adb logcat -d -v threadtime > 10g-logcat.txt
             adb shell uiautomator dump /sdcard/10g-window-after.xml || true
             adb pull /sdcard/10g-window-after.xml 10g-window-after.xml || true
-
             grep -Eqi 'FAILED TO LOAD|STARTUP TIMEOUT|readiness timeout|Viewer startup failed|APP FAILED TO LOAD' 10g-window-before.xml 10g-window-after.xml 2>/dev/null && exit 21 || true
             grep -Eqi 'FATAL EXCEPTION|Fatal signal|Process com\.gear66me\.galaxyviewer10g .* died|Render process.*gone|renderer.*crash|AwContents.*render.*gone|OutOfMemoryError|low memory killer.*galaxyviewer10g|Uncaught (SyntaxError|TypeError|ReferenceError)|GALAXY VIEWER 10G APK FAILURE' 10g-logcat.txt && exit 22 || true
             grep -q 'resource-id="android:id/ok"' 10g-window-before.xml 2>/dev/null && exit 23 || true
