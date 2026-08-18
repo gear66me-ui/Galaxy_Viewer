@@ -1,4 +1,5 @@
 name: Build Fresh Galaxy Viewer 10G APK
+# Trigger: 2026-08-18 fresh 10G APK build
 
 on:
   push:
