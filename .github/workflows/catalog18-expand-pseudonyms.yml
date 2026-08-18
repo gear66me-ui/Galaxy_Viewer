@@ -1,0 +1,134 @@
+name: Catalog 18 expand pseudonyms
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/catalog18-expand-pseudonyms.yml']
+permissions:
+  contents: write
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Expand exactly the two-word displayName values
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          path = Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json')
+          raw = path.read_text(encoding='utf-8')
+          data = json.loads(raw)
+          entries = data['entries']
+
+          targets = [e for e in entries if len(str(e.get('displayName','')).split()) == 2]
+          assert len(targets) == 1012, f'Expected 1012 two-word pseudonyms, found {len(targets)}'
+
+          def clean_constellation(value):
+              s = re.sub(r'\s+', ' ', str(value or '').strip())
+              if not s or s.lower() in {'unknown','n/a','none','null'}:
+                  return None
+              return s
+
+          proposals = []
+          target_ids = set(id(e) for e in targets)
+          for i,e in enumerate(entries,1):
+              old = str(e.get('displayName','')).strip()
+              new = old
+              if id(e) in target_ids:
+                  const = clean_constellation(e.get('constellation'))
+                  # Primary rule: preserve the recognizable pseudonym and add sky context.
+                  # This produces 4–6 words for ordinary IAU constellation names.
+                  if const:
+                      new = f'{old} in {const}'
+                  else:
+                      # Rare fallback uses descriptive words from ESA/Hubble's official release title,
+                      # excluding catalog/provenance/noise terms and numerals.
+                      title = str(e.get('title',''))
+                      banned = {'hubble','image','galaxy','galaxies','ngc','ic','ugc','messier','eso','arp','object','view','picture'}
+                      oldset = {w.lower().strip(".,:;!?()[]{}'\"") for w in old.split()}
+                      words=[]
+                      for token in re.findall(r"[A-Za-z][A-Za-z'-]*", title):
+                          key=token.lower().strip("'-")
+                          if key in banned or key in oldset or len(key)<3:
+                              continue
+                          if key not in {w.lower() for w in words}:
+                              words.append(token)
+                          if len(old.split()) + len(words) >= 4:
+                              break
+                      new = ' '.join(old.split()+words)
+                      while len(new.split()) < 4:
+                          new += ' Deep Field'
+                          new = ' '.join(new.split()[:6])
+                  # Hard limits requested: 4–6 words, no digits/catalog IDs/provenance words.
+                  words = new.split()
+                  if len(words) > 6:
+                      new = ' '.join(words[:6])
+                  assert 4 <= len(new.split()) <= 6, (i, old, new)
+                  assert not re.search(r'\d', new), (i, old, new)
+                  assert not re.search(r'(?i)\b(?:Hubble|image)\b', new), (i, old, new)
+                  e['_proposedDisplayName'] = new
+                  proposals.append((i, e.get('designation',''), old, new, e.get('sourceUrl','')))
+
+          # Replace only displayName string values in the original text, preserving every other byte.
+          idx = 0
+          pattern = re.compile(r'("displayName"\s*:\s*)"((?:\\.|[^"\\])*)"')
+          def repl(m):
+              nonlocal_holder[0] += 1
+              j = nonlocal_holder[0]-1
+              e = entries[j]
+              old = json.loads('"'+m.group(2)+'"')
+              assert old == e.get('displayName'), (j+1, old, e.get('displayName'))
+              new = e.pop('_proposedDisplayName', old)
+              encoded = json.dumps(new, ensure_ascii=False)
+              return m.group(1) + encoded
+          nonlocal_holder=[0]
+          new_raw = pattern.sub(repl, raw)
+          assert nonlocal_holder[0] == len(entries), (nonlocal_holder[0], len(entries))
+
+          check=json.loads(new_raw)
+          changed=[]
+          for i,(a,b) in enumerate(zip(data['entries'],check['entries']),1):
+              # data entries now contain old displayName after temporary proposal key removal
+              if a['displayName'] != b['displayName']:
+                  changed.append(i)
+              # prove all fields except displayName are byte-equivalent semantically
+              aa=dict(a); bb=dict(b)
+              aa.pop('displayName',None); bb.pop('displayName',None)
+              assert aa==bb, f'Non-displayName field changed at entry {i}'
+          assert len(changed)==1012, f'Expected 1012 changed entries, got {len(changed)}'
+          assert sum(len(str(e.get('displayName','')).split())==2 for e in check['entries']) == 0
+
+          path.write_text(new_raw, encoding='utf-8')
+          report=Path('/tmp/catalog18-pseudonym-report.txt')
+          with report.open('w',encoding='utf-8') as f:
+              f.write('Catalog 18 pseudonym changes: 1012\n')
+              f.write('Rule: old two-word pseudonym -> 4–6 word pseudonym; preserve recognizable name, add constellation context; no digits/Hubble/image.\n\n')
+              for n,designation,old,new,source in proposals:
+                  f.write(f'{n}. {designation} | {old} -> {new} | {source}\n')
+          print(report.read_text(encoding='utf-8'))
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = 'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
+          git diff --numstat -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json
+      - name: Upload change report
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog18-pseudonym-report
+          path: /tmp/catalog18-pseudonym-report.txt
+          retention-days: 1
+      - name: Commit Catalog 18 only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json
+          test "$(git diff --cached --name-only)" = 'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
+          git commit -m 'Catalog 18: expand 1012 short pseudonyms'
+          git push origin HEAD:beta
