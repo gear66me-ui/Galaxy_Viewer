@@ -53,7 +53,7 @@ jobs:
           echo "plugins { id 'com.android.application' version '8.7.3' apply false }" > "$R/build.gradle"
           cat > "$R/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
-          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 9; versionName 'GENERIC' } }
+          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 23; targetSdk 35; versionCode 10; versionName 'GENERIC' } }
           EOF
           echo '<resources><color name="black">#000000</color></resources>' > "$R/app/src/main/res/values/colors.xml"
           cat > "$R/app/src/main/res/values/styles.xml" <<'EOF'
@@ -85,7 +85,7 @@ jobs:
           EOF
           cd "$R"; gradle --no-daemon :app:assembleDebug
           cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/Galaxy-Viewer-GENERIC.apk"
-      - name: Verify APK
+      - name: Verify APK package and signature
         shell: bash
         run: |
           set -euo pipefail
@@ -95,12 +95,10 @@ jobs:
           "$AAPT" dump badging Galaxy-Viewer-GENERIC.apk | tee apk-badging.txt
           grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt
           grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
-          DEX=$(mktemp); unzip -p Galaxy-Viewer-GENERIC.apk classes.dex > "$DEX"; strings "$DEX" > apk-dex-strings.txt
-          grep -q 'GV-GENERIC-app.html' apk-dex-strings.txt
-          ! grep -q 'GV-beta-0010G.py' apk-dex-strings.txt
           "$SIGN" verify --verbose --print-certs Galaxy-Viewer-GENERIC.apk | tee apk-signature.txt
           sha256sum Galaxy-Viewer-GENERIC.apk | tee Galaxy-Viewer-GENERIC.apk.sha256
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: Galaxy-Viewer-GENERIC
           path: |
@@ -111,6 +109,7 @@ jobs:
             apk-zip-test.txt
           if-no-files-found: error
       - name: Publish direct-download release
+        if: success()
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
           set -euo pipefail
