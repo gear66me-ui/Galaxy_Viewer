@@ -1,5 +1,5 @@
 name: Build Galaxy Viewer GENERIC APK
-# GENERIC build trigger 2026-08-18
+# GENERIC build trigger 2026-08-18 white-black runtime fix
 
 on:
   push:
@@ -62,16 +62,30 @@ jobs:
               applicationId 'com.gear66me.galaxyviewergeneric'
               minSdk 23
               targetSdk 35
-              versionCode 1
+              versionCode 2
               versionName 'GENERIC'
             }
           }
           EOF
-          cp viewer/artwork/icon_target_vector.svg "$ROOT/app/src/main/assets/artwork/target-icon.svg"
-          rsvg-convert -w 512 -h 512 viewer/artwork/icon_target_vector.svg -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+
+          # Derive the approved target geometry from viewer/artwork/icon_target_vector.svg,
+          # but render the APK launcher/cover strictly white on black.
+          test -s viewer/artwork/icon_target_vector.svg
+          cat > "$ROOT/app/src/main/assets/artwork/target-icon.svg" <<'EOF'
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Galaxy Viewer target icon">
+            <rect width="32" height="32" fill="#000000"/>
+            <circle cx="16" cy="16" r="9.5" fill="#000000" stroke="#FFFFFF" stroke-width="1.8"/>
+            <ellipse cx="16" cy="16" rx="11.5" ry="4.2" fill="none" stroke="#FFFFFF" stroke-width="2.2" transform="rotate(-18 16 16)"/>
+            <ellipse cx="16" cy="16" rx="5.7" ry="2.2" fill="none" stroke="#FFFFFF" stroke-width="1.6" transform="rotate(-18 16 16)"/>
+            <circle cx="16" cy="16" r="1.6" fill="#FFFFFF"/>
+            <path d="M16 2.5V7 M16 25V29.5 M2.5 16H7 M25 16H29.5" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          EOF
+          rsvg-convert -w 512 -h 512 "$ROOT/app/src/main/assets/artwork/target-icon.svg" -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
           test -s "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+
           cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
-          <resources><style name="AppTheme" parent="android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item></style></resources>
+          <resources><style name="AppTheme" parent="android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item><item name="android:colorAccent">#FFFFFF</item></style></resources>
           EOF
           cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -88,12 +102,12 @@ jobs:
           import android.app.Activity;import android.graphics.Color;import android.os.Bundle;import android.webkit.WebChromeClient;import android.webkit.WebSettings;import android.webkit.WebView;import android.webkit.WebViewClient;
           public final class MainActivity extends Activity {
             private WebView web;
-            @Override protected void onCreate(Bundle state){super.onCreate(state);web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebViewClient(new WebViewClient());web.setWebChromeClient(new WebChromeClient());setContentView(web);web.loadUrl("file:///android_asset/index.html");}
+            @Override protected void onCreate(Bundle state){super.onCreate(state);web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setAllowFileAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebViewClient(new WebViewClient());web.setWebChromeClient(new WebChromeClient());setContentView(web);web.loadUrl("file:///android_asset/index.html");}
             @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
           }
           EOF
           cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:999999}#cover img{width:min(46vw,260px);height:auto}#err{white-space:pre-wrap;padding:24px;font:14px monospace;color:#ffd85a}</style></head><body><div id="cover"><img src="artwork/target-icon.svg"></div><div id="err"></div><script>(async()=>{'use strict';const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const read=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};try{const p=JSON.parse(await read(B+'gv-current-viewer.json?t='+Date.now()));const v=String(p.viewer||'').trim();if(!/^GV-beta-[0-9A-Z._-]+\.py$/i.test(v))throw Error('INVALID VIEWER POINTER');const source=await read(B+v+'?t='+Date.now());const h=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('VIEWER EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);const s=document.createElement('script');s.textContent=j[0][1];document.body.appendChild(s);document.getElementById('cover').remove()}catch(e){document.getElementById('cover')?.remove();document.getElementById('err').textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
+          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><base href="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:999999}#cover img{width:min(46vw,260px);height:auto}#err{white-space:pre-wrap;padding:24px;font:14px monospace;color:#fff;background:#000}</style></head><body><div id="cover"><img src="file:///android_asset/artwork/target-icon.svg"></div><div id="err"></div><script>(async()=>{'use strict';const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const read=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};try{const p=JSON.parse(await read(B+'gv-current-viewer.json?t='+Date.now()));const v=String(p.viewer||'').trim();if(!/^GV-beta-[0-9A-Z._-]+\.py$/i.test(v))throw Error('INVALID VIEWER POINTER');const source=await read(B+v+'?t='+Date.now());const h=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('VIEWER EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);const s=document.createElement('script');s.textContent=j[0][1];document.body.appendChild(s);document.getElementById('cover')?.remove()}catch(e){document.getElementById('cover')?.remove();document.getElementById('err').textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
           EOF
           cd "$ROOT"
           gradle --no-daemon :app:assembleDebug
@@ -112,9 +126,13 @@ jobs:
           grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
           unzip -p Galaxy-Viewer-GENERIC.apk assets/index.html > apk-index.html
           grep -q 'gv-current-viewer.json' apk-index.html
+          grep -q '<base href="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/">' apk-index.html
           ! grep -q 'GV-beta-0010G.py' apk-index.html
+          unzip -p Galaxy-Viewer-GENERIC.apk assets/artwork/target-icon.svg > apk-target-icon.svg
+          grep -q '#000000' apk-target-icon.svg
+          grep -q '#FFFFFF' apk-target-icon.svg
+          ! grep -Eq '#45E7FF|#4F9DFF|#7575FF|#FF6B2D' apk-target-icon.svg
           unzip -l Galaxy-Viewer-GENERIC.apk | grep -q 'res/drawable/gv_target_launcher.png'
-          unzip -l Galaxy-Viewer-GENERIC.apk | grep -q 'assets/artwork/target-icon.svg'
           "$SIGN" verify --verbose --print-certs Galaxy-Viewer-GENERIC.apk | tee apk-signature.txt
           sha256sum Galaxy-Viewer-GENERIC.apk | tee Galaxy-Viewer-GENERIC.apk.sha256
 
