@@ -1,0 +1,48 @@
+name: Patch 10G Hubble catalog to 0018
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/patch-10g-catalog-0018.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Replace only stale Hubble catalog URL in 10G
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='viewer/GV-beta-0010G.py'
+          OLD='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json?v=e8009928f12dfc4138f215e2144edd16a0974fd4'
+          NEW='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/GV-beta-0010G.py')
+          s=p.read_text()
+          old='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0017.json?v=e8009928f12dfc4138f215e2144edd16a0974fd4'
+          new='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
+          assert s.count(old)==1, f'expected exactly one stale URL, found {s.count(old)}'
+          s2=s.replace(old,new)
+          assert s2.count(new)==1
+          assert 'gv-hubble-galaxies-full-0017.json' not in s2
+          p.write_text(s2)
+          PY
+          git diff --check
+          git diff -- "$FILE"
+          grep -q 'gv-hubble-galaxies-full-0018.json' "$FILE"
+          ! grep -q 'gv-hubble-galaxies-full-0017.json' "$FILE"
+      - name: Commit only 10G
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010G.py
+          test "$(git diff --cached --name-only)" = 'viewer/GV-beta-0010G.py'
+          git commit -m '10G: use Hubble catalog full-0018'
+          git push origin HEAD:beta
