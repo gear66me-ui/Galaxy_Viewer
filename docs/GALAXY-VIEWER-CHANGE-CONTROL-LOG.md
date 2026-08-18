@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-851bb3a40334 — Make GENERIC APK build self-report run metadata
+
+**Recorded:** 2026-08-18T11:17:32-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`851bb3a403344a329ffaa31dd816bfcf0e30c663`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/851bb3a403344a329ffaa31dd816bfcf0e30c663)  
+**Parent/baseline:** `af8d1281cb0a42658ca9d1d7e3daece2ddf83fa2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/af8d1281cb0a42658ca9d1d7e3daece2ddf83fa2...851bb3a403344a329ffaa31dd816bfcf0e30c663)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Make GENERIC APK build self-report run metadata
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-android-10E-generic-r2.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `d33fd1d0335342e7d4abb80adabdd627882babd515894b17254b468d4417cb7b`
+- SHA-256 after: `abe6285fe04a5928de8b3b9bede07027f495c2edc410def0126d5088c846e030`
+- Bytes: `10850` → `11665`
+- Lines: `217` → `217`
+- Characters: `10850` → `11665`
+- Inserted lines: `36`
+- Deleted lines: `36`
+- Inserted characters: `1259`
+- Deleted characters: `444`
+- Unified diff hunks: `6`
+- Inserted blocks: `3`
+- Deleted blocks: `5`
+- Changed blocks: `6`
+- Line balance: `217 + 36 - 36 = 217` — **PASS**
+- Character balance: `10850 + 1259 - 444 = 11665` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-5275336d65dd — Build permanent Galaxy Viewer GENERIC APK with target icon
 
 **Recorded:** 2026-08-18T11:14:11-05:00  
