@@ -101,6 +101,7 @@ jobs:
           ! grep -q 'GV-beta-0010E.py' apk-index.html
           ! grep -q 'BASELINE_URL=' apk-index.html
           ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
+          test "$(grep -o '</script>' apk-index.html | wc -l)" -eq 1
 
           unzip -l "$APK" | tee apk-files.txt
           grep -q 'assets/artwork/Space-Age.otf' apk-files.txt
@@ -125,6 +126,17 @@ jobs:
             adb shell am start -W -n com.gear66me.galaxyviewer10g/com.gear66me.galaxyviewer10g.MainActivity > smoke-start.txt
             cat smoke-start.txt
             grep -q 'Status: ok' smoke-start.txt
+
+            # Android shows a one-time immersive-mode teaching overlay on a fresh
+            # emulator. Dismiss it so screenshots and interaction exercise the
+            # actual Galaxy Viewer rather than the operating-system overlay.
+            sleep 2
+            adb shell uiautomator dump /sdcard/immersive-window.xml || true
+            adb pull /sdcard/immersive-window.xml immersive-window.xml || true
+            if grep -q 'resource-id="android:id/ok"' immersive-window.xml 2>/dev/null; then
+              adb shell input tap 926 627
+              sleep 2
+            fi
 
             sleep 65
 
@@ -156,8 +168,9 @@ jobs:
             adb pull /sdcard/10g-window-after.xml 10g-window-after.xml || true
 
             grep -Eqi 'FAILED TO LOAD|STARTUP TIMEOUT|readiness timeout|Viewer startup failed|APP FAILED TO LOAD' 10g-window-before.xml 10g-window-after.xml 2>/dev/null && exit 21 || true
-            grep -Eqi 'FATAL EXCEPTION|Fatal signal|Process com\.gear66me\.galaxyviewer10g .* died|Render process.*gone|renderer.*crash|AwContents.*render.*gone|OutOfMemoryError|low memory killer.*galaxyviewer10g' 10g-logcat.txt && exit 22 || true
-            echo 'ANDROID RUNTIME GATE PASSED: 10G survived startup and interaction'
+            grep -Eqi 'FATAL EXCEPTION|Fatal signal|Process com\.gear66me\.galaxyviewer10g .* died|Render process.*gone|renderer.*crash|AwContents.*render.*gone|OutOfMemoryError|low memory killer.*galaxyviewer10g|Uncaught (SyntaxError|TypeError|ReferenceError)|GALAXY VIEWER 10G APK FAILURE' 10g-logcat.txt && exit 22 || true
+            grep -q 'resource-id="android:id/ok"' 10g-window-before.xml 2>/dev/null && exit 23 || true
+            echo 'ANDROID RUNTIME GATE PASSED: 10G survived startup and interaction without system overlay'
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -173,6 +186,7 @@ jobs:
             apk-files.txt
             apk-signature.txt
             apk-zip-test.txt
+            immersive-window.xml
             10g-before-tap.png
             10g-after-tap.png
             10g-logcat.txt
