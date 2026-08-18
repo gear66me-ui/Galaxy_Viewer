@@ -1,0 +1,103 @@
+name: Build Fresh Galaxy Viewer 10G APK
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-10g-fresh-now.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Verify frozen 10G source before packaging
+        run: |
+          set -euo pipefail
+          test -s viewer/GV-beta-0010G.py
+          sha256sum viewer/GV-beta-0010G.py | tee 10g-source-before.sha256
+          grep -q "const VERSION='10G';" viewer/GV-beta-0010G.py
+          grep -q "const DISPLAY_VERSION='10G';" viewer/GV-beta-0010G.py
+          grep -q 'GalaxyViewerInfo10G' viewer/GV-beta-0010G.py
+
+      - name: Create brand-new Android project from 10G only
+        run: python3 .github/scripts/build_10g_flatten.py
+
+      - name: Verify 10G source unchanged
+        run: |
+          set -euo pipefail
+          sha256sum viewer/GV-beta-0010G.py | tee 10g-source-after.sha256
+          cmp 10g-source-before.sha256 10g-source-after.sha256
+          git diff --exit-code -- viewer/GV-beta-0010G.py
+
+      - name: Build fresh APK
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-10g-build :app:assembleDebug
+
+      - name: Validate and stage installer
+        run: |
+          set -euo pipefail
+          APK=/tmp/galaxy-viewer-10g-build/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-10G-FRESH.apk
+          test -s "$APK"
+          cp "$APK" "$OUT"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer10g'" apk-badging.txt
+          grep -q "versionName='10G-standalone-apk-3'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer 10G'" apk-badging.txt
+          unzip -p "$APK" assets/index.html > apk-index.html
+          grep -q 'VERSION 10G' apk-index.html
+          grep -q 'GalaxyViewerInfo10G' apk-index.html
+          grep -q 'gv-viewer-ready' apk-index.html
+          grep -q 'gv-viewer-failed' apk-index.html
+          ! grep -Eq 'GV-beta-[0-9A-Z-]+\.py' apk-index.html
+          unzip -l "$APK" | tee apk-files.txt
+          grep -q 'assets/artwork/Space-Age.otf' apk-files.txt
+          grep -q 'assets/artwork/icon.svg' apk-files.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
+          unzip -t "$APK" | tee apk-zip-test.txt
+          grep -q 'No errors detected' apk-zip-test.txt
+          sha256sum "$OUT" | tee "$OUT.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-10G-FRESH
+          path: |
+            Galaxy-Viewer-10G-FRESH.apk
+            Galaxy-Viewer-10G-FRESH.apk.sha256
+            apk-badging.txt
+            apk-signature.txt
+            apk-zip-test.txt
+            10g-source-before.sha256
+            10g-source-after.sha256
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish direct installer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-10g-fresh
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" Galaxy-Viewer-10G-FRESH.apk Galaxy-Viewer-10G-FRESH.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer 10G — Fresh APK' --notes 'Fresh Android project generated from authoritative GV-beta-0010G.py only. No prior Android release tree is copied.'
