@@ -1,5 +1,5 @@
 name: Build Fresh Galaxy Viewer 10G APK
-# Trigger: 2026-08-18 preload official Aladin Lite 3.8.2 in APK shell
+# Trigger: 2026-08-18 current committed 10G after Galaxy Info/JWST update
 
 on:
   push:
