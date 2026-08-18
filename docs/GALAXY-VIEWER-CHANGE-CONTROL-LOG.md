@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-e99ebf2468e8 — Fix generic web launcher with parser-executed Viewer document
+
+**Recorded:** 2026-08-18T12:43:58-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e99ebf2468e8806e4827880cd1df69d4097f369f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e99ebf2468e8806e4827880cd1df69d4097f369f)  
+**Parent/baseline:** `211356d3bf149dba65802c998e4fca0f49bd2af5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/211356d3bf149dba65802c998e4fca0f49bd2af5...e99ebf2468e8806e4827880cd1df69d4097f369f)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Fix generic web launcher with parser-executed Viewer document
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/GV-GENERIC-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `af5a1da72e1c570754fcb181cb4ffec656910f517ec5fe4d0f9f3bfa206741ed`
+- SHA-256 after: `d9269d727fcdd9634228f70c16d296a0604dd7c06929337e4c5356d6863ba492`
+- Bytes: `3175` → `4589`
+- Lines: `1` → `1`
+- Characters: `3175` → `4589`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `2097`
+- Deleted characters: `683`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `1 + 1 - 1 = 1` — **PASS**
+- Character balance: `3175 + 2097 - 683 = 4589` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-03237490586d — Use robust APK verification and always publish artifact
 
 **Recorded:** 2026-08-18T12:42:00-05:00  
