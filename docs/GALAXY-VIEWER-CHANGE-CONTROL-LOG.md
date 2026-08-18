@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-af8be1872312 — ECO 10H-L1 repair generated script terminator
+
+**Recorded:** 2026-08-18T14:31:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`af8be187231289c3b6706e5eb89ffa1cf734c485`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/af8be187231289c3b6706e5eb89ffa1cf734c485)  
+**Parent/baseline:** `4024d8b7064d5aa045f8a7eef67e4a6c6dbc332a`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/4024d8b7064d5aa045f8a7eef67e4a6c6dbc332a...af8be187231289c3b6706e5eb89ffa1cf734c485)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO 10H-L1 repair generated script terminator
+```
+
+### Complete changed-path accounting
+
+#### `mobile/beta/GV-10H-app.html`
+
+- Status: **MODIFIED**
+- SHA-256 before: `2b940eaba2e8afb693edabbcfacfbbd490e188429cfb7452a669da9772b2afd5`
+- SHA-256 after: `6a70dc1690cce27ad89dc292826f772ed9c315f8f72c71f5ff1ac6bafbd5577f`
+- Bytes: `2445` → `2446`
+- Lines: `49` → `49`
+- Characters: `2445` → `2446`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `3`
+- Deleted characters: `2`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `1`
+- Changed blocks: `1`
+- Line balance: `49 + 1 - 1 = 49` — **PASS**
+- Character balance: `2445 + 3 - 2 = 2446` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-e4b484cb6aa1 — 10H standalone surgical HD restoration and HTML launcher
 
 **Recorded:** 2026-08-18T14:22:28-05:00  
