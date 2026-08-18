@@ -1,0 +1,246 @@
+name: Apply Final 10G ECO and Build Generic APK
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/apply-10g-final-and-build-generic.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Lock baseline and apply surgical 10G ECO
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,re,difflib
+          p=Path('viewer/GV-beta-0010G.py'); f=Path('viewer/GV-beta-0010F.py')
+          before=p.read_text(encoding='utf-8'); tenf=f.read_bytes()
+          def metrics(s):
+              return {'bytes':len(s.encode()),'characters':len(s),'lines':len(s.splitlines()),'newlines':s.count('\n'),'spaces':s.count(' '),'tabs':s.count('\t'),'commas':s.count(','),'semicolons':s.count(';'),'open_braces':s.count('{'),'close_braces':s.count('}'),'open_parens':s.count('('),'close_parens':s.count(')')}
+          baseline={'blob':__import__('subprocess').check_output(['git','hash-object',str(p)],text=True).strip(),'sha256':hashlib.sha256(before.encode()).hexdigest(),'metrics':metrics(before),'tenf_sha256':hashlib.sha256(tenf).hexdigest()}
+          Path('/tmp/10g-baseline.json').write_text(json.dumps(baseline,indent=2)+'\n')
+          s=before
+          def one(old,new,label):
+              global s
+              n=s.count(old)
+              if n!=1: raise SystemExit(f'{label}: expected exactly 1 match, found {n}')
+              s=s.replace(old,new,1)
+          one("    const HD_LAYOUT=Object.freeze({bannerRatio:366/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});\n", "    const HD_LAYOUT=Object.freeze({bannerRatio:366/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});\n    const MAX_HD_IMAGE_BYTES=1_000_000;\n", '1MB constant')
+          one("            fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,sourceUrl:source.href,orientation:String(candidate.orientation||'').trim(),\n", "            fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,renditionUrls:archiveRenditionCandidates([candidate.selectedImageUrl,...(Array.isArray(candidate.jpegCandidates)?candidate.jpegCandidates:[]),candidate.githubImageUrl]),sourceUrl:source.href,orientation:String(candidate.orientation||'').trim(),\n", 'Hubble rendition list')
+          one("    function chooseJwstImageUrl(candidate){\n        const candidates=[...(Array.isArray(candidate?.jpegCandidates)?candidate.jpegCandidates:[]),candidate?.selectedImageUrl].map(value=>String(value||'').trim()).filter(Boolean);\n        return candidates.find(url=>/\\/screen\\//i.test(url))||String(candidate?.selectedImageUrl||candidates[0]||'').trim();\n    }\n", "    function archiveRenditionCandidates(values){\n        const out=[];\n        const add=value=>{const url=String(value||'').trim();if(url&&!out.includes(url))out.push(url)};\n        for(const value of values||[]){\n            add(value);\n            const url=String(value||'').trim();\n            if(/\\/large\\//i.test(url))add(url.replace(/\\/large\\//i,'/screen/'));\n            if(/\\/publicationjpg\\//i.test(url))add(url.replace(/\\/publicationjpg\\//i,'/screen/'));\n        }\n        return Object.freeze(out);\n    }\n\n    function chooseJwstImageUrl(candidate){\n        const candidates=archiveRenditionCandidates([...(Array.isArray(candidate?.jpegCandidates)?candidate.jpegCandidates:[]),candidate?.selectedImageUrl]);\n        return candidates.find(url=>/\\/screen\\//i.test(url))||String(candidate?.selectedImageUrl||candidates[0]||'').trim();\n    }\n", 'rendition helper')
+          one("            physicalSizeLy, fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,sourceUrl:source.href,orientation,\n", "            physicalSizeLy, fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,renditionUrls:archiveRenditionCandidates([...(Array.isArray(candidate.jpegCandidates)?candidate.jpegCandidates:[]),candidate.selectedImageUrl]),sourceUrl:source.href,orientation,\n", 'JWST rendition list')
+          old="""    async function prepareHdDestination(destination,signal=null){
+        const sources=[];
+        const github=String(destination.githubImageUrl||'').trim();
+        const archive=String(destination.hdUrl||'').trim();
+        if(github)sources.push({url:github,kind:'GITHUB'});
+        if(archive&&!sources.some(item=>item.url===archive))sources.push({url:archive,kind:destination.provider||'ARCHIVE'});
+        let lastError=null;
+        for(const source of sources){
+            try{
+                setHdStatus(destination,'DOWNLOADING',source.kind);
+                const response=await fetch(source.url,{cache:'force-cache',signal});
+                if(!response.ok)throw new Error('HD PRELOAD RETURNED HTTP '+response.status);
+                const blob=await response.blob();
+                if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
+                setHdStatus(destination,'DECODING',source.kind);
+                const prepared=await decodePreparedBlob(blob);
+                setHdStatus(destination,'READY',source.kind);
+                return {key:destinationKey(destination),destination,image:prepared.image,objectUrl:prepared.objectUrl,sourceUrl:source.url,sourceKind:source.kind};
+            }catch(error){
+                if(error?.name==='AbortError'){setHdStatus(destination,'SUSPENDED',source.kind);throw error}
+                lastError=error;
+            }
+        }
+        setHdStatus(destination,'RETRY-WAIT');
+        throw lastError||new Error('HD PRELOAD HAS NO USABLE SOURCE');
+    }
+"""
+          new="""    async function chooseHdRendition(destination,signal=null){
+        const urls=archiveRenditionCandidates([...(Array.isArray(destination.renditionUrls)?destination.renditionUrls:[]),destination.githubImageUrl,destination.hdUrl]);
+        if(!urls.length)return [];
+        const measured=[];
+        for(const url of urls){
+            try{
+                const response=await fetch(url,{method:'HEAD',cache:'no-store',signal});
+                const bytes=Number(response.headers.get('content-length'));
+                measured.push({url,bytes:response.ok&&Number.isFinite(bytes)&&bytes>0?bytes:null});
+            }catch(error){if(error?.name==='AbortError')throw error;measured.push({url,bytes:null})}
+        }
+        const under=measured.filter(item=>item.bytes!==null&&item.bytes<=MAX_HD_IMAGE_BYTES).sort((a,b)=>b.bytes-a.bytes);
+        const over=measured.filter(item=>item.bytes!==null&&item.bytes>MAX_HD_IMAGE_BYTES).sort((a,b)=>a.bytes-b.bytes);
+        const unknown=measured.filter(item=>item.bytes===null).sort((a,b)=>Number(/\\/screen\\//i.test(b.url))-Number(/\\/screen\\//i.test(a.url)));
+        return [...under,...(under.length?[]:over),...unknown];
+    }
+
+    async function prepareHdDestination(destination,signal=null){
+        const ranked=await chooseHdRendition(destination,signal);
+        let lastError=null;
+        for(const candidate of ranked){
+            const source={url:candidate.url,kind:destination.provider||'ARCHIVE'};
+            try{
+                setHdStatus(destination,'DOWNLOADING',source.kind);
+                const response=await fetch(source.url,{cache:'force-cache',signal});
+                if(!response.ok)throw new Error('HD PRELOAD RETURNED HTTP '+response.status);
+                const blob=await response.blob();
+                if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
+                if(blob.size>MAX_HD_IMAGE_BYTES&&ranked.some(item=>item.bytes!==null&&item.bytes<=MAX_HD_IMAGE_BYTES))throw new Error('HD RENDITION EXCEEDED 1 MB WHILE A <=1 MB RENDITION EXISTS');
+                setHdStatus(destination,'DECODING',source.kind);
+                const prepared=await decodePreparedBlob(blob);
+                setHdStatus(destination,'READY',source.kind);
+                return {key:destinationKey(destination),destination,image:prepared.image,objectUrl:prepared.objectUrl,sourceUrl:source.url,sourceKind:source.kind,imageBytes:blob.size};
+            }catch(error){
+                if(error?.name==='AbortError'){setHdStatus(destination,'SUSPENDED',source.kind);throw error}
+                lastError=error;
+            }
+        }
+        setHdStatus(destination,'RETRY-WAIT');
+        throw lastError||new Error('HD PRELOAD HAS NO USABLE SOURCE');
+    }
+"""
+          one(old,new,'HD rendition selection')
+          old_style="#gv-hd-info-more{flex:0 0 auto;margin-top:6px;padding-right:4px;color:#B7FFD0;font-size:10px;letter-spacing:.65px;text-align:right;white-space:nowrap}#gv-hd-info-link{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #78FFAB;border-radius:6px;background:rgba(0,12,8,.32);overflow:hidden;pointer-events:auto;touch-action:manipulation}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}"
+          new_style="#gv-hd-info-source{position:absolute;right:20px;bottom:20px;z-index:8;display:inline-flex;align-items:center;gap:8px;pointer-events:auto}#gv-hd-info-more-inline{color:#E8FFF0;font:400 10px/1 \"Space Age\",sans-serif;letter-spacing:.65px;text-shadow:0 0 5px rgba(87,255,147,.55);white-space:nowrap}#gv-hd-info-link{position:static;display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border:1px solid #B7FFD0;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94));overflow:hidden;pointer-events:auto;touch-action:manipulation;animation:gv-source-pulse 2.6s ease-in-out infinite}@keyframes gv-source-pulse{0%,100%{box-shadow:inset 0 0 7px rgba(167,255,203,.28),0 0 5px rgba(87,255,147,.22)}50%{box-shadow:inset 0 0 10px rgba(167,255,203,.55),0 0 15px rgba(87,255,147,.88),0 0 24px rgba(87,255,147,.42)}}#gv-hd-info-link img{display:block;max-width:40px;max-height:40px;object-fit:contain}"
+          one(old_style,new_style,'source control CSS')
+          one("    hdInfoPanel.innerHTML='<div id=\"gv-hd-info-title\">GALAXY INFO</div><div id=\"gv-hd-info-body\"></div><div id=\"gv-hd-info-more\">MORE INFO &gt;</div>';\n", "    hdInfoPanel.innerHTML='<div id=\"gv-hd-info-title\">GALAXY INFO</div><div id=\"gv-hd-info-body\"></div>';\n", 'remove bottom MORE INFO')
+          one("    hdInfoLink.id='gv-hd-info-link';\n    hdInfoLink.target='_blank';\n    hdInfoLink.rel='noopener noreferrer';\n", "    hdInfoLink.id='gv-hd-info-link';\n    hdInfoLink.target='_self';\n    hdInfoLink.rel='noopener noreferrer';\n", 'source same-view navigation')
+          one("    hdInfoLink.appendChild(hdInfoIcon);\n    randomGalaxy.hdViewport?.appendChild(hdInfoLink);\n", "    hdInfoLink.appendChild(hdInfoIcon);\n    const hdInfoSource=document.createElement('div');\n    hdInfoSource.id='gv-hd-info-source';\n    const hdInfoMoreInline=document.createElement('span');\n    hdInfoMoreInline.id='gv-hd-info-more-inline';\n    hdInfoMoreInline.textContent='MORE INFO >';\n    hdInfoSource.append(hdInfoMoreInline,hdInfoLink);\n    hdInfoSource.addEventListener('click',event=>{if(event.target!==hdInfoLink&&!hdInfoLink.contains(event.target))hdInfoLink.click()});\n    randomGalaxy.hdViewport?.appendChild(hdInfoSource);\n    randomGalaxy.creditEl?.remove();\n", 'inline source group and delete credit')
+          one("        hdInfoLink.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoLink.style.pointerEvents='auto';\n", "        hdInfoSource.style.right=`${HD_LAYOUT.iconInset}px`;hdInfoSource.style.bottom=`${HD_LAYOUT.iconInset}px`;hdInfoSource.style.pointerEvents='auto';hdInfoLink.style.pointerEvents='auto';\n", 'position source group')
+          p.write_text(s,encoding='utf-8')
+          after=p.read_text(encoding='utf-8')
+          compile(after,str(p),'exec')
+          if "const VERSION='10G';" not in after or "const DISPLAY_VERSION='10G';" not in after: raise SystemExit('10G identity changed')
+          if 'MORE INFO &gt;' in after: raise SystemExit('old bottom MORE INFO remains')
+          if 'MAX_HD_IMAGE_BYTES=1_000_000' not in after: raise SystemExit('1MB policy missing')
+          if "randomGalaxy.creditEl?.remove();" not in after: raise SystemExit('credit removal missing')
+          if hashlib.sha256(f.read_bytes()).hexdigest()!=baseline['tenf_sha256']: raise SystemExit('10F CHANGED')
+          afterm={'sha256':hashlib.sha256(after.encode()).hexdigest(),'metrics':metrics(after)}
+          Path('/tmp/10g-after.json').write_text(json.dumps(afterm,indent=2)+'\n')
+          diff=''.join(difflib.unified_diff(before.splitlines(True),after.splitlines(True),fromfile='10G-before',tofile='10G-after'))
+          Path('/tmp/10g.diff').write_text(diff)
+          ins=sum(1 for x in diff.splitlines() if x.startswith('+') and not x.startswith('+++')); dele=sum(1 for x in diff.splitlines() if x.startswith('-') and not x.startswith('---'))
+          audit={'baseline':baseline,'after':afterm,'inserted_diff_lines':ins,'deleted_diff_lines':dele}
+          Path('10G-ECO-AUDIT.json').write_text(json.dumps(audit,indent=2)+'\n')
+          print(json.dumps(audit,indent=2))
+          PY
+      - name: Point generic launcher to current 10G
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          Path('viewer/gv-current-viewer.json').write_text(json.dumps({'version':'10G','viewer':'GV-beta-0010G.py'},indent=2)+'\n',encoding='utf-8')
+          PY
+      - name: Commit only 10G and current-viewer pointer
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010G.py viewer/gv-current-viewer.json
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git diff --cached --name-only | grep -qx 'viewer/GV-beta-0010G.py'
+          git diff --cached --name-only | grep -qx 'viewer/gv-current-viewer.json'
+          git commit -m '10G surgical HD source control and 1MB image policy'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
+          echo "TEN_G_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "TEN_G_BLOB=$(git hash-object viewer/GV-beta-0010G.py)" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build permanent generic Android launcher from scratch
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=/tmp/gv-generic
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric" "$ROOT/app/src/main/assets/artwork" "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/mipmap-hdpi" "$ROOT/app/src/main/res/mipmap-mdpi" "$ROOT/app/src/main/res/mipmap-xhdpi" "$ROOT/app/src/main/res/mipmap-xxhdpi" "$ROOT/app/src/main/res/mipmap-xxxhdpi"
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewerGeneric'
+          include ':app'
+          EOF
+          echo "plugins { id 'com.android.application' version '8.7.3' apply false }" > "$ROOT/build.gradle"
+          printf '%s\n' 'org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8' 'android.useAndroidX=false' > "$ROOT/gradle.properties"
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android { namespace 'com.gear66me.galaxyviewergeneric'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewergeneric'; minSdk 29; targetSdk 35; versionCode 1; versionName 'generic-1' } }
+          EOF
+          cp viewer/artwork/icon.svg "$ROOT/app/src/main/assets/artwork/icon.svg"
+          cat > "$ROOT/app/src/main/res/drawable/ic_launcher_foreground.xml" <<'EOF'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#000000" android:pathData="M0,0h108v108h-108z"/><path android:fillColor="#78FFAB" android:pathData="M54,18a36,36 0,1 0,0 72a36,36 0,1 0,0 -72M54,27a27,27 0,1 1,0 54a27,27 0,1 1,0 -54"/><path android:fillColor="#FFFFFF" android:pathData="M51,34h6v40h-6zM34,51h40v6h-40z"/></vector>
+          EOF
+          cat > "$ROOT/app/src/main/res/drawable/ic_launcher_background.xml" <<'EOF'
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
+          EOF
+          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/ic_launcher_background"/><foreground android:drawable="@drawable/ic_launcher_foreground"/></adaptive-icon>
+          EOF
+          cp "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:allowBackup="false" android:label="Galaxy Viewer" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:usesCleartextTraffic="false" android:theme="@android:style/Theme.Material.NoActionBar"><activity android:name=".MainActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true" android:screenOrientation="portrait"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>
+          EOF
+          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergeneric/MainActivity.java" <<'EOF'
+          package com.gear66me.galaxyviewergeneric;
+          import android.app.*;import android.graphics.Color;import android.net.Uri;import android.os.*;import android.view.*;import android.webkit.*;import android.widget.*;
+          public final class MainActivity extends Activity{
+            WebView web; Button backToViewer; String viewerHost="raw.githubusercontent.com";
+            public void onCreate(Bundle b){super.onCreate(b);getWindow().getDecorView().setSystemUiVisibility(5894);FrameLayout frame=new FrameLayout(this);web=new WebView(this);web.setBackgroundColor(Color.BLACK);WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);web.setWebChromeClient(new WebChromeClient());backToViewer=new Button(this);backToViewer.setText("BACK TO GALAXY VIEWER");backToViewer.setTextColor(Color.WHITE);backToViewer.setBackgroundColor(Color.rgb(18,105,65));backToViewer.setVisibility(View.GONE);backToViewer.setOnClickListener(v->returnToViewer());frame.addView(web,new FrameLayout.LayoutParams(-1,-1));FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-1,56);bp.gravity=Gravity.BOTTOM;bp.setMargins(12,0,12,12);frame.addView(backToViewer,bp);setContentView(frame);web.setWebViewClient(new WebViewClient(){public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){Uri u=r.getUrl();String host=u==null?"":String.valueOf(u.getHost());boolean archive=host.endsWith("esahubble.org")||host.endsWith("esawebb.org");backToViewer.setVisibility(archive?View.VISIBLE:View.GONE);return false;}public void onPageFinished(WebView v,String url){Uri u=Uri.parse(url);String host=String.valueOf(u.getHost());boolean archive=host.endsWith("esahubble.org")||host.endsWith("esawebb.org");backToViewer.setVisibility(archive?View.VISIBLE:View.GONE);}});web.loadUrl("file:///android_asset/index.html");}
+            void returnToViewer(){while(web.canGoBack()){web.goBack();String u=web.getUrl();if(u!=null&&(u.startsWith("file:///android_asset/index.html")||u.contains("raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer")))break;}backToViewer.setVisibility(View.GONE);}
+            @Override public void onBackPressed(){if(backToViewer.getVisibility()==View.VISIBLE){returnToViewer();return;}if(web.canGoBack())web.goBack();else super.onBackPressed();}
+          }
+          EOF
+          cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
+          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover,#err{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000;z-index:999999}#cover img{width:min(48vw,260px);max-height:48vh}#err{display:none;padding:28px;font:16px sans-serif;color:#FFD166}button{margin-top:20px;padding:12px 20px}</style></head><body><div id="cover"><img src="artwork/icon.svg"><div>GALAXY VIEWER</div></div><div id="err"><div id="msg"></div><button onclick="location.reload()">RETRY</button></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const err=document.getElementById('err'),msg=document.getElementById('msg');const text=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};const extract=s=>{const h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('Viewer extraction failed');return[h[0][1],j[0][1]]};try{const manifest=JSON.parse(await text(BASE+'gv-current-viewer.json?t='+Date.now()));if(!/^GV-beta-[0-9A-Z-]+\.py$/.test(manifest.viewer))throw Error('Invalid viewer pointer');const source=await text(BASE+manifest.viewer+'?t='+Date.now());const [h,j]=extract(source);document.body.insertAdjacentHTML('beforeend',h);const z=document.createElement('script');z.textContent=j;document.body.appendChild(z);document.getElementById('cover').remove()}catch(e){document.getElementById('cover').remove();err.style.display='flex';msg.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e.message||e)}})();</script></body></html>
+          EOF
+          gradle --no-daemon -p "$ROOT" :app:assembleDebug
+          APK="$ROOT/app/build/outputs/apk/debug/app-debug.apk"
+          cp "$APK" Galaxy-Viewer-GENERIC.apk
+      - name: Verify generic APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=Galaxy-Viewer-GENERIC.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewergeneric'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-badging.txt
+          unzip -p "$APK" assets/index.html > /tmp/index.html
+          grep -q 'gv-current-viewer.json' /tmp/index.html
+          ! grep -q 'GV-beta-0010G.py' /tmp/index.html
+          grep -q 'RETRY' /tmp/index.html
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-signature.txt
+          unzip -t "$APK" | tee apk-zip-test.txt
+          grep -q 'No errors detected' apk-zip-test.txt
+          sha256sum "$APK" | tee Galaxy-Viewer-GENERIC.apk.sha256
+          git show "$TEN_G_COMMIT:viewer/GV-beta-0010G.py" | grep -q 'MAX_HD_IMAGE_BYTES=1_000_000'
+          git show "$TEN_G_COMMIT:viewer/GV-beta-0010G.py" | grep -q 'MORE INFO >'
+          git show "$TEN_G_COMMIT:viewer/GV-beta-0010G.py" | grep -q 'creditEl?.remove'
+          test "$(git hash-object viewer/GV-beta-0010F.py)" = "$(git rev-parse HEAD^:viewer/GV-beta-0010F.py)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-GENERIC
+          path: |
+            Galaxy-Viewer-GENERIC.apk
+            Galaxy-Viewer-GENERIC.apk.sha256
+            apk-badging.txt
+            apk-signature.txt
+            apk-zip-test.txt
+            10G-ECO-AUDIT.json
+          if-no-files-found: error
+          retention-days: 30
