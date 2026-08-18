@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-cd01a9603885 — Temporary apply conservative Catalog 0018 pseudonyms
+
+**Recorded:** 2026-08-18T14:09:59-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`cd01a9603885ca1ddda2cbcce6752b4f021243da`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/cd01a9603885ca1ddda2cbcce6752b4f021243da)  
+**Parent/baseline:** `0c0bacd9e9f79206eba73c5aef3c2ee1af04f919`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0c0bacd9e9f79206eba73c5aef3c2ee1af04f919...cd01a9603885ca1ddda2cbcce6752b4f021243da)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Temporary apply conservative Catalog 0018 pseudonyms
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-apply-catalog-0018-pseudonyms-v3.yml`
+
+- Status: **ADDED**
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `9c5e191bdfe5893609ef19eeb3e4bb97155990ee46c9fc6ff0ae1d4970558380`
+- Bytes: `0` → `5301`
+- Lines: `0` → `103`
+- Characters: `0` → `5301`
+- Inserted lines: `103`
+- Deleted lines: `0`
+- Inserted characters: `5301`
+- Deleted characters: `0`
+- Unified diff hunks: `1`
+- Inserted blocks: `1`
+- Deleted blocks: `0`
+- Changed blocks: `1`
+- Line balance: `0 + 103 - 0 = 103` — **PASS**
+- Character balance: `0 + 5301 - 0 = 5301` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-035c9d056b37 — Temporary complete Catalog 0018 pseudonym pass
 
 **Recorded:** 2026-08-18T14:02:58-05:00  
