@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-24c46f728e4b — Retrigger verified Catalog 0018 pseudonym apply
+
+**Recorded:** 2026-08-18T14:11:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`24c46f728e4b55fb4b29521f600ca8d86911004b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/24c46f728e4b55fb4b29521f600ca8d86911004b)  
+**Parent/baseline:** `e5d6bfb6f3307674e5a2a5f83e0212034af218c4`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e5d6bfb6f3307674e5a2a5f83e0212034af218c4...24c46f728e4b55fb4b29521f600ca8d86911004b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+Retrigger verified Catalog 0018 pseudonym apply
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/temp-apply-catalog-0018-pseudonyms-v3.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `9c5e191bdfe5893609ef19eeb3e4bb97155990ee46c9fc6ff0ae1d4970558380`
+- SHA-256 after: `e90c54518ad49ff1dfad5d58bd5ef3953b153c9faf68363ea56e78018e7c64af`
+- Bytes: `5301` → `4754`
+- Lines: `103` → `97`
+- Characters: `5301` → `4754`
+- Inserted lines: `1`
+- Deleted lines: `7`
+- Inserted characters: `34`
+- Deleted characters: `581`
+- Unified diff hunks: `6`
+- Inserted blocks: `1`
+- Deleted blocks: `5`
+- Changed blocks: `6`
+- Line balance: `103 + 1 - 7 = 97` — **PASS**
+- Character balance: `5301 + 34 - 581 = 4754` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-cd01a9603885 — Temporary apply conservative Catalog 0018 pseudonyms
 
 **Recorded:** 2026-08-18T14:09:59-05:00  
