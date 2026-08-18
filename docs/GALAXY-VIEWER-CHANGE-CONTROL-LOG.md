@@ -305,6 +305,57 @@ Every pre-existing repository path and all repository settings.
 
 ---
 
+## AUTO-7671141bd936 — ECO: sanitize 10G standalone and restore local Aladin mirror
+
+**Recorded:** 2026-08-17T22:42:15-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7671141bd93633571da975653f89c20305a8474b`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7671141bd93633571da975653f89c20305a8474b)  
+**Parent/baseline:** `18fdbed51a960d1c8a963ef965a2ac454e97c057`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/18fdbed51a960d1c8a963ef965a2ac454e97c057...7671141bd93633571da975653f89c20305a8474b)  
+**Author:** German Arciniegas  
+**Changed-path count:** `1`  
+**Forensic reconciliation:** **PASS**
+
+### Commit message
+
+```text
+ECO: sanitize 10G standalone and restore local Aladin mirror
+```
+
+### Complete changed-path accounting
+
+#### `.github/workflows/restore-10g-standalone.yml`
+
+- Status: **MODIFIED**
+- SHA-256 before: `48eeec026b7138f1f25609f4cf808b81cf4edb24357249bc63c54ef7b589eb0a`
+- SHA-256 after: `f174aae235318c527030554f9a05a9ac08c6dd2e79594c6c975c47c1a511253d`
+- Bytes: `2603` → `3740`
+- Lines: `68` → `82`
+- Characters: `2601` → `3738`
+- Inserted lines: `15`
+- Deleted lines: `1`
+- Inserted characters: `1151`
+- Deleted characters: `14`
+- Unified diff hunks: `5`
+- Inserted blocks: `5`
+- Deleted blocks: `1`
+- Changed blocks: `5`
+- Line balance: `68 + 15 - 1 = 82` — **PASS**
+- Character balance: `2601 + 1151 - 14 = 3738` — **PASS**
+
+### Recorded instruction evidence
+
+No supported change-order marker was found in the changed text files.
+The commit message and exact diff remain authoritative; intent has not been invented.
+
+### Audit rule
+
+Every changed path must appear above. Text-file line and character arithmetic must reconcile exactly.
+A reconciliation failure fails this workflow before the automated log commit is created.
+
+---
+
 ## AUTO-7d555950ceb8 — One-shot: restore 10G as single standalone Viewer
 
 **Recorded:** 2026-08-17T22:38:23-05:00  
