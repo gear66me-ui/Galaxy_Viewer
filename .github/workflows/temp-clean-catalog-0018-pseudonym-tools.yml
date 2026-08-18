@@ -1,0 +1,45 @@
+name: Temporary cleanup Catalog 0018 pseudonym tools
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-clean-catalog-0018-pseudonym-tools.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Remove temporary pseudonym tooling and reports
+        shell: bash
+        run: |
+          git fetch origin beta
+          git reset --hard origin/beta
+          rm -f \
+            .github/workflows/temp-catalog-0018-audit-remaining.yml \
+            .github/workflows/temp-catalog-0018-complete-pseudonyms.yml \
+            .github/workflows/temp-revert-catalog-0018-bulk-pass.yml \
+            .github/workflows/temp-catalog-0018-candidate-pass-v2.yml \
+            .github/workflows/temp-catalog-0018-candidate-pass-v3.yml \
+            .github/workflows/temp-apply-catalog-0018-pseudonyms-v3.yml \
+            .github/workflows/temp-diagnose-catalog-0018-apply.yml \
+            .github/workflows/temp-apply-catalog-0018-final-829.yml \
+            .github/workflows/temp-clean-catalog-0018-pseudonym-tools.yml \
+            viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-audit-remaining.json \
+            viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-candidates-v2.tsv \
+            viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-candidates-v3.tsv \
+            viewer/image-databases/Hubble/databases/catalog-0018-apply-diagnostic.txt \
+            viewer/image-databases/Hubble/databases/catalog-0018-pseudonym-final-audit.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Clean temporary Catalog 0018 pseudonym tooling'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
