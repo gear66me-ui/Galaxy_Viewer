@@ -1,0 +1,58 @@
+name: Retry Catalog 0018 pseudonym update safely
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-update-catalog-0018-pseudonyms-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Patch Catalog 0018 displayName fields 1-100
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json')
+          names = [
+            'Fading Supernova Galaxy','Antennae Galaxies','Perseus A','Ultra Deep Field','Stellar Forge','Sombrero Galaxy','Spirals and Supernovae','Whirlpool Galaxy','Fornax A','Mice Galaxies',
+            'Tadpole Galaxy','Active Spiral Galaxy','Flocculent Spiral',"Stephan's Quintet",'Phantom Galaxy','Edge-On Lenticular Galaxy','Cigar Galaxy','Pinwheel Galaxy','Spiral Snapshot','Black Eye Galaxy',
+            'Extended Spiral Galaxy','Twisted Galaxy','Large Magellanic Cloud','Squid Galaxy','Centaurus A','Gravitational Lens Cluster','Milky Way Twin','Starburst Ring Galaxy','Cosmic Fireworks','Bucking the Trend',
+            'Grand Design Spiral','Coma Cluster','Peculiar Merger Galaxy','Green Cosmic Arc','Distorted Starburst Galaxy','Andromeda Galaxy',"Bode's Galaxy",'Gravitational Lens Cluster','Waterfall of Stars','Open Arms',
+            'Spiral in Profile','Irregular Starburst Galaxy','El Gordo','Cosmic Heavyweight','Two-Quadrillion-Sun Cluster','Edge-On Lenticular','Stripped Spiral Galaxy','Luminous in Lepus','Cluster in the Cloud','Cosmic Leviathan',
+            'Cosmic Cinnamon Bun','Birds of a Feather','Galaxy in Bloom','Bedin I','Between Local and Laniakea','Monster in the Deep','Cosmic Lens Flare','Galactic Close-Up','Beauty from Chaos','Smudged Fingerprint Galaxy',
+            "Rubin's Galaxy",'Sunburst Arc','Beautiful Whorl','Galactic Treasure Chest','Cosmic Nursery','Red Relic Galaxy','Cosmic Snake Galaxy','Hockey Stick Galaxy','Unnamed Dwarf Galaxy','Close Galactic Pair',
+            'Woolly Galaxy','Mysterious Old Spiral',"Mayall's Object",'Gone but Not Forgotten','Ancient Spiral','Up and Over','Frontier Fields Cluster','Ultra-Bright Galaxy Gallery','Spiral in Serpens','Collisional Ring Galaxy',
+            'Dust-Stripped Spiral','One-Sided Spiral','Circumstellar Disc','Long-Distance Relationship','Starburst Dwarf Galaxy','Baby Stars Blowing Bubbles','Disruptive Neighbour','Unusual Spiral','Spiralling Star Factory','Supernova Host Galaxy',
+            'Well-Studied Spiral','Starbursting Centre','Ambiguous Spiral','Third Look','Noteworthy Nearby Spiral','Low-Brightness Spiral','Supernova-Rich Spiral','Intermediate-Mass Black Hole','Swirling Spiral in Hydra','Massive Galaxy Cluster'
+          ]
+          data = json.loads(p.read_text(encoding='utf-8'))
+          entries = data['entries']
+          assert len(names) == 100 and len(entries) >= 100
+          changed = 0
+          for i, new in enumerate(names):
+              if entries[i].get('displayName') != new:
+                  entries[i]['displayName'] = new
+                  changed += 1
+          p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(f'Catalog records validated: 100; displayName values changed: {changed}')
+          PY
+          test "$(git diff --name-only | wc -l)" -eq 1
+          test "$(git diff --name-only)" = "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json"
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json
+          git commit -m 'Catalog 0018: update first 100 pseudonyms'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
