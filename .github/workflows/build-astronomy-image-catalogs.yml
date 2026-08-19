@@ -71,7 +71,7 @@ jobs:
           retry = Retry(total=4, backoff_factor=.8, status_forcelist=[429,500,502,503,504], allowed_methods=['GET','HEAD'])
           s.mount('https://', HTTPAdapter(max_retries=retry))
           s.headers['User-Agent']='GalaxyViewerCatalogBuilder/1.0 (+https://github.com/gear66me-ui/Galaxy_Viewer)'
-          resolver, image_cache = {}, {}
+          resolver, image_cache, source_cache = {}, {}, {}
 
           def get(url, **kw):
             time.sleep(.08)
@@ -79,6 +79,7 @@ jobs:
           def bs(url):
             r=get(url); return BeautifulSoup(r.text,'html.parser'),r.url
           def text(x): return re.sub(r'\s+',' ',x or '').strip()
+          def bump(ex,key): ex[key]=ex.get(key,0)+1
           def image_ok(url):
             if not url:return (False,None)
             if url in image_cache:return image_cache[url]
@@ -89,6 +90,14 @@ jobs:
               size=r.headers.get('content-length'); ans=(ok,int(size) if size and size.isdigit() else None)
             except Exception: ans=(False,None)
             image_cache[url]=ans; return ans
+          def source_ok(url):
+            if not url:return False
+            if url in source_cache:return source_cache[url]
+            try:
+              r=s.get(url,timeout=20,stream=True,headers={'Range':'bytes=0-1023'},allow_redirects=True);r.raise_for_status()
+              ok=200 <= r.status_code < 400
+            except Exception: ok=False
+            source_cache[url]=ok; return ok
           def best_image(doc,base):
             cand=[]
             for a in doc.find_all('a',href=True):
@@ -151,56 +160,65 @@ jobs:
               seen.update(k);out.append(r)
             out.sort(key=lambda r:((r.get('designation') or r['displayName']).lower(),r['archiveId']))
             return out,dups
+          def report(urls,rows,ex,du,failed_pages,failed_records):
+            return {'archivePagesDiscovered':len(urls),'candidateImageCount':len(urls),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'failedPageCount':len(failed_pages),'failedPages':failed_pages[:100],'failedRecordCount':failed_records,'exclusionCounts':ex}
           def chandra():
-            cats=['galaxies','quasars','galaxyclusters','background'];urls=set()
+            cats=['galaxies','quasars','galaxyclusters','background'];urls=set();ex={};failed_pages=[]
             for c in cats:
-              doc,base=bs(f'https://chandra.harvard.edu/photo/category/{c}.html')
+              page=f'https://chandra.harvard.edu/photo/category/{c}.html'
+              try:doc,base=bs(page)
+              except Exception as e:
+                bump(ex,'category_fetch_error');failed_pages.append({'url':page,'error':type(e).__name__});continue
               for a in doc.find_all('a',href=True):
                 u=urljoin(base,a['href'])
                 if re.search(r'chandra\.harvard\.edu/photo/(?:19|20)\d{2}/[^/]+/?(?:index\.html)?$',u,re.I):urls.add(u)
-            rows=[];ex={}
+            rows=[];failed_records=0
             for u in sorted(urls):
               try:
                 doc,final=bs(u); title=text((doc.find('h1') or doc.find('h2') or doc.find('title')).get_text(' ',strip=True));blob=text(doc.get_text(' ',strip=True))
                 if not any(k in blob.lower() for k in ('galaxy','galaxies','quasar','cluster','deep field')):continue
                 img,size=best_image(doc,final)
-                if not img:ex['missing_publication_jpeg']=ex.get('missing_publication_jpeg',0)+1;continue
+                if not img:bump(ex,'missing_publication_jpeg');failed_records+=1;continue
                 m=re.search(r'/photo/((?:19|20)\d{2})/([^/]+)',final);aid='-'.join(m.groups()) if m else hashlib.sha1(final.encode()).hexdigest()[:16]
                 r,why=rec(aid,title,blob[:12000],final,img,size,'NASA/CXC; see source page for complete credit','Chandra Image Use Policy','https://chandra.harvard.edu/photo/image_use.html',method='Chandra X-ray Center source page')
                 if r:rows.append(r)
-                else:ex[why]=ex.get(why,0)+1
-              except Exception:ex['fetch_or_parse_error']=ex.get('fetch_or_parse_error',0)+1
+                else:bump(ex,why);failed_records+=1
+              except Exception as e:
+                bump(ex,'fetch_or_parse_error');failed_records+=1;failed_pages.append({'url':u,'error':type(e).__name__})
               if cap and len(rows)>=cap:break
-            rows,du=dedupe(rows);return rows,{'archivePagesDiscovered':len(urls),'candidateImageCount':len(urls),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'exclusionCounts':ex}
+            rows,du=dedupe(rows);return rows,report(urls,rows,ex,du,failed_pages,failed_records)
           def euclid():
-            urls=set()
+            urls=set();ex={};failed_pages=[]
             for off in range(0,301,50):
               u='https://www.esa.int/ESA_Multimedia/Missions/Euclid/%28sortBy%29/published/%28result_type%29/images' if off==0 else f'https://www.esa.int/ESA_Multimedia/Missions/Euclid/%28offset%29/{off}/%28sortBy%29/published/%28result_type%29/images'
               try:doc,base=bs(u)
-              except Exception:continue
+              except Exception as e:
+                bump(ex,'archive_page_fetch_error');failed_pages.append({'url':u,'error':type(e).__name__});continue
               for a in doc.find_all('a',href=True):
                 x=urljoin(base,a['href'])
                 if '/ESA_Multimedia/Images/' in x:urls.add(x.split('#')[0])
-            rows=[];ex={};good=('galaxy','galaxies','galactic','cluster','deep field','gravitational lens','cosmic atlas');bad=('artist impression',"artist's impression",'spacecraft','infographic','logo','diagram','illustration')
+            rows=[];failed_records=0;good=('galaxy','galaxies','galactic','cluster','deep field','gravitational lens','cosmic atlas');bad=('artist impression',"artist's impression",'spacecraft','infographic','logo','diagram','illustration')
             for u in sorted(urls):
               try:
                 doc,final=bs(u);title=text((doc.find('h1') or doc.find('title')).get_text(' ',strip=True));blob=text(doc.get_text(' ',strip=True));lo=(title+' '+blob[:10000]).lower()
                 if 'euclid' not in lo or not any(k in lo for k in good) or any(k in lo for k in bad):continue
                 img,size=best_image(doc,final)
-                if not img:ex['missing_publication_jpeg']=ex.get('missing_publication_jpeg',0)+1;continue
+                if not img:bump(ex,'missing_publication_jpeg');failed_records+=1;continue
                 m=re.search(r'\b(\d{6})\s+ID\b',blob);aid=m.group(1) if m else hashlib.sha1(final.encode()).hexdigest()[:16]
                 r,why=rec(aid,title,blob[:14000],final,img,size,'ESA/Euclid/Euclid Consortium/NASA; see source page for complete processing credit','CC BY-SA 3.0 IGO or ESA Standard Licence','https://www.esa.int/ESA_Multimedia/Copyright_Notice_Images',xy=explicit_coords(blob),method='ESA Euclid multimedia source page')
                 if r:rows.append(r)
-                else:ex[why]=ex.get(why,0)+1
-              except Exception:ex['fetch_or_parse_error']=ex.get('fetch_or_parse_error',0)+1
+                else:bump(ex,why);failed_records+=1
+              except Exception as e:
+                bump(ex,'fetch_or_parse_error');failed_records+=1;failed_pages.append({'url':u,'error':type(e).__name__})
               if cap and len(rows)>=cap:break
-            rows,du=dedupe(rows);return rows,{'archivePagesDiscovered':len(urls),'candidateImageCount':len(urls),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'exclusionCounts':ex}
+            rows,du=dedupe(rows);return rows,report(urls,rows,ex,du,failed_pages,failed_records)
           def spitzer():
-            items={};queries=['Spitzer galaxy','Spitzer galaxies','Spitzer galaxy cluster','Spitzer interacting galaxy','Spitzer deep field','Spitzer spiral galaxy']
+            items={};ex={};failed_pages=[];queries=['Spitzer galaxy','Spitzer galaxies','Spitzer galaxy cluster','Spitzer interacting galaxy','Spitzer deep field','Spitzer spiral galaxy']
             for q in queries:
               for page in range(1,101):
                 try:data=get('https://images-api.nasa.gov/search',params={'q':q,'media_type':'image','page':page},timeout=35).json()['collection']
-                except Exception:break
+                except Exception as e:
+                  bump(ex,'archive_page_fetch_error');failed_pages.append({'query':q,'page':page,'error':type(e).__name__});break
                 batch=data.get('items') or []
                 if not batch:break
                 for item in batch:
@@ -208,19 +226,22 @@ jobs:
                   if nid:items[nid]=item
                 if not any(x.get('rel')=='next' for x in data.get('links') or []):break
                 if len(items)>=3000:break
-            rows=[];ex={}
+            rows=[];failed_records=0
             for nid,item in sorted(items.items()):
-              meta=(item.get('data') or [{}])[0];title=text(meta.get('title'));desc=text(meta.get('description') or meta.get('description_508'));lo=(title+' '+desc).lower()
-              if 'spitzer' not in lo or not any(k in lo for k in ('galaxy','galaxies','galactic','cluster','deep field')):continue
-              if any(k in lo for k in ('artist concept',"artist's concept",'illustration','diagram','spacecraft')):continue
-              img=next((x.get('href') for x in item.get('links') or [] if x.get('render')=='image' and x.get('href')),None);ok,size=image_ok(img)
-              if not ok:ex['missing_publication_jpeg']=ex.get('missing_publication_jpeg',0)+1;continue
-              center=text(meta.get('center'));credit='NASA/JPL-Caltech' if 'jpl' in lo or center.upper()=='JPL' else 'NASA'+('/'+center if center else '')
-              r,why=rec(nid,title,desc,f'https://images.nasa.gov/details/{quote(nid,safe="")}',img,size,credit,'NASA Media Usage Guidelines','https://www.nasa.gov/nasa-brand-center/images-and-media/',method='NASA Image and Video Library / JPL metadata')
-              if r:r['releaseDate']=(meta.get('date_created') or '')[:10] or None;rows.append(r)
-              else:ex[why]=ex.get(why,0)+1
+              try:
+                meta=(item.get('data') or [{}])[0];title=text(meta.get('title'));desc=text(meta.get('description') or meta.get('description_508'));lo=(title+' '+desc).lower()
+                if 'spitzer' not in lo or not any(k in lo for k in ('galaxy','galaxies','galactic','cluster','deep field')):continue
+                if any(k in lo for k in ('artist concept',"artist's concept",'illustration','diagram','spacecraft')):continue
+                img=next((x.get('href') for x in item.get('links') or [] if x.get('render')=='image' and x.get('href')),None);ok,size=image_ok(img)
+                if not ok:bump(ex,'missing_publication_jpeg');failed_records+=1;continue
+                center=text(meta.get('center'));credit='NASA/JPL-Caltech' if 'jpl' in lo or center.upper()=='JPL' else 'NASA'+('/'+center if center else '')
+                r,why=rec(nid,title,desc,f'https://images.nasa.gov/details/{quote(nid,safe="")}',img,size,credit,'NASA Media Usage Guidelines','https://www.nasa.gov/nasa-brand-center/images-and-media/',method='NASA Image and Video Library / JPL metadata')
+                if r:r['releaseDate']=(meta.get('date_created') or '')[:10] or None;rows.append(r)
+                else:bump(ex,why);failed_records+=1
+              except Exception as e:
+                bump(ex,'fetch_or_parse_error');failed_records+=1;failed_pages.append({'archiveId':nid,'error':type(e).__name__})
               if cap and len(rows)>=cap:break
-            rows,du=dedupe(rows);return rows,{'archivePagesDiscovered':len(items),'candidateImageCount':len(items),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'exclusionCounts':ex}
+            rows,du=dedupe(rows);return rows,report(items,rows,ex,du,failed_pages,failed_records)
 
           META={
             'chandra':('Chandra X-ray Center Photo Album — galaxies, quasars, clusters and deep fields','https://chandra.harvard.edu/photo/','https://chandra.harvard.edu/photo/image_use.html','Chandra Image Use Policy'),
@@ -228,22 +249,40 @@ jobs:
             'spitzer':('NASA Image and Video Library — Spitzer galaxy-related NASA/JPL holdings','https://images.nasa.gov/','https://www.nasa.gov/nasa-brand-center/images-and-media/','NASA Media Usage Guidelines')}
           builders={'chandra':chandra,'euclid':euclid,'spitzer':spitzer}
           names=list(OUT) if choice=='all' else [choice]
+          statuses={}
           for name in names:
-            rows,report=builders[name]();src,archive,copyright_url,lic=META[name];path=OUT[name]
-            payload=json.dumps({'entries':rows,'report':report},sort_keys=True,ensure_ascii=False,separators=(',',':'));digest=hashlib.sha256(payload.encode()).hexdigest();generated=datetime.now(timezone.utc).isoformat(timespec='seconds')
+            try:
+              rows,report_data=builders[name]();src,archive,copyright_url,lic=META[name];path=OUT[name]
+            except Exception as e:
+              statuses[name]={'status':'FAIL','records':0,'reason':'builder_exception:'+type(e).__name__};print(name,'FAIL',statuses[name]['reason']);continue
+            valid=[]
+            for r in rows:
+              try:
+                if not(0<=r['ra']<360 and -90<=r['dec']<=90):raise ValueError('invalid_coordinates')
+                if not r['sourceUrl'].startswith('http') or not r['selectedImageUrl'].startswith('http'):raise ValueError('invalid_url')
+                if not image_ok(r['selectedImageUrl'])[0]:raise ValueError('broken_image_url')
+                if not source_ok(r['sourceUrl']):raise ValueError('broken_source_url')
+                valid.append(r)
+              except Exception as e:
+                bump(report_data['exclusionCounts'],'final_validation_'+str(e));report_data['failedRecordCount']+=1
+            rows=valid;report_data['qualifiedImageCount']=len(rows);report_data['rejectedCount']=sum(report_data['exclusionCounts'].values())
+            if not rows:
+              statuses[name]={'status':'FAIL','records':0,'reason':'zero_valid_records_existing_catalog_preserved'};print(name,'FAIL',statuses[name]['reason']);continue
+            payload=json.dumps({'entries':rows,'report':report_data},sort_keys=True,ensure_ascii=False,separators=(',',':'));digest=hashlib.sha256(payload.encode()).hexdigest();generated=datetime.now(timezone.utc).isoformat(timespec='seconds')
             if path.exists():
               try:
                 old=json.loads(path.read_text());generated=old.get('generatedAt') if old.get('contentSha256')==digest else generated
               except Exception:pass
-            catalog={'version':'full-0001','generatedAt':generated,'source':src,'sourceArchiveUrl':archive,'sourceCopyrightUrl':copyright_url,'license':lic,'licenseUrl':copyright_url,'categoryEntryCount':report['candidateImageCount'],'metadataRecordCount':len(rows),'downloadedImageCount':0,'unavailableImageCount':report['rejectedCount'],'totalImageBytes':None,'largestImageBytes':max((r.get('bytes') or 0 for r in rows),default=0) or None,'largestImageArchiveId':next((r['archiveId'] for r in sorted(rows,key=lambda x:x.get('bytes') or 0,reverse=True) if r.get('bytes')),None),'oldQualificationGateCount':report['candidateImageCount'],'oldQualificationExcludedCount':report['rejectedCount'],'oldQualificationExclusionCounts':report['exclusionCounts'],'storageGate':{'ordinaryGitSafe':True,'maxTotalBytes':1500000000,'maxSingleFileBytes':99614720,'reasons':[]},'researchReport':{**report,'recordsWithRaDec':len(rows),'recordsWithDistance':sum((r['science']['distanceMly'] is not None) for r in rows),'recordsWithAge':0,'recordsWithRedshift':0,'recordsRequiringEstimates':0},'contentSha256':digest,'entries':rows}
+            catalog={'version':'full-0001','generatedAt':generated,'source':src,'sourceArchiveUrl':archive,'sourceCopyrightUrl':copyright_url,'license':lic,'licenseUrl':copyright_url,'categoryEntryCount':report_data['candidateImageCount'],'metadataRecordCount':len(rows),'downloadedImageCount':0,'unavailableImageCount':report_data['rejectedCount'],'totalImageBytes':None,'largestImageBytes':max((r.get('bytes') or 0 for r in rows),default=0) or None,'largestImageArchiveId':next((r['archiveId'] for r in sorted(rows,key=lambda x:x.get('bytes') or 0,reverse=True) if r.get('bytes')),None),'oldQualificationGateCount':report_data['candidateImageCount'],'oldQualificationExcludedCount':report_data['rejectedCount'],'oldQualificationExclusionCounts':report_data['exclusionCounts'],'storageGate':{'ordinaryGitSafe':True,'maxTotalBytes':1500000000,'maxSingleFileBytes':99614720,'reasons':[]},'researchReport':{**report_data,'recordsWithRaDec':len(rows),'recordsWithDistance':sum((r['science']['distanceMly'] is not None) for r in rows),'recordsWithAge':0,'recordsWithRedshift':0,'recordsRequiringEstimates':0},'contentSha256':digest,'entries':rows}
             ids=set()
             for r in rows:
               if r['archiveId'] in ids:raise SystemExit(f'duplicate archiveId {name}:{r["archiveId"]}')
               ids.add(r['archiveId'])
-              if not(0<=r['ra']<360 and -90<=r['dec']<=90):raise SystemExit(f'invalid coordinates {name}:{r["archiveId"]}')
-              if not r['sourceUrl'].startswith('http') or not r['selectedImageUrl'].startswith('http'):raise SystemExit(f'invalid URL {name}:{r["archiveId"]}')
             path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(catalog,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n');json.loads(path.read_text())
+            statuses[name]={'status':'PASS','records':len(rows),'reason':'validated_catalog_written'}
             print(name,json.dumps(catalog['researchReport'],indent=2))
+          status_path=pathlib.Path(os.environ.get('RUNNER_TEMP','/tmp'))/'galaxy-viewer-catalog-status.json'
+          status_path.write_text(json.dumps({'selected':names,'statuses':statuses},indent=2)+'\n',encoding='utf-8')
           PY
 
       - name: Verify authorized output paths and JSON syntax
@@ -257,7 +296,7 @@ jobs:
           changed={x[3:] for x in subprocess.check_output(['git','status','--porcelain'],text=True).splitlines() if x.strip()}
           if changed-allowed:raise SystemExit('Unauthorized generated path(s): '+', '.join(sorted(changed-allowed)))
           for p in changed:
-            d=json.loads(pathlib.Path(p).read_text());assert d['version']=='full-0001' and isinstance(d['entries'],list)
+            d=json.loads(pathlib.Path(p).read_text());assert d['version']=='full-0001' and isinstance(d['entries'],list) and len(d['entries'])>0
           print('Changed:', ', '.join(sorted(changed)) or 'none')
           PY
 
@@ -272,9 +311,32 @@ jobs:
           while IFS= read -r p; do [ -n "$p" ] && git add -- "$p"; done <<< "$paths"
           git commit -m "Build astronomy image catalogs
 
-          ECO-ID: ECO-20260819-MULTI-CATALOG-003
+          ECO-ID: ECO-20260819-MULTI-CATALOG-004
           AUTHORIZED-PATHS: ${authorized_paths}
-          REQUIREMENTS: REQ-001-REQ-004
+          REQUIREMENTS: REQ-001-REQ-008
           ARCHIVE-AUTHORIZED: false
           USER-GO: true"
           git push origin HEAD:beta
+
+      - name: Publish observatory status
+        if: always()
+        run: |
+          python3 <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(os.environ.get('RUNNER_TEMP','/tmp'))/'galaxy-viewer-catalog-status.json'
+          if not p.exists():
+            print('CATALOG BUILD STATUS: FAIL — builder did not produce status data')
+            sys.exit(1)
+          data=json.loads(p.read_text());statuses=data.get('statuses',{});selected=data.get('selected',[])
+          lines=['## Galaxy Viewer astronomy catalog build']
+          passes=0
+          for name in selected:
+            x=statuses.get(name,{'status':'FAIL','records':0,'reason':'missing_status'})
+            if x['status']=='PASS':passes+=1
+            line=f"{name.upper()}: {x['status']} — {x['records']} records — {x['reason']}"
+            lines.append('- '+line);print(line)
+          summary=os.environ.get('GITHUB_STEP_SUMMARY')
+          if summary:
+            with open(summary,'a',encoding='utf-8') as f:f.write('\n'.join(lines)+'\n')
+          if passes==0:sys.exit(1)
+          PY
