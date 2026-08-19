@@ -17,7 +17,7 @@ jobs:
         with:
           ref: beta
           fetch-depth: 0
-      - name: Apply one-value 10V HD comet repair
+      - name: Apply surgical 10V HD comet geometry repair
         run: |
           set -euo pipefail
           test "$(git hash-object viewer/GV-beta-0010V.py)" = "e024d6808d0beb351eee3c9f05f1c30f31ca8cd3"
@@ -25,19 +25,24 @@ jobs:
           from pathlib import Path
           p=Path('viewer/GV-beta-0010V.py')
           s=p.read_text()
-          old='inset:-5px;border-radius:50%;opacity:0;pointer-events:none;transform-origin:50% 50%'
-          new='inset:4px;border-radius:50%;opacity:0;pointer-events:none;transform-origin:50% 50%'
-          assert s.count(old)==1, s.count(old)
-          s=s.replace(old,new,1)
-          assert s.count(new)==1, s.count(new)
+          old_inset='inset:-5px;border-radius:50%;opacity:0;pointer-events:none;transform-origin:50% 50%'
+          new_inset='inset:4px;border-radius:50%;opacity:0;pointer-events:none;transform-origin:50% 50%'
+          old_tail='#gv-hd-archive-button .gv-hd-archive-comet::after{content:"";position:absolute;left:50%;top:1px;width:15px;height:3px;margin-left:-1px;border-radius:3px;background:linear-gradient(90deg,rgba(248,255,255,.95),rgba(91,184,255,.68),rgba(15,54,122,0));transform:rotate(28deg);transform-origin:left center;filter:blur(.2px)}'
+          new_tail='#gv-hd-archive-button .gv-hd-archive-comet::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from -90deg,rgba(248,255,255,.95) 0deg,rgba(91,184,255,.72) 38deg,rgba(41,109,189,.38) 78deg,rgba(15,54,122,0) 118deg,rgba(15,54,122,0) 360deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));filter:drop-shadow(0 0 3px rgba(143,229,255,.72))}'
+          assert s.count(old_inset)==1, s.count(old_inset)
+          assert s.count(old_tail)==1, s.count(old_tail)
+          s=s.replace(old_inset,new_inset,1)
+          s=s.replace(old_tail,new_tail,1)
+          assert s.count(new_inset)==1, s.count(new_inset)
+          assert s.count(new_tail)==1, s.count(new_tail)
           p.write_text(s)
           PY
           python -m py_compile viewer/GV-beta-0010V.py
-          test "$(git hash-object viewer/GV-beta-0010V.py)" = "ec060fd6cfad637db416c74370d1fa2b63fee007"
+          test "$(git hash-object viewer/GV-beta-0010V.py)" = "2fe68a5869b5d4eb6c8339725279192e453d1770"
           git rm .github/workflows/fix-10v-hd-comet-once.yml
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/GV-beta-0010V.py .github/workflows/fix-10v-hd-comet-once.yml
-          git commit -m '10V keep HD archive comet inside provider icon' -m 'ECO-ID: GV-10V-HD-COMET-005' -m 'AUTHORIZED-PATHS: viewer/GV-beta-0010V.py, .github/workflows/fix-10v-hd-comet-once.yml' -m 'CHANGE: gv-hd-archive-comet inset -5px to 4px only' -m 'USER-GO: true'
+          git commit -m '10V keep HD archive comet and curved trail inside provider icon' -m 'ECO-ID: GV-10V-HD-COMET-005' -m 'AUTHORIZED-PATHS: viewer/GV-beta-0010V.py, .github/workflows/fix-10v-hd-comet-once.yml' -m 'CHANGE: shrink orbit from inset -5px to 4px and replace straight tail with circular conic-gradient arc' -m 'USER-GO: true'
           git push origin HEAD:beta
