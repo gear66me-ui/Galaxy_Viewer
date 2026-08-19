@@ -177,6 +177,9 @@ try{
     preparedViewerPromise
   ]);
   await runSplash(preloadedSplash);
+  const loadingIcon=cover.querySelector('#gv-loading-mark>img');
+  if(loadingIcon)loadingIcon.style.display='none';
+  versionEl.style.display='none';
   cover.style.display='flex';
   const postSplashHold=sleep(POST_SPLASH_HOLD_MS);
   const viewerReadyPromise=initializeViewer(preparedViewer);
