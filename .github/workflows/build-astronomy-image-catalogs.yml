@@ -1,0 +1,280 @@
+name: Build Galaxy Viewer Astronomy Image Catalogs
+
+'on':
+  workflow_dispatch:
+    inputs:
+      observatory:
+        description: Observatory to build
+        required: true
+        default: all
+        type: choice
+        options: [all, chandra, euclid, spitzer]
+      dry_run:
+        description: Build and validate without committing
+        required: true
+        default: false
+        type: boolean
+      max_records:
+        description: Optional per-observatory cap; 0 means no arbitrary cap
+        required: true
+        default: '0'
+        type: string
+  push:
+    branches: [beta]
+    paths: [.github/workflows/build-astronomy-image-catalogs.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-viewer-astronomy-catalog-builder
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      OBSERVATORY: ${{ github.event_name == 'workflow_dispatch' && inputs.observatory || 'all' }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+      MAX_RECORDS: ${{ github.event_name == 'workflow_dispatch' && inputs.max_records || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install scraper dependency
+        run: python -m pip install --disable-pip-version-check --quiet requests beautifulsoup4
+
+      - name: Build source-grounded catalogs
+        run: |
+          python3 <<'PY'
+          import hashlib, json, math, os, pathlib, re, time
+          from datetime import datetime, timezone
+          from urllib.parse import quote, urljoin, urlparse
+          import requests
+          from bs4 import BeautifulSoup
+          from requests.adapters import HTTPAdapter
+          from urllib3.util.retry import Retry
+
+          ROOT = pathlib.Path.cwd()
+          OUT = {
+            'chandra': ROOT/'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json',
+            'euclid': ROOT/'viewer/image-databases/Euclid/databases/gv-euclid-galaxies-full-0001.json',
+            'spitzer': ROOT/'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0001.json'}
+          choice = os.getenv('OBSERVATORY','all').lower()
+          cap = max(0, int(os.getenv('MAX_RECORDS','0') or 0))
+          if choice not in {'all',*OUT}: raise SystemExit('Invalid observatory')
+
+          s = requests.Session()
+          retry = Retry(total=4, backoff_factor=.8, status_forcelist=[429,500,502,503,504], allowed_methods=['GET','HEAD'])
+          s.mount('https://', HTTPAdapter(max_retries=retry))
+          s.headers['User-Agent']='GalaxyViewerCatalogBuilder/1.0 (+https://github.com/gear66me-ui/Galaxy_Viewer)'
+          resolver, image_cache = {}, {}
+
+          def get(url, **kw):
+            time.sleep(.08)
+            r=s.get(url, timeout=kw.pop('timeout',30), allow_redirects=True, **kw); r.raise_for_status(); return r
+          def bs(url):
+            r=get(url); return BeautifulSoup(r.text,'html.parser'),r.url
+          def text(x): return re.sub(r'\s+',' ',x or '').strip()
+          def image_ok(url):
+            if not url:return (False,None)
+            if url in image_cache:return image_cache[url]
+            try:
+              r=s.get(url,timeout=25,stream=True,headers={'Range':'bytes=0-2047'},allow_redirects=True);r.raise_for_status()
+              ct=(r.headers.get('content-type') or '').lower(); head=next(r.iter_content(2048),b'')
+              ok='image/' in ct or head.startswith((b'\xff\xd8\xff',b'\x89PNG',b'GIF8'))
+              size=r.headers.get('content-length'); ans=(ok,int(size) if size and size.isdigit() else None)
+            except Exception: ans=(False,None)
+            image_cache[url]=ans; return ans
+          def best_image(doc,base):
+            cand=[]
+            for a in doc.find_all('a',href=True):
+              label=text(a.get_text(' ',strip=True)).lower(); u=urljoin(base,a['href'])
+              if ('jpg' in label or 'jpeg' in label) and re.search(r'\.jpe?g(?:\?|$)',u,re.I): cand.append(u)
+            for q,a in [('meta[property="og:image"]','content'),('meta[name="twitter:image"]','content')]:
+              n=doc.select_one(q)
+              if n and n.get(a): cand.append(urljoin(base,n[a]))
+            for img in doc.find_all('img',src=True): cand.append(urljoin(base,img['src']))
+            seen=set()
+            for u in cand:
+              if u in seen or any(k in u.lower() for k in ('logo','icon','sprite','avatar')):continue
+              seen.add(u); ok,size=image_ok(u)
+              if ok:return u,size
+            return None,None
+          pats=[r'\bNGC\s*\d+[A-Za-z]?\b',r'\bIC\s*\d+[A-Za-z]?\b',r'\bM\s*\d{1,3}\b',r'\bMessier\s+\d{1,3}\b',r'\bUGC\s*\d+\b',r'\bPGC\s*0*\d+\b',r'\bESO\s+[0-9A-Za-z-]+\b',r'\bArp\s*\d+\b',r'\bAbell\s*\d+\b',r'\b3C\s*\d+(?:\.\d+)?\b',r'\bMrk\s*\d+\b',r'\bSDSS\s+J[0-9.+-]+\b']
+          common={'andromeda galaxy':'M31','sombrero galaxy':'M104','whirlpool galaxy':'M51','pinwheel galaxy':'M101','cigar galaxy':'M82','hidden galaxy':'IC 342','sculptor galaxy':'NGC 253','antennae':'NGC 4038'}
+          def designation(title,desc):
+            blob=f'{title} {desc}'
+            for p in pats:
+              m=re.search(p,blob,re.I)
+              if m:return text(m.group())
+            lo=blob.lower()
+            for k,v in common.items():
+              if k in lo:return v
+          def coords(name):
+            if not name:return None
+            if name in resolver:return resolver[name]
+            try:
+              x=get('https://cds.unistra.fr/cgi-bin/nph-sesame/-oxp/'+quote(name,safe=''),timeout=18).text
+              a=re.search(r'<jradeg>([-+0-9.]+)</jradeg>',x);d=re.search(r'<jdedeg>([-+0-9.]+)</jdedeg>',x)
+              out=(float(a.group(1)),float(d.group(1))) if a and d else None
+            except Exception:out=None
+            resolver[name]=out;return out
+          def explicit_coords(blob):
+            m=re.search(r'(?i)RA\s*/\s*DEC\s*[:：]\s*(\d{1,2})[:\s](\d{1,2})[:\s]([0-9.]+)\s*/\s*([+-]?\d{1,2})[:\s](\d{1,2})[:\s]([0-9.]+)',blob)
+            if not m:return None
+            h,mi,se,de,dm,ds=m.groups(); ra=15*(float(h)+float(mi)/60+float(se)/3600);sg=-1 if de.startswith('-') else 1
+            return ra,sg*(abs(float(de))+float(dm)/60+float(ds)/3600)
+          def dist(blob):
+            for m in re.finditer(r'(?i)([0-9][0-9,]*(?:\.\d+)?)\s*(billion|million|thousand)?\s*light[- ]years',blob):
+              v=float(m.group(1).replace(',',''));u=(m.group(2) or '').lower();f={'billion':1000,'million':1,'thousand':.001,'':.000001}[u]
+              if 0<v*f<20000:return round(v*f,6)
+          def date(blob):
+            m=re.search(r'\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b',blob)
+            return f'{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}' if m else None
+          def rec(aid,title,desc,src,img,size,credit,lic,licurl,des=None,xy=None,method='official source page'):
+            des=des or designation(title,desc); xy=xy or coords(des) or coords(title)
+            if not xy:return None,'missing_or_invalid_ra_dec'
+            ra,dec=xy
+            if not(0<=ra<360 and -90<=dec<=90 and math.isfinite(ra) and math.isfinite(dec)):return None,'missing_or_invalid_ra_dec'
+            d=dist(desc); dd=None if d is None else (f'{d/1000:.3g} billion light-years' if d>=1000 else f'{d:.4g} million light-years')
+            sci={'distanceMly':d,'distanceMethod':method if d is not None else None,'sizeKly':None,'sizeMethod':None,'ageGyr':None,'ageMethod':None,'ageMinGyr':None,'ageMaxGyr':None,'ageEstimated':None,'ageDisplay':None,'redshift':None,'redshiftDisplay':None,'redshiftEstimated':None,'redshiftMethod':None,'distanceDisplay':dd,'distanceEstimated':False if d is not None else None,'sizeEstimated':None,'sizeDisplay':None}
+            return {'archiveId':str(aid),'name':des or title,'title':title,'ra':round(ra,10),'dec':round(dec,10),'raText':None,'decText':None,'distance':dd,'constellation':None,'fieldOfView':None,'orientation':None,'imageType':'Observation','releaseDate':date(desc),'pixelSize':None,'credit':credit,'sourceUrl':src,'esaPublicationJpeg':img,'jpegCandidates':[img],'license':lic,'licenseUrl':licurl,'imageStatus':'remote','selectedImageUrl':img,'assetName':pathlib.PurePosixPath(urlparse(img).path).name or str(aid)+'.jpg','bytes':size,'sha256':None,'downloadErrors':[],'githubImageUrl':None,'releaseTag':None,'science':sci,'constellationMethod':None,'designation':des,'designationMethod':'source_title_or_description_catalog_identifier' if des else None,'designationSourceFields':['title','description'],'displayName':des or title,'imageReview':'PASS'},None
+          def dedupe(rows):
+            out=[];seen=set();dups=0
+            for r in rows:
+              k=(r['archiveId'].lower(),r['sourceUrl'].lower(),r['selectedImageUrl'].lower())
+              if any(x in seen for x in k):dups+=1;continue
+              seen.update(k);out.append(r)
+            out.sort(key=lambda r:((r.get('designation') or r['displayName']).lower(),r['archiveId']))
+            return out,dups
+          def chandra():
+            cats=['galaxies','quasars','galaxyclusters','background'];urls=set()
+            for c in cats:
+              doc,base=bs(f'https://chandra.harvard.edu/photo/category/{c}.html')
+              for a in doc.find_all('a',href=True):
+                u=urljoin(base,a['href'])
+                if re.search(r'chandra\.harvard\.edu/photo/(?:19|20)\d{2}/[^/]+/?(?:index\.html)?$',u,re.I):urls.add(u)
+            rows=[];ex={}
+            for u in sorted(urls):
+              try:
+                doc,final=bs(u); title=text((doc.find('h1') or doc.find('h2') or doc.find('title')).get_text(' ',strip=True));blob=text(doc.get_text(' ',strip=True))
+                if not any(k in blob.lower() for k in ('galaxy','galaxies','quasar','cluster','deep field')):continue
+                img,size=best_image(doc,final)
+                if not img:ex['missing_publication_jpeg']=ex.get('missing_publication_jpeg',0)+1;continue
+                m=re.search(r'/photo/((?:19|20)\d{2})/([^/]+)',final);aid='-'.join(m.groups()) if m else hashlib.sha1(final.encode()).hexdigest()[:16]
+                r,why=rec(aid,title,blob[:12000],final,img,size,'NASA/CXC; see source page for complete credit','Chandra Image Use Policy','https://chandra.harvard.edu/photo/image_use.html',method='Chandra X-ray Center source page')
+                if r:rows.append(r)
+                else:ex[why]=ex.get(why,0)+1
+              except Exception:ex['fetch_or_parse_error']=ex.get('fetch_or_parse_error',0)+1
+              if cap and len(rows)>=cap:break
+            rows,du=dedupe(rows);return rows,{'archivePagesDiscovered':len(urls),'candidateImageCount':len(urls),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'exclusionCounts':ex}
+          def euclid():
+            urls=set()
+            for off in range(0,301,50):
+              u='https://www.esa.int/ESA_Multimedia/Missions/Euclid/%28sortBy%29/published/%28result_type%29/images' if off==0 else f'https://www.esa.int/ESA_Multimedia/Missions/Euclid/%28offset%29/{off}/%28sortBy%29/published/%28result_type%29/images'
+              try:doc,base=bs(u)
+              except Exception:continue
+              for a in doc.find_all('a',href=True):
+                x=urljoin(base,a['href'])
+                if '/ESA_Multimedia/Images/' in x:urls.add(x.split('#')[0])
+            rows=[];ex={};good=('galaxy','galaxies','galactic','cluster','deep field','gravitational lens','cosmic atlas');bad=('artist impression',"artist's impression",'spacecraft','infographic','logo','diagram','illustration')
+            for u in sorted(urls):
+              try:
+                doc,final=bs(u);title=text((doc.find('h1') or doc.find('title')).get_text(' ',strip=True));blob=text(doc.get_text(' ',strip=True));lo=(title+' '+blob[:10000]).lower()
+                if 'euclid' not in lo or not any(k in lo for k in good) or any(k in lo for k in bad):continue
+                img,size=best_image(doc,final)
+                if not img:ex['missing_publication_jpeg']=ex.get('missing_publication_jpeg',0)+1;continue
+                m=re.search(r'\b(\d{6})\s+ID\b',blob);aid=m.group(1) if m else hashlib.sha1(final.encode()).hexdigest()[:16]
+                r,why=rec(aid,title,blob[:14000],final,img,size,'ESA/Euclid/Euclid Consortium/NASA; see source page for complete processing credit','CC BY-SA 3.0 IGO or ESA Standard Licence','https://www.esa.int/ESA_Multimedia/Copyright_Notice_Images',xy=explicit_coords(blob),method='ESA Euclid multimedia source page')
+                if r:rows.append(r)
+                else:ex[why]=ex.get(why,0)+1
+              except Exception:ex['fetch_or_parse_error']=ex.get('fetch_or_parse_error',0)+1
+              if cap and len(rows)>=cap:break
+            rows,du=dedupe(rows);return rows,{'archivePagesDiscovered':len(urls),'candidateImageCount':len(urls),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'exclusionCounts':ex}
+          def spitzer():
+            items={};queries=['Spitzer galaxy','Spitzer galaxies','Spitzer galaxy cluster','Spitzer interacting galaxy','Spitzer deep field','Spitzer spiral galaxy']
+            for q in queries:
+              for page in range(1,101):
+                try:data=get('https://images-api.nasa.gov/search',params={'q':q,'media_type':'image','page':page},timeout=35).json()['collection']
+                except Exception:break
+                batch=data.get('items') or []
+                if not batch:break
+                for item in batch:
+                  meta=(item.get('data') or [{}])[0];nid=meta.get('nasa_id')
+                  if nid:items[nid]=item
+                if not any(x.get('rel')=='next' for x in data.get('links') or []):break
+                if len(items)>=3000:break
+            rows=[];ex={}
+            for nid,item in sorted(items.items()):
+              meta=(item.get('data') or [{}])[0];title=text(meta.get('title'));desc=text(meta.get('description') or meta.get('description_508'));lo=(title+' '+desc).lower()
+              if 'spitzer' not in lo or not any(k in lo for k in ('galaxy','galaxies','galactic','cluster','deep field')):continue
+              if any(k in lo for k in ('artist concept',"artist's concept",'illustration','diagram','spacecraft')):continue
+              img=next((x.get('href') for x in item.get('links') or [] if x.get('render')=='image' and x.get('href')),None);ok,size=image_ok(img)
+              if not ok:ex['missing_publication_jpeg']=ex.get('missing_publication_jpeg',0)+1;continue
+              center=text(meta.get('center'));credit='NASA/JPL-Caltech' if 'jpl' in lo or center.upper()=='JPL' else 'NASA'+('/'+center if center else '')
+              r,why=rec(nid,title,desc,f'https://images.nasa.gov/details/{quote(nid,safe="")}',img,size,credit,'NASA Media Usage Guidelines','https://www.nasa.gov/nasa-brand-center/images-and-media/',method='NASA Image and Video Library / JPL metadata')
+              if r:r['releaseDate']=(meta.get('date_created') or '')[:10] or None;rows.append(r)
+              else:ex[why]=ex.get(why,0)+1
+              if cap and len(rows)>=cap:break
+            rows,du=dedupe(rows);return rows,{'archivePagesDiscovered':len(items),'candidateImageCount':len(items),'qualifiedImageCount':len(rows),'rejectedCount':sum(ex.values()),'duplicateCount':du,'exclusionCounts':ex}
+
+          META={
+            'chandra':('Chandra X-ray Center Photo Album — galaxies, quasars, clusters and deep fields','https://chandra.harvard.edu/photo/','https://chandra.harvard.edu/photo/image_use.html','Chandra Image Use Policy'),
+            'euclid':('ESA Multimedia — Euclid mission galaxy-related observations','https://www.esa.int/ESA_Multimedia/Missions/Euclid/%28result_type%29/images','https://www.esa.int/ESA_Multimedia/Copyright_Notice_Images','CC BY-SA 3.0 IGO or ESA Standard Licence where stated'),
+            'spitzer':('NASA Image and Video Library — Spitzer galaxy-related NASA/JPL holdings','https://images.nasa.gov/','https://www.nasa.gov/nasa-brand-center/images-and-media/','NASA Media Usage Guidelines')}
+          builders={'chandra':chandra,'euclid':euclid,'spitzer':spitzer}
+          names=list(OUT) if choice=='all' else [choice]
+          for name in names:
+            rows,report=builders[name]();src,archive,copyright_url,lic=META[name];path=OUT[name]
+            payload=json.dumps({'entries':rows,'report':report},sort_keys=True,ensure_ascii=False,separators=(',',':'));digest=hashlib.sha256(payload.encode()).hexdigest();generated=datetime.now(timezone.utc).isoformat(timespec='seconds')
+            if path.exists():
+              try:
+                old=json.loads(path.read_text());generated=old.get('generatedAt') if old.get('contentSha256')==digest else generated
+              except Exception:pass
+            catalog={'version':'full-0001','generatedAt':generated,'source':src,'sourceArchiveUrl':archive,'sourceCopyrightUrl':copyright_url,'license':lic,'licenseUrl':copyright_url,'categoryEntryCount':report['candidateImageCount'],'metadataRecordCount':len(rows),'downloadedImageCount':0,'unavailableImageCount':report['rejectedCount'],'totalImageBytes':None,'largestImageBytes':max((r.get('bytes') or 0 for r in rows),default=0) or None,'largestImageArchiveId':next((r['archiveId'] for r in sorted(rows,key=lambda x:x.get('bytes') or 0,reverse=True) if r.get('bytes')),None),'oldQualificationGateCount':report['candidateImageCount'],'oldQualificationExcludedCount':report['rejectedCount'],'oldQualificationExclusionCounts':report['exclusionCounts'],'storageGate':{'ordinaryGitSafe':True,'maxTotalBytes':1500000000,'maxSingleFileBytes':99614720,'reasons':[]},'researchReport':{**report,'recordsWithRaDec':len(rows),'recordsWithDistance':sum((r['science']['distanceMly'] is not None) for r in rows),'recordsWithAge':0,'recordsWithRedshift':0,'recordsRequiringEstimates':0},'contentSha256':digest,'entries':rows}
+            ids=set()
+            for r in rows:
+              if r['archiveId'] in ids:raise SystemExit(f'duplicate archiveId {name}:{r["archiveId"]}')
+              ids.add(r['archiveId'])
+              if not(0<=r['ra']<360 and -90<=r['dec']<=90):raise SystemExit(f'invalid coordinates {name}:{r["archiveId"]}')
+              if not r['sourceUrl'].startswith('http') or not r['selectedImageUrl'].startswith('http'):raise SystemExit(f'invalid URL {name}:{r["archiveId"]}')
+            path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(catalog,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8',newline='\n');json.loads(path.read_text())
+            print(name,json.dumps(catalog['researchReport'],indent=2))
+          PY
+
+      - name: Verify authorized output paths and JSON syntax
+        run: |
+          python3 <<'PY'
+          import json, pathlib, subprocess
+          allowed={
+            'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json',
+            'viewer/image-databases/Euclid/databases/gv-euclid-galaxies-full-0001.json',
+            'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0001.json'}
+          changed={x[3:] for x in subprocess.check_output(['git','status','--porcelain'],text=True).splitlines() if x.strip()}
+          if changed-allowed:raise SystemExit('Unauthorized generated path(s): '+', '.join(sorted(changed-allowed)))
+          for p in changed:
+            d=json.loads(pathlib.Path(p).read_text());assert d['version']=='full-0001' and isinstance(d['entries'],list)
+          print('Changed:', ', '.join(sorted(changed)) or 'none')
+          PY
+
+      - name: Commit validated catalogs
+        if: env.DRY_RUN != 'true'
+        run: |
+          paths="$(git status --porcelain | sed 's/^...//' | grep -E '^viewer/image-databases/(Chandra|Euclid|Spitzer)/databases/gv-(chandra|euclid|spitzer)-galaxies-full-0001\.json$' || true)"
+          [ -z "$paths" ] && { echo 'No catalog changes.'; exit 0; }
+          authorized_paths="$(printf '%s\n' "$paths" | paste -sd, -)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          while IFS= read -r p; do [ -n "$p" ] && git add -- "$p"; done <<< "$paths"
+          git commit -m "Build astronomy image catalogs
+
+          ECO-ID: ECO-20260819-MULTI-CATALOG-001
+          AUTHORIZED-PATHS: ${authorized_paths}
+          REQUIREMENTS: REQ-001-REQ-012
+          ARCHIVE-AUTHORIZED: false
+          USER-GO: true"
+          git push origin HEAD:beta
