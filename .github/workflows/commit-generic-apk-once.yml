@@ -1,0 +1,113 @@
+name: Commit verified generic APK once
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/commit-generic-apk-once.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  commit-once:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout triggering beta revision
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Commit exact verified APK and move stale metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_SHA: ${{ github.sha }}
+          APK_SHA256: 298051d4698031f82c73fb51f620f0b64f71205d5eedef0bb132251c0130b879
+          APK_SIZE: '49987'
+          ARTIFACT_ID: '9346570073'
+          POINTER_BLOB: bc9a377010a3fa052cf5105e66b6d0d9f56df622
+          BUILD_JSON_BLOB: 9535d043940d3a7858fabbad9cdc9e4c0fd2a33c
+          LATEST_JSON_BLOB: f0d79165f746f29d691badc6fb4fe5cf2bfb2cce
+        run: |
+          set -euo pipefail
+
+          git fetch origin beta
+          REMOTE_SHA="$(git rev-parse origin/beta)"
+          if [ "$REMOTE_SHA" != "$TRIGGER_SHA" ]; then
+            mapfile -t DRIFT_PATHS < <(git diff --name-only "$TRIGGER_SHA" "$REMOTE_SHA")
+            for p in "${DRIFT_PATHS[@]}"; do
+              if [ "$p" != "docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md" ]; then
+                echo "BASELINE DRIFT after trigger: $p" >&2
+                exit 20
+              fi
+            done
+          fi
+
+          git checkout -B beta origin/beta
+
+          [ "$(git hash-object viewer/gv-current-viewer.json)" = "$POINTER_BLOB" ] || { echo '10P pointer baseline drift' >&2; exit 21; }
+          [ "$(git hash-object viewer/gv-generic-apk-build.json)" = "$BUILD_JSON_BLOB" ] || { echo 'build metadata baseline drift' >&2; exit 22; }
+          [ "$(git hash-object viewer/gv-generic-apk-latest.json)" = "$LATEST_JSON_BLOB" ] || { echo 'latest metadata baseline drift' >&2; exit 23; }
+          grep -Fq '"version": "10P"' viewer/gv-current-viewer.json || { echo 'pointer no longer 10P' >&2; exit 24; }
+          grep -Fq '"viewer": "GV-beta-0010P.py"' viewer/gv-current-viewer.json || { echo 'pointer target changed' >&2; exit 25; }
+
+          test ! -e android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk || { echo 'APK destination already exists' >&2; exit 26; }
+          test ! -e viewer/metadata-archive/gv-generic-apk-build.json || { echo 'build metadata destination already exists' >&2; exit 27; }
+          test ! -e viewer/metadata-archive/gv-generic-apk-latest.json || { echo 'latest metadata destination already exists' >&2; exit 28; }
+
+          mkdir -p "$RUNNER_TEMP/generic-apk"
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            -o "$RUNNER_TEMP/generic-apk/artifact.zip"
+          unzip -q "$RUNNER_TEMP/generic-apk/artifact.zip" -d "$RUNNER_TEMP/generic-apk/unpacked"
+          APK="$RUNNER_TEMP/generic-apk/unpacked/Galaxy-Viewer-Generic.apk"
+          test -f "$APK" || { echo 'Expected APK missing from artifact' >&2; exit 29; }
+          [ "$(stat -c '%s' "$APK")" = "$APK_SIZE" ] || { echo 'APK size mismatch' >&2; exit 30; }
+          [ "$(sha256sum "$APK" | awk '{print $1}')" = "$APK_SHA256" ] || { echo 'APK SHA-256 mismatch' >&2; exit 31; }
+
+          mkdir -p android/galaxy-viewer/releases viewer/metadata-archive
+          cp "$APK" android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk
+          git mv viewer/gv-generic-apk-build.json viewer/metadata-archive/gv-generic-apk-build.json
+          git mv viewer/gv-generic-apk-latest.json viewer/metadata-archive/gv-generic-apk-latest.json
+          git rm .github/workflows/commit-generic-apk-once.yml
+          git add android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk
+
+          mapfile -t ACTUAL < <(git diff --cached --name-only)
+          EXPECTED=(
+            '.github/workflows/commit-generic-apk-once.yml'
+            'android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk'
+            'viewer/gv-generic-apk-build.json'
+            'viewer/gv-generic-apk-latest.json'
+            'viewer/metadata-archive/gv-generic-apk-build.json'
+            'viewer/metadata-archive/gv-generic-apk-latest.json'
+          )
+          printf '%s\n' "${ACTUAL[@]}" | sort > "$RUNNER_TEMP/actual-paths"
+          printf '%s\n' "${EXPECTED[@]}" | sort > "$RUNNER_TEMP/expected-paths"
+          diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/actual-paths"
+
+          cmp viewer/metadata-archive/gv-generic-apk-build.json <(git show HEAD:viewer/gv-generic-apk-build.json)
+          cmp viewer/metadata-archive/gv-generic-apk-latest.json <(git show HEAD:viewer/gv-generic-apk-latest.json)
+          [ "$(sha256sum android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk | awk '{print $1}')" = "$APK_SHA256" ]
+          [ "$(git hash-object viewer/gv-current-viewer.json)" = "$POINTER_BLOB" ]
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Commit verified generic APK and archive stale metadata' \
+            -m 'ECO-ID: GV-GENERIC-APK-REPO-10P-007A' \
+            -m 'AUTHORIZED-PATHS: .github/workflows/commit-generic-apk-once.yml, android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk, viewer/gv-generic-apk-build.json, viewer/gv-generic-apk-latest.json, viewer/metadata-archive/gv-generic-apk-build.json, viewer/metadata-archive/gv-generic-apk-latest.json' \
+            -m 'REQUIREMENTS: REQ-001-REQ-006' \
+            -m 'ARCHIVE-AUTHORIZED: false' \
+            -m 'USER-GO: true'
+
+          RESULT_SHA="$(git rev-parse HEAD)"
+          git push origin HEAD:beta
+          git fetch origin beta
+          [ "$(git rev-parse origin/beta)" = "$RESULT_SHA" ] || { echo 'Remote beta did not land on result commit' >&2; exit 32; }
+          echo "RESULT_COMMIT=$RESULT_SHA"
+          echo "APK_SHA256=$APK_SHA256"
