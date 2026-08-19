@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- GALAXY VIEWER 10V HD-CONTROL REPAIR TEST LAUNCHER. Base viewer: exact GV-beta-0010U.py blob ae019dd0071c22fd8ee2c9791248ae6c639676b0. 10V repair: non-overlapping BACK TO SKY + DOWNLOAD IMAGE control row. -->
+<!-- GALAXY VIEWER 10V standalone launcher. Loads only GV-beta-0010V.py blob 69fd0f5fbd1daf0f6297012276d49c06512bdb7c. Splash transitions on the 10V shell-ready event; full initialization continues in background. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -15,19 +15,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}
 #gv-opening-poster{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
-
-/* 10V repair: keep the two Galaxy Info controls in one layout owner. */
-#gv-hd-controls-10v{position:absolute!important;left:12px!important;right:12px!important;bottom:12px!important;z-index:31!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;height:36px!important;pointer-events:none!important;box-sizing:border-box!important}
-#gv-hd-controls-10v>#gv-hd-download-button,#gv-hd-controls-10v>.gvrg-back-button{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;margin:0!important;height:36px!important;box-sizing:border-box!important;pointer-events:auto!important;flex:0 0 auto!important}
-#gv-hd-controls-10v>.gvrg-back-button{min-width:118px!important;width:auto!important;padding:0 10px!important}
-#gv-hd-controls-10v>#gv-hd-download-button{width:156px!important;min-width:156px!important;max-width:156px!important;padding:0 12px!important;gap:8px!important;overflow:hidden!important;white-space:nowrap!important}
-#gv-hd-controls-10v>#gv-hd-download-button .gvrg-download-icon{width:16px!important;height:16px!important;flex:0 0 16px!important}
-#gv-hd-info-body{box-sizing:border-box!important;padding-bottom:52px!important}
-@media (max-width:390px){
-  #gv-hd-controls-10v{gap:6px!important}
-  #gv-hd-controls-10v>.gvrg-back-button{min-width:112px!important;padding:0 8px!important}
-  #gv-hd-controls-10v>#gv-hd-download-button{width:148px!important;min-width:148px!important;max-width:148px!important;padding:0 8px!important}
-}
 </style>
 </head>
 <body>
@@ -36,7 +23,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <div id="gv-launch-error" role="alert"></div>
 <script>
 (async()=>{'use strict';
-const BASE_VIEWER_URL='../../viewer/GV-beta-0010U.py?v=ae019dd0071c22fd8ee2c9791248ae6c639676b0';
+const VIEWER_URL='../../viewer/GV-beta-0010V.py?v=69fd0f5fbd1daf0f6297012276d49c06512bdb7c';
 const SPLASH_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
 const VIEWER_TIMEOUT_MS=30000;
 const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
@@ -47,6 +34,17 @@ const splashFrame=document.getElementById('gv-splash-frame');
 const errorBox=document.getElementById('gv-launch-error');
 const showError=e=>{errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(e?.stack||e)};
 const fetchText=async(url,label)=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(label+' HTTP '+r.status);return r.text()};
+const waitForViewerEvent=(name,validate)=>new Promise((resolve,reject)=>{
+ let settled=false;
+ const timer=setTimeout(()=>{if(settled)return;settled=true;cleanup();reject(new Error(name+' TIMEOUT'))},VIEWER_TIMEOUT_MS);
+ const ready=event=>{if(settled||!validate(event))return;settled=true;cleanup();resolve(event.detail)};
+ const failed=event=>{if(settled)return;settled=true;cleanup();reject(new Error(event.detail?.message||'GALAXY VIEWER FAILED'))};
+ const cleanup=()=>{clearTimeout(timer);document.removeEventListener(name,ready);document.removeEventListener('gv-viewer-failed',failed)};
+ document.addEventListener(name,ready);
+ document.addEventListener('gv-viewer-failed',failed);
+});
+const shellReady=waitForViewerEvent('gv-viewer-shell-ready',event=>event.detail?.version==='10V');
+const fullReady=waitForViewerEvent('gv-viewer-ready',event=>event.detail?.version==='10V');
 const extractAndRun=source=>{
  const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
  htmlMatches.forEach(m=>document.body.insertAdjacentHTML('beforeend',m[1]));
@@ -54,6 +52,7 @@ const extractAndRun=source=>{
  jsMatches.forEach(m=>{const s=document.createElement('script');s.textContent=m[1];document.body.appendChild(s)});
  return jsMatches.length;
 };
+const initializeViewer=async()=>{const source=await fetchText(VIEWER_URL,'GV-BETA-0010V.PY');if(!extractAndRun(source))throw new Error('COULD NOT EXTRACT 10V VIEWER')};
 const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))));
 const preload=document.createElement('iframe');Object.assign(preload.style,{position:'fixed',left:'-10000px',top:'0',width:'1px',height:'1px',border:'0',opacity:'0',pointerEvents:'none'});preload.src=SPLASH_URL;document.body.appendChild(preload);
 const startSplash=async()=>{
@@ -63,27 +62,11 @@ const startSplash=async()=>{
   splashFrame.addEventListener('error',()=>fail(new Error('SPLASH FAILED TO LOAD')),{once:true});splashFrame.src=SPLASH_URL;
  });
 };
-const waitForBaseViewer=()=>new Promise((resolve,reject)=>{const deadline=performance.now()+VIEWER_TIMEOUT_MS;const check=()=>{const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas')&&window.aladin_cosmic_command_test&&window.__gv10eRandomGalaxy&&window.GV10E?.version==='10U'){requestAnimationFrame(()=>requestAnimationFrame(resolve));return}if(performance.now()>=deadline){reject(new Error('GALAXY VIEWER 10U BASE STARTUP TIMEOUT'));return}setTimeout(check,100)};check()});
-function install10VRepair(){
- const rg=window.__gv10eRandomGalaxy;
- const panel=document.getElementById('gv-hd-info-panel');
- const back=rg?.backButton||panel?.querySelector('.gvrg-back-button');
- const download=document.getElementById('gv-hd-download-button')||rg?.downloadButton;
- if(!panel||!back||!download)throw new Error('10V HD CONTROL TARGETS MISSING');
- let controls=document.getElementById('gv-hd-controls-10v');
- if(!controls){controls=document.createElement('div');controls.id='gv-hd-controls-10v';panel.appendChild(controls)}
- controls.append(back,download);
- const versionLabel=document.getElementById('gv-version-label');
- if(versionLabel){versionLabel.textContent='VERSION 10V';versionLabel.setAttribute('aria-label','GALAXY VIEWER VERSION 10V')}
- const relayout=()=>{if(!document.getElementById('gv-hd-controls-10v'))return;controls.append(back,download)};
- window.addEventListener('resize',relayout,{passive:true});
- rg?.viewHdButton?.addEventListener('click',()=>requestAnimationFrame(relayout),true);
- rg?.hubbleIconButton?.addEventListener('click',()=>requestAnimationFrame(relayout),true);
- window.GV10V=Object.freeze({version:'10V',baseVersion:'10U',repair:'HD_CONTROL_COLLISION',controls,backButton:back,downloadButton:download});
- document.dispatchEvent(new CustomEvent('gv-10v-repair-ready',{detail:{version:'10V',baseVersion:'10U'}}));
-}
-const initializeViewer=async()=>{const source=await fetchText(BASE_VIEWER_URL,'GV-BETA-0010U.PY');if(!extractAndRun(source))throw new Error('COULD NOT EXTRACT 10U BASE VIEWER');await waitForBaseViewer();install10VRepair()};
-try{await Promise.all([initializeViewer(),startSplash()]);requestAnimationFrame(()=>{if(splashFrame.isConnected)splashFrame.remove();if(launchCover.isConnected)launchCover.remove()})}catch(e){console.error('GALAXY VIEWER 10V LAUNCHER FAILURE',e);showError(e)}
+try{
+ await Promise.all([initializeViewer(),startSplash(),shellReady]);
+ requestAnimationFrame(()=>{if(splashFrame.isConnected)splashFrame.remove();if(launchCover.isConnected)launchCover.remove()});
+ fullReady.catch(showError);
+}catch(e){console.error('GALAXY VIEWER 10V LAUNCHER FAILURE',e);showError(e)}
 })();
 </script>
 </body>
