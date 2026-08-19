@@ -46,7 +46,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 const POINTER_URL='../../viewer/gv-current-viewer.json';
 const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
 const ICON_HOLD_MS=3500;
-const POST_SPLASH_HOLD_MS=2000;
+const POST_SPLASH_HOLD_MS=1000;
 const VIEWER_TIMEOUT_MS=30000;
 const launchStartedAt=performance.now();
 const cover=document.getElementById('gv-generic-cover');
@@ -175,8 +175,9 @@ try{
     Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html),
     preparedViewerPromise
   ]);
+  const viewerReadyPromise=initializeViewer(preparedViewer);
   await runSplash(preloadedSplash);
-  await Promise.all([initializeViewer(preparedViewer),sleep(POST_SPLASH_HOLD_MS)]);
+  await Promise.all([viewerReadyPromise,sleep(POST_SPLASH_HOLD_MS)]);
   if(splash.isConnected)splash.remove();
   if(cover.isConnected)cover.remove();
 }catch(error){console.error(error);fail(error)}
