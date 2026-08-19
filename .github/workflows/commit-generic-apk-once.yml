@@ -111,3 +111,5 @@ jobs:
           [ "$(git rev-parse origin/beta)" = "$RESULT_SHA" ] || { echo 'Remote beta did not land on result commit' >&2; exit 32; }
           echo "RESULT_COMMIT=$RESULT_SHA"
           echo "APK_SHA256=$APK_SHA256"
+
+# authorized trigger update
