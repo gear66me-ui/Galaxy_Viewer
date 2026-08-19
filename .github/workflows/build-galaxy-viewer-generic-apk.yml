@@ -1,5 +1,5 @@
 name: Build Galaxy Viewer Generic APK
-# ECO GV-GENERIC-APK-STARTUP-002A build trigger only
+# ECO GV-ICON-CANONICAL-005 canonical icon build
 
 on:
   push:
@@ -51,8 +51,9 @@ jobs:
 
           launcher = pathlib.Path('mobile/beta/generic-app.html').read_text(encoding='utf-8')
           required = [
-              'const ICON_HOLD_MS=3500;',
+              'const ICON_HOLD_MS=3000;',
               'gv-loading-comet-orbit 2.8s linear infinite',
+              '../../viewer/artwork/icon.svg',
               'const splashReadyPromise=preloadSplash();',
               'await runSplash(preloadedSplash);',
               'initializeViewer(preparedViewer)',
@@ -62,6 +63,20 @@ jobs:
                   raise SystemExit(f'generic launcher marker missing: {marker}')
           if 'viewer/archive/' in launcher:
               raise SystemExit('generic launcher references viewer/archive/')
+
+          canonical_svg = pathlib.Path('viewer/artwork/icon.svg')
+          canonical_png = pathlib.Path('viewer/artwork/icon_transparent.png')
+          if not canonical_svg.is_file():
+              raise SystemExit('canonical web icon missing')
+          if not canonical_png.is_file():
+              raise SystemExit('canonical Android icon missing')
+          if pathlib.Path('android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png').exists():
+              raise SystemExit('duplicate static Android icon must not exist')
+
+          gradle = pathlib.Path('android/galaxy-viewer/app/build.gradle').read_text(encoding='utf-8')
+          for marker in ('icon_transparent.png', 'prepareCanonicalIcon', "rename { 'gv_app_icon.png' }"):
+              if marker not in gradle:
+                  raise SystemExit(f'canonical Android icon build marker missing: {marker}')
 
           manifest = pathlib.Path('android/galaxy-viewer/app/src/main/AndroidManifest.xml').read_text(encoding='utf-8')
           if 'android:theme="@style/GalaxyViewerTheme"' not in manifest:
