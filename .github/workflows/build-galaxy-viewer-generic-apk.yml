@@ -1,4 +1,3 @@
-# black-icon generic APK build trigger
 name: Build Galaxy Viewer Generic APK
 
 on:
@@ -9,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -21,19 +20,74 @@ jobs:
           ref: beta
           fetch-depth: 1
 
-      - name: Verify protected runtime inputs
+      - name: Verify generic runtime inputs
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object viewer/GV-beta-0010L.py)" = "9852017513867ee0cd6994d312f495a5525df2ad"
-          test "$(git hash-object viewer/gv-current-viewer.json)" = "c148173001db1a6029d4d4b00e62c50968ac70bf"
-          test "$(git hash-object mobile/beta/generic-app.html)" = "15ea8552737762c47606227b21f618171320d5a4"
-          test "$(git hash-object android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png)" = "47b3e714053bfd64f835d3f1a2510e13618dbede"
-          grep -F '"version": "10L"' viewer/gv-current-viewer.json
-          grep -F '"viewer": "GV-beta-0010L.py"' viewer/gv-current-viewer.json
-          grep -F 'mobile/beta/generic-app.html?source=android-app' android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java
-          ! grep -RIna 'viewer/archive/' android/galaxy-viewer mobile/beta/generic-app.html
-          ! grep -RInaE 'GV-beta-0010L\.py|GV-beta-0010[FGHIJK]\.py' android/galaxy-viewer/app/src/main/java
+          python3 <<'PY'
+          import json
+          import pathlib
+          import re
+
+          pointer_path = pathlib.Path('viewer/gv-current-viewer.json')
+          pointer = json.loads(pointer_path.read_text(encoding='utf-8'))
+          version = str(pointer.get('version', '')).strip()
+          viewer = str(pointer.get('viewer', '')).strip()
+
+          if not version:
+              raise SystemExit('current-viewer version is empty')
+          if not re.fullmatch(r'GV-beta-[A-Za-z0-9.-]+\.py', viewer):
+              raise SystemExit(f'invalid active Viewer filename: {viewer!r}')
+          if '/' in viewer or 'archive' in viewer.lower():
+              raise SystemExit(f'active Viewer must be a root viewer/ file: {viewer!r}')
+
+          active = pathlib.Path('viewer') / viewer
+          if not active.is_file():
+              raise SystemExit(f'active Viewer missing: {active}')
+          source = active.read_text(encoding='utf-8')
+          if 'viewer/archive/' in source:
+              raise SystemExit('active Viewer references viewer/archive/')
+
+          launcher = pathlib.Path('mobile/beta/generic-app.html').read_text(encoding='utf-8')
+          required = [
+              'const ICON_HOLD_MS=3500;',
+              'gv-loading-comet-orbit 2.8s linear infinite',
+              'const splashReadyPromise=preloadSplash();',
+              'await runSplash(preloadedSplash);',
+              'initializeViewer(preparedViewer)',
+          ]
+          for marker in required:
+              if marker not in launcher:
+                  raise SystemExit(f'generic launcher marker missing: {marker}')
+          if 'viewer/archive/' in launcher:
+              raise SystemExit('generic launcher references viewer/archive/')
+
+          manifest = pathlib.Path('android/galaxy-viewer/app/src/main/AndroidManifest.xml').read_text(encoding='utf-8')
+          if 'android:theme="@style/GalaxyViewerTheme"' not in manifest:
+              raise SystemExit('GalaxyViewerTheme not active in manifest')
+          if 'android:icon="@drawable/gv_app_icon_black"' not in manifest:
+              raise SystemExit('black launcher icon resource not active')
+
+          styles = pathlib.Path('android/galaxy-viewer/app/src/main/res/values/styles.xml').read_text(encoding='utf-8')
+          for marker in (
+              '<item name="android:windowBackground">@android:color/black</item>',
+              '<item name="android:colorBackground">@android:color/black</item>',
+              '<item name="android:windowSplashScreenBackground">@android:color/black</item>',
+              '<item name="android:windowSplashScreenIconBackgroundColor">@android:color/black</item>',
+          ):
+              if marker not in styles:
+                  raise SystemExit(f'black startup theme marker missing: {marker}')
+
+          main = pathlib.Path('android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java').read_text(encoding='utf-8')
+          if 'mobile/beta/generic-app.html?source=android-app' not in main:
+              raise SystemExit('Android wrapper does not use stable generic launcher')
+          if re.search(r'GV-beta-[A-Za-z0-9.-]+\.py', main):
+              raise SystemExit('Android wrapper hardcodes a Viewer revision')
+          if 'viewer/archive/' in main:
+              raise SystemExit('Android wrapper references viewer/archive/')
+
+          print(f'GENERIC_RUNTIME_OK version={version} viewer={viewer}')
+          PY
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -53,42 +107,6 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Apply solid black launcher-icon background
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m pip install --quiet pillow
-          python3 <<'PY'
-          from PIL import Image
-          from pathlib import Path
-
-          path = Path('android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png')
-          original = Image.open(path).convert('RGBA')
-          result = Image.new('RGBA', original.size, (0, 0, 0, 255))
-          result.alpha_composite(original)
-
-          src = original.load()
-          dst = result.load()
-          changed_opaque = 0
-          for y in range(original.height):
-              for x in range(original.width):
-                  if src[x, y][3] == 255 and src[x, y] != dst[x, y]:
-                      changed_opaque += 1
-          if changed_opaque != 0:
-              raise SystemExit(f'opaque artwork changed: {changed_opaque} pixels')
-
-          result.save(path)
-          check = Image.open(path).convert('RGBA')
-          if check.size != (512, 512):
-              raise SystemExit(f'unexpected icon size: {check.size}')
-          if check.getchannel('A').getextrema() != (255, 255):
-              raise SystemExit('launcher icon is not fully opaque')
-          corners = [check.getpixel((0,0)), check.getpixel((511,0)), check.getpixel((0,511)), check.getpixel((511,511))]
-          if any(pixel != (0, 0, 0, 255) for pixel in corners):
-              raise SystemExit(f'launcher icon corners are not solid black: {corners}')
-          print('BLACK_ICON_OK 512x512 opaque black background; opaque artwork pixels unchanged')
-          PY
-
       - name: Build generic APK
         shell: bash
         run: gradle --no-daemon -p android/galaxy-viewer :app:assembleDebug
@@ -105,23 +123,10 @@ jobs:
           grep -q "launchable-activity: name='com.gear66me.galaxyviewer.MainActivity'" /tmp/gv-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           unzip -t "$APK"
-          unzip -p "$APK" res/drawable/gv_app_icon.png > /tmp/gv_app_icon.png
-          python3 <<'PY'
-          from PIL import Image
-          im = Image.open('/tmp/gv_app_icon.png').convert('RGBA')
-          if im.size != (512, 512):
-              raise SystemExit(f'packaged icon size mismatch: {im.size}')
-          if im.getchannel('A').getextrema() != (255, 255):
-              raise SystemExit('packaged launcher icon is not fully opaque')
-          corners = [im.getpixel((0,0)), im.getpixel((511,0)), im.getpixel((0,511)), im.getpixel((511,511))]
-          if any(pixel != (0, 0, 0, 255) for pixel in corners):
-              raise SystemExit(f'packaged launcher icon corners are not black: {corners}')
-          print('PACKAGED_BLACK_ICON_OK')
-          PY
           cp "$APK" Galaxy-Viewer-Generic.apk
           sha256sum Galaxy-Viewer-Generic.apk | tee Galaxy-Viewer-Generic.apk.sha256
 
-      - name: Upload generic APK
+      - name: Upload verified generic APK
         uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-Generic
@@ -130,56 +135,3 @@ jobs:
             Galaxy-Viewer-Generic.apk.sha256
           if-no-files-found: error
           retention-days: 30
-
-      - name: Publish verified APK release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAG="galaxy-viewer-generic-${GITHUB_SHA::12}"
-          gh release create "$TAG" \
-            Galaxy-Viewer-Generic.apk \
-            Galaxy-Viewer-Generic.apk.sha256 \
-            --target "$GITHUB_SHA" \
-            --title 'Galaxy Viewer — Generic APK' \
-            --notes "Verified generic Android launcher with opaque black launcher-icon background built from commit $GITHUB_SHA. Runtime Viewer is selected by viewer/gv-current-viewer.json; the Android wrapper does not hardcode a normal Galaxy Viewer revision."
-
-      - name: Record generic APK build metadata
-        if: always()
-        shell: bash
-        run: |
-          set -u
-          STATUS='${{ job.status }}'
-          SHA256=''
-          if [ -f Galaxy-Viewer-Generic.apk.sha256 ]; then
-            SHA256="$(awk '{print $1}' Galaxy-Viewer-Generic.apk.sha256)"
-          fi
-          cat > viewer/gv-generic-apk-build.json <<EOF
-          {
-            "status": "$STATUS",
-            "run_id": "${GITHUB_RUN_ID}",
-            "run_attempt": "${GITHUB_RUN_ATTEMPT}",
-            "artifact": "Galaxy-Viewer-Generic",
-            "apk": "Galaxy-Viewer-Generic.apk",
-            "sha256": "$SHA256",
-            "source_commit": "${GITHUB_SHA}"
-          }
-          EOF
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/gv-generic-apk-build.json
-          if ! git diff --cached --quiet; then
-            git commit -m "ECO-ID: GV-GENERIC-APK-BLACK-ICON-004" \
-              -m "AUTHORIZED-PATHS: viewer/gv-generic-apk-build.json" \
-              -m "REQUIREMENTS: REQ-005,REQ-006" \
-              -m "ARCHIVE-AUTHORIZED: false" \
-              -m "USER-GO: true" \
-              -m "Record black-icon generic APK build ${GITHUB_RUN_ID}"
-            for attempt in 1 2 3 4 5; do
-              git pull --rebase origin beta && git push origin HEAD:beta && exit 0
-              git rebase --abort >/dev/null 2>&1 || true
-              sleep 2
-            done
-            exit 1
-          fi
