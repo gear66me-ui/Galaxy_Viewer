@@ -1,0 +1,69 @@
+name: Fix 10V HD archive preload once
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - .github/workflows/fix-10v-hd-archive-preload-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Apply surgical HD archive preload repair
+        run: |
+          set -euo pipefail
+          test "$(git hash-object viewer/GV-beta-0010V.py)" = "87944256a5a0c197254bc3a5f9738548d8c7c0c4"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('viewer/GV-beta-0010V.py')
+          s=p.read_text()
+
+          old="""    archiveFrame.addEventListener('load',()=>{\n        if(!archiveSourceUrl||archiveClosing)return;\n        setArchiveLoading(false);\n        archiveOverlay.removeAttribute('aria-hidden');\n        archiveOverlay.style.pointerEvents='auto';\n        archiveOverlay.classList.add('gv-open');\n        archiveFrame.style.pointerEvents='auto';\n    });\n"""
+          new="""    let archiveOpenRequested=false;\n    let archiveLoadedUrl='';\n    archiveFrame.addEventListener('load',()=>{\n        if(!archiveSourceUrl||archiveClosing)return;\n        archiveLoadedUrl=archiveSourceUrl;\n        setArchiveLoading(false);\n        if(!archiveOpenRequested)return;\n        archiveOverlay.removeAttribute('aria-hidden');\n        archiveOverlay.style.pointerEvents='auto';\n        archiveOverlay.classList.add('gv-open');\n        archiveFrame.style.pointerEvents='auto';\n    });\n"""
+          assert s.count(old)==1, s.count(old)
+          s=s.replace(old,new,1)
+
+          old="""    function currentArchiveDestination(){return randomGalaxy.getState?.().activeDestination||randomGalaxy.activeDestination||null}\n    function providerFor(destination){return destination?.provider==='JWST'?'JWST':'HUBBLE'}\n"""
+          new="""    function currentArchiveDestination(){return randomGalaxy.getState?.().activeDestination||randomGalaxy.activeDestination||null}\n    function providerFor(destination){return destination?.provider==='JWST'?'JWST':'HUBBLE'}\n    function preloadArchiveDestination(destination){\n        const sourceUrl=String(destination?.sourceUrl||'').trim();\n        if(!/^https:\\/\\//i.test(sourceUrl)||archiveClosing)return;\n        if(archiveSourceUrl===sourceUrl&&(archiveLoadedUrl===sourceUrl||archiveFrame.src===sourceUrl))return;\n        archiveOpenRequested=false;\n        archiveLoadedUrl='';\n        archiveSourceUrl=sourceUrl;\n        archiveFrame.style.pointerEvents='none';\n        archiveFrame.src=sourceUrl;\n    }\n"""
+          assert s.count(old)==1, s.count(old)
+          s=s.replace(old,new,1)
+
+          old="""        archiveSourceUrl=sourceUrl;\n        archiveClosing=false;\n        setArchiveLoading(true);\n        archiveOverlay.classList.remove('gv-open');\n        archiveOverlay.style.pointerEvents='none';\n        archiveOverlay.setAttribute('aria-hidden','true');\n        archiveFrame.style.pointerEvents='none';\n        archiveFrame.src=sourceUrl;\n"""
+          new="""        archiveSourceUrl=sourceUrl;\n        archiveClosing=false;\n        archiveOpenRequested=true;\n        if(archiveLoadedUrl===sourceUrl){\n            setArchiveLoading(false);\n            archiveOverlay.removeAttribute('aria-hidden');\n            archiveOverlay.style.pointerEvents='auto';\n            archiveOverlay.classList.add('gv-open');\n            archiveFrame.style.pointerEvents='auto';\n            return;\n        }\n        setArchiveLoading(true);\n        archiveOverlay.classList.remove('gv-open');\n        archiveOverlay.style.pointerEvents='none';\n        archiveOverlay.setAttribute('aria-hidden','true');\n        archiveFrame.style.pointerEvents='none';\n        if(archiveFrame.src!==sourceUrl)archiveFrame.src=sourceUrl;\n"""
+          assert s.count(old)==1, s.count(old)
+          s=s.replace(old,new,1)
+
+          old="""    function syncHdProviderPresentation(destination=currentArchiveDestination()){\n        if(!destination)return;\n        const provider=providerFor(destination);\n"""
+          new="""    function syncHdProviderPresentation(destination=currentArchiveDestination()){\n        if(!destination)return;\n        preloadArchiveDestination(destination);\n        const provider=providerFor(destination);\n"""
+          assert s.count(old)==1, s.count(old)
+          s=s.replace(old,new,1)
+
+          old="""        archiveSourceUrl='';\n        archiveFrame.src='about:blank';\n"""
+          new="""        archiveOpenRequested=false;\n        archiveSourceUrl='';\n        archiveLoadedUrl='';\n        archiveFrame.src='about:blank';\n"""
+          assert s.count(old)==1, s.count(old)
+          s=s.replace(old,new,1)
+
+          p.write_text(s)
+          PY
+          python -m py_compile viewer/GV-beta-0010V.py
+          git diff --check
+          git rm .github/workflows/fix-10v-hd-archive-preload-once.yml
+          mapfile -t changed < <(git status --short | sed -E 's/^.. //')
+          printf '%s\n' "${changed[@]}" | sort > /tmp/actual
+          printf '%s\n' '.github/workflows/fix-10v-hd-archive-preload-once.yml' 'viewer/GV-beta-0010V.py' | sort > /tmp/expected
+          diff -u /tmp/expected /tmp/actual
+          grep -Fq "function preloadArchiveDestination(destination)" viewer/GV-beta-0010V.py
+          grep -Fq "if(archiveLoadedUrl===sourceUrl)" viewer/GV-beta-0010V.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/GV-beta-0010V.py .github/workflows/fix-10v-hd-archive-preload-once.yml
+          git commit -m '10V preload HD archive pages before user opens them' -m 'ECO-ID: GV-10V-HD-ARCHIVE-PRELOAD-003' -m 'AUTHORIZED-PATHS: viewer/GV-beta-0010V.py, .github/workflows/fix-10v-hd-archive-preload-once.yml' -m 'REQUIREMENTS: preload ESA/JWST archive while galaxy remains visible; instant reveal when ready' -m 'ARCHIVE-AUTHORIZED: false' -m 'USER-GO: true'
+          git push origin HEAD:beta
