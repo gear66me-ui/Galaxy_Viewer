@@ -163,7 +163,7 @@ async function runSplash(preloadedHtml){
     splash.addEventListener('error',()=>{clearTimeout(timer);reject(new Error('SPLASH FAILED TO LOAD'))},{once:true});
   });
   splash.style.visibility='visible';
-  if(cover.isConnected)cover.remove();
+  cover.style.display='none';
   splash.srcdoc=preloadedHtml;
   await splashCompletion;
 }
@@ -171,10 +171,14 @@ try{
   await coverPainted();
   const minimumHold=sleep(ICON_HOLD_MS);
   const splashReadyPromise=preloadSplash();
-  const preloadedSplash=await Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html);
+  const preparedViewerPromise=prepareViewer();
+  const [preloadedSplash,preparedViewer]=await Promise.all([
+    Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html),
+    preparedViewerPromise
+  ]);
   await runSplash(preloadedSplash);
+  cover.style.display='flex';
   const postSplashHold=sleep(POST_SPLASH_HOLD_MS);
-  const preparedViewer=await prepareViewer();
   const viewerReadyPromise=initializeViewer(preparedViewer);
   await Promise.all([viewerReadyPromise,postSplashHold]);
   if(splash.isConnected)splash.remove();
