@@ -86,91 +86,188 @@ display(Javascript(r"""
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
     const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/559dfd10c0c3dafa7f7a5c3f7fe2c76337f26066/viewer/modules/gv-random-galaxy-0031.js?v=4abd2d76e717c0f4abbb61777154b7db14f49cf8';
-    const Hubble_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json';
-    const JWST_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json';
-    const TRAVEL_SECONDS=18;
-    const HOME=Object.freeze({name:'MILKY WAY',ra:266.4051,dec:-28.936175,distance:0,constellation:'Sagittarius',designation:'MILKY WAY',commonName:'Milky Way',age:'13.6 billion years',ageYears:13.6e9,physicalSizeLy:100000,fov:360,hdUrl:'',sourceUrl:'',orientation:'',credit:'',imageType:'Observation',category:'Galaxies'});
-    const HUBBLE_PREFETCH_TARGET=10;
-    const HUBBLE_PREFETCH_RETRY_MS=12000;
-    const PREFETCH_MAX_WORKERS=3;
-    const PREFETCH_HEALTH_INTERVAL_MS=30000;
-    const ALADIN_PREWARM_DWELL_MS=900;
-    const ALADIN_PREWARM_SAMPLE_MS=140;
-    const FRAMING_SAMPLE_SIZE=128;
-    const FRAMING_MAX_SHIFT_FRACTION=.26;
-    const HD_PREFERRED_MAX_BYTES=1048576;
-    const HD_PROBE_MAX_WORKERS=4;
-    const Hubble_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-ESA-icon-BW.svg';
+    const HUBBLE_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json';
+    const JWST_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/948867116a8f35e5265c4cecf887c60c1df0cd77/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json?v=bcc37a66bc5bb697b57530d07daee5886c63338a';
+    const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
+    const TARGET_ICON_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/icon_target_vector.svg?v=92b223268c18c7ed67c69c56374fc0bd968b8236';
+    const HUBBLE_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b';
     const JWST_ICON_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/JWST/esa-jwst-logo.png?v=7169a77e4b56dc582f9b0fb0b76bf389bcf337ce';
-    const TARGET_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg';
-    const ARRIVAL_OCCUPANCY=Object.freeze({target:.28,minFov:.03,maxFov:12});
-    let galaxyCatalog=[],catalogRecordCount=0,catalogDatabaseCounts=Object.freeze({hubble:0,jwst:0,total:0,eligibleHubble:0,eligibleJwst:0,eligibleTotal:0});
-    let activePreparedItem=null,historyPreparedItem=null,activeTargetKey='',priorityPrefetchDestination=null;
-    let prefetchReady=[],prefetchQueued=[],prefetchLoading=new Map(),prefetchControllers=new Map(),prefetchRetryAfter=new Map(),prefetchRetryTimer=0,prefetchFailedCount=0,prefetchHealthTimer=0,lastPrefetchHealth=null;
-    let hdDownloadStatus=new Map(),backgroundWorkSuspended=false;
-    let aladinPrewarm=null,aladinPrewarmReady=null,aladinPrewarmHost=null,aladinPrewarmTimer=0,aladinPrewarmWaitResolve=null,aladinPrewarmActiveKey='',aladinPrewarmLastKey='',aladinPrefetchSerial=Promise.resolve(),aladinPrewarmedKeys=new Set();
-    let galaxyHistory=[],galaxyHistoryIndex=-1,pendingHistoryIndex=null,forcedDestination=null,navigationPending=false,travelHudFrame=0;
+    const HD_LAYOUT=Object.freeze({bannerRatio:366/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});
+    const HOME=Object.freeze({name:'EARTH — MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
+    const ARRIVAL_OCCUPANCY=Object.freeze({target:0.35,max:0.40,minFov:0.05,maxFov:8});
+    const HUBBLE_PREFETCH_TARGET=10;
+    const PREFETCH_MAX_WORKERS=3;
+    const PREFETCH_PROBE_CONCURRENCY=3;
+    const PREFETCH_HEALTH_INTERVAL_MS=30000;
+    const ALADIN_PREWARM_DWELL_MS=1400;
+    const PREFETCH_RETRY_MS=5000;
+    const HD_PREFERRED_MAX_BYTES=1024*1024;
+    const FRAMING_SAMPLE_SIZE=96;
+    const FRAMING_MAX_SHIFT_FRACTION=0.18;
+    const TRAVEL_SECONDS=18;
 
-    const approvedHost=host=>host==='cdn.spacetelescope.org'||host==='cdn.esahubble.org'||host==='cdn.esawebb.org'||host==='raw.githubusercontent.com';
-    const json=async url=>{const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status} ${url}`);return response.json()};
-    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-    const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
-    const smootherstep=t=>{const x=clamp(t,0,1);return x*x*x*(x*(x*6-15)+10)};
-    const createHost=(parent,id)=>{const host=document.createElement('div');host.id=id;parent.appendChild(host);return host};
-    const loadScript=(src,key)=>new Promise((resolve,reject)=>{if(key&&window[key]){resolve(window[key]);return}const script=document.createElement('script');script.src=src;script.async=true;script.onload=()=>resolve(window[key]);script.onerror=()=>reject(new Error(`SCRIPT LOAD FAILED: ${src}`));document.head.appendChild(script)});
-    const ensureAladin=()=>new Promise((resolve,reject)=>{if(window.A?.init){resolve(window.A);return}const script=document.createElement('script');script.src=ALADIN_URL;script.async=true;script.onload=()=>resolve(window.A);script.onerror=()=>reject(new Error('ALADIN LOAD FAILED'));document.head.appendChild(script)});
+    let galaxyCatalog=[];
+    let catalogRecordCount=0;
+    let catalogDatabaseCounts=Object.freeze({hubble:0,jwst:0,total:0,eligibleHubble:0,eligibleJwst:0,eligibleTotal:0});
+    const prefetchReady=[];
+    const prefetchQueued=[];
+    const prefetchLoading=new Map();
+    const prefetchControllers=new Map();
+    const prefetchRetryAfter=new Map();
+    const hdDownloadStatus=new Map();
+    let prefetchFailedCount=0;
+    let prefetchRetryTimer=0;
+    let prefetchHealthTimer=0;
+    let lastPrefetchHealth=Object.freeze({ready:0,loading:0,queued:0,total:0,activeKeys:Object.freeze([]),retryWait:Object.freeze([]),workers:Object.freeze([]),checkedAt:0});
+    let priorityPrefetchDestination=null;
+    let aladinPrefetchSerial=Promise.resolve();
+    let activePreparedItem=null;
+    let historyPreparedItem=null;
+    let activeTargetKey='';
+    let forcedDestination=null;
+    let pendingHistoryIndex=null;
+    let navigationPending=false;
+    let backgroundWorkSuspended=false;
+    const galaxyHistory=[];
+    let galaxyHistoryIndex=-1;
+    let travelHudFrame=0;
+    let aladinPrewarm=null;
+    let aladinPrewarmHost=null;
+    let aladinPrewarmReady=null;
+    let aladinPrewarmTimer=0;
+    let aladinPrewarmWaitResolve=null;
+    let aladinPrewarmActiveKey='';
+    let aladinPrewarmLastKey='';
+    const aladinPrewarmedKeys=new Set();
 
-    function createCenterReticle(root){
-        const div=document.createElement('div');div.id='gv-center-reticle';
-        const img=document.createElement('img');img.src=TARGET_ICON_URL;img.alt='CENTER TARGET';div.appendChild(img);root.appendChild(div);return div;
+    function setHdStatus(destination,state,sourceKind=''){
+        const key=destinationKey(destination);
+        if(!key)return;
+        const old=hdDownloadStatus.get(key)||{};
+        hdDownloadStatus.set(key,{key,name:String(destination?.name||old.name||''),state,sourceKind:sourceKind||old.sourceKind||'',updatedAt:Date.now()});
     }
-    function createBottomControls(root){
-        const nav=document.createElement('div');nav.id='gv-galaxy-nav';
-        const back=document.createElement('button');back.type='button';back.className='gv-galaxy-history gv-galaxy-history-back';back.setAttribute('aria-label','PREVIOUS GALAXY');back.disabled=true;
-        const random=document.createElement('button');random.type='button';random.id='gv-random-galaxy';random.textContent='RANDOM GALAXY';
-        const forward=document.createElement('button');forward.type='button';forward.className='gv-galaxy-history gv-galaxy-history-forward';forward.setAttribute('aria-label','NEXT GALAXY');forward.disabled=true;
-        nav.append(back,random,forward);root.appendChild(nav);
-        const version=document.createElement('div');version.id='gv-version-label';version.textContent=`VERSION ${DISPLAY_VERSION}`;root.appendChild(version);
-        return {nav,back,random,forward,version};
+
+    function getHubbleDownloadStatus(){
+        return Object.freeze([...hdDownloadStatus.values()].map(item=>Object.freeze({...item})));
     }
-    function createUniverseContext(root){
-        const wrap=document.createElement('div');wrap.id='gv-universe-context';
-        const label=document.createElement('div');label.className='gv-universe-label';label.innerHTML='OBSERVABLE UNIVERSE<span class="gv-universe-count">ABOUT 2 TRILLION GALAXIES</span>';
-        const leader=document.createElement('div');leader.className='gv-universe-leader';wrap.append(label,leader);root.appendChild(wrap);return wrap;
+
+    function suspendBackgroundWork(){
+        if(backgroundWorkSuspended)return;
+        backgroundWorkSuspended=true;
+        if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
+        if(aladinPrewarmWaitResolve){const resolve=aladinPrewarmWaitResolve;aladinPrewarmWaitResolve=null;resolve(false)}
+        aladinPrewarmActiveKey='';
+        aladinPrewarm=null;
+        aladinPrewarmReady=null;
+        try{aladinPrewarmHost?.remove()}catch(_){}
+        aladinPrewarmHost=null;
+        queueMicrotask(fillPrefetchQueue);
     }
-    function createHomeOverlay(root){
-        const wrap=document.createElement('div');wrap.id='gv-we-are-here';
-        const leader=document.createElement('div');leader.className='gv-home-leader';
-        const label=document.createElement('div');label.className='gv-home-label';label.innerHTML='<div class="gv-home-origin"><span class="gv-earth-icon">🌎</span><span>WE ARE HERE</span></div><div class="gv-home-sub">MILKY WAY</div><div class="gv-home-hint">CLICK RANDOM GALAXY TO NAVIGATE</div>';
-        wrap.append(leader,label);root.appendChild(wrap);return wrap;
+
+    function resumeBackgroundWork(){
+        if(!backgroundWorkSuspended)return;
+        backgroundWorkSuspended=false;
+        const active=galaxyCatalog.find(item=>destinationKey(item)===activeTargetKey);
+        const alreadyReady=Boolean(activePreparedItem?.key===activeTargetKey||prefetchReady.some(item=>item.key===activeTargetKey));
+        if(active&&!alreadyReady)priorityPrefetchDestination=active;
+        queueMicrotask(fillPrefetchQueue);
+    }
+
+    function clamp(value,min,max){return Math.max(min,Math.min(max,Number(value)))}
+    function clamp01(value){return clamp(value,0,1)}
+    function smootherstep(value){const t=clamp01(value);return t*t*t*(t*(t*6-15)+10)}
+
+    function parseDistanceMly(value){
+        if(typeof value==='number'&&Number.isFinite(value)&&value>0)return value;
+        const text=String(value??'').trim().toLowerCase().replace(/,/g,'');
+        if(!text)return null;
+        let match=text.match(/([0-9]+(?:\.[0-9]+)?)\s*(billion|million|thousand)\s+light\s*-?\s*years?/i);
+        if(match){
+            const number=Number(match[1]);
+            if(!Number.isFinite(number)||number<=0)return null;
+            if(match[2]==='billion')return number*1000;
+            if(match[2]==='million')return number;
+            return number/1000;
+        }
+        match=text.match(/([0-9][0-9\s]*(?:\.[0-9]+)?)\s+light\s*-?\s*years?/i);
+        if(!match)return null;
+        const lightYears=Number(match[1].replace(/\s+/g,''));
+        return Number.isFinite(lightYears)&&lightYears>0?lightYears/1_000_000:null;
+    }
+
+    function parseFieldOfViewDegrees(value){
+        const text=String(value??'').trim().toLowerCase();
+        if(!text)return null;
+        const numbers=[...text.matchAll(/[0-9]+(?:\.[0-9]+)?/g)].slice(0,2).map(match=>Number(match[0])).filter(Number.isFinite);
+        if(!numbers.length)return null;
+        let span=Math.max(...numbers);
+        if(/arcsec/.test(text))span/=3600;
+        else if(/arcmin/.test(text))span/=60;
+        else if(!/(?:degree|\bdeg\b)/.test(text))return null;
+        return span>0?span:null;
     }
 
     function parseArchiveOrientation(value){
-        const text=String(value||'').trim();if(!text)return null;
-        const numeric=text.match(/(?:orientation|rotation|position angle|pa)[^+\-\d]*([+\-]?\d+(?:\.\d+)?)/i)||text.match(/^\s*([+\-]?\d+(?:\.\d+)?)\s*(?:deg|degrees?|°)?\s*$/i);
-        if(!numeric)return null;
-        const angle=Number(numeric[1]);return Number.isFinite(angle)?angle:null;
+        const text=String(value??'').trim();
+        if(!text)return null;
+        const match=text.match(/North\s+is\s+([0-9]+(?:\.[0-9]+)?)\s*°?\s*(right|left)\s+of\s+vertical/i);
+        if(!match)return null;
+        const angle=Number(match[1]);
+        if(!Number.isFinite(angle))return null;
+        return normalizeSignedAngle((match[2].toLowerCase()==='left'?-1:1)*angle);
     }
-    function parseFieldOfView(value){
-        const text=String(value||'').toLowerCase();if(!text)return null;
-        const values=[...text.matchAll(/([0-9]+(?:\.[0-9]+)?)\s*(arcsec|arcmin|degrees?|deg|°)/g)].map(match=>{const number=Number(match[1]);const unit=match[2];if(!Number.isFinite(number)||number<=0)return null;if(unit==='arcsec')return number/3600;if(unit==='arcmin')return number/60;return number}).filter(Number.isFinite);
-        if(!values.length)return null;return Math.max(...values);
+
+    function extractDesignation(candidate){
+        const explicit=String(candidate?.designation||'').trim();
+        const texts=[explicit,candidate?.name,candidate?.title,candidate?.displayName,candidate?.imageType,candidate?.category]
+            .map(value=>String(value||'').trim()).filter(Boolean);
+        const joined=texts.join(' | ');
+        if(/stephan(?:'|’)?s\s+quintet/i.test(joined))return 'HCG 92';
+        for(const text of texts){
+            let match=text.match(/\bHCG\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\bHICKSON(?:\s+COMPACT\s+GROUP)?\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\bABELL\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `ABELL ${match[1].toUpperCase()}`;
+        }
+        if(explicit)return explicit.toUpperCase();
+        for(const text of texts){
+            const match=text.match(/\b(?:M|NGC|IC|UGC|PGC|ARP|ESO)\s*[- ]?\s*\d+[A-Z]?(?:[- ]?\d+)?\b/i);
+            if(match)return match[0].replace(/\s+/g,' ').toUpperCase();
+        }
+        if(/\b(?:galaxy\s+cluster|cluster\s+of\s+galaxies|galaxies\s+cluster)\b/i.test(joined))return 'GALAXY CLUSTER';
+        if(/\b(?:compact\s+group|galaxy\s+group|group\s+of\s+galaxies|quintet|quartet|triplet)\b/i.test(joined))return 'GALAXY GROUP';
+        if(/\b(?:galaxy\s+pair|pair\s+of\s+galaxies|interacting\s+galaxies)\b/i.test(joined))return 'GALAXY PAIR';
+        if(/\b(?:star\s+cluster|stellar\s+cluster)\b/i.test(joined))return 'STAR CLUSTER';
+        if(/\b(?:star\s+field|stellar\s+field)\b/i.test(joined))return 'STAR FIELD';
+        if(/\bnebula\b/i.test(joined))return 'NEBULA';
+        if(/\bstar\b/i.test(joined)&&!/\bgalax/i.test(joined))return 'STAR';
+        return 'GALAXY';
     }
-    function parsePhysicalSizeLy(value){
-        if(Array.isArray(value)){const v=value.map(Number).filter(n=>Number.isFinite(n)&&n>0);return v.length?v:null}
-        if(Number.isFinite(Number(value))&&Number(value)>0)return Number(value);
-        const text=String(value||'').toLowerCase();if(!text)return null;
-        const values=[...text.matchAll(/([0-9]+(?:\.[0-9]+)?)\s*(?:x\s*([0-9]+(?:\.[0-9]+)?)\s*)?(million\s+)?light[\s-]*years?/g)].flatMap(match=>{const scale=match[3]?1e6:1;const a=Number(match[1])*scale,b=match[2]?Number(match[2])*scale:null;return Number.isFinite(b)?[a,b]:[a]}).filter(n=>Number.isFinite(n)&&n>0);return values.length?values:null;
-    }
-    function destinationFromHubble(candidate,index){
-        const name=String(candidate.commonName||candidate.designation||candidate.name||`HUBBLE GALAXY ${index+1}`).trim();
-        const designation=String(candidate.designation||candidate.name||name).trim();
-        const commonName=String(candidate.commonName||candidate.pseudonym||name).trim();
-        const ra=Number(candidate.ra),dec=Number(candidate.dec),distance=Number(candidate.distance),ageYears=Number(candidate.ageYears);
-        const age=String(candidate.age||'').trim(),constellation=String(candidate.constellation||'').trim();
-        const fieldDegrees=parseFieldOfView(candidate.fieldOfView||candidate.imageFieldOfView||candidate.fov);
-        if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(distance)||distance<=0||!fieldDegrees)return null;
-        let hd,source;try{hd=new URL(String(candidate.selectedImageUrl||candidate.hdUrl||''));source=new URL(String(candidate.sourceUrl||''))}catch(_){return null}
+
+    function normalizeCatalogGalaxy(candidate,index){
+        if(!candidate||typeof candidate!=='object')return null;
+        const name=String(candidate.name||candidate.title||'').trim();
+        const ra=Number(candidate.ra),dec=Number(candidate.dec);
+        const distance=parseDistanceMly(candidate.science?.distanceMly??candidate.distance);
+        const constellation=String(candidate.constellation||'').trim();
+        const designation=extractDesignation(candidate);
+        const commonName=String(candidate.displayName||candidate.title||candidate.name||'').trim();
+        const age=String(candidate.science?.ageDisplay??candidate.age??candidate.ageEstimate??candidate.age_estimate??'').trim();
+        const ageGyr=Number(candidate.science?.ageGyr);
+        const ageYears=Number.isFinite(ageGyr)&&ageGyr>0?ageGyr*1_000_000_000:Number(candidate.ageYears??candidate.age_years);
+        const scienceSize=Array.isArray(candidate.science?.sizeKly)?candidate.science.sizeKly.map(value=>Number(value)*1000):null;
+        const sizeRaw=scienceSize??candidate.physicalSizeLy??candidate.physical_size_ly??null;
+        const physicalSizeLy=Array.isArray(sizeRaw)?sizeRaw.map(Number):Number(sizeRaw);
+        const fieldDegrees=parseFieldOfViewDegrees(candidate.fieldOfView);
+        const sourceUrl=String(candidate.sourceUrl||'').trim();
+        const hdUrl=String(candidate.selectedImageUrl||'').trim();
+        if(!name||!Number.isFinite(ra)||ra<0||ra>=360||!Number.isFinite(dec)||dec<-90||dec>90)return null;
+        if(!Number.isFinite(distance)||distance<=0||!constellation||!Number.isFinite(fieldDegrees)||fieldDegrees<=0)return null;
+        let hd,source;
+        try{hd=new URL(hdUrl);source=new URL(sourceUrl)}catch(_){return null}
+        const approvedHost=host=>host==='esahubble.org'||host.endsWith('.esahubble.org');
         if(hd.protocol!=='https:'||source.protocol!=='https:'||!approvedHost(hd.hostname)||!approvedHost(source.hostname))return null;
         const imageType=String(candidate.imageType||'').trim();
         if(imageType&&/\b(artwork|illustration|collage|chart|simulation|diagram|artist(?:'s)? impression)\b/i.test(imageType))return null;
@@ -184,19 +281,36 @@ display(Javascript(r"""
             fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,sourceUrl:source.href,orientation:String(candidate.orientation||'').trim(),
             credit:String(candidate.credit||'ESA/Hubble').trim()||'ESA/Hubble',
             imageType:imageType||'Observation',category:'Galaxies',telescope:'Hubble Space Telescope',
-            githubImageUrl:'',sha256:String(candidate.sha256||'').trim(),catalogIndex:index
+            githubImageUrl:String(candidate.githubImageUrl||'').trim(),sha256:String(candidate.sha256||'').trim(),catalogIndex:index
         });
     }
-    function destinationFromJwst(candidate,index){
-        const name=String(candidate.commonName||candidate.designation||candidate.name||`JWST GALAXY ${index+1}`).trim();
-        const designation=String(candidate.designation||candidate.name||name).trim();
-        const commonName=String(candidate.commonName||candidate.pseudonym||name).trim();
-        const ra=Number(candidate.ra),dec=Number(candidate.dec),distance=Number(candidate.distance),ageYears=Number(candidate.ageYears);
-        const age=String(candidate.age||'').trim(),constellation=String(candidate.constellation||'').trim();
-        const fieldDegrees=parseFieldOfView(candidate.fieldOfView||candidate.imageFieldOfView||candidate.fov);
-        const physicalSizeLy=parsePhysicalSizeLy(candidate.physicalSizeLy||candidate.size||candidate.diameterLy||candidate.diameter);
-        if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(distance)||distance<=0||!fieldDegrees)return null;
-        let hd,source;try{hd=new URL(String(candidate.selectedImageUrl||candidate.hdUrl||''));source=new URL(String(candidate.sourceUrl||''))}catch(_){return null}
+
+    function chooseJwstImageUrl(candidate){
+        const candidates=[...(Array.isArray(candidate?.jpegCandidates)?candidate.jpegCandidates:[]),candidate?.selectedImageUrl].map(value=>String(value||'').trim()).filter(Boolean);
+        return candidates.find(url=>/\/screen\//i.test(url))||String(candidate?.selectedImageUrl||candidates[0]||'').trim();
+    }
+
+    function normalizeJwstGalaxy(candidate,index){
+        if(!candidate||typeof candidate!=='object')return null;
+        const name=String(candidate.name||candidate.title||'').trim();
+        const ra=Number(candidate.ra),dec=Number(candidate.dec);
+        const distance=parseDistanceMly(candidate.science?.distanceMly??candidate.distance);
+        const constellation=String(candidate.constellation||'').trim();
+        const designation=extractDesignation(candidate);
+        const commonName=String(candidate.displayName||candidate.title||candidate.name||'').trim();
+        const age=String(candidate.science?.ageDisplay??candidate.age??'').trim();
+        const ageGyr=Number(candidate.science?.ageGyr);
+        const ageYears=Number.isFinite(ageGyr)&&ageGyr>0?ageGyr*1_000_000_000:null;
+        const scienceSize=Array.isArray(candidate.science?.sizeKly)?candidate.science.sizeKly.map(value=>Number(value)*1000):null;
+        const physicalSizeLy=Array.isArray(scienceSize)?scienceSize.filter(value=>Number.isFinite(value)&&value>0):null;
+        const fieldDegrees=parseFieldOfViewDegrees(candidate.fieldOfView);
+        const sourceUrl=String(candidate.sourceUrl||'').trim();
+        const hdUrl=chooseJwstImageUrl(candidate);
+        if(!name||!Number.isFinite(ra)||ra<0||ra>=360||!Number.isFinite(dec)||dec<-90||dec>90)return null;
+        if(!Number.isFinite(distance)||distance<=0||!constellation||!Number.isFinite(fieldDegrees)||fieldDegrees<=0)return null;
+        let hd,source;
+        try{hd=new URL(hdUrl);source=new URL(sourceUrl)}catch(_){return null}
+        const approvedHost=host=>host==='esawebb.org'||host.endsWith('.esawebb.org');
         if(hd.protocol!=='https:'||source.protocol!=='https:'||!approvedHost(hd.hostname)||!approvedHost(source.hostname))return null;
         const imageType=String(candidate.imageType||'').trim();
         if(imageType&&/\b(artwork|illustration|collage|chart|simulation|diagram|artist(?:'s)? impression)\b/i.test(imageType))return null;
@@ -217,14 +331,36 @@ display(Javascript(r"""
     }
 
     async function loadGalaxyCatalog(){
-        const [hubbleRaw,jwstRaw]=await Promise.all([json(Hubble_CATALOG_URL),json(JWST_CATALOG_URL)]);
-        const hubbleRecords=Array.isArray(hubbleRaw)?hubbleRaw:Array.isArray(hubbleRaw?.records)?hubbleRaw.records:[];
-        const jwstRecords=Array.isArray(jwstRaw)?jwstRaw:Array.isArray(jwstRaw?.records)?jwstRaw.records:[];
-        const hubble=hubbleRecords.map(destinationFromHubble).filter(Boolean);
-        const jwst=jwstRecords.map(destinationFromJwst).filter(Boolean);
-        const combined=[...hubble,...jwst];
+        const response=await fetch(HUBBLE_CATALOG_URL,{cache:'no-store'});
+        if(!response.ok)throw new Error('FULL HUBBLE CATALOG RETURNED HTTP '+response.status);
+        const payload=await response.json();
+        const raw=payload?.entries;
+        const declared=Number(payload?.categoryEntryCount);
+        if(!Array.isArray(raw)||!raw.length||!Number.isFinite(declared)||declared!==raw.length)throw new Error('FULL HUBBLE CATALOG COUNT MISMATCH');
+        const eligible=raw.map(normalizeCatalogGalaxy).filter(Boolean);
+        if(eligible.length<HUBBLE_PREFETCH_TARGET)throw new Error('FULL HUBBLE CATALOG HAS FEWER THAN TEN TRUTHFULLY TARGETABLE GALAXIES');
+        return Object.freeze({rawCount:raw.length,eligible:Object.freeze(eligible)});
+    }
+
+    async function loadJwstCatalog(){
+        const response=await fetch(JWST_CATALOG_URL,{cache:'no-store'});
+        if(!response.ok)throw new Error('FULL JWST CATALOG RETURNED HTTP '+response.status);
+        const payload=await response.json();
+        const raw=payload?.entries;
+        const declared=Number(payload?.categoryEntryCount);
+        if(payload?.version!=='full-0002')throw new Error('JWST CATALOG MUST BE FULL-0002');
+        if(!Array.isArray(raw)||!raw.length||!Number.isFinite(declared)||declared!==raw.length)throw new Error('FULL JWST CATALOG COUNT MISMATCH');
+        const eligible=raw.map(normalizeJwstGalaxy).filter(Boolean);
+        if(!eligible.length)throw new Error('FULL JWST CATALOG HAS NO TARGETABLE GALAXIES');
+        return Object.freeze({rawCount:raw.length,eligible:Object.freeze(eligible)});
+    }
+
+    async function loadCombinedGalaxyCatalog(){
+        const [hubbleData,jwstData]=await Promise.all([loadGalaxyCatalog(),loadJwstCatalog()]);
+        const hubble=hubbleData.eligible,jwst=jwstData.eligible;
+        const combined=Object.freeze([...hubble,...jwst]);
         catalogRecordCount=combined.length;
-        catalogDatabaseCounts=Object.freeze({hubble:hubbleRecords.length,jwst:jwstRecords.length,total:hubbleRecords.length+jwstRecords.length,eligibleHubble:hubble.length,eligibleJwst:jwst.length,eligibleTotal:combined.length});
+        catalogDatabaseCounts=Object.freeze({hubble:hubbleData.rawCount,jwst:jwstData.rawCount,total:hubbleData.rawCount+jwstData.rawCount,eligibleHubble:hubble.length,eligibleJwst:jwst.length,eligibleTotal:combined.length});
         console.info('GV-10G CATALOG COUNTS',catalogDatabaseCounts);
         return combined;
     }
@@ -237,55 +373,50 @@ display(Javascript(r"""
         return pool[Math.floor(Math.random()*pool.length)];
     }
 
-    async function probeHdSourceBytes(source,signal=null){
-        let response=null;
-        try{response=await fetch(source.url,{method:'HEAD',cache:'no-store',signal})}catch(_){}
-        if(response?.ok){
-            const size=Number(response.headers.get('content-length'));
-            if(Number.isFinite(size)&&size>0)return size;
-        }
+    function releasePreparedItem(item){
+        if(!item)return;
+        try{if(item.image)item.image.src=''}catch(_){}
+        try{if(item.objectUrl)URL.revokeObjectURL(item.objectUrl)}catch(_){}
+    }
+
+    async function decodePreparedBlob(blob){
+        const objectUrl=URL.createObjectURL(blob);
+        const image=new Image();
+        image.decoding='async';
+        image.loading='eager';
+        image.src=objectUrl;
         try{
-            response=await fetch(source.url,{headers:{Range:'bytes=0-0'},cache:'no-store',signal});
-            if(response.ok||response.status===206){
-                const range=String(response.headers.get('content-range')||'');
-                const match=range.match(/\/(\d+)$/);
-                const size=match?Number(match[1]):Number(response.headers.get('content-length'));
-                if(Number.isFinite(size)&&size>0)return size;
+            if(image.decode){
+                try{await image.decode()}catch(_){
+                    if(!(image.complete&&image.naturalWidth))await new Promise((resolve,reject)=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',()=>reject(new Error('HD PRELOAD FAILED')),{once:true})});
+                }
+            }else if(!(image.complete&&image.naturalWidth)){
+                await new Promise((resolve,reject)=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',()=>reject(new Error('HD PRELOAD FAILED')),{once:true})});
             }
-        }catch(_){}
-        return null;
+            if(!image.naturalWidth||!image.naturalHeight)throw new Error('HD PRELOAD DECODED WITHOUT IMAGE DIMENSIONS');
+            return {image,objectUrl};
+        }catch(error){
+            image.src='';
+            URL.revokeObjectURL(objectUrl);
+            throw error;
+        }
     }
 
-    async function orderHdSourcesBySize(sources,signal=null){
-        const probed=new Array(sources.length);let next=0;
-        const workers=Array.from({length:Math.min(HD_PROBE_MAX_WORKERS,sources.length)},async()=>{
-            for(;;){
-                const index=next++;if(index>=sources.length)return;
-                let bytes=null;try{bytes=await probeHdSourceBytes(sources[index],signal)}catch(error){if(error?.name==='AbortError')throw error}
-                probed[index]={...sources[index],bytes:Number.isFinite(bytes)&&bytes>0?bytes:null};
-            }
-        });
-        await Promise.all(workers);
-        const known=probed.filter(source=>Number.isFinite(source.bytes)&&source.bytes>0);
-        const preferred=known.filter(source=>source.bytes<=HD_PREFERRED_MAX_BYTES).sort((a,b)=>b.rank-a.rank||b.bytes-a.bytes);
-        const oversized=known.filter(source=>source.bytes>HD_PREFERRED_MAX_BYTES).sort((a,b)=>a.bytes-b.bytes||b.rank-a.rank);
-        const unknown=probed.filter(source=>!Number.isFinite(source.bytes)).sort((a,b)=>b.rank-a.rank);
-        return [...preferred,...oversized,...unknown];
-    }
-
-    function hdVariantRank(path){
-        if(/publicationjpg/i.test(path))return 70;
-        if(/large/i.test(path))return 60;
-        if(/screen/i.test(path))return 50;
-        if(/wallpaper1/i.test(path))return 40;
-        if(/thumb700x/i.test(path))return 30;
-        if(/thumb300y/i.test(path))return 20;
+    function hdVariantRank(url){
+        const value=String(url||'').toLowerCase();
+        if(value.includes('/publicationjpg/'))return 60;
+        if(value.includes('/large/'))return 50;
+        if(value.includes('/screen/'))return 40;
+        if(value.includes('/wallpaper'))return 30;
+        if(value.includes('/thumb700'))return 20;
+        if(value.includes('/thumb300'))return 10;
         return 45;
     }
 
-    function hdSourceCandidates(destination){
-        const sources=[],seen=new Set();
-        const add=(url,kind,rank=45)=>{
+    function buildHdSourceCandidates(destination){
+        const sources=[];
+        const seen=new Set();
+        const add=(url,kind,rank=hdVariantRank(url))=>{
             const value=String(url||'').trim();
             if(!/^https:\/\//i.test(value)||seen.has(value))return;
             seen.add(value);sources.push({url:value,kind,rank});
@@ -304,32 +435,68 @@ display(Javascript(r"""
         return sources.sort((a,b)=>b.rank-a.rank);
     }
 
-    async function decodePreparedBlob(blob){
-        const objectUrl=URL.createObjectURL(blob);
+    async function probeHdSourceBytes(source,signal=null){
         try{
-            const image=new Image();image.decoding='async';image.src=objectUrl;
-            if(typeof image.decode==='function')await image.decode();else await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject});
-            return {image,objectUrl};
-        }catch(error){URL.revokeObjectURL(objectUrl);throw error}
+            const head=await fetch(source.url,{method:'HEAD',cache:'force-cache',signal});
+            if(head.ok){
+                const length=Number(head.headers.get('content-length'));
+                if(Number.isFinite(length)&&length>0)return length;
+            }
+        }catch(error){if(error?.name==='AbortError')throw error}
+        try{
+            const probe=await fetch(source.url,{method:'GET',headers:{Range:'bytes=0-0'},cache:'force-cache',signal});
+            if(!probe.ok&&probe.status!==206)return null;
+            const range=String(probe.headers.get('content-range')||'');
+            const total=Number(range.match(/\/(\d+)$/)?.[1]);
+            const length=Number(probe.headers.get('content-length'));
+            try{await probe.body?.cancel()}catch(_){}
+            if(Number.isFinite(total)&&total>0)return total;
+            if(probe.status===200&&Number.isFinite(length)&&length>0)return length;
+        }catch(error){if(error?.name==='AbortError')throw error}
+        return null;
     }
 
-    function setHdStatus(destination,state,sourceKind=''){
-        const key=destinationKey(destination);if(!key)return;
-        const current=hdDownloadStatus.get(key)||{};
-        const now=Date.now();
-        hdDownloadStatus.set(key,Object.freeze({...current,key,state,sourceKind:sourceKind||current.sourceKind||'',updatedAt:now,lastProgressAt:now}));
+    async function mapWithConcurrency(items,limit,worker){
+        const results=new Array(items.length);
+        let next=0;
+        const count=Math.max(1,Math.min(Number(limit)||1,items.length));
+        await Promise.all(Array.from({length:count},async()=>{
+            for(;;){
+                const index=next++;
+                if(index>=items.length)return;
+                results[index]=await worker(items[index],index);
+            }
+        }));
+        return results;
+    }
+
+    async function orderHdSourcesBySize(destination,signal=null){
+        const sources=buildHdSourceCandidates(destination);
+        if(sources.length<2)return sources;
+        const probed=await mapWithConcurrency(sources,PREFETCH_PROBE_CONCURRENCY,async source=>({...source,bytes:await probeHdSourceBytes(source,signal)}));
+        const preferred=[];
+        const oversized=[];
+        const unknown=[];
+        for(const source of probed){
+            const bytes=source.bytes;
+            if(Number.isFinite(bytes)&&bytes>0&&bytes<=HD_PREFERRED_MAX_BYTES)preferred.push(source);
+            else if(Number.isFinite(bytes)&&bytes>HD_PREFERRED_MAX_BYTES)oversized.push(source);
+            else unknown.push(source);
+        }
+        preferred.sort((a,b)=>b.rank-a.rank||b.bytes-a.bytes);
+        oversized.sort((a,b)=>a.bytes-b.bytes||a.rank-b.rank);
+        unknown.sort((a,b)=>a.rank-b.rank);
+        return [...preferred,...oversized,...unknown];
     }
 
     async function prepareHdDestination(destination,signal=null){
-        const sources=await orderHdSourcesBySize(hdSourceCandidates(destination),signal);
-        if(!sources.length)throw new Error('HD PRELOAD HAS NO SOURCES');
+        const sources=await orderHdSourcesBySize(destination,signal);
         let lastError=null;
         for(const source of sources){
-            if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
-            setHdStatus(destination,'DOWNLOADING',source.kind);
             try{
+                setHdStatus(destination,'DOWNLOADING',source.kind);
                 const response=await fetch(source.url,{cache:'force-cache',signal});
-                if(!response.ok)throw new Error(`HTTP ${response.status} ${source.url}`);
+                if(!response.ok)throw new Error('HD PRELOAD RETURNED HTTP '+response.status);
                 const blob=await response.blob();
                 if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
                 setHdStatus(destination,'DECODING',source.kind);
@@ -651,7 +818,7 @@ display(Javascript(r"""
                 }
                 prefetchFailedCount++;
                 setHdStatus(destination,'RETRY-WAIT');
-                prefetchRetryAfter.set(key,Date.now()+HUBBLE_PREFETCH_RETRY_MS);
+                prefetchRetryAfter.set(key,Date.now()+PREFETCH_RETRY_MS);
             }
         })().finally(()=>{
             prefetchLoading.delete(key);
@@ -857,35 +1024,159 @@ display(Javascript(r"""
             failedCount:prefetchFailedCount,
             activeDownloadKeys:Object.freeze([...prefetchLoading.keys()]),
             activePreparedGalaxy:activePreparedItem?.destination?.name||'',
-            activePreparedProvider:activePreparedItem?.destination?.provider||'',
-            historyPreparedGalaxy:historyPreparedItem?.destination?.name||'',
-            backgroundWorkSuspended,
-            health:lastPrefetchHealth
+            activePreparedSource:activePreparedItem?.sourceKind||'',
+            readyDestinations:prefetchReady.map(item=>item.destination.name),
+            queuedDestinations:prefetchQueued.map(item=>item.name),
+            health:lastPrefetchHealth,
+            downloads:getHubbleDownloadStatus()
         });
     }
-    function getHubbleDownloadStatus(){return Object.freeze([...hdDownloadStatus.values()].map(value=>Object.freeze({...value})))}
-    function getAladinPrewarmState(){return Object.freeze({ready:Boolean(aladinPrewarm),activeKey:aladinPrewarmActiveKey,lastKey:aladinPrewarmLastKey,warmedCount:aladinPrewarmedKeys.size,suspended:backgroundWorkSuspended})}
 
-    function releasePreparedItem(item){if(item?.objectUrl)try{URL.revokeObjectURL(item.objectUrl)}catch(_){}}
-    function suspendBackgroundWork(){
-        if(backgroundWorkSuspended)return;
-        backgroundWorkSuspended=true;
-        for(const [key,controller] of prefetchControllers){
-            if(key===activeTargetKey)continue;
-            try{controller.abort()}catch(_){}
-        }
-        prefetchQueued.length=0;
-        if(prefetchRetryTimer){clearTimeout(prefetchRetryTimer);prefetchRetryTimer=0}
-        if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
-        if(aladinPrewarmWaitResolve){const resolve=aladinPrewarmWaitResolve;aladinPrewarmWaitResolve=null;resolve(false)}
-    }
-    function resumeBackgroundWork(){
-        if(!backgroundWorkSuspended)return;
-        backgroundWorkSuspended=false;
-        fillPrefetchQueue();
+    function getAladinPrewarmState(){
+        return Object.freeze({
+            targetReady:HUBBLE_PREFETCH_TARGET,
+            cachedCount:aladinPrewarmedKeys.size,
+            activeKey:aladinPrewarmActiveKey,
+            queuedDestinations:[]
+        });
     }
 
-    const galaxyCatalogPromise=loadGalaxyCatalog();
+    function loadScript(url,datasetKey){
+        return new Promise((resolve,reject)=>{
+            const existing=[...document.scripts].find(script=>script.src===url||script.dataset[datasetKey]==='true');
+            if(existing){
+                if(existing.dataset.gvLoaded==='true'){resolve(existing);return}
+                existing.addEventListener('load',()=>resolve(existing),{once:true});
+                existing.addEventListener('error',()=>reject(new Error('SCRIPT FAILED TO LOAD: '+url)),{once:true});
+                return;
+            }
+            const script=document.createElement('script');
+            script.charset='utf-8';
+            script.dataset[datasetKey]='true';
+            if(url.startsWith('https://raw.githubusercontent.com/')){
+                fetch(url,{cache:'no-store'}).then(response=>{
+                    if(!response.ok)throw new Error('SCRIPT FETCH RETURNED HTTP '+response.status+': '+url);
+                    return response.text();
+                }).then(source=>{
+                    if(datasetKey==='gvRandomGalaxy0031'){
+                        source=source.replace("return host === 'esahubble.org' || host.endsWith('.esahubble.org');","return host === 'esahubble.org' || host.endsWith('.esahubble.org') || host === 'esawebb.org' || host.endsWith('.esawebb.org');");
+                        source=source.replace("if (telescope && !/hubble/i.test(telescope)) throw new Error('Rejected entry without Hubble telescope data.');","if (telescope && !/(hubble|webb)/i.test(telescope)) throw new Error('Rejected entry without Hubble/Webb telescope data.');");
+                        source=source.replace("source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        hubble: true,","source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        provider: cleanText(candidate.provider || (/webb/i.test(telescope) ? 'JWST' : 'HUBBLE')).toUpperCase(),\n        hubble: true,");
+                        if(!source.includes("host === 'esawebb.org'")||!source.includes("provider: cleanText(candidate.provider"))throw new Error('RANDOM GALAXY 0031 10M COMPATIBILITY PATCH FAILED');
+                    }
+                    script.textContent=source;
+                    document.head.appendChild(script);
+                    script.dataset.gvLoaded='true';
+                    resolve(script);
+                }).catch(error=>reject(new Error('SCRIPT FAILED TO LOAD: '+url+' — '+String(error?.message||error))));
+                return;
+            }
+            script.src=url;
+            script.addEventListener('load',()=>{script.dataset.gvLoaded='true';resolve(script)},{once:true});
+            script.addEventListener('error',()=>reject(new Error('SCRIPT FAILED TO LOAD: '+url)),{once:true});
+            document.head.appendChild(script);
+        });
+    }
+
+    async function ensureAladin(){
+        if(window.A?.init)return window.A;
+        await loadScript(ALADIN_URL,'gvAladin382');
+        if(!window.A?.init)throw new Error('ALADIN LITE 3.8.2 EXPORT MISSING');
+        return window.A;
+    }
+
+    function createHost(root,id){
+        let host=root.querySelector('#'+id);
+        if(!host){host=document.createElement('div');host.id=id;root.appendChild(host)}
+        return host;
+    }
+
+    function createCenterReticle(root){
+        const reticle=document.createElement('div');
+        reticle.id='gv-center-reticle';
+        reticle.setAttribute('aria-hidden','true');
+        const image=document.createElement('img');
+        image.src=RETICLE_URL;
+        image.alt='';
+        image.width=32;
+        image.height=32;
+        reticle.appendChild(image);
+        root.appendChild(reticle);
+        return reticle;
+    }
+
+    function createBottomControls(root){
+        const version=document.createElement('div');
+        version.id='gv-version-label';
+        version.textContent=`VERSION ${DISPLAY_VERSION}`;
+        version.setAttribute('aria-label',`GALAXY VIEWER VERSION ${DISPLAY_VERSION}`);
+        root.appendChild(version);
+
+        const nav=document.createElement('div');
+        nav.id='gv-galaxy-nav';
+        const back=document.createElement('button');
+        back.type='button';back.className='gv-galaxy-history gv-galaxy-history-back';back.textContent='';back.setAttribute('aria-label','PREVIOUS GALAXY');back.disabled=true;
+        const random=document.createElement('button');
+        random.id='gv-random-galaxy';random.type='button';random.innerHTML='<span class="gvrg-random-layout"><span class="gvrg-random-star-wrap gvrg-random-star-wrap-left" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet gvrg-random-comet-left"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap gvrg-random-star-wrap-right" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></span>';random.setAttribute('aria-label','RANDOM GALAXY');
+        const forward=document.createElement('button');
+        forward.type='button';forward.className='gv-galaxy-history gv-galaxy-history-forward';forward.textContent='';forward.setAttribute('aria-label','NEXT GALAXY');forward.disabled=true;
+        nav.append(back,random,forward);root.appendChild(nav);
+
+        const hud=document.createElement('div');
+        hud.id='gv-travel-hud';hud.setAttribute('role','status');hud.setAttribute('aria-live','polite');
+        hud.innerHTML='<div id="gv-travel-distance"><span id="gv-travel-distance-value"><span id="gv-travel-distance-integer">0</span><span id="gv-travel-distance-decimal">.</span><span id="gv-travel-distance-fraction">00</span></span><span id="gv-travel-distance-unit">MILLION LIGHT-YEARS</span></div><div id="gv-travel-primary"><div id="gv-travel-course">COURSE LOCKED</div><div id="gv-travel-heading">HEADING TO</div><div id="gv-travel-destination"></div></div>';
+        root.appendChild(hud);
+        return {version,nav,back,random,forward,hud};
+    }
+
+    function createUniverseContext(root){
+        const context=document.createElement('div');
+        context.id='gv-universe-context';
+        context.setAttribute('aria-live','polite');
+        context.innerHTML='<div class="gv-universe-label">THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE<span class="gv-universe-count">EST. ~2 TRILLION GALAXIES</span></div><div class="gv-universe-leader" aria-hidden="true"></div>';
+        root.appendChild(context);
+        return context;
+    }
+
+    function createHomeOverlay(root){
+        const overlay=document.createElement('div');
+        overlay.id='gv-we-are-here';
+        overlay.setAttribute('aria-live','polite');
+        overlay.innerHTML='<div class="gv-home-leader" aria-hidden="true"></div><div class="gv-home-label"><div class="gv-home-origin"><span class="gv-earth-icon" aria-hidden="true">🌎</span><strong>WE ARE HERE</strong></div><div class="gv-home-sub">EARTH — MILKY WAY</div><div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div></div>';
+        root.appendChild(overlay);
+        return overlay;
+    }
+
+    function equatorialToGalactic(raDeg,decDeg){
+        const d=Math.PI/180,ra=raDeg*d,dec=decDeg*d;
+        const raNGP=192.85948*d,decNGP=27.12825*d,lOmega=32.93192*d;
+        const b=Math.asin(Math.sin(dec)*Math.sin(decNGP)+Math.cos(dec)*Math.cos(decNGP)*Math.cos(ra-raNGP));
+        const y=Math.sin(dec)*Math.cos(decNGP)-Math.cos(dec)*Math.sin(decNGP)*Math.cos(ra-raNGP);
+        const x=Math.cos(dec)*Math.sin(ra-raNGP);
+        let l=(Math.atan2(y,x)+lOmega)/d;
+        l=((l%360)+360)%360;
+        return [l,b/d];
+    }
+
+    function readCurrentRaDec(aladin,root){
+        try{
+            const value=aladin.getRaDec?.();
+            const ra=Number(value?.[0]),dec=Number(value?.[1]);
+            if(Number.isFinite(ra)&&Number.isFinite(dec))return [ra,dec];
+        }catch(error){console.warn('GV-8K GETRADEC WARNING',error)}
+        try{
+            const canvas=root.querySelector('canvas');
+            if(canvas&&typeof aladin.pix2world==='function'){
+                const value=aladin.pix2world(canvas.clientWidth/2,canvas.clientHeight/2);
+                const ra=Number(value?.[0]),dec=Number(value?.[1]);
+                if(Number.isFinite(ra)&&Number.isFinite(dec))return [ra,dec];
+            }
+        }catch(error){console.warn('GV-8K PIX2WORLD WARNING',error)}
+        return null;
+    }
+
+    const galaxyCatalogPromise=loadCombinedGalaxyCatalog();
+
     const A=await ensureAladin();
     await A.init;
     const root=document.getElementById('aladin-cosmic-command-test');
@@ -968,25 +1259,64 @@ display(Javascript(r"""
         try{if(typeof aladin.setFrame==='function')aladin.setFrame(frame==='GAL'?'galactic':'ICRSd')}catch(error){console.warn('GV-10G FRAME CHANGE WARNING',error)}
         renderCoordinates();
     }});
-    const updateCoo=()=>{try{const coo=aladin.getRaDec();if(Array.isArray(coo)&&coo.length>=2){latestRa=Number(coo[0]);latestDec=Number(coo[1]);renderCoordinates()}}catch(_){}};
-    if(typeof aladin.on==='function'){
-        try{aladin.on('positionChanged',updateCoo)}catch(_){}
-        try{aladin.on('objectClicked',updateCoo)}catch(_){}
-        try{aladin.on('zoomChanged',updateCoo)}catch(_){}
-    }
-    updateCoo();
+    await coordinate.ready;
+    const initialCoordinates=readCurrentRaDec(aladin,root);
+    if(initialCoordinates){latestRa=initialCoordinates[0];latestDec=initialCoordinates[1];renderCoordinates()}
+    let lastRa=NaN,lastDec=NaN;
+    const coordinateTimer=setInterval(()=>{
+        const value=readCurrentRaDec(aladin,root);
+        if(!value)return;
+        const ra=value[0],dec=value[1];
+        if(ra===lastRa&&dec===lastDec)return;
+        lastRa=ra;lastDec=dec;latestRa=ra;latestDec=dec;renderCoordinates();
+    },100);
+    window.addEventListener('beforeunload',()=>clearInterval(coordinateTimer),{once:true});
 
-    await loadScript(TARGET_URL,'gvTargetSimbad0001');
-    if(!window.GalaxyTargetSimbad)throw new Error('TARGET MODULE EXPORT MISSING');
-    const target=window.GalaxyTargetSimbad.init({host:targetHost,aladin});
+    await loadScript(TARGET_URL,'gvTarget0001');
+    if(window.GalaxyViewerTargetSimbad?.version!=='0001')throw new Error('TARGET / SIMBAD MODULE 0001 EXPORT MISSING');
+    const target=window.GalaxyViewerTargetSimbad.init({host:targetHost,aladin,viewerRoot:root});
 
     await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');
-    if(!window.GalaxyRandomGalaxy0031)throw new Error('RANDOM GALAXY MODULE 0031 EXPORT MISSING');
-    const randomGalaxy=window.GalaxyRandomGalaxy0031.init({
-        host:randomGalaxyHost,
+    if(window.GalaxyRandomGalaxy?.VERSION!=='0031')throw new Error('RANDOM GALAXY 0031 EXPORT MISSING OR VERSION MISMATCH');
+    function historySnapshot(destination){
+        const {preparedHdUrl,preparedSource,preparedHdImage,...snapshot}=destination||{};
+        return Object.freeze({...snapshot});
+    }
+    function setHistoryControls(){
+        const busy=navigationPending||Boolean(window.__gv10eRandomGalaxy?.getState?.().busy);
+        bottom.back.disabled=busy||galaxyHistoryIndex<=0;
+        bottom.forward.disabled=busy||galaxyHistoryIndex<0||galaxyHistoryIndex>=galaxyHistory.length-1;
+    }
+    function recordArrival(destination){
+        if(Number.isInteger(pendingHistoryIndex)){
+            galaxyHistoryIndex=pendingHistoryIndex;
+            pendingHistoryIndex=null;
+        }else{
+            if(galaxyHistoryIndex<galaxyHistory.length-1)galaxyHistory.splice(galaxyHistoryIndex+1);
+            galaxyHistory.push(historySnapshot(destination));
+            galaxyHistoryIndex=galaxyHistory.length-1;
+        }
+    }
+    function navigateHistory(index){
+        if(index<0||index>=galaxyHistory.length||navigationPending||randomGalaxy.getState().busy)return;
+        suspendBackgroundWork();
+        forcedDestination=galaxyHistory[index];
+        pendingHistoryIndex=index;
+        navigationPending=true;
+        homeOverlay.classList.add('gv-hidden');universeContext.classList.add('gv-hidden');setHistoryControls();
+        randomGalaxy.travelToRandom().catch(error=>{
+            forcedDestination=null;pendingHistoryIndex=null;navigationPending=false;resumeBackgroundWork();endTravelHud();setHistoryControls();console.error('GV-10G HISTORY NAVIGATION FAILURE',error);
+        });
+    }
+
+    const randomGalaxy=window.GalaxyRandomGalaxy.mount(randomGalaxyHost,{
         aladin,
-        button:bottom.random,
-        provider:randomHubbleProvider,
+        randomButton:bottom.random,
+        bindClick:false,
+        prefetch:false,
+        hubbleProvider:randomHubbleProvider,
+        currentGalaxy:HOME,
+        catalogCount:catalogRecordCount,
         travelSeconds:TRAVEL_SECONDS,
         onArrival(destination){
             navigationPending=false;
@@ -1033,89 +1363,56 @@ display(Javascript(r"""
             constellationValue.className='gvrg-hd-science-value';
             constellationItem.append(key,constellationValue);
             const ageItem=scienceItems.find(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()==='AGE');
-            if(ageItem?.parentNode)ageItem.parentNode.insertBefore(constellationItem,ageItem.nextSibling);else hdScience.appendChild(constellationItem);
-        }else constellationValue=constellationItem.querySelector('.gvrg-hd-science-value');
-        if(!constellationValue){
-            constellationValue=document.createElement('div');constellationValue.className='gvrg-hd-science-value';constellationItem.appendChild(constellationValue);
+            hdScience.insertBefore(constellationItem,ageItem||null);
+        }else{
+            constellationValue=constellationItem.querySelector('.gvrg-hd-science-value');
         }
-        constellationValue.textContent='UNKNOWN';
+        const syncHdConst=()=>{
+            if(constellationValue)constellationValue.textContent=String(randomGalaxy.activeDestination?.constellation||randomGalaxy.constellationValueEl?.textContent||'').trim().toUpperCase();
+        };
+        if(randomGalaxy.constellationValueEl)new MutationObserver(syncHdConst).observe(randomGalaxy.constellationValueEl,{childList:true,subtree:true,characterData:true});
+        randomGalaxy.viewHdButton?.addEventListener('click',syncHdConst,true);
+        randomGalaxy.hubbleIconButton?.addEventListener('click',syncHdConst,true);
+        syncHdConst();
     }
 
-    const hdInfoPanel=document.createElement('div');hdInfoPanel.id='gv-hd-info-panel';
-    const hdInfoTitle=document.createElement('div');hdInfoTitle.id='gv-hd-info-title';hdInfoTitle.textContent='GALAXY INFO';
-    const hdInfoBody=document.createElement('div');hdInfoBody.id='gv-hd-info-body';
-    hdInfoPanel.append(hdInfoTitle,hdInfoBody);document.body.appendChild(hdInfoPanel);
+    if(randomGalaxy.downloadButton){
+        try{if(randomGalaxy._downloadClick)randomGalaxy.downloadButton.removeEventListener('click',randomGalaxy._downloadClick)}catch(_){}
+        try{randomGalaxy.downloadButton.remove()}catch(_){}
+        randomGalaxy.downloadButton=null;
+    }
 
-    const hdBackToSky=randomGalaxy.hdBackButton||randomGalaxy.backToSkyButton||document.querySelector('.gvrg-hd-back');
+    const hdInfoPanel=document.createElement('div');
+    hdInfoPanel.id='gv-hd-info-panel';
+    hdInfoPanel.innerHTML='<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div>';
+    randomGalaxy.hdOverlay?.appendChild(hdInfoPanel);
+    const hdInfoBody=hdInfoPanel.querySelector('#gv-hd-info-body');
+    const hdBackToSky=randomGalaxy.backButton;
     if(hdBackToSky){
-        hdBackToSky.id='gv-hd-back-to-sky';
-        hdBackToSky.textContent='BACK TO SKY';
+        // Preserve the established denomination exactly: BACK TO SKY.
+        const backLabel=hdBackToSky.lastElementChild;
+        if(backLabel)backLabel.textContent='BACK TO SKY';
+        else hdBackToSky.textContent='BACK TO SKY';
+        hdBackToSky.setAttribute('aria-label','BACK TO SKY');
+        hdInfoPanel.appendChild(hdBackToSky);
+        Object.assign(hdBackToSky.style,{
+            position:'absolute',left:'12px',right:'auto',bottom:'12px',zIndex:'30',
+            minWidth:'118px',height:'36px',margin:'0',padding:'0 10px',
+            pointerEvents:'auto',touchAction:'manipulation',
+            border:'2px solid #ABB3AA',borderRadius:'6px',
+            background:'linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98))',
+            color:'#E8FFF0',boxShadow:'none'
+        });
     }
-
-    function isHdPresentationActive(){return Boolean(randomGalaxy.getState?.().hdOpen)}
-
-    function restoreNormalViewerPresentation(){
-        bottom.version.style.top='';
-        bottom.version.style.bottom='51px';
-        if(!archiveOverlay.classList.contains('gv-open')){
-            archiveOverlay.style.pointerEvents='none';
-            archiveOverlay.setAttribute('aria-hidden','true');
-            archiveFrame.style.pointerEvents='none';
+    function restoreAfterHdClose(attempt=0){
+        if(isHdPresentationActive()){
+            if(attempt<60)requestAnimationFrame(()=>restoreAfterHdClose(attempt+1));
+            return;
         }
-        if(!navigationPending&&!randomGalaxy.getState().busy)bottom.random.disabled=false;
-        setHistoryControls();
+        restoreNormalViewerPresentation();
     }
-
-    function settleHdPresentation(){
-        if(!isHdPresentationActive())return;
-        const viewport=randomGalaxy.hdViewport;if(!viewport)return;
-        const safeWidth=Math.min(680,Math.max(0,window.innerWidth-20));
-        const topBannerHeight=randomGalaxy.hdScience?.offsetHeight||0;
-        const top=10+topBannerHeight+8;
-        const maxHeight=Math.max(120,window.innerHeight-top-150);
-        const size=Math.min(safeWidth,maxHeight);
-        viewport.style.width=`${size}px`;viewport.style.height=`${size}px`;viewport.style.top=`${top}px`;
-        positionHdInfoPanel();
-        bottom.version.style.top=`${Math.min(window.innerHeight-12,hdInfoPanel.offsetTop+hdInfoPanel.offsetHeight+6)}px`;
-        bottom.version.style.bottom='auto';
-    }
-
-    function positionHdInfoPanel(){
-        if(!isHdPresentationActive())return;
-        const viewport=randomGalaxy.hdViewport;if(!viewport)return;
-        const rect=viewport.getBoundingClientRect();
-        const desiredTop=Math.min(window.innerHeight-92,Math.round(rect.bottom+8));
-        hdInfoPanel.style.top=`${Math.max(0,desiredTop)}px`;
-        hdInfoPanel.style.height=`${Math.max(84,window.innerHeight-desiredTop-22)}px`;
-        fitHdInfoText();
-    }
-
-    function fitHdInfoText(){
-        if(!isHdPresentationActive())return;
-        const text=hdInfoBody.dataset.fullText||'';
-        const button=hdBackToSky;if(!button){hdInfoBody.textContent=text;return}
-        const panelRect=hdInfoPanel.getBoundingClientRect();
-        const buttonRect=button.getBoundingClientRect();
-        const bodyRect=hdInfoBody.getBoundingClientRect();
-        const safety={left:buttonRect.left-panelRect.left-6,right:buttonRect.right-panelRect.left+6,top:buttonRect.top-bodyRect.top-4,bottom:buttonRect.bottom-bodyRect.top+4};
-        const words=text.split(/\s+/).filter(Boolean);hdInfoBody.textContent='';
-        const measure=document.createElement('span');measure.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit';document.body.appendChild(measure);
-        const lines=[];const lineHeight=parseFloat(getComputedStyle(hdInfoBody).lineHeight)||15;const maxLines=Math.max(1,Math.floor(bodyRect.height/lineHeight));
-        let line='';
-        for(const word of words){
-            const row=lines.length;const rowTop=row*lineHeight,rowBottom=rowTop+lineHeight;
-            const intersects=rowBottom>safety.top&&rowTop<safety.bottom;
-            const available=intersects?Math.max(30,bodyRect.right-buttonRect.right-10):bodyRect.width;
-            const candidate=line?`${line} ${word}`:word;measure.textContent=candidate;
-            if(measure.offsetWidth<=available){line=candidate;continue}
-            if(line){lines.push(line);if(lines.length>=maxLines)break;line=word}else{lines.push(word);line='';if(lines.length>=maxLines)break}
-        }
-        if(line&&lines.length<maxLines)lines.push(line);measure.remove();hdInfoBody.textContent=lines.join(' ');
-    }
-
-    function renderHdInfoCandidate(destination){
-        const text=galaxyInfoText(destination);hdInfoBody.dataset.fullText=text;hdInfoBody.textContent=text;requestAnimationFrame(()=>requestAnimationFrame(fitHdInfoText));
-    }
+    if(hdBackToSky)hdBackToSky.addEventListener('click',()=>requestAnimationFrame(()=>restoreAfterHdClose()),true);
+    if(randomGalaxy.creditEl)randomGalaxy.creditEl.remove();
 
     const hdArchiveButton=document.createElement('button');
     hdArchiveButton.id='gv-hd-archive-button';
@@ -1181,8 +1478,11 @@ display(Javascript(r"""
     });
 
     function currentArchiveDestination(){return randomGalaxy.getState?.().activeDestination||randomGalaxy.activeDestination||null}
+    function providerFor(destination){return destination?.provider==='JWST'?'JWST':'HUBBLE'}
     hdArchiveButton.addEventListener('click',event=>{
-        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         const destination=currentArchiveDestination();
         const sourceUrl=String(destination?.sourceUrl||'').trim();
         if(!/^https:\/\//i.test(sourceUrl))return;
@@ -1197,30 +1497,183 @@ display(Javascript(r"""
     function galaxyInfoText(destination){
         if(!destination)return '';
         const provider=providerFor(destination);
-        return `${provider} ${destination.designation||destination.name}. ${destination.commonName||destination.name}. Distance ${Number(destination.distance).toFixed(1)} million light-years. ${destination.constellation?`Constellation ${destination.constellation}. `:''}${destination.age?`Estimated age ${destination.age}. `:''}${destination.orientation?`Orientation ${destination.orientation}. `:''}${destination.credit?`Credit ${destination.credit}.`:''}`.replace(/\s+/g,' ').trim();
+        const telescope=provider==='JWST'?'JAMES WEBB SPACE TELESCOPE':'HUBBLE SPACE TELESCOPE';
+        const identity=String(destination.commonName||destination.designation||destination.name||'THIS GALAXY').trim().toUpperCase();
+        const parts=[`${identity} — ${telescope} IMAGERY.`];
+        if(destination.constellation)parts.push(`CONSTELLATION ${String(destination.constellation).trim().toUpperCase()}.`);
+        const distance=Number(destination.distance);
+        if(Number.isFinite(distance)&&distance>0)parts.push(`DISTANCE ${distance>=1000?(distance/1000).toFixed(2)+' BILLION':distance.toFixed(distance>=100?0:1)+' MILLION'} LIGHT-YEARS.`);
+        if(destination.age)parts.push(`AGE ${String(destination.age).trim().toUpperCase()}.`);
+        if(destination.imageType)parts.push(`${String(destination.imageType).trim().toUpperCase()} IMAGE.`);
+        return parts.join(' ');
     }
 
-    function providerFor(destination){return String(destination?.provider||'HUBBLE').toUpperCase()==='JWST'?'JWST':'HUBBLE'}
+    function renderHdInfoCandidate(words,count){
+        hdInfoBody.replaceChildren();
+        const bodyRect=hdInfoBody.getBoundingClientRect();
+        const style=getComputedStyle(hdInfoBody);
+        const font=style.font||`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const measuredLineHeight=parseFloat(style.lineHeight);
+        const fontSize=parseFloat(style.fontSize)||10.5;
+        const lineHeight=Number.isFinite(measuredLineHeight)?measuredLineHeight:fontSize*1.45;
+        const canvas=renderHdInfoCandidate._canvas||(renderHdInfoCandidate._canvas=document.createElement('canvas'));
+        const context=canvas.getContext('2d');
+        context.font=font;
+        const gap=10;
+        let envelopeTop=bodyRect.bottom;
+        let envelopeBottom=bodyRect.bottom;
+        let envelopeRight=bodyRect.left;
+        if(hdBackToSky){
+            const buttonRect=hdBackToSky.getBoundingClientRect();
+            envelopeRight=Math.min(bodyRect.right,buttonRect.right+gap);
+            envelopeTop=Math.max(bodyRect.top,buttonRect.top-gap);
+            envelopeBottom=Math.min(bodyRect.bottom,buttonRect.bottom+gap);
+        }
+        const sourceWords=count?words.slice(0,count):[];
+        const lines=[];
+        let index=0;
+        const maxLines=Math.max(0,Math.floor((bodyRect.height+.5)/lineHeight));
+        const letterSpacing=parseFloat(style.letterSpacing)||0;
+        const measure=value=>context.measureText(value).width+Math.max(0,value.length-1)*letterSpacing;
+        for(let lineIndex=0;lineIndex<maxLines&&index<sourceWords.length;lineIndex++){
+            const lineTop=bodyRect.top+lineIndex*lineHeight;
+            const lineBottom=lineTop+lineHeight;
+            if(lineTop>=envelopeBottom-.5)break;
+            const intersectsEnvelope=lineBottom>envelopeTop+.5&&lineTop<envelopeBottom-.5;
+            if(intersectsEnvelope&&lineBottom>envelopeBottom+.5)break;
+            const leftOffset=intersectsEnvelope?Math.max(0,envelopeRight-bodyRect.left):0;
+            const availableWidth=Math.max(0,bodyRect.width-leftOffset);
+            if(availableWidth<24)break;
+            let text='';
+            while(index<sourceWords.length){
+                const proposed=text?`${text} ${sourceWords[index]}`:sourceWords[index];
+                if(text&&measure(proposed)>availableWidth)break;
+                if(!text&&measure(proposed)>availableWidth){
+                    text=proposed;
+                    index++;
+                    break;
+                }
+                text=proposed;
+                index++;
+            }
+            if(!text)break;
+            lines.push({text,width:availableWidth,left:leftOffset});
+        }
+        const truncated=index<sourceWords.length||count<words.length;
+        if(truncated&&lines.length){
+            let line=lines[lines.length-1];
+            let text=line.text.replace(/\s*…$/,'');
+            while(text&&measure(`${text} …`)>line.width)text=text.replace(/\s+\S+$/,'');
+            line.text=text?`${text} …`:'…';
+        }
+        const fragment=document.createDocumentFragment();
+        for(const line of lines){
+            const row=document.createElement('div');
+            row.textContent=line.text;
+            Object.assign(row.style,{display:'block',marginLeft:`${line.left}px`,width:`${line.width}px`,height:`${lineHeight}px`,lineHeight:`${lineHeight}px`,whiteSpace:'nowrap',overflow:'hidden'});
+            fragment.appendChild(row);
+        }
+        hdInfoBody.appendChild(fragment);
+        return {renderedWords:index,lineCount:lines.length,truncated};
+    }
+
+    function fitHdInfoText(destination=currentArchiveDestination()){
+        if(!hdInfoBody||!destination)return;
+        const words=galaxyInfoText(destination).split(/\s+/).filter(Boolean);
+        const metrics=renderHdInfoCandidate(words,words.length);
+        hdInfoBody.dataset.fittedCharacters=String(hdInfoBody.textContent.length);
+        hdInfoBody.dataset.fittedWords=String(metrics.renderedWords);
+    }
+
     function syncHdProviderPresentation(destination=currentArchiveDestination()){
-        const provider=providerFor(destination);hdArchiveIcon.src=provider==='JWST'?JWST_ICON_URL:Hubble_ICON_URL;hdArchiveButton.setAttribute('aria-label',`OPEN ${provider} ARCHIVE SOURCE`);renderHdInfoCandidate(destination);requestAnimationFrame(settleHdPresentation);
+        if(!destination)return;
+        const provider=providerFor(destination);
+        const iconUrl=provider==='JWST'?JWST_ICON_URL:HUBBLE_ICON_URL;
+        if(randomGalaxy.viewHdButton){randomGalaxy.viewHdButton.textContent=`VIEW ${provider} IN HD`;randomGalaxy.viewHdButton.setAttribute('aria-label',`VIEW ${provider} IN HD`)}
+        const buttonIcon=randomGalaxy.hubbleIconButton?.querySelector('img');
+        if(buttonIcon){buttonIcon.src=iconUrl;buttonIcon.alt=`${provider} ARCHIVE`}
+        hdArchiveIcon.src=iconUrl;
+        hdArchiveIcon.alt=`${provider} ARCHIVE`;
+        hdArchiveButton.setAttribute('aria-label',`OPEN ${provider} ARCHIVE SOURCE`);
+        if(randomGalaxy.hdLoading&&provider==='JWST'&&/HUBBLE/i.test(randomGalaxy.hdLoading.textContent||''))randomGalaxy.hdLoading.textContent=String(randomGalaxy.hdLoading.textContent||'').replace(/HUBBLE/gi,'JWST');
+        fitHdInfoText(destination);
     }
 
-    function recordArrival(destination){
-        if(!destination)return;
-        const item={...destination};
-        if(pendingHistoryIndex!==null){galaxyHistoryIndex=pendingHistoryIndex;galaxyHistory[galaxyHistoryIndex]=item;pendingHistoryIndex=null;return}
-        if(galaxyHistoryIndex<galaxyHistory.length-1)galaxyHistory=galaxyHistory.slice(0,galaxyHistoryIndex+1);
-        galaxyHistory.push(item);galaxyHistoryIndex=galaxyHistory.length-1;
+    function applySmartHdCrop(){
+        const image=randomGalaxy.hdImage;
+        if(!(image instanceof HTMLImageElement)||!image.complete||!image.naturalWidth)return;
+        const profile=imageLightProfile(image);
+        const x=profile?clamp(profile.x/FRAMING_SAMPLE_SIZE*100,32,68):50;
+        const y=profile?clamp(profile.y/FRAMING_SAMPLE_SIZE*100,32,68):50;
+        image.style.objectFit='cover';
+        image.style.objectPosition=`${x.toFixed(2)}% ${y.toFixed(2)}%`;
     }
-    function setHistoryControls(){
-        const busy=navigationPending||Boolean(randomGalaxy?.getState?.().busy);
-        bottom.back.disabled=busy||galaxyHistoryIndex<=0;
-        bottom.forward.disabled=busy||galaxyHistoryIndex<0||galaxyHistoryIndex>=galaxyHistory.length-1;
+
+    function isHdPresentationActive(){return Boolean(randomGalaxy.getState?.().hdOpen)}
+
+    function restoreNormalViewerPresentation(){
+        bottom.version.style.top='';
+        bottom.version.style.bottom='51px';
+        if(!archiveOverlay.classList.contains('gv-open')){
+            archiveOverlay.style.pointerEvents='none';
+            archiveOverlay.setAttribute('aria-hidden','true');
+            archiveFrame.style.pointerEvents='none';
+        }
+        if(!navigationPending&&!randomGalaxy.getState().busy)bottom.random.disabled=false;
+        setHistoryControls();
     }
-    function navigateHistory(index){
-        if(index<0||index>=galaxyHistory.length||navigationPending||randomGalaxy.getState().busy)return;
-        const destination=galaxyHistory[index];pendingHistoryIndex=index;forcedDestination=destination;navigationPending=true;setHistoryControls();
-        randomGalaxy.travelToRandom().catch(error=>{navigationPending=false;pendingHistoryIndex=null;forcedDestination=null;setHistoryControls();console.error('GV-10G HISTORY FAILURE',error)});
+
+    function positionHdInfoPanel(){
+        if(!isHdPresentationActive())return;
+        if(!randomGalaxy.hdOverlay||!randomGalaxy.hdViewport||!randomGalaxy.hdScience)return;
+        const overlayRect=randomGalaxy.hdOverlay.getBoundingClientRect();
+        const navRect=bottom.nav.getBoundingClientRect();
+        if(!overlayRect.height||!overlayRect.width)return;
+        const safeBottom=Math.min(overlayRect.bottom-HD_LAYOUT.edge,navRect.top-24);
+        const available=Math.max(1,safeBottom-overlayRect.top-HD_LAYOUT.edge-HD_LAYOUT.gap*2);
+        const bannerTarget=overlayRect.height*HD_LAYOUT.bannerRatio;
+        const viewportWidth=Math.min(680,Math.max(1,randomGalaxy.hdViewport.getBoundingClientRect().width||overlayRect.width-20));
+        const layoutScale=Math.min(1,available/Math.max(1,bannerTarget+viewportWidth+150));
+        const bannerHeight=Math.max(1,Math.floor(bannerTarget*layoutScale));
+        const imageHeight=Math.max(1,Math.floor(viewportWidth*layoutScale));
+        const scienceTop=HD_LAYOUT.edge;
+        const imageTop=scienceTop+bannerHeight+HD_LAYOUT.gap;
+        const infoTop=imageTop+imageHeight+HD_LAYOUT.gap;
+        const infoHeight=Math.max(150,Math.floor(safeBottom-(overlayRect.top+infoTop)));
+        const set=(element,name,value)=>element.style.setProperty(name,value,'important');
+        set(randomGalaxy.hdScience,'top',`${scienceTop}px`);set(randomGalaxy.hdScience,'height',`${bannerHeight}px`);set(randomGalaxy.hdScience,'max-height',`${bannerHeight}px`);
+        set(randomGalaxy.hdViewport,'top',`${imageTop}px`);set(randomGalaxy.hdViewport,'bottom','auto');set(randomGalaxy.hdViewport,'height',`${imageHeight}px`);set(randomGalaxy.hdViewport,'max-height',`${imageHeight}px`);
+        set(hdInfoPanel,'top',`${infoTop}px`);set(hdInfoPanel,'height',`${infoHeight}px`);set(hdInfoPanel,'max-height',`${infoHeight}px`);
+        randomGalaxy.hdOverlay.style.pointerEvents='none';
+        randomGalaxy.hdViewport.style.pointerEvents='auto';
+        hdInfoPanel.style.pointerEvents='none';
+        if(hdBackToSky)hdBackToSky.style.pointerEvents='auto';
+        hdArchiveButton.style.pointerEvents='auto';
+        const rootRect=root.getBoundingClientRect();
+        const versionTop=Math.ceil(overlayRect.top+infoTop+infoHeight+5-rootRect.top);
+        bottom.version.style.bottom='auto';
+        bottom.version.style.top=`${versionTop}px`;
+        randomGalaxy.hdOverlay.querySelectorAll('button,a').forEach(element=>{element.style.pointerEvents='auto'});
+        fitHdInfoText();
+    }
+
+    function settleHdPresentation(){
+        if(!isHdPresentationActive())return;
+        syncHdProviderPresentation();
+        applySmartHdCrop();
+        positionHdInfoPanel();
+        const image=randomGalaxy.hdImage;
+        if(image instanceof HTMLImageElement&&!image.complete)image.addEventListener('load',()=>{
+            if(!isHdPresentationActive())return;
+            applySmartHdCrop();
+            positionHdInfoPanel();
+            syncHdProviderPresentation();
+        },{once:true});
+    }
+
+    function reconcileViewerPresentation(){
+        if(isHdPresentationActive())settleHdPresentation();
+        else restoreNormalViewerPresentation();
     }
 
     const originalShowHubbleHD=randomGalaxy.showHubbleHD.bind(randomGalaxy);
