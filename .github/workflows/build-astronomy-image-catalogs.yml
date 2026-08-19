@@ -272,9 +272,9 @@ jobs:
           while IFS= read -r p; do [ -n "$p" ] && git add -- "$p"; done <<< "$paths"
           git commit -m "Build astronomy image catalogs
 
-          ECO-ID: ECO-20260819-MULTI-CATALOG-001
-          AUTHORIZED-PATHS: ${authorized_paths}
-          REQUIREMENTS: REQ-001-REQ-012
-          ARCHIVE-AUTHORIZED: false
-          USER-GO: true"
+ECO-ID: ECO-20260819-MULTI-CATALOG-002
+AUTHORIZED-PATHS: ${authorized_paths}
+REQUIREMENTS: REQ-001-REQ-004
+ARCHIVE-AUTHORIZED: false
+USER-GO: true"
           git push origin HEAD:beta
