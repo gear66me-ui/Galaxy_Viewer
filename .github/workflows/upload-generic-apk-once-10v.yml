@@ -1,0 +1,61 @@
+name: Upload verified generic APK once for 10V
+
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/workflows/upload-generic-apk-once-10v.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  upload-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Download, verify, and commit exact APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: '9346570073'
+          APK_SHA256: '298051d4698031f82c73fb51f620f0b64f71205d5eedef0bb132251c0130b879'
+          APK_SIZE: '49987'
+        run: |
+          set -euo pipefail
+          TARGET='android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk'
+          test ! -e "$TARGET" || { echo 'Target already exists'; exit 20; }
+          mkdir -p "$RUNNER_TEMP/gv-apk" "$(dirname "$TARGET")"
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            -o "$RUNNER_TEMP/gv-apk/artifact.zip"
+          unzip -q "$RUNNER_TEMP/gv-apk/artifact.zip" -d "$RUNNER_TEMP/gv-apk/unpacked"
+          APK="$RUNNER_TEMP/gv-apk/unpacked/Galaxy-Viewer-Generic.apk"
+          test -f "$APK"
+          [ "$(stat -c '%s' "$APK")" = "$APK_SIZE" ]
+          [ "$(sha256sum "$APK" | awk '{print $1}')" = "$APK_SHA256" ]
+          cp "$APK" "$TARGET"
+          [ "$(stat -c '%s' "$TARGET")" = "$APK_SIZE" ]
+          [ "$(sha256sum "$TARGET" | awk '{print $1}')" = "$APK_SHA256" ]
+          git add "$TARGET"
+          mapfile -t ACTUAL < <(git diff --cached --name-only)
+          [ "${#ACTUAL[@]}" -eq 1 ] && [ "${ACTUAL[0]}" = "$TARGET" ]
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Commit verified Galaxy Viewer Generic APK' \
+            -m 'ECO-ID: GV-GENERIC-APK-UPLOAD-10V-001' \
+            -m 'AUTHORIZED-PATHS: android/galaxy-viewer/releases/Galaxy-Viewer-Generic.apk' \
+            -m 'REQUIREMENTS: REQ-002' \
+            -m 'ARCHIVE-AUTHORIZED: false' \
+            -m 'USER-GO: true'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
