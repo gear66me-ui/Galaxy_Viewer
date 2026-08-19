@@ -6,7 +6,7 @@ const APP_SHELL=[
   './manifest.webmanifest?v=6I-public-mobile-001',
   '../viewer/GV-beta-0006I.py?v=6I-public-mobile-001',
   '../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-001',
-  '../viewer/artwork/icon_target_vector.svg?v=6I-public-mobile-001',
+  '../viewer/artwork/icon.svg?v=6I-public-mobile-001',
   '../viewer/artwork/GV-splash-0003.svg?v=6I-public-mobile-001',
   '../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-public-mobile-001'
 ];
