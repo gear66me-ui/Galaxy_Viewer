@@ -11,16 +11,10 @@
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-192.png?v=9D-app-002",
-      "sizes": "192x192",
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_transparent.png",
+      "sizes": "1536x1536",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png?v=9D-app-002",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
     }
   ]
 }
