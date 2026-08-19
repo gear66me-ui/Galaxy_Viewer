@@ -1,4 +1,5 @@
 name: Build Galaxy Viewer Generic APK
+# ECO GV-GENERIC-APK-STARTUP-002A build trigger only
 
 on:
   push:
