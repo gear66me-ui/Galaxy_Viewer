@@ -5,7 +5,11 @@
             <solid android:color="#000000" />
         </shape>
     </item>
-    <item>
+    <item
+        android:left="18dp"
+        android:top="18dp"
+        android:right="18dp"
+        android:bottom="18dp">
         <bitmap
             android:src="@drawable/gv_app_icon"
             android:gravity="fill" />
