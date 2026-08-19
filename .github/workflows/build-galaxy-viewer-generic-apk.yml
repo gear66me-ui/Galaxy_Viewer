@@ -1,5 +1,5 @@
 name: Build Galaxy Viewer Generic APK
-# ECO GV-ICON-CANONICAL-005 canonical icon build
+# ECO GV-ICON-CANONICAL-005A icon-only rebuild trigger
 
 on:
   push:
