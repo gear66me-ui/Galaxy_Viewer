@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- GALAXY VIEWER 10V standalone launcher. Loads only GV-beta-0010V.py blob 69fd0f5fbd1daf0f6297012276d49c06512bdb7c. Splash exits when its animation completes; a comet indicates the remaining shell-ready wait while full initialization continues in background. -->
+<!-- GALAXY VIEWER 10V standalone launcher. Loads only GV-beta-0010V.py blob 87944256a5a0c197254bc3a5f9738548d8c7c0c4. Splash hands off to the Python-owned startup state; full initialization continues in background. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -14,26 +14,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-launch-cover{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#000}
 #gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}
 #gv-opening-poster{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}
-#gv-startup-wait{position:fixed;inset:0;z-index:2147483644;display:none;align-items:center;justify-content:center;background:#000;pointer-events:none}
-#gv-startup-wait.gv-visible{display:flex}
-#gv-startup-comet{position:relative;width:54px;height:54px;border-radius:50%;animation:gvStartupOrbit .8s linear infinite}
-#gv-startup-comet::before{content:"";position:absolute;left:50%;top:-2px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,#ddf7ff 30%,#79d6ff 55%,#1e6ec1 78%,#0a255d 100%);box-shadow:0 0 5px #fff,0 0 11px #76d8ff,0 0 18px rgba(20,83,173,.85)}
-#gv-startup-comet::after{content:"";position:absolute;left:50%;top:1px;width:28px;height:6px;margin-left:-1px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,.96),rgba(135,220,255,.80) 28%,rgba(44,128,219,.48) 58%,rgba(9,35,89,0) 100%);transform:rotate(30deg);transform-origin:left center;filter:blur(.4px)}
-@keyframes gvStartupOrbit{to{transform:rotate(360deg)}}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
-#gv-archive-overlay{background:#000!important}
-#gv-archive-frame{background:#000!important;opacity:0!important;visibility:hidden!important}
-#gv-archive-frame.gv-archive-painted{opacity:1!important;visibility:visible!important}
 </style>
 </head>
 <body>
 <div id="gv-launch-cover"><img id="gv-opening-poster" src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="GALAXY VIEWER"></div>
 <iframe id="gv-splash-frame" title="GALAXY VIEWER SPLASH"></iframe>
-<div id="gv-startup-wait" aria-hidden="true"><div id="gv-startup-comet"></div></div>
 <div id="gv-launch-error" role="alert"></div>
 <script>
 (async()=>{'use strict';
-const VIEWER_URL='../../viewer/GV-beta-0010V.py?v=69fd0f5fbd1daf0f6297012276d49c06512bdb7c';
+const VIEWER_URL='../../viewer/GV-beta-0010V.py?v=87944256a5a0c197254bc3a5f9738548d8c7c0c4';
 const SPLASH_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=a22e99d53d1cea58736d961e2d8bec400c670b72';
 const VIEWER_TIMEOUT_MS=30000;
 const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
@@ -41,10 +31,9 @@ const ICON_MIN_HOLD_MS=3500;
 const launchStartedAt=performance.now();
 const launchCover=document.getElementById('gv-launch-cover');
 const splashFrame=document.getElementById('gv-splash-frame');
-const startupWait=document.getElementById('gv-startup-wait');
 const errorBox=document.getElementById('gv-launch-error');
-const showError=e=>{startupWait?.classList.remove('gv-visible');errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(e?.stack||e)};
-const fetchText=async(url,label)=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(label+' HTTP '+r.status);return r.text()};
+const showError=e=>{errorBox.style.display='block';errorBox.textContent='APP FAILED TO LOAD\n\n'+String(e?.stack||e)};
+const fetchText=async(url,label)=>{const r=await fetch(url,{cache:'force-cache'});if(!r.ok)throw new Error(label+' HTTP '+r.status);return r.text()};
 const waitForViewerEvent=(name,validate)=>new Promise((resolve,reject)=>{
  let settled=false;
  const timer=setTimeout(()=>{if(settled)return;settled=true;cleanup();reject(new Error(name+' TIMEOUT'))},VIEWER_TIMEOUT_MS);
@@ -54,7 +43,7 @@ const waitForViewerEvent=(name,validate)=>new Promise((resolve,reject)=>{
  document.addEventListener(name,ready);
  document.addEventListener('gv-viewer-failed',failed);
 });
-const shellReady=waitForViewerEvent('gv-viewer-shell-ready',event=>event.detail?.version==='10V');
+const startupVisible=waitForViewerEvent('gv-viewer-startup-visible',event=>event.detail?.version==='10V');
 const fullReady=waitForViewerEvent('gv-viewer-ready',event=>event.detail?.version==='10V');
 const extractAndRun=source=>{
  const htmlMatches=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
@@ -64,12 +53,6 @@ const extractAndRun=source=>{
  return jsMatches.length;
 };
 const initializeViewer=async()=>{const source=await fetchText(VIEWER_URL,'GV-BETA-0010V.PY');if(!extractAndRun(source))throw new Error('COULD NOT EXTRACT 10V VIEWER')};
-const installArchivePaintGuard=()=>{
- const frame=document.getElementById('gv-archive-frame');if(!frame)return;
- frame.classList.remove('gv-archive-painted');
- frame.addEventListener('load',()=>{if(frame.src&&frame.src!=='about:blank')frame.classList.add('gv-archive-painted')});
- document.addEventListener('click',event=>{if(event.target?.closest?.('#gv-hd-archive-button'))frame.classList.remove('gv-archive-painted')},true);
-};
 const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))));
 const preload=document.createElement('iframe');Object.assign(preload.style,{position:'fixed',left:'-10000px',top:'0',width:'1px',height:'1px',border:'0',opacity:'0',pointerEvents:'none'});preload.src=SPLASH_URL;document.body.appendChild(preload);
 const startSplash=async()=>{
@@ -80,14 +63,9 @@ const startSplash=async()=>{
  });
 };
 try{
- const viewerInit=initializeViewer();
- await startSplash();
- if(splashFrame.isConnected)splashFrame.remove();
- if(launchCover.isConnected)launchCover.remove();
- startupWait.classList.add('gv-visible');
- await Promise.all([viewerInit,shellReady]);
- requestAnimationFrame(()=>startupWait.classList.remove('gv-visible'));
- fullReady.then(installArchivePaintGuard).catch(showError);
+ await Promise.all([initializeViewer(),startSplash(),startupVisible]);
+ requestAnimationFrame(()=>{if(splashFrame.isConnected)splashFrame.remove();if(launchCover.isConnected)launchCover.remove()});
+ fullReady.catch(showError);
 }catch(e){console.error('GALAXY VIEWER 10V LAUNCHER FAILURE',e);showError(e)}
 })();
 </script>
