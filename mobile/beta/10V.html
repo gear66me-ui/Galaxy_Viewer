@@ -15,6 +15,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-splash-frame{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483645;background:#000}
 #gv-opening-poster{display:block;width:min(42vw,240px);height:auto;max-height:42vh;object-fit:contain}
 #aladin-cosmic-command-test{width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important}
+#gv-archive-overlay{background:#000!important}
+#gv-archive-frame{background:#000!important;opacity:0!important;visibility:hidden!important}
+#gv-archive-frame.gv-archive-painted{opacity:1!important;visibility:visible!important}
 </style>
 </head>
 <body>
@@ -53,6 +56,12 @@ const extractAndRun=source=>{
  return jsMatches.length;
 };
 const initializeViewer=async()=>{const source=await fetchText(VIEWER_URL,'GV-BETA-0010V.PY');if(!extractAndRun(source))throw new Error('COULD NOT EXTRACT 10V VIEWER')};
+const installArchivePaintGuard=()=>{
+ const frame=document.getElementById('gv-archive-frame');if(!frame)return;
+ frame.classList.remove('gv-archive-painted');
+ frame.addEventListener('load',()=>{if(frame.src&&frame.src!=='about:blank')frame.classList.add('gv-archive-painted')});
+ document.addEventListener('click',event=>{if(event.target?.closest?.('#gv-hd-archive-button'))frame.classList.remove('gv-archive-painted')},true);
+};
 const waitForIconMinimum=()=>new Promise(resolve=>setTimeout(resolve,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-launchStartedAt))));
 const preload=document.createElement('iframe');Object.assign(preload.style,{position:'fixed',left:'-10000px',top:'0',width:'1px',height:'1px',border:'0',opacity:'0',pointerEvents:'none'});preload.src=SPLASH_URL;document.body.appendChild(preload);
 const startSplash=async()=>{
@@ -65,7 +74,7 @@ const startSplash=async()=>{
 try{
  await Promise.all([initializeViewer(),startSplash(),shellReady]);
  requestAnimationFrame(()=>{if(splashFrame.isConnected)splashFrame.remove();if(launchCover.isConnected)launchCover.remove()});
- fullReady.catch(showError);
+ fullReady.then(installArchivePaintGuard).catch(showError);
 }catch(e){console.error('GALAXY VIEWER 10V LAUNCHER FAILURE',e);showError(e)}
 })();
 </script>
