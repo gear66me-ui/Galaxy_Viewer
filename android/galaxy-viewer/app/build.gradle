@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
+def canonicalIconOutputDir = layout.buildDirectory.dir('generated/res/canonicalIcon').get().asFile
+
 android {
     namespace 'com.gear66me.galaxyviewer'
     compileSdk 35
@@ -13,4 +15,20 @@ android {
         versionCode 9
         versionName 'generic-1'
     }
+
+    sourceSets {
+        main {
+            res.srcDir canonicalIconOutputDir
+        }
+    }
+}
+
+tasks.register('prepareCanonicalIcon', Copy) {
+    from rootProject.file('../../viewer/artwork/icon_transparent.png')
+    into new File(canonicalIconOutputDir, 'drawable')
+    rename { 'gv_app_icon.png' }
+}
+
+tasks.named('preBuild').configure {
+    dependsOn tasks.named('prepareCanonicalIcon')
 }
