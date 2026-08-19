@@ -154,271 +154,349 @@ display(Javascript(r"""
     function suspendBackgroundWork(){
         if(backgroundWorkSuspended)return;
         backgroundWorkSuspended=true;
-        for(const controller of prefetchControllers.values())controller.abort();
         if(aladinPrewarmTimer){clearTimeout(aladinPrewarmTimer);aladinPrewarmTimer=0}
         if(aladinPrewarmWaitResolve){const resolve=aladinPrewarmWaitResolve;aladinPrewarmWaitResolve=null;resolve(false)}
         aladinPrewarmActiveKey='';
+        aladinPrewarm=null;
+        aladinPrewarmReady=null;
+        try{aladinPrewarmHost?.remove()}catch(_){}
+        aladinPrewarmHost=null;
+        queueMicrotask(fillPrefetchQueue);
     }
 
     function resumeBackgroundWork(){
         if(!backgroundWorkSuspended)return;
         backgroundWorkSuspended=false;
+        const active=galaxyCatalog.find(item=>destinationKey(item)===activeTargetKey);
+        const alreadyReady=Boolean(activePreparedItem?.key===activeTargetKey||prefetchReady.some(item=>item.key===activeTargetKey));
+        if(active&&!alreadyReady)priorityPrefetchDestination=active;
         queueMicrotask(fillPrefetchQueue);
     }
 
-    function clamp(value,min,max){return Math.min(max,Math.max(min,value))}
+    function clamp(value,min,max){return Math.max(min,Math.min(max,Number(value)))}
+    function clamp01(value){return clamp(value,0,1)}
+    function smootherstep(value){const t=clamp01(value);return t*t*t*(t*(t*6-15)+10)}
 
-    function smootherstep(t){t=clamp(t,0,1);return t*t*t*(t*(t*6-15)+10)}
-
-    function destinationKey(destination){return `${String(destination?.provider||'HUBBLE').toUpperCase()}:${String(destination?.archiveId||destination?.name||'').trim()}`}
-
-    function normalizeProvider(raw,fallback='HUBBLE'){
-        const value=String(raw||fallback).trim().toUpperCase();
-        return value==='JWST'?'JWST':'HUBBLE';
+    function parseDistanceMly(value){
+        if(typeof value==='number'&&Number.isFinite(value)&&value>0)return value;
+        const text=String(value??'').trim().toLowerCase().replace(/,/g,'');
+        if(!text)return null;
+        let match=text.match(/([0-9]+(?:\.[0-9]+)?)\s*(billion|million|thousand)\s+light\s*-?\s*years?/i);
+        if(match){
+            const number=Number(match[1]);
+            if(!Number.isFinite(number)||number<=0)return null;
+            if(match[2]==='billion')return number*1000;
+            if(match[2]==='million')return number;
+            return number/1000;
+        }
+        match=text.match(/([0-9][0-9\s]*(?:\.[0-9]+)?)\s+light\s*-?\s*years?/i);
+        if(!match)return null;
+        const lightYears=Number(match[1].replace(/\s+/g,''));
+        return Number.isFinite(lightYears)&&lightYears>0?lightYears/1_000_000:null;
     }
 
-    function normalizeHubbleRecord(item){
-        const displayName=String(item?.name||item?.pseudoName||item?.archiveId||'').trim();
-        const ra=Number(item?.raDeg),dec=Number(item?.decDeg);
-        if(!displayName||!Number.isFinite(ra)||!Number.isFinite(dec))return null;
-        const sourceUrl=String(item?.sourceUrl||'').trim();
-        const directImages=Array.isArray(item?.imageUrls)?item.imageUrls:[];
-        const hdImage=String(item?.hdImage||item?.imageUrl||'').trim();
-        const archiveId=String(item?.archiveId||'').trim();
-        const derived=[
-            hdImage,
-            ...directImages,
-            archiveId?`https://cdn.esahubble.org/archives/images/screen/${archiveId}.jpg`:'',
-            archiveId?`https://cdn.esahubble.org/archives/images/large/${archiveId}.jpg`:'',
-            archiveId?`https://cdn.esahubble.org/archives/images/wallpaper2/${archiveId}.jpg`:'',
-            archiveId?`https://cdn.esahubble.org/archives/images/publicationjpg/${archiveId}.jpg`:''
-        ].filter(Boolean);
-        const imageUrls=[...new Set(derived)];
-        if(!imageUrls.length)return null;
+    function parseFieldOfViewDegrees(value){
+        const text=String(value??'').trim().toLowerCase();
+        if(!text)return null;
+        const numbers=[...text.matchAll(/[0-9]+(?:\.[0-9]+)?/g)].slice(0,2).map(match=>Number(match[0])).filter(Number.isFinite);
+        if(!numbers.length)return null;
+        let span=Math.max(...numbers);
+        if(/arcsec/.test(text))span/=3600;
+        else if(/arcmin/.test(text))span/=60;
+        else if(!/(?:degree|\bdeg\b)/.test(text))return null;
+        return span>0?span:null;
+    }
+
+    function parseArchiveOrientation(value){
+        const text=String(value??'').trim();
+        if(!text)return null;
+        const match=text.match(/North\s+is\s+([0-9]+(?:\.[0-9]+)?)\s*°?\s*(right|left)\s+of\s+vertical/i);
+        if(!match)return null;
+        const angle=Number(match[1]);
+        if(!Number.isFinite(angle))return null;
+        return normalizeSignedAngle((match[2].toLowerCase()==='left'?-1:1)*angle);
+    }
+
+    function extractDesignation(candidate){
+        const explicit=String(candidate?.designation||'').trim();
+        const texts=[explicit,candidate?.name,candidate?.title,candidate?.displayName,candidate?.imageType,candidate?.category]
+            .map(value=>String(value||'').trim()).filter(Boolean);
+        const joined=texts.join(' | ');
+        if(/stephan(?:'|’)?s\s+quintet/i.test(joined))return 'HCG 92';
+        for(const text of texts){
+            let match=text.match(/\bHCG\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\bHICKSON(?:\s+COMPACT\s+GROUP)?\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `HCG ${match[1].toUpperCase()}`;
+            match=text.match(/\bABELL\s*[- ]?\s*(\d+[A-Z]?)\b/i);
+            if(match)return `ABELL ${match[1].toUpperCase()}`;
+        }
+        if(explicit)return explicit.toUpperCase();
+        for(const text of texts){
+            const match=text.match(/\b(?:M|NGC|IC|UGC|PGC|ARP|ESO)\s*[- ]?\s*\d+[A-Z]?(?:[- ]?\d+)?\b/i);
+            if(match)return match[0].replace(/\s+/g,' ').toUpperCase();
+        }
+        if(/\b(?:galaxy\s+cluster|cluster\s+of\s+galaxies|galaxies\s+cluster)\b/i.test(joined))return 'GALAXY CLUSTER';
+        if(/\b(?:compact\s+group|galaxy\s+group|group\s+of\s+galaxies|quintet|quartet|triplet)\b/i.test(joined))return 'GALAXY GROUP';
+        if(/\b(?:galaxy\s+pair|pair\s+of\s+galaxies|interacting\s+galaxies)\b/i.test(joined))return 'GALAXY PAIR';
+        if(/\b(?:star\s+cluster|stellar\s+cluster)\b/i.test(joined))return 'STAR CLUSTER';
+        if(/\b(?:star\s+field|stellar\s+field)\b/i.test(joined))return 'STAR FIELD';
+        if(/\bnebula\b/i.test(joined))return 'NEBULA';
+        if(/\bstar\b/i.test(joined)&&!/\bgalax/i.test(joined))return 'STAR';
+        return 'GALAXY';
+    }
+
+    function normalizeCatalogGalaxy(candidate,index){
+        if(!candidate||typeof candidate!=='object')return null;
+        const name=String(candidate.name||candidate.title||'').trim();
+        const ra=Number(candidate.ra),dec=Number(candidate.dec);
+        const distance=parseDistanceMly(candidate.science?.distanceMly??candidate.distance);
+        const constellation=String(candidate.constellation||'').trim();
+        const designation=extractDesignation(candidate);
+        const commonName=String(candidate.displayName||candidate.title||candidate.name||'').trim();
+        const age=String(candidate.science?.ageDisplay??candidate.age??candidate.ageEstimate??candidate.age_estimate??'').trim();
+        const ageGyr=Number(candidate.science?.ageGyr);
+        const ageYears=Number.isFinite(ageGyr)&&ageGyr>0?ageGyr*1_000_000_000:Number(candidate.ageYears??candidate.age_years);
+        const scienceSize=Array.isArray(candidate.science?.sizeKly)?candidate.science.sizeKly.map(value=>Number(value)*1000):null;
+        const sizeRaw=scienceSize??candidate.physicalSizeLy??candidate.physical_size_ly??null;
+        const physicalSizeLy=Array.isArray(sizeRaw)?sizeRaw.map(Number):Number(sizeRaw);
+        const fieldDegrees=parseFieldOfViewDegrees(candidate.fieldOfView);
+        const sourceUrl=String(candidate.sourceUrl||'').trim();
+        const hdUrl=String(candidate.selectedImageUrl||'').trim();
+        if(!name||!Number.isFinite(ra)||ra<0||ra>=360||!Number.isFinite(dec)||dec<-90||dec>90)return null;
+        if(!Number.isFinite(distance)||distance<=0||!constellation||!Number.isFinite(fieldDegrees)||fieldDegrees<=0)return null;
+        let hd,source;
+        try{hd=new URL(hdUrl);source=new URL(sourceUrl)}catch(_){return null}
+        const approvedHost=host=>host==='esahubble.org'||host.endsWith('.esahubble.org');
+        if(hd.protocol!=='https:'||source.protocol!=='https:'||!approvedHost(hd.hostname)||!approvedHost(source.hostname))return null;
+        const imageType=String(candidate.imageType||'').trim();
+        if(imageType&&/\b(artwork|illustration|collage|chart|simulation|diagram|artist(?:'s)? impression)\b/i.test(imageType))return null;
+        const fov=clamp(fieldDegrees/ARRIVAL_OCCUPANCY.target,ARRIVAL_OCCUPANCY.minFov,ARRIVAL_OCCUPANCY.maxFov);
         return Object.freeze({
-            provider:'HUBBLE',archiveId,name:displayName,ra,dec,
-            fov:Number.isFinite(Number(item?.aladinFovDeg))?Number(item.aladinFovDeg):(Number.isFinite(Number(item?.fovDeg))?Number(item.fovDeg):1.25),
-            distance:Number.isFinite(Number(item?.distanceMly))?Number(item.distanceMly):null,
-            constellation:String(item?.constellation||'').trim(),age:String(item?.age||'').trim(),
-            size:String(item?.size||item?.diameter||'').trim(),sizeKly:Number.isFinite(Number(item?.sizeKly))?Number(item.sizeKly):null,
-            morphology:String(item?.morphology||item?.type||'').trim(),
-            sourceUrl,imageUrls,credit:String(item?.credit||'ESA/Hubble').trim()||'ESA/Hubble',
-            fieldOfView:String(item?.fieldOfView||'').trim(),orientation:String(item?.orientation||'').trim(),
-            aladinRotation:Number.isFinite(Number(item?.aladinRotationDeg))?Number(item.aladinRotationDeg):null
+            source:'ESA/HUBBLE GALAXIES CATALOG FULL-0002',provider:'HUBBLE',hubble:true,
+            archiveId:String(candidate.archiveId||'').trim(),
+            name,ra,dec,distance,constellation,designation,commonName,age,
+            ageYears:Number.isFinite(ageYears)&&ageYears>0?ageYears:null,
+            physicalSizeLy:Array.isArray(physicalSizeLy)?physicalSizeLy.filter(value=>Number.isFinite(value)&&value>0):Number.isFinite(physicalSizeLy)&&physicalSizeLy>0?physicalSizeLy:null,
+            fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,sourceUrl:source.href,orientation:String(candidate.orientation||'').trim(),
+            credit:String(candidate.credit||'ESA/Hubble').trim()||'ESA/Hubble',
+            imageType:imageType||'Observation',category:'Galaxies',telescope:'Hubble Space Telescope',
+            githubImageUrl:String(candidate.githubImageUrl||'').trim(),sha256:String(candidate.sha256||'').trim(),catalogIndex:index
         });
     }
 
-    function normalizeJwstRecord(item){
-        const displayName=String(item?.name||item?.pseudoName||item?.archiveId||'').trim();
-        const ra=Number(item?.raDeg),dec=Number(item?.decDeg);
-        if(!displayName||!Number.isFinite(ra)||!Number.isFinite(dec))return null;
-        const sourceUrl=String(item?.sourceUrl||'').trim();
-        const directImages=Array.isArray(item?.imageUrls)?item.imageUrls:[];
-        const hdImage=String(item?.hdImage||item?.imageUrl||'').trim();
-        const imageUrls=[...new Set([hdImage,...directImages].filter(Boolean))];
-        if(!imageUrls.length)return null;
+    function chooseJwstImageUrl(candidate){
+        const candidates=[...(Array.isArray(candidate?.jpegCandidates)?candidate.jpegCandidates:[]),candidate?.selectedImageUrl].map(value=>String(value||'').trim()).filter(Boolean);
+        return candidates.find(url=>/\/screen\//i.test(url))||String(candidate?.selectedImageUrl||candidates[0]||'').trim();
+    }
+
+    function normalizeJwstGalaxy(candidate,index){
+        if(!candidate||typeof candidate!=='object')return null;
+        const name=String(candidate.name||candidate.title||'').trim();
+        const ra=Number(candidate.ra),dec=Number(candidate.dec);
+        const distance=parseDistanceMly(candidate.science?.distanceMly??candidate.distance);
+        const constellation=String(candidate.constellation||'').trim();
+        const designation=extractDesignation(candidate);
+        const commonName=String(candidate.displayName||candidate.title||candidate.name||'').trim();
+        const age=String(candidate.science?.ageDisplay??candidate.age??'').trim();
+        const ageGyr=Number(candidate.science?.ageGyr);
+        const ageYears=Number.isFinite(ageGyr)&&ageGyr>0?ageGyr*1_000_000_000:null;
+        const scienceSize=Array.isArray(candidate.science?.sizeKly)?candidate.science.sizeKly.map(value=>Number(value)*1000):null;
+        const physicalSizeLy=Array.isArray(scienceSize)?scienceSize.filter(value=>Number.isFinite(value)&&value>0):null;
+        const fieldDegrees=parseFieldOfViewDegrees(candidate.fieldOfView);
+        const sourceUrl=String(candidate.sourceUrl||'').trim();
+        const hdUrl=chooseJwstImageUrl(candidate);
+        if(!name||!Number.isFinite(ra)||ra<0||ra>=360||!Number.isFinite(dec)||dec<-90||dec>90)return null;
+        if(!Number.isFinite(distance)||distance<=0||!constellation||!Number.isFinite(fieldDegrees)||fieldDegrees<=0)return null;
+        let hd,source;
+        try{hd=new URL(hdUrl);source=new URL(sourceUrl)}catch(_){return null}
+        const approvedHost=host=>host==='esawebb.org'||host.endsWith('.esawebb.org');
+        if(hd.protocol!=='https:'||source.protocol!=='https:'||!approvedHost(hd.hostname)||!approvedHost(source.hostname))return null;
+        const imageType=String(candidate.imageType||'').trim();
+        if(imageType&&/\b(artwork|illustration|collage|chart|simulation|diagram|artist(?:'s)? impression)\b/i.test(imageType))return null;
+        const fov=clamp(fieldDegrees/ARRIVAL_OCCUPANCY.target,ARRIVAL_OCCUPANCY.minFov,ARRIVAL_OCCUPANCY.maxFov);
+        const orientation=String(candidate.orientation||'').trim();
+        const archiveRotation=parseArchiveOrientation(orientation);
         return Object.freeze({
-            provider:'JWST',archiveId:String(item?.archiveId||'').trim(),name:displayName,ra,dec,
-            fov:Number.isFinite(Number(item?.aladinFovDeg))?Number(item.aladinFovDeg):(Number.isFinite(Number(item?.fovDeg))?Number(item.fovDeg):1.25),
-            distance:Number.isFinite(Number(item?.distanceMly))?Number(item.distanceMly):null,
-            constellation:String(item?.constellation||'').trim(),age:String(item?.age||'').trim(),
-            size:String(item?.size||item?.diameter||'').trim(),sizeKly:Number.isFinite(Number(item?.sizeKly))?Number(item.sizeKly):null,
-            morphology:String(item?.morphology||item?.type||'').trim(),
-            sourceUrl,imageUrls,credit:String(item?.credit||'ESA/Webb').trim()||'ESA/Webb',
-            fieldOfView:String(item?.fieldOfView||'').trim(),orientation:String(item?.orientation||'').trim(),
-            aladinRotation:Number.isFinite(Number(item?.aladinRotationDeg))?Number(item.aladinRotationDeg):null
+            source:'ESA/WEBB GALAXIES CATALOG FULL-0002',provider:'JWST',hubble:true,
+            archiveId:String(candidate.archiveId||'').trim(),
+            name,ra,dec,distance,constellation,designation,commonName,age,
+            ageYears:Number.isFinite(ageYears)&&ageYears>0?ageYears:null,
+            physicalSizeLy, fov,imageFovDegrees:fieldDegrees,hdUrl:hd.href,sourceUrl:source.href,orientation,
+            aladinRotation:Number.isFinite(archiveRotation)?archiveRotation:null,
+            credit:String(candidate.credit||'ESA/Webb, NASA & CSA').trim()||'ESA/Webb, NASA & CSA',
+            imageType:imageType||'Observation',category:'Galaxies',telescope:'James Webb Space Telescope',
+            githubImageUrl:'',sha256:String(candidate.sha256||'').trim(),catalogIndex:index
         });
     }
 
     async function loadGalaxyCatalog(){
-        const [hubbleResponse,jwstResponse]=await Promise.all([
-            fetch(HUBBLE_CATALOG_URL,{cache:'no-store'}),
-            fetch(JWST_CATALOG_URL,{cache:'no-store'})
-        ]);
-        if(!hubbleResponse.ok)throw new Error(`HUBBLE CATALOG HTTP ${hubbleResponse.status}`);
-        if(!jwstResponse.ok)throw new Error(`JWST CATALOG HTTP ${jwstResponse.status}`);
-        const [hubbleData,jwstData]=await Promise.all([hubbleResponse.json(),jwstResponse.json()]);
-        const hubbleRecords=Array.isArray(hubbleData?.galaxies)?hubbleData.galaxies:[];
-        const jwstRecords=Array.isArray(jwstData?.galaxies)?jwstData.galaxies:[];
-        const hubble=hubbleRecords.map(normalizeHubbleRecord).filter(Boolean);
-        const jwst=jwstRecords.map(normalizeJwstRecord).filter(Boolean);
-        catalogRecordCount=hubbleRecords.length+jwstRecords.length;
-        catalogDatabaseCounts=Object.freeze({hubble:hubbleRecords.length,jwst:jwstRecords.length,total:catalogRecordCount,eligibleHubble:hubble.length,eligibleJwst:jwst.length,eligibleTotal:hubble.length+jwst.length});
-        return Object.freeze([...hubble,...jwst]);
+        const response=await fetch(HUBBLE_CATALOG_URL,{cache:'no-store'});
+        if(!response.ok)throw new Error('FULL HUBBLE CATALOG RETURNED HTTP '+response.status);
+        const payload=await response.json();
+        const raw=payload?.entries;
+        const declared=Number(payload?.categoryEntryCount);
+        if(!Array.isArray(raw)||!raw.length||!Number.isFinite(declared)||declared!==raw.length)throw new Error('FULL HUBBLE CATALOG COUNT MISMATCH');
+        const eligible=raw.map(normalizeCatalogGalaxy).filter(Boolean);
+        if(eligible.length<HUBBLE_PREFETCH_TARGET)throw new Error('FULL HUBBLE CATALOG HAS FEWER THAN TEN TRUTHFULLY TARGETABLE GALAXIES');
+        return Object.freeze({rawCount:raw.length,eligible:Object.freeze(eligible)});
     }
 
-    async function loadScript(url,attribute){
-        const node=document.createElement('script');
-        node.src=url;node.async=true;node.setAttribute(attribute,'1');document.head.appendChild(node);
-        await new Promise((resolve,reject)=>{node.onload=resolve;node.onerror=()=>reject(new Error(`SCRIPT LOAD FAILED ${url}`))});
-        return node;
+    async function loadJwstCatalog(){
+        const response=await fetch(JWST_CATALOG_URL,{cache:'no-store'});
+        if(!response.ok)throw new Error('FULL JWST CATALOG RETURNED HTTP '+response.status);
+        const payload=await response.json();
+        const raw=payload?.entries;
+        const declared=Number(payload?.categoryEntryCount);
+        if(payload?.version!=='full-0002')throw new Error('JWST CATALOG MUST BE FULL-0002');
+        if(!Array.isArray(raw)||!raw.length||!Number.isFinite(declared)||declared!==raw.length)throw new Error('FULL JWST CATALOG COUNT MISMATCH');
+        const eligible=raw.map(normalizeJwstGalaxy).filter(Boolean);
+        if(!eligible.length)throw new Error('FULL JWST CATALOG HAS NO TARGETABLE GALAXIES');
+        return Object.freeze({rawCount:raw.length,eligible:Object.freeze(eligible)});
     }
 
-    async function ensureAladin(){
-        if(window.A?.init)return window.A;
-        await loadScript(ALADIN_URL,'gv-aladin');
-        if(!window.A?.init)throw new Error('ALADIN EXPORT MISSING');
-        return window.A;
+    async function loadCombinedGalaxyCatalog(){
+        const [hubbleData,jwstData]=await Promise.all([loadGalaxyCatalog(),loadJwstCatalog()]);
+        const hubble=hubbleData.eligible,jwst=jwstData.eligible;
+        const combined=Object.freeze([...hubble,...jwst]);
+        catalogRecordCount=combined.length;
+        catalogDatabaseCounts=Object.freeze({hubble:hubbleData.rawCount,jwst:jwstData.rawCount,total:hubbleData.rawCount+jwstData.rawCount,eligibleHubble:hubble.length,eligibleJwst:jwst.length,eligibleTotal:combined.length});
+        console.info('GV-10G CATALOG COUNTS',catalogDatabaseCounts);
+        return combined;
     }
 
-    function createHost(root,id){const host=document.createElement('div');host.id=id;root.appendChild(host);return host}
-
-    function createCenterReticle(root){
-        const reticle=document.createElement('div');reticle.id='gv-center-reticle';
-        reticle.innerHTML=`<img src="${RETICLE_URL}" alt="" aria-hidden="true">`;root.appendChild(reticle);return reticle;
-    }
-
-    function createBottomControls(root){
-        const version=document.createElement('div');
-        version.id='gv-version-label';
-        version.textContent=`VERSION ${DISPLAY_VERSION}`;
-        version.setAttribute('aria-label',`GALAXY VIEWER VERSION ${DISPLAY_VERSION}`);
-        root.appendChild(version);
-
-        const nav=document.createElement('div');
-        nav.id='gv-galaxy-nav';
-        const back=document.createElement('button');
-        back.type='button';back.className='gv-galaxy-history gv-galaxy-history-back';back.textContent='';back.setAttribute('aria-label','PREVIOUS GALAXY');back.disabled=true;
-        const random=document.createElement('button');
-        random.id='gv-random-galaxy';random.type='button';random.innerHTML='<span class="gvrg-random-layout"><span class="gvrg-random-star-wrap gvrg-random-star-wrap-left" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet gvrg-random-comet-left"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap gvrg-random-star-wrap-right" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></span>';random.setAttribute('aria-label','RANDOM GALAXY');
-        const forward=document.createElement('button');
-        forward.type='button';forward.className='gv-galaxy-history gv-galaxy-history-forward';forward.textContent='';forward.setAttribute('aria-label','NEXT GALAXY');forward.disabled=true;
-        nav.append(back,random,forward);root.appendChild(nav);
-
-        const hud=document.createElement('div');
-        hud.id='gv-travel-hud';hud.setAttribute('role','status');hud.setAttribute('aria-live','polite');
-        hud.innerHTML='<div id="gv-travel-distance"><span id="gv-travel-distance-value"><span id="gv-travel-distance-integer">0</span><span id="gv-travel-distance-decimal">.</span><span id="gv-travel-distance-fraction">00</span></span><span id="gv-travel-distance-unit">MILLION LIGHT-YEARS</span></div><div id="gv-travel-primary"><div id="gv-travel-course">COURSE LOCKED</div><div id="gv-travel-heading">HEADING TO</div><div id="gv-travel-destination"></div></div>';
-        root.appendChild(hud);
-        return {version,nav,back,random,forward,hud};
-    }
-
-    function createUniverseContext(root){
-        const context=document.createElement('div');
-        context.id='gv-universe-context';
-        context.setAttribute('aria-live','polite');
-        context.innerHTML='<div class="gv-universe-label">THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE<span class="gv-universe-count">EST. ~2 TRILLION GALAXIES</span></div><div class="gv-universe-leader" aria-hidden="true"></div>';
-        root.appendChild(context);
-        return context;
-    }
-
-    function createHomeOverlay(root){
-        const overlay=document.createElement('div');
-        overlay.id='gv-we-are-here';
-        overlay.setAttribute('aria-live','polite');
-        overlay.innerHTML='<div class="gv-home-leader" aria-hidden="true"></div><div class="gv-home-label"><div class="gv-home-origin"><span class="gv-earth-icon" aria-hidden="true">🌎</span><strong>WE ARE HERE</strong></div><div class="gv-home-sub">EARTH — MILKY WAY</div><div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div></div>';
-        root.appendChild(overlay);
-        return overlay;
-    }
-
-    function equatorialToGalactic(raDeg,decDeg){
-        const d=Math.PI/180,ra=raDeg*d,dec=decDeg*d;
-        const raNGP=192.85948*d,decNGP=27.12825*d,lOmega=32.93192*d;
-        const b=Math.asin(Math.sin(dec)*Math.sin(decNGP)+Math.cos(dec)*Math.cos(decNGP)*Math.cos(ra-raNGP));
-        const y=Math.sin(dec)*Math.cos(decNGP)-Math.cos(dec)*Math.sin(decNGP)*Math.cos(ra-raNGP);
-        const x=Math.cos(dec)*Math.sin(ra-raNGP);
-        let l=(Math.atan2(y,x)+lOmega)/d;
-        l=((l%360)+360)%360;
-        return [l,b/d];
-    }
-
-    function readCurrentRaDec(aladin,root){
-        try{
-            const value=aladin.getRaDec?.();
-            const ra=Number(value?.[0]),dec=Number(value?.[1]);
-            if(Number.isFinite(ra)&&Number.isFinite(dec))return [ra,dec];
-        }catch(_){}
-        const location=root.querySelector('.aladin-location-text,.aladin-location');
-        const raw=String(location?.textContent||'');
-        const matches=raw.match(/[-+]?\d+(?:\.\d+)?/g)||[];
-        if(matches.length>=2){const ra=Number(matches[0]),dec=Number(matches[1]);if(Number.isFinite(ra)&&Number.isFinite(dec))return [ra,dec]}
-        return null;
-    }
-
-    function syncCoordinates(aladin,root){
-        const coords=readCurrentRaDec(aladin,root);if(!coords)return;
-        latestRa=coords[0];latestDec=coords[1];renderCoordinates();
-    }
-
-    function createTravelListener(aladin,root){
-        let travelFrame=0;
-        const schedule=()=>{cancelAnimationFrame(travelFrame);travelFrame=requestAnimationFrame(()=>syncCoordinates(aladin,root))};
-        if(typeof aladin.on==='function'){
-            try{aladin.on('positionChanged',schedule)}catch(_){}
-            try{aladin.on('zoomChanged',schedule)}catch(_){}
-        }
-        window.addEventListener('resize',schedule);
-        return ()=>{cancelAnimationFrame(travelFrame);window.removeEventListener('resize',schedule)};
-    }
-
-    const galaxyCatalogPromise=loadGalaxyCatalog();
-
-    function waitForImageDecode(image){return image.decode?image.decode():new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject})}
-
-    function decodePreparedBlob(blob){
-        const objectUrl=URL.createObjectURL(blob);
-        const image=new Image();
-        image.decoding='async';image.src=objectUrl;
-        return waitForImageDecode(image).then(()=>({image,objectUrl})).catch(error=>{URL.revokeObjectURL(objectUrl);throw error});
+    function destinationKey(destination){return String(destination?.archiveId||destination?.name||'').trim().toLowerCase()}
+    function chooseGalaxy(catalog,excludeName=''){
+        const excluded=String(excludeName||'').trim().toLowerCase();
+        const available=catalog.filter(item=>item.name.toLowerCase()!==excluded&&destinationKey(item)!==activeTargetKey);
+        const pool=available.length?available:catalog;
+        return pool[Math.floor(Math.random()*pool.length)];
     }
 
     function releasePreparedItem(item){
         if(!item)return;
+        try{if(item.image)item.image.src=''}catch(_){}
         try{if(item.objectUrl)URL.revokeObjectURL(item.objectUrl)}catch(_){}
     }
 
-    async function probeHdSourceBytes(source,signal){
-        const check=async(init)=>{
-            const response=await fetch(source.url,{...init,cache:'no-store',signal});
-            if(!response.ok&&!([206,416].includes(response.status)))throw new Error(`HD PROBE HTTP ${response.status}`);
-            const range=response.headers.get('Content-Range')||'';
-            const rangeMatch=range.match(/\/(\d+)\s*$/);
-            const length=Number(response.headers.get('Content-Length'));
-            if(rangeMatch)return Number(rangeMatch[1]);
-            if(Number.isFinite(length)&&length>0)return length;
-            return null;
-        };
-        try{return await check({method:'HEAD'})}catch(error){if(error?.name==='AbortError')throw error}
-        try{return await check({headers:{Range:'bytes=0-0'}})}catch(error){if(error?.name==='AbortError')throw error;return null}
-    }
-
-    async function mapBounded(items,limit,mapper){
-        const results=new Array(items.length);let next=0;
-        const workers=Array.from({length:Math.min(Math.max(1,limit),items.length)},async()=>{
-            for(;;){
-                const index=next++;if(index>=items.length)return;
-                results[index]=await mapper(items[index],index);
+    async function decodePreparedBlob(blob){
+        const objectUrl=URL.createObjectURL(blob);
+        const image=new Image();
+        image.decoding='async';
+        image.loading='eager';
+        image.src=objectUrl;
+        try{
+            if(image.decode){
+                try{await image.decode()}catch(_){
+                    if(!(image.complete&&image.naturalWidth))await new Promise((resolve,reject)=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',()=>reject(new Error('HD PRELOAD FAILED')),{once:true})});
+                }
+            }else if(!(image.complete&&image.naturalWidth)){
+                await new Promise((resolve,reject)=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',()=>reject(new Error('HD PRELOAD FAILED')),{once:true})});
             }
-        });
-        await Promise.all(workers);return results;
-    }
-
-    async function orderHdSourcesBySize(destination,signal){
-        const unique=[];
-        for(let index=0;index<destination.imageUrls.length;index++){
-            const url=destination.imageUrls[index];
-            if(!url||unique.some(source=>source.url===url))continue;
-            unique.push({url,kind:index===0?'archive-catalog':`archive-variant-${index}`,quality:index});
+            if(!image.naturalWidth||!image.naturalHeight)throw new Error('HD PRELOAD DECODED WITHOUT IMAGE DIMENSIONS');
+            return {image,objectUrl};
+        }catch(error){
+            image.src='';
+            URL.revokeObjectURL(objectUrl);
+            throw error;
         }
-        const probed=await mapBounded(unique,PREFETCH_PROBE_CONCURRENCY,async source=>{
-            if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
-            let bytes=null;try{bytes=await probeHdSourceBytes(source,signal)}catch(error){if(error?.name==='AbortError')throw error}
-            return {...source,bytes:Number.isFinite(bytes)&&bytes>0?bytes:null};
-        });
-        const under=probed.filter(source=>source.bytes!==null&&source.bytes<=HD_PREFERRED_MAX_BYTES).sort((a,b)=>a.quality-b.quality||b.bytes-a.bytes);
-        const knownOversize=probed.filter(source=>source.bytes!==null&&source.bytes>HD_PREFERRED_MAX_BYTES).sort((a,b)=>a.bytes-b.bytes||a.quality-b.quality);
-        const unknown=probed.filter(source=>source.bytes===null).sort((a,b)=>a.quality-b.quality);
-        return [...under,...knownOversize,...unknown];
     }
 
-    async function prepareHdDestination(destination,signal){
+    function hdVariantRank(url){
+        const value=String(url||'').toLowerCase();
+        if(value.includes('/publicationjpg/'))return 60;
+        if(value.includes('/large/'))return 50;
+        if(value.includes('/screen/'))return 40;
+        if(value.includes('/wallpaper'))return 30;
+        if(value.includes('/thumb700'))return 20;
+        if(value.includes('/thumb300'))return 10;
+        return 45;
+    }
+
+    function buildHdSourceCandidates(destination){
+        const sources=[];
+        const seen=new Set();
+        const add=(url,kind,rank=hdVariantRank(url))=>{
+            const value=String(url||'').trim();
+            if(!/^https:\/\//i.test(value)||seen.has(value))return;
+            seen.add(value);sources.push({url:value,kind,rank});
+        };
+        const github=String(destination.githubImageUrl||'').trim();
+        const archive=String(destination.hdUrl||'').trim();
+        if(github)add(github,'GITHUB',55);
+        if(archive){
+            const provider=destination.provider||'ARCHIVE';
+            const match=archive.match(/^(https:\/\/[^/]+\/archives\/images\/)([^/]+)(\/[^?#]+(?:\?[^#]*)?)$/i);
+            if(match){
+                for(const variant of ['publicationjpg','large','screen','wallpaper1','thumb700x','thumb300y'])add(match[1]+variant+match[3],provider,hdVariantRank('/'+variant+'/'));
+            }
+            add(archive,provider);
+        }
+        return sources.sort((a,b)=>b.rank-a.rank);
+    }
+
+    async function probeHdSourceBytes(source,signal=null){
+        try{
+            const head=await fetch(source.url,{method:'HEAD',cache:'force-cache',signal});
+            if(head.ok){
+                const length=Number(head.headers.get('content-length'));
+                if(Number.isFinite(length)&&length>0)return length;
+            }
+        }catch(error){if(error?.name==='AbortError')throw error}
+        try{
+            const probe=await fetch(source.url,{method:'GET',headers:{Range:'bytes=0-0'},cache:'force-cache',signal});
+            if(!probe.ok&&probe.status!==206)return null;
+            const range=String(probe.headers.get('content-range')||'');
+            const total=Number(range.match(/\/(\d+)$/)?.[1]);
+            const length=Number(probe.headers.get('content-length'));
+            try{await probe.body?.cancel()}catch(_){}
+            if(Number.isFinite(total)&&total>0)return total;
+            if(probe.status===200&&Number.isFinite(length)&&length>0)return length;
+        }catch(error){if(error?.name==='AbortError')throw error}
+        return null;
+    }
+
+    async function mapWithConcurrency(items,limit,worker){
+        const results=new Array(items.length);
+        let next=0;
+        const count=Math.max(1,Math.min(Number(limit)||1,items.length));
+        await Promise.all(Array.from({length:count},async()=>{
+            for(;;){
+                const index=next++;
+                if(index>=items.length)return;
+                results[index]=await worker(items[index],index);
+            }
+        }));
+        return results;
+    }
+
+    async function orderHdSourcesBySize(destination,signal=null){
+        const sources=buildHdSourceCandidates(destination);
+        if(sources.length<2)return sources;
+        const probed=await mapWithConcurrency(sources,PREFETCH_PROBE_CONCURRENCY,async source=>({...source,bytes:await probeHdSourceBytes(source,signal)}));
+        const preferred=[];
+        const oversized=[];
+        const unknown=[];
+        for(const source of probed){
+            const bytes=source.bytes;
+            if(Number.isFinite(bytes)&&bytes>0&&bytes<=HD_PREFERRED_MAX_BYTES)preferred.push(source);
+            else if(Number.isFinite(bytes)&&bytes>HD_PREFERRED_MAX_BYTES)oversized.push(source);
+            else unknown.push(source);
+        }
+        preferred.sort((a,b)=>b.rank-a.rank||b.bytes-a.bytes);
+        oversized.sort((a,b)=>a.bytes-b.bytes||a.rank-b.rank);
+        unknown.sort((a,b)=>a.rank-b.rank);
+        return [...preferred,...oversized,...unknown];
+    }
+
+    async function prepareHdDestination(destination,signal=null){
         const sources=await orderHdSourcesBySize(destination,signal);
         let lastError=null;
         for(const source of sources){
-            if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
-            setHdStatus(destination,'DOWNLOADING',source.kind);
             try{
-                const response=await fetch(source.url,{cache:'no-store',signal});
-                if(!response.ok)throw new Error(`HD PRELOAD HTTP ${response.status}`);
+                setHdStatus(destination,'DOWNLOADING',source.kind);
+                const response=await fetch(source.url,{cache:'force-cache',signal});
+                if(!response.ok)throw new Error('HD PRELOAD RETURNED HTTP '+response.status);
                 const blob=await response.blob();
                 if(signal?.aborted)throw new DOMException('HD PRELOAD SUSPENDED','AbortError');
                 setHdStatus(destination,'DECODING',source.kind);
@@ -959,43 +1037,145 @@ display(Javascript(r"""
             targetReady:HUBBLE_PREFETCH_TARGET,
             cachedCount:aladinPrewarmedKeys.size,
             activeKey:aladinPrewarmActiveKey,
-            queuedDestinations:[],
-            lastKey:aladinPrewarmLastKey
+            queuedDestinations:[]
         });
     }
 
-    function setHistoryControls(){
-        const busy=navigationPending||Boolean(window.__gv10eRandomGalaxy?.getState?.().busy);
-        const enabled=galaxyHistory.length>0;
-        if(bottom?.back)bottom.back.disabled=busy||!enabled||galaxyHistoryIndex<=0;
-        if(bottom?.forward)bottom.forward.disabled=busy||!enabled||galaxyHistoryIndex<0||galaxyHistoryIndex>=galaxyHistory.length-1;
-        if(bottom?.random)bottom.random.disabled=busy;
+    function loadScript(url,datasetKey){
+        return new Promise((resolve,reject)=>{
+            const existing=[...document.scripts].find(script=>script.src===url||script.dataset[datasetKey]==='true');
+            if(existing){
+                if(existing.dataset.gvLoaded==='true'){resolve(existing);return}
+                existing.addEventListener('load',()=>resolve(existing),{once:true});
+                existing.addEventListener('error',()=>reject(new Error('SCRIPT FAILED TO LOAD: '+url)),{once:true});
+                return;
+            }
+            const script=document.createElement('script');
+            script.charset='utf-8';
+            script.dataset[datasetKey]='true';
+            if(url.startsWith('https://raw.githubusercontent.com/')){
+                fetch(url,{cache:'no-store'}).then(response=>{
+                    if(!response.ok)throw new Error('SCRIPT FETCH RETURNED HTTP '+response.status+': '+url);
+                    return response.text();
+                }).then(source=>{
+                    if(datasetKey==='gvRandomGalaxy0031'){
+                        source=source.replace("return host === 'esahubble.org' || host.endsWith('.esahubble.org');","return host === 'esahubble.org' || host.endsWith('.esahubble.org') || host === 'esawebb.org' || host.endsWith('.esawebb.org');");
+                        source=source.replace("if (telescope && !/hubble/i.test(telescope)) throw new Error('Rejected entry without Hubble telescope data.');","if (telescope && !/(hubble|webb)/i.test(telescope)) throw new Error('Rejected entry without Hubble/Webb telescope data.');");
+                        source=source.replace("source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        hubble: true,","source: cleanText(candidate.source || 'ESA/HUBBLE GALAXIES CATALOG'),\n        provider: cleanText(candidate.provider || (/webb/i.test(telescope) ? 'JWST' : 'HUBBLE')).toUpperCase(),\n        hubble: true,");
+                        if(!source.includes("host === 'esawebb.org'")||!source.includes("provider: cleanText(candidate.provider"))throw new Error('RANDOM GALAXY 0031 10M COMPATIBILITY PATCH FAILED');
+                    }
+                    script.textContent=source;
+                    document.head.appendChild(script);
+                    script.dataset.gvLoaded='true';
+                    resolve(script);
+                }).catch(error=>reject(new Error('SCRIPT FAILED TO LOAD: '+url+' — '+String(error?.message||error))));
+                return;
+            }
+            script.src=url;
+            script.addEventListener('load',()=>{script.dataset.gvLoaded='true';resolve(script)},{once:true});
+            script.addEventListener('error',()=>reject(new Error('SCRIPT FAILED TO LOAD: '+url)),{once:true});
+            document.head.appendChild(script);
+        });
     }
 
-    function recordArrival(destination){
-        if(!destination||pendingHistoryIndex!==null)return;
-        const key=destinationKey(destination);
-        if(galaxyHistoryIndex>=0&&destinationKey(galaxyHistory[galaxyHistoryIndex])===key)return;
-        if(galaxyHistoryIndex<galaxyHistory.length-1)galaxyHistory.splice(galaxyHistoryIndex+1);
-        galaxyHistory.push(destination);galaxyHistoryIndex=galaxyHistory.length-1;
-        setHistoryControls();
+    async function ensureAladin(){
+        if(window.A?.init)return window.A;
+        await loadScript(ALADIN_URL,'gvAladin382');
+        if(!window.A?.init)throw new Error('ALADIN LITE 3.8.2 EXPORT MISSING');
+        return window.A;
     }
 
-    async function navigateHistory(index){
-        if(navigationPending||index<0||index>=galaxyHistory.length||index===galaxyHistoryIndex)return;
-        const destination=galaxyHistory[index];
-        pendingHistoryIndex=index;forcedDestination=destination;navigationPending=true;
-        homeOverlay.classList.add('gv-hidden');universeContext.classList.add('gv-hidden');setHistoryControls();
-        suspendBackgroundWork();
+    function createHost(root,id){
+        let host=root.querySelector('#'+id);
+        if(!host){host=document.createElement('div');host.id=id;root.appendChild(host)}
+        return host;
+    }
+
+    function createCenterReticle(root){
+        const reticle=document.createElement('div');
+        reticle.id='gv-center-reticle';
+        reticle.setAttribute('aria-hidden','true');
+        const image=document.createElement('img');
+        image.src=RETICLE_URL;
+        image.alt='';
+        image.width=32;
+        image.height=32;
+        reticle.appendChild(image);
+        root.appendChild(reticle);
+        return reticle;
+    }
+
+    function createBottomControls(root){
+        const version=document.createElement('div');
+        version.id='gv-version-label';
+        version.textContent=`VERSION ${DISPLAY_VERSION}`;
+        version.setAttribute('aria-label',`GALAXY VIEWER VERSION ${DISPLAY_VERSION}`);
+        root.appendChild(version);
+
+        const nav=document.createElement('div');
+        nav.id='gv-galaxy-nav';
+        const back=document.createElement('button');
+        back.type='button';back.className='gv-galaxy-history gv-galaxy-history-back';back.textContent='';back.setAttribute('aria-label','PREVIOUS GALAXY');back.disabled=true;
+        const random=document.createElement('button');
+        random.id='gv-random-galaxy';random.type='button';random.innerHTML='<span class="gvrg-random-layout"><span class="gvrg-random-star-wrap gvrg-random-star-wrap-left" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet gvrg-random-comet-left"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap gvrg-random-star-wrap-right" aria-hidden="true"><span class="gvrg-random-star">✨</span><span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></span>';random.setAttribute('aria-label','RANDOM GALAXY');
+        const forward=document.createElement('button');
+        forward.type='button';forward.className='gv-galaxy-history gv-galaxy-history-forward';forward.textContent='';forward.setAttribute('aria-label','NEXT GALAXY');forward.disabled=true;
+        nav.append(back,random,forward);root.appendChild(nav);
+
+        const hud=document.createElement('div');
+        hud.id='gv-travel-hud';hud.setAttribute('role','status');hud.setAttribute('aria-live','polite');
+        hud.innerHTML='<div id="gv-travel-distance"><span id="gv-travel-distance-value"><span id="gv-travel-distance-integer">0</span><span id="gv-travel-distance-decimal">.</span><span id="gv-travel-distance-fraction">00</span></span><span id="gv-travel-distance-unit">MILLION LIGHT-YEARS</span></div><div id="gv-travel-primary"><div id="gv-travel-course">COURSE LOCKED</div><div id="gv-travel-heading">HEADING TO</div><div id="gv-travel-destination"></div></div>';
+        root.appendChild(hud);
+        return {version,nav,back,random,forward,hud};
+    }
+
+    function createUniverseContext(root){
+        const context=document.createElement('div');
+        context.id='gv-universe-context';
+        context.setAttribute('aria-live','polite');
+        context.innerHTML='<div class="gv-universe-label">THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE<span class="gv-universe-count">EST. ~2 TRILLION GALAXIES</span></div><div class="gv-universe-leader" aria-hidden="true"></div>';
+        root.appendChild(context);
+        return context;
+    }
+
+    function createHomeOverlay(root){
+        const overlay=document.createElement('div');
+        overlay.id='gv-we-are-here';
+        overlay.setAttribute('aria-live','polite');
+        overlay.innerHTML='<div class="gv-home-leader" aria-hidden="true"></div><div class="gv-home-label"><div class="gv-home-origin"><span class="gv-earth-icon" aria-hidden="true">🌎</span><strong>WE ARE HERE</strong></div><div class="gv-home-sub">EARTH — MILKY WAY</div><div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div></div>';
+        root.appendChild(overlay);
+        return overlay;
+    }
+
+    function equatorialToGalactic(raDeg,decDeg){
+        const d=Math.PI/180,ra=raDeg*d,dec=decDeg*d;
+        const raNGP=192.85948*d,decNGP=27.12825*d,lOmega=32.93192*d;
+        const b=Math.asin(Math.sin(dec)*Math.sin(decNGP)+Math.cos(dec)*Math.cos(decNGP)*Math.cos(ra-raNGP));
+        const y=Math.sin(dec)*Math.cos(decNGP)-Math.cos(dec)*Math.sin(decNGP)*Math.cos(ra-raNGP);
+        const x=Math.cos(dec)*Math.sin(ra-raNGP);
+        let l=(Math.atan2(y,x)+lOmega)/d;
+        l=((l%360)+360)%360;
+        return [l,b/d];
+    }
+
+    function readCurrentRaDec(aladin,root){
         try{
-            const state=randomGalaxy.getState();
-            if(state.hdOpen)randomGalaxy.hideHubbleHD();
-            await randomGalaxy.travelToRandom();
-            galaxyHistoryIndex=index;
-        }catch(error){
-            pendingHistoryIndex=null;forcedDestination=null;navigationPending=false;setHistoryControls();resumeBackgroundWork();throw error;
-        }
+            const value=aladin.getRaDec?.();
+            const ra=Number(value?.[0]),dec=Number(value?.[1]);
+            if(Number.isFinite(ra)&&Number.isFinite(dec))return [ra,dec];
+        }catch(error){console.warn('GV-8K GETRADEC WARNING',error)}
+        try{
+            const canvas=root.querySelector('canvas');
+            if(canvas&&typeof aladin.pix2world==='function'){
+                const value=aladin.pix2world(canvas.clientWidth/2,canvas.clientHeight/2);
+                const ra=Number(value?.[0]),dec=Number(value?.[1]);
+                if(Number.isFinite(ra)&&Number.isFinite(dec))return [ra,dec];
+            }
+        }catch(error){console.warn('GV-8K PIX2WORLD WARNING',error)}
+        return null;
     }
+
+    const galaxyCatalogPromise=loadCombinedGalaxyCatalog();
 
     const A=await ensureAladin();
     await A.init;
@@ -1079,22 +1259,64 @@ display(Javascript(r"""
         try{if(typeof aladin.setFrame==='function')aladin.setFrame(frame==='GAL'?'galactic':'ICRSd')}catch(error){console.warn('GV-10G FRAME CHANGE WARNING',error)}
         renderCoordinates();
     }});
-    createTravelListener(aladin,root);
+    await coordinate.ready;
+    const initialCoordinates=readCurrentRaDec(aladin,root);
+    if(initialCoordinates){latestRa=initialCoordinates[0];latestDec=initialCoordinates[1];renderCoordinates()}
+    let lastRa=NaN,lastDec=NaN;
+    const coordinateTimer=setInterval(()=>{
+        const value=readCurrentRaDec(aladin,root);
+        if(!value)return;
+        const ra=value[0],dec=value[1];
+        if(ra===lastRa&&dec===lastDec)return;
+        lastRa=ra;lastDec=dec;latestRa=ra;latestDec=dec;renderCoordinates();
+    },100);
+    window.addEventListener('beforeunload',()=>clearInterval(coordinateTimer),{once:true});
 
     await loadScript(TARGET_URL,'gvTarget0001');
-    if(window.GalaxyViewerTargetSimbad?.version!=='0001')throw new Error('TARGET MODULE 0001 EXPORT MISSING');
-    const target=window.GalaxyViewerTargetSimbad.init({host:targetHost,aladin});
+    if(window.GalaxyViewerTargetSimbad?.version!=='0001')throw new Error('TARGET / SIMBAD MODULE 0001 EXPORT MISSING');
+    const target=window.GalaxyViewerTargetSimbad.init({host:targetHost,aladin,viewerRoot:root});
 
-    let randomGalaxyScript=await fetch(RANDOM_GALAXY_URL,{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error(`RANDOM GALAXY MODULE HTTP ${response.status}`);return response.text()});
-    const bootstrapProviderAssignments=['window.GV_HUBBLE_PROVIDER=HUBBLE_PROVIDER','window.GV_HUBBLE_PROVIDER = HUBBLE_PROVIDER'];
-    const combinedProviderBootstrap='window.GV_HUBBLE_PROVIDER=window.GV_COMBINED_GALAXY_PROVIDER||window.GV_HUBBLE_PROVIDER||HUBBLE_PROVIDER';
-    if(!bootstrapProviderAssignments.some(assignment=>randomGalaxyScript.includes(assignment)))throw new Error('RANDOM GALAXY MODULE PROVIDER BOOTSTRAP ASSIGNMENT MISSING');
-    for(const assignment of bootstrapProviderAssignments)randomGalaxyScript=randomGalaxyScript.replace(assignment,combinedProviderBootstrap);
-    const randomGalaxyModuleUrl=URL.createObjectURL(new Blob([randomGalaxyScript],{type:'text/javascript'}));
-    try{await loadScript(randomGalaxyModuleUrl,'gvRandomGalaxy0031')}finally{URL.revokeObjectURL(randomGalaxyModuleUrl)}
-    if(window.GalaxyViewerRandomGalaxy?.version!=='0031')throw new Error('RANDOM GALAXY MODULE 0031 EXPORT MISSING');
-    const randomGalaxy=window.GalaxyViewerRandomGalaxy.init({
-        host:randomGalaxyHost,aladin,provider:'hubble',randomButton:bottom.random,
+    await loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0031');
+    if(window.GalaxyRandomGalaxy?.VERSION!=='0031')throw new Error('RANDOM GALAXY 0031 EXPORT MISSING OR VERSION MISMATCH');
+    function historySnapshot(destination){
+        const {preparedHdUrl,preparedSource,preparedHdImage,...snapshot}=destination||{};
+        return Object.freeze({...snapshot});
+    }
+    function setHistoryControls(){
+        const busy=navigationPending||Boolean(window.__gv10eRandomGalaxy?.getState?.().busy);
+        bottom.back.disabled=busy||galaxyHistoryIndex<=0;
+        bottom.forward.disabled=busy||galaxyHistoryIndex<0||galaxyHistoryIndex>=galaxyHistory.length-1;
+    }
+    function recordArrival(destination){
+        if(Number.isInteger(pendingHistoryIndex)){
+            galaxyHistoryIndex=pendingHistoryIndex;
+            pendingHistoryIndex=null;
+        }else{
+            if(galaxyHistoryIndex<galaxyHistory.length-1)galaxyHistory.splice(galaxyHistoryIndex+1);
+            galaxyHistory.push(historySnapshot(destination));
+            galaxyHistoryIndex=galaxyHistory.length-1;
+        }
+    }
+    function navigateHistory(index){
+        if(index<0||index>=galaxyHistory.length||navigationPending||randomGalaxy.getState().busy)return;
+        suspendBackgroundWork();
+        forcedDestination=galaxyHistory[index];
+        pendingHistoryIndex=index;
+        navigationPending=true;
+        homeOverlay.classList.add('gv-hidden');universeContext.classList.add('gv-hidden');setHistoryControls();
+        randomGalaxy.travelToRandom().catch(error=>{
+            forcedDestination=null;pendingHistoryIndex=null;navigationPending=false;resumeBackgroundWork();endTravelHud();setHistoryControls();console.error('GV-10G HISTORY NAVIGATION FAILURE',error);
+        });
+    }
+
+    const randomGalaxy=window.GalaxyRandomGalaxy.mount(randomGalaxyHost,{
+        aladin,
+        randomButton:bottom.random,
+        bindClick:false,
+        prefetch:false,
+        hubbleProvider:randomHubbleProvider,
+        currentGalaxy:HOME,
+        catalogCount:catalogRecordCount,
         travelSeconds:TRAVEL_SECONDS,
         onArrival(destination){
             navigationPending=false;
@@ -1121,7 +1343,7 @@ display(Javascript(r"""
 
     // 10N HD presentation: exact scope is archive/source controls + Galaxy Info + BACK TO SKY.
     const presentationStyle=document.createElement('style');
-    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,calc(100vw - 20px))!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-science .gvrg-hd-science-value{font-size:10.5px!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport>img:not(#gv-hd-archive-button img){width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 10px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}.gvrg-credit{display:none!important}#gv-hd-archive-button{position:absolute!important;right:14px!important;bottom:14px!important;z-index:40!important;width:36px!important;height:36px!important;margin:0!important;padding:2px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:content-box!important;border:2px solid #78FFAB!important;border-radius:5px!important;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;pointer-events:auto!important;touch-action:manipulation!important}#gv-hd-archive-button img{display:block!important;width:calc(100% - 6px)!important;height:calc(100% - 6px)!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;margin:0!important;padding:0!important;border:0!important;border-radius:3px!important;box-shadow:none!important}#gv-archive-overlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;pointer-events:none}#gv-archive-overlay.gv-open{display:block;pointer-events:auto}#gv-archive-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#gv-archive-back{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483647;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 12px;border:2px solid #ABB3AA;border-radius:7px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));color:#E8FFF0;font:400 13px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 12px rgba(0,0,0,.75);pointer-events:auto;touch-action:manipulation;cursor:pointer}#gv-archive-arrow{position:relative;display:inline-flex;width:36px;height:36px;flex:0 0 36px;align-items:center;justify-content:center}#gv-archive-arrow::before,#gv-archive-arrow::after{content:"";position:absolute;left:50%;top:50%;width:17px;height:17px;border-style:solid;border-left:0;border-bottom:0;box-sizing:border-box;pointer-events:none}#gv-archive-arrow::before{border-width:6px;border-color:#78FFAB;filter:drop-shadow(0 0 4px rgba(87,255,147,.90));transform:translate(-38%,-50%) rotate(-135deg)}#gv-archive-arrow::after{width:13px;height:13px;border-width:4px;border-color:#DFFBFF;filter:drop-shadow(0 0 3px rgba(98,216,255,.80));transform:translate(-34%,-50%) rotate(-135deg)}#gv-archive-target-tile{box-sizing:border-box;width:36px;height:36px;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));overflow:hidden}#gv-archive-target-tile img{display:block;width:28px;height:28px;object-fit:contain;flex:0 0 28px;margin:0;padding:0;border:0}';
+    presentationStyle.textContent='#gv-random-galaxy{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10)}.gv-galaxy-history{border:2px solid #ABB3AA!important;box-shadow:none!important;filter:brightness(1.10);opacity:1!important}.gvrg-hd-science,.gvrg-hd-viewport,#gv-hd-info-panel{box-sizing:border-box!important;width:min(680px,calc(100vw - 20px))!important;border:1px solid #78FFAB!important;border-radius:8px!important}.gvrg-hd-science,#gv-hd-info-panel{background:transparent!important;box-shadow:none!important}.gvrg-hd-science{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;overflow:hidden!important;pointer-events:none!important}.gvrg-hd-science .gvrg-hd-science-value{font-size:10.5px!important}.gvrg-hd-viewport{position:absolute!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;aspect-ratio:auto!important;overflow:hidden!important;background:#020B07!important;box-shadow:inset 0 0 6px rgba(120,255,171,.10),0 0 8px rgba(87,255,147,.22)!important;pointer-events:auto!important}.gvrg-hd-viewport>img:not(#gv-hd-archive-button img){width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:50% 50%;scale:1!important}.gvrg-hd-scale,.gvrg-hd-scale-label{font-size:13.5px!important}#gv-hd-info-panel{position:absolute;left:50%;z-index:4;transform:translateX(-50%);padding:9px 11px 10px;color:#DFFFEA;font:400 10.5px/1.45 "Space Age",sans-serif;letter-spacing:.42px;text-align:left;text-shadow:0 0 4px rgba(87,255,147,.22);display:flex;flex-direction:column;overflow:hidden;pointer-events:none}#gv-hd-info-title{flex:0 0 auto;margin-bottom:6px;color:#78FFAB;font-size:12px;letter-spacing:.75px;text-align:center}#gv-hd-info-body{flex:1 1 auto;min-height:0;overflow:hidden;overflow-wrap:anywhere}.gvrg-credit{display:none!important}#gv-hd-archive-button{position:absolute!important;right:14px!important;bottom:14px!important;z-index:40!important;width:36px!important;height:36px!important;margin:0!important;padding:2px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:content-box!important;border:2px solid #78FFAB!important;border-radius:5px!important;background:linear-gradient(145deg,rgba(18,105,65,.96),rgba(31,176,96,.94))!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;pointer-events:auto!important;touch-action:manipulation!important}#gv-hd-archive-button img{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;margin:0!important;padding:0!important;border:0!important;border-radius:3px!important;box-shadow:none!important}#gv-archive-overlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;pointer-events:none}#gv-archive-overlay.gv-open{display:block;pointer-events:auto}#gv-archive-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#gv-archive-back{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));z-index:2147483647;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 12px;border:2px solid #ABB3AA;border-radius:7px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));color:#E8FFF0;font:400 13px/1 "Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 12px rgba(0,0,0,.75);pointer-events:auto;touch-action:manipulation;cursor:pointer}#gv-archive-arrow{position:relative;display:inline-flex;width:36px;height:36px;flex:0 0 36px;align-items:center;justify-content:center}#gv-archive-arrow::before,#gv-archive-arrow::after{content:"";position:absolute;left:50%;top:50%;width:17px;height:17px;border-style:solid;border-left:0;border-bottom:0;box-sizing:border-box;pointer-events:none}#gv-archive-arrow::before{border-width:6px;border-color:#78FFAB;filter:drop-shadow(0 0 4px rgba(87,255,147,.90));transform:translate(-38%,-50%) rotate(-135deg)}#gv-archive-arrow::after{width:13px;height:13px;border-width:4px;border-color:#DFFBFF;filter:drop-shadow(0 0 3px rgba(98,216,255,.80));transform:translate(-34%,-50%) rotate(-135deg)}#gv-archive-target-tile{box-sizing:border-box;width:36px;height:36px;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #ABB3AA;border-radius:6px;background:linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98));overflow:hidden}#gv-archive-target-tile img{display:block;width:28px;height:28px;object-fit:contain;flex:0 0 28px;margin:0;padding:0;border:0}';
     document.head.appendChild(presentationStyle);
 
     const hdScience=randomGalaxy.hdScience;
@@ -1141,170 +1363,318 @@ display(Javascript(r"""
             constellationValue.className='gvrg-hd-science-value';
             constellationItem.append(key,constellationValue);
             const ageItem=scienceItems.find(item=>String(item.querySelector('.gvrg-hd-science-label')?.textContent||'').trim().toUpperCase()==='AGE');
-            if(ageItem?.parentNode)ageItem.parentNode.insertBefore(constellationItem,ageItem);
-            else hdScience.appendChild(constellationItem);
-        }else constellationValue=constellationItem.querySelector('.gvrg-hd-science-value');
-        const hdMorphology=document.createElement('div');
-        hdMorphology.className='gvrg-hd-science-item';
-        hdMorphology.innerHTML='<div class="gvrg-hd-science-label">TYPE</div><div class="gvrg-hd-science-value"></div>';
-        hdScience.insertBefore(hdMorphology,constellationItem||null);
-        const hdMorphologyValue=hdMorphology.querySelector('.gvrg-hd-science-value');
-        const hdSize=document.createElement('div');
-        hdSize.className='gvrg-hd-science-item';
-        hdSize.innerHTML='<div class="gvrg-hd-science-label">SIZE</div><div class="gvrg-hd-science-value"></div>';
-        hdScience.appendChild(hdSize);
-        const hdSizeValue=hdSize.querySelector('.gvrg-hd-science-value');
-
-        function syncHdScience(destination){
-            const shown=destination||randomGalaxy.getState?.().activeDestination||{};
-            if(hdMorphologyValue)hdMorphologyValue.textContent=String(shown.morphology||'').trim()||'—';
-            if(constellationValue)constellationValue.textContent=String(shown.constellation||'').trim()||'—';
-            if(hdSizeValue)hdSizeValue.textContent=String(shown.size||'').trim()||(Number.isFinite(Number(shown.sizeKly))?`${Number(shown.sizeKly).toFixed(1)} KLY`:'—');
+            hdScience.insertBefore(constellationItem,ageItem||null);
+        }else{
+            constellationValue=constellationItem.querySelector('.gvrg-hd-science-value');
         }
-        randomGalaxy.__gvSyncHdScience=syncHdScience;
+        const syncHdConst=()=>{
+            if(constellationValue)constellationValue.textContent=String(randomGalaxy.activeDestination?.constellation||randomGalaxy.constellationValueEl?.textContent||'').trim().toUpperCase();
+        };
+        if(randomGalaxy.constellationValueEl)new MutationObserver(syncHdConst).observe(randomGalaxy.constellationValueEl,{childList:true,subtree:true,characterData:true});
+        randomGalaxy.viewHdButton?.addEventListener('click',syncHdConst,true);
+        randomGalaxy.hubbleIconButton?.addEventListener('click',syncHdConst,true);
+        syncHdConst();
     }
 
-    const hdViewport=randomGalaxy.hdViewport;
-    if(hdViewport){
-        hdViewport.style.width='min(680px,calc(100vw - 20px))';
-        hdViewport.style.height='min(680px,calc(100vw - 20px))';
+    if(randomGalaxy.downloadButton){
+        try{if(randomGalaxy._downloadClick)randomGalaxy.downloadButton.removeEventListener('click',randomGalaxy._downloadClick)}catch(_){}
+        try{randomGalaxy.downloadButton.remove()}catch(_){}
+        randomGalaxy.downloadButton=null;
     }
+
     const hdInfoPanel=document.createElement('div');
     hdInfoPanel.id='gv-hd-info-panel';
-    const hdInfoTitle=document.createElement('div');hdInfoTitle.id='gv-hd-info-title';hdInfoTitle.textContent='GALAXY INFO';
-    const hdInfoBody=document.createElement('div');hdInfoBody.id='gv-hd-info-body';
-    const hdBackToSky=document.createElement('button');hdBackToSky.id='gv-hd-back-to-sky';hdBackToSky.type='button';hdBackToSky.setAttribute('aria-label','BACK TO SKY');hdBackToSky.innerHTML='<span class="gv-back-chevron" aria-hidden="true"></span><span>BACK TO SKY</span>';
-    hdInfoPanel.append(hdInfoTitle,hdInfoBody,hdBackToSky);root.appendChild(hdInfoPanel);
+    hdInfoPanel.innerHTML='<div id="gv-hd-info-title">GALAXY INFO</div><div id="gv-hd-info-body"></div>';
+    randomGalaxy.hdOverlay?.appendChild(hdInfoPanel);
+    const hdInfoBody=hdInfoPanel.querySelector('#gv-hd-info-body');
+    const hdBackToSky=randomGalaxy.backButton;
+    if(hdBackToSky){
+        // Preserve the established denomination exactly: BACK TO SKY.
+        const backLabel=hdBackToSky.lastElementChild;
+        if(backLabel)backLabel.textContent='BACK TO SKY';
+        else hdBackToSky.textContent='BACK TO SKY';
+        hdBackToSky.setAttribute('aria-label','BACK TO SKY');
+        hdInfoPanel.appendChild(hdBackToSky);
+        Object.assign(hdBackToSky.style,{
+            position:'absolute',left:'12px',right:'auto',bottom:'12px',zIndex:'30',
+            minWidth:'118px',height:'36px',margin:'0',padding:'0 10px',
+            pointerEvents:'auto',touchAction:'manipulation',
+            border:'2px solid #ABB3AA',borderRadius:'6px',
+            background:'linear-gradient(145deg,rgba(18,105,65,.98),rgba(31,176,96,.98))',
+            color:'#E8FFF0',boxShadow:'none'
+        });
+    }
+    function restoreAfterHdClose(attempt=0){
+        if(isHdPresentationActive()){
+            if(attempt<60)requestAnimationFrame(()=>restoreAfterHdClose(attempt+1));
+            return;
+        }
+        restoreNormalViewerPresentation();
+    }
+    if(hdBackToSky)hdBackToSky.addEventListener('click',()=>requestAnimationFrame(()=>restoreAfterHdClose()),true);
+    if(randomGalaxy.creditEl)randomGalaxy.creditEl.remove();
 
-    const archiveOverlay=document.createElement('div');archiveOverlay.id='gv-archive-overlay';archiveOverlay.innerHTML='<iframe id="gv-archive-frame" title="SOURCE ARCHIVE"></iframe><button id="gv-archive-back" type="button"><span id="gv-archive-arrow" aria-hidden="true"></span><span id="gv-archive-back-label">BACK TO GALAXY VIEWER</span><span id="gv-archive-target-tile"><img id="gv-archive-target" alt="" aria-hidden="true"></span></button>';document.body.appendChild(archiveOverlay);
-    const archiveFrame=archiveOverlay.querySelector('#gv-archive-frame');const archiveBack=archiveOverlay.querySelector('#gv-archive-back');const archiveTarget=archiveOverlay.querySelector('#gv-archive-target');archiveTarget.src=TARGET_ICON_URL;
+    const hdArchiveButton=document.createElement('button');
+    hdArchiveButton.id='gv-hd-archive-button';
+    hdArchiveButton.type='button';
+    hdArchiveButton.setAttribute('aria-label','OPEN ARCHIVE SOURCE');
+    const hdArchiveIcon=document.createElement('img');
+    hdArchiveIcon.alt='ARCHIVE SOURCE';
+    hdArchiveButton.appendChild(hdArchiveIcon);
+    randomGalaxy.hdViewport?.appendChild(hdArchiveButton);
+    hdArchiveButton.addEventListener('pointerdown',event=>event.stopPropagation(),true);
+    hdArchiveButton.addEventListener('pointerup',event=>event.stopPropagation(),true);
 
-    function isHdActive(){return Boolean(randomGalaxy?.getState?.().hdOpen)}
-
-    function closeArchiveOverlay(){
+    const archiveOverlay=document.createElement('div');
+    archiveOverlay.id='gv-archive-overlay';
+    const archiveFrame=document.createElement('iframe');
+    archiveFrame.id='gv-archive-frame';
+    archiveFrame.title='GALAXY ARCHIVE SOURCE';
+    const archiveBack=document.createElement('button');
+    archiveBack.id='gv-archive-back';
+    archiveBack.type='button';
+    const archiveArrow=document.createElement('span');
+    archiveArrow.id='gv-archive-arrow';
+    archiveArrow.setAttribute('aria-hidden','true');
+    const archiveTargetTile=document.createElement('span');
+    archiveTargetTile.id='gv-archive-target-tile';
+    archiveTargetTile.setAttribute('aria-hidden','true');
+    const archiveTarget=document.createElement('img');
+    archiveTarget.src=TARGET_ICON_URL;
+    archiveTarget.alt='';
+    archiveTarget.setAttribute('aria-hidden','true');
+    archiveTargetTile.appendChild(archiveTarget);
+    const archiveBackLabel=document.createElement('span');
+    archiveBackLabel.textContent='BACK TO GALAXY VIEWER';
+    archiveBack.append(archiveArrow,archiveBackLabel,archiveTargetTile);
+    archiveBack.setAttribute('aria-label','BACK TO GALAXY VIEWER');
+    archiveOverlay.append(archiveFrame,archiveBack);
+    document.body.appendChild(archiveOverlay);
+    let archiveSourceUrl='';
+    const closeArchiveOverlay=()=>{
         archiveOverlay.classList.remove('gv-open');
-        archiveOverlay.style.display='none';archiveOverlay.style.pointerEvents='none';
+        archiveOverlay.style.pointerEvents='none';
+        archiveOverlay.setAttribute('aria-hidden','true');
+        archiveFrame.style.pointerEvents='none';
+        archiveFrame.blur();
         archiveFrame.src='about:blank';
-        try{archiveBack.blur()}catch(_){}
-        try{root.focus?.({preventScroll:true})}catch(_){}
-        if(isHdActive())requestAnimationFrame(settleHdPresentation);
-    }
-    archiveBack.addEventListener('click',closeArchiveOverlay);
+        archiveSourceUrl='';
+        requestAnimationFrame(()=>{
+            reconcileViewerPresentation();
+            if(!navigationPending&&!randomGalaxy.getState().busy)bottom.random.disabled=false;
+            setHistoryControls();
+            if(isHdPresentationActive())try{hdArchiveButton.focus({preventScroll:true})}catch(_){}
+        });
+    };
+    archiveBack.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        closeArchiveOverlay();
+    });
+    archiveFrame.addEventListener('error',()=>{
+        const sourceUrl=archiveSourceUrl;
+        closeArchiveOverlay();
+        if(sourceUrl)window.open(sourceUrl,'_blank','noopener,noreferrer');
+    });
 
-    function openArchiveOverlay(){
-        const destination=randomGalaxy.getState?.().activeDestination||{};
-        const sourceUrl=String(destination.sourceUrl||'').trim();
-        if(!sourceUrl)return;
-        archiveFrame.src=sourceUrl;archiveOverlay.style.display='block';archiveOverlay.style.pointerEvents='auto';archiveOverlay.classList.add('gv-open');
+    function currentArchiveDestination(){return randomGalaxy.getState?.().activeDestination||randomGalaxy.activeDestination||null}
+    function providerFor(destination){return destination?.provider==='JWST'?'JWST':'HUBBLE'}
+    hdArchiveButton.addEventListener('click',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        const destination=currentArchiveDestination();
+        const sourceUrl=String(destination?.sourceUrl||'').trim();
+        if(!/^https:\/\//i.test(sourceUrl))return;
+        archiveSourceUrl=sourceUrl;
+        archiveFrame.src=sourceUrl;
+        archiveFrame.style.pointerEvents='auto';
+        archiveOverlay.removeAttribute('aria-hidden');
+        archiveOverlay.style.pointerEvents='auto';
+        archiveOverlay.classList.add('gv-open');
+    },true);
+
+    function galaxyInfoText(destination){
+        if(!destination)return '';
+        const provider=providerFor(destination);
+        const telescope=provider==='JWST'?'JAMES WEBB SPACE TELESCOPE':'HUBBLE SPACE TELESCOPE';
+        const identity=String(destination.commonName||destination.designation||destination.name||'THIS GALAXY').trim().toUpperCase();
+        const parts=[`${identity} — ${telescope} IMAGERY.`];
+        if(destination.constellation)parts.push(`CONSTELLATION ${String(destination.constellation).trim().toUpperCase()}.`);
+        const distance=Number(destination.distance);
+        if(Number.isFinite(distance)&&distance>0)parts.push(`DISTANCE ${distance>=1000?(distance/1000).toFixed(2)+' BILLION':distance.toFixed(distance>=100?0:1)+' MILLION'} LIGHT-YEARS.`);
+        if(destination.age)parts.push(`AGE ${String(destination.age).trim().toUpperCase()}.`);
+        if(destination.imageType)parts.push(`${String(destination.imageType).trim().toUpperCase()} IMAGE.`);
+        return parts.join(' ');
     }
 
-    const hdArchiveButton=document.createElement('button');hdArchiveButton.id='gv-hd-archive-button';hdArchiveButton.type='button';hdArchiveButton.setAttribute('aria-label','OPEN SOURCE ARCHIVE');hdArchiveButton.innerHTML='<img alt="" aria-hidden="true">';hdViewport?.appendChild(hdArchiveButton);
-    const hdArchiveIcon=hdArchiveButton.querySelector('img');
-    function syncHdProviderPresentation(destination){
-        const shown=destination||randomGalaxy.getState?.().activeDestination||{};
-        const provider=normalizeProvider(shown.provider);
-        hdArchiveIcon.src=provider==='JWST'?JWST_ICON_URL:HUBBLE_ICON_URL;
-        hdArchiveButton.title=provider==='JWST'?'OPEN ESA/WEBB SOURCE':'OPEN ESA/HUBBLE SOURCE';
-        randomGalaxy.__gvSyncHdScience?.(shown);
-        renderHdInfoCandidate(shown);
-    }
-    hdArchiveButton.addEventListener('click',openArchiveOverlay);
-
-    function renderHdInfoCandidate(destination){
-        if(!destination){hdInfoBody.textContent='';return}
-        const parts=[];
-        const label=value=>String(value||'').trim();
-        if(label(destination.name))parts.push(label(destination.name));
-        if(label(destination.morphology))parts.push(label(destination.morphology));
-        if(label(destination.constellation))parts.push(`${label(destination.constellation)} constellation`);
-        if(Number.isFinite(Number(destination.distance)))parts.push(`${Number(destination.distance).toFixed(1)} million light-years away`);
-        if(label(destination.age))parts.push(`Age ${label(destination.age)}`);
-        if(label(destination.size))parts.push(`Size ${label(destination.size)}`);else if(Number.isFinite(Number(destination.sizeKly)))parts.push(`Size ${Number(destination.sizeKly).toFixed(1)} KLY`);
-        hdInfoBody.dataset.fullText=parts.join(' • ');
-        fitHdInfoText();
-    }
-
-    function fitHdInfoText(){
-        if(!isHdActive())return;
-        const full=String(hdInfoBody.dataset.fullText||'');
-        if(!full){hdInfoBody.textContent='';return}
-        const panelRect=hdInfoPanel.getBoundingClientRect();
-        const buttonRect=hdBackToSky.getBoundingClientRect();
-        if(!(panelRect.width>0&&panelRect.height>0&&buttonRect.width>0&&buttonRect.height>0)){hdInfoBody.textContent=full;return}
-        const titleRect=hdInfoTitle.getBoundingClientRect();
+    function renderHdInfoCandidate(words,count){
+        hdInfoBody.replaceChildren();
+        const bodyRect=hdInfoBody.getBoundingClientRect();
         const style=getComputedStyle(hdInfoBody);
-        const lineHeight=parseFloat(style.lineHeight)||15.225;
-        const top=titleRect.bottom+4;
-        const bottom=Math.min(panelRect.bottom-8,buttonRect.bottom);
-        const rows=Math.max(1,Math.floor((bottom-top)/lineHeight));
-        const bodyWidth=Math.max(1,hdInfoBody.clientWidth);
-        const envelopeLeft=Math.max(0,buttonRect.left-panelRect.left-8);
-        const envelopeRight=Math.min(bodyWidth,buttonRect.right-panelRect.left+8);
-        const rowWidths=[];
-        for(let row=0;row<rows;row++){
-            const y=top+row*lineHeight;
-            if(y>=buttonRect.top-4&&y<buttonRect.bottom+4){rowWidths.push(Math.max(20,bodyWidth-envelopeRight))}else rowWidths.push(bodyWidth);
+        const font=style.font||`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const measuredLineHeight=parseFloat(style.lineHeight);
+        const fontSize=parseFloat(style.fontSize)||10.5;
+        const lineHeight=Number.isFinite(measuredLineHeight)?measuredLineHeight:fontSize*1.45;
+        const canvas=renderHdInfoCandidate._canvas||(renderHdInfoCandidate._canvas=document.createElement('canvas'));
+        const context=canvas.getContext('2d');
+        context.font=font;
+        const gap=10;
+        let envelopeTop=bodyRect.bottom;
+        let envelopeBottom=bodyRect.bottom;
+        let envelopeRight=bodyRect.left;
+        if(hdBackToSky){
+            const buttonRect=hdBackToSky.getBoundingClientRect();
+            envelopeRight=Math.min(bodyRect.right,buttonRect.right+gap);
+            envelopeTop=Math.max(bodyRect.top,buttonRect.top-gap);
+            envelopeBottom=Math.min(bodyRect.bottom,buttonRect.bottom+gap);
         }
-        const canvas=fitHdInfoText.canvas||(fitHdInfoText.canvas=document.createElement('canvas'));
-        const ctx=canvas.getContext('2d');ctx.font=style.font;
-        const words=full.split(/\s+/).filter(Boolean);let line='',row=0,shown=[];
-        for(const word of words){
-            if(row>=rowWidths.length)break;
-            const candidate=line?`${line} ${word}`:word;
-            if(ctx.measureText(candidate).width<=rowWidths[row])line=candidate;
-            else{
-                if(line)shown.push(line);
-                row++;
-                if(row>=rowWidths.length)break;
-                line=word;
+        const sourceWords=count?words.slice(0,count):[];
+        const lines=[];
+        let index=0;
+        const maxLines=Math.max(0,Math.floor((bodyRect.height+.5)/lineHeight));
+        const letterSpacing=parseFloat(style.letterSpacing)||0;
+        const measure=value=>context.measureText(value).width+Math.max(0,value.length-1)*letterSpacing;
+        for(let lineIndex=0;lineIndex<maxLines&&index<sourceWords.length;lineIndex++){
+            const lineTop=bodyRect.top+lineIndex*lineHeight;
+            const lineBottom=lineTop+lineHeight;
+            if(lineTop>=envelopeBottom-.5)break;
+            const intersectsEnvelope=lineBottom>envelopeTop+.5&&lineTop<envelopeBottom-.5;
+            if(intersectsEnvelope&&lineBottom>envelopeBottom+.5)break;
+            const leftOffset=intersectsEnvelope?Math.max(0,envelopeRight-bodyRect.left):0;
+            const availableWidth=Math.max(0,bodyRect.width-leftOffset);
+            if(availableWidth<24)break;
+            let text='';
+            while(index<sourceWords.length){
+                const proposed=text?`${text} ${sourceWords[index]}`:sourceWords[index];
+                if(text&&measure(proposed)>availableWidth)break;
+                if(!text&&measure(proposed)>availableWidth){
+                    text=proposed;
+                    index++;
+                    break;
+                }
+                text=proposed;
+                index++;
             }
+            if(!text)break;
+            lines.push({text,width:availableWidth,left:leftOffset});
         }
-        if(row<rowWidths.length&&line)shown.push(line);
-        hdInfoBody.textContent=shown.join('\n');
-        hdInfoBody.style.whiteSpace='pre-line';
-        hdInfoBody.style.paddingLeft='0';
-        hdInfoBody.style.paddingRight='0';
-        const buttonTop=Math.max(0,buttonRect.top-panelRect.top);
-        hdInfoBody.style.clipPath=`polygon(0 0,100% 0,100% 100%,0 100%)`;
-        hdInfoBody.style.setProperty('--gv-back-envelope-left',`${envelopeLeft}px`);
-        hdInfoBody.style.setProperty('--gv-back-envelope-top',`${buttonTop}px`);
+        const truncated=index<sourceWords.length||count<words.length;
+        if(truncated&&lines.length){
+            let line=lines[lines.length-1];
+            let text=line.text.replace(/\s*…$/,'');
+            while(text&&measure(`${text} …`)>line.width)text=text.replace(/\s+\S+$/,'');
+            line.text=text?`${text} …`:'…';
+        }
+        const fragment=document.createDocumentFragment();
+        for(const line of lines){
+            const row=document.createElement('div');
+            row.textContent=line.text;
+            Object.assign(row.style,{display:'block',marginLeft:`${line.left}px`,width:`${line.width}px`,height:`${lineHeight}px`,lineHeight:`${lineHeight}px`,whiteSpace:'nowrap',overflow:'hidden'});
+            fragment.appendChild(row);
+        }
+        hdInfoBody.appendChild(fragment);
+        return {renderedWords:index,lineCount:lines.length,truncated};
+    }
+
+    function fitHdInfoText(destination=currentArchiveDestination()){
+        if(!hdInfoBody||!destination)return;
+        const words=galaxyInfoText(destination).split(/\s+/).filter(Boolean);
+        const metrics=renderHdInfoCandidate(words,words.length);
+        hdInfoBody.dataset.fittedCharacters=String(hdInfoBody.textContent.length);
+        hdInfoBody.dataset.fittedWords=String(metrics.renderedWords);
+    }
+
+    function syncHdProviderPresentation(destination=currentArchiveDestination()){
+        if(!destination)return;
+        const provider=providerFor(destination);
+        const iconUrl=provider==='JWST'?JWST_ICON_URL:HUBBLE_ICON_URL;
+        if(randomGalaxy.viewHdButton){randomGalaxy.viewHdButton.textContent=`VIEW ${provider} IN HD`;randomGalaxy.viewHdButton.setAttribute('aria-label',`VIEW ${provider} IN HD`)}
+        const buttonIcon=randomGalaxy.hubbleIconButton?.querySelector('img');
+        if(buttonIcon){buttonIcon.src=iconUrl;buttonIcon.alt=`${provider} ARCHIVE`}
+        hdArchiveIcon.src=iconUrl;
+        hdArchiveIcon.alt=`${provider} ARCHIVE`;
+        hdArchiveButton.setAttribute('aria-label',`OPEN ${provider} ARCHIVE SOURCE`);
+        if(randomGalaxy.hdLoading&&provider==='JWST'&&/HUBBLE/i.test(randomGalaxy.hdLoading.textContent||''))randomGalaxy.hdLoading.textContent=String(randomGalaxy.hdLoading.textContent||'').replace(/HUBBLE/gi,'JWST');
+        fitHdInfoText(destination);
+    }
+
+    function applySmartHdCrop(){
+        const image=randomGalaxy.hdImage;
+        if(!(image instanceof HTMLImageElement)||!image.complete||!image.naturalWidth)return;
+        const profile=imageLightProfile(image);
+        const x=profile?clamp(profile.x/FRAMING_SAMPLE_SIZE*100,32,68):50;
+        const y=profile?clamp(profile.y/FRAMING_SAMPLE_SIZE*100,32,68):50;
+        image.style.objectFit='cover';
+        image.style.objectPosition=`${x.toFixed(2)}% ${y.toFixed(2)}%`;
+    }
+
+    function isHdPresentationActive(){return Boolean(randomGalaxy.getState?.().hdOpen)}
+
+    function restoreNormalViewerPresentation(){
+        bottom.version.style.top='';
+        bottom.version.style.bottom='51px';
+        if(!archiveOverlay.classList.contains('gv-open')){
+            archiveOverlay.style.pointerEvents='none';
+            archiveOverlay.setAttribute('aria-hidden','true');
+            archiveFrame.style.pointerEvents='none';
+        }
+        if(!navigationPending&&!randomGalaxy.getState().busy)bottom.random.disabled=false;
+        setHistoryControls();
     }
 
     function positionHdInfoPanel(){
-        if(!isHdActive())return;
-        const viewportRect=hdViewport?.getBoundingClientRect?.();
-        if(!viewportRect?.height)return;
-        const panelHeight=145;
-        const panelTop=Math.min(window.innerHeight-panelHeight-34,viewportRect.bottom+6);
-        hdInfoPanel.style.top=`${Math.max(6,panelTop)}px`;
-        hdInfoPanel.style.height=`${panelHeight}px`;
-        bottom.version.style.top=`${Math.max(6,panelTop+panelHeight+7)}px`;
+        if(!isHdPresentationActive())return;
+        if(!randomGalaxy.hdOverlay||!randomGalaxy.hdViewport||!randomGalaxy.hdScience)return;
+        const overlayRect=randomGalaxy.hdOverlay.getBoundingClientRect();
+        const navRect=bottom.nav.getBoundingClientRect();
+        if(!overlayRect.height||!overlayRect.width)return;
+        const safeBottom=Math.min(overlayRect.bottom-HD_LAYOUT.edge,navRect.top-24);
+        const available=Math.max(1,safeBottom-overlayRect.top-HD_LAYOUT.edge-HD_LAYOUT.gap*2);
+        const bannerTarget=overlayRect.height*HD_LAYOUT.bannerRatio;
+        const viewportWidth=Math.min(680,Math.max(1,randomGalaxy.hdViewport.getBoundingClientRect().width||overlayRect.width-20));
+        const layoutScale=Math.min(1,available/Math.max(1,bannerTarget+viewportWidth+150));
+        const bannerHeight=Math.max(1,Math.floor(bannerTarget*layoutScale));
+        const imageHeight=Math.max(1,Math.floor(viewportWidth*layoutScale));
+        const scienceTop=HD_LAYOUT.edge;
+        const imageTop=scienceTop+bannerHeight+HD_LAYOUT.gap;
+        const infoTop=imageTop+imageHeight+HD_LAYOUT.gap;
+        const infoHeight=Math.max(150,Math.floor(safeBottom-(overlayRect.top+infoTop)));
+        const set=(element,name,value)=>element.style.setProperty(name,value,'important');
+        set(randomGalaxy.hdScience,'top',`${scienceTop}px`);set(randomGalaxy.hdScience,'height',`${bannerHeight}px`);set(randomGalaxy.hdScience,'max-height',`${bannerHeight}px`);
+        set(randomGalaxy.hdViewport,'top',`${imageTop}px`);set(randomGalaxy.hdViewport,'bottom','auto');set(randomGalaxy.hdViewport,'height',`${imageHeight}px`);set(randomGalaxy.hdViewport,'max-height',`${imageHeight}px`);
+        set(hdInfoPanel,'top',`${infoTop}px`);set(hdInfoPanel,'height',`${infoHeight}px`);set(hdInfoPanel,'max-height',`${infoHeight}px`);
+        randomGalaxy.hdOverlay.style.pointerEvents='none';
+        randomGalaxy.hdViewport.style.pointerEvents='auto';
+        hdInfoPanel.style.pointerEvents='none';
+        if(hdBackToSky)hdBackToSky.style.pointerEvents='auto';
+        hdArchiveButton.style.pointerEvents='auto';
+        const rootRect=root.getBoundingClientRect();
+        const versionTop=Math.ceil(overlayRect.top+infoTop+infoHeight+5-rootRect.top);
         bottom.version.style.bottom='auto';
+        bottom.version.style.top=`${versionTop}px`;
+        randomGalaxy.hdOverlay.querySelectorAll('button,a').forEach(element=>{element.style.pointerEvents='auto'});
         fitHdInfoText();
     }
 
     function settleHdPresentation(){
-        if(!isHdActive())return;
-        const viewportRect=hdViewport?.getBoundingClientRect?.();
-        if(!viewportRect?.height)return;
-        const size=Math.min(680,Math.max(0,window.innerWidth-20));
-        hdViewport.style.width=`${size}px`;hdViewport.style.height=`${size}px`;
+        if(!isHdPresentationActive())return;
+        syncHdProviderPresentation();
+        applySmartHdCrop();
         positionHdInfoPanel();
+        const image=randomGalaxy.hdImage;
+        if(image instanceof HTMLImageElement&&!image.complete)image.addEventListener('load',()=>{
+            if(!isHdPresentationActive())return;
+            applySmartHdCrop();
+            positionHdInfoPanel();
+            syncHdProviderPresentation();
+        },{once:true});
     }
 
-    function restoreNormalViewerPresentation(){
-        if(isHdActive())return;
-        hdInfoPanel.style.top='';hdInfoPanel.style.height='';
-        bottom.version.style.top='';bottom.version.style.bottom='51px';
-        archiveOverlay.classList.remove('gv-open');archiveOverlay.style.display='none';archiveOverlay.style.pointerEvents='none';archiveFrame.src='about:blank';
-        setHistoryControls();
+    function reconcileViewerPresentation(){
+        if(isHdPresentationActive())settleHdPresentation();
+        else restoreNormalViewerPresentation();
     }
-
-    hdBackToSky.addEventListener('click',()=>{
-        if(!isHdActive())return;
-        randomGalaxy.hideHubbleHD();
-        restoreNormalViewerPresentation();
-    });
 
     const originalShowHubbleHD=randomGalaxy.showHubbleHD.bind(randomGalaxy);
     randomGalaxy.showHubbleHD=function(){
