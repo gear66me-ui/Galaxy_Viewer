@@ -1,0 +1,215 @@
+name: TEMP AE4 Prefetch Diagnostics
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-ae4-prefetch-diagnostics.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-ae4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Build AE4 surgically from standalone AE2
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          src=Path('viewer/GV-beta-0010AE2.py')
+          dst=Path('viewer/GV-beta-0010AE4.py')
+          text=src.read_text(encoding='utf-8')
+
+          def once(old,new,label):
+              global text
+              n=text.count(old)
+              if n!=1:
+                  raise SystemExit(f'FAIL-CLOSED {label}: expected 1 anchor, found {n}')
+              text=text.replace(old,new,1)
+
+          # Revision rollover only.
+          once('# GV-beta-0010AE2','# GV-beta-0010AE4','header version')
+          once("version.textContent='VERSION 10AE2'","version.textContent='VERSION 10AE4'",'visible version')
+          once("const VERSION='10AE2';","const VERSION='10AE4';",'runtime version')
+          once("const DISPLAY_VERSION='10AE2';","const DISPLAY_VERSION='10AE4';",'display version')
+          once("GV-10AE2 CATALOG COUNTS","GV-10AE4 CATALOG COUNTS",'catalog log')
+          once("RANDOM GALAXY 0031 10AE2 COMPATIBILITY PATCH FAILED","RANDOM GALAXY 0031 10AE4 COMPATIBILITY PATCH FAILED",'compat log')
+          once("GALAXY VIEWER 10AE2 STARTUP FAILURE:","GALAXY VIEWER 10AE4 STARTUP FAILURE:",'startup log')
+          once('# GV-beta-0010AE2 staged','# GV-beta-0010AE4 staged','footer version')
+
+          # Diagnostic panel CSS. No existing layout selectors are modified.
+          css='''\n#gv-prefetch-diagnostics{position:absolute;right:6px;bottom:58px;z-index:7395;width:min(220px,48vw);box-sizing:border-box;padding:6px;border:1px solid rgba(120,255,171,.72);border-radius:6px;background:rgba(0,10,7,.86);box-shadow:0 0 8px rgba(87,255,147,.16);pointer-events:none;color:#DFFFEA;font:400 7.5px/1.15 "Space Age",sans-serif;letter-spacing:.18px}\n#gv-prefetch-diagnostics .gv-pd-title{margin:0 0 4px;color:#78FFAB;font-size:8px;letter-spacing:.45px;text-align:center}\n#gv-prefetch-diagnostics .gv-pd-row{display:grid;grid-template-columns:14px minmax(0,1fr) 52px;align-items:center;gap:3px;height:15px;margin:1px 0}\n#gv-prefetch-diagnostics .gv-pd-num{color:#B7FFD0;text-align:right}\n#gv-prefetch-diagnostics .gv-pd-main{min-width:0}\n#gv-prefetch-diagnostics .gv-pd-name{height:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#DFFFEA;font-size:6.6px}\n#gv-prefetch-diagnostics .gv-pd-track{position:relative;height:4px;margin-top:1px;border:1px solid rgba(120,255,171,.40);border-radius:3px;overflow:hidden;background:rgba(255,255,255,.05)}\n#gv-prefetch-diagnostics .gv-pd-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#16763f,#78FFAB);transition:width .12s linear}\n#gv-prefetch-diagnostics .gv-pd-fill.gv-indeterminate{width:36%!important;animation:gvPdSweep .85s linear infinite}\n@keyframes gvPdSweep{0%{transform:translateX(-110%)}100%{transform:translateX(310%)}}\n#gv-prefetch-diagnostics .gv-pd-state{text-align:right;white-space:nowrap;color:#AEEFC5;font-size:6.4px}\n#gv-prefetch-diagnostics .gv-pd-state.gv-ready{color:#78FFAB}\n#gv-prefetch-diagnostics .gv-pd-state.gv-failed{color:#FF8F8F}\n#gv-prefetch-diagnostics .gv-pd-aladin{margin-top:5px;padding-top:4px;border-top:1px solid rgba(120,255,171,.32)}\n#gv-prefetch-diagnostics .gv-pd-aladin .gv-pd-row{grid-template-columns:34px minmax(0,1fr) 52px}\n'''
+          once('</style>',css+'\n</style>','diagnostic CSS insertion')
+
+          panel='''<div id="gv-prefetch-diagnostics" aria-label="PREFETCH DIAGNOSTICS"><div class="gv-pd-title">ARCHIVE PRELOAD 1-10</div><div id="gv-pd-slots"></div><div class="gv-pd-aladin"><div class="gv-pd-row"><div class="gv-pd-num">ALADIN</div><div class="gv-pd-main"><div id="gv-pd-aladin-name" class="gv-pd-name">IDLE</div><div class="gv-pd-track"><div id="gv-pd-aladin-fill" class="gv-pd-fill"></div></div></div><div id="gv-pd-aladin-state" class="gv-pd-state">IDLE</div></div></div></div>'''
+          root_old='<div id="aladin-cosmic-command-test"><div id="gv-startup-wait" aria-hidden="true"><div id="gv-startup-comet"></div></div></div>'
+          root_new='<div id="aladin-cosmic-command-test"><div id="gv-startup-wait" aria-hidden="true"><div id="gv-startup-comet"></div></div>'+panel+'</div>'
+          once(root_old,root_new,'diagnostic DOM insertion')
+
+          # Extend existing download status structure; old calls remain valid.
+          status_old='''    function setHdStatus(destination,state,sourceKind=''){
+        const key=destinationKey(destination);
+        if(!key)return;
+        const old=hdDownloadStatus.get(key)||{};
+        hdDownloadStatus.set(key,{key,name:String(destination?.name||old.name||''),state,sourceKind:sourceKind||old.sourceKind||'',updatedAt:Date.now()});
+    }
+
+    function getHubbleDownloadStatus(){
+        return Object.freeze([...hdDownloadStatus.values()].map(item=>Object.freeze({...item})));
+    }
+'''
+          status_new='''    function setHdStatus(destination,state,sourceKind='',progress=null,receivedBytes=0,totalBytes=0){
+        const key=destinationKey(destination);
+        if(!key)return;
+        const old=hdDownloadStatus.get(key)||{};
+        const normalizedProgress=Number.isFinite(Number(progress))?clamp(Number(progress),0,1):null;
+        hdDownloadStatus.set(key,{key,name:String(destination?.name||old.name||''),state,sourceKind:sourceKind||old.sourceKind||'',progress:normalizedProgress,receivedBytes:Number(receivedBytes)||0,totalBytes:Number(totalBytes)||0,updatedAt:Date.now()});
+    }
+
+    function getHubbleDownloadStatus(){
+        return Object.freeze([...hdDownloadStatus.values()].map(item=>Object.freeze({...item})));
+    }
+
+    async function readHdResponseWithProgress(response,destination,sourceKind,signal=null){
+        const total=Number(response.headers.get('content-length'))||0;
+        if(!response.body?.getReader){
+            setHdStatus(destination,'DOWNLOADING',sourceKind,null,0,total);
+            const blob=await response.blob();
+            setHdStatus(destination,'DOWNLOADING',sourceKind,total>0?1:null,blob.size,total||blob.size);
+            return blob;
+        }
+        const reader=response.body.getReader();
+        const chunks=[];
+        let received=0;
+        for(;;){
+            if(signal?.aborted){try{await reader.cancel()}catch(_){};throw new DOMException('HD PRELOAD SUSPENDED','AbortError')}
+            const {done,value}=await reader.read();
+            if(done)break;
+            chunks.push(value);
+            received+=value.byteLength;
+            setHdStatus(destination,'DOWNLOADING',sourceKind,total>0?received/total:null,received,total);
+        }
+        return new Blob(chunks,{type:response.headers.get('content-type')||'application/octet-stream'});
+    }
+
+    let prefetchDiagnosticTimer=0;
+    function renderPrefetchDiagnostics(){
+        const host=document.getElementById('gv-pd-slots');
+        if(!host)return;
+        const rows=[];
+        const seen=new Set();
+        const push=(destination,stateOverride='')=>{
+            const key=destinationKey(destination);
+            if(!key||seen.has(key)||rows.length>=HUBBLE_PREFETCH_TARGET)return;
+            seen.add(key);
+            const status=hdDownloadStatus.get(key)||{};
+            rows.push({destination,key,status:{...status,state:stateOverride||status.state||'QUEUED'}});
+        };
+        for(const item of prefetchReady)push(item.destination,'READY');
+        for(const key of prefetchLoading.keys())push(galaxyCatalog.find(item=>destinationKey(item)===key),'');
+        for(const destination of prefetchQueued)push(destination,'QUEUED');
+        while(rows.length<HUBBLE_PREFETCH_TARGET)rows.push({destination:null,key:'',status:{state:'EMPTY'}});
+        host.replaceChildren();
+        rows.slice(0,HUBBLE_PREFETCH_TARGET).forEach((row,index)=>{
+            const state=String(row.status.state||'EMPTY').toUpperCase();
+            const progress=state==='READY'?1:Number.isFinite(Number(row.status.progress))?clamp(Number(row.status.progress),0,1):state==='DECODING'?.96:state==='QUEUED'?.04:0;
+            const item=document.createElement('div');item.className='gv-pd-row';
+            const num=document.createElement('div');num.className='gv-pd-num';num.textContent=String(index+1);
+            const main=document.createElement('div');main.className='gv-pd-main';
+            const name=document.createElement('div');name.className='gv-pd-name';name.textContent=String(row.destination?.name||'—').toUpperCase();
+            const track=document.createElement('div');track.className='gv-pd-track';
+            const fill=document.createElement('div');fill.className='gv-pd-fill';
+            if(state==='DOWNLOADING'&&!Number.isFinite(Number(row.status.progress)))fill.classList.add('gv-indeterminate');
+            else fill.style.width=`${Math.round(progress*100)}%`;
+            track.appendChild(fill);main.append(name,track);
+            const stateEl=document.createElement('div');stateEl.className='gv-pd-state';
+            if(state==='READY'){stateEl.classList.add('gv-ready');stateEl.textContent='✓ READY'}
+            else if(state==='RETRY-WAIT'||state==='FAILED'){stateEl.classList.add('gv-failed');stateEl.textContent='✕ '+state}
+            else if(state==='DOWNLOADING'&&Number.isFinite(Number(row.status.progress)))stateEl.textContent=`${Math.round(Number(row.status.progress)*100)}%`;
+            else stateEl.textContent=state;
+            item.append(num,main,stateEl);host.appendChild(item);
+        });
+        const aladinName=document.getElementById('gv-pd-aladin-name');
+        const aladinFill=document.getElementById('gv-pd-aladin-fill');
+        const aladinState=document.getElementById('gv-pd-aladin-state');
+        if(aladinName&&aladinFill&&aladinState){
+            const active=aladinPrewarmActiveKey;
+            const last=aladinPrewarmLastKey;
+            const activeDestination=galaxyCatalog.find(item=>destinationKey(item)===active);
+            const lastDestination=galaxyCatalog.find(item=>destinationKey(item)===last);
+            aladinFill.classList.remove('gv-indeterminate');
+            if(active){aladinName.textContent=String(activeDestination?.name||active).toUpperCase();aladinState.textContent='PRELOAD';aladinFill.style.width='36%';aladinFill.classList.add('gv-indeterminate')}
+            else if(last){aladinName.textContent=String(lastDestination?.name||last).toUpperCase();aladinState.textContent='✓ READY';aladinState.className='gv-pd-state gv-ready';aladinFill.style.width='100%'}
+            else{aladinName.textContent='IDLE';aladinState.textContent='IDLE';aladinState.className='gv-pd-state';aladinFill.style.width='0%'}
+        }
+    }
+'''
+          once(status_old,status_new,'download instrumentation')
+
+          # Use streamed response reader only for diagnostics; payload remains a Blob for the existing decoder.
+          once("                const blob=await response.blob();","                const blob=await readHdResponseWithProgress(response,destination,source.kind,signal);",'download progress hook')
+
+          # Start the non-interactive diagnostic renderer next to the existing health timer.
+          timer_old='''    prefetchHealthTimer=setInterval(prefetchHealthCheck,PREFETCH_HEALTH_INTERVAL_MS);
+'''
+          timer_new='''    prefetchHealthTimer=setInterval(prefetchHealthCheck,PREFETCH_HEALTH_INTERVAL_MS);
+    prefetchDiagnosticTimer=setInterval(renderPrefetchDiagnostics,200);
+    renderPrefetchDiagnostics();
+'''
+          once(timer_old,timer_new,'diagnostic timer start')
+
+          # Clean up diagnostics timer with existing unload cleanup.
+          once("        if(prefetchHealthTimer)clearInterval(prefetchHealthTimer);","        if(prefetchHealthTimer)clearInterval(prefetchHealthTimer);\n        if(prefetchDiagnosticTimer)clearInterval(prefetchDiagnosticTimer);",'diagnostic timer cleanup')
+
+          # Frozen behavior assertions.
+          required=[
+              "bottom.random.addEventListener('click',launchRandomGalaxy);",
+              "await randomGalaxy.ready;",
+              "bottom.random.disabled=false;",
+              "const HUBBLE_PREFETCH_TARGET=10;",
+              "const PREFETCH_MAX_WORKERS=3;",
+              "function fillPrefetchQueue(){",
+              "function prepareAladinDestination(destination,force=false){",
+              "const CHANDRA_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json';",
+          ]
+          for anchor in required:
+              if anchor not in text: raise SystemExit('FAIL-CLOSED frozen anchor missing: '+anchor)
+
+          dst.write_text(text,encoding='utf-8')
+          Path('viewer/gv-current-viewer.json').write_text(json.dumps({'version':'10AE4','viewer':'GV-beta-0010AE4.py'},indent=2)+'\n',encoding='utf-8')
+          PY
+
+      - name: Syntax and scope verification
+        run: |
+          python3 -m py_compile viewer/GV-beta-0010AE4.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          text=Path('viewer/GV-beta-0010AE4.py').read_text(encoding='utf-8')
+          matches=re.findall(r'display\(Javascript\(r?"""([\s\S]*?)"""\)\)',text)
+          if not matches: raise SystemExit('FAIL-CLOSED no embedded JavaScript found')
+          js='\n'.join(matches)
+          p=Path('/tmp/ae4.js');p.write_text(js,encoding='utf-8')
+          subprocess.run(['node','--check',str(p)],check=True)
+          if text.count("bottom.random.addEventListener('click',launchRandomGalaxy);")!=1: raise SystemExit('FAIL-CLOSED Random Galaxy click binding changed')
+          if 'gv-prefetch-diagnostics' not in text or 'readHdResponseWithProgress' not in text: raise SystemExit('FAIL-CLOSED diagnostics missing')
+          if "gv-chandra-galaxies-full-0001-FOV-updated.json" in text: raise SystemExit('FAIL-CLOSED unauthorized FOV filename present')
+          print('AE4 syntax and diagnostic anchors verified')
+          PY
+
+      - name: Commit AE4 only and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/temp-ae4-prefetch-diagnostics.yml
+          git add viewer/GV-beta-0010AE4.py viewer/gv-current-viewer.json
+          git commit -m "GV 10AE4 add prefetch diagnostics"
+          git push origin beta
