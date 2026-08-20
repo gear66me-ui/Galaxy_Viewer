@@ -56,7 +56,7 @@ display(Javascript(r"""
             const normalized=String(state||'').toUpperCase();
             if(normalized==='RETRY-WAIT'){
                 if(slot.state!=='RETRY')slot.attempt+=1;
-                slot.state='RETRY';slot.retryAt=Number(prefetchRetryAfter.get(key)||0);slot.lastError=String(old?.lastError||'HD PRELOAD FAILED');
+                slot.state='RETRY';slot.retryAt=Number(prefetchRetryAfter.get(key)||0);slot.lastError='HD PRELOAD FAILED';
             }else if(normalized==='READY'){slot.state='READY';slot.retryAt=0;slot.lastError=''}
             else if(normalized==='DECODING')slot.state='DECODING';
             else if(normalized==='DOWNLOADING')slot.state='DOWNLOADING';
@@ -69,8 +69,7 @@ display(Javascript(r"""
     source=replaceBlock(source,'function setHdStatus(destination,state,sourceKind=\'\'){','function getHubbleDownloadStatus(){',ae7Status,'SLOT STATUS');
 
     const ae7Suspend=\`function suspendBackgroundWork(){
-        // AE7: normal Random/History travel must not abort fixed HD downloads or destroy Aladin prewarm state.
-        // Archive-page preload has its own suspension path and remains unchanged.
+        // AE7: Random/History travel preserves fixed HD downloads and Aladin prewarm state.
         backgroundWorkSuspended=false;
     }
 
@@ -146,7 +145,7 @@ display(Javascript(r"""
         if(index<0)return null;
         const [item]=prefetchReady.splice(index,1);
         const ownedSlot=slotForKey(item.key);
-        if(ownedSlot)lastConsumedSlot={slot:ownedSlot.slot,key:item.key,name:item.destination?.name||'',provider:item.destination?.provider||'HUBBLE'};
+        if(ownedSlot)lastConsumedSlot={slot:ownedSlot.slot,key:item.key,name:item.destination?.name||'',provider:item.destination?.provider||'HUBBLE',aladinReady:aladinPrewarmedKeys.has(item.key)};
         clearHdSlot(item.key);
         setPreparedActive(item);
         queueMicrotask(fillPrefetchQueue);
@@ -157,7 +156,7 @@ display(Javascript(r"""
     source=replaceBlock(source,'function consumeReady(destination=null,excludeName=\'\'){','async function waitForPreparedKey(',ae7Consume,'SLOT CONSUMPTION');
 
     const ae7Api=\`function getHdSlots(){
-        return Object.freeze(hdSlots.map(slot=>Object.freeze({slot:slot.slot,key:slot.key,provider:String(slot.destination?.provider||''),name:String(slot.destination?.name||''),state:slot.state,attempt:slot.attempt,retryAt:slot.retryAt,ready:slot.state==='READY',active:Boolean(lastConsumedSlot&&lastConsumedSlot.key===slot.key),aladinState:slotAladinState(slot)})));
+        return Object.freeze(hdSlots.map(slot=>Object.freeze({slot:slot.slot,key:slot.key,provider:String(slot.destination?.provider||''),name:String(slot.destination?.name||''),state:slot.state,attempt:slot.attempt,retryAt:slot.retryAt,ready:slot.state==='READY',active:false,aladinState:slotAladinState(slot)})));
     }
     function getAladinSlots(){
         return Object.freeze(hdSlots.map(slot=>Object.freeze({slot:slot.slot,key:slot.key,name:String(slot.destination?.name||''),state:slotAladinState(slot),ready:Boolean(slot.key&&aladinPrewarmedKeys.has(slot.key)),active:Boolean(slot.key&&aladinPrewarmActiveKey===slot.key)})));
@@ -172,27 +171,18 @@ display(Javascript(r"""
 
     wrapper=replaceOnce(wrapper,"    source=source.replaceAll('10AE2','10AE7');",innerPatch,'INNER AE7 PATCH');
 
-    const newRender=`    const render=()=>{
-        const hs=api.getHdSlots?.()||[];
-        const as=api.getAladinSlots?.()||[];
-        const hrows=[...hd.querySelectorAll('.gv-ae7-row')];
-        hrows.forEach((row,i)=>{
-            const item=hs[i]||{};const state=String(item.state||'EMPTY').toUpperCase();
-            row.querySelector('.gv-ae7-name').textContent=item.key?`${item.name} ${state==='READY'?'✓':state}`:'EMPTY';
-            row.classList.toggle('gv-ae7-fail',state==='RETRY');
-            const pct=state==='READY'?100:state==='DECODING'?82:state==='DOWNLOADING'?48:state==='QUEUED'?14:state==='RETRY'?8:0;
-            row.querySelector('.gv-ae7-fill').style.width=pct+'%';
-        });
-        const arows=[...aldn.querySelectorAll('.gv-ae7-row')];
-        arows.forEach((row,i)=>{const item=as[i]||{};row.querySelector('.gv-ae7-name').textContent=item.key?`${item.name} ${item.ready?'✓':item.state}`:'EMPTY'});
-        const current=api.randomGalaxy?.getState?.().activeDestination||api.randomGalaxy?.activeDestination||null;
-        const info=api.getActiveSlotInfo?.()||{};
-        const key=String(current?.archiveId||current?.name||'').trim().toLowerCase();
-        const alReady=as.some(item=>item.key===key&&item.ready);
-        active.textContent=`ACTIVE ${String(current?.name||'—')} — ${info.slot?`FROM SLOT ${info.slot}`:'FALLBACK'} / HD ${info.slot?'READY':'NO READY SLOT'} / ALDN ${alReady?'READY':'NO'}`;
-        diag.classList.toggle('gv-hide',Boolean(api.randomGalaxy?.getState?.().hdOpen));
-    };
-`;
+    const newRender="    const render=()=>{\n"+
+        "        const hs=api.getHdSlots?.()||[];\n"+
+        "        const as=api.getAladinSlots?.()||[];\n"+
+        "        const hrows=[...hd.querySelectorAll('.gv-ae7-row')];\n"+
+        "        hrows.forEach((row,i)=>{const item=hs[i]||{};const state=String(item.state||'EMPTY').toUpperCase();row.querySelector('.gv-ae7-name').textContent=item.key?(item.name+' '+(state==='READY'?'✓':state)):'EMPTY';row.classList.toggle('gv-ae7-fail',state==='RETRY');const pct=state==='READY'?100:state==='DECODING'?82:state==='DOWNLOADING'?48:state==='QUEUED'?14:state==='RETRY'?8:0;row.querySelector('.gv-ae7-fill').style.width=pct+'%'});\n"+
+        "        const arows=[...aldn.querySelectorAll('.gv-ae7-row')];\n"+
+        "        arows.forEach((row,i)=>{const item=as[i]||{};row.querySelector('.gv-ae7-name').textContent=item.key?(item.name+' '+(item.ready?'✓':item.state)):'EMPTY'});\n"+
+        "        const current=api.randomGalaxy?.getState?.().activeDestination||api.randomGalaxy?.activeDestination||null;\n"+
+        "        const info=api.getActiveSlotInfo?.()||{};\n"+
+        "        active.textContent='ACTIVE '+String(current?.name||'—')+' — '+(info.slot?('FROM SLOT '+info.slot):'FALLBACK')+' / HD '+(info.slot?'READY':'NO READY SLOT')+' / ALDN '+(info.aladinReady?'READY':'NO');\n"+
+        "        diag.classList.toggle('gv-hide',Boolean(api.randomGalaxy?.getState?.().hdOpen));\n"+
+        "    };\n";
     wrapper=replaceBlock(wrapper,'    const render=()=>{','    render();const timer=',newRender,'STABLE DIAGNOSTIC RENDER');
 
     const htmlMatch=wrapper.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
