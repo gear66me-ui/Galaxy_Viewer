@@ -72,13 +72,21 @@ name: Galaxy Viewer Controlled Engineering Change
 #
 # G. If a complete authoritative baseline cannot be retrieved by the first
 #    repository read method, exhaust available retrieval methods before asking
-#    the user to supply the file:
+#    the user to supply the file. A truncated connector/tool display is NOT a
+#    retrieval failure and MUST NOT by itself trigger a user-upload request:
 #    1. fetch the complete file through the GitHub connector;
 #    2. try an alternate GitHub contents/blob retrieval method;
 #    3. retrieve the complete raw GitHub file when available;
-#    4. save/download the retrieved source into the working environment when
-#       useful for exact processing and verification;
-#    5. only if all available retrieval methods fail, STOP and request that the
+#    4. if a connector/raw response is truncated for display, attempt an actual
+#       direct file transfer/download of the raw repository file into local
+#       working storage instead of reconstructing it from displayed chunks;
+#    5. when a repository filesystem/Codex environment is available, prefer
+#       fetching/checking out the exact repository revision there and read the
+#       complete file directly from that filesystem;
+#    6. verify any locally obtained baseline against the authoritative Git blob
+#       SHA before using it for an edit;
+#    7. only if all available automated connector, blob, raw-download and
+#       repository-filesystem methods genuinely fail, STOP and request that the
 #       user upload the exact current file.
 #    Never reconstruct a baseline from snippets, truncated responses, memory,
 #    previous chats, another revision, or guessed/missing content.
