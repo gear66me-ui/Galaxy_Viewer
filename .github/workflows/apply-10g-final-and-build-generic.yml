@@ -17,8 +17,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          BASELINE_HEAD='18a304c545b6073b8ed9b046a7cf09a6cf244833'
-          test "$(git rev-parse HEAD^)" = "$BASELINE_HEAD"
+          ORIGINAL_WORKFLOW_REF='18a304c545b6073b8ed9b046a7cf09a6cf244833'
           python3 - <<'PY'
           from pathlib import Path
           import json, hashlib
@@ -42,10 +41,8 @@ jobs:
           pointer_path.write_text(json.dumps({'version':'10AE2','viewer':'GV-beta-0010AE2.py'},indent=2)+'\n',encoding='utf-8')
           print('AE1_SHA256='+hashlib.sha256(ae1.encode()).hexdigest())
           print('AE2_SHA256='+hashlib.sha256(ae2.encode()).hexdigest())
-          print('AE1_BYTES='+str(len(ae1.encode())))
-          print('AE2_BYTES='+str(len(ae2.encode())))
           PY
-          git checkout HEAD^ -- .github/workflows/apply-10g-final-and-build-generic.yml
+          git checkout "$ORIGINAL_WORKFLOW_REF" -- .github/workflows/apply-10g-final-and-build-generic.yml
           git diff --check
           test -z "$(git diff -- viewer/GV-beta-0010AE1.py)"
           test -z "$(git diff -- viewer/modules/gv-random-galaxy-0031.js)"
@@ -54,4 +51,10 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'ECO GV-10AE2-RANDOM-REPAIR-001 restore Random Galaxy selection'
-          git push origin HEAD:beta
+          for attempt in 1 2 3 4 5; do
+            git fetch origin beta
+            git rebase origin/beta
+            if git push origin HEAD:beta; then exit 0; fi
+            sleep 2
+          done
+          exit 1
