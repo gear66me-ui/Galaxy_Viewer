@@ -70,6 +70,19 @@ name: Galaxy Viewer Controlled Engineering Change
 #    BASELINE DRIFT. Do not overwrite concurrent work and do not silently
 #    rebase the ECO.
 #
+# G. If a complete authoritative baseline cannot be retrieved by the first
+#    repository read method, exhaust available retrieval methods before asking
+#    the user to supply the file:
+#    1. fetch the complete file through the GitHub connector;
+#    2. try an alternate GitHub contents/blob retrieval method;
+#    3. retrieve the complete raw GitHub file when available;
+#    4. save/download the retrieved source into the working environment when
+#       useful for exact processing and verification;
+#    5. only if all available retrieval methods fail, STOP and request that the
+#       user upload the exact current file.
+#    Never reconstruct a baseline from snippets, truncated responses, memory,
+#    previous chats, another revision, or guessed/missing content.
+#
 # ============================================================================
 # SECTION 2 — NO OPPORTUNISTIC CHANGES
 # ============================================================================
