@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Galaxy Viewer — Colombia ESA Link Test</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#050b14;color:#eaf5ff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;padding:12px;background:linear-gradient(180deg,#0d2948,#09192b);border-bottom:1px solid #3278b5}
+h1{font-size:17px;margin:0 0 8px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,input{border:1px solid #4ba3ef;border-radius:7px;background:#0e2b49;color:#fff;padding:9px 11px;font-weight:700}
+button{cursor:pointer}
+button:disabled{opacity:.45}
+small{display:block;margin-top:7px;opacity:.78;line-height:1.35}
+#summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px}
+.card{background:#0b1c30;border:1px solid #234c70;border-radius:7px;padding:8px;min-width:0}
+.card b{display:block;font-size:19px}
+#progressWrap{padding:0 8px 8px}
+progress{width:100%;height:18px}
+#log{padding:8px;font-size:12px;white-space:pre-wrap;max-height:180px;overflow:auto;background:#02060c;border-block:1px solid #152d43}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{padding:7px;border-bottom:1px solid #17324b;text-align:left;vertical-align:top}
+th{position:sticky;top:104px;background:#0a1a2c;z-index:3}
+.fast{color:#78ffab}.moderate{color:#cfe76a}.slow{color:#ffd36e}.very-slow{color:#ff9e6e}.failed{color:#ff7777;font-weight:800}
+a{color:#77c8ff;word-break:break-all}
+@media(max-width:600px){#summary{grid-template-columns:repeat(2,minmax(0,1fr))}th{top:137px}.optional{display:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>Galaxy Viewer — Colombia ESA/Hubble + ESA/Webb Live Test</h1>
+<div class="controls">
+  <button id="start">RUN ALL — 16 COLD + 16 WARM</button>
+  <button id="stop" disabled>STOP</button>
+  <button id="csv" disabled>DOWNLOAD CSV</button>
+  <button id="json" disabled>DOWNLOAD JSON</button>
+</div>
+<small>
+Runs from THIS browser/network in Colombia. Uses the existing Hubble full-0018 and JWST full-0002 catalogs directly.
+“Cold” is an in-browser approximation using a unique cache-busting page URL; HTML cannot truly purge another origin's cache.
+Warm runs reuse the exact provider URL. Cross-origin browser security means this measures iframe navigation/load elapsed time,
+not ESA's private internal resource timing.
+</small>
+</header>
+<div id="summary">
+  <div class="card">Links<b id="links">0</b></div>
+  <div class="card">Completed<b id="done">0</b></div>
+  <div class="card">Cold median<b id="coldMedian">—</b></div>
+  <div class="card">Warm median<b id="warmMedian">—</b></div>
+</div>
+<div id="progressWrap"><progress id="progress" value="0" max="1"></progress></div>
+<div id="log"></div>
+<table>
+<thead><tr>
+<th>Provider</th><th>ID / Name</th><th>Cold</th><th>Warm</th><th>Class</th><th>URL</th>
+</tr></thead>
+<tbody id="rows"></tbody>
+</table>
+<div id="sandbox" style="position:fixed;left:-10000px;top:-10000px;width:10px;height:10px;overflow:hidden"></div>
+<script>
+const CATALOGS=[
+ {provider:'HUBBLE',url:'../viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'},
+ {provider:'JWST',url:'../viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json'}
+];
+const CONCURRENCY=16;
+const TIMEOUT_MS=45000;
+let stopRequested=false, results=[], entries=[];
+const $=s=>document.querySelector(s);
+function log(s){const e=$('#log');e.textContent+=s+'\n';e.scrollTop=e.scrollHeight}
+function median(a){a=a.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function fmt(ms){return Number.isFinite(ms)?(ms/1000).toFixed(2)+' s':'—'}
+function cls(ms,failed){if(failed)return'FAILED';if(ms<3000)return'FAST';if(ms<7000)return'MODERATE';if(ms<15000)return'SLOW';return'VERY SLOW'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function extract(root,providerHint){
+ const out=[],seen=new Set();
+ function walk(n){
+   if(!n)return;
+   if(Array.isArray(n)){n.forEach(walk);return}
+   if(typeof n!=='object')return;
+   const u=typeof n.sourceUrl==='string'?n.sourceUrl.trim():typeof n.officialUrl==='string'?n.officialUrl.trim():'';
+   if(/^https:\/\//i.test(u)){
+     let h='';try{h=new URL(u).hostname.toLowerCase()}catch{}
+     if((h.includes('esahubble.org')||h.includes('esawebb.org'))&&!seen.has(u)){
+       seen.add(u);out.push({provider:h.includes('esawebb.org')?'JWST':'HUBBLE',archiveId:String(n.archiveId||n.id||'').trim(),name:String(n.displayName||n.commonName||n.name||n.title||'').trim(),sourceUrl:u});
+     }
+   }
+   Object.values(n).forEach(v=>{if(v&&typeof v==='object')walk(v)})
+ }
+ walk(root);return out;
+}
+async function loadCatalogs(){
+ const all=[];
+ for(const c of CATALOGS){
+   log('Loading '+c.provider+' catalog...');
+   const controller=new AbortController();
+   const timer=setTimeout(()=>controller.abort(),20000);
+   let r;
+   try{
+     r=await fetch(c.url,{cache:'no-store',signal:controller.signal});
+   }catch(e){
+     throw new Error(c.provider+' catalog fetch failed: '+(e.name==='AbortError'?'20 s timeout':e.message));
+   }finally{
+     clearTimeout(timer);
+   }
+   if(!r.ok)throw new Error(c.provider+' catalog HTTP '+r.status);
+   const x=extract(await r.json(),c.provider);
+   log(c.provider+': '+x.length+' provider links');
+   all.push(...x);
+ }
+ const m=new Map();all.forEach(e=>m.set(e.sourceUrl,e));return[...m.values()];
+}
+function navUrl(url,mode){
+ if(mode==='warm')return url;
+ const u=new URL(url);
+ u.searchParams.set('_gv_cold_test',Date.now().toString(36)+Math.random().toString(36).slice(2));
+ return u.href;
+}
+function frameLoad(entry,mode){
+ return new Promise(resolve=>{
+   const f=document.createElement('iframe');
+   f.referrerPolicy='no-referrer';
+   f.loading='eager';
+   f.style.width='8px';f.style.height='8px';
+   const start=performance.now();
+   let settled=false;
+   const done=(ok,why)=>{
+     if(settled)return;settled=true;
+     const elapsed=Math.round(performance.now()-start);
+     clearTimeout(timer);try{f.remove()}catch{}
+     resolve({ok,elapsed,why});
+   };
+   f.onload=()=>done(true,'load');
+   f.onerror=()=>done(false,'error');
+   const timer=setTimeout(()=>done(false,'timeout'),TIMEOUT_MS);
+   $('#sandbox').appendChild(f);
+   f.src=navUrl(entry.sourceUrl,mode);
+ });
+}
+async function mapLimit(items,limit,fn){
+ let next=0;
+ async function worker(){
+   while(!stopRequested){
+     const i=next++;if(i>=items.length)return;
+     await fn(items[i],i);
+   }
+ }
+ await Promise.all(Array.from({length:limit},worker));
+}
+function render(){
+ $('#links').textContent=entries.length;
+ $('#done').textContent=results.length;
+ $('#progress').max=Math.max(1,entries.length);
+ $('#progress').value=results.length;
+ $('#coldMedian').textContent=fmt(median(results.map(r=>r.coldMs)));
+ $('#warmMedian').textContent=fmt(median(results.map(r=>r.warmMs)));
+ const sorted=[...results].sort((a,b)=>(b.coldMs||0)-(a.coldMs||0));
+ $('#rows').innerHTML=sorted.map(r=>{
+   const c=cls(r.coldMs,!r.coldOk),w=cls(r.warmMs,!r.warmOk);
+   const worst=(!r.coldOk||!r.warmOk)?'FAILED':(Math.max(r.coldMs,r.warmMs)>=15000?'VERY SLOW':Math.max(r.coldMs,r.warmMs)>=7000?'SLOW':Math.max(r.coldMs,r.warmMs)>=3000?'MODERATE':'FAST');
+   return `<tr><td>${esc(r.provider)}</td><td><b>${esc(r.archiveId)}</b><br>${esc(r.name)}</td>
+   <td class="${c.toLowerCase().replace(' ','-')}">${fmt(r.coldMs)}<br>${esc(r.coldWhy)}</td>
+   <td class="${w.toLowerCase().replace(' ','-')}">${fmt(r.warmMs)}<br>${esc(r.warmWhy)}</td>
+   <td class="${worst.toLowerCase().replace(' ','-')}">${worst}</td>
+   <td><a href="${esc(r.sourceUrl)}" target="_blank" rel="noopener">${esc(r.sourceUrl)}</a></td></tr>`;
+ }).join('');
+}
+function download(name,type,text){
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+$('#csv').onclick=()=>{
+ const cols=['provider','archiveId','name','sourceUrl','coldOk','coldMs','coldWhy','warmOk','warmMs','warmWhy'];
+ const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replaceAll('"','""')+'"':v};
+ download('ESA-COLOMBIA-LINK-TEST.csv','text/csv',[cols.join(','),...results.map(r=>cols.map(c=>q(r[c])).join(','))].join('\n'));
+};
+$('#json').onclick=()=>download('ESA-COLOMBIA-LINK-TEST.json','application/json',JSON.stringify({generatedAt:new Date().toISOString(),locationBasis:'this browser/network',concurrency:CONCURRENCY,timeoutMs:TIMEOUT_MS,results},null,2));
+$('#stop').onclick=()=>{stopRequested=true;log('Stop requested; current navigations will finish/timeout.')};
+$('#start').onclick=async()=>{
+ stopRequested=false;results=[];render();
+ $('#start').disabled=true;$('#stop').disabled=false;$('#csv').disabled=true;$('#json').disabled=true;
+ try{
+   entries=await loadCatalogs();render();
+   log('Testing '+entries.length+' URLs from this device/network with concurrency '+CONCURRENCY+'.');
+   log('Each URL: COLD approximation first, then WARM exact URL.');
+   await mapLimit(entries,CONCURRENCY,async(entry,i)=>{
+     const cold=await frameLoad(entry,'cold');
+     const warm=await frameLoad(entry,'warm');
+     const row={...entry,coldOk:cold.ok,coldMs:cold.elapsed,coldWhy:cold.why,warmOk:warm.ok,warmMs:warm.elapsed,warmWhy:warm.why};
+     results.push(row);
+     log(`[${results.length}/${entries.length}] ${entry.provider} ${entry.archiveId||entry.name} cold=${fmt(row.coldMs)} warm=${fmt(row.warmMs)} ${cls(Math.max(row.coldMs,row.warmMs),!row.coldOk||!row.warmOk)}`);
+     render();
+   });
+   log('DONE. Download CSV/JSON for the full report.');
+ }catch(e){log('ERROR: '+e.message)}
+ finally{$('#start').disabled=false;$('#stop').disabled=true;$('#csv').disabled=results.length===0;$('#json').disabled=results.length===0}
+};
+</script>
+</body>
+</html>
