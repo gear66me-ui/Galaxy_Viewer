@@ -14,11 +14,12 @@ body:
         **Process:**
         1. ChatGPT summarizes the user's conversation into REQ-001 through REQ-N.
         2. ChatGPT fills the manifest below with the exact baseline commit/blob identity, exact files, anchors, operations, and expected before/after region SHA-256 values.
-        3. The user reviews the ECO and gives explicit **GO**.
-        4. The manifest is frozen. GO authorizes only this ECO.
-        5. Implementation changes only the declared paths/regions.
-        6. After commit, `eco-requirement-forensic-audit.yml` checks every requirement old-block → new-block, reconciles character/word/line accounting, checks protected paths, checks standalone architecture, and performs the final **WHAT ELSE CHANGED?** protected-remainder SHA-256 audit.
-        7. Any unexplained byte fails. No workflow may silently repair a failure.
+        3. The issue is created before implementation. No source write is authorized yet.
+        4. The user reviews this exact ECO and gives explicit **GO** in the conversation.
+        5. ChatGPT records that GO in the issue before implementation; GO authorizes only this frozen ECO.
+        6. Implementation changes only the declared paths/regions.
+        7. After commit, `eco-requirement-forensic-audit.yml` checks every requirement old-block → new-block, reconciles character/word/line accounting, checks protected paths, checks standalone architecture, and performs the final **WHAT ELSE CHANGED?** protected-remainder SHA-256 audit.
+        8. Any unexplained byte fails. No workflow may silently repair a failure.
 
   - type: input
     id: eco_id
@@ -129,11 +130,12 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
-    id: user_go
+  - type: markdown
     attributes:
-      label: Explicit user authorization
-      description: This box is checked only after the user gives explicit GO to this exact frozen ECO.
-      options:
-        - label: USER GO RECEIVED FOR THIS EXACT ECO
-          required: true
+      value: |
+        ### GO recording rule
+        Do **not** treat creation of this issue as authorization. After the user explicitly says **GO** to this exact ECO, ChatGPT must add a GitHub issue comment containing:
+
+        `USER-GO: true`
+
+        plus the ECO ID and frozen manifest SHA-256. No implementation write may occur before that GO record exists.
