@@ -1,0 +1,139 @@
+name: Galaxy Viewer Engineering Change Order
+about: Freeze user-requested requirements before implementation and drive forensic source audit
+title: "ECO: "
+labels: []
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Galaxy Viewer ECO — Frozen Requirement Manifest
+        This issue is the permanent machine-readable record for one authorized engineering change.
+
+        **Process:**
+        1. ChatGPT summarizes the user's conversation into REQ-001 through REQ-N.
+        2. ChatGPT fills the manifest below with the exact baseline commit/blob identity, exact files, anchors, operations, and expected before/after region SHA-256 values.
+        3. The user reviews the ECO and gives explicit **GO**.
+        4. The manifest is frozen. GO authorizes only this ECO.
+        5. Implementation changes only the declared paths/regions.
+        6. After commit, `eco-requirement-forensic-audit.yml` checks every requirement old-block → new-block, reconciles character/word/line accounting, checks protected paths, checks standalone architecture, and performs the final **WHAT ELSE CHANGED?** protected-remainder SHA-256 audit.
+        7. Any unexplained byte fails. No workflow may silently repair a failure.
+
+  - type: input
+    id: eco_id
+    attributes:
+      label: ECO ID
+      description: Stable identifier, for example GV-11B-PREFETCH-001
+      placeholder: GV-...
+    validations:
+      required: true
+
+  - type: input
+    id: baseline_commit
+    attributes:
+      label: Baseline commit SHA
+      description: Full immutable 40-character commit SHA captured before user GO
+      placeholder: 40-character SHA
+    validations:
+      required: true
+
+  - type: textarea
+    id: conversation_summary
+    attributes:
+      label: Conversation → requirements summary
+      description: Concise summary of the user's requested behavior before implementation. This is explanatory; the JSON manifest below is authoritative.
+      placeholder: |
+        REQ-001 — ...
+        REQ-002 — ...
+        REQ-003 — ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: frozen_manifest
+    attributes:
+      label: Frozen machine-readable ECO manifest
+      description: ChatGPT must fill this exact JSON structure before requesting GO. Do not delete the marker comments. Replace every placeholder. One requirement = one explicit source-change contract.
+      render: markdown
+      value: |
+        <!-- ECO-MANIFEST-START -->
+        ```json
+        {
+          "eco_id": "GV-REPLACE-ME",
+          "baseline_commit": "REPLACE_WITH_FULL_40_CHAR_SHA",
+          "target_commit": "PENDING",
+          "target_files": [
+            "viewer/REPLACE_TARGET.py"
+          ],
+          "standalone_viewer_files": [
+            "viewer/REPLACE_TARGET.py"
+          ],
+          "protected_paths": [
+            "viewer/gv-current-viewer.json",
+            "viewer/modules/gv-random-galaxy-0031.js"
+          ],
+          "requirements": [
+            {
+              "id": "REQ-001",
+              "description": "Exact user-requested behavior",
+              "baseline_file": "viewer/REPLACE_BASELINE.py",
+              "target_file": "viewer/REPLACE_TARGET.py",
+              "operation": "replace",
+              "start_anchor": "EXACT UNIQUE START ANCHOR",
+              "end_anchor": "EXACT UNIQUE END ANCHOR",
+              "before_sha256": "SHA256_OF_EXACT_BASELINE_REGION",
+              "after_sha256": "SHA256_OF_EXACT_AUTHORIZED_TARGET_REGION",
+              "acceptance": "Machine- and user-verifiable expected behavior",
+              "must_not_change": [
+                "Exact neighboring behavior or protected feature"
+              ]
+            }
+          ]
+        }
+        ```
+        <!-- ECO-MANIFEST-END -->
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: freeze_rules
+    attributes:
+      label: Absolute ECO freeze rules
+      options:
+        - label: Every user-requested change is represented by exactly one or more numbered REQ entries.
+          required: true
+        - label: Every REQ identifies exact baseline/target file, exact anchors, operation, before SHA-256, after SHA-256, acceptance criterion, and protected behavior.
+          required: true
+        - label: Questions, troubleshooting, audits, status requests, and explanations are read-only and do not authorize repository writes.
+          required: true
+        - label: GO authorizes only this frozen ECO; adjacent fixes, cleanup, refactoring, formatting, artwork, pointer, catalog, module, launcher, workflow, and archive changes remain forbidden unless explicitly listed.
+          required: true
+        - label: Any new requirement discovered after GO requires an ECO amendment and new explicit user authorization before writing it.
+          required: true
+        - label: A failed audit may be reported but never silently repaired.
+          required: true
+
+  - type: textarea
+    id: pre_go_report
+    attributes:
+      label: Pre-GO implementation map
+      description: Before requesting GO, show REQ-by-REQ the exact old block, exact intended new block or deterministic transform, expected counts, and protected neighbors. No implementation writes may occur yet.
+      placeholder: |
+        REQ-001
+        OLD BLOCK SHA-256: ...
+        OLD BLOCK: ...
+        AUTHORIZED CHANGE: ...
+        EXPECTED NEW BLOCK SHA-256: ...
+        PROTECTED NEIGHBORS: ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: user_go
+    attributes:
+      label: Explicit user authorization
+      description: This box is checked only after the user gives explicit GO to this exact frozen ECO.
+      options:
+        - label: USER GO RECEIVED FOR THIS EXACT ECO
+          required: true
