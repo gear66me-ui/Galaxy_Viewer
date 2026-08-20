@@ -1,0 +1,65 @@
+name: ESA archive link health test
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: Cold-cache runs per URL
+        required: true
+        default: '3'
+      concurrency:
+        description: Parallel browser pages
+        required: true
+        default: '4'
+
+permissions:
+  contents: write
+
+jobs:
+  test-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Check out beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run all Hubble and JWST source-link tests
+        env:
+          RUNS: ${{ inputs.runs }}
+          CONCURRENCY: ${{ inputs.concurrency }}
+          NAV_TIMEOUT_MS: '45000'
+          SETTLE_TIMEOUT_MS: '10000'
+        run: node test/esa-link-health-check.mjs
+
+      - name: Commit official latest report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add test/ESA-LINK-HEALTH-LATEST.md test/ESA-LINK-HEALTH-LATEST.csv test/ESA-LINK-HEALTH-LATEST.html
+          if git diff --cached --quiet; then
+            echo 'No report changes to commit.'
+          else
+            git commit -m 'Update ESA archive link health report'
+            git push origin HEAD:beta
+          fi
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ESA-link-health-report
+          path: |
+            test/ESA-LINK-HEALTH-LATEST.md
+            test/ESA-LINK-HEALTH-LATEST.csv
+            test/ESA-LINK-HEALTH-LATEST.html
