@@ -1,0 +1,92 @@
+name: TEMP AE3 Chandra-first repair
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/temp-ae3-chandra-first.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-ae3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Create AE3 surgically from AE2
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          src_path=Path('viewer/GV-beta-0010AE2.py')
+          dst_path=Path('viewer/GV-beta-0010AE3.py')
+          text=src_path.read_text(encoding='utf-8')
+
+          replacements=[
+              ('# GV-beta-0010AE2', '# GV-beta-0010AE3'),
+              ("version.textContent='VERSION 10AE2'", "version.textContent='VERSION 10AE3'"),
+              ("const VERSION='10AE2';", "const VERSION='10AE3';"),
+              ("const DISPLAY_VERSION='10AE2';", "const DISPLAY_VERSION='10AE3';"),
+              ("viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json", "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001-FOV-updated.json"),
+              ("chandraTestTotal=chandraTestQueue.length;\n        chandraTestOverrideActive=false;", "chandraTestTotal=chandraTestQueue.length;\n        chandraTestOverrideActive=chandraTestTotal>0;"),
+              ("GV-10AE2 CATALOG COUNTS", "GV-10AE3 CATALOG COUNTS"),
+              ("RANDOM GALAXY 0031 10AE2 COMPATIBILITY PATCH FAILED", "RANDOM GALAXY 0031 10AE3 COMPATIBILITY PATCH FAILED"),
+              ("GALAXY VIEWER 10AE2 STARTUP FAILURE:", "GALAXY VIEWER 10AE3 STARTUP FAILURE:"),
+              ('# GV-beta-0010AE2 staged', '# GV-beta-0010AE3 staged'),
+          ]
+          for old,new in replacements:
+              count=text.count(old)
+              if count != 1:
+                  raise SystemExit(f'FAIL-CLOSED replacement count {count} for {old!r}')
+              text=text.replace(old,new,1)
+
+          # Preserve the Random Galaxy click binding and module source exactly.
+          required=[
+              "bottom.random.addEventListener('click',launchRandomGalaxy);",
+              "await randomGalaxy.ready;",
+              "bottom.random.disabled=false;",
+              "const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/559dfd10c0c3dafa7f7a5c3f7fe2c76337f26066/viewer/modules/gv-random-galaxy-0031.js?v=4abd2d76e717c0f4abbb61777154b7db14f49cf8';",
+          ]
+          for item in required:
+              if item not in text:
+                  raise SystemExit('FAIL-CLOSED missing frozen Random Galaxy text: '+item)
+
+          if "chandraTestOverrideActive=chandraTestTotal>0;" not in text:
+              raise SystemExit('FAIL-CLOSED Chandra-first override not enabled')
+          if 'gv-chandra-galaxies-full-0001-FOV-updated.json' not in text:
+              raise SystemExit('FAIL-CLOSED corrected Chandra catalog path missing')
+          if "const VERSION='10AE3';" not in text or "const DISPLAY_VERSION='10AE3';" not in text:
+              raise SystemExit('FAIL-CLOSED AE3 version rollover missing')
+
+          dst_path.write_text(text,encoding='utf-8')
+          Path('viewer/gv-current-viewer.json').write_text(json.dumps({'version':'10AE3','viewer':'GV-beta-0010AE3.py'},indent=2)+'\n',encoding='utf-8')
+          PY
+      - name: Syntax and differential checks
+        run: |
+          python3 -m py_compile viewer/GV-beta-0010AE3.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import difflib
+          a=Path('viewer/GV-beta-0010AE2.py').read_text(encoding='utf-8').splitlines()
+          b=Path('viewer/GV-beta-0010AE3.py').read_text(encoding='utf-8').splitlines()
+          diff=list(difflib.unified_diff(a,b,fromfile='AE2',tofile='AE3',lineterm=''))
+          allowed=('10AE2','10AE3','gv-chandra-galaxies-full-0001.json','gv-chandra-galaxies-full-0001-FOV-updated.json','chandraTestOverrideActive=false;','chandraTestOverrideActive=chandraTestTotal>0;')
+          changed=[line for line in diff if line.startswith(('+','-')) and not line.startswith(('+++','---'))]
+          for line in changed:
+              if not any(token in line for token in allowed):
+                  raise SystemExit('FAIL-CLOSED unauthorized diff line: '+line)
+          print('\n'.join(diff))
+          PY
+      - name: Commit AE3 and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/temp-ae3-chandra-first.yml
+          git add viewer/GV-beta-0010AE3.py viewer/gv-current-viewer.json
+          git commit -m "GV 10AE3 restore Chandra-first test queue"
+          git push origin beta
