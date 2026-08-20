@@ -1,0 +1,480 @@
+name: Galaxy Viewer ECO Requirement Forensic Audit
+
+# =============================================================================
+# PURPOSE
+# =============================================================================
+# This workflow is the machine-verifiable second half of the Galaxy Viewer ECO
+# process. ChatGPT converts the user's conversation into a frozen ECO issue
+# BEFORE implementation. The issue contains a strict JSON manifest between:
+#
+#   <!-- ECO-MANIFEST-START -->
+#   ...JSON...
+#   <!-- ECO-MANIFEST-END -->
+#
+# Each requirement must declare the exact baseline/target file, operation,
+# baseline anchor region, expected before/after SHA-256, and protected paths.
+# After implementation this workflow compares the immutable baseline commit
+# against the committed target, requirement by requirement, then performs a
+# final WHAT-ELSE-CHANGED pass. Any byte not attributable to a requirement
+# fails the audit. The workflow NEVER repairs source.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      eco_issue:
+        description: GitHub issue number containing the frozen ECO manifest
+        required: true
+        type: string
+      target_commit:
+        description: Committed implementation SHA to audit
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: eco-forensic-audit-${{ inputs.eco_issue }}
+  cancel-in-progress: false
+
+jobs:
+  forensic-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.target_commit }}
+
+      - name: Audit frozen ECO requirements against committed source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          ECO_ISSUE: ${{ inputs.eco_issue }}
+          TARGET_COMMIT: ${{ inputs.target_commit }}
+        run: |
+          python3 <<'PY'
+          import difflib
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+          import urllib.request
+
+          repo = os.environ['REPOSITORY']
+          issue_no = os.environ['ECO_ISSUE'].strip()
+          target_commit_input = os.environ['TARGET_COMMIT'].strip()
+          token = os.environ['GH_TOKEN']
+
+          failures = []
+          report = []
+
+          def fail(msg):
+              failures.append(msg)
+
+          def git_text(*args):
+              return subprocess.check_output(['git', *args], text=True)
+
+          def git_bytes(*args):
+              return subprocess.check_output(['git', *args])
+
+          def exists_at(ref, path):
+              return subprocess.run(
+                  ['git','cat-file','-e',f'{ref}:{path}'],
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+              ).returncode == 0
+
+          def blob_at(ref, path):
+              if not exists_at(ref, path):
+                  raise RuntimeError(f'missing {path} at {ref}')
+              return git_bytes('show', f'{ref}:{path}')
+
+          def sha256(data):
+              return hashlib.sha256(data).hexdigest()
+
+          def decode(data, label):
+              try:
+                  return data.decode('utf-8')
+              except UnicodeDecodeError:
+                  raise RuntimeError(f'{label} is not UTF-8 text')
+
+          def api(method, path, payload=None):
+              url = f'https://api.github.com/repos/{repo}{path}'
+              body = None if payload is None else json.dumps(payload).encode()
+              req = urllib.request.Request(url, data=body, method=method)
+              req.add_header('Authorization', f'Bearer {token}')
+              req.add_header('Accept', 'application/vnd.github+json')
+              req.add_header('X-GitHub-Api-Version', '2022-11-28')
+              if body is not None:
+                  req.add_header('Content-Type','application/json')
+              with urllib.request.urlopen(req) as response:
+                  return json.loads(response.read().decode())
+
+          # -----------------------------------------------------------------
+          # PASS 1 — LOAD THE FROZEN ECO MANIFEST FROM THE ISSUE
+          # -----------------------------------------------------------------
+          issue = api('GET', f'/issues/{issue_no}')
+          body = issue.get('body') or ''
+          m = re.search(
+              r'<!--\s*ECO-MANIFEST-START\s*-->\s*```json\s*(\{.*?\})\s*```\s*<!--\s*ECO-MANIFEST-END\s*-->',
+              body,
+              re.S | re.I,
+          )
+          if not m:
+              raise SystemExit('FAIL: ECO issue has no valid frozen JSON manifest block')
+          try:
+              manifest = json.loads(m.group(1))
+          except Exception as exc:
+              raise SystemExit(f'FAIL: malformed ECO JSON manifest: {exc}')
+
+          required_top = ['eco_id','baseline_commit','target_files','requirements','protected_paths']
+          for key in required_top:
+              if key not in manifest:
+                  fail(f'missing manifest field: {key}')
+
+          eco_id = str(manifest.get('eco_id','')).strip()
+          baseline = str(manifest.get('baseline_commit','')).strip()
+          declared_target = str(manifest.get('target_commit','')).strip()
+          requirements = manifest.get('requirements') or []
+          target_files = manifest.get('target_files') or []
+          protected_paths = manifest.get('protected_paths') or []
+
+          if not re.fullmatch(r'[0-9a-fA-F]{40}', baseline):
+              fail('baseline_commit must be a full 40-character commit SHA')
+          try:
+              target = git_text('rev-parse', target_commit_input).strip()
+          except Exception:
+              raise SystemExit('FAIL: target_commit cannot be resolved')
+          if declared_target and declared_target not in {'PENDING', target}:
+              fail(f'target commit mismatch: manifest={declared_target} input={target}')
+
+          if not requirements:
+              fail('requirements array is empty')
+
+          req_ids = []
+          for req in requirements:
+              rid = str(req.get('id','')).strip()
+              req_ids.append(rid)
+              for field in ['id','description','baseline_file','target_file','operation','start_anchor','end_anchor','before_sha256','after_sha256']:
+                  if not str(req.get(field,'')).strip():
+                      fail(f'{rid or "UNKNOWN"}: missing {field}')
+              if req.get('operation') not in {'replace','insert-before','insert-after','delete','create'}:
+                  fail(f'{rid}: unsupported operation {req.get("operation")}')
+
+          if len(req_ids) != len(set(req_ids)):
+              fail('duplicate requirement IDs')
+          if req_ids:
+              nums = []
+              for rid in req_ids:
+                  mm = re.fullmatch(r'REQ-(\d+)', rid)
+                  if not mm:
+                      fail(f'invalid requirement ID: {rid}')
+                  else:
+                      nums.append(int(mm.group(1)))
+              if nums and nums != list(range(1, len(nums)+1)):
+                  fail('requirements must be contiguous and ordered REQ-001..REQ-N')
+
+          report.append(f'# ECO {eco_id} — FORENSIC REQUIREMENT AUDIT')
+          report.append('')
+          report.append(f'- Issue: #{issue_no}')
+          report.append(f'- Baseline commit: `{baseline}`')
+          report.append(f'- Target commit: `{target}`')
+          report.append(f'- Requirement count: {len(requirements)}')
+          report.append('')
+
+          if failures:
+              report.append('## MANIFEST VALIDATION: FAIL')
+              report.extend(f'- {x}' for x in failures)
+          else:
+              report.append('## MANIFEST VALIDATION: PASS')
+
+          # -----------------------------------------------------------------
+          # Helpers for requirement-region extraction and accounting
+          # -----------------------------------------------------------------
+          def locate_region(text, start_anchor, end_anchor, label):
+              start_hits = [m.start() for m in re.finditer(re.escape(start_anchor), text)]
+              if len(start_hits) != 1:
+                  raise RuntimeError(f'{label}: start anchor occurs {len(start_hits)} times')
+              start = start_hits[0]
+              if end_anchor == '__EOF__':
+                  end = len(text)
+              else:
+                  end_hits = [m.start() for m in re.finditer(re.escape(end_anchor), text[start + len(start_anchor):])]
+                  if len(end_hits) != 1:
+                      raise RuntimeError(f'{label}: end anchor occurs {len(end_hits)} times after start anchor')
+                  end = start + len(start_anchor) + end_hits[0]
+              if end < start:
+                  raise RuntimeError(f'{label}: invalid anchor order')
+              return start, end
+
+          def counts(text):
+              return {
+                  'bytes': len(text.encode('utf-8')),
+                  'characters': len(text),
+                  'words': len(re.findall(r'\S+', text)),
+                  'lines': len(text.splitlines()),
+              }
+
+          def diff_accounting(old, new):
+              sm = difflib.SequenceMatcher(None, old, new, autojunk=False)
+              ins = dele = 0
+              for tag,i1,i2,j1,j2 in sm.get_opcodes():
+                  if tag in ('insert','replace'):
+                      ins += j2-j1
+                  if tag in ('delete','replace'):
+                      dele += i2-i1
+              old_lines = old.splitlines(keepends=True)
+              new_lines = new.splitlines(keepends=True)
+              lm = difflib.SequenceMatcher(None, old_lines, new_lines, autojunk=False)
+              li = ld = 0
+              for tag,i1,i2,j1,j2 in lm.get_opcodes():
+                  if tag in ('insert','replace'):
+                      li += j2-j1
+                  if tag in ('delete','replace'):
+                      ld += i2-i1
+              old_words = re.findall(r'\S+', old)
+              new_words = re.findall(r'\S+', new)
+              wm = difflib.SequenceMatcher(None, old_words, new_words, autojunk=False)
+              wi = wd = 0
+              for tag,i1,i2,j1,j2 in wm.get_opcodes():
+                  if tag in ('insert','replace'):
+                      wi += j2-j1
+                  if tag in ('delete','replace'):
+                      wd += i2-i1
+              return {'inserted_characters':ins,'deleted_characters':dele,'inserted_lines':li,'deleted_lines':ld,'inserted_words':wi,'deleted_words':wd}
+
+          # -----------------------------------------------------------------
+          # PASS 2 — REQUIREMENT-BY-REQUIREMENT OLD BLOCK -> NEW BLOCK AUDIT
+          # -----------------------------------------------------------------
+          regions_by_pair = {}
+          authorized_account = {
+              'inserted_characters':0,'deleted_characters':0,
+              'inserted_lines':0,'deleted_lines':0,
+              'inserted_words':0,'deleted_words':0,
+          }
+
+          for req in requirements:
+              rid = req['id']
+              bfile = req['baseline_file']
+              tfile = req['target_file']
+              pair = (bfile,tfile)
+              report.append('')
+              report.append(f'## {rid} — {req.get("description","")}')
+              try:
+                  old_text = decode(blob_at(baseline,bfile), f'{rid} baseline')
+                  new_text = decode(blob_at(target,tfile), f'{rid} target')
+                  bs, be = locate_region(old_text, req['start_anchor'], req['end_anchor'], f'{rid} baseline')
+                  ts, te = locate_region(new_text, req['start_anchor'], req['end_anchor'], f'{rid} target')
+                  old_region = old_text[bs:be]
+                  new_region = new_text[ts:te]
+                  old_hash = sha256(old_region.encode())
+                  new_hash = sha256(new_region.encode())
+                  req_fail = []
+                  if old_hash.lower() != req['before_sha256'].lower():
+                      req_fail.append(f'before SHA mismatch expected {req["before_sha256"]} got {old_hash}')
+                  if new_hash.lower() != req['after_sha256'].lower():
+                      req_fail.append(f'after SHA mismatch expected {req["after_sha256"]} got {new_hash}')
+                  acct = diff_accounting(old_region,new_region)
+                  for k,v in acct.items():
+                      authorized_account[k] += v
+                  regions_by_pair.setdefault(pair,[]).append((bs,be,ts,te,rid))
+                  report.append(f'- Baseline block SHA-256: `{old_hash}`')
+                  report.append(f'- Target block SHA-256: `{new_hash}`')
+                  report.append(f'- Baseline region: chars {bs}:{be}')
+                  report.append(f'- Target region: chars {ts}:{te}')
+                  report.append(f'- Character delta: +{acct["inserted_characters"]} / -{acct["deleted_characters"]}')
+                  report.append(f'- Word delta: +{acct["inserted_words"]} / -{acct["deleted_words"]}')
+                  report.append(f'- Line delta: +{acct["inserted_lines"]} / -{acct["deleted_lines"]}')
+                  if req_fail:
+                      fail(f'{rid}: ' + '; '.join(req_fail))
+                      report.append('- Result: **FAIL**')
+                      report.extend(f'  - {x}' for x in req_fail)
+                  else:
+                      report.append('- Result: **PASS**')
+              except Exception as exc:
+                  fail(f'{rid}: {exc}')
+                  report.append(f'- Result: **FAIL — {exc}**')
+
+          # -----------------------------------------------------------------
+          # PASS 3 — WHOLE-FILE ACCOUNTING VS SUM OF AUTHORIZED REGIONS
+          # -----------------------------------------------------------------
+          report.append('')
+          report.append('## ACCOUNTING RECONCILIATION')
+          whole_account = {
+              'inserted_characters':0,'deleted_characters':0,
+              'inserted_lines':0,'deleted_lines':0,
+              'inserted_words':0,'deleted_words':0,
+          }
+          for bfile,tfile in {(r['baseline_file'],r['target_file']) for r in requirements}:
+              try:
+                  old_text = decode(blob_at(baseline,bfile), 'baseline file')
+                  new_text = decode(blob_at(target,tfile), 'target file')
+                  acct = diff_accounting(old_text,new_text)
+                  for k,v in acct.items():
+                      whole_account[k] += v
+              except Exception as exc:
+                  fail(f'whole-file accounting {bfile}->{tfile}: {exc}')
+
+          for k in whole_account:
+              report.append(f'- {k}: authorized={authorized_account[k]} whole-file={whole_account[k]}')
+
+          # Character accounting is authoritative. Line/word counts are sanity checks because
+          # edits in multiple adjacent regions can collapse into one diff opcode.
+          if authorized_account['inserted_characters'] != whole_account['inserted_characters'] or authorized_account['deleted_characters'] != whole_account['deleted_characters']:
+              fail('character accounting mismatch between authorized regions and whole-file diff')
+              report.append('- Character accounting: **FAIL**')
+          else:
+              report.append('- Character accounting: **PASS**')
+
+          # -----------------------------------------------------------------
+          # PASS 4 — WHAT ELSE CHANGED? PROTECTED-REMAINDER CHECKSUM
+          # Build a canonical remainder by replacing each authorized region with a
+          # stable requirement token in both baseline and target, then hash it.
+          # Any unrelated byte, whitespace, comment, CSS, icon, timing or code change fails.
+          # -----------------------------------------------------------------
+          report.append('')
+          report.append('## WHAT ELSE CHANGED?')
+
+          def canonical_remainder(text, spans, side):
+              # side=0 uses baseline coordinates, side=1 target coordinates
+              pieces=[]
+              pos=0
+              ordered=sorted(spans, key=lambda x: x[0 if side==0 else 2])
+              last_end=-1
+              for bs,be,ts,te,rid in ordered:
+                  s,e=(bs,be) if side==0 else (ts,te)
+                  if s < last_end:
+                      raise RuntimeError(f'overlapping authorized regions near {rid}')
+                  pieces.append(text[pos:s])
+                  pieces.append(f'\n/*__AUTHORIZED_REGION_{rid}__*/\n')
+                  pos=e
+                  last_end=e
+              pieces.append(text[pos:])
+              return ''.join(pieces)
+
+          for pair,spans in regions_by_pair.items():
+              bfile,tfile=pair
+              try:
+                  old_text=decode(blob_at(baseline,bfile),'baseline remainder')
+                  new_text=decode(blob_at(target,tfile),'target remainder')
+                  old_rem=canonical_remainder(old_text,spans,0)
+                  new_rem=canonical_remainder(new_text,spans,1)
+                  oh=sha256(old_rem.encode())
+                  nh=sha256(new_rem.encode())
+                  report.append(f'- `{bfile}` -> `{tfile}`')
+                  report.append(f'  - Baseline protected remainder SHA-256: `{oh}`')
+                  report.append(f'  - Target protected remainder SHA-256: `{nh}`')
+                  if oh != nh:
+                      fail(f'WHAT-ELSE-CHANGED mismatch outside authorized regions for {bfile}->{tfile}')
+                      report.append('  - Result: **FAIL — UNAUTHORIZED CHANGE OUTSIDE REQUIREMENTS**')
+                  else:
+                      report.append('  - Result: **PASS — ZERO UNACCOUNTED BYTES**')
+              except Exception as exc:
+                  fail(f'remainder audit {bfile}->{tfile}: {exc}')
+                  report.append(f'  - Result: **FAIL — {exc}**')
+
+          # -----------------------------------------------------------------
+          # PROTECTED PATHS — exact blob identity baseline vs target
+          # -----------------------------------------------------------------
+          report.append('')
+          report.append('## PROTECTED PATHS')
+          for path in protected_paths:
+              try:
+                  old=blob_at(baseline,path)
+                  new=blob_at(target,path)
+                  oh=sha256(old); nh=sha256(new)
+                  if oh != nh:
+                      fail(f'protected path changed: {path}')
+                      report.append(f'- `{path}`: **FAIL** `{oh}` -> `{nh}`')
+                  else:
+                      report.append(f'- `{path}`: PASS `{oh}`')
+              except Exception as exc:
+                  fail(f'protected path audit {path}: {exc}')
+                  report.append(f'- `{path}`: **FAIL — {exc}**')
+
+          # -----------------------------------------------------------------
+          # PATH SCOPE — actual changed paths must equal manifest target_files.
+          # -----------------------------------------------------------------
+          try:
+              changed_lines = git_text('diff','--name-only',baseline,target).splitlines()
+              actual=set(x.strip() for x in changed_lines if x.strip())
+              allowed=set(str(x).strip() for x in target_files if str(x).strip())
+              extra=sorted(actual-allowed)
+              missing=sorted(allowed-actual)
+              report.append('')
+              report.append('## PATH SCOPE')
+              report.append(f'- Allowed: {sorted(allowed)}')
+              report.append(f'- Actual: {sorted(actual)}')
+              if extra:
+                  fail('unauthorized changed paths: '+', '.join(extra))
+                  report.append(f'- Unauthorized: **{extra}**')
+              if missing:
+                  fail('declared target paths not changed: '+', '.join(missing))
+                  report.append(f'- Declared-but-unchanged: **{missing}**')
+              if not extra and not missing:
+                  report.append('- Result: **PASS**')
+          except Exception as exc:
+              fail(f'path scope audit failed: {exc}')
+
+          # -----------------------------------------------------------------
+          # STANDALONE VIEWER AUDIT
+          # Reject cross-viewer dependency, archive dependency and common runtime
+          # patch/bootstrap patterns in declared standalone viewer targets.
+          # -----------------------------------------------------------------
+          report.append('')
+          report.append('## STANDALONE VIEWER AUDIT')
+          standalone_files = manifest.get('standalone_viewer_files') or []
+          forbidden_patterns = [
+              (r'viewer/archive/', 'archive runtime dependency'),
+              (r'fetch\s*\([^\n]{0,300}GV-beta-[A-Za-z0-9-]+\.py', 'runtime fetch of another viewer'),
+              (r'GV-beta-[A-Za-z0-9-]+\.py[^\n]{0,300}(replace|replaceAll|eval|Function\s*\()', 'runtime viewer patch/reconstruction'),
+          ]
+          viewer_ref = re.compile(r'GV-beta-[A-Za-z0-9-]+\.py')
+          for path in standalone_files:
+              try:
+                  text=decode(blob_at(target,path),path)
+                  own=pathlib.PurePosixPath(path).name
+                  refs=sorted(set(viewer_ref.findall(text))-{own})
+                  local_fail=[]
+                  if refs:
+                      local_fail.append('references other viewer release(s): '+', '.join(refs))
+                  for pattern,label in forbidden_patterns:
+                      if re.search(pattern,text,re.I|re.S):
+                          local_fail.append(label)
+                  if local_fail:
+                      fail(f'standalone audit {path}: ' + '; '.join(local_fail))
+                      report.append(f'- `{path}`: **FAIL** — ' + '; '.join(local_fail))
+                  else:
+                      report.append(f'- `{path}`: PASS')
+              except Exception as exc:
+                  fail(f'standalone audit {path}: {exc}')
+                  report.append(f'- `{path}`: **FAIL — {exc}**')
+
+          # -----------------------------------------------------------------
+          # FINAL RESULT — post immutable forensic result back to ECO issue.
+          # -----------------------------------------------------------------
+          report.append('')
+          report.append('## FINAL RESULT')
+          if failures:
+              report.append('**FORENSIC ECO AUDIT: FAIL**')
+              report.append('')
+              report.append('### Failures')
+              report.extend(f'- {x}' for x in failures)
+          else:
+              report.append('**FORENSIC ECO AUDIT: PASS**')
+              report.append('')
+              report.append('All requirements verified block-by-block; whole-file character accounting reconciled; protected remainder checksum matched; no unexplained source change was detected.')
+
+          comment='\n'.join(report)
+          api('POST',f'/issues/{issue_no}/comments',{'body':comment[:65000]})
+          print(comment)
+          if failures:
+              sys.exit(1)
+          PY
