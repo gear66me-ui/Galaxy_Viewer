@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hubble Image Replacement Review</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; background: #05070b; color: #f4f7fb; }
+    main { max-width: 1500px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 5vw, 48px); }
+    .intro { margin: 0 0 24px; color: #b9c4d6; font-size: 17px; line-height: 1.5; }
+    .candidate { border: 1px solid #30394a; border-radius: 18px; margin: 24px 0; padding: 18px; background: #0b1019; }
+    .candidate h2 { margin: 0 0 4px; font-size: 26px; }
+    .meta { color: #9eacc2; margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 14px; }
+    .card { border: 1px solid #2b3443; border-radius: 14px; overflow: hidden; background: #111827; display: flex; flex-direction: column; }
+    .card.current { border-style: dashed; opacity: .88; }
+    .card img { width: 100%; height: 280px; object-fit: contain; background: #000; display: block; }
+    .card-body { padding: 12px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+    .label { font-weight: 800; font-size: 18px; }
+    .desc { color: #bec9da; min-height: 42px; line-height: 1.35; }
+    .source { color: #8fb9ff; text-decoration: none; word-break: break-word; }
+    .choose { margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #46526a; border-radius: 10px; cursor: pointer; font-weight: 700; }
+    input[type="radio"] { width: 22px; height: 22px; accent-color: #7aa7ff; }
+    .selected-note { color: #8dd8a3; font-weight: 700; }
+    .output { position: sticky; bottom: 0; margin-top: 26px; padding: 18px; border: 1px solid #3e4a60; border-radius: 18px 18px 0 0; background: rgba(9,14,23,.97); backdrop-filter: blur(8px); }
+    .output h2 { margin: 0 0 10px; }
+    textarea { box-sizing: border-box; width: 100%; min-height: 170px; resize: vertical; padding: 12px; border-radius: 10px; border: 1px solid #39465b; background: #03060b; color: #f7f9fc; font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    button { margin-top: 10px; padding: 12px 18px; border: 0; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 16px; }
+    #copyStatus { margin-left: 10px; color: #8dd8a3; font-weight: 700; }
+    @media (max-width: 600px) { main { padding: 14px; } .card img { height: 235px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Hubble Image Replacement Review</h1>
+  <p class="intro">Temporary visual selector for confirmed poor-image candidates in Hubble Catalog 0018. Compare the current catalog image with official ESA/Hubble alternatives, choose Option 1, 2 or 3, then copy the final selections from the bottom. This page does not modify the catalog.</p>
+
+  <section class="candidate" data-archive="heic0805a" data-name="Abell 1689 / A1689-zD1">
+    <h2>Abell 1689 / A1689-zD1</h2>
+    <div class="meta">Catalog archive ID: <strong>heic0805a</strong> · Existing presentation includes the small grayscale high-redshift cutout. <span class="selected-note">Option 2 is preselected from your earlier choice.</span></div>
+    <div class="grid">
+      <article class="card current">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/heic0805a.jpg" alt="Current Abell 1689 catalog image">
+        <div class="card-body"><div class="label">CURRENT</div><div class="desc">Catalog 0018 image under review.</div><a class="source" href="https://esahubble.org/images/heic0805a/" target="_blank" rel="noopener">Official ESA/Hubble source</a></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/heic1317a.jpg" alt="Abell 1689 replacement option 1">
+        <div class="card-body"><div class="label">OPTION 1</div><div class="desc">New Hubble view of Abell 1689, visible + infrared ACS data.</div><a class="source" href="https://esahubble.org/images/heic1317a/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="heic0805a" value="1" data-image="https://cdn.esahubble.org/archives/images/large/heic1317a.jpg" data-source="https://esahubble.org/images/heic1317a/"> Select Option 1</label></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/heic0805d.jpg" alt="Abell 1689 replacement option 2">
+        <div class="card-body"><div class="label">OPTION 2</div><div class="desc">Full-color Hubble field of Abell 1689 and its gravitationally lensed background galaxies.</div><a class="source" href="https://esahubble.org/images/heic0805d/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="heic0805a" value="2" data-image="https://cdn.esahubble.org/archives/images/large/heic0805d.jpg" data-source="https://esahubble.org/images/heic0805d/" checked> Select Option 2</label></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/opo1407b.jpg" alt="Abell 1689 replacement option 3">
+        <div class="card-body"><div class="label">OPTION 3</div><div class="desc">Hubble ACS + WFC3 blend showing the galaxy cluster and lensing arcs.</div><a class="source" href="https://esahubble.org/images/opo1407b/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="heic0805a" value="3" data-image="https://cdn.esahubble.org/archives/images/large/opo1407b.jpg" data-source="https://esahubble.org/images/opo1407b/"> Select Option 3</label></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="candidate" data-archive="opo9621a2" data-name="NGC 1365">
+    <h2>NGC 1365</h2>
+    <div class="meta">Catalog archive ID: <strong>opo9621a2</strong> · Current image is an older black-and-white ground-based photograph.</div>
+    <div class="grid">
+      <article class="card current">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/opo9621a2.jpg" alt="Current NGC 1365 catalog image">
+        <div class="card-body"><div class="label">CURRENT</div><div class="desc">Black-and-white ground-based whole-galaxy image currently used by Catalog 0018.</div><a class="source" href="https://esahubble.org/images/opo9621a2/" target="_blank" rel="noopener">Official ESA/Hubble source</a></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/potw2040a.jpg" alt="NGC 1365 replacement option 1">
+        <div class="card-body"><div class="label">OPTION 1</div><div class="desc">2020 PHANGS-HST color portrait of NGC 1365; 3966 × 3811.</div><a class="source" href="https://esahubble.org/images/potw2040a/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="opo9621a2" value="1" data-image="https://cdn.esahubble.org/archives/images/large/potw2040a.jpg" data-source="https://esahubble.org/images/potw2040a/"> Select Option 1</label></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/opo9621a1.jpg" alt="NGC 1365 replacement option 2">
+        <div class="card-body"><div class="label">OPTION 2</div><div class="desc">Classic color Hubble WFPC2 view of a star-forming region in NGC 1365.</div><a class="source" href="https://esahubble.org/images/opo9621a1/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="opo9621a2" value="2" data-image="https://cdn.esahubble.org/archives/images/large/opo9621a1.jpg" data-source="https://esahubble.org/images/opo9621a1/"> Select Option 2</label></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/heic9902d.jpg" alt="NGC 1365 replacement option 3">
+        <div class="card-body"><div class="label">OPTION 3</div><div class="desc">Hubble WFPC2 close-up of the bright nucleus, dust lanes and young star clusters.</div><a class="source" href="https://esahubble.org/images/heic9902d/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="opo9621a2" value="3" data-image="https://cdn.esahubble.org/archives/images/large/heic9902d.jpg" data-source="https://esahubble.org/images/heic9902d/"> Select Option 3</label></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="candidate" data-archive="opo9631c" data-name="NGC 2366">
+    <h2>NGC 2366</h2>
+    <div class="meta">Catalog archive ID: <strong>opo9631c</strong> · Current image is a 930 × 725 black-and-white CFHT ground-based image.</div>
+    <div class="grid">
+      <article class="card current">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/opo9631c.jpg" alt="Current NGC 2366 catalog image">
+        <div class="card-body"><div class="label">CURRENT</div><div class="desc">Black-and-white CFHT image currently used by Catalog 0018.</div><a class="source" href="https://esahubble.org/images/opo9631c/" target="_blank" rel="noopener">Official ESA/Hubble source</a></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/heic1207a.jpg" alt="NGC 2366 replacement option 1">
+        <div class="card-body"><div class="label">OPTION 1</div><div class="desc">2012 Hubble mosaic of NGC 2366 and its bright star-forming region; 6268 × 2354.</div><a class="source" href="https://esahubble.org/images/heic1207a/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="opo9631c" value="1" data-image="https://cdn.esahubble.org/archives/images/large/heic1207a.jpg" data-source="https://esahubble.org/images/heic1207a/"> Select Option 1</label></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/opo9631b.jpg" alt="NGC 2366 replacement option 2">
+        <div class="card-body"><div class="label">OPTION 2</div><div class="desc">Color Hubble WFPC2 view of the luminous NGC 2363 star-forming complex in NGC 2366.</div><a class="source" href="https://esahubble.org/images/opo9631b/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="opo9631c" value="2" data-image="https://cdn.esahubble.org/archives/images/large/opo9631b.jpg" data-source="https://esahubble.org/images/opo9631b/"> Select Option 2</label></div>
+      </article>
+      <article class="card">
+        <img loading="lazy" src="https://cdn.esahubble.org/archives/images/large/opo9631a.jpg" alt="NGC 2366 replacement option 3">
+        <div class="card-body"><div class="label">OPTION 3</div><div class="desc">Hubble/ground comparison collage centered on NGC 2363 within NGC 2366.</div><a class="source" href="https://esahubble.org/images/opo9631a/" target="_blank" rel="noopener">Official ESA/Hubble source</a><label class="choose"><input type="radio" name="opo9631c" value="3" data-image="https://cdn.esahubble.org/archives/images/large/opo9631a.jpg" data-source="https://esahubble.org/images/opo9631a/"> Select Option 3</label></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="output">
+    <h2>Final selections</h2>
+    <textarea id="selectionOutput" readonly aria-label="Selected replacement images"></textarea>
+    <button id="copyButton" type="button">Copy selections</button><span id="copyStatus" role="status"></span>
+  </section>
+</main>
+<script>
+(() => {
+  const sections = [...document.querySelectorAll('.candidate')];
+  const output = document.getElementById('selectionOutput');
+  const status = document.getElementById('copyStatus');
+
+  function refresh() {
+    const lines = [];
+    for (const section of sections) {
+      const picked = section.querySelector('input[type="radio"]:checked');
+      if (!picked) continue;
+      lines.push(`${section.dataset.name} — ${section.dataset.archive} — OPTION ${picked.value}`);
+      lines.push(`IMAGE: ${picked.dataset.image}`);
+      lines.push(`SOURCE: ${picked.dataset.source}`);
+      lines.push('');
+    }
+    output.value = lines.join('\n').trim();
+    status.textContent = '';
+  }
+
+  document.addEventListener('change', event => {
+    if (event.target.matches('input[type="radio"]')) refresh();
+  });
+
+  document.getElementById('copyButton').addEventListener('click', async () => {
+    refresh();
+    try {
+      await navigator.clipboard.writeText(output.value);
+      status.textContent = 'Copied.';
+    } catch (_) {
+      output.focus();
+      output.select();
+      status.textContent = 'Select-all ready — use Copy.';
+    }
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
