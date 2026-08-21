@@ -1,0 +1,240 @@
+name: Spitzer Commons Curation
+
+'on':
+  workflow_dispatch:
+  push:
+    branches: [beta]
+    paths:
+      - .github/workflows/spitzer-commons-curation.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: spitzer-commons-curation
+  cancel-in-progress: false
+
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check --quiet requests pillow imagehash
+
+      - name: Harvest, analyze, dedupe, and build site
+        run: |
+          python3 <<'PY'
+          import io, json, math, pathlib, re, statistics, time
+          from collections import Counter, defaultdict
+          from datetime import datetime, timezone
+          from urllib.parse import quote
+
+          import imagehash
+          import requests
+          from PIL import Image, ImageFilter, ImageStat
+
+          API='https://commons.wikimedia.org/w/api.php'
+          CATEGORY='Category:Images by Spitzer Space Telescope'
+          OUT=pathlib.Path('viewer/image-databases/Spitzer/commons-curation')
+          THUMBS=OUT/'thumbs'
+          OUT.mkdir(parents=True,exist_ok=True); THUMBS.mkdir(parents=True,exist_ok=True)
+
+          s=requests.Session()
+          s.headers['User-Agent']='GalaxyViewer-Spitzer-Curation/1.0 (Wikimedia Commons review workflow)'
+
+          # REQ-001/002: enumerate the whole Commons category using continuation.
+          titles=[]; cmcontinue=None
+          while True:
+              p={'action':'query','format':'json','list':'categorymembers','cmtitle':CATEGORY,'cmtype':'file','cmlimit':'500'}
+              if cmcontinue:p['cmcontinue']=cmcontinue
+              r=s.get(API,params=p,timeout=30); r.raise_for_status(); j=r.json()
+              titles += [x['title'] for x in j.get('query',{}).get('categorymembers',[])]
+              cmcontinue=j.get('continue',{}).get('cmcontinue')
+              print('category files =',len(titles),flush=True)
+              if not cmcontinue:break
+              time.sleep(.15)
+
+          if len(titles)<100: raise SystemExit(f'Commons category unexpectedly small: {len(titles)}')
+
+          science_terms=re.compile(r'\b(chart|plot|diagram|spectrum|spectra|spectral|light curve|histogram|comparison|annotat|labelled|labeled|inset|zoom|panel|mosaic comparison|simulation|model|schematic|temperature map|contour|color-color|colour-colour)\b',re.I)
+          nongalaxy_terms=re.compile(r'\b(telescope|spacecraft|launch|rocket|instrument|engineer|technician|planet|comet|asteroid|nebula|star forming region|star-forming region|milky way|magellanic cloud|exoplanet|saturn|jupiter|mars|earth)\b',re.I)
+          galaxy_terms=re.compile(r'\b(galaxy|galaxies|spiral|elliptical|lenticular|interacting galaxies|merger)\b',re.I)
+          alias_patterns=[
+              r'\bNGC\s*0*\d+[A-Za-z]?\b',r'\bIC\s*0*\d+[A-Za-z]?\b',r'\bUGC\s*0*\d+\b',
+              r'\bPGC\s*0*\d+\b',r'\bMessier\s+\d{1,3}\b',r'\bM\s*\d{1,3}\b',r'\bESO\s+[0-9A-Za-z-]+\b',
+              r'\bArp\s*\d+\b',r'\bMrk\s*\d+\b',r'\bVV\s*\d+\b'
+          ]
+          def norm_alias(x):
+              x=re.sub(r'(?i)^Messier\s+','M',x)
+              x=re.sub(r'[^A-Z0-9]+','',x.upper())
+              m=re.match(r'^(NGC|IC|UGC|PGC|M)(0*)(\d+)([A-Z]?)$',x)
+              return m.group(1)+str(int(m.group(3)))+m.group(4) if m else x
+          def aliases(text):
+              out=[]
+              for p in alias_patterns:
+                  for m in re.findall(p,text or '',re.I):
+                      a=norm_alias(m)
+                      if a and a not in out: out.append(a)
+              return out
+
+          # Batch imageinfo 50 files per API call.
+          records=[]
+          for off in range(0,len(titles),50):
+              batch=titles[off:off+50]
+              p={
+                  'action':'query','format':'json','titles':'|'.join(batch),'prop':'imageinfo',
+                  'iiprop':'url|size|sha1|mime|extmetadata','iiurlwidth':'480'
+              }
+              r=s.get(API,params=p,timeout=40); r.raise_for_status(); pages=r.json().get('query',{}).get('pages',{})
+              for pg in pages.values():
+                  ii=(pg.get('imageinfo') or [{}])[0]
+                  em=ii.get('extmetadata') or {}
+                  def ev(k): return (em.get(k) or {}).get('value','')
+                  desc=re.sub('<[^>]+>',' ',ev('ImageDescription'))
+                  cats=ev('Categories')
+                  obj=ev('ObjectName')
+                  text=' '.join([pg.get('title',''),obj,desc,cats])
+                  rec={
+                      'title':pg.get('title',''),'pageid':pg.get('pageid'),'sha1':ii.get('sha1',''),'mime':ii.get('mime',''),
+                      'width':ii.get('width') or 0,'height':ii.get('height') or 0,'bytes':ii.get('size') or 0,
+                      'originalUrl':ii.get('url',''),'thumbUrl':ii.get('thumburl') or ii.get('url',''),
+                      'descriptionUrl':ii.get('descriptionurl') or ('https://commons.wikimedia.org/wiki/'+quote(pg.get('title','').replace(' ','_'))),
+                      'artist':re.sub('<[^>]+>',' ',ev('Artist')),'credit':re.sub('<[^>]+>',' ',ev('Credit')),
+                      'license':ev('LicenseShortName') or ev('UsageTerms'),'objectName':obj,'description':desc[:1500],
+                      'categories':cats,'aliases':aliases(text),'flags':[],'decision':'UNREVIEWED','groupKey':None
+                  }
+                  low=text.lower()
+                  if science_terms.search(text): rec['flags'].append('SCIENTIFIC_OR_ANNOTATED_METADATA')
+                  if nongalaxy_terms.search(text) and not galaxy_terms.search(text): rec['flags'].append('LIKELY_NON_GALAXY')
+                  if rec['width'] and rec['height']:
+                      ratio=rec['width']/rec['height']
+                      if .94<=ratio<=1.06: rec['flags'].append('SQUARE')
+                      if ratio>=2.2 or ratio<=.45: rec['flags'].append('EXTREME_ASPECT')
+                  if not rec['aliases'] and not galaxy_terms.search(text): rec['flags'].append('NO_GALAXY_IDENTITY')
+                  records.append(rec)
+              print('metadata',min(off+50,len(titles)),'/',len(titles),flush=True)
+              time.sleep(.12)
+
+          # REQ-003/004/005: download only 480px thumbnails; analyze color/frame/detail and perceptual duplicates.
+          sha_seen={}; phash_buckets=[]
+          for i,rec in enumerate(records,1):
+              if rec['sha1'] and rec['sha1'] in sha_seen:
+                  rec['flags'].append('EXACT_DUPLICATE')
+                  rec['duplicateOf']=sha_seen[rec['sha1']]
+              elif rec['sha1']:
+                  sha_seen[rec['sha1']]=rec['title']
+              try:
+                  rr=s.get(rec['thumbUrl'],timeout=25); rr.raise_for_status()
+                  if len(rr.content)>900000: raise ValueError('thumbnail too large')
+                  im=Image.open(io.BytesIO(rr.content)).convert('RGB')
+                  # Keep a local low-weight review thumbnail.
+                  im.thumbnail((420,420))
+                  fn=f'{i:04d}.jpg'; path=THUMBS/fn
+                  im.save(path,'JPEG',quality=72,optimize=True)
+                  rec['localThumb']='thumbs/'+fn; rec['thumbBytes']=path.stat().st_size
+
+                  sm=im.copy(); sm.thumbnail((160,160)); px=list(sm.getdata())
+                  spread=[max(p)-min(p) for p in px]; lum=[sum(p)/3 for p in px]
+                  color_fraction=sum(x>=18 for x in spread)/len(spread)
+                  saturation=sum(spread)/(255*len(spread))
+                  fill=sum(x>=20 for x in lum)/len(lum)
+                  brightness=sum(lum)/(255*len(lum))
+                  contrast=min(1,statistics.pstdev(lum)/65) if len(lum)>1 else 0
+                  # Edge-density proxy: annotated graphics often have unusually dense hard edges.
+                  edges=sm.convert('L').filter(ImageFilter.FIND_EDGES)
+                  edge_mean=ImageStat.Stat(edges).mean[0]/255
+                  rec['quality']={'colorFraction':round(color_fraction,3),'saturation':round(saturation,3),'frameFill':round(fill,3),'brightness':round(brightness,3),'contrast':round(contrast,3),'edgeDensity':round(edge_mean,3)}
+                  if color_fraction<.08: rec['flags'].append('LOW_COLOR')
+                  if fill<.12: rec['flags'].append('TOO_MUCH_BLACK')
+                  if brightness<.06: rec['flags'].append('TOO_DARK')
+                  if edge_mean>.22: rec['flags'].append('TEXT_OR_GRAPHIC_LIKELY')
+
+                  ph=imagehash.phash(im,hash_size=8); rec['phash']=str(ph)
+                  near=None
+                  for oldh,oldtitle in phash_buckets:
+                      if ph-oldh<=4:
+                          near=oldtitle; break
+                  if near and 'EXACT_DUPLICATE' not in rec['flags']:
+                      rec['flags'].append('NEAR_DUPLICATE'); rec['nearDuplicateOf']=near
+                  else:
+                      phash_buckets.append((ph,rec['title']))
+              except Exception as ex:
+                  rec['flags'].append('THUMBNAIL_ERROR');rec['thumbnailError']=type(ex).__name__
+              if i%50==0 or i==len(records): print('analyzed',i,'/',len(records),flush=True)
+
+          # REQ-006/007: group by galaxy identity. Ungrouped items stay reviewable but not auto-primary.
+          groups=defaultdict(list)
+          for rec in records:
+              rec['groupKey']=rec['aliases'][0] if rec['aliases'] else 'UNGROUPED:'+rec['title']
+              groups[rec['groupKey']].append(rec)
+
+          # Conservative first-pass ranking: never auto-accept flagged scientific/non-galaxy/duplicate/text-like images.
+          rejectish={'LIKELY_NON_GALAXY','NO_GALAXY_IDENTITY','SCIENTIFIC_OR_ANNOTATED_METADATA','TEXT_OR_GRAPHIC_LIKELY','THUMBNAIL_ERROR'}
+          for key,items in groups.items():
+              def score(r):
+                  q=r.get('quality',{})
+                  val=100*q.get('colorFraction',0)+45*q.get('frameFill',0)+35*q.get('contrast',0)
+                  val-=35*sum(f in rejectish for f in r['flags'])
+                  val-=20*sum(f in ('EXACT_DUPLICATE','NEAR_DUPLICATE','SQUARE','EXTREME_ASPECT','TOO_MUCH_BLACK','TOO_DARK','LOW_COLOR') for f in r['flags'])
+                  return val
+              items.sort(key=score,reverse=True)
+              for rank,r in enumerate(items,1): r['groupRank']=rank; r['autoScore']=round(score(r),2)
+              best=items[0]
+              if not any(f in rejectish for f in best['flags']) and 'EXACT_DUPLICATE' not in best['flags'] and best.get('quality',{}).get('colorFraction',0)>=.10:
+                  best['autoSuggestion']='PRIMARY_CANDIDATE'
+              else: best['autoSuggestion']='REVIEW'
+              for r in items[1:]: r['autoSuggestion']='ALTERNATE_OR_REJECT'
+
+          # REQ-008: 300-at-a-time review site with primary/alternate/reject controls and HD/source links.
+          manifest={'version':'spitzer-commons-curation-0001','generatedAt':datetime.now(timezone.utc).isoformat(),'sourceCategory':CATEGORY,
+                    'recordCount':len(records),'groupCount':len(groups),'pageSize':300,'pageCount':math.ceil(len(records)/300),'records':records}
+          (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          counts=Counter(f for r in records for f in r['flags'])
+          suggestions=Counter(r.get('autoSuggestion') for r in records)
+          report={'generatedAt':manifest['generatedAt'],'recordCount':len(records),'groupCount':len(groups),'uniqueSha1':len(sha_seen),
+                  'flagCounts':dict(counts),'suggestionCounts':dict(suggestions),'policy':'Conservative first pass; no automatic final keep/reject decisions.'}
+          (OUT/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+
+          html=r'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Spitzer Commons Curation</title><style>
+          body{margin:0;background:#070910;color:#eef2f8;font:14px system-ui}header{position:sticky;top:0;z-index:5;background:#0b0e16f2;border-bottom:1px solid #293244;padding:10px}.bar{max-width:1600px;margin:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}button,input,select{background:#171c28;color:#eef2f8;border:1px solid #354057;border-radius:7px;padding:8px}.nav button.active{background:#28518d}.stats{margin-left:auto;color:#aab4c3}main{max-width:1600px;margin:auto;padding:10px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:9px}.card{background:#111621;border:1px solid #293244;border-radius:10px;overflow:hidden}.img{height:215px;background:#020307;display:flex;align-items:center;justify-content:center;position:relative}.img img{width:100%;height:100%;object-fit:contain}.badge{position:absolute;top:5px;left:5px;background:#000d;padding:4px 6px;border-radius:5px;font-size:10px}.body{padding:8px}.name{font-weight:700}.meta{font-size:11px;color:#aab4c3;margin:4px 0 6px;max-height:72px;overflow:auto}.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}.primary.active{background:#174d32}.alternate.active{background:#624b16}.reject.active{background:#5c2025}.links{display:flex;gap:4px;margin-top:5px}.links a{flex:1;text-align:center;color:#bcd7ff;background:#171c28;padding:6px;border-radius:6px;text-decoration:none;font-size:11px}</style></head><body>
+          <header><div class="bar"><b>Spitzer Commons Curation</b><input id="q" placeholder="Galaxy / filename"><select id="filter"><option value="all">All</option><option value="PRIMARY_CANDIDATE">Primary candidates</option><option value="flagged">Flagged</option><option value="duplicates">Duplicates</option><option value="unreviewed">Unreviewed by me</option></select><button onclick="exportSel()">Export selections</button><span class="stats" id="stats"></span></div><div class="bar nav" id="nav"></div></header>
+          <main><div id="grid" class="grid"></div></main><script>
+          let M,page=0;const K='gv-spitzer-commons-curation';let S=JSON.parse(localStorage.getItem(K)||'{}');const save=()=>localStorage.setItem(K,JSON.stringify(S));
+          function choose(t,v){S[t]=v;save();render()}function filtered(){let q=document.getElementById('q').value.toLowerCase(),f=document.getElementById('filter').value;return M.records.filter(r=>{let hit=!q||(r.title+' '+(r.aliases||[]).join(' ')).toLowerCase().includes(q);if(!hit)return false;if(f==='all')return true;if(f==='PRIMARY_CANDIDATE')return r.autoSuggestion===f;if(f==='flagged')return (r.flags||[]).length>0;if(f==='duplicates')return (r.flags||[]).some(x=>x.includes('DUPLICATE'));if(f==='unreviewed')return !S[r.title];return true})}
+          function render(){let d=filtered(),ps=300,pc=Math.max(1,Math.ceil(d.length/ps));if(page>=pc)page=pc-1;let nav=document.getElementById('nav');nav.innerHTML='';for(let i=0;i<pc;i++){let b=document.createElement('button');b.textContent=(i*ps+1)+'-'+Math.min((i+1)*ps,d.length);b.className=i===page?'active':'';b.onclick=()=>{page=i;render();scrollTo(0,0)};nav.appendChild(b)}let g=document.getElementById('grid');g.innerHTML='';d.slice(page*ps,page*ps+ps).forEach(r=>{let dec=S[r.title]||'',e=document.createElement('div');e.className='card';e.innerHTML=`<div class="img"><img loading="lazy" src="${r.localThumb||r.thumbUrl}"><span class="badge">${r.autoSuggestion} #${r.groupRank||''}</span></div><div class="body"><div class="name">${(r.aliases&&r.aliases[0])||r.objectName||r.title}</div><div class="meta">${r.title}<br>${(r.flags||[]).join(', ')||'CLEAN'}<br>Group: ${r.groupKey}</div><div class="actions"><button class="primary ${dec==='primary'?'active':''}" onclick='choose(${JSON.stringify(r.title)},"primary")'>PRIMARY</button><button class="alternate ${dec==='alternate'?'active':''}" onclick='choose(${JSON.stringify(r.title)},"alternate")'>ALTERNATE</button><button class="reject ${dec==='reject'?'active':''}" onclick='choose(${JSON.stringify(r.title)},"reject")'>REJECT</button></div><div class="links"><a target="_blank" href="${r.originalUrl}">Open HD</a><a target="_blank" href="${r.descriptionUrl}">Commons page</a></div></div>`;g.appendChild(e)});document.getElementById('stats').textContent='Page '+(page+1)+'/'+pc+' • '+d.length+' files • '+M.groupCount+' groups'}
+          function exportSel(){let b=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),selections:S},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='spitzer-commons-selections.json';a.click()}
+          q.oninput=()=>{page=0;render()};filter.onchange=()=>{page=0;render()};fetch('manifest.json?'+Date.now()).then(r=>r.json()).then(x=>{M=x;render()});
+          </script></body></html>'''
+          (OUT/'index.html').write_text(html,encoding='utf-8')
+          print('CURATION BUILD PASS',report,flush=True)
+          PY
+
+      - name: Commit generated curation site
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --ff-only origin beta
+          git add -- viewer/image-databases/Spitzer/commons-curation
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Build Spitzer Commons curation site
+
+          ECO-ID: ECO-20260821-SPITZER-COMMONS-CURATION-003
+          AUTHORIZED-PATHS: viewer/image-databases/Spitzer/commons-curation/**
+          REQUIREMENTS: REQ-001-REQ-012
+          ARCHIVE-AUTHORIZED: false
+          USER-GO: true"
+          git push origin HEAD:beta
+
+      - name: Upload curation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spitzer-commons-curation-site
+          path: viewer/image-databases/Spitzer/commons-curation
+          retention-days: 30
