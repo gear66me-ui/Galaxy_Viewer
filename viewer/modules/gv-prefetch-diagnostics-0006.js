@@ -7,14 +7,15 @@ const ROOT_ID='gv-prefetch-diagnostics-0006';
 let timer=0;
 
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function progressValue(resource){const value=resource?.progress;return typeof value==='number'&&Number.isFinite(value)?value:null}
 function stateText(resource){
   const state=String(resource?.state||'QUEUED').toUpperCase();
-  const progress=Number(resource?.progress);
+  const progress=progressValue(resource);
   if(state==='READY')return '✓ 100%';
   if(state==='FAILED')return '✕ FAILED';
   if(state==='RETRY')return 'RETRY';
   if(state==='SUSPENDED')return 'PAUSED';
-  if(Number.isFinite(progress))return `${Math.max(0,Math.min(100,Math.round(progress)))}%`;
+  if(progress!==null)return `${Math.max(0,Math.min(100,Math.round(progress)))}%`;
   if(state==='DOWNLOADING')return 'DOWNLOADING';
   if(state==='DECODING')return 'DECODING';
   if(state==='PREPARING')return 'PREPARING';
@@ -30,8 +31,8 @@ function barClass(resource){
 }
 function bar(resource){
   const state=String(resource?.state||'QUEUED').toUpperCase();
-  const progress=Number(resource?.progress);
-  const determinate=Number.isFinite(progress);
+  const progress=progressValue(resource);
+  const determinate=progress!==null;
   const width=determinate?Math.max(0,Math.min(100,progress)):0;
   const cls=barClass(resource)+(determinate?' gvpd-determinate':' gvpd-indeterminate');
   return `<div class="gvpd-resource ${cls}" title="${escapeHtml(state)}"><div class="gvpd-track"><div class="gvpd-fill"${determinate?` style="width:${width}%"`:''}></div></div><span>${escapeHtml(stateText(resource))}</span></div>`;
