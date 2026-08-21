@@ -228,6 +228,105 @@ name: Galaxy Viewer Controlled Engineering Change
 # Every actual diff hunk must map to at least one authorized requirement.
 # Any unexplained or unmapped hunk is a FAIL even when the feature works.
 #
+# ---------------------------------------------------------------------------
+# MANDATORY REQUIREMENT-BY-REQUIREMENT BEFORE/AFTER SOURCE PROOF
+# ---------------------------------------------------------------------------
+#
+# For every ECO that requires a source change, completion MUST include one
+# independently readable proof record for EVERY REQ-xxx. A generic whole-file
+# diff, summary, or statement that the requirement was handled is not a
+# substitute for the individual proof record.
+#
+# Each requirement proof record MUST state exactly:
+#
+#     REQUESTED: <what the user required>
+#     BEFORE: <exact authoritative baseline source snippet>
+#     AFTER: <exact fetched-back committed source snippet>
+#     IMPLEMENTED: YES|NO
+#     ACCEPTANCE TEST: <exact test required>
+#     RESULT: PASS|FAIL|UNVERIFIED
+#
+# BEFORE and AFTER snippets MUST come from the exact authoritative baseline and
+# the exact committed file fetched back from the repository. They MUST NOT be
+# reconstructed from memory, prior chats, drafts, stale files, or intended code.
+# Quote enough surrounding source to identify the changed function, element,
+# record, or region uniquely.
+#
+# For a DELETION proof:
+# - BEFORE must quote the exact deleted baseline block;
+# - AFTER must state: REMOVED — occurrence count = 0;
+# - the zero occurrence count must be verified against the fetched-back file.
+#
+# For an ADDITION proof:
+# - BEFORE must state: ABSENT — occurrence count = 0;
+# - AFTER must quote the exact added committed block;
+# - the baseline absence must be verified against the authoritative baseline.
+#
+# For a MODIFICATION proof:
+# - quote the exact baseline block and exact committed replacement block;
+# - include enough unchanged surrounding context to prove the blocks correspond
+#   to the same source region.
+#
+# REQUIREMENT COMPLETENESS TEST:
+# - compare the full numbered requirement list against the committed source;
+# - any requested requirement with no corresponding implementation proof is a
+#   FAIL and may not be silently omitted from closure;
+# - IMPLEMENTED: NO means the ECO is not complete even if path and diff audits
+#   otherwise pass.
+#
+# INVERSE DIFF TEST:
+# - after all REQ proof records are assembled, inspect the complete repository
+#   diff and ask whether any changed source is absent from all requirement proof
+#   records;
+# - any changed-but-unrequested source is a FAIL;
+# - the combined proof records must account for 100% of inserted, deleted, and
+#   replaced source content in the complete diff.
+#
+# THREE INDEPENDENT VERIFICATION PASSES ARE MANDATORY:
+# 1. PASS 1 — normal requirement/source reconciliation using the authoritative
+#    baseline and fetched-back committed files;
+# 2. PASS 2 — re-fetch the baseline and committed files and independently
+#    rebuild the BEFORE/AFTER proof set without relying on PASS 1 conclusions;
+# 3. PASS 3 — re-fetch again and verify every quoted snippet, occurrence count,
+#    requirement mapping, and full-diff accounting independently.
+#
+# After PASS 3, perform a RANDOM/ADVERSARIAL protected-source inspection outside
+# the authorized change blocks. Compare baseline versus committed source for
+# missing words, extra words, punctuation, whitespace, variable/function names,
+# constants, removed functions, URLs, comments, and accidental formatting.
+#
+# Every ECO closure MUST explicitly answer:
+#
+#     WHAT CHANGED THAT THE USER DID NOT REQUEST?
+#
+# The only successful answer is:
+#
+#     NOTHING
+#
+# If NOTHING cannot be proven from the source evidence, the ECO does not pass.
+#
+# PASS/READY/READY TO TEST or equivalent completion language is PROHIBITED unless:
+# - every source-changing requirement has its BEFORE/AFTER proof record;
+# - every requirement is IMPLEMENTED: YES;
+# - every required acceptance test is PASS at its required verification level;
+# - every changed hunk is mapped;
+# - no unrequested source exists;
+# - the three independent verification passes are complete;
+# - the adversarial source inspection is complete.
+#
+# For any ECO requiring a write, completion MUST explicitly include:
+#
+#     WRITE PERFORMED: YES
+#     COMMIT SHA: <actual repository commit SHA>
+#
+# If the required source write or repair commit does not exist, the only valid
+# completion status is STALLED / NOT IMPLEMENTED, never PASS or READY.
+#
+# These requirements are ADDITIVE. They MUST NOT weaken, replace, bypass, or
+# supersede the GO gate, baseline verification, archive protection, runtime-path
+# protection, commit metadata, forensic accounting, requirement closure matrix,
+# verification-level distinctions, failed-test repair gate, or fail-closed rule.
+#
 # ============================================================================
 # SECTION 8 — VERIFICATION LEVELS MUST NEVER BE CONFUSED
 # ============================================================================
