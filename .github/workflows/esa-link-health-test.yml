@@ -1,65 +1,138 @@
-name: ESA archive link health test
+name: Hubble JWST Chandra image link health audit
 
 on:
   workflow_dispatch:
     inputs:
       runs:
-        description: Cold-cache runs per URL
+        description: Independent runs per image URL
         required: true
-        default: '3'
+        default: '2'
       concurrency:
-        description: Parallel browser pages
+        description: Parallel URL probes
         required: true
-        default: '4'
+        default: '10'
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/esa-link-health-test.yml'
+      - 'test/esa-link-health-check.mjs'
+      - 'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0018.json'
+      - 'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json'
+      - 'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json'
 
 permissions:
   contents: write
 
+env:
+  RUNS: ${{ github.event_name == 'workflow_dispatch' && inputs.runs || '2' }}
+  CONCURRENCY: ${{ github.event_name == 'workflow_dispatch' && inputs.concurrency || '10' }}
+  TIMEOUT_MS: '30000'
+  RETRIES: '2'
+  MAX_BYTES: '262144'
+
 jobs:
-  test-links:
+  audit-image-links:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
+    concurrency:
+      group: galaxy-viewer-image-link-health
+      cancel-in-progress: false
+
     steps:
       - name: Check out beta
         uses: actions/checkout@v4
         with:
           ref: beta
+          fetch-depth: 0
 
-      - name: Set up Node
+      - name: Set up Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Playwright
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
-
-      - name: Run all Hubble and JWST source-link tests
-        env:
-          RUNS: ${{ inputs.runs }}
-          CONCURRENCY: ${{ inputs.concurrency }}
-          NAV_TIMEOUT_MS: '45000'
-          SETTLE_TIMEOUT_MS: '10000'
+      - name: Run resilient actual-image URL audit
+        id: audit
+        continue-on-error: true
         run: node test/esa-link-health-check.mjs
 
-      - name: Commit official latest report
+      - name: Verify report files exist
+        if: always()
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add test/ESA-LINK-HEALTH-LATEST.md test/ESA-LINK-HEALTH-LATEST.csv test/ESA-LINK-HEALTH-LATEST.html
-          if git diff --cached --quiet; then
-            echo 'No report changes to commit.'
-          else
-            git commit -m 'Update ESA archive link health report'
-            git push origin HEAD:beta
-          fi
+          set -u
+          missing=0
+          for f in \
+            test/ESA-LINK-HEALTH-LATEST.md \
+            test/ESA-LINK-HEALTH-LATEST.csv \
+            test/ESA-LINK-HEALTH-LATEST.html \
+            test/ESA-LINK-HEALTH-LATEST.json; do
+            if [ ! -s "$f" ]; then
+              echo "MISSING OR EMPTY: $f"
+              missing=1
+            else
+              echo "OK: $f ($(wc -c < "$f") bytes)"
+            fi
+          done
+          exit "$missing"
 
-      - name: Upload report artifact
+      - name: Upload report artifact even after audit errors
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ESA-link-health-report
+          name: galaxy-viewer-image-link-health-report
+          if-no-files-found: warn
+          retention-days: 30
           path: |
             test/ESA-LINK-HEALTH-LATEST.md
             test/ESA-LINK-HEALTH-LATEST.csv
             test/ESA-LINK-HEALTH-LATEST.html
+            test/ESA-LINK-HEALTH-LATEST.json
+
+      - name: Commit official latest report with push retry
+        if: always()
+        shell: bash
+        run: |
+          set -u
+          files=(
+            test/ESA-LINK-HEALTH-LATEST.md
+            test/ESA-LINK-HEALTH-LATEST.csv
+            test/ESA-LINK-HEALTH-LATEST.html
+            test/ESA-LINK-HEALTH-LATEST.json
+          )
+          present=()
+          for f in "${files[@]}"; do [ -s "$f" ] && present+=("$f"); done
+          if [ ${#present[@]} -eq 0 ]; then
+            echo 'No report files exist to commit.'
+            exit 1
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "${present[@]}"
+          if git diff --cached --quiet; then
+            echo 'Report is unchanged; nothing to commit.'
+            exit 0
+          fi
+          git commit -m 'Update Hubble JWST Chandra image link health report'
+
+          for attempt in 1 2 3; do
+            echo "Push attempt $attempt/3"
+            if git push origin HEAD:beta; then exit 0; fi
+            git fetch origin beta
+            if ! git rebase origin/beta; then
+              git rebase --abort || true
+              echo 'Rebase failed; preserving artifact even though report commit failed.'
+              exit 1
+            fi
+            sleep $((attempt * 2))
+          done
+          echo 'Report artifact exists, but all push attempts failed.'
+          exit 1
+
+      - name: Final audit status
+        if: always()
+        run: |
+          echo "Audit step outcome: ${{ steps.audit.outcome }}"
+          if [ "${{ steps.audit.outcome }}" != "success" ]; then
+            echo 'The audit reported a fatal condition, but report-generation and artifact steps were still attempted.'
+            exit 1
+          fi
