@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer 11D</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dfffea}</style>
+</head>
+<body>
+<script>
+(async()=>{
+    'use strict';
+    const VERSION='11D';
+    const recoveryParam='gvRecovery';
+    const recoveryAttempt=Number(new URLSearchParams(location.search).get(recoveryParam)||0);
+    const viewerUrl='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-0011D.py?t='+Date.now();
+    const response=await fetch(viewerUrl,{cache:'no-store'});if(!response.ok)throw new Error('VIEWER HTTP '+response.status);
+    const source=await response.text();
+    const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+    const jsMatches=[...source.matchAll(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/g)];
+    if(!htmlMatch||!jsMatches.length)throw new Error('11D VIEWER EXTRACTION FAILED');
+    const scripts=jsMatches.map(match=>'<script>'+match[1].replace(/<\/script/gi,'<\\/script')+'</scr'+'ipt>').join('');
+    const diag='<script src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-prefetch-diagnostics-0004.js?t='+Date.now()+'"></scr'+'ipt>';
+    const watchdog=`<script>(()=>{
+        'use strict';
+        const VERSION='11D',PARAM='${recoveryParam}',attempt=${recoveryAttempt};
+        window.__gv11dRecoveryEvents=window.__gv11dRecoveryEvents||[];
+        let ready=false,recovering=false,startupTimer=0;
+        const record=(type,detail={})=>{const entry={at:new Date().toISOString(),type,...detail};window.__gv11dRecoveryEvents.push(entry);document.dispatchEvent(new CustomEvent('gv-launcher-recovery',{detail:entry}));return entry};
+        const stripRecoveryParam=()=>{try{const url=new URL(location.href);if(url.searchParams.has(PARAM)){url.searchParams.delete(PARAM);history.replaceState(null,'',url.pathname+(url.search?'?'+url.searchParams.toString():'')+url.hash)}}catch(_){}};
+        const showFailure=reason=>{clearTimeout(startupTimer);document.documentElement.style.background='#000';document.body.style.background='#000';document.body.innerHTML='<div id="gv-11d-launch-failure" style="box-sizing:border-box;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#dfffea;font:14px/1.5 monospace;text-align:center">GALAXY VIEWER 11D FAILED TO INITIALIZE.<br>PLEASE REFRESH THE PAGE.<br><br>'+String(reason||'UNKNOWN FAILURE').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</div>';record('recovery-failed',{reason:String(reason||'')})};
+        const recover=reason=>{if(recovering)return;recovering=true;record('stale-runtime-detected',{reason});if(attempt>=1){showFailure(reason);return}record('recovery-start',{reason});try{const url=new URL(location.href);url.searchParams.set(PARAM,'1');url.searchParams.set('t',String(Date.now()));location.replace(url.href)}catch(error){showFailure(String(error?.message||error))}};
+        const healthy=()=>Boolean(document.getElementById('aladin-cosmic-command-test')&&window.GV10E&&String(window.GV10E.version)===VERSION);
+        document.addEventListener('gv-viewer-ready',event=>{if(String(event?.detail?.version||'')!==VERSION)return;ready=true;clearTimeout(startupTimer);record(attempt?'recovery-success':'startup-ready');stripRecoveryParam()});
+        document.addEventListener('gv-viewer-failed',event=>recover('VIEWER FAILURE: '+String(event?.detail?.message||'UNKNOWN')));
+        startupTimer=setTimeout(()=>{if(!ready&&!healthy()){record('startup-timeout');recover('STARTUP TIMEOUT')}},30000);
+        window.addEventListener('pageshow',()=>{if(ready&&!healthy())recover('PAGESHOW RUNTIME MISSING')});
+        document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ready&&!healthy())recover('VISIBLE RUNTIME MISSING')});
+    })();<\/script>`;
+    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dfffea}</style></head><body>'+htmlMatch[1]+watchdog+scripts+diag+'</body></html>';
+    document.open();document.write(page);document.close();
+})().catch(error=>{
+    console.error('GALAXY VIEWER 11D HANDOFF FAILURE',error);
+    document.documentElement.style.background='#000';document.body.style.background='#000';document.body.innerHTML='<div style="box-sizing:border-box;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#dfffea;font:14px/1.5 monospace;text-align:center">GALAXY VIEWER 11D FAILED TO INITIALIZE.<br>PLEASE REFRESH THE PAGE.</div>';
+});
+</script>
+</body>
+</html>
