@@ -17,7 +17,8 @@
     const jsMatches=[...source.matchAll(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/g)];
     if(!htmlMatch||!jsMatches.length)throw new Error('11C VIEWER EXTRACTION FAILED');
     const scripts=jsMatches.map(match=>'<script>'+match[1].replace(/<\/script/gi,'<\\/script')+'</scr'+'ipt>').join('');
-    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"></head><body>'+htmlMatch[1]+scripts+'</body></html>';
+    const diag='<script src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-prefetch-diagnostics-0003.js?t='+Date.now()+'"></scr'+'ipt>';
+    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"></head><body>'+htmlMatch[1]+scripts+diag+'</body></html>';
     document.open();document.write(page);document.close();
 })().catch(error=>console.error('GALAXY VIEWER 11C HANDOFF FAILURE',error));
 </script>
