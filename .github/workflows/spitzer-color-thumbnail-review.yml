@@ -15,7 +15,123 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  gallery-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check --quiet requests beautifulsoup4
+      - name: Index official Spitzer gallery
+        run: |
+          python3 <<'PY'
+          import json, pathlib, re, time
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from urllib.parse import urljoin
+          import requests
+          from bs4 import BeautifulSoup
+          from requests.adapters import HTTPAdapter
+          from urllib3.util.retry import Retry
+
+          def norm(v):
+              s=re.sub(r'[^A-Z0-9]+','',str(v or '').upper())
+              m=re.match(r'^(NGC|IC|UGC|PGC|M)(0*)(\d+)([A-Z]?)$',s)
+              if m:return m.group(1)+str(int(m.group(3)))+m.group(4)
+              return s
+
+          pats=[r'\bNGC\s*0*\d+[A-Za-z]?\b',r'\bIC\s*0*\d+[A-Za-z]?\b',r'\bUGC\s*0*\d+\b',r'\bPGC\s*0*\d+\b',r'\bM\s*\d{1,3}\b',r'\bMessier\s+\d{1,3}\b',r'\bESO\s+[0-9A-Za-z-]+\b',r'\bArp\s*\d+\b',r'\bMrk\s*\d+\b']
+          def aliases(text):
+              out=set()
+              for p in pats:
+                  for m in re.findall(p,text or '',re.I):
+                      out.add(norm(re.sub(r'(?i)^Messier\s+','M',m)))
+              return sorted(x for x in out if x)
+
+          s=requests.Session()
+          retry=Retry(total=4,connect=4,read=4,backoff_factor=.8,status_forcelist=[429,500,502,503,504],allowed_methods=['GET','HEAD'])
+          s.mount('https://',HTTPAdapter(max_retries=retry,pool_connections=16,pool_maxsize=16))
+          s.headers['User-Agent']='GalaxyViewer-Spitzer-Color-Review/3.0'
+
+          pages=[];seen=set();empty=0
+          for page in range(1,301):
+              try:
+                  r=s.get(f'https://www.spitzer.caltech.edu/images?page={page}',timeout=25);r.raise_for_status()
+                  soup=BeautifulSoup(r.text,'html.parser')
+                  found=[]
+                  for a in soup.find_all('a',href=True):
+                      u=urljoin(r.url,a['href']).split('#')[0]
+                      if re.match(r'^https://www\.spitzer\.caltech\.edu/image/[^/?#]+$',u):found.append(u)
+                  new=[u for u in dict.fromkeys(found) if u not in seen]
+                  if not new:
+                      empty+=1
+                      if empty>=5:break
+                  else:
+                      empty=0
+                      for u in new:seen.add(u);pages.append(u)
+                  if page%10==0:print('listing',page,'detail_pages',len(pages),flush=True)
+              except Exception as ex:
+                  print('listing_error',page,type(ex).__name__,flush=True)
+                  empty+=1
+                  if empty>=5:break
+              time.sleep(.05)
+
+          def parse(url):
+              try:
+                  r=s.get(url,timeout=25);r.raise_for_status();soup=BeautifulSoup(r.text,'html.parser')
+                  title=(soup.find('h1') or soup.find('title'))
+                  title=' '.join(title.get_text(' ',strip=True).split()) if title else url.rsplit('/',1)[-1]
+                  text=' '.join(soup.get_text(' ',strip=True).split())
+                  aa=aliases(title+' '+text[:12000])
+                  if not aa:return None
+                  wavelengths=sorted(set(re.findall(r'\b(?:3\.6|4\.5|5\.8|8(?:\.0)?|24|70|160)\s*(?:micron|µm|um)',text,re.I)))
+                  jpgs=[]
+                  for a in soup.find_all('a',href=True):
+                      u=urljoin(r.url,a['href'])
+                      if not re.search(r'\.jpe?g(?:\?|$)',u,re.I):continue
+                      label=' '.join(a.get_text(' ',strip=True).split())
+                      sm=re.search(r'([0-9.]+)\s*(KB|MB)',label,re.I)
+                      kb=None
+                      if sm:kb=float(sm.group(1))*(1024 if sm.group(2).upper()=='MB' else 1)
+                      dm=re.search(r'(\d{2,5})\s*[x×]\s*(\d{2,5})',label,re.I)
+                      w=int(dm.group(1)) if dm else None;h=int(dm.group(2)) if dm else None
+                      priority=0 if kb and 30<=kb<=100 else 1 if kb and kb<200 else 2
+                      jpgs.append({'url':u,'label':label,'kb':kb,'width':w,'height':h,'priority':priority})
+                  if not jpgs:
+                      og=soup.select_one('meta[property="og:image"]')
+                      if og and og.get('content'):jpgs=[{'url':urljoin(r.url,og['content']),'label':'og:image','kb':None,'width':None,'height':None,'priority':3}]
+                  uniq={x['url']:x for x in jpgs};jpgs=sorted(uniq.values(),key=lambda x:(x['priority'],abs((x['kb'] or 65)-65)))[:8]
+                  return {'sourcePage':url,'title':title,'aliases':aa,'wavelengthMentions':wavelengths,'bandEvidenceCount':len(wavelengths),'images':jpgs}
+              except Exception:return None
+
+          records=[]
+          with ThreadPoolExecutor(max_workers=8) as ex:
+              futs=[ex.submit(parse,u) for u in pages]
+              for i,f in enumerate(as_completed(futs),1):
+                  x=f.result()
+                  if x:records.append(x)
+                  if i%100==0:print('parsed',i,'/',len(futs),'indexed',len(records),flush=True)
+
+          alias_index={}
+          for rec in records:
+              for a in rec['aliases']:alias_index.setdefault(a,[]).append(rec)
+          out={'version':'spitzer-gallery-index-0001','detailPagesDiscovered':len(pages),'indexedPages':len(records),'aliasCount':len(alias_index),'aliases':alias_index}
+          pathlib.Path('gallery-index').mkdir(exist_ok=True)
+          pathlib.Path('gallery-index/gallery-index.json').write_text(json.dumps(out,ensure_ascii=False)+'\n',encoding='utf-8')
+          print('GALLERY INDEX PASS',len(pages),len(records),len(alias_index),flush=True)
+          if not records or not alias_index:raise SystemExit('Official Spitzer gallery index is empty')
+          PY
+      - name: Upload gallery index
+        uses: actions/upload-artifact@v4
+        with:
+          name: spitzer-gallery-index
+          path: gallery-index/gallery-index.json
+          retention-days: 7
+
   shard:
+    needs: gallery-index
     runs-on: ubuntu-latest
     timeout-minutes: 180
     strategy:
@@ -28,6 +144,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: beta
+      - name: Download gallery index
+        uses: actions/download-artifact@v4
+        with:
+          name: spitzer-gallery-index
+          path: gallery-index
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check --quiet requests pillow
       - name: Build shard
@@ -36,32 +157,41 @@ jobs:
           CATALOG: viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0004.json
         run: |
           python3 <<'PY'
-          import io, json, os, pathlib, statistics, time
+          import io,json,os,pathlib,re,statistics,time
           from urllib.parse import quote
           import requests
           from PIL import Image
 
-          PAGE=300
-          shard=int(os.environ['SHARD'])
+          PAGE=300;shard=int(os.environ['SHARD'])
           entries=json.load(open(os.environ['CATALOG'],encoding='utf-8')).get('entries',[])
-          if len(entries)!=3239: raise SystemExit(f'Expected 3239 records, got {len(entries)}')
-          start=shard*PAGE
-          subset=entries[start:min(start+PAGE,len(entries))]
-          s=requests.Session()
-          s.headers['User-Agent']='GalaxyViewer-Spitzer-Review/2.0'
-          out=[]
+          if len(entries)!=3239:raise SystemExit(f'Expected 3239 records, got {len(entries)}')
+          gallery=json.load(open('gallery-index/gallery-index.json',encoding='utf-8'))['aliases']
+          start=shard*PAGE;subset=entries[start:min(start+PAGE,len(entries))]
+          s=requests.Session();s.headers['User-Agent']='GalaxyViewer-Spitzer-Review/3.0'
+
+          def norm(v):
+              x=re.sub(r'[^A-Z0-9]+','',str(v or '').upper())
+              m=re.match(r'^(NGC|IC|UGC|PGC|M)(0*)(\d+)([A-Z]?)$',x)
+              return m.group(1)+str(int(m.group(3)))+m.group(4) if m else x
+          pats=[r'\bNGC\s*0*\d+[A-Za-z]?\b',r'\bIC\s*0*\d+[A-Za-z]?\b',r'\bUGC\s*0*\d+\b',r'\bPGC\s*0*\d+\b',r'\bM\s*\d{1,3}\b',r'\bMessier\s+\d{1,3}\b',r'\bESO\s+[0-9A-Za-z-]+\b']
+          def aliases(e):
+              out=set()
+              for k in ('name','displayName','designation','title'):
+                  v=e.get(k)
+                  if not v:continue
+                  out.add(norm(v))
+                  for p in pats:
+                      for m in re.findall(p,v,re.I):out.add(norm(re.sub(r'(?i)^Messier\s+','M',m)))
+              return [x for x in out if x]
 
           def analyze(url):
               try:
-                  r=s.get(url,timeout=15); r.raise_for_status()
-                  if len(r.content)>750000:return None
-                  im=Image.open(io.BytesIO(r.content)).convert('RGB')
-                  original=im.size; im.thumbnail((160,160)); px=list(im.getdata())
+                  r=s.get(url,timeout=15);r.raise_for_status()
+                  if len(r.content)>1000000:return None
+                  im=Image.open(io.BytesIO(r.content)).convert('RGB');original=im.size;im.thumbnail((160,160));px=list(im.getdata())
                   if not px:return None
-                  spread=[max(p)-min(p) for p in px]; lum=[sum(p)/3 for p in px]
-                  cf=sum(v>=18 for v in spread)/len(px); sat=sum(spread)/(255*len(px))
-                  fill=sum(v>=18 for v in lum)/len(px); bright=sum(lum)/(255*len(px))
-                  contrast=min(1.0,statistics.pstdev(lum)/65)
+                  spread=[max(p)-min(p) for p in px];lum=[sum(p)/3 for p in px]
+                  cf=sum(v>=18 for v in spread)/len(px);sat=sum(spread)/(255*len(px));fill=sum(v>=18 for v in lum)/len(px);bright=sum(lum)/(255*len(px));contrast=min(1.0,statistics.pstdev(lum)/65)
                   score=round(100*(.36*min(1,cf/.45)+.22*min(1,sat/.20)+.22*min(1,fill/.55)+.20*contrast),1)
                   flags=[]
                   if cf<.10:flags.append('LOW_COLOR')
@@ -72,37 +202,49 @@ jobs:
                   return {'score':score,'status':status,'flags':flags,'previewBytes':len(r.content),'width':original[0],'height':original[1]}
               except Exception:return None
 
-          def one(e,idx):
-              name=e.get('displayName') or e.get('name') or e['archiveId']
+          def gallery_candidates(e):
+              pages={}
+              for a in aliases(e):
+                  for rec in gallery.get(a,[]):pages[rec['sourcePage']]=rec
+              out=[]
+              for rec in pages.values():
+                  multi=rec.get('bandEvidenceCount',0)
+                  for img in rec.get('images',[])[:5]:
+                      q=analyze(img['url'])
+                      if not q:continue
+                      out.append({'source':'SPITZER_GALLERY','sourcePage':rec['sourcePage'],'previewUrl':img['url'],'originalUrl':img['url'],'title':rec['title'],'bandEvidenceCount':multi,'wavelengthMentions':rec.get('wavelengthMentions',[]),'declaredKB':img.get('kb'),'quality':q})
+              out.sort(key=lambda c:(c['quality']['status']!='AUTO_GOOD',-(1 if c.get('bandEvidenceCount',0)>=3 else 0),-c['quality']['score'],abs((c.get('declaredKB') or 65)-65)))
+              return out[:4]
+
+          def nasa_candidates(e):
+              name=e.get('displayName') or e.get('name') or e['archiveId'];out=[]
               try:
-                  r=s.get('https://images-api.nasa.gov/search',params={'q':f'{name} Spitzer galaxy','media_type':'image','page_size':12},timeout=18)
-                  r.raise_for_status(); items=r.json().get('collection',{}).get('items',[])
-              except Exception as ex:
-                  return {'index':idx,'archiveId':e['archiveId'],'name':name,'status':'LOOKUP_ERROR','flags':[type(ex).__name__],'candidates':[]}
-              cand=[]
+                  r=s.get('https://images-api.nasa.gov/search',params={'q':f'{name} Spitzer galaxy','media_type':'image','page_size':12},timeout=18);r.raise_for_status();items=r.json().get('collection',{}).get('items',[])
+              except Exception:return []
+              target=norm(name)
               for item in items:
-                  d=(item.get('data') or [{}])[0]
-                  blob=' '.join(map(str,[d.get('title',''),d.get('description',''),d.get('keywords','')])).lower()
-                  if 'spitzer' not in blob: continue
-                  links=item.get('links') or []
-                  img=next((x.get('href') for x in links if x.get('href') and x.get('render')=='image'),None) or next((x.get('href') for x in links if x.get('href')),None)
+                  d=(item.get('data') or [{}])[0];text=' '.join(map(str,[d.get('title',''),d.get('description',''),d.get('keywords','')]))
+                  if target and target not in norm(text):continue
+                  links=item.get('links') or [];img=next((x.get('href') for x in links if x.get('href') and x.get('render')=='image'),None) or next((x.get('href') for x in links if x.get('href')),None)
                   if not img:continue
                   q=analyze(img)
                   if not q:continue
                   nid=d.get('nasa_id') or ''
-                  cand.append({'source':'NASA_IMAGES','sourcePage':f'https://images.nasa.gov/details/{quote(nid)}' if nid else 'https://images.nasa.gov/','previewUrl':img,'originalUrl':img,'title':d.get('title') or name,'quality':q})
-                  if len(cand)>=4:break
-              cand.sort(key=lambda c:(c['quality']['status']!='AUTO_GOOD',-c['quality']['score'],c['quality']['previewBytes']))
-              best=cand[0] if cand else None
-              return {'index':idx,'archiveId':e['archiveId'],'name':name,'ra':e.get('ra'),'dec':e.get('dec'),'distance':e.get('distance'),'status':best['quality']['status'] if best else 'NO_COLOR_CANDIDATE','flags':best['quality']['flags'] if best else ['NO_OFFICIAL_COLOR_IMAGE_FOUND'],'candidateCount':len(cand),'candidates':cand}
+                  out.append({'source':'NASA_FALLBACK','sourcePage':f'https://images.nasa.gov/details/{quote(nid)}' if nid else 'https://images.nasa.gov/','previewUrl':img,'originalUrl':img,'title':d.get('title') or name,'bandEvidenceCount':0,'wavelengthMentions':[],'declaredKB':None,'quality':q})
+                  if len(out)>=4:break
+              out.sort(key=lambda c:(c['quality']['status']!='AUTO_GOOD',-c['quality']['score'],c['quality']['previewBytes']))
+              return out
 
+          records=[]
           for i,e in enumerate(subset,1):
-              out.append(one(e,start+i))
-              if i%25==0 or i==len(subset): print(f'shard={shard} completed={i}/{len(subset)}',flush=True)
-              time.sleep(.08)
-          p=pathlib.Path('shard-output');p.mkdir(exist_ok=True)
-          (p/f'shard-{shard:02d}.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-          print(f'SHARD PASS {shard}: {len(out)} records')
+              cand=gallery_candidates(e)
+              if not cand:cand=nasa_candidates(e)
+              best=cand[0] if cand else None
+              records.append({'index':start+i,'archiveId':e['archiveId'],'name':e.get('displayName') or e.get('name'),'ra':e.get('ra'),'dec':e.get('dec'),'distance':e.get('distance'),'status':best['quality']['status'] if best else 'NO_COLOR_CANDIDATE','flags':best['quality']['flags'] if best else ['NO_OFFICIAL_COLOR_IMAGE_FOUND'],'candidateCount':len(cand),'candidates':cand})
+              if i%25==0 or i==len(subset):print(f'shard={shard} completed={i}/{len(subset)}',flush=True)
+              time.sleep(.04)
+          p=pathlib.Path('shard-output');p.mkdir(exist_ok=True);(p/f'shard-{shard:02d}.json').write_text(json.dumps(records,ensure_ascii=False)+'\n',encoding='utf-8')
+          print('SHARD PASS',shard,len(records),flush=True)
           PY
       - name: Upload shard
         uses: actions/upload-artifact@v4
@@ -130,27 +272,26 @@ jobs:
       - name: Build and validate review site
         run: |
           python3 <<'PY'
-          import json, pathlib
+          import json,pathlib
           from collections import Counter
-          from datetime import datetime, timezone
+          from datetime import datetime,timezone
           files=sorted(pathlib.Path('shards').glob('shard-*.json'))
           if len(files)!=11:raise SystemExit(f'Expected 11 shards, got {len(files)}')
           records=[]
-          for f in files: records+=json.loads(f.read_text(encoding='utf-8'))
+          for f in files:records+=json.loads(f.read_text(encoding='utf-8'))
           records.sort(key=lambda r:r['index'])
           if len(records)!=3239:raise SystemExit(f'Expected 3239 records, got {len(records)}')
           if [r['index'] for r in records]!=list(range(1,3240)):raise SystemExit('Index coverage failure')
-          counts=Counter(r['status'] for r in records)
-          out=pathlib.Path('viewer/image-databases/Spitzer/review-site');out.mkdir(parents=True,exist_ok=True)
-          now=datetime.now(timezone.utc).isoformat()
-          manifest={'version':'spitzer-color-review-0002','generatedAt':now,'catalogRecords':3239,'pageSize':300,'pageCount':11,'records':records}
-          report={'generatedAt':now,'catalogRecords':3239,'pageSize':300,'pageCount':11,'statusCounts':dict(counts),'source':'NASA Image and Video Library constrained to Spitzer','policy':{'autoGood':'score>=68 with color/frame-fill/brightness gates','fitsRendering':False}}
-          (out/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-          (out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-          html='''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Spitzer Color Review</title><style>body{margin:0;background:#070910;color:#eef2f8;font:14px system-ui}header{position:sticky;top:0;z-index:9;background:#0b0e16ee;padding:10px;border-bottom:1px solid #293244}.bar{max-width:1600px;margin:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}button,input,select{background:#171c28;color:#eef2f8;border:1px solid #354057;border-radius:7px;padding:8px}.nav button.active{background:#28518d}.stats{margin-left:auto;color:#aab4c3}main{max-width:1600px;margin:auto;padding:10px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}.card{background:#111621;border:1px solid #293244;border-radius:10px;overflow:hidden}.img{height:205px;background:#020307;display:flex;align-items:center;justify-content:center;position:relative}.img img{width:100%;height:100%;object-fit:contain}.badge{position:absolute;top:5px;left:5px;background:#000c;padding:4px;border-radius:5px;font-size:11px}.body{padding:8px}.name{font-weight:700}.meta{font-size:11px;color:#aab4c3;margin:3px 0 6px}.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}.keep.active{background:#174d32}.another.active{background:#624b16}.reject.active{background:#5c2025}.links{display:flex;gap:4px;margin-top:5px}.links a{flex:1;text-align:center;color:#bcd7ff;background:#171c28;padding:6px;border-radius:6px;text-decoration:none;font-size:11px}.noimg{color:#9aa5b5;text-align:center;padding:18px}</style></head><body><header><div class="bar"><b>Spitzer Color Review</b><input id="q" placeholder="Search"><select id="filter"><option value="all">All</option><option>AUTO_GOOD</option><option>REVIEW</option><option>NO_COLOR_CANDIDATE</option><option>LOOKUP_ERROR</option><option value="unreviewed">Unreviewed by me</option></select><button onclick="exportSel()">Export selections</button><span class="stats" id="stats"></span></div><div class="bar nav" id="nav"></div></header><main><div class="grid" id="grid"></div></main><script>let M=null,page=0;const K="gv-spitzer-color-review-selections";let S=JSON.parse(localStorage.getItem(K)||"{}");const save=()=>localStorage.setItem(K,JSON.stringify(S));function choose(id,v){S[id]=v;save();render()}function filtered(){let q=document.getElementById("q").value.toLowerCase(),f=document.getElementById("filter").value;return M.records.filter(r=>(!q||(r.name+" "+r.archiveId).toLowerCase().includes(q))&&(f==="all"||(f==="unreviewed"?!S[r.archiveId]:r.status===f)))}function render(){let d=filtered(),ps=300,pc=Math.max(1,Math.ceil(d.length/ps));if(page>=pc)page=pc-1;let nav=document.getElementById("nav");nav.innerHTML="";for(let i=0;i<pc;i++){let b=document.createElement("button");b.textContent=(i*ps+1)+"-"+Math.min((i+1)*ps,d.length);b.className=i===page?"active":"";b.onclick=()=>{page=i;render();scrollTo(0,0)};nav.appendChild(b)}let g=document.getElementById("grid");g.innerHTML="";d.slice(page*ps,page*ps+ps).forEach(r=>{let c=r.candidates[0],dec=S[r.archiveId]||"",el=document.createElement("div");el.className="card";let im=c?"<img loading=\"lazy\" src=\""+c.previewUrl+"\">":"<div class=\"noimg\">NO OFFICIAL COLOR CANDIDATE</div>";el.innerHTML="<div class=\"img\">"+im+"<span class=\"badge\">"+r.status+(c?" - "+c.quality.score:"")+"</span></div><div class=\"body\"><div class=\"name\">"+r.name+"</div><div class=\"meta\">"+r.archiveId+"<br>"+(r.flags||[]).join(", ")+(c?"<br>"+c.source+" - "+Math.round(c.quality.previewBytes/1024)+" KB":"")+"</div><div class=\"actions\"><button onclick=\"choose('"+r.archiveId+"','keep')\">KEEP</button><button onclick=\"choose('"+r.archiveId+"','another')\">FIND ANOTHER</button><button onclick=\"choose('"+r.archiveId+"','reject')\">REJECT</button></div>"+(c?"<div class=\"links\"><a target=\"_blank\" href=\""+c.previewUrl+"\">Open preview</a><a target=\"_blank\" href=\""+c.sourcePage+"\">Source / detail</a></div>":"")+"</div>";g.appendChild(el)});document.getElementById("stats").textContent="Page "+(page+1)+"/"+pc+" - "+d.length+" records"}function exportSel(){let b=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),selections:S},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="spitzer-color-review-selections.json";a.click()}document.getElementById("q").oninput=()=>{page=0;render()};document.getElementById("filter").onchange=()=>{page=0;render()};fetch("manifest.json?"+Date.now()).then(r=>r.json()).then(x=>{M=x;render()});</script></body></html>'''
-          (out/'index.html').write_text(html,encoding='utf-8')
-          if (out/'index.html').stat().st_size<3000:raise SystemExit('HTML unexpectedly small')
-          print('VALIDATION PASS',dict(counts))
+          counts=Counter(r['status'] for r in records);sources=Counter((r['candidates'][0]['source'] if r.get('candidates') else 'NONE') for r in records)
+          matched=sum(1 for r in records if r.get('candidates'))
+          if matched==0:raise SystemExit('SANITY GATE FAIL: zero color candidates across 3239 records')
+          if matched<5:raise SystemExit(f'SANITY GATE FAIL: implausibly low match count {matched}/3239')
+          out=pathlib.Path('viewer/image-databases/Spitzer/review-site');out.mkdir(parents=True,exist_ok=True);now=datetime.now(timezone.utc).isoformat()
+          manifest={'version':'spitzer-color-review-0003','generatedAt':now,'catalogRecords':3239,'pageSize':300,'pageCount':11,'records':records}
+          report={'generatedAt':now,'catalogRecords':3239,'pageSize':300,'pageCount':11,'matchedRecords':matched,'statusCounts':dict(counts),'bestSourceCounts':dict(sources),'sources':['Official Spitzer Gallery','NASA Image and Video Library fallback'],'policy':{'preferredPreviewKB':'30-100','autoGood':'score>=68 with color/frame-fill/brightness gates','prefer3PlusBandEvidence':True,'fitsRendering':False}}
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n',encoding='utf-8');(out/'report.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          html='''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Spitzer Color Review</title><style>body{margin:0;background:#070910;color:#eef2f8;font:14px system-ui}header{position:sticky;top:0;z-index:9;background:#0b0e16ee;padding:10px;border-bottom:1px solid #293244}.bar{max-width:1600px;margin:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}button,input,select{background:#171c28;color:#eef2f8;border:1px solid #354057;border-radius:7px;padding:8px}.nav button.active{background:#28518d}.stats{margin-left:auto;color:#aab4c3}main{max-width:1600px;margin:auto;padding:10px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}.card{background:#111621;border:1px solid #293244;border-radius:10px;overflow:hidden}.img{height:205px;background:#020307;display:flex;align-items:center;justify-content:center;position:relative}.img img{width:100%;height:100%;object-fit:contain}.badge{position:absolute;top:5px;left:5px;background:#000c;padding:4px;border-radius:5px;font-size:11px}.body{padding:8px}.name{font-weight:700}.meta{font-size:11px;color:#aab4c3;margin:3px 0 6px}.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}.links{display:flex;gap:4px;margin-top:5px}.links a{flex:1;text-align:center;color:#bcd7ff;background:#171c28;padding:6px;border-radius:6px;text-decoration:none;font-size:11px}.noimg{color:#9aa5b5;text-align:center;padding:18px}</style></head><body><header><div class="bar"><b>Spitzer Color Review</b><input id="q" placeholder="Search"><select id="filter"><option value="all">All</option><option>AUTO_GOOD</option><option>REVIEW</option><option>NO_COLOR_CANDIDATE</option><option value="unreviewed">Unreviewed by me</option></select><button onclick="exportSel()">Export selections</button><span class="stats" id="stats"></span></div><div class="bar nav" id="nav"></div></header><main><div class="grid" id="grid"></div></main><script>let M=null,page=0;const K="gv-spitzer-color-review-selections";let S=JSON.parse(localStorage.getItem(K)||"{}");const save=()=>localStorage.setItem(K,JSON.stringify(S));function choose(id,v){S[id]=v;save();render()}function filtered(){let q=document.getElementById("q").value.toLowerCase(),f=document.getElementById("filter").value;return M.records.filter(r=>(!q||(r.name+" "+r.archiveId).toLowerCase().includes(q))&&(f==="all"||(f==="unreviewed"?!S[r.archiveId]:r.status===f)))}function render(){let d=filtered(),ps=300,pc=Math.max(1,Math.ceil(d.length/ps));if(page>=pc)page=pc-1;let nav=document.getElementById("nav");nav.innerHTML="";for(let i=0;i<pc;i++){let b=document.createElement("button");b.textContent=(i*ps+1)+"-"+Math.min((i+1)*ps,d.length);b.className=i===page?"active":"";b.onclick=()=>{page=i;render();scrollTo(0,0)};nav.appendChild(b)}let g=document.getElementById("grid");g.innerHTML="";d.slice(page*ps,page*ps+ps).forEach(r=>{let c=r.candidates[0],el=document.createElement("div");el.className="card";let im=c?"<img loading=\"lazy\" src=\""+c.previewUrl+"\">":"<div class=\"noimg\">NO OFFICIAL COLOR CANDIDATE</div>";el.innerHTML="<div class=\"img\">"+im+"<span class=\"badge\">"+r.status+(c?" - "+c.quality.score:"")+"</span></div><div class=\"body\"><div class=\"name\">"+r.name+"</div><div class=\"meta\">"+r.archiveId+(c?"<br>"+c.source+" - "+Math.round(c.quality.previewBytes/1024)+" KB":"")+"</div><div class=\"actions\"><button onclick=\"choose('"+r.archiveId+"','keep')\">KEEP</button><button onclick=\"choose('"+r.archiveId+"','another')\">FIND ANOTHER</button><button onclick=\"choose('"+r.archiveId+"','reject')\">REJECT</button></div>"+(c?"<div class=\"links\"><a target=\"_blank\" href=\""+c.previewUrl+"\">Open preview</a><a target=\"_blank\" href=\""+c.sourcePage+"\">Source / detail</a></div>":"")+"</div>";g.appendChild(el)});document.getElementById("stats").textContent="Page "+(page+1)+"/"+pc+" - "+d.length+" records"}function exportSel(){let b=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),selections:S},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="spitzer-color-review-selections.json";a.click()}document.getElementById("q").oninput=()=>{page=0;render()};document.getElementById("filter").onchange=()=>{page=0;render()};fetch("manifest.json?"+Date.now()).then(r=>r.json()).then(x=>{M=x;render()});</script></body></html>'''
+          (out/'index.html').write_text(html,encoding='utf-8');print('VALIDATION PASS',dict(counts),dict(sources),'matched',matched,flush=True)
           PY
       - name: Commit review site
         run: |
@@ -161,9 +302,9 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Build Spitzer color review site
 
-          ECO-ID: ECO-20260821-SPITZER-COLOR-REVIEW-WORKFLOW-001
+          ECO-ID: ECO-20260821-SPITZER-COLOR-MATCHER-002
           AUTHORIZED-PATHS: viewer/image-databases/Spitzer/review-site/index.html,viewer/image-databases/Spitzer/review-site/manifest.json,viewer/image-databases/Spitzer/review-site/report.json
-          REQUIREMENTS: REQ-001-REQ-010
+          REQUIREMENTS: REQ-001-REQ-012
           ARCHIVE-AUTHORIZED: false
           USER-GO: true"
           git push origin HEAD:beta
