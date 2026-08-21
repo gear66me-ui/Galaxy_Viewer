@@ -1,6 +1,6 @@
 {
-  "version": "spitzer-color-review-0002",
-  "generatedAt": "2026-08-21T07:10:29.229505+00:00",
+  "version": "spitzer-color-review-0003",
+  "generatedAt": "2026-08-21T16:39:41.015333+00:00",
   "catalogRecords": 3239,
   "pageSize": 300,
   "pageCount": 11,
@@ -82,12 +82,119 @@
       "ra": 160.990618,
       "dec": 11.703659,
       "distance": "32.420 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-015-ngc-3351-m95",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/larger/sig05-015.jpg?1603803830",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/larger/sig05-015.jpg?1603803830",
+          "title": "NGC 3351 (M95)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 228.0,
+          "quality": {
+            "score": 57.3,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 233718,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-015-ngc-3351-m95",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/largest/sig05-015.jpg?1603803830",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/largest/sig05-015.jpg?1603803830",
+          "title": "NGC 3351 (M95)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 311.0,
+          "quality": {
+            "score": 57.3,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 318926,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-015-ngc-3351-m95",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/jpg_original/sig05-015.jpg?1603803830",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/jpg_original/sig05-015.jpg?1603803830",
+          "title": "NGC 3351 (M95)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 160.0,
+          "quality": {
+            "score": 56.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 163817,
+            "width": 730,
+            "height": 730
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-015-ngc-3351-m95",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/large/sig05-015.jpg?1603803830",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2365/large/sig05-015.jpg?1603803830",
+          "title": "NGC 3351 (M95)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 89.4,
+          "quality": {
+            "score": 56.5,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 91554,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 7,
@@ -782,12 +889,95 @@
       "ra": 182.50716,
       "dec": 39.882832,
       "distance": "51.076 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-15a1-cygnus-star-forming-region-dr22",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/large/ssc2009-15a1.jpg?1603796230",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/large/ssc2009-15a1.jpg?1603796230",
+          "title": "Cygnus Star Forming Region DR22",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm"
+          ],
+          "declaredKB": 111.0,
+          "quality": {
+            "score": 79.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 114009,
+            "width": 500,
+            "height": 442
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-15a1-cygnus-star-forming-region-dr22",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/larger/ssc2009-15a1.jpg?1603796230",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/larger/ssc2009-15a1.jpg?1603796230",
+          "title": "Cygnus Star Forming Region DR22",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm"
+          ],
+          "declaredKB": 269.0,
+          "quality": {
+            "score": 79.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 275943,
+            "width": 1024,
+            "height": 905
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-15a1-cygnus-star-forming-region-dr22",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/largest/ssc2009-15a1.jpg?1603796230",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/largest/ssc2009-15a1.jpg?1603796230",
+          "title": "Cygnus Star Forming Region DR22",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm"
+          ],
+          "declaredKB": 363.0,
+          "quality": {
+            "score": 79.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 371538,
+            "width": 1280,
+            "height": 1131
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-15a1-cygnus-star-forming-region-dr22",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/jpg_original/ssc2009-15a1.jpg?1603796230",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2702/jpg_original/ssc2009-15a1.jpg?1603796230",
+          "title": "Cygnus Star Forming Region DR22",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm"
+          ],
+          "declaredKB": 450.0,
+          "quality": {
+            "score": 79.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 461078,
+            "width": 1493,
+            "height": 1319
+          }
+        }
+      ]
     },
     {
       "index": 57,
@@ -3848,12 +4038,119 @@
       "ra": 170.062528,
       "dec": 12.991503,
       "distance": "31.376 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/largest/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/largest/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 224.0,
+          "quality": {
+            "score": 51.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 229243,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/jpg_original/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/jpg_original/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 126.0,
+          "quality": {
+            "score": 51.1,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 129068,
+            "width": 812,
+            "height": 812
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/larger/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/larger/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 163.0,
+          "quality": {
+            "score": 51.1,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 166991,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/large/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/large/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 64.4,
+          "quality": {
+            "score": 50.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 65982,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 276,
@@ -3862,12 +4159,119 @@
       "ra": 170.070643,
       "dec": 13.588986,
       "distance": "31.996 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/largest/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/largest/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 224.0,
+          "quality": {
+            "score": 51.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 229243,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/jpg_original/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/jpg_original/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 126.0,
+          "quality": {
+            "score": 51.1,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 129068,
+            "width": 812,
+            "height": 812
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/larger/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/larger/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 163.0,
+          "quality": {
+            "score": 51.1,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 166991,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-016-ngc-3627-m66",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/large/sig05-016.jpg?1603792048",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/large/sig05-016.jpg?1603792048",
+          "title": "NGC 3627 (M66)",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 64.4,
+          "quality": {
+            "score": 50.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 65982,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 277,
@@ -4198,12 +4602,83 @@
       "ra": 186.453601,
       "dec": 33.546863,
       "distance": "13.894 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-01a-slender-galaxy-with-robust-black-hole",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/large/ssc2008-01a.jpg?1603796370",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/large/ssc2008-01a.jpg?1603796370",
+          "title": "Slender Galaxy with Robust Black Hole",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 62.9,
+          "quality": {
+            "score": 79.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 64373,
+            "width": 500,
+            "height": 400
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-01a-slender-galaxy-with-robust-black-hole",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/medium/ssc2008-01a.jpg?1603796370",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/medium/ssc2008-01a.jpg?1603796370",
+          "title": "Slender Galaxy with Robust Black Hole",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 46.6,
+          "quality": {
+            "score": 79.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 47712,
+            "width": 320,
+            "height": 256
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-01a-slender-galaxy-with-robust-black-hole",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/larger/ssc2008-01a.jpg?1603796370",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/larger/ssc2008-01a.jpg?1603796370",
+          "title": "Slender Galaxy with Robust Black Hole",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 123.0,
+          "quality": {
+            "score": 79.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 126040,
+            "width": 1024,
+            "height": 819
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-01a-slender-galaxy-with-robust-black-hole",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/largest/ssc2008-01a.jpg?1603796370",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1883/largest/ssc2008-01a.jpg?1603796370",
+          "title": "Slender Galaxy with Robust Black Hole",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 156.0,
+          "quality": {
+            "score": 79.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 159764,
+            "width": 1280,
+            "height": 1024
+          }
+        }
+      ]
     },
     {
       "index": 301,
@@ -4352,12 +4827,103 @@
       "ra": 185.478896,
       "dec": 4.473746,
       "distance": "47.684 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-04-m61-a-starburst-spiral",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/jpg_original/ssc2023-04.jpg?1692853407",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/jpg_original/ssc2023-04.jpg?1692853407",
+          "title": "M61: A Starburst Spiral",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 497.0,
+          "quality": {
+            "score": 85.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 508699,
+            "width": 1570,
+            "height": 1570
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-04-m61-a-starburst-spiral",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/large/ssc2023-04.jpg?1692853407",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/large/ssc2023-04.jpg?1692853407",
+          "title": "M61: A Starburst Spiral",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 101.0,
+          "quality": {
+            "score": 85.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 103890,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-04-m61-a-starburst-spiral",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/larger/ssc2023-04.jpg?1692853407",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/larger/ssc2023-04.jpg?1692853407",
+          "title": "M61: A Starburst Spiral",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 278.0,
+          "quality": {
+            "score": 85.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 284860,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-04-m61-a-starburst-spiral",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/largest/ssc2023-04.jpg?1692853407",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/largest/ssc2023-04.jpg?1692853407",
+          "title": "M61: A Starburst Spiral",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 378.0,
+          "quality": {
+            "score": 85.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 386896,
+            "width": 1280,
+            "height": 1280
+          }
+        }
+      ]
     },
     {
       "index": 312,
@@ -4492,12 +5058,111 @@
       "ra": 185.728879,
       "dec": 15.8223,
       "distance": "52.576 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/largest/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/largest/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 412.0,
+          "quality": {
+            "score": 84.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 421574,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/large/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/large/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 111.0,
+          "quality": {
+            "score": 84.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 114068,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/larger/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/larger/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 301.0,
+          "quality": {
+            "score": 84.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 308190,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/medium/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/medium/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 63.8,
+          "quality": {
+            "score": 84.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 65323,
+            "width": 320,
+            "height": 320
+          }
+        }
+      ]
     },
     {
       "index": 322,
@@ -5612,12 +6277,97 @@
       "ra": 197.44875,
       "dec": -23.383944,
       "distance": "126.907 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2017-14a2-flicker-of-a-neutron-star-merger-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6426/medium/ssc2017-14a2.jpg?1603799027",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6426/medium/ssc2017-14a2.jpg?1603799027",
+          "title": "Flicker of A Neutron Star Merger in Infrared Light",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 62.8,
+          "quality": {
+            "score": 73.1,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 64288,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2017-14a2-flicker-of-a-neutron-star-merger-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6426/large/ssc2017-14a2.jpg?1603799027",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6426/large/ssc2017-14a2.jpg?1603799027",
+          "title": "Flicker of A Neutron Star Merger in Infrared Light",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 108.0,
+          "quality": {
+            "score": 72.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 110579,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2017-14a-spitzer-sees-flicker-of-neutron-star-collision",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6418/large/ssc2017-14a.jpg?1603796905",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6418/large/ssc2017-14a.jpg?1603796905",
+          "title": "Spitzer Sees Flicker of Neutron Star Collision",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 54.3,
+          "quality": {
+            "score": 49.1,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 55587,
+            "width": 500,
+            "height": 221
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2017-14a-spitzer-sees-flicker-of-neutron-star-collision",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6418/medium/ssc2017-14a.jpg?1603796905",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6418/medium/ssc2017-14a.jpg?1603796905",
+          "title": "Spitzer Sees Flicker of Neutron Star Collision",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 33.3,
+          "quality": {
+            "score": 48.6,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 34070,
+            "width": 320,
+            "height": 141
+          }
+        }
+      ]
     },
     {
       "index": 402,
@@ -5892,12 +6642,134 @@
       "ra": 228.972935,
       "dec": 56.328744,
       "distance": "46.542 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "LOW_COLOR",
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-002-splendid-splinter",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/huge/sig05-002.jpg?1603802938",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/huge/sig05-002.jpg?1603802938",
+          "title": "Splendid Splinter",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 202.0,
+          "quality": {
+            "score": 22.1,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR",
+              "TOO_DARK"
+            ],
+            "previewBytes": 206806,
+            "width": 1600,
+            "height": 1200
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-002-splendid-splinter",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/larger/sig05-002.jpg?1603802938",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/larger/sig05-002.jpg?1603802938",
+          "title": "Splendid Splinter",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 115.0,
+          "quality": {
+            "score": 22.0,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR",
+              "TOO_DARK"
+            ],
+            "previewBytes": 117647,
+            "width": 1024,
+            "height": 768
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-002-splendid-splinter",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/largest/sig05-002.jpg?1603802938",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/largest/sig05-002.jpg?1603802938",
+          "title": "Splendid Splinter",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 153.0,
+          "quality": {
+            "score": 22.0,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR",
+              "TOO_DARK"
+            ],
+            "previewBytes": 156714,
+            "width": 1280,
+            "height": 960
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-002-splendid-splinter",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/large/sig05-002.jpg?1603802938",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2328/large/sig05-002.jpg?1603802938",
+          "title": "Splendid Splinter",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 51.5,
+          "quality": {
+            "score": 21.9,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR",
+              "TOO_DARK"
+            ],
+            "previewBytes": 52718,
+            "width": 500,
+            "height": 375
+          }
+        }
+      ]
     },
     {
       "index": 422,
@@ -7642,12 +8514,107 @@
       "ra": 192.61073,
       "dec": 25.500699,
       "distance": "42.661 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-011-ngc-4725",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/largest/sig05-011.jpg?1603801577",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/largest/sig05-011.jpg?1603801577",
+          "title": "NGC 4725",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 404.0,
+          "quality": {
+            "score": 67.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 413926,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-011-ngc-4725",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/larger/sig05-011.jpg?1603801577",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/larger/sig05-011.jpg?1603801577",
+          "title": "NGC 4725",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 292.0,
+          "quality": {
+            "score": 67.0,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 298770,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-011-ngc-4725",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/jpg_original/sig05-011.jpg?1603801577",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/jpg_original/sig05-011.jpg?1603801577",
+          "title": "NGC 4725",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 306.0,
+          "quality": {
+            "score": 66.7,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 313685,
+            "width": 975,
+            "height": 975
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-011-ngc-4725",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/large/sig05-011.jpg?1603801577",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2355/large/sig05-011.jpg?1603801577",
+          "title": "NGC 4725",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 103.0,
+          "quality": {
+            "score": 66.5,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 105431,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 547,
@@ -7684,12 +8651,111 @@
       "ra": 192.721,
       "dec": 41.120213,
       "distance": "16.732 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-004-galactic-wheels-within-wheels",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/medium/sig13-004.jpg?1603791751",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/medium/sig13-004.jpg?1603791751",
+          "title": "Galactic Wheels within Wheels",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 50.7,
+          "quality": {
+            "score": 89.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 51889,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-004-galactic-wheels-within-wheels",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/large/sig13-004.jpg?1603791751",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/large/sig13-004.jpg?1603791751",
+          "title": "Galactic Wheels within Wheels",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 100.0,
+          "quality": {
+            "score": 89.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 102638,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-004-galactic-wheels-within-wheels",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/larger/sig13-004.jpg?1603791751",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/larger/sig13-004.jpg?1603791751",
+          "title": "Galactic Wheels within Wheels",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 306.0,
+          "quality": {
+            "score": 89.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 313732,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-004-galactic-wheels-within-wheels",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/largest/sig13-004.jpg?1603791751",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5578/largest/sig13-004.jpg?1603791751",
+          "title": "Galactic Wheels within Wheels",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 431.0,
+          "quality": {
+            "score": 89.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 440833,
+            "width": 1280,
+            "height": 1280
+          }
+        }
+      ]
     },
     {
       "index": 550,
@@ -8048,12 +9114,105 @@
       "ra": 155.86251,
       "dec": 19.898473,
       "distance": "110.078 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "LOW_COLOR"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/medium/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/medium/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 57.9,
+          "quality": {
+            "score": 32.2,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 59259,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/large/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/large/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 114.0,
+          "quality": {
+            "score": 32.2,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 116639,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/larger/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/larger/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 382.0,
+          "quality": {
+            "score": 32.1,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 391613,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/largest/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/largest/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 562.0,
+          "quality": {
+            "score": 32.1,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 575201,
+            "width": 1280,
+            "height": 1280
+          }
+        }
+      ]
     },
     {
       "index": 576,
@@ -8118,12 +9277,119 @@
       "ra": 148.888327,
       "dec": 69.065347,
       "distance": "11.970 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2003-06c1-spiral-galaxy-messier-81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/largest/ssc2003-06c1.jpg?1603802458",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/largest/ssc2003-06c1.jpg?1603802458",
+          "title": "Spiral Galaxy Messier 81",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 271.0,
+          "quality": {
+            "score": 79.6,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 277957,
+            "width": 1280,
+            "height": 971
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2003-06c1-spiral-galaxy-messier-81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/larger/ssc2003-06c1.jpg?1603802458",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/larger/ssc2003-06c1.jpg?1603802458",
+          "title": "Spiral Galaxy Messier 81",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 210.0,
+          "quality": {
+            "score": 79.5,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 214816,
+            "width": 1024,
+            "height": 776
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2003-06c1-spiral-galaxy-messier-81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/jpg_original/ssc2003-06c1.jpg?1603802458",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/jpg_original/ssc2003-06c1.jpg?1603802458",
+          "title": "Spiral Galaxy Messier 81",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 258.0,
+          "quality": {
+            "score": 79.5,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 264268,
+            "width": 1158,
+            "height": 878
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2003-06c1-spiral-galaxy-messier-81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/large/ssc2003-06c1.jpg?1603802458",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1072/large/ssc2003-06c1.jpg?1603802458",
+          "title": "Spiral Galaxy Messier 81",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 74.6,
+          "quality": {
+            "score": 79.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 76374,
+            "width": 500,
+            "height": 379
+          }
+        }
+      ]
     },
     {
       "index": 581,
@@ -8146,12 +9412,103 @@
       "ra": 148.968,
       "dec": 69.67975,
       "distance": "12.524 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-004a-the-cigar-galaxy-m82",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/large/sig14-004b.jpg?1603783429",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/large/sig14-004b.jpg?1603783429",
+          "title": "The Cigar Galaxy M82",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 58.3,
+          "quality": {
+            "score": 81.6,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 59721,
+            "width": 500,
+            "height": 386
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-004a-the-cigar-galaxy-m82",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/medium/sig14-004b.jpg?1603783429",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/medium/sig14-004b.jpg?1603783429",
+          "title": "The Cigar Galaxy M82",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 37.7,
+          "quality": {
+            "score": 81.5,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 38634,
+            "width": 320,
+            "height": 247
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-004a-the-cigar-galaxy-m82",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/largest/sig14-004b.jpg?1603783429",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/largest/sig14-004b.jpg?1603783429",
+          "title": "The Cigar Galaxy M82",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 213.0,
+          "quality": {
+            "score": 81.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 217638,
+            "width": 1280,
+            "height": 989
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-004a-the-cigar-galaxy-m82",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/huge/sig14-004b.jpg?1603783429",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5743/huge/sig14-004b.jpg?1603783429",
+          "title": "The Cigar Galaxy M82",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 294.0,
+          "quality": {
+            "score": 81.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 301340,
+            "width": 1600,
+            "height": 1236
+          }
+        }
+      ]
     },
     {
       "index": 583,
@@ -9336,12 +10693,107 @@
       "ra": 198.955285,
       "dec": 42.029353,
       "distance": "25.147 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-002-spitzers-sunflower",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/jpg_original/sig11-002.jpg?1603790353",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/jpg_original/sig11-002.jpg?1603790353",
+          "title": "Spitzer's Sunflower",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 465.0,
+          "quality": {
+            "score": 67.6,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 475727,
+            "width": 1500,
+            "height": 1500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-002-spitzers-sunflower",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/largest/sig11-002.jpg?1603790353",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/largest/sig11-002.jpg?1603790353",
+          "title": "Spitzer's Sunflower",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 362.0,
+          "quality": {
+            "score": 67.5,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 370335,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-002-spitzers-sunflower",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/larger/sig11-002.jpg?1603790353",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/larger/sig11-002.jpg?1603790353",
+          "title": "Spitzer's Sunflower",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 253.0,
+          "quality": {
+            "score": 67.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 258605,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-002-spitzers-sunflower",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/large/sig11-002.jpg?1603790353",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3552/large/sig11-002.jpg?1603790353",
+          "title": "Spitzer's Sunflower",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 84.6,
+          "quality": {
+            "score": 67.1,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 86680,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 668,
@@ -9924,12 +11376,91 @@
       "ra": 184.739572,
       "dec": 47.303979,
       "distance": "23.712 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-020-galactic-pyrotechnics-on-display",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/large/sig14-020.jpg?1603781485",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/large/sig14-020.jpg?1603781485",
+          "title": "Galactic Pyrotechnics on Display",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 75.6,
+          "quality": {
+            "score": 87.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 77454,
+            "width": 500,
+            "height": 391
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-020-galactic-pyrotechnics-on-display",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/medium/sig14-020.jpg?1603781485",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/medium/sig14-020.jpg?1603781485",
+          "title": "Galactic Pyrotechnics on Display",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 50.1,
+          "quality": {
+            "score": 87.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 51271,
+            "width": 320,
+            "height": 250
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-020-galactic-pyrotechnics-on-display",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/larger/sig14-020.jpg?1603781485",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/larger/sig14-020.jpg?1603781485",
+          "title": "Galactic Pyrotechnics on Display",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 223.0,
+          "quality": {
+            "score": 87.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 228319,
+            "width": 1024,
+            "height": 800
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-020-galactic-pyrotechnics-on-display",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/largest/sig14-020.jpg?1603781485",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5907/largest/sig14-020.jpg?1603781485",
+          "title": "Galactic Pyrotechnics on Display",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 344.0,
+          "quality": {
+            "score": 87.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 352405,
+            "width": 1280,
+            "height": 1000
+          }
+        }
+      ]
     },
     {
       "index": 710,
@@ -10932,12 +12463,95 @@
       "ra": 150.82955,
       "dec": 68.733766,
       "distance": "11.839 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-009-multiwavelength-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/large/sig07-009.jpg?1603790539",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/large/sig07-009.jpg?1603790539",
+          "title": "Multiwavelength M81",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 68.7,
+          "quality": {
+            "score": 80.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 70386,
+            "width": 500,
+            "height": 386
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-009-multiwavelength-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/medium/sig07-009.jpg?1603790539",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/medium/sig07-009.jpg?1603790539",
+          "title": "Multiwavelength M81",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 43.1,
+          "quality": {
+            "score": 80.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 44143,
+            "width": 320,
+            "height": 247
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-009-multiwavelength-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/larger/sig07-009.jpg?1603790539",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/larger/sig07-009.jpg?1603790539",
+          "title": "Multiwavelength M81",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 212.0,
+          "quality": {
+            "score": 80.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 217166,
+            "width": 1024,
+            "height": 791
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-009-multiwavelength-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/largest/sig07-009.jpg?1603790539",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2126/largest/sig07-009.jpg?1603790539",
+          "title": "Multiwavelength M81",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 327.0,
+          "quality": {
+            "score": 80.7,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 335210,
+            "width": 1280,
+            "height": 989
+          }
+        }
+      ]
     },
     {
       "index": 782,
@@ -14838,12 +16452,117 @@
       "ra": 187.70637,
       "dec": 12.390519,
       "distance": "54.664 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-05a-spitzer-captures-messier-87-eht",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/largest/ssc2019-05a.jpg?1603804739",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/largest/ssc2019-05a.jpg?1603804739",
+          "title": "Spitzer Captures Messier 87 (EHT)",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 301.0,
+          "quality": {
+            "score": 56.8,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 308715,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-05a-spitzer-captures-messier-87-eht",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/huge/ssc2019-05a.jpg?1603804739",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/huge/ssc2019-05a.jpg?1603804739",
+          "title": "Spitzer Captures Messier 87 (EHT)",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 422.0,
+          "quality": {
+            "score": 56.8,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 432029,
+            "width": 1600,
+            "height": 1600
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-05a-spitzer-captures-messier-87-eht",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/larger/ssc2019-05a.jpg?1603804739",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/larger/ssc2019-05a.jpg?1603804739",
+          "title": "Spitzer Captures Messier 87 (EHT)",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 212.0,
+          "quality": {
+            "score": 56.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 216673,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-05a-spitzer-captures-messier-87-eht",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/large/ssc2019-05a.jpg?1603804739",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6593/large/ssc2019-05a.jpg?1603804739",
+          "title": "Spitzer Captures Messier 87 (EHT)",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 78.7,
+          "quality": {
+            "score": 56.4,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 80614,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 1061,
@@ -19150,12 +20869,91 @@
       "ra": 180.47088,
       "dec": -18.867559,
       "distance": "68.688 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/large/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/large/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 61.9,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 63415,
+            "width": 500,
+            "height": 508
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/larger/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/larger/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 173.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 177333,
+            "width": 1024,
+            "height": 1040
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/largest/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/largest/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 253.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 258890,
+            "width": 1280,
+            "height": 1300
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/huge/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/huge/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 372.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 381315,
+            "width": 1600,
+            "height": 1625
+          }
+        }
+      ]
     },
     {
       "index": 1369,
@@ -19164,12 +20962,91 @@
       "ra": 180.472987,
       "dec": -18.88611,
       "distance": "68.297 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/large/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/large/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 61.9,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 63415,
+            "width": 500,
+            "height": 508
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/larger/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/larger/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 173.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 177333,
+            "width": 1024,
+            "height": 1040
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/largest/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/largest/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 253.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 258890,
+            "width": 1280,
+            "height": 1300
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig10-017-takes-two-antenna-galaxies-to-tangle",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/huge/sig10-17.jpg?1603803759",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3244/huge/sig10-17.jpg?1603803759",
+          "title": "Takes Two Antenna Galaxies to Tangle",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "8.0 µm"
+          ],
+          "declaredKB": 372.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 381315,
+            "width": 1600,
+            "height": 1625
+          }
+        }
+      ]
     },
     {
       "index": 1370,
@@ -19584,12 +21461,113 @@
       "ra": 189.086628,
       "dec": 25.987649,
       "distance": "38.160 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-02-a-needle-galaxy-on-its-edge",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/huge/NGC4565_Spitzer.jpg?1692853659",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/huge/NGC4565_Spitzer.jpg?1692853659",
+          "title": "A \"Needle\" Galaxy on Its Edge",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 240.0,
+          "quality": {
+            "score": 30.7,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 246248,
+            "width": 1600,
+            "height": 900
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-02-a-needle-galaxy-on-its-edge",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/largest/NGC4565_Spitzer.jpg?1692853659",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/largest/NGC4565_Spitzer.jpg?1692853659",
+          "title": "A \"Needle\" Galaxy on Its Edge",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 171.0,
+          "quality": {
+            "score": 30.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 174785,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-02-a-needle-galaxy-on-its-edge",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/larger/NGC4565_Spitzer.jpg?1692853659",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/larger/NGC4565_Spitzer.jpg?1692853659",
+          "title": "A \"Needle\" Galaxy on Its Edge",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 125.0,
+          "quality": {
+            "score": 30.5,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 127826,
+            "width": 1024,
+            "height": 576
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2023-02-a-needle-galaxy-on-its-edge",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/large/NGC4565_Spitzer.jpg?1692853659",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/large/NGC4565_Spitzer.jpg?1692853659",
+          "title": "A \"Needle\" Galaxy on Its Edge",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 51.7,
+          "quality": {
+            "score": 29.4,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 52901,
+            "width": 500,
+            "height": 281
+          }
+        }
+      ]
     },
     {
       "index": 1400,
@@ -19808,12 +21786,119 @@
       "ra": 359.457211,
       "dec": -32.591067,
       "distance": "12.492 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-017-ngc-7793",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/largest/sig05-017.jpg?1603796761",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/largest/sig05-017.jpg?1603796761",
+          "title": "NGC 7793",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 410.0,
+          "quality": {
+            "score": 58.0,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 419630,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-017-ngc-7793",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/larger/sig05-017.jpg?1603796761",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/larger/sig05-017.jpg?1603796761",
+          "title": "NGC 7793",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 296.0,
+          "quality": {
+            "score": 57.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 302691,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-017-ngc-7793",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/jpg_original/sig05-017.jpg?1603796761",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/jpg_original/sig05-017.jpg?1603796761",
+          "title": "NGC 7793",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 318.0,
+          "quality": {
+            "score": 57.5,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 326016,
+            "width": 990,
+            "height": 990
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-017-ngc-7793",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/large/sig05-017.jpg?1603796761",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/large/sig05-017.jpg?1603796761",
+          "title": "NGC 7793",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 104.0,
+          "quality": {
+            "score": 57.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 106357,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 1416,
@@ -19878,12 +21963,83 @@
       "ra": 50.52719,
       "dec": -15.400028,
       "distance": "91.748 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2011-07a-galaxies-near-and-far",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/largest/ssc2011-07a.jpg?1603803467",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/largest/ssc2011-07a.jpg?1603803467",
+          "title": "Galaxies Near and Far",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 235.0,
+          "quality": {
+            "score": 50.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 240231,
+            "width": 1280,
+            "height": 987
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2011-07a-galaxies-near-and-far",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/huge/ssc2011-07a.jpg?1603803467",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/huge/ssc2011-07a.jpg?1603803467",
+          "title": "Galaxies Near and Far",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 345.0,
+          "quality": {
+            "score": 50.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 353488,
+            "width": 1600,
+            "height": 1234
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2011-07a-galaxies-near-and-far",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/large/ssc2011-07a.jpg?1603803467",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/large/ssc2011-07a.jpg?1603803467",
+          "title": "Galaxies Near and Far",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 56.0,
+          "quality": {
+            "score": 50.7,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 57356,
+            "width": 500,
+            "height": 386
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2011-07a-galaxies-near-and-far",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/medium/ssc2011-07a.jpg?1603803467",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3663/medium/ssc2011-07a.jpg?1603803467",
+          "title": "Galaxies Near and Far",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 35.9,
+          "quality": {
+            "score": 50.7,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 36802,
+            "width": 320,
+            "height": 247
+          }
+        }
+      ]
     },
     {
       "index": 1421,
@@ -20340,12 +22496,111 @@
       "ra": 210.802231,
       "dec": 54.348854,
       "distance": "21.657 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-14b-the-pinwheel-galaxy-m101-in-the-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/medium/ssc2008-14b.jpg?1603799696",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/medium/ssc2008-14b.jpg?1603799696",
+          "title": "The Pinwheel Galaxy, M101, in the Infrared",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 73.2,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 74927,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-14b-the-pinwheel-galaxy-m101-in-the-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/large/ssc2008-14b.jpg?1603799696",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/large/ssc2008-14b.jpg?1603799696",
+          "title": "The Pinwheel Galaxy, M101, in the Infrared",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 148.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 151613,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-14b-the-pinwheel-galaxy-m101-in-the-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/larger/ssc2008-14b.jpg?1603799696",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/larger/ssc2008-14b.jpg?1603799696",
+          "title": "The Pinwheel Galaxy, M101, in the Infrared",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 513.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 525400,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2008-14b-the-pinwheel-galaxy-m101-in-the-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/largest/ssc2008-14b.jpg?1603799696",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1945/largest/ssc2008-14b.jpg?1603799696",
+          "title": "The Pinwheel Galaxy, M101, in the Infrared",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 762.0,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 780073,
+            "width": 1280,
+            "height": 1280
+          }
+        }
+      ]
     },
     {
       "index": 1454,
@@ -21012,12 +23267,105 @@
       "ra": 155.877396,
       "dec": 19.865127,
       "distance": "61.154 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "LOW_COLOR"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/medium/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/medium/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 57.9,
+          "quality": {
+            "score": 32.2,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 59259,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/large/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/large/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 114.0,
+          "quality": {
+            "score": 32.2,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 116639,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/larger/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/larger/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 382.0,
+          "quality": {
+            "score": 32.1,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 391613,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-029-a-flood-of-gas-annotated",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/largest/sig14-029.jpg?1603784378",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5992/largest/sig14-029.jpg?1603784378",
+          "title": "A Flood of Gas Annotated",
+          "bandEvidenceCount": 2,
+          "wavelengthMentions": [
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 562.0,
+          "quality": {
+            "score": 32.1,
+            "status": "REVIEW",
+            "flags": [
+              "LOW_COLOR"
+            ],
+            "previewBytes": 575201,
+            "width": 1280,
+            "height": 1280
+          }
+        }
+      ]
     },
     {
       "index": 1502,
@@ -22300,12 +24648,119 @@
       "ra": 189.431405,
       "dec": 11.818196,
       "distance": "60.013 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-003-ngc-4579",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/largest/sig06-003.jpg?1603797001",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/largest/sig06-003.jpg?1603797001",
+          "title": "NGC 4579",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 332.0,
+          "quality": {
+            "score": 48.8,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 340279,
+            "width": 1280,
+            "height": 1576
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-003-ngc-4579",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/larger/sig06-003.jpg?1603797001",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/larger/sig06-003.jpg?1603797001",
+          "title": "NGC 4579",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 240.0,
+          "quality": {
+            "score": 48.6,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 245608,
+            "width": 1024,
+            "height": 1260
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-003-ngc-4579",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/jpg_original/sig06-003.jpg?1603797001",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/jpg_original/sig06-003.jpg?1603797001",
+          "title": "NGC 4579",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 152.0,
+          "quality": {
+            "score": 48.5,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 155182,
+            "width": 706,
+            "height": 869
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-003-ngc-4579",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/large/sig06-003.jpg?1603797001",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2265/large/sig06-003.jpg?1603797001",
+          "title": "NGC 4579",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 87.3,
+          "quality": {
+            "score": 48.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 89441,
+            "width": 500,
+            "height": 615
+          }
+        }
+      ]
     },
     {
       "index": 1594,
@@ -22398,12 +24853,103 @@
       "ra": 189.997622,
       "dec": -11.622993,
       "distance": "36.595 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2012-06a-the-sombrero-galaxys-split-personality",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/largest/ssc2012-06a.jpg?1603796042",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/largest/ssc2012-06a.jpg?1603796042",
+          "title": "The Sombrero Galaxy's Split Personality",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 448.0,
+          "quality": {
+            "score": 88.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 459229,
+            "width": 1280,
+            "height": 1559
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2012-06a-the-sombrero-galaxys-split-personality",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/huge/ssc2012-06a.jpg?1603796042",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/huge/ssc2012-06a.jpg?1603796042",
+          "title": "The Sombrero Galaxy's Split Personality",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 623.0,
+          "quality": {
+            "score": 88.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 638458,
+            "width": 1600,
+            "height": 1949
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2012-06a-the-sombrero-galaxys-split-personality",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/medium/ssc2012-06a.jpg?1603796042",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/medium/ssc2012-06a.jpg?1603796042",
+          "title": "The Sombrero Galaxy's Split Personality",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 58.9,
+          "quality": {
+            "score": 88.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 60309,
+            "width": 320,
+            "height": 390
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2012-06a-the-sombrero-galaxys-split-personality",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/large/ssc2012-06a.jpg?1603796042",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5135/large/ssc2012-06a.jpg?1603796042",
+          "title": "The Sombrero Galaxy's Split Personality",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 107.0,
+          "quality": {
+            "score": 88.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 109964,
+            "width": 500,
+            "height": 609
+          }
+        }
+      ]
     },
     {
       "index": 1601,
@@ -25646,12 +28192,111 @@
       "ra": 185.83344,
       "dec": 15.820418,
       "distance": "77.299 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/largest/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/largest/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 412.0,
+          "quality": {
+            "score": 84.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 421574,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/large/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/large/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 111.0,
+          "quality": {
+            "score": 84.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 114068,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/larger/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/larger/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 301.0,
+          "quality": {
+            "score": 84.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 308190,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig12-008-hot-and-cold-in-the-m100-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/medium/sig12-008.jpg?1603783459",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/medium/sig12-008.jpg?1603783459",
+          "title": "Hot and Cold in the M100 Galaxy",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 63.8,
+          "quality": {
+            "score": 84.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 65323,
+            "width": 320,
+            "height": 320
+          }
+        }
+      ]
     },
     {
       "index": 1833,
@@ -26332,12 +28977,111 @@
       "ra": 202.469673,
       "dec": 47.195165,
       "distance": "23.581 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/larger/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/larger/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 329.0,
+          "quality": {
+            "score": 89.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 336708,
+            "width": 1024,
+            "height": 1587
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/largest/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/largest/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 459.0,
+          "quality": {
+            "score": 89.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 470351,
+            "width": 1280,
+            "height": 1984
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/huge/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/huge/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 639.0,
+          "quality": {
+            "score": 89.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 654815,
+            "width": 1600,
+            "height": 2480
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/medium/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/medium/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 59.2,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 60574,
+            "width": 320,
+            "height": 496
+          }
+        }
+      ]
     },
     {
       "index": 1882,
@@ -26346,12 +29090,111 @@
       "ra": 202.498124,
       "dec": 47.266156,
       "distance": "23.548 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/larger/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/larger/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 329.0,
+          "quality": {
+            "score": 89.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 336708,
+            "width": 1024,
+            "height": 1587
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/largest/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/largest/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 459.0,
+          "quality": {
+            "score": 89.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 470351,
+            "width": 1280,
+            "height": 1984
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/huge/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/huge/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 639.0,
+          "quality": {
+            "score": 89.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 654815,
+            "width": 1600,
+            "height": 2480
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-11c-the-whirlpool-galaxy-in-infrared-light",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/medium/ssc2019-11c.jpg?1603800139",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6639/medium/ssc2019-11c.jpg?1603800139",
+          "title": "The Whirlpool Galaxy in Infrared Light",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 59.2,
+          "quality": {
+            "score": 88.9,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 60574,
+            "width": 320,
+            "height": 496
+          }
+        }
+      ]
     },
     {
       "index": 1883,
@@ -26766,12 +29609,109 @@
       "ra": 226.622951,
       "dec": 55.763287,
       "distance": "40.443 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-13a-perfectly-sideways-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/largest/ssc2019-13a.jpg?1603799022",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/largest/ssc2019-13a.jpg?1603799022",
+          "title": "Perfectly Sideways Galaxy",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "4.5 micron",
+            "8 micron"
+          ],
+          "declaredKB": 133.0,
+          "quality": {
+            "score": 52.0,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 136631,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-13a-perfectly-sideways-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/larger/ssc2019-13a.jpg?1603799022",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/larger/ssc2019-13a.jpg?1603799022",
+          "title": "Perfectly Sideways Galaxy",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "4.5 micron",
+            "8 micron"
+          ],
+          "declaredKB": 101.0,
+          "quality": {
+            "score": 51.8,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 103646,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-13a-perfectly-sideways-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/jpg_original/ssc2019-13a.jpg?1603799022",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/jpg_original/ssc2019-13a.jpg?1603799022",
+          "title": "Perfectly Sideways Galaxy",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "4.5 micron",
+            "8 micron"
+          ],
+          "declaredKB": 118.0,
+          "quality": {
+            "score": 51.8,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 120528,
+            "width": 1200,
+            "height": 1200
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2019-13a-perfectly-sideways-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/large/ssc2019-13a.jpg?1603799022",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/large/ssc2019-13a.jpg?1603799022",
+          "title": "Perfectly Sideways Galaxy",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "4.5 micron",
+            "8 micron"
+          ],
+          "declaredKB": 41.4,
+          "quality": {
+            "score": 51.5,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 42356,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 1913,
@@ -27074,12 +30014,119 @@
       "ra": 146.813661,
       "dec": 67.916707,
       "distance": "12.459 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-014-ngc-2976",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/largest/sig05-014.jpg?1603796159",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/largest/sig05-014.jpg?1603796159",
+          "title": "NGC 2976",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 326.0,
+          "quality": {
+            "score": 58.4,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 334003,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-014-ngc-2976",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/larger/sig05-014.jpg?1603796159",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/larger/sig05-014.jpg?1603796159",
+          "title": "NGC 2976",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 239.0,
+          "quality": {
+            "score": 58.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 244563,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-014-ngc-2976",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/jpg_original/sig05-014.jpg?1603796159",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/jpg_original/sig05-014.jpg?1603796159",
+          "title": "NGC 2976",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 140.0,
+          "quality": {
+            "score": 57.9,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 142994,
+            "width": 632,
+            "height": 632
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-014-ngc-2976",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/large/sig05-014.jpg?1603796159",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/large/sig05-014.jpg?1603796159",
+          "title": "NGC 2976",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 94.0,
+          "quality": {
+            "score": 57.6,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 96288,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 1935,
@@ -27998,12 +31045,93 @@
       "ra": 198.84981,
       "dec": -16.385344,
       "distance": "123.972 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-015-dust-in-hell",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/largest/sig07-015.jpg?1603793744",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/largest/sig07-015.jpg?1603793744",
+          "title": "Dust in Hell",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 134.0,
+          "quality": {
+            "score": 53.7,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 137317,
+            "width": 1280,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-015-dust-in-hell",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/huge/sig07-015.jpg?1603793744",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/huge/sig07-015.jpg?1603793744",
+          "title": "Dust in Hell",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 188.0,
+          "quality": {
+            "score": 53.7,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 192420,
+            "width": 1600,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-015-dust-in-hell",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/large/sig07-015.jpg?1603793744",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/large/sig07-015.jpg?1603793744",
+          "title": "Dust in Hell",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 44.8,
+          "quality": {
+            "score": 53.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 45924,
+            "width": 500,
+            "height": 400
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig07-015-dust-in-hell",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/larger/sig07-015.jpg?1603793744",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2118/larger/sig07-015.jpg?1603793744",
+          "title": "Dust in Hell",
+          "bandEvidenceCount": 0,
+          "wavelengthMentions": [],
+          "declaredKB": 98.9,
+          "quality": {
+            "score": 53.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 101283,
+            "width": 1024,
+            "height": 819
+          }
+        }
+      ]
     },
     {
       "index": 2001,
@@ -28404,12 +31532,129 @@
       "ra": 65.001562,
       "dec": -54.937997,
       "distance": "31.278 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-013-ngc-1566",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/largest/sig05-013.jpg?1603795897",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/largest/sig05-013.jpg?1603795897",
+          "title": "NGC 1566",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 286.0,
+          "quality": {
+            "score": 39.3,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 292782,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-013-ngc-1566",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/larger/sig05-013.jpg?1603795897",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/larger/sig05-013.jpg?1603795897",
+          "title": "NGC 1566",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 209.0,
+          "quality": {
+            "score": 39.2,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 214236,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-013-ngc-1566",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/jpg_original/sig05-013.jpg?1603795897",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/jpg_original/sig05-013.jpg?1603795897",
+          "title": "NGC 1566",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 210.0,
+          "quality": {
+            "score": 39.1,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 214769,
+            "width": 974,
+            "height": 974
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig05-013-ngc-1566",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/large/sig05-013.jpg?1603795897",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/large/sig05-013.jpg?1603795897",
+          "title": "NGC 1566",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 83.2,
+          "quality": {
+            "score": 38.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 85165,
+            "width": 500,
+            "height": 500
+          }
+        }
+      ]
     },
     {
       "index": 2030,
@@ -28698,12 +31943,111 @@
       "ra": 204.253572,
       "dec": -29.865537,
       "distance": "21.233 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-016-a-dusty-view-of-milky-ways-smaller-cousin",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/large/sig11-016.jpg?1603799881",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/large/sig11-016.jpg?1603799881",
+          "title": "A Dusty View of Milky Ways Smaller Cousin",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 88.6,
+          "quality": {
+            "score": 75.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 90701,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-016-a-dusty-view-of-milky-ways-smaller-cousin",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/largest/sig11-016.jpg?1603799881",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/largest/sig11-016.jpg?1603799881",
+          "title": "A Dusty View of Milky Ways Smaller Cousin",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 372.0,
+          "quality": {
+            "score": 75.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 380970,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-016-a-dusty-view-of-milky-ways-smaller-cousin",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/medium/sig11-016.jpg?1603799881",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/medium/sig11-016.jpg?1603799881",
+          "title": "A Dusty View of Milky Ways Smaller Cousin",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 52.8,
+          "quality": {
+            "score": 75.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 54093,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-016-a-dusty-view-of-milky-ways-smaller-cousin",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/larger/sig11-016.jpg?1603799881",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4832/larger/sig11-016.jpg?1603799881",
+          "title": "A Dusty View of Milky Ways Smaller Cousin",
+          "bandEvidenceCount": 6,
+          "wavelengthMentions": [
+            "24 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 256.0,
+          "quality": {
+            "score": 75.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 261698,
+            "width": 1024,
+            "height": 1024
+          }
+        }
+      ]
     },
     {
       "index": 2051,
@@ -29034,12 +32378,91 @@
       "ra": 140.511219,
       "dec": 50.976585,
       "distance": "53.294 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig09-005-star-streams-in-the-galaxy-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/large/sig09-005.jpg?1603801095",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/large/sig09-005.jpg?1603801095",
+          "title": "Star Streams in the Galaxy M81",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "4.5 micron"
+          ],
+          "declaredKB": 71.3,
+          "quality": {
+            "score": 72.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 72963,
+            "width": 500,
+            "height": 400
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig09-005-star-streams-in-the-galaxy-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/larger/sig09-005.jpg?1603801095",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/larger/sig09-005.jpg?1603801095",
+          "title": "Star Streams in the Galaxy M81",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "4.5 micron"
+          ],
+          "declaredKB": 185.0,
+          "quality": {
+            "score": 72.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 189549,
+            "width": 1024,
+            "height": 819
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig09-005-star-streams-in-the-galaxy-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/huge/sig09-005.jpg?1603801095",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/huge/sig09-005.jpg?1603801095",
+          "title": "Star Streams in the Galaxy M81",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "4.5 micron"
+          ],
+          "declaredKB": 347.0,
+          "quality": {
+            "score": 72.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 354950,
+            "width": 1600,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig09-005-star-streams-in-the-galaxy-m81",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/medium/sig09-005.jpg?1603801095",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1591/medium/sig09-005.jpg?1603801095",
+          "title": "Star Streams in the Galaxy M81",
+          "bandEvidenceCount": 1,
+          "wavelengthMentions": [
+            "4.5 micron"
+          ],
+          "declaredKB": 45.6,
+          "quality": {
+            "score": 72.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 46667,
+            "width": 320,
+            "height": 256
+          }
+        }
+      ]
     },
     {
       "index": 2075,
@@ -31120,12 +34543,113 @@
       "ra": 11.888215,
       "dec": -25.288259,
       "distance": "10.470 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2013-07a1-the-barred-sculptor-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/largest/ssc2013-07a1.jpg?1603781776",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/largest/ssc2013-07a1.jpg?1603781776",
+          "title": "The Barred Sculptor Galaxy",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 234.0,
+          "quality": {
+            "score": 40.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 239498,
+            "width": 1280,
+            "height": 1080
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2013-07a1-the-barred-sculptor-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/huge/ssc2013-07a1.jpg?1603781776",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/huge/ssc2013-07a1.jpg?1603781776",
+          "title": "The Barred Sculptor Galaxy",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 329.0,
+          "quality": {
+            "score": 40.6,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 337190,
+            "width": 1600,
+            "height": 1350
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2013-07a1-the-barred-sculptor-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/larger/ssc2013-07a1.jpg?1603781776",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/larger/ssc2013-07a1.jpg?1603781776",
+          "title": "The Barred Sculptor Galaxy",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 166.0,
+          "quality": {
+            "score": 40.5,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 170316,
+            "width": 1024,
+            "height": 864
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2013-07a1-the-barred-sculptor-galaxy",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/large/ssc2013-07a1.jpg?1603781776",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/large/ssc2013-07a1.jpg?1603781776",
+          "title": "The Barred Sculptor Galaxy",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 59.3,
+          "quality": {
+            "score": 40.2,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_DARK"
+            ],
+            "previewBytes": 60745,
+            "width": 500,
+            "height": 422
+          }
+        }
+      ]
     },
     {
       "index": 2224,
@@ -31778,12 +35302,119 @@
       "ra": 13.722672,
       "dec": -37.684196,
       "distance": "6.327 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2004-07a-a-natal-microcosm",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/large/ssc2004-07a.jpg?1603795865",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/large/ssc2004-07a.jpg?1603795865",
+          "title": "A Natal Microcosm",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 59.2,
+          "quality": {
+            "score": 83.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 60606,
+            "width": 500,
+            "height": 325
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2004-07a-a-natal-microcosm",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/medium/ssc2004-07a.jpg?1603795865",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/medium/ssc2004-07a.jpg?1603795865",
+          "title": "A Natal Microcosm",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 37.9,
+          "quality": {
+            "score": 83.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 38856,
+            "width": 320,
+            "height": 208
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2004-07a-a-natal-microcosm",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/jpg_original/ssc2004-07a.jpg?1603795865",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/jpg_original/ssc2004-07a.jpg?1603795865",
+          "title": "A Natal Microcosm",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 258.0,
+          "quality": {
+            "score": 83.4,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 264222,
+            "width": 1500,
+            "height": 975
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2004-07a-a-natal-microcosm",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/larger/ssc2004-07a.jpg?1603795865",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1160/larger/ssc2004-07a.jpg?1603795865",
+          "title": "A Natal Microcosm",
+          "bandEvidenceCount": 8,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm",
+            "5.8 micron",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 152.0,
+          "quality": {
+            "score": 83.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 155894,
+            "width": 1024,
+            "height": 666
+          }
+        }
+      ]
     },
     {
       "index": 2271,
@@ -32506,12 +36137,107 @@
       "ra": 163.662696,
       "dec": 54.305524,
       "distance": "77.462 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "REVIEW",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005-galactic-train-wrecks",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/large/sig11-005.jpg?1603788423",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/large/sig11-005.jpg?1603788423",
+          "title": "Galactic Train Wrecks",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 87.8,
+          "quality": {
+            "score": 67.4,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 89938,
+            "width": 500,
+            "height": 400
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005-galactic-train-wrecks",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/medium/sig11-005.jpg?1603788423",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/medium/sig11-005.jpg?1603788423",
+          "title": "Galactic Train Wrecks",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 53.1,
+          "quality": {
+            "score": 67.3,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 54396,
+            "width": 320,
+            "height": 256
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005-galactic-train-wrecks",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/largest/sig11-005.jpg?1603788423",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/largest/sig11-005.jpg?1603788423",
+          "title": "Galactic Train Wrecks",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 335.0,
+          "quality": {
+            "score": 67.3,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 343367,
+            "width": 1280,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005-galactic-train-wrecks",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/huge/sig11-005.jpg?1603788423",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3607/huge/sig11-005.jpg?1603788423",
+          "title": "Galactic Train Wrecks",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 465.0,
+          "quality": {
+            "score": 67.2,
+            "status": "REVIEW",
+            "flags": [],
+            "previewBytes": 475999,
+            "width": 1600,
+            "height": 1280
+          }
+        }
+      ]
     },
     {
       "index": 2323,
@@ -36132,12 +39858,118 @@
       "ra": 243.603539,
       "dec": -0.207579,
       "distance": "102.543 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
+      "status": "REVIEW",
       "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
+        "TOO_MUCH_BLACK",
+        "TOO_DARK"
       ],
-      "candidateCount": 0,
-      "candidates": []
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-017a-two-galaxies-masquerading-as-one",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/huge/sig13-017a.jpg?1603803617",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/huge/sig13-017a.jpg?1603803617",
+          "title": "Two Galaxies Masquerading as One",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 216.0,
+          "quality": {
+            "score": 30.1,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_MUCH_BLACK",
+              "TOO_DARK"
+            ],
+            "previewBytes": 220824,
+            "width": 1600,
+            "height": 900
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-017a-two-galaxies-masquerading-as-one",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/largest/sig13-017a.jpg?1603803617",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/largest/sig13-017a.jpg?1603803617",
+          "title": "Two Galaxies Masquerading as One",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 163.0,
+          "quality": {
+            "score": 30.0,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_MUCH_BLACK",
+              "TOO_DARK"
+            ],
+            "previewBytes": 167036,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-017a-two-galaxies-masquerading-as-one",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/larger/sig13-017a.jpg?1603803617",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/larger/sig13-017a.jpg?1603803617",
+          "title": "Two Galaxies Masquerading as One",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 126.0,
+          "quality": {
+            "score": 29.7,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_MUCH_BLACK",
+              "TOO_DARK"
+            ],
+            "previewBytes": 129038,
+            "width": 1024,
+            "height": 576
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig13-017a-two-galaxies-masquerading-as-one",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/large/sig13-017a.jpg?1603803617",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5705/large/sig13-017a.jpg?1603803617",
+          "title": "Two Galaxies Masquerading as One",
+          "bandEvidenceCount": 4,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 59.9,
+          "quality": {
+            "score": 29.0,
+            "status": "REVIEW",
+            "flags": [
+              "TOO_MUCH_BLACK",
+              "TOO_DARK"
+            ],
+            "previewBytes": 61327,
+            "width": 500,
+            "height": 281
+          }
+        }
+      ]
     },
     {
       "index": 2582,
@@ -38064,12 +41896,107 @@
       "ra": 19.936847,
       "dec": 3.409903,
       "distance": "113.470 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/medium/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/medium/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 57.6,
+          "quality": {
+            "score": 72.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 59007,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/large/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/large/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 99.9,
+          "quality": {
+            "score": 72.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 102331,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/largest/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/largest/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 342.0,
+          "quality": {
+            "score": 72.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 349996,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/larger/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/larger/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 265.0,
+          "quality": {
+            "score": 72.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 271325,
+            "width": 1024,
+            "height": 1024
+          }
+        }
+      ]
     },
     {
       "index": 2720,
@@ -38092,12 +42019,107 @@
       "ra": 20.027841,
       "dec": 3.415528,
       "distance": "91.487 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/medium/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/medium/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 57.6,
+          "quality": {
+            "score": 72.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 59007,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/large/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/large/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 99.9,
+          "quality": {
+            "score": 72.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 102331,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/largest/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/largest/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 342.0,
+          "quality": {
+            "score": 72.2,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 349996,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig11-005a-galactic-train-wreck",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/larger/sig11-005a.jpg?1603784566",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3608/larger/sig11-005a.jpg?1603784566",
+          "title": "Galactic Train Wreck",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8 micron",
+            "8.0 µm"
+          ],
+          "declaredKB": 265.0,
+          "quality": {
+            "score": 72.0,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 271325,
+            "width": 1024,
+            "height": 1024
+          }
+        }
+      ]
     },
     {
       "index": 2722,
@@ -38750,12 +42772,99 @@
       "ra": 49.327329,
       "dec": -41.107973,
       "distance": "14.351 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/medium/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/medium/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 60.1,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 61524,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/large/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/large/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 105.0,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 107680,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/larger/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/larger/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 285.0,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 292236,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/jpg_original/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/jpg_original/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 354.0,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 362828,
+            "width": 1188,
+            "height": 1188
+          }
+        }
+      ]
     },
     {
       "index": 2769,
@@ -38764,12 +42873,99 @@
       "ra": 49.561816,
       "dec": -27.61043,
       "distance": "67.188 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/medium/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/medium/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 60.1,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 61524,
+            "width": 320,
+            "height": 320
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/large/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/large/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 105.0,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 107680,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/larger/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/larger/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 285.0,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 292236,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig14-027-galactic-wheel-of-life-shines-in-infrared",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/jpg_original/sig14-027.jpg?1603787727",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5978/jpg_original/sig14-027.jpg?1603787727",
+          "title": "Galactic Wheel of Life Shines in Infrared",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 micron",
+            "4.5 µm"
+          ],
+          "declaredKB": 354.0,
+          "quality": {
+            "score": 86.3,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 362828,
+            "width": 1188,
+            "height": 1188
+          }
+        }
+      ]
     },
     {
       "index": 2770,
@@ -39464,12 +43660,99 @@
       "ra": 24.173866,
       "dec": 15.783626,
       "distance": "24.429 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-018a-supernova-dust-factory-in-m74",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/large/sig06-018a.jpg?1603800940",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/large/sig06-018a.jpg?1603800940",
+          "title": "Supernova Dust Factory in M74",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 65.3,
+          "quality": {
+            "score": 99.1,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 66821,
+            "width": 500,
+            "height": 497
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-018a-supernova-dust-factory-in-m74",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/medium/sig06-018a.jpg?1603800940",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/medium/sig06-018a.jpg?1603800940",
+          "title": "Supernova Dust Factory in M74",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 42.8,
+          "quality": {
+            "score": 99.1,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 43806,
+            "width": 320,
+            "height": 318
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-018a-supernova-dust-factory-in-m74",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/larger/sig06-018a.jpg?1603800940",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/larger/sig06-018a.jpg?1603800940",
+          "title": "Supernova Dust Factory in M74",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 140.0,
+          "quality": {
+            "score": 99.1,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 142881,
+            "width": 1024,
+            "height": 1018
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/sig06-018a-supernova-dust-factory-in-m74",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/largest/sig06-018a.jpg?1603800940",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2252/largest/sig06-018a.jpg?1603800940",
+          "title": "Supernova Dust Factory in M74",
+          "bandEvidenceCount": 3,
+          "wavelengthMentions": [
+            "3.6 µm",
+            "4.5 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 183.0,
+          "quality": {
+            "score": 99.1,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 187795,
+            "width": 1280,
+            "height": 1272
+          }
+        }
+      ]
     },
     {
       "index": 2820,
@@ -40248,12 +44531,107 @@
       "ra": 41.578937,
       "dec": -30.274717,
       "distance": "55.968 million light-years",
-      "status": "NO_COLOR_CANDIDATE",
-      "flags": [
-        "NO_OFFICIAL_COLOR_IMAGE_FOUND"
-      ],
-      "candidateCount": 0,
-      "candidates": []
+      "status": "AUTO_GOOD",
+      "flags": [],
+      "candidateCount": 4,
+      "candidates": [
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-14a1-coiled-creature-of-the-night",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/large/ssc2009-14a1.jpg?1603798667",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/large/ssc2009-14a1.jpg?1603798667",
+          "title": "Coiled Creature of the Night",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 105.0,
+          "quality": {
+            "score": 84.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 107277,
+            "width": 500,
+            "height": 500
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-14a1-coiled-creature-of-the-night",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/larger/ssc2009-14a1.jpg?1603798667",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/larger/ssc2009-14a1.jpg?1603798667",
+          "title": "Coiled Creature of the Night",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 309.0,
+          "quality": {
+            "score": 84.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 316248,
+            "width": 1024,
+            "height": 1024
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-14a1-coiled-creature-of-the-night",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/largest/ssc2009-14a1.jpg?1603798667",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/largest/ssc2009-14a1.jpg?1603798667",
+          "title": "Coiled Creature of the Night",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 434.0,
+          "quality": {
+            "score": 84.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 444927,
+            "width": 1280,
+            "height": 1280
+          }
+        },
+        {
+          "source": "SPITZER_GALLERY",
+          "sourcePage": "https://www.spitzer.caltech.edu/image/ssc2009-14a1-coiled-creature-of-the-night",
+          "previewUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/huge/ssc2009-14a1.jpg?1603798667",
+          "originalUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/huge/ssc2009-14a1.jpg?1603798667",
+          "title": "Coiled Creature of the Night",
+          "bandEvidenceCount": 5,
+          "wavelengthMentions": [
+            "3.6 micron",
+            "3.6 µm",
+            "4.5 µm",
+            "5.8 µm",
+            "8.0 µm"
+          ],
+          "declaredKB": 608.0,
+          "quality": {
+            "score": 84.8,
+            "status": "AUTO_GOOD",
+            "flags": [],
+            "previewBytes": 622700,
+            "width": 1600,
+            "height": 1600
+          }
+        }
+      ]
     },
     {
       "index": 2876,
