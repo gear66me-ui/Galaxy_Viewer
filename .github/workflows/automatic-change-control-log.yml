@@ -251,6 +251,28 @@ name: Galaxy Viewer Controlled Engineering Change
 # If a required test cannot be performed, report UNVERIFIED rather than
 # promoting weaker evidence into a stronger claim.
 #
+# REQUIREMENT CLOSURE MATRIX IS MANDATORY. Before any ECO may be reported
+# successful, ChatGPT MUST close every REQ-xxx individually. For every
+# requirement, the completion record MUST state:
+# - exact source/diff mapping;
+# - acceptance test;
+# - test actually executed;
+# - evidence/result;
+# - final status: PASS, FAIL, or UNVERIFIED.
+#
+# No ECO may be reported successful while any requirement is FAIL, UNTESTED,
+# or UNVERIFIED. If an acceptance test cannot be executed at the required
+# verification level, the ECO remains UNVERIFIED until that evidence exists.
+#
+# Exact blob identity, byte/character/line accounting, mapped diff hunks, and
+# WHAT-ELSE-CHANGED = NOTHING prove surgical integrity only. They DO NOT prove
+# that the requested behavior works. Behavioral success requires the applicable
+# requirement-specific acceptance test to be executed and PASS.
+#
+# The Requirement Closure Matrix is an additional gate. It does not replace or
+# weaken any existing forensic accounting, protected-scope, or WHAT-ELSE-CHANGED
+# requirement.
+#
 # A failed test does not authorize a repair. The repair requires authorization.
 #
 # ============================================================================
