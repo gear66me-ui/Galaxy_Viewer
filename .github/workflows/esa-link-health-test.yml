@@ -2,15 +2,6 @@ name: Hubble JWST Chandra image link health audit
 
 on:
   workflow_dispatch:
-    inputs:
-      runs:
-        description: Independent runs per image URL
-        required: true
-        default: '2'
-      concurrency:
-        description: Parallel URL probes
-        required: true
-        default: '10'
   push:
     branches: [beta]
     paths:
@@ -24,8 +15,8 @@ permissions:
   contents: write
 
 env:
-  RUNS: ${{ github.event_name == 'workflow_dispatch' && inputs.runs || '2' }}
-  CONCURRENCY: ${{ github.event_name == 'workflow_dispatch' && inputs.concurrency || '10' }}
+  RUNS: '2'
+  CONCURRENCY: '10'
   TIMEOUT_MS: '30000'
   RETRIES: '2'
   MAX_BYTES: '262144'
@@ -34,9 +25,6 @@ jobs:
   audit-image-links:
     runs-on: ubuntu-latest
     timeout-minutes: 180
-    concurrency:
-      group: galaxy-viewer-image-link-health
-      cancel-in-progress: false
 
     steps:
       - name: Check out beta
