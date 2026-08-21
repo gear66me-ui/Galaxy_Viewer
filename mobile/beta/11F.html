@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer 11F</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dfffea}</style>
+</head>
+<body>
+<script>
+(async()=>{
+    'use strict';
+    const viewerUrl='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-0011F.py?t='+Date.now();
+    const response=await fetch(viewerUrl,{cache:'no-store'});
+    if(!response.ok)throw new Error('VIEWER HTTP '+response.status);
+    const source=await response.text();
+    const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+    const jsMatches=[...source.matchAll(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/g)];
+    if(!htmlMatch||!jsMatches.length)throw new Error('11F VIEWER EXTRACTION FAILED');
+    const scripts=jsMatches.map(match=>'<script>'+match[1].replace(/<\/script/gi,'<\\/script')+'</scr'+'ipt>').join('');
+    const diagnostics='<script src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-prefetch-diagnostics-0006.js?t='+Date.now()+'"></scr'+'ipt>';
+    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dfffea}</style></head><body>'+htmlMatch[1]+scripts+diagnostics+'</body></html>';
+    document.open();document.write(page);document.close();
+})().catch(error=>{
+    console.error('GALAXY VIEWER 11F HANDOFF FAILURE',error);
+    document.documentElement.style.background='#000';
+    document.body.style.background='#000';
+    document.body.innerHTML='<div style="box-sizing:border-box;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#dfffea;font:14px/1.5 monospace;text-align:center">GALAXY VIEWER 11F FAILED TO INITIALIZE.<br>PLEASE REFRESH THE PAGE.</div>';
+});
+</script>
+</body>
+</html>
