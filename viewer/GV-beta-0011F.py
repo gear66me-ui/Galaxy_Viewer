@@ -2002,9 +2002,240 @@ display(Javascript(r"""
     setHistoryControls();
     startupTiming.fullReadyAt=performance.now();
     const startupMetrics=Object.freeze({...startupTiming,shellMs:startupTiming.shellReadyAt-startupTiming.startedAt,catalogMs:startupTiming.catalogReadyAt-startupTiming.startedAt,randomMs:startupTiming.randomReadyAt-startupTiming.startedAt,fullMs:startupTiming.fullReadyAt-startupTiming.startedAt});
-    window.GV10E=Object.freeze({version:VERSION,displayVersion:DISPLAY_VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,universeContext,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,catalogDatabaseCounts,startupMetrics,getHubblePrefetchState,getHubbleDownloadStatus,getAladinPrewarmState,startHubblePrefetch:fillPrefetchQueue,getChandraTestOverrideState:()=>Object.freeze({chandraTestOverrideActive,chandraTestRemaining:chandraTestQueue.length,chandraTestTotal}),getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId,provider:item.provider||'HUBBLE'}))})});
+    window.GV10E=Object.freeze({version:VERSION,displayVersion:DISPLAY_VERSION,aladin,hamburger,coordinate,target,randomGalaxy,randomGalaxyButton:bottom.random,historyBackButton:bottom.back,historyForwardButton:bottom.forward,reticle,versionLabel:bottom.version,universeContext,homeOverlay,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,catalogDatabaseCounts,startupMetrics,getHubblePrefetchState,getHubbleDownloadStatus,getAladinPrewarmState,startHubblePrefetch:fillPrefetchQueue,getGalaxyCatalog:()=>Object.freeze([...galaxyCatalog]),activateQueuedDestination:(destination,excludeName='')=>consumeReady(destination,excludeName)||setUnpreparedActive(destination),requestHdPrefetch:destination=>{if(!destination)return '';enqueuePrefetch(destination,true);fillPrefetchQueue();return destinationKey(destination)},isAladinPrepared:key=>aladinPrewarmedKeys.has(String(key||'').trim().toLowerCase()),getBackgroundWorkSuspended:()=>backgroundWorkSuspended,getChandraTestOverrideState:()=>Object.freeze({chandraTestOverrideActive,chandraTestRemaining:chandraTestQueue.length,chandraTestTotal}),getGalaxyHistory:()=>({index:galaxyHistoryIndex,items:galaxyHistory.map(item=>({name:item.name,archiveId:item.archiveId,provider:item.provider||'HUBBLE'}))})});
     document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,startupMetrics}}));
 })().catch(error=>{console.error('GALAXY VIEWER 10AE2 STARTUP FAILURE:',error);document.dispatchEvent(new CustomEvent('gv-viewer-failed',{detail:{message:String(error?.stack||error)}}));});
 """))
 
 # GV-beta-0010AE2 staged
+
+# GV-beta-0011F — unified future-ten prefetch integration layer.
+display(Javascript(r"""
+(()=>{
+'use strict';
+const VERSION='11F';
+const FUTURE_TARGET=10;
+const WEB_MAX=10;
+const WEB_RETRY_MS=5000;
+const POLL_MS=80;
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const keyOf=destination=>String(destination?.archiveId||destination?.name||'').trim().toLowerCase();
+let core=null;
+let randomGalaxy=null;
+let originalProvider=null;
+let catalog=[];
+let catalogByKey=new Map();
+let catalogByName=new Map();
+let future=[];
+let activeRecord=null;
+let nextSequence=0;
+let historyBypass=false;
+let installed=false;
+let suspended=false;
+let hdFeedbackBusy=false;
+const webStatus=new Map();
+const webControllers=new Map();
+
+function makeRecord(destination){
+  return {sequence:++nextSequence,key:keyOf(destination),destination};
+}
+function uniqueRecords(records){
+  const seen=new Set();
+  return records.filter(record=>record?.key&&!seen.has(record.key)&&(seen.add(record.key),true));
+}
+function findDestinationByName(name){return catalogByName.get(String(name||'').trim().toLowerCase())||null}
+function findDestinationByKey(key){return catalogByKey.get(String(key||'').trim().toLowerCase())||null}
+function currentBlockedKeys(){
+  const blocked=new Set(future.map(record=>record.key));
+  if(activeRecord?.key)blocked.add(activeRecord.key);
+  const activeKey=keyOf(randomGalaxy?.getState?.().activeDestination);
+  if(activeKey)blocked.add(activeKey);
+  return blocked;
+}
+function chooseUniqueDestination(){
+  const blocked=currentBlockedKeys();
+  const pool=catalog.filter(destination=>{const key=keyOf(destination);return key&&!blocked.has(key)});
+  return pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
+}
+function pipelineDestinations(){
+  const state=core?.getHubblePrefetchState?.()||{};
+  const downloads=Array.isArray(state.downloads)?state.downloads:[];
+  const byDownloadKey=new Map(downloads.map(item=>[String(item?.key||'').toLowerCase(),item]));
+  const out=[];
+  const add=destination=>{if(destination)out.push(destination)};
+  for(const name of state.readyDestinations||[])add(findDestinationByName(name));
+  for(const key of state.activeDownloadKeys||[]){
+    const normalized=String(key||'').toLowerCase();
+    add(findDestinationByKey(normalized)||findDestinationByName(byDownloadKey.get(normalized)?.name));
+  }
+  for(const name of state.queuedDestinations||[])add(findDestinationByName(name));
+  return uniqueRecords(out.map(makeRecord)).map(record=>record.destination);
+}
+function setWebState(record,state,detail=''){
+  if(!record?.key)return;
+  webStatus.set(record.key,{state,detail,updatedAt:Date.now(),nextRetryAt:state==='RETRY'?Date.now()+WEB_RETRY_MS:0});
+}
+function webStateFor(record){return webStatus.get(record?.key)||{state:'QUEUED',detail:'',updatedAt:0,nextRetryAt:0}}
+function suspendWeb(){
+  suspended=true;
+  for(const [key,controller] of webControllers){try{controller.abort()}catch(_){};const record=activeRecord?.key===key?activeRecord:future.find(item=>item.key===key);if(record)setWebState(record,'SUSPENDED')}
+  webControllers.clear();
+}
+function resumeWeb(){
+  suspended=false;
+  for(const record of [activeRecord,...future].filter(Boolean)){const state=webStateFor(record);if(state.state==='SUSPENDED')setWebState(record,'QUEUED')}
+  pumpWeb();
+}
+function startWeb(record){
+  if(!record?.key||suspended||webControllers.size>=WEB_MAX||webControllers.has(record.key))return;
+  const state=webStateFor(record);
+  if(state.state==='READY'||state.state==='DOWNLOADING')return;
+  if(state.state==='RETRY'&&Date.now()<Number(state.nextRetryAt||0))return;
+  const sourceUrl=String(record.destination?.sourceUrl||'').trim();
+  if(!/^https:\/\//i.test(sourceUrl)){setWebState(record,'FAILED','NO SOURCE URL');return}
+  const controller=new AbortController();
+  webControllers.set(record.key,controller);
+  setWebState(record,'DOWNLOADING');
+  fetch(sourceUrl,{mode:'no-cors',cache:'force-cache',credentials:'omit',signal:controller.signal,priority:'low'})
+    .then(()=>setWebState(record,'READY'))
+    .catch(error=>{if(error?.name==='AbortError'){setWebState(record,'SUSPENDED');return}setWebState(record,'RETRY',String(error?.message||error))})
+    .finally(()=>{webControllers.delete(record.key);setTimeout(pumpWeb,0)});
+}
+function pumpWeb(){
+  if(suspended)return;
+  const candidates=[activeRecord,...future].filter(Boolean);
+  for(const record of candidates){if(webControllers.size>=WEB_MAX)break;startWeb(record)}
+}
+function prepareRecord(record){
+  if(!record)return;
+  core?.requestHdPrefetch?.(record.destination);
+  if(!webStatus.has(record.key))setWebState(record,'QUEUED');
+  pumpWeb();
+}
+function addFuture(destination){
+  if(!destination)return false;
+  const key=keyOf(destination);
+  if(!key||currentBlockedKeys().has(key))return false;
+  const record=makeRecord(destination);
+  future.push(record);
+  prepareRecord(record);
+  return true;
+}
+function reconcileFutureQueue(){
+  future=uniqueRecords(future).slice(0,FUTURE_TARGET);
+  const pipeline=pipelineDestinations();
+  for(const destination of pipeline){if(future.length>=FUTURE_TARGET)break;addFuture(destination)}
+  while(future.length<FUTURE_TARGET){const candidate=chooseUniqueDestination();if(!candidate||!addFuture(candidate))break}
+  pumpWeb();
+}
+function consumeNext(excludeName=''){
+  reconcileFutureQueue();
+  const excluded=String(excludeName||'').trim().toLowerCase();
+  let index=future.findIndex(record=>String(record.destination?.name||'').trim().toLowerCase()!==excluded&&record.key!==activeRecord?.key);
+  if(index<0)index=0;
+  const record=future.splice(index,1)[0]||null;
+  if(!record)return null;
+  activeRecord=record;
+  const destination=core.activateQueuedDestination(record.destination,excludeName);
+  activeRecord.destination=destination;
+  setTimeout(reconcileFutureQueue,100);
+  pumpWeb();
+  return destination;
+}
+function normalizeHdState(state){
+  const value=String(state||'').toUpperCase();
+  if(value==='READY')return 'READY';
+  if(value==='DOWNLOADING'||value==='DECODING')return value;
+  if(value==='SUSPENDED')return 'SUSPENDED';
+  if(value.includes('RETRY'))return 'RETRY';
+  if(value==='QUEUED')return 'QUEUED';
+  return value||'QUEUED';
+}
+function hdStateFor(record){
+  const status=(core.getHubbleDownloadStatus?.()||[]).find(item=>String(item?.key||'').toLowerCase()===record.key);
+  const state=normalizeHdState(status?.state);
+  return {state,progress:state==='READY'?100:null,detail:String(status?.sourceKind||'')};
+}
+function aladinStateFor(record){
+  if(core.isAladinPrepared?.(record.key))return {state:'READY',progress:100};
+  if(core.getBackgroundWorkSuspended?.())return {state:'SUSPENDED',progress:null};
+  const state=core.getAladinPrewarmState?.()||{};
+  if(String(state.activeKey||'').toLowerCase()===record.key)return {state:'PREPARING',progress:null};
+  return {state:'QUEUED',progress:null};
+}
+function webTelemetry(record){
+  const state=webStateFor(record);
+  return {state:state.state,progress:state.state==='READY'?100:null,detail:state.detail||''};
+}
+function telemetry(){
+  return Object.freeze({
+    version:VERSION,
+    suspended:Boolean(core?.getBackgroundWorkSuspended?.()),
+    active:activeRecord?Object.freeze({sequence:activeRecord.sequence,key:activeRecord.key,name:String(activeRecord.destination?.name||''),provider:String(activeRecord.destination?.provider||'')}):null,
+    rows:Object.freeze(future.slice(0,FUTURE_TARGET).map(record=>Object.freeze({sequence:record.sequence,key:record.key,name:String(record.destination?.name||''),provider:String(record.destination?.provider||''),hd:Object.freeze(hdStateFor(record)),aladin:Object.freeze(aladinStateFor(record)),web:Object.freeze(webTelemetry(record))})))
+  });
+}
+function installHdFeedback(){
+  if(!randomGalaxy?.hubbleIconButton)return;
+  const style=document.createElement('style');
+  style.id='gv-11f-hd-feedback-style';
+  style.textContent='.gvrg-hd-icon-button{position:relative!important}.gv-11f-hd-feedback{position:absolute;inset:5px;border-radius:50%;opacity:0;pointer-events:none;transform-origin:50% 50%}.gv-11f-hd-feedback::before{content:"";position:absolute;left:50%;top:-1px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#F8FFFF;box-shadow:0 0 4px #fff,0 0 8px #8FE5FF,0 0 11px #296DBD}.gv-11f-hd-feedback::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 250deg,transparent 0deg,rgba(91,184,255,.25) 42deg,rgba(143,229,255,.58) 82deg,rgba(248,255,255,.92) 110deg,transparent 111deg 360deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px))}.gvrg-hd-icon-button.gv-11f-hd-wait .gv-11f-hd-feedback{opacity:1;animation:gv11fHdOrbit 1s linear infinite}@keyframes gv11fHdOrbit{to{transform:rotate(360deg)}}';
+  document.head.appendChild(style);
+  const feedback=document.createElement('span');
+  feedback.className='gv-11f-hd-feedback';feedback.setAttribute('aria-hidden','true');
+  randomGalaxy.hubbleIconButton.appendChild(feedback);
+  const waitForHd=async(key,timeout=2500)=>{const started=performance.now();for(;;){const state=hdStateFor({key});if(state.state==='READY')return true;if(performance.now()-started>=timeout)return false;await sleep(80)}};
+  const handle=async event=>{
+    const destination=randomGalaxy.getState?.().activeDestination;
+    if(!destination||hdFeedbackBusy)return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    hdFeedbackBusy=true;
+    randomGalaxy.hubbleIconButton.classList.add('gv-11f-hd-wait');
+    const key=keyOf(destination);
+    core.requestHdPrefetch?.(destination);
+    try{await Promise.all([sleep(1000),waitForHd(key,2500)]);randomGalaxy.showHubbleHD()}catch(error){console.error('GV-11F HD ENTRY FAILURE',error);try{randomGalaxy.showHubbleHD()}catch(_){} }finally{randomGalaxy.hubbleIconButton.classList.remove('gv-11f-hd-wait');hdFeedbackBusy=false}
+  };
+  randomGalaxy.viewHdButton?.addEventListener('click',handle,true);
+  randomGalaxy.hubbleIconButton?.addEventListener('click',handle,true);
+}
+function install(){
+  if(installed)return true;
+  core=window.GV10E;
+  if(!core?.randomGalaxy||typeof core.getGalaxyCatalog!=='function'||typeof core.activateQueuedDestination!=='function')return false;
+  randomGalaxy=core.randomGalaxy;
+  originalProvider=randomGalaxy.hubbleProvider;
+  catalog=core.getGalaxyCatalog();
+  catalogByKey=new Map(catalog.map(destination=>[keyOf(destination),destination]));
+  catalogByName=new Map(catalog.map(destination=>[String(destination?.name||'').trim().toLowerCase(),destination]));
+  reconcileFutureQueue();
+  randomGalaxy.hubbleProvider=async args=>{
+    if(historyBypass){historyBypass=false;return originalProvider(args)}
+    const destination=consumeNext(args?.excludeName||'');
+    return destination||originalProvider(args);
+  };
+  core.historyBackButton?.addEventListener('click',()=>{if(!core.historyBackButton.disabled)historyBypass=true},true);
+  core.historyForwardButton?.addEventListener('click',()=>{if(!core.historyForwardButton.disabled)historyBypass=true},true);
+  core.randomGalaxyButton?.addEventListener('click',()=>{setTimeout(()=>{if(core.getBackgroundWorkSuspended?.())suspendWeb()},0)},true);
+  const monitor=setInterval(()=>{
+    const nextSuspended=Boolean(core.getBackgroundWorkSuspended?.());
+    if(nextSuspended!==suspended){if(nextSuspended)suspendWeb();else resumeWeb()}
+    if(!nextSuspended)reconcileFutureQueue();
+  },POLL_MS);
+  window.addEventListener('beforeunload',()=>{clearInterval(monitor);for(const controller of webControllers.values())try{controller.abort()}catch(_){};webControllers.clear()},{once:true});
+  installHdFeedback();
+  if(core.versionLabel){core.versionLabel.textContent='VERSION 11F';core.versionLabel.setAttribute('aria-label','GALAXY VIEWER VERSION 11F')}
+  window.GV11F=Object.freeze({version:VERSION,displayVersion:VERSION,core,randomGalaxy,getPrefetchTelemetry:telemetry,reconcileFutureQueue});
+  installed=true;
+  document.dispatchEvent(new CustomEvent('gv-11f-ready',{detail:{version:VERSION,rows:future.length}}));
+  return true;
+}
+if(!install()){
+  const onReady=()=>setTimeout(install,0);
+  document.addEventListener('gv-viewer-ready',onReady,{once:true});
+  const timer=setInterval(()=>{if(install())clearInterval(timer)},100);
+  setTimeout(()=>clearInterval(timer),30000);
+}
+})();
+"""))
+
+# GV-beta-0011F staged
