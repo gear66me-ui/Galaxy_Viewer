@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-08-21T07:05:13.132981+00:00",
+  "catalogRecords": 3239,
+  "pageSize": 300,
+  "pageCount": 11,
+  "statusCounts": {
+    "NO_COLOR_CANDIDATE": 3239
+  },
+  "source": "NASA Image and Video Library constrained to Spitzer",
+  "policy": {
+    "autoGood": "score>=68 with color/frame-fill/brightness gates",
+    "fitsRendering": false
+  }
+}
