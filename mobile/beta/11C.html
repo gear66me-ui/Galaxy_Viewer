@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer 11C</title>
+</head>
+<body>
+<script>
+(async()=>{
+    'use strict';
+    const viewerUrl='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-0011C.py?t='+Date.now();
+    const response=await fetch(viewerUrl,{cache:'no-store'});if(!response.ok)throw new Error('VIEWER HTTP '+response.status);
+    const source=await response.text();
+    const htmlMatch=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+    const jsMatches=[...source.matchAll(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/g)];
+    if(!htmlMatch||!jsMatches.length)throw new Error('11C VIEWER EXTRACTION FAILED');
+    const scripts=jsMatches.map(match=>'<script>'+match[1].replace(/<\/script/gi,'<\\/script')+'</scr'+'ipt>').join('');
+    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"></head><body>'+htmlMatch[1]+scripts+'</body></html>';
+    document.open();document.write(page);document.close();
+})().catch(error=>console.error('GALAXY VIEWER 11C HANDOFF FAILURE',error));
+</script>
+</body>
+</html>
