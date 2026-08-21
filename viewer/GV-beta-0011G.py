@@ -18,10 +18,6 @@ display(HTML("""
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test{position:relative!important;width:100%!important;height:100vh!important;height:100svh!important;height:100dvh!important;min-height:100vh!important;min-height:100svh!important;min-height:100dvh!important;overflow:hidden!important;background:#000!important}
 #gv-startup-wait{position:absolute;inset:0;z-index:7085;display:flex;align-items:center;justify-content:center;background:#000;pointer-events:none}
-#gv-startup-comet{position:relative;width:54px;height:54px;border-radius:50%;animation:gvStartupOrbit .8s linear infinite}
-#gv-startup-comet::before{content:"";position:absolute;left:50%;top:-2px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 18%,#ddf7ff 30%,#79d6ff 55%,#1e6ec1 78%,#0a255d 100%);box-shadow:0 0 5px #fff,0 0 11px #76d8ff,0 0 18px rgba(20,83,173,.85)}
-#gv-startup-comet::after{content:"";position:absolute;left:50%;top:1px;width:28px;height:6px;margin-left:-1px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,.96),rgba(135,220,255,.80) 28%,rgba(44,128,219,.48) 58%,rgba(9,35,89,0) 100%);transform:rotate(30deg);transform-origin:left center;filter:blur(.4px)}
-@keyframes gvStartupOrbit{to{transform:rotate(360deg)}}
 #aladin-cosmic-command-test .aladin-logo,
 #aladin-cosmic-command-test .aladin-copyright,
 #aladin-cosmic-command-test .aladin-fov,
@@ -77,7 +73,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-we-are-here.gv-hidden{opacity:0;visibility:hidden}
 #gv-apk-cover{flex-direction:column;gap:18px}#gv-apk-cover .gv-10e-version{color:#FFD85A;font:400 16px/1 "Space Age",sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55);white-space:nowrap}
 </style>
-<div id="aladin-cosmic-command-test"><div id="gv-startup-wait" aria-hidden="true"><div id="gv-startup-comet"></div></div></div>
+<div id="aladin-cosmic-command-test"><div id="gv-startup-wait" aria-hidden="true"></div></div>
 <script>(()=>{const cover=document.getElementById('gv-apk-cover');if(!cover)return;const img=cover.querySelector('img');if(img)img.src='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/icon_target_vector.svg';const version=document.createElement('div');version.className='gv-10e-version';version.textContent='VERSION 10AE2';cover.appendChild(version)})();</script>
 """))
 
