@@ -103,7 +103,7 @@ display(Javascript(r"""
     'use strict';
     const VERSION='10AE2';
     const DISPLAY_VERSION='10AE2';
-    const ALADIN_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/aladin-source-clone/dist/aladin.js';
+    const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=28d4acb0b724e2c9ec9764f4f3ce92ee1e3210a5';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=5c323a13b92f146426b45c047fc716b599494f3a';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=7b877f841f091f214d844bdc8ae2f933530f4592';
@@ -114,7 +114,7 @@ display(Javascript(r"""
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/5274c366f42bb1e764c4b2c4827df0bbba41b4cd/viewer/artwork/GV-reticle-0001.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
     const TARGET_ICON_URL='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20role%3D%22img%22%20aria-label%3D%22Galaxy%20Viewer%20target%20icon%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22ring%22%20x1%3D%224.5%22%20y1%3D%2210%22%20x2%3D%2227.5%22%20y2%3D%2222%22%20gradientUnits%3D%22userSpaceOnUse%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2345E7FF%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220.52%22%20stop-color%3D%22%234F9DFF%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237575FF%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%229.5%22%20fill%3D%22%23000000%22%20stroke%3D%22%23FF6B2D%22%20stroke-width%3D%221.8%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2216%22%20cy%3D%2216%22%20rx%3D%2211.5%22%20ry%3D%224.2%22%20fill%3D%22none%22%20stroke%3D%22url%28%23ring%29%22%20stroke-width%3D%222.2%22%20transform%3D%22rotate%28-18%2016%2016%29%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%2216%22%20cy%3D%2216%22%20rx%3D%225.7%22%20ry%3D%222.2%22%20fill%3D%22none%22%20stroke%3D%22%2345E7FF%22%20stroke-width%3D%221.6%22%20transform%3D%22rotate%28-18%2016%2016%29%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%221.6%22%20fill%3D%22%237575FF%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M16%202.5V7%20M16%2025V29.5%20M2.5%2016H7%20M25%2016H29.5%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fsvg%3E';
     const HUBBLE_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Hubble/Hubble-NASA-ESA-logo.png?v=9283e83cfbacd230551e9fc005794138be59709b';
-    const JWST_ICON_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/JWST/esa-jwst-logo.png?v=7169a77e4b56dc582f9b0fb0b76bf389bcf337ce';
+    const JWST_ICON_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/JWST/esa-jwst-logo.png?v=7169a77e4b56dc582f9b0b76bf389bcf337ce';
     const CHANDRA_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Chandra/images.png';
     const HD_LAYOUT=Object.freeze({bannerRatio:366/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});
     const HOME=Object.freeze({name:'EARTH — MILKY WAY',ra:266.41683,dec:-29.00781,distance:null});
@@ -2436,7 +2436,6 @@ function pumpWeb(){
   if(suspended)return;
   const candidates=[activeRecord,...future].filter(Boolean);
   for(const record of candidates){if(webControllers.size>=WEB_MAX)break;startWeb(record)}
-}
 function prepareRecord(record){
   if(!record)return;
   core?.requestHdPrefetch?.(record.destination);
