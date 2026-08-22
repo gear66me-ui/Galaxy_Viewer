@@ -2436,6 +2436,7 @@ function pumpWeb(){
   if(suspended)return;
   const candidates=[activeRecord,...future].filter(Boolean);
   for(const record of candidates){if(webControllers.size>=WEB_MAX)break;startWeb(record)}
+}
 function prepareRecord(record){
   if(!record)return;
   core?.requestHdPrefetch?.(record.destination);
