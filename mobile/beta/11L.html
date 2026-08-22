@@ -20,13 +20,8 @@
     if(!htmlMatch||!jsMatches.length)throw new Error('11L VIEWER EXTRACTION FAILED');
     const scripts=jsMatches.map(match=>'<script>'+match[1].replace(/<\/script/gi,'<\\/script')+'</scr'+'ipt>').join('');
     const diagnostics='<script src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-prefetch-diagnostics-0010.js?t='+Date.now()+'"></scr'+'ipt>';
-    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dfffea}</style></head><body>'+htmlMatch[1]+scripts+diagnostics+'</body></html>';
-    window.addEventListener('error',event=>{
-        document.body.textContent='GALAXY VIEWER 11L RUNTIME ERROR\n'+String(event?.error?.message||event?.message||'UNKNOWN ERROR');
-    });
-    window.addEventListener('unhandledrejection',event=>{
-        document.body.textContent='GALAXY VIEWER 11L PROMISE ERROR\n'+String(event?.reason?.message||event?.reason||'UNKNOWN ERROR');
-    });
+    const runtimeDiagnostics='<script>window.addEventListener("error",event=>{document.body.textContent="GALAXY VIEWER 11L RUNTIME ERROR\\n"+String(event?.error?.message||event?.message||"UNKNOWN ERROR")});window.addEventListener("unhandledrejection",event=>{document.body.textContent="GALAXY VIEWER 11L PROMISE ERROR\\n"+String(event?.reason?.message||event?.reason||"UNKNOWN ERROR")})</scr'+'ipt>';
+    const page='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dfffea}</style></head><body>'+runtimeDiagnostics+htmlMatch[1]+scripts+diagnostics+'</body></html>';
     document.open();document.write(page);document.close();
 })().catch(error=>{
     console.error('GALAXY VIEWER 11L HANDOFF FAILURE',error);
