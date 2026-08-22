@@ -1,11 +1,10 @@
-/* Galaxy Viewer 11J diagnostics + travel-isolated scheduler 0010.
-   Derived from the exact 11I diagnostics 0009 baseline. The 11J Viewer remains
-   byte-identical to 11I. Diagnostics rendering, hidden-Aladin preparation and
-   HD reconciliation yield completely while galaxy navigation is active. */
+/* Galaxy Viewer prefetch diagnostics + travel-isolated scheduler.
+   Standalone diagnostics rendering, hidden-Aladin preparation and HD
+   reconciliation yield completely while galaxy navigation is active. */
 (()=>{
 'use strict';
 const VERSION='0010';
-const ROOT_ID='gv-prefetch-diagnostics-0010';
+const ROOT_ID='gv-prefetch-diagnostics';
 const POLL_MS=400;
 const ALADIN_DWELL_MS=1400;
 const HD_REQUEUE_COOLDOWN_MS=1200;
@@ -24,6 +23,7 @@ let aladinRunToken=0;
 let aladinDwellTimer=0;
 let aladinDwellResolve=null;
 let travelPaused=false;
+let tableVisible=true;
 
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function keyOf(value){return String(value?.archiveId||value?.key||value?.name||'').trim().toLowerCase()}
@@ -32,6 +32,7 @@ function stateText(resource){const state=String(resource?.state||'QUEUED').toUpp
 function barClass(resource){const state=String(resource?.state||'QUEUED').toUpperCase();if(state==='READY')return 'gvpd-ready';if(state==='FAILED')return 'gvpd-failed';if(state.includes('RETRY'))return 'gvpd-retry';if(state==='SUSPENDED')return 'gvpd-paused';return 'gvpd-working'}
 function bar(resource){const state=String(resource?.state||'QUEUED').toUpperCase();const progress=progressValue(resource);const determinate=progress!==null;const width=determinate?Math.max(0,Math.min(100,progress)):0;const cls=barClass(resource)+(determinate?' gvpd-determinate':' gvpd-indeterminate');return `<div class="gvpd-resource ${cls}" title="${escapeHtml(state)}"><div class="gvpd-track"><div class="gvpd-fill"${determinate?` style="width:${width}%"`:''}></div></div><span>${escapeHtml(stateText(resource))}</span></div>`}
 function destinationForKey(key){return catalogByKey.get(String(key||'').toLowerCase())||null}
+function canonicalName(value){const destination=destinationForKey(keyOf(value));return String(destination?.name||value?.name||'')}
 function navigationActive(){return Boolean(core?.randomGalaxy?.getState?.().busy||core?.getBackgroundWorkSuspended?.())}
 
 function captureControls(){
@@ -89,8 +90,8 @@ function scheduleSkyRestore(){
   let frames=0;const check=()=>{frames++;if(!archiveOpen()&&!hdOpen()){restoreExistingNavigationShell();return}if(frames<120)requestAnimationFrame(check)};requestAnimationFrame(check);
 }
 function installBackRestoration(){
-  if(document.documentElement.dataset.gv11jBackBound==='true')return;
-  document.documentElement.dataset.gv11jBackBound='true';
+  if(document.documentElement.dataset.gvPrefetchBackBound==='true')return;
+  document.documentElement.dataset.gvPrefetchBackBound='true';
   document.addEventListener('click',event=>{
     const target=event.target instanceof Element?event.target:null;if(!target)return;
     if(target.closest('#gv-archive-back')){
@@ -106,9 +107,10 @@ function installBackRestoration(){
 function currentRuntimeDestination(data){
   const busy=Boolean(core?.randomGalaxy?.getState?.().busy);
   const runtime=core?.randomGalaxy?.getState?.().activeDestination||core?.randomGalaxy?.activeDestination||null;
-  if(busy&&data?.active?.name)return {name:String(data.active.name),key:String(data.active.key||''),sequence:data.active.sequence,provider:String(data.active.provider||''),destination:runtime};
-  if(runtime)return {name:String(runtime.name||data?.active?.name||''),key:keyOf(runtime)||String(data?.active?.key||''),sequence:data?.active?.sequence??'',provider:String(runtime.provider||data?.active?.provider||''),destination:runtime};
-  return data?.active?{name:String(data.active.name||''),key:String(data.active.key||''),sequence:data.active.sequence,provider:String(data.active.provider||''),destination:null}:null;
+  if(busy&&data?.active?.name){const canonical=destinationForKey(data.active.key);return {name:String(canonical?.name||data.active.name),key:String(data.active.key||''),sequence:data.active.sequence,provider:String(canonical?.provider||data.active.provider||''),destination:canonical||runtime}}
+  if(runtime)return {name:canonicalName(runtime)||String(data?.active?.name||''),key:keyOf(runtime)||String(data?.active?.key||''),sequence:data?.active?.sequence??'',provider:String(runtime.provider||data?.active?.provider||''),destination:runtime};
+  if(data?.active){const canonical=destinationForKey(data.active.key);return {name:String(canonical?.name||data.active.name||''),key:String(data.active.key||''),sequence:data.active.sequence,provider:String(canonical?.provider||data.active.provider||''),destination:canonical}}
+  return null;
 }
 function hdStateForActive(active,cached){
   const key=String(active?.key||'').toLowerCase();
@@ -128,10 +130,10 @@ async function ensureAladinPrewarm(){
   if(!window.A?.init)return null;
   await window.A.init;
   if(!aladinHost){
-    aladinHost=document.createElement('div');aladinHost.id='gv11j-aladin-prewarm';aladinHost.setAttribute('aria-hidden','true');
+    aladinHost=document.createElement('div');aladinHost.id='gv-prefetch-aladin-prewarm';aladinHost.setAttribute('aria-hidden','true');
     Object.assign(aladinHost.style,{position:'fixed',left:'-10000px',top:'0',width:'512px',height:'512px',opacity:'0',pointerEvents:'none',overflow:'hidden'});document.body.appendChild(aladinHost);
   }
-  aladinPrewarm=window.A.aladin('#gv11j-aladin-prewarm',{target:'266.41683 -29.00781',survey:'P/DSS2/color',fov:1,projection:'SIN',cooFrame:'ICRSd',showReticle:false,showZoomControl:false,showFullscreenControl:false,showLayersControl:false,showGotoControl:false,showCooGridControl:false,showSettingsControl:false,showSelectionModeControl:false,showColorPickerControl:false,showShareControl:false,showSimbadPointerControl:false,showProjectionControl:false,showStatusBar:false,showFrame:false,showFov:false,showCooLocation:false,showContextMenu:false,showCatalog:false,showCooGrid:false});
+  aladinPrewarm=window.A.aladin('#gv-prefetch-aladin-prewarm',{target:'266.41683 -29.00781',survey:'P/DSS2/color',fov:1,projection:'SIN',cooFrame:'ICRSd',showReticle:false,showZoomControl:false,showFullscreenControl:false,showLayersControl:false,showGotoControl:false,showCooGridControl:false,showSettingsControl:false,showSelectionModeControl:false,showColorPickerControl:false,showShareControl:false,showSimbadPointerControl:false,showProjectionControl:false,showStatusBar:false,showFrame:false,showFov:false,showCooLocation:false,showContextMenu:false,showCatalog:false,showCooGrid:false});
   try{aladinPrewarm.setFrame?.('ICRSd');aladinPrewarm.setProjection?.('SIN')}catch(_){}
   return aladinPrewarm;
 }
@@ -195,28 +197,37 @@ function reconcileHd(data,active){
     hdRequeueAt.set(key,now);core?.requestHdPrefetch?.(destination);
   }
 }
-function repairedRows(data){return (Array.isArray(data?.rows)?data.rows.slice(0,10):[]).map(row=>Object.freeze({...row,aladin:Object.freeze(aladinStateForKey(row.key))}))}
+function repairedRows(data){return (Array.isArray(data?.rows)?data.rows.slice(0,10):[]).map(row=>{const destination=destinationForKey(row?.key);return Object.freeze({...row,name:String(destination?.name||row?.name||''),provider:String(destination?.provider||row?.provider||''),aladin:Object.freeze(aladinStateForKey(row.key))})})}
+
+function setTableVisible(visible){
+  tableVisible=Boolean(visible);
+  const root=document.getElementById(ROOT_ID);if(!root)return;
+  const body=root.querySelector('.gvpd-table-body');if(body)body.hidden=!tableVisible;
+  const button=root.querySelector('.gvpd-toggle');
+  if(button){button.textContent=tableVisible?'TABLE ON':'TABLE OFF';button.setAttribute('aria-pressed',String(tableVisible));button.setAttribute('title',tableVisible?'HIDE PREFETCH TABLE':'SHOW PREFETCH TABLE')}
+}
+function toggleTable(){setTableVisible(!tableVisible)}
 
 function ensureRoot(){
   let root=document.getElementById(ROOT_ID);if(root)return root;
-  const style=document.createElement('style');style.id=ROOT_ID+'-style';style.textContent=`#${ROOT_ID}{position:absolute;left:12px;right:12px;top:56px;z-index:7060;box-sizing:border-box;max-width:calc(100vw - 24px);padding:5px 6px 4px;border:1px solid rgba(120,255,171,.72);border-radius:6px;background:rgba(0,10,7,.78);color:#e8fff0;font:400 8px/1.12 "Space Age",sans-serif;letter-spacing:.12px;pointer-events:none;box-shadow:0 0 8px rgba(77,255,143,.16)}#${ROOT_ID} .gvpd-active-title{height:14px;overflow:hidden;color:#78ffab;font-size:8px;line-height:14px;white-space:nowrap;text-overflow:ellipsis;text-align:center}#${ROOT_ID} table{width:100%;border-collapse:collapse;table-layout:fixed}#${ROOT_ID} th,#${ROOT_ID} td{height:15px;padding:1px 2px;border-top:1px solid rgba(120,255,171,.16);overflow:hidden;vertical-align:middle}#${ROOT_ID} th{height:14px;color:#aeefc5;font-size:7px;text-align:center}#${ROOT_ID} .gvpd-seq{width:24px;text-align:center;font-variant-numeric:tabular-nums}#${ROOT_ID} .gvpd-name{width:34%;white-space:nowrap;text-overflow:ellipsis;color:#fff}#${ROOT_ID} .gvpd-resource{display:grid;grid-template-columns:minmax(32px,1fr) 48px;align-items:center;gap:3px;min-width:0;font-family:system-ui,sans-serif;font-size:7px}#${ROOT_ID} .gvpd-track{position:relative;height:5px;border:1px solid rgba(210,255,230,.30);border-radius:4px;overflow:hidden;background:rgba(255,255,255,.08)}#${ROOT_ID} .gvpd-fill{height:100%;width:100%;background:#68e99a}#${ROOT_ID} .gvpd-indeterminate .gvpd-fill{width:38%;animation:gvpdMove .9s linear infinite}#${ROOT_ID} .gvpd-retry .gvpd-fill,#${ROOT_ID} .gvpd-failed .gvpd-fill{background:#ff4b4b}#${ROOT_ID} .gvpd-retry span,#${ROOT_ID} .gvpd-failed span{color:#ff7b7b}#${ROOT_ID} .gvpd-paused .gvpd-fill{background:#b8b8b8;animation:none;width:48%}#${ROOT_ID} .gvpd-ready span{color:#9fffc1}#${ROOT_ID} .gvpd-active-row{background:rgba(64,255,132,.13);box-shadow:inset 0 0 7px rgba(64,255,132,.18)}#${ROOT_ID} .gvpd-active-row.gvpd-traveling{background:rgba(255,216,90,.13);box-shadow:inset 0 0 7px rgba(255,216,90,.18)}#${ROOT_ID} .gvpd-dot{display:inline-block;width:7px;height:7px;margin-right:3px;border-radius:50%;vertical-align:middle;background:#46ff83;box-shadow:0 0 5px #46ff83}#${ROOT_ID} .gvpd-traveling .gvpd-dot{background:#ffd85a;box-shadow:0 0 5px #ffd85a;animation:gvpdBlink .7s steps(1,end) infinite}#${ROOT_ID} .gvpd-tools{height:20px;display:flex;align-items:flex-end;justify-content:flex-start;pointer-events:none}#${ROOT_ID} .gvpd-copy{position:relative;width:18px;height:18px;margin:2px 0 0;padding:0;border:1px solid rgba(120,255,171,.72);border-radius:4px;background:rgba(0,18,11,.92);pointer-events:auto;cursor:pointer}#${ROOT_ID} .gvpd-copy::before,#${ROOT_ID} .gvpd-copy::after{content:"";position:absolute;width:7px;height:9px;border:1px solid #dfffea;border-radius:1px;background:#03130c}#${ROOT_ID} .gvpd-copy::before{left:5px;top:3px}#${ROOT_ID} .gvpd-copy::after{left:3px;top:5px}#${ROOT_ID} .gvpd-copy.gvpd-copied{border-color:#78ffab;box-shadow:0 0 7px #46ff83}@keyframes gvpdMove{from{transform:translateX(-110%)}to{transform:translateX(290%)}}@keyframes gvpdBlink{0%,49%{opacity:1}50%,100%{opacity:.2}}@media(max-width:520px){#${ROOT_ID}{left:5px;right:5px;max-width:calc(100vw - 10px);padding-left:3px;padding-right:3px}#${ROOT_ID} .gvpd-name{width:30%;font-size:7px}#${ROOT_ID} .gvpd-resource{grid-template-columns:minmax(22px,1fr) 39px;gap:2px;font-size:6px}}`;
+  const style=document.createElement('style');style.id=ROOT_ID+'-style';style.textContent=`#${ROOT_ID}{position:absolute;left:12px;right:12px;top:56px;z-index:7060;box-sizing:border-box;max-width:calc(100vw - 24px);padding:5px 6px 4px;border:1px solid rgba(120,255,171,.72);border-radius:6px;background:rgba(0,10,7,.78);color:#e8fff0;font:400 8px/1.12 "Space Age",sans-serif;letter-spacing:.12px;pointer-events:none;box-shadow:0 0 8px rgba(77,255,143,.16)}#${ROOT_ID} .gvpd-table-body[hidden]{display:none!important}#${ROOT_ID} .gvpd-active-title{height:14px;overflow:hidden;color:#78ffab;font-size:8px;line-height:14px;white-space:nowrap;text-overflow:ellipsis;text-align:center}#${ROOT_ID} table{width:100%;border-collapse:collapse;table-layout:fixed}#${ROOT_ID} th,#${ROOT_ID} td{height:15px;padding:1px 2px;border-top:1px solid rgba(120,255,171,.16);overflow:hidden;vertical-align:middle}#${ROOT_ID} th{height:14px;color:#aeefc5;font-size:7px;text-align:center}#${ROOT_ID} .gvpd-seq{width:24px;text-align:center;font-variant-numeric:tabular-nums}#${ROOT_ID} .gvpd-name{width:34%;white-space:nowrap;text-overflow:ellipsis;color:#fff}#${ROOT_ID} .gvpd-resource{display:grid;grid-template-columns:minmax(32px,1fr) 48px;align-items:center;gap:3px;min-width:0;font-family:system-ui,sans-serif;font-size:7px}#${ROOT_ID} .gvpd-track{position:relative;height:5px;border:1px solid rgba(210,255,230,.30);border-radius:4px;overflow:hidden;background:rgba(255,255,255,.08)}#${ROOT_ID} .gvpd-fill{height:100%;width:100%;background:#68e99a}#${ROOT_ID} .gvpd-indeterminate .gvpd-fill{width:38%;animation:gvpdMove .9s linear infinite}#${ROOT_ID} .gvpd-retry .gvpd-fill,#${ROOT_ID} .gvpd-failed .gvpd-fill{background:#ff4b4b}#${ROOT_ID} .gvpd-retry span,#${ROOT_ID} .gvpd-failed span{color:#ff7b7b}#${ROOT_ID} .gvpd-paused .gvpd-fill{background:#b8b8b8;animation:none;width:48%}#${ROOT_ID} .gvpd-ready span{color:#9fffc1}#${ROOT_ID} .gvpd-active-row{background:rgba(64,255,132,.13);box-shadow:inset 0 0 7px rgba(64,255,132,.18)}#${ROOT_ID} .gvpd-active-row.gvpd-traveling{background:rgba(255,216,90,.13);box-shadow:inset 0 0 7px rgba(255,216,90,.18)}#${ROOT_ID} .gvpd-dot{display:inline-block;width:7px;height:7px;margin-right:3px;border-radius:50%;vertical-align:middle;background:#46ff83;box-shadow:0 0 5px #46ff83}#${ROOT_ID} .gvpd-traveling .gvpd-dot{background:#ffd85a;box-shadow:0 0 5px #ffd85a;animation:gvpdBlink .7s steps(1,end) infinite}#${ROOT_ID} .gvpd-tools{height:20px;display:flex;align-items:flex-end;justify-content:flex-start;gap:4px;pointer-events:none}#${ROOT_ID} .gvpd-copy,#${ROOT_ID} .gvpd-toggle{height:18px;margin:2px 0 0;padding:0 5px;border:1px solid rgba(120,255,171,.72);border-radius:4px;background:rgba(0,18,11,.92);color:#dfffea;font:400 7px/1 "Space Age",sans-serif;pointer-events:auto;cursor:pointer}#${ROOT_ID} .gvpd-copy{position:relative;width:18px;padding:0}#${ROOT_ID} .gvpd-copy::before,#${ROOT_ID} .gvpd-copy::after{content:"";position:absolute;width:7px;height:9px;border:1px solid #dfffea;border-radius:1px;background:#03130c}#${ROOT_ID} .gvpd-copy::before{left:5px;top:3px}#${ROOT_ID} .gvpd-copy::after{left:3px;top:5px}#${ROOT_ID} .gvpd-copy.gvpd-copied{border-color:#78ffab;box-shadow:0 0 7px #46ff83}#${ROOT_ID} .gvpd-toggle[aria-pressed="false"]{opacity:.62}@keyframes gvpdMove{from{transform:translateX(-110%)}to{transform:translateX(290%)}}@keyframes gvpdBlink{0%,49%{opacity:1}50%,100%{opacity:.2}}@media(max-width:520px){#${ROOT_ID}{left:5px;right:5px;max-width:calc(100vw - 10px);padding-left:3px;padding-right:3px}#${ROOT_ID} .gvpd-name{width:30%;font-size:7px}#${ROOT_ID} .gvpd-resource{grid-template-columns:minmax(22px,1fr) 39px;gap:2px;font-size:6px}}`;
   document.head.appendChild(style);
-  root=document.createElement('section');root.id=ROOT_ID;root.setAttribute('aria-label','GALAXY VIEWER 11J PREFETCH STATUS');
-  root.innerHTML='<div class="gvpd-active-title">ACTIVE / TRAVELING TO — WAITING FOR 11J</div><table><thead><tr><th class="gvpd-seq">#</th><th class="gvpd-name">GALAXY</th><th>1 HD</th><th>2 ALADIN</th><th>3 WEB</th></tr></thead><tbody></tbody></table><div class="gvpd-tools"><button class="gvpd-copy" type="button" aria-label="COPY DIAGNOSTIC REPORT" title="COPY DIAGNOSTIC REPORT"></button></div>';
-  const viewer=document.getElementById('aladin-cosmic-command-test');(viewer||document.body).appendChild(root);root.querySelector('.gvpd-copy').addEventListener('click',copyReport);return root;
+  root=document.createElement('section');root.id=ROOT_ID;root.setAttribute('aria-label','GALAXY VIEWER PREFETCH STATUS');
+  root.innerHTML='<div class="gvpd-table-body"><div class="gvpd-active-title">ACTIVE / TRAVELING TO — WAITING FOR TELEMETRY</div><table><thead><tr><th class="gvpd-seq">#</th><th class="gvpd-name">GALAXY</th><th>1 HD</th><th>2 ALADIN</th><th>3 WEB</th></tr></thead><tbody></tbody></table></div><div class="gvpd-tools"><button class="gvpd-copy" type="button" aria-label="COPY DIAGNOSTIC REPORT" title="COPY DIAGNOSTIC REPORT"></button><button class="gvpd-toggle" type="button" aria-label="TOGGLE PREFETCH TABLE" aria-pressed="true" title="HIDE PREFETCH TABLE">TABLE ON</button></div>';
+  const viewer=document.getElementById('aladin-cosmic-command-test');(viewer||document.body).appendChild(root);root.querySelector('.gvpd-copy').addEventListener('click',copyReport);root.querySelector('.gvpd-toggle').addEventListener('click',toggleTable);return root;
 }
 function rowHtml(row,index,{active=false,traveling=false}={}){const cls=active?` class="gvpd-active-row${traveling?' gvpd-traveling':''}"`:'';const seq=active?`<span class="gvpd-dot" aria-hidden="true"></span>${escapeHtml(row.sequence||'A')}`:String(index+1);return `<tr${cls} data-key="${escapeHtml(row.key)}"><td class="gvpd-seq">${seq}</td><td class="gvpd-name" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</td><td>${bar(row.hd)}</td><td>${bar(row.aladin)}</td><td>${bar(row.web)}</td></tr>`}
 function reportText(){
   const data=queueApi?.getPrefetchTelemetry?.()||{};const active=currentRuntimeDestination(data);const activeRow=activeResourceRow(active);const rows=repairedRows(data);const aladinQueue=getAladinQueueState(data,active);
-  const lines=['GALAXY VIEWER 11J DIAGNOSTIC REPORT',`SUSPENDED: ${Boolean(core?.getBackgroundWorkSuspended?.())}`,`TRAVEL PAUSED: ${travelPaused}`,`ALADIN ACTIVE: ${aladinQueue.activeKey||'NONE'}`,`ALADIN QUEUE: ${aladinQueue.queuedDestinations.join(', ')||'EMPTY'}`];
+  const lines=['GALAXY VIEWER PREFETCH DIAGNOSTIC REPORT',`SUSPENDED: ${Boolean(core?.getBackgroundWorkSuspended?.())}`,`TRAVEL PAUSED: ${travelPaused}`,`ALADIN ACTIVE: ${aladinQueue.activeKey||'NONE'}`,`ALADIN QUEUE: ${aladinQueue.queuedDestinations.join(', ')||'EMPTY'}`];
   if(activeRow)lines.push(`ACTIVE | SEQ ${activeRow.sequence} | KEY ${activeRow.key} | ${activeRow.provider} | ${activeRow.name} | HD ${stateText(activeRow.hd)} | ALADIN ${stateText(activeRow.aladin)} | WEB ${stateText(activeRow.web)}`);else lines.push('ACTIVE | NONE');
   rows.forEach((row,index)=>lines.push(`${index+1} | SEQ ${row.sequence} | KEY ${row.key} | ${row.provider} | ${row.name} | HD ${stateText(row.hd)} | ALADIN ${stateText(row.aladin)} | WEB ${stateText(row.web)}${row.hd?.detail?` | HD DETAIL ${row.hd.detail}`:''}${row.web?.detail?` | WEB DETAIL ${row.web.detail}`:''}`));return lines.join('\n');
 }
 async function copyReport(){const text=reportText();let copied=false;try{await navigator.clipboard.writeText(text);copied=true}catch(_){try{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.left='-10000px';document.body.appendChild(area);area.select();copied=document.execCommand('copy');area.remove()}catch(__){}}if(copied){const button=document.querySelector(`#${ROOT_ID} .gvpd-copy`);button?.classList.add('gvpd-copied');setTimeout(()=>button?.classList.remove('gvpd-copied'),650)}}
 
 function installImmediateNavigationPause(){
-  if(document.documentElement.dataset.gv11jPauseBound==='true')return;
-  document.documentElement.dataset.gv11jPauseBound='true';
+  if(document.documentElement.dataset.gvPrefetchPauseBound==='true')return;
+  document.documentElement.dataset.gvPrefetchPauseBound='true';
   document.addEventListener('click',event=>{
     const target=event.target instanceof Element?event.target:null;if(!target)return;
     const controls=captureControls();
@@ -224,8 +235,8 @@ function installImmediateNavigationPause(){
   },true);
 }
 function render(){
-  const root=ensureRoot();core=window.GV10E||core;queueApi=window.GV11F||queueApi;const title=root.querySelector('.gvpd-active-title');const body=root.querySelector('tbody');
-  if(!core||!queueApi||typeof queueApi.getPrefetchTelemetry!=='function'){title.textContent='ACTIVE / TRAVELING TO — WAITING FOR 11J TELEMETRY';body.replaceChildren();return}
+  const root=ensureRoot();core=window.GalaxyViewerCore||core;queueApi=window.GalaxyViewerPrefetch||queueApi;const title=root.querySelector('.gvpd-active-title');const body=root.querySelector('tbody');
+  if(!core||!queueApi||typeof queueApi.getPrefetchTelemetry!=='function'){title.textContent='ACTIVE / TRAVELING TO — WAITING FOR TELEMETRY';body.replaceChildren();return}
   try{
     installBackRestoration();installImmediateNavigationPause();captureControls();
     if(navigationActive()){enterTravelPause();return}
@@ -239,12 +250,11 @@ function render(){
     let html=activeRow?rowHtml(activeRow,-1,{active:true,traveling:false}):'';html+=rows.map((row,index)=>rowHtml(row,index)).join('');body.innerHTML=html;
     while(body.querySelectorAll('tr:not(.gvpd-active-row)').length<10){const index=body.querySelectorAll('tr:not(.gvpd-active-row)').length;const tr=document.createElement('tr');tr.innerHTML=`<td class="gvpd-seq">${index+1}</td><td class="gvpd-name">WAITING</td><td>${bar({state:'QUEUED'})}</td><td>${bar({state:'QUEUED'})}</td><td>${bar({state:'QUEUED'})}</td>`;body.appendChild(tr)}
     if(!archiveOpen()&&!hdOpen())restoreExistingNavigationShell();
-    if(core.versionLabel){core.versionLabel.textContent='VERSION 11J';core.versionLabel.setAttribute('aria-label','GALAXY VIEWER VERSION 11J')}
-    const aladinQueue=getAladinQueueState(data,active);window.GV11J=Object.freeze({version:'11J',displayVersion:'11J',core,queueApi,getPrefetchTelemetry:()=>({active:activeRow,rows,suspended:false,travelPaused,aladin:aladinQueue}),getAladinPrewarmState:()=>aladinQueue,copyDiagnosticReport:copyReport,restoreHdViewportControls});
+    const aladinQueue=getAladinQueueState(data,active);window.GalaxyViewerDiagnosticsRuntime=Object.freeze({version:VERSION,core,queueApi,getPrefetchTelemetry:()=>({active:activeRow,rows,suspended:false,travelPaused,aladin:aladinQueue}),getAladinPrewarmState:()=>aladinQueue,copyDiagnosticReport:copyReport,restoreHdViewportControls});
   }catch(error){title.textContent='DIAGNOSTICS ERROR — '+String(error?.message||error)}
 }
 function start(){if(timer)return;ensureRoot();render();timer=setInterval(render,POLL_MS)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.addEventListener('beforeunload',()=>{if(timer)clearInterval(timer);cancelAladinDwell();try{aladinHost?.remove()}catch(_){}},{once:true});
-window.GalaxyViewerPrefetchDiagnostics0010=Object.freeze({version:VERSION,render,copyReport,restoreHdViewportControls});
+window.GalaxyViewerPrefetchDiagnostics=Object.freeze({version:VERSION,render,copyReport,restoreHdViewportControls,setTableVisible,toggleTable});
 })();
