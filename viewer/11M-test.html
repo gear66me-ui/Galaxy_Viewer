@@ -7,38 +7,80 @@
 <title>Galaxy Viewer 11M Test</title>
 <style>
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000;color:#fff}
-#gv-test-status{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:#000;color:#78ffab;font:16px/1.4 monospace;text-align:center;white-space:pre-wrap}
+#gv-test-status{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:#000;color:#78ffab;font:14px/1.45 monospace;text-align:center;white-space:pre-wrap;overflow:auto}
 </style>
 </head>
 <body>
 <div id="gv-test-status">LOADING GALAXY VIEWER 11M…</div>
 <script>
-(async()=>{
+(()=>{
+  'use strict';
   const status=document.getElementById('gv-test-status');
+  let finished=false;
+  const show=message=>{if(status){status.style.display='flex';status.textContent=String(message)}};
   const fail=message=>{
-    if(status){status.style.display='flex';status.textContent='GALAXY VIEWER LOAD FAILED\n'+String(message)}
+    if(finished)return;
+    finished=true;
+    show('GALAXY VIEWER 11M LOAD FAILED\n\n'+String(message));
     console.error('GALAXY VIEWER 11M TEST LAUNCHER FAILURE',message);
   };
-  try{
-    const response=await fetch('./GV-beta-0011M.py?test=11m',{cache:'no-store'});
-    if(!response.ok)throw new Error('11M SOURCE RETURNED HTTP '+response.status);
-    const source=await response.text();
-    const htmlMatch=source.match(/display\(HTML\(r?"""([\s\S]*?)"""\)\)/);
-    const jsMatches=[...source.matchAll(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/g)];
-    if(!htmlMatch)throw new Error('11M HTML BLOCK NOT FOUND');
-    if(jsMatches.length!==2)throw new Error('EXPECTED 2 JAVASCRIPT BLOCKS, FOUND '+jsMatches.length);
-
-    document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
+  const succeed=()=>{
+    if(finished)return;
+    finished=true;
     if(status)status.remove();
+  };
 
-    for(const match of jsMatches){
-      const script=document.createElement('script');
-      script.textContent=match[1];
-      document.body.appendChild(script);
+  window.addEventListener('error',event=>{
+    fail(event?.error?.stack||event?.message||'UNKNOWN WINDOW ERROR');
+  });
+  window.addEventListener('unhandledrejection',event=>{
+    fail(event?.reason?.stack||event?.reason||'UNHANDLED PROMISE REJECTION');
+  });
+  document.addEventListener('gv-viewer-failed',event=>{
+    fail(event?.detail?.message||'VIEWER REPORTED STARTUP FAILURE');
+  },{once:true});
+  document.addEventListener('gv-viewer-ready',succeed,{once:true});
+
+  (async()=>{
+    try{
+      show('FETCHING GALAXY VIEWER 11M…');
+      const response=await fetch('./GV-beta-0011M.py?launcher=901313ac',{cache:'no-store'});
+      if(!response.ok)throw new Error('11M SOURCE RETURNED HTTP '+response.status);
+      const source=await response.text();
+
+      const htmlMatch=source.match(/display\(HTML\(r?"""([\s\S]*?)"""\)\)/);
+      const jsMatches=[...source.matchAll(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/g)];
+      if(!htmlMatch)throw new Error('11M HTML BLOCK NOT FOUND');
+      if(jsMatches.length!==2)throw new Error('EXPECTED 2 JAVASCRIPT BLOCKS, FOUND '+jsMatches.length);
+
+      show('STARTING GALAXY VIEWER 11M…');
+      document.body.insertAdjacentHTML('beforeend',htmlMatch[1]);
+
+      const embedded=[...document.body.querySelectorAll('script:not([src])')].filter(node=>node!==document.currentScript);
+      for(const old of embedded){
+        if(old.parentNode&&old.textContent){
+          const replacement=document.createElement('script');
+          replacement.textContent=old.textContent;
+          old.replaceWith(replacement);
+        }
+      }
+
+      for(const match of jsMatches){
+        const script=document.createElement('script');
+        script.textContent=match[1];
+        document.body.appendChild(script);
+      }
+
+      setTimeout(()=>{
+        if(finished)return;
+        const root=document.getElementById('aladin-cosmic-command-test');
+        const canvas=root?.querySelector('canvas');
+        fail('VIEWER READY EVENT TIMED OUT\nROOT: '+Boolean(root)+'\nCANVAS: '+Boolean(canvas)+'\nALADIN: '+Boolean(window.aladin_cosmic_command_test));
+      },30000);
+    }catch(error){
+      fail(error?.stack||error);
     }
-  }catch(error){
-    fail(error?.stack||error);
-  }
+  })();
 })();
 </script>
 </body>
