@@ -1451,16 +1451,16 @@ display(Javascript(r"""
         cancelAnimationFrame(earthReturnFrame);
         earthReturnFrame=0;
         earthReturnDestination=null;
-        earthReturnIndicator.root.classList.remove(gv-visible);
-        earthReturnIndicator.root.setAttribute(aria-hidden,true);
+        earthReturnIndicator.root.classList.remove('gv-visible');
+        earthReturnIndicator.root.setAttribute('aria-hidden','true');
     };
 
     const formatEarthReturnDistance=destination=>{
         const millionLy=Number(destination?.distance);
         if(!Number.isFinite(millionLy)||millionLy<=0)return null;
-        if(millionLy>=1000)return {value:(millionLy/1000).toFixed(1),unit:BLY};
-        if(millionLy<1)return {value:(millionLy*1000).toFixed(1),unit:KLY};
-        return {value:millionLy.toFixed(1),unit:MLY};
+        if(millionLy>=1000)return {value:(millionLy/1000).toFixed(1),unit:'BLY'};
+        if(millionLy<1)return {value:(millionLy*1000).toFixed(1),unit:'KLY'};
+        return {value:millionLy.toFixed(1),unit:'MLY'};
     };
 
     const updateEarthReturnIndicator=()=>{
@@ -1472,7 +1472,7 @@ display(Javascript(r"""
 
         let dx=1,dy=0;
         try{
-            if(typeof aladin.world2pix===function){
+            if(typeof aladin.world2pix==='function'){
                 const earthPixel=aladin.world2pix(HOME.ra,HOME.dec);
                 const ex=Number(earthPixel?.[0]),ey=Number(earthPixel?.[1]);
                 if(Number.isFinite(ex)&&Number.isFinite(ey)){
@@ -1524,8 +1524,8 @@ display(Javascript(r"""
         earthReturnDestination=destination;
         earthReturnIndicator.value.textContent=formatted.value;
         earthReturnIndicator.unit.textContent=formatted.unit;
-        earthReturnIndicator.root.removeAttribute(aria-hidden);
-        earthReturnIndicator.root.classList.add(gv-visible);
+        earthReturnIndicator.root.removeAttribute('aria-hidden');
+        earthReturnIndicator.root.classList.add('gv-visible');
         updateEarthReturnIndicator();
     };
 
