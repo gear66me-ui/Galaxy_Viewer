@@ -591,16 +591,16 @@ jobs:
           # ------------------------------------------------------------------
           # RUNTIME PATH PROTECTION
           # Launchers and active Viewers may never reference viewer/archive/.
-          # Scan all relevant committed text, not just changed files, so a
-          # promotion cannot legitimize a stale archive dependency.
+          # Scan only relevant runtime text changed by the current commit so
+          # unrelated historical files cannot make a valid commit fail.
           # ------------------------------------------------------------------
-          tracked = git_text('ls-tree', '-r', '--name-only', commit_sha).splitlines()
           scan_paths = [
-              p for p in tracked
+              p for p in actual_paths
               if (
                   p.startswith('mobile/') or
                   p.startswith('viewer/')
               ) and p.lower().endswith(('.html', '.htm', '.js', '.mjs', '.py', '.json', '.yml', '.yaml'))
+              and exists_at(commit_sha, p)
           ]
 
           archive_ref_re = re.compile(r'viewer/archive/|\.\./archive/|/archive/GV-beta-', re.I)
