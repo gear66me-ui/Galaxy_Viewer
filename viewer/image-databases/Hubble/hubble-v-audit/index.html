@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hubble V — Live Aladin Comparison Audit</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.css">
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#05070b;color:#edf3fb}
+main{max-width:1500px;margin:auto;padding:10px}
+h1{margin:0 0 4px;font-size:clamp(24px,4vw,40px)}
+.sub{margin:0 0 10px;color:#aebbd0;line-height:1.4}
+.panel{background:#0c121c;border:1px solid #31415a;border-radius:12px;padding:10px;margin:10px 0}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(90px,1fr));gap:6px}
+.stat{background:#111a28;border:1px solid #2c3c55;border-radius:9px;padding:8px}
+.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:#9fb0c7}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{border:1px solid #536782;background:#17243a;color:#fff;border-radius:8px;padding:9px 13px;font-weight:800}
+button.primary{background:#dfeaff;color:#07101d;border:0}button:disabled{opacity:.45}
+label{font-size:12px;color:#b9c7da}input[type=number]{width:74px;background:#050a12;color:#fff;border:1px solid #43536d;border-radius:6px;padding:6px}
+.progress{height:10px;background:#101725;border-radius:999px;overflow:hidden;margin-top:8px}
+.progress>div{height:100%;width:0;background:#dfeaff}
+.current{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.frame{border:1px solid #34445d;border-radius:10px;overflow:hidden;background:#000;min-height:300px}
+.frame h3{margin:0;padding:7px 9px;background:#101827;font-size:13px}
+.frame img,#aladin{width:100%;height:430px;display:block;object-fit:contain;background:#000}
+#aladin{position:relative}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.meta div{background:#101827;border-radius:7px;padding:7px;font-size:11px}
+.meta b{display:block;color:#8fa5c1}
+.statusline{margin-top:8px;font-weight:800}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;margin-right:5px}
+.pass{background:#173622;border:1px solid #4d9464}.warn{background:#4a3810;border:1px solid #ad8b35}.review{background:#4b1820;border:1px solid #b65061}.complex{background:#35234d;border:1px solid #7958a1}
+.queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.card{background:#0e1622;border:1px solid #34445d;border-radius:10px;padding:8px}
+.card h3{margin:0 0 4px;font-size:15px}.card .thumbs{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.card img{width:100%;height:135px;object-fit:contain;background:#000;border-radius:6px}
+.small{font-size:10px;color:#9dadc2;word-break:break-word}
+textarea{width:100%;min-height:160px;background:#02050a;color:#fff;border:1px solid #34445d;border-radius:8px;padding:8px;font:11px/1.4 ui-monospace,monospace}
+.hidden{display:none!important}
+@media(max-width:760px){main{padding:6px}.stats{grid-template-columns:repeat(3,1fr)}.current{grid-template-columns:1fr}.frame img,#aladin{height:300px}.meta{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><main>
+<h1>Hubble V — Live Aladin Comparison Audit</h1>
+<p class="sub">Browser-local first pass for Catalog 0022. Hubble reference images are compared against live Aladin Lite renders. Nothing on this page modifies the catalog.</p>
+
+<section class="panel">
+  <div class="stats">
+    <div class="stat"><b id="total">0</b><span>Total</span></div>
+    <div class="stat"><b id="processed">0</b><span>Processed</span></div>
+    <div class="stat"><b id="passes">0</b><span>Pass ≤20%</span></div>
+    <div class="stat"><b id="warnings">0</b><span>Warning 20–30%</span></div>
+    <div class="stat"><b id="reviews">0</b><span>Review &gt;30%</span></div>
+    <div class="stat"><b id="complex">0</b><span>Complex/uncertain</span></div>
+  </div>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="controls" style="margin-top:10px">
+    <button id="start" class="primary">START / RESUME</button>
+    <button id="pause" disabled>PAUSE</button>
+    <button id="next">SKIP TO REVIEW</button>
+    <label>Pass ≤ <input id="passThreshold" type="number" min="1" max="99" value="20">%</label>
+    <label>Review &gt; <input id="reviewThreshold" type="number" min="1" max="99" value="30">%</label>
+    <label>Render wait <input id="renderWait" type="number" min="1" max="20" value="4"> sec</label>
+  </div>
+  <div id="message" class="statusline">Loading Catalog 0022…</div>
+</section>
+
+<section class="panel">
+  <div class="current">
+    <div class="frame"><h3>HUBBLE REFERENCE</h3><img id="hubbleImage" alt="Hubble reference"></div>
+    <div class="frame"><h3>LIVE ALADIN</h3><div id="aladin"></div></div>
+  </div>
+  <div class="meta">
+    <div><b>OBJECT</b><span id="mName">—</span></div>
+    <div><b>RA / DEC</b><span id="mCoords">—</span></div>
+    <div><b>FOV</b><span id="mFov">—</span></div>
+    <div><b>ORIENTATION</b><span id="mOrientation">—</span></div>
+  </div>
+  <div id="currentResult" class="statusline">Waiting.</div>
+</section>
+
+<section class="panel">
+  <h2>Human review queue</h2>
+  <p class="sub">Only warnings, &gt;30% mismatches, capture failures and complex/uncertain fields are retained here.</p>
+  <div id="queue" class="queue"></div>
+</section>
+
+<section class="panel">
+  <div class="controls">
+    <button id="copyJson">COPY RESULTS JSON</button>
+    <button id="downloadJson">DOWNLOAD RESULTS JSON</button>
+    <button id="clearLocal">CLEAR LOCAL PROGRESS</button>
+  </div>
+  <textarea id="jsonOut" readonly></textarea>
+</section>
+
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+<script>
+'use strict';
+
+const CATALOG = '../databases/gv-hubble-galaxies-full-0022.json';
+const STORAGE_KEY = 'gv-hubble-v-live-audit-0022-v1';
+const ANALYSIS_SIZE = 96;
+const $ = id => document.getElementById(id);
+
+let records = [], index = 0, running = false, paused = false, aladin = null;
+let results = [];
+let stats = {pass:0, warning:0, review:0, complex:0};
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function num(v){
+  if(typeof v === 'number' && Number.isFinite(v)) return v;
+  const m = String(v ?? '').match(/[-+]?\d+(?:\.\d+)?/);
+  return m ? Number(m[0]) : NaN;
+}
+function text(v, fallback='—'){ return v === null || v === undefined || v === '' ? fallback : String(v); }
+
+function normalizeCatalog(payload){
+  if(Array.isArray(payload)) return payload;
+  const preferred = ['galaxies','records','objects','items','catalog'];
+  for(const k of preferred) if(Array.isArray(payload?.[k])) return payload[k];
+  if(payload && typeof payload === 'object'){
+    const array = Object.values(payload).find(Array.isArray);
+    if(array) return array;
+    const vals = Object.values(payload);
+    if(vals.length && vals.every(v=>v && typeof v === 'object' && !Array.isArray(v))) return vals;
+  }
+  throw new Error('Catalog 0022 has no recognizable record array.');
+}
+
+function recordView(r, i){
+  const id = r.archiveId ?? r.id ?? r.designation ?? `record-${i+1}`;
+  const name = r.displayName ?? r.name ?? r.title ?? r.designation ?? id;
+  const ra = num(r.ra);
+  const dec = num(r.dec);
+  const fovRaw = r.fieldOfView ?? r.fov ?? r.field_of_view;
+  let fov = num(fovRaw);
+  if(!Number.isFinite(fov) || fov <= 0) fov = 1.5;
+  const orientationRaw = r.orientation ?? r.positionAngle ?? r.pa ?? 0;
+  let orientation = num(orientationRaw);
+  if(!Number.isFinite(orientation)) orientation = 0;
+  const orientText = String(orientationRaw ?? '');
+  if(/left/i.test(orientText)) orientation = -Math.abs(orientation);
+  if(/right/i.test(orientText)) orientation = Math.abs(orientation);
+  const image = r.selectedImageUrl ?? r.githubImageUrl ?? r.esaPublicationJpeg ?? r.imageUrl ?? r.jpegUrl ?? '';
+  return {raw:r,id:String(id),name:String(name),ra,dec,fov,fovRaw,orientation,orientationRaw,image};
+}
+
+async function loadImage(url){
+  if(!url) throw new Error('No selected image URL');
+  return await new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.referrerPolicy = 'no-referrer';
+    img.onload = ()=>resolve(img);
+    img.onerror = ()=>reject(new Error('Hubble image load/CORS failed'));
+    img.src = url;
+  });
+}
+
+function imageDataFromImage(img, size=ANALYSIS_SIZE){
+  const c=document.createElement('canvas'); c.width=size; c.height=size;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.fillStyle='#000';ctx.fillRect(0,0,size,size);
+  const scale=Math.min(size/img.naturalWidth,size/img.naturalHeight);
+  const w=img.naturalWidth*scale,h=img.naturalHeight*scale;
+  ctx.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+  return ctx.getImageData(0,0,size,size);
+}
+
+function imageDataFromDataUrl(url, size=ANALYSIS_SIZE){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>{try{resolve(imageDataFromImage(img,size));}catch(e){reject(e);}};
+    img.onerror=()=>reject(new Error('Snapshot decode failed'));
+    img.src=url;
+  });
+}
+
+function features(data){
+  const {width:w,height:h,data:p}=data;
+  const lum=new Float32Array(w*h);
+  let mean=0;
+  for(let i=0,j=0;i<p.length;i+=4,j++){const y=.2126*p[i]+.7152*p[i+1]+.0722*p[i+2];lum[j]=y;mean+=y;}
+  mean/=lum.length;
+  let variance=0;for(const y of lum){const d=y-mean;variance+=d*d;}variance/=lum.length;
+  const sd=Math.sqrt(variance);
+  const threshold=Math.min(245,mean+Math.max(8,sd*.65));
+  let sw=0,sx=0,sy=0,sxx=0,syy=0,sxy=0,count=0;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const v=Math.max(0,lum[y*w+x]-threshold);
+    if(v>0){const wt=v+1;sw+=wt;sx+=wt*x;sy+=wt*y;count++;}
+  }
+  if(sw<=0 || count < w*h*.002) return {confidence:0,complex:true,mean,sd};
+  const cx=sx/sw,cy=sy/sw;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const v=Math.max(0,lum[y*w+x]-threshold);if(v<=0)continue;
+    const wt=v+1,dx=x-cx,dy=y-cy;
+    sxx+=wt*dx*dx;syy+=wt*dy*dy;sxy+=wt*dx*dy;
+  }
+  sxx/=sw;syy/=sw;sxy/=sw;
+  const trace=sxx+syy,delta=Math.sqrt((sxx-syy)**2+4*sxy*sxy);
+  const l1=Math.max(1e-6,(trace+delta)/2),l2=Math.max(1e-6,(trace-delta)/2);
+  const angle=.5*Math.atan2(2*sxy,sxx-syy)*180/Math.PI;
+  const major=Math.sqrt(l1)*4,minor=Math.sqrt(l2)*4;
+  const occupancy=Math.min(1,Math.max(major,minor)/Math.max(w,h));
+  const elongation=Math.sqrt(l1/l2);
+  const confidence=Math.min(1,(count/(w*h)*5)+Math.min(sd/55,.55));
+  const complex=(count/(w*h)>.55)||(confidence<.12);
+  return {confidence,complex,mean,sd,cx:cx/w,cy:cy/h,major:major/w,minor:minor/h,occupancy,angle,elongation};
+}
+
+function angleDiff(a,b){
+  let d=Math.abs(a-b)%180; if(d>90)d=180-d; return d;
+}
+
+function compareFeatures(a,b){
+  if(!a || !b || a.complex || b.complex || !a.confidence || !b.confidence){
+    return {classification:'REVIEW / COMPLEX',mismatch:null,complex:true,
+      detail:{reason:'Dominant structure uncertain or complex field'}};
+  }
+  const center=Math.min(1,Math.hypot(a.cx-b.cx,a.cy-b.cy)/.5);
+  const scale=Math.min(1,Math.abs(a.occupancy-b.occupancy)/Math.max(.08,a.occupancy));
+  const shape=Math.min(1,(Math.abs(a.major-b.major)+Math.abs(a.minor-b.minor))/Math.max(.08,a.major+a.minor));
+  const orient=(a.elongation>1.25 && b.elongation>1.25) ? Math.min(1,angleDiff(a.angle,b.angle)/45) : 0;
+  const confidence=Math.min(a.confidence,b.confidence);
+  const raw=(center*.34+scale*.30+shape*.22+orient*.14);
+  const mismatch=Math.round(Math.min(100,raw*100*(1+(1-confidence)*.18))*10)/10;
+  return {mismatch,complex:false,detail:{
+    centerPct:Math.round(center*1000)/10,scalePct:Math.round(scale*1000)/10,
+    structurePct:Math.round(shape*1000)/10,orientationDeg:Math.round(angleDiff(a.angle,b.angle)*10)/10,
+    hubbleOccupancy:Math.round(a.occupancy*1000)/10,aladinOccupancy:Math.round(b.occupancy*1000)/10,
+    confidence:Math.round(confidence*1000)/10
+  }};
+}
+
+function classificationFor(cmp){
+  if(cmp.complex || cmp.mismatch===null) return 'REVIEW / COMPLEX';
+  const pass=Number($('passThreshold').value)||20, review=Number($('reviewThreshold').value)||30;
+  if(cmp.mismatch<=pass)return 'PASS';
+  if(cmp.mismatch<=review)return 'WARNING';
+  return 'REVIEW';
+}
+
+function setRotation(deg){
+  if(!aladin || !Number.isFinite(deg)) return false;
+  const candidates=['setRotation','setViewRotation','setRoll'];
+  for(const k of candidates){
+    if(typeof aladin[k]==='function'){try{aladin[k](deg);return true;}catch(_){}}
+  }
+  return false;
+}
+
+async function ensureAladin(){
+  if(aladin)return;
+  if(!window.A)throw new Error('Aladin Lite library did not load');
+  if(A.init && typeof A.init.then==='function') await A.init;
+  aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'M 31',fov:1.5,
+    showReticle:true,showGotoControl:false,showLayersControl:false,showFullscreenControl:false});
+}
+
+async function aimAladin(v){
+  await ensureAladin();
+  if(!Number.isFinite(v.ra)||!Number.isFinite(v.dec))throw new Error('Invalid RA/Dec');
+  if(typeof aladin.gotoRaDec==='function')aladin.gotoRaDec(v.ra,v.dec);
+  else if(typeof aladin.gotoObject==='function')aladin.gotoObject(`${v.ra} ${v.dec}`);
+  if(typeof aladin.setFoV==='function')aladin.setFoV(v.fov);
+  setRotation(v.orientation);
+  await sleep(Math.max(1,Number($('renderWait').value)||4)*1000);
+}
+
+async function captureAladin(){
+  if(aladin && typeof aladin.getViewDataURL==='function'){
+    try{
+      const x=aladin.getViewDataURL('image/png');
+      const url=(x&&typeof x.then==='function')?await x:x;
+      if(typeof url==='string'&&url.startsWith('data:image'))return url;
+    }catch(_){}
+  }
+  const canvases=[...$('aladin').querySelectorAll('canvas')].filter(c=>c.width>32&&c.height>32);
+  if(!canvases.length)throw new Error('No Aladin canvas found');
+  canvases.sort((a,b)=>(b.width*b.height)-(a.width*a.height));
+  try{return canvases[0].toDataURL('image/png');}
+  catch(e){throw new Error('Aladin snapshot blocked by browser/CORS');}
+}
+
+function renderMeta(v){
+  $('mName').textContent=`${v.name} (${v.id})`;
+  $('mCoords').textContent=`${text(v.ra)} / ${text(v.dec)}`;
+  $('mFov').textContent=text(v.fovRaw,v.fov);
+  $('mOrientation').textContent=text(v.orientationRaw,v.orientation);
+}
+
+function badge(cls){
+  const map={'PASS':'pass','WARNING':'warn','REVIEW':'review','REVIEW / COMPLEX':'complex','CAPTURE BLOCKED':'review'};
+  return `<span class="badge ${map[cls]||'review'}">${cls}</span>`;
+}
+
+function addReviewCard(r){
+  const d=r.detail||{}, safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const card=document.createElement('article');card.className='card';
+  card.innerHTML=`<h3>${safe(r.name)}</h3>
+    <div>${badge(r.classification)} ${r.mismatch===null?'':safe(r.mismatch)+'% mismatch'}</div>
+    <div class="thumbs"><img src="${safe(r.hubbleImage)}" alt="Hubble"><img src="${safe(r.aladinSnapshot||'')}" alt="Aladin snapshot"></div>
+    <div class="small">${safe(r.id)} · RA ${safe(r.ra)} · Dec ${safe(r.dec)} · FOV ${safe(r.fov)} · orientation ${safe(r.orientation)}°</div>
+    <div class="small">center ${safe(d.centerPct)}% · scale ${safe(d.scalePct)}% · structure ${safe(d.structurePct)}% · rotation ${safe(d.orientationDeg)}° · confidence ${safe(d.confidence)}%</div>`;
+  $('queue').prepend(card);
+}
+
+function updateStats(){
+  $('total').textContent=records.length;$('processed').textContent=results.length;
+  $('passes').textContent=stats.pass;$('warnings').textContent=stats.warning;
+  $('reviews').textContent=stats.review;$('complex').textContent=stats.complex;
+  $('bar').style.width=(records.length?results.length/records.length*100:0)+'%';
+  const exportObj={catalog:'gv-hubble-galaxies-full-0022.json',generatedAt:new Date().toISOString(),
+    thresholds:{passMaxPercent:Number($('passThreshold').value),reviewAbovePercent:Number($('reviewThreshold').value)},
+    processed:results.length,total:records.length,results};
+  $('jsonOut').value=JSON.stringify(exportObj,null,2);
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({index,results,stats}));}catch(_){}
+}
+
+function countResult(cls){
+  if(cls==='PASS')stats.pass++; else if(cls==='WARNING')stats.warning++;
+  else if(cls==='REVIEW / COMPLEX')stats.complex++; else stats.review++;
+}
+
+async function auditOne(r,i){
+  const v=recordView(r,i);renderMeta(v);
+  $('currentResult').innerHTML='Rendering and comparing…';
+  $('message').textContent=`Record ${i+1} of ${records.length}: ${v.name}`;
+  $('hubbleImage').src=v.image||'';
+  let hImg=null,hFeat=null,snapshot='',aFeat=null,cmp=null,cls='REVIEW';
+  try{
+    hImg=await loadImage(v.image); hFeat=features(imageDataFromImage(hImg));
+  }catch(e){
+    cmp={mismatch:null,complex:true,detail:{reason:e.message}};cls='REVIEW / COMPLEX';
+  }
+  if(hFeat){
+    try{
+      await aimAladin(v); snapshot=await captureAladin();
+      aFeat=features(await imageDataFromDataUrl(snapshot));
+      cmp=compareFeatures(hFeat,aFeat);cls=classificationFor(cmp);
+    }catch(e){
+      cmp={mismatch:null,complex:false,detail:{reason:e.message}};cls='CAPTURE BLOCKED';
+    }
+  }
+  const out={id:v.id,name:v.name,ra:v.ra,dec:v.dec,fov:v.fov,orientation:v.orientation,
+    hubbleImage:v.image,aladinSnapshot:snapshot||null,mismatch:cmp?.mismatch??null,
+    classification:cls,detail:cmp?.detail??{}};
+  $('currentResult').innerHTML=`${badge(cls)} ${out.mismatch===null?'No numeric score':out.mismatch+'% overall mismatch'}${out.detail.reason?' — '+out.detail.reason:''}`;
+  countResult(cls);
+  if(cls!=='PASS')addReviewCard(out);
+  return out;
+}
+
+async function run(){
+  if(running)return;running=true;paused=false;$('pause').disabled=false;$('start').disabled=true;
+  while(index<records.length && !paused){
+    const out=await auditOne(records[index],index);
+    results.push(out);index++;updateStats();
+    await sleep(60);
+  }
+  running=false;$('start').disabled=false;$('pause').disabled=true;
+  if(index>=records.length)$('message').textContent=`Audit complete: ${results.length} records processed.`;
+  else $('message').textContent=`Paused at ${index} / ${records.length}.`;
+}
+
+function restore(){
+  try{
+    const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if(!s)return;
+    index=Math.min(Number(s.index)||0,records.length);results=Array.isArray(s.results)?s.results:[];
+    stats=s.stats||{pass:0,warning:0,review:0,complex:0};
+    for(const r of results)if(r.classification!=='PASS')addReviewCard(r);
+  }catch(_){}
+}
+
+async function boot(){
+  try{
+    const res=await fetch(CATALOG,{cache:'no-store'});if(!res.ok)throw new Error(`Catalog HTTP ${res.status}`);
+    const payload=await res.json();records=normalizeCatalog(payload);
+    restore();updateStats();
+    $('message').textContent=`Catalog 0022 loaded: ${records.length} records. Ready.`;
+    await ensureAladin();
+  }catch(e){
+    $('message').textContent=`STARTUP ERROR: ${e.message}`;
+    $('start').disabled=true;
+  }
+}
+
+$('start').onclick=run;
+$('pause').onclick=()=>{paused=true;$('pause').disabled=true;};
+$('next').onclick=()=>document.querySelector('.queue').scrollIntoView({behavior:'smooth'});
+$('copyJson').onclick=async()=>{await navigator.clipboard.writeText($('jsonOut').value);$('message').textContent='Results JSON copied.';};
+$('downloadJson').onclick=()=>{
+  const blob=new Blob([$('jsonOut').value],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hubble-v-audit-0022-results.json';a.click();URL.revokeObjectURL(a.href);
+};
+$('clearLocal').onclick=()=>{localStorage.removeItem(STORAGE_KEY);location.reload();};
+$('passThreshold').onchange=updateStats;$('reviewThreshold').onchange=updateStats;
+boot();
+</script>
+</main></body></html>
