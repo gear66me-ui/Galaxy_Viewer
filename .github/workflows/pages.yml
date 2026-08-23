@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   workflow_run:
     workflows:
-      - Automatic Change Control Log
+      - Galaxy Viewer Controlled Engineering Change
     types:
       - completed
     branches:
