@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>GALAXY VIEWER 12H TEST</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#FFD84D}#gv12h-cover,#gv12h-error{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000;font:13px monospace}#gv12h-cover{letter-spacing:1px}#gv12h-error{display:none;align-items:flex-start;justify-content:flex-start;padding:24px;white-space:pre-wrap;overflow:auto}</style>
+</head>
+<body>
+<div id="gv12h-cover">GALAXY VIEWER 12H<br><br>REPAIR TEST</div>
+<div id="gv12h-error"></div>
+<script>
+(async()=>{
+  'use strict';
+  const VIEWER='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-0012H.py';
+  const cover=document.getElementById('gv12h-cover'),error=document.getElementById('gv12h-error');
+  const read=async url=>{const response=await fetch(url+'?t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status} ${url}`);return response.text()};
+  const extract=source=>{const html=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],js=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(html.length!==1||js.length!==1)throw new Error('12H VIEWER EXTRACTION FAILED');return[html[0][1],js[0][1]]};
+  try{
+    const [html,js]=extract(await read(VIEWER));
+    document.body.insertAdjacentHTML('beforeend',html);
+    const script=document.createElement('script');script.textContent=js;document.body.appendChild(script);
+    cover.remove();
+  }catch(e){cover.remove();error.style.display='flex';error.textContent='GALAXY VIEWER 12H TEST FAILED\n\n'+String(e?.stack||e)}
+})();
+</script>
+</body>
+</html>
