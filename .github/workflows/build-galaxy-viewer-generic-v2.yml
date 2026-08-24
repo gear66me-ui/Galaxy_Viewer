@@ -1,0 +1,263 @@
+name: Build Galaxy Viewer GENERIC V2 APK
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-generic-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-generic-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Install SVG rasterizer
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq librsvg2-bin
+
+      - name: Generate Generic V2 Android shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=/tmp/galaxy-viewer-generic-v2
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2"
+          mkdir -p "$ROOT/app/src/main/assets/artwork"
+          mkdir -p "$ROOT/app/src/main/res/drawable"
+
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewerGenericV2'
+          include ':app'
+          EOF
+
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
+
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=false
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.gear66me.galaxyviewergenericv2'
+            compileSdk 35
+            defaultConfig {
+              applicationId 'com.gear66me.galaxyviewergenericv2'
+              minSdk 29
+              targetSdk 35
+              versionCode 2
+              versionName 'GENERIC-2'
+            }
+          }
+          EOF
+
+          cp viewer/artwork/icon_target_vector.svg "$ROOT/app/src/main/assets/artwork/target-icon.svg"
+          rsvg-convert -w 512 -h 512 viewer/artwork/icon_target_vector.svg -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application
+              android:allowBackup="false"
+              android:hardwareAccelerated="true"
+              android:icon="@drawable/gv_target_launcher"
+              android:roundIcon="@drawable/gv_target_launcher"
+              android:label="Galaxy Viewer GENERIC V2"
+              android:theme="@android:style/Theme.Material.NoActionBar"
+              android:usesCleartextTraffic="false">
+              <activity
+                android:name=".MainActivity"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:exported="true"
+                android:screenOrientation="fullSensor">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java" <<'EOF'
+          package com.gear66me.galaxyviewergenericv2;
+
+          import android.app.Activity;
+          import android.content.ContentValues;
+          import android.graphics.Color;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.provider.MediaStore;
+          import android.view.View;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.Toast;
+          import org.json.JSONObject;
+          import java.io.OutputStream;
+          import java.nio.charset.StandardCharsets;
+
+          public final class MainActivity extends Activity {
+            private WebView web;
+
+            private void emit(String type, String key, String value) {
+              if (web == null) return;
+              final String script = "window.dispatchEvent(new CustomEvent(" + JSONObject.quote(type) + ",{detail:{" + key + ":" + JSONObject.quote(value == null ? "" : value) + "}}));";
+              web.post(() -> web.evaluateJavascript(script, null));
+            }
+
+            public final class DownloadBridge {
+              @JavascriptInterface
+              public void saveJson(String requestedFilename, String json) {
+                String filename = requestedFilename == null ? "Galaxy-Viewer-Analytics.json" : requestedFilename;
+                filename = filename.replaceAll("[\\\\/:*?\"<>|\\r\\n]", "_");
+                if (!filename.toLowerCase().endsWith(".json")) filename += ".json";
+                final String finalFilename = filename;
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Downloading " + finalFilename, Toast.LENGTH_SHORT).show());
+                Uri uri = null;
+                try {
+                  ContentValues values = new ContentValues();
+                  values.put(MediaStore.Downloads.DISPLAY_NAME, finalFilename);
+                  values.put(MediaStore.Downloads.MIME_TYPE, "application/json");
+                  values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Galaxy Viewer");
+                  values.put(MediaStore.Downloads.IS_PENDING, 1);
+                  uri = getContentResolver().insert(MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), values);
+                  if (uri == null) throw new IllegalStateException("Android Downloads insert failed");
+                  try (OutputStream out = getContentResolver().openOutputStream(uri, "w")) {
+                    if (out == null) throw new IllegalStateException("Android Downloads output stream failed");
+                    out.write((json == null ? "{}" : json).getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                  }
+                  ContentValues done = new ContentValues();
+                  done.put(MediaStore.Downloads.IS_PENDING, 0);
+                  getContentResolver().update(uri, done, null, null);
+                  emit("gv-native-download-complete", "filename", finalFilename);
+                  runOnUiThread(() -> Toast.makeText(MainActivity.this, "Saved to Downloads/Galaxy Viewer/" + finalFilename, Toast.LENGTH_LONG).show());
+                } catch (Throwable error) {
+                  if (uri != null) {
+                    try { getContentResolver().delete(uri, null, null); } catch (Throwable ignored) {}
+                  }
+                  emit("gv-native-download-failed", "message", String.valueOf(error.getMessage()));
+                  runOnUiThread(() -> Toast.makeText(MainActivity.this, "Download failed", Toast.LENGTH_LONG).show());
+                }
+              }
+            }
+
+            @Override protected void onCreate(Bundle state) {
+              super.onCreate(state);
+              getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+              web=new WebView(this);
+              web.setBackgroundColor(Color.BLACK);
+              WebSettings s=web.getSettings();
+              s.setJavaScriptEnabled(true);
+              s.setDomStorageEnabled(true);
+              s.setAllowFileAccess(true);
+              s.setAllowContentAccess(true);
+              s.setAllowFileAccessFromFileURLs(true);
+              s.setAllowUniversalAccessFromFileURLs(true);
+              s.setMediaPlaybackRequiresUserGesture(false);
+              s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+              web.setWebViewClient(new WebViewClient());
+              web.setWebChromeClient(new WebChromeClient());
+              web.addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads");
+              setContentView(web);
+              web.loadUrl("file:///android_asset/index.html");
+            }
+
+            @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
+            @Override protected void onDestroy(){if(web!=null){web.removeJavascriptInterface("GalaxyViewerDownloads");web.destroy();web=null;}super.onDestroy();}
+          }
+          EOF
+
+          cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
+          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><title>GALAXY VIEWER GENERIC V2</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover,#error{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#cover img{width:min(46vw,260px);height:min(46vw,260px);object-fit:contain}.name{margin-top:18px;font:16px sans-serif;letter-spacing:2px;color:#fff}#error{display:none;padding:28px;white-space:pre-wrap;color:#9BE5FF;font:12px monospace}</style></head><body><div id="cover"><img src="artwork/target-icon.svg" alt="Galaxy Viewer target icon"><div class="name">GALAXY VIEWER</div></div><div id="error"></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const cover=document.getElementById('cover'),error=document.getElementById('error');const read=async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+url);return r.text()};const extract=source=>{const h=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw new Error('VIEWER EXTRACTION FAILED');return[h[0][1],j[0][1]]};try{const manifest=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));if(!manifest||!/^GV-beta-[0-9A-Z._-]+\.py$/i.test(String(manifest.viewer||'')))throw new Error('INVALID VIEWER POINTER');const source=await read(BASE+manifest.viewer+'?t='+Date.now());const [html,js]=extract(source);document.body.insertAdjacentHTML('beforeend',html);const script=document.createElement('script');script.textContent=js;document.body.appendChild(script);cover.remove()}catch(e){cover.remove();error.style.display='flex';error.textContent='GALAXY VIEWER GENERIC V2 FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
+          EOF
+
+          test -s "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+          grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java"
+          grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java"
+
+      - name: Build Generic V2 APK
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
+
+      - name: Verify Generic V2 APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-Generic-V2.apk
+          test -s "$APK"
+          cp "$APK" "$OUT"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-v2-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewergenericv2'" apk-v2-badging.txt
+          grep -q "application-label:'Galaxy Viewer GENERIC V2'" apk-v2-badging.txt
+          unzip -p "$OUT" classes.dex >/dev/null
+          unzip -t "$OUT" | tee apk-v2-zip-test.txt
+          grep -q 'No errors detected' apk-v2-zip-test.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-v2-signature.txt
+          sha256sum "$OUT" | tee Galaxy-Viewer-Generic-V2.apk.sha256
+
+      - name: Publish APK into beta repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android/galaxy-viewer/releases
+          cp Galaxy-Viewer-Generic-V2.apk android/galaxy-viewer/releases/Galaxy-Viewer-Generic-V2.apk
+          cp Galaxy-Viewer-Generic-V2.apk.sha256 android/galaxy-viewer/releases/Galaxy-Viewer-Generic-V2.apk.sha256
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add android/galaxy-viewer/releases/Galaxy-Viewer-Generic-V2.apk android/galaxy-viewer/releases/Galaxy-Viewer-Generic-V2.apk.sha256
+          git commit -m 'Publish Galaxy Viewer Generic V2 APK'
+          git pull --rebase origin beta
+          git push origin HEAD:beta
+
+      - name: Publish Generic V2 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-generic-v2
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" Galaxy-Viewer-Generic-V2.apk Galaxy-Viewer-Generic-V2.apk.sha256 --target beta --title 'Galaxy Viewer GENERIC V2' --notes 'Pointer-driven Galaxy Viewer Android shell with native JSON export to Downloads/Galaxy Viewer.'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-Generic-V2
+          path: |
+            Galaxy-Viewer-Generic-V2.apk
+            Galaxy-Viewer-Generic-V2.apk.sha256
+            apk-v2-badging.txt
+            apk-v2-signature.txt
+            apk-v2-zip-test.txt
+          retention-days: 30
