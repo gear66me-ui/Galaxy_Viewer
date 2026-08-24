@@ -1,7 +1,7 @@
 {
   "version": "0001",
   "catalogs": {
-    "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0024.json",
+    "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json",
     "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
     "chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json"
   }
