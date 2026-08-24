@@ -2918,10 +2918,10 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
       #296DBD 100%
     ) padding-box,
     linear-gradient(135deg,
-      #DDF8FF 0%,
-      #8DDAFF 28%,
-      #58BFFF 58%,
-      #296DBD 100%
+      #296DBD 0%,
+      #58BFFF 38%,
+      #8DDAFF 70%,
+      #F4FDFF 100%
     ) border-box!important;
   box-shadow:
     inset 0 0 8px rgba(221,248,255,.14),
