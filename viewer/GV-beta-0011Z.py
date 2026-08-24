@@ -33,22 +33,22 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-center-reticle img{display:block;width:32px;height:32px}
 #gv-galaxy-nav{position:absolute;left:50%;bottom:12px;z-index:7100;display:flex;align-items:center;justify-content:center;gap:5px;width:calc(100vw - 24px);height:36px;transform:translateX(-50%);pointer-events:auto}
 #gv-version-label{position:absolute;left:50%;bottom:51px;z-index:7400;transform:translateX(-50%);height:10px;color:#9BE5FF;font:400 8px/10px "Space Age",sans-serif;letter-spacing:.85px;text-align:center;text-transform:uppercase;text-shadow:0 0 4px rgba(221,248,255,.28),0 0 7px rgba(88,191,255,.58);white-space:nowrap;pointer-events:none}
-#gv-apk-cover{flex-direction:column;gap:18px}#gv-apk-cover .gv-viewer-version{color:#FFD85A;font:400 16px/1 "Space Age",sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55);white-space:nowrap}
+#gv-apk-cover{flex-direction:column;gap:18px}#gv-apk-cover .gv-viewer-version{color:#DDF8FF;background:linear-gradient(90deg,#F4FDFF 0%,#8DDAFF 30%,#58BFFF 62%,#296DBD 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font:400 16px/1 "Space Age",sans-serif;letter-spacing:1.2px;filter:drop-shadow(0 0 5px rgba(88,191,255,.68));white-space:nowrap}
 </style>
 <div id="aladin-cosmic-command-test"><div id="gv-startup-wait" aria-hidden="true"></div></div>
-<script>(()=>{const cover=document.getElementById('gv-apk-cover');if(!cover)return;const img=cover.querySelector('img');if(img)img.src='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';const version=document.createElement('div');version.className='gv-viewer-version';version.textContent='VERSION 11X';cover.appendChild(version)})();</script>
+<script>(()=>{const cover=document.getElementById('gv-apk-cover');if(!cover)return;const img=cover.querySelector('img');if(img)img.src='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';const version=document.createElement('div');version.className='gv-viewer-version';version.textContent='VERSION 11Z';cover.appendChild(version)})();</script>
 """))
 
 display(Javascript(r"""
 (async()=>{
     'use strict';
     const VERSION='ACTIVE';
-    const DISPLAY_VERSION='11X';
+    const DISPLAY_VERSION='11Z';
     const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-hamburger-menu-0002.js?v=9ed18798f4c7010b76782d0ff2bf0c8ec5eb4cba';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-coordinate-overlay-0004.js?v=4c9a595860ed69d800d4c1a038c4e0402c69bba0';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/gv-target-simbad-0001.js?v=9f50e6c8e199b64b82ee49267250157c35997662';
-    const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/modules/gv-random-galaxy-0034.js';
+    const RANDOM_GALAXY_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/modules/gv-random-galaxy-0034.js?v=f47d3e11e818115139563f86b0522a935bfecca3';
     const MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
     const RAW_BETA_ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/';
     const RETICLE_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/runtime/navigation/galaxy-viewer-reticle.svg?v=fd0f8aa1d5d1f5746e373577c06ae6c81d1f9cc0';
@@ -1813,7 +1813,7 @@ function navigateHistory(direction){
             const destination=bundle?.destination||bundle;
             const key=destinationKey(destination);
             return key===String(bundle?.key||key).trim().toLowerCase()&&
-                core.isHdPrepared?.(key)&&
+                window.GalaxyViewerCore?.isHdPrepared?.(key)&&
                 window.GalaxyViewerPrefetch?.hasReadyNavigation?.();
         });
 
