@@ -1,0 +1,101 @@
+name: Build Galaxy Viewer Analytics 0003
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - "android/galaxy-viewer-analytics-0002/**"
+      - "mobile/beta/analytics-app-0001.html"
+      - "viewer/GV-beta-0012L.py"
+      - "viewer/modules/diagnostics/gv-diagnostics-0003.js"
+      - ".github/workflows/build-galaxy-viewer-analytics-0003.yml"
+
+permissions:
+  contents: read
+
+env:
+  APK_NAME: Galaxy-Viewer-Analytics-0003.apk
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35
+        run: |
+          set -euo pipefail
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+          yes | sdkmanager --licenses >/dev/null || true
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Verify automatic analytics contract
+        run: |
+          set -euo pipefail
+          grep -q "applicationId 'com.gear66me.galaxyviewer.analytics'" android/galaxy-viewer-analytics-0002/app/build.gradle
+          grep -q "versionCode 2" android/galaxy-viewer-analytics-0002/app/build.gradle
+          grep -q "versionName 'analytics-2'" android/galaxy-viewer-analytics-0002/app/build.gradle
+          grep -q "analytics-app-0001.html" android/galaxy-viewer-analytics-0002/app/src/main/java/com/gear66me/galaxyviewer/analytics/MainActivity.java
+          grep -q "GalaxyViewerNativeAudit" android/galaxy-viewer-analytics-0002/app/src/main/java/com/gear66me/galaxyviewer/analytics/MainActivity.java
+          grep -q "RESOURCE_REQUEST" android/galaxy-viewer-analytics-0002/app/src/main/java/com/gear66me/galaxyviewer/analytics/MainActivity.java
+          grep -q "GV-beta-0012L.py" mobile/beta/analytics-app-0001.html
+          grep -q "BOOT_HEARTBEAT" mobile/beta/analytics-app-0001.html
+          grep -q "AUTO — COLLECTING FROM START" viewer/modules/diagnostics/gv-diagnostics-0003.js
+          grep -q "POLL_MS=1000" viewer/modules/diagnostics/gv-diagnostics-0003.js
+          grep -q "DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0003.js?v=0003'" viewer/GV-beta-0012L.py
+
+      - name: Build Analytics APK
+        run: |
+          set -euo pipefail
+          gradle --no-daemon -p android/galaxy-viewer-analytics-0002 :app:assembleDebug
+
+      - name: Stage APK
+        run: |
+          set -euo pipefail
+          APK="android/galaxy-viewer-analytics-0002/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          cp "$APK" "$APK_NAME"
+          sha256sum "$APK_NAME" > "$APK_NAME.sha256"
+
+      - name: Verify APK signature
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK_NAME"
+
+      - name: Verify APK identity
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK_NAME" > analytics-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.analytics'" analytics-badging.txt
+          grep -q "versionCode='2'" analytics-badging.txt
+          grep -q "versionName='analytics-2'" analytics-badging.txt
+          grep -q "application-label:'GALAXY VIEWER ANALYTICS'" analytics-badging.txt
+          head -20 analytics-badging.txt
+
+      - name: Upload Analytics APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-Analytics-0003
+          path: |
+            Galaxy-Viewer-Analytics-0003.apk
+            Galaxy-Viewer-Analytics-0003.apk.sha256
+            analytics-badging.txt
+          if-no-files-found: error
+          retention-days: 30
