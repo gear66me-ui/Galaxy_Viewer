@@ -1799,7 +1799,7 @@ function navigateHistory(direction){
     const randomGalaxyInitialization=randomGalaxy.ready;
     randomGalaxy.ready=Promise.resolve(randomGalaxy);
     startupTiming.randomReadyAt=performance.now();
-    bottom.random.disabled=true;
+    bottom.random.disabled=false;
     fillPrefetchQueue();
     randomGalaxyInitialization.catch(error=>console.warn(
         "GALAXY VIEWER RANDOM GALAXY OPTIONAL INITIALIZATION WARNING",error
