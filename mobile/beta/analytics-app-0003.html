@@ -3,105 +3,271 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#061d45">
-<title>GALAXY VIEWER ANALYTICS</title>
-<script>
-(() => {
-  'use strict';
-  const bootPerf=performance.now(),bootEpoch=Date.now();
-  const events=[],resources=[],snapshots=[],errors=[];
-  const MAX_EVENTS=24000,MAX_RESOURCES=24000,MAX_SNAPSHOTS=7200,MAX_ERRORS=1200;
-  let saveIssued=false,savedFilename='',second=0;
-  const elapsed=()=>Math.round(performance.now()-bootPerf);
-  const trim=(a,max)=>{if(a.length>max)a.splice(0,a.length-max)};
-  const safe=v=>{try{return typeof v==='string'?v:JSON.parse(JSON.stringify(v))}catch(_){return String(v)}};
-  const emit=(type,detail={})=>{events.push({at:new Date().toISOString(),elapsedMs:elapsed(),type:String(type),detail:safe(detail)});trim(events,MAX_EVENTS)};
-  const recordError=(type,value)=>{const message=value?.error?.stack||value?.reason?.stack||value?.message||value?.reason||value?.error||value;errors.push({at:new Date().toISOString(),elapsedMs:elapsed(),type:String(type),message:String(message||'UNKNOWN ERROR')});trim(errors,MAX_ERRORS)};
-  const addResource=entry=>{resources.push({at:new Date().toISOString(),elapsedMs:elapsed(),name:String(entry.name||''),initiatorType:String(entry.initiatorType||''),durationMs:Math.round(Number(entry.duration||0)),transferSize:Number(entry.transferSize||0),encodedBodySize:Number(entry.encodedBodySize||0),decodedBodySize:Number(entry.decodedBodySize||0)});trim(resources,MAX_RESOURCES)};
-  const compactUrl=value=>{try{const u=new URL(String(value||''),location.href);return `${u.host}${u.pathname}${u.search}`.slice(-360)}catch(_){return String(value||'').slice(-360)}};
-  const core=()=>window.GalaxyViewerCore||window.GalaxyRandomGalaxy?.prefetchRuntime?.core||null;
-  const telemetry=()=>{try{return window.GalaxyRandomGalaxy?.getPrefetchTelemetry?.()||null}catch(error){recordError('TELEMETRY',error);return null}};
-  function queueState(){
-    const c=core(),t=telemetry(),rows=Array.isArray(t?.rows)?t.rows:[];
-    return rows.map((row,index)=>{
-      const d=row?.destination||row||{};let prepared=null;
-      try{prepared=c?.getHdPreparedResource?.(row?.key)||null}catch(error){recordError('HD_RESOURCE',error)}
-      return {
-        slot:Number(row?.slot||index+1),key:String(row?.key||d?.key||''),name:String(row?.bannerText||row?.name||d?.displayName||d?.designation||d?.name||''),provider:String(row?.provider||prepared?.provider||d?.provider||d?.imageType||''),
-        hd:{state:String(row?.hd?.state||''),detail:String(row?.hd?.detail||''),url:String(prepared?.url||prepared?.src||d?.selectedImageUrl||d?.githubImageUrl||'')},
-        aladin:{state:String(row?.aladin?.state||''),detail:String(row?.aladin?.detail||''),ra:d?.ra??null,dec:d?.dec??null,fov:d?.fieldOfView??d?.fov??null,rotation:d?.aladinRotation??d?.orientation??null},
-        web:{state:String(row?.web?.state||''),detail:String(row?.web?.detail||''),url:String(d?.sourceUrl||d?.archiveUrl||'')},
-        selectedImageUrl:String(d?.selectedImageUrl||''),githubImageUrl:String(d?.githubImageUrl||''),sourceUrl:String(d?.sourceUrl||'')
-      };
-    });
-  }
-  function imageState(){return [...document.images].slice(0,240).map((img,index)=>({index,id:String(img.id||''),alt:String(img.alt||''),src:compactUrl(img.currentSrc||img.src||''),complete:Boolean(img.complete),width:Number(img.naturalWidth||0),height:Number(img.naturalHeight||0),state:img.complete?(img.naturalWidth>0?'LOADED':'FAILED_OR_EMPTY'):'LOADING'}))}
-  function snapshot(){
-    const c=core(),t=telemetry(),random=c?.randomGalaxy?.getState?.()||{},queue=queueState();
-    const s={at:new Date().toISOString(),elapsedMs:elapsed(),second,readyState:document.readyState,viewer:String(c?.displayVersion||''),randomVersion:String(window.GalaxyRandomGalaxy?.VERSION||''),viewerCore:Boolean(window.GalaxyViewerCore),randomApi:Boolean(window.GalaxyRandomGalaxy),diagnostics:Boolean(window.GalaxyViewerDiagnostics),mode:random.busy?'TRAVELING':random.hdOpen?'HD_OPEN':'READY',backgroundSuspended:Boolean(c?.getBackgroundWorkSuspended?.()||t?.suspended),future:queue.length,next:queue[0]?.name||'',active:String(t?.active?.bannerText||t?.active?.name||''),catalog:Number(c?.eligibleCatalogCount||0),queue,images:imageState(),canvasCount:document.querySelectorAll('canvas').length,aladinRoot:Boolean(document.getElementById('aladin-cosmic-command-test')),aladinCanvas:Boolean(document.querySelector('#aladin-cosmic-command-test canvas')),resourceCount:resources.length,eventCount:events.length};
-    snapshots.push(s);trim(snapshots,MAX_SNAPSHOTS);return s;
-  }
-  function nativeAudit(){try{const raw=window.GalaxyViewerNativeAudit?.getNativeAudit?.();return raw?JSON.parse(raw):null}catch(error){recordError('NATIVE_AUDIT',error);return null}}
-  function stamp(){const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}`}
-  function exportData(reason,extra={}){
-    let diagnostics=null;try{diagnostics=window.GalaxyViewerDiagnostics?.exportData?.()||null}catch(error){recordError('DIAGNOSTICS_EXPORT',error)}
-    return {module:'GalaxyViewerStartupAudit',version:'0003',reason:String(reason||'MANUAL'),startedAt:new Date(bootEpoch).toISOString(),exportedAt:new Date().toISOString(),elapsedMs:elapsed(),startupReady:Boolean(window.__GV_ANALYTICS_STARTUP_READY__),extra:safe(extra),events:[...events],resources:[...resources],snapshots:[...snapshots],errors:[...errors],diagnostics,nativeAudit:nativeAudit()};
-  }
-  async function saveNow(reason='MANUAL',extra={}){
-    if(saveIssued)return savedFilename||'SAVE_ALREADY_REQUESTED';
-    saveIssued=true;const filename=`Galaxy-Viewer-Startup-Audit-${stamp()}.json`;savedFilename=filename;emit('AUDIT_SAVE_BEGIN',{reason,filename});
-    try{const bridge=window.GalaxyViewerDownloads;if(!bridge||typeof bridge.saveJson!=='function')throw new Error('NATIVE SAVE BRIDGE MISSING');const json=JSON.stringify(exportData(reason,extra),null,2);bridge.saveJson(filename,json);emit('AUDIT_SAVE_REQUESTED',{reason,filename,bytes:json.length});return filename}
-    catch(error){saveIssued=false;savedFilename='';recordError('AUDIT_SAVE',error);emit('AUDIT_SAVE_FAILED',{reason,error:String(error?.stack||error)});throw error}
-  }
-  window.__GV_ANALYTICS_AUDIT__={version:'0003',startedAt:new Date(bootEpoch).toISOString(),bootEpoch,emit,events,resources,snapshots,errors,exportData:()=>exportData('EXPORT')};
-  window.__GV_ANALYTICS_SAVE_NOW__=saveNow;
-  emit('BOOT_SCRIPT_START',{href:location.href,userAgent:navigator.userAgent});
-  try{new PerformanceObserver(list=>list.getEntries().forEach(addResource)).observe({type:'resource',buffered:true})}catch(error){recordError('PERFORMANCE_OBSERVER_RESOURCE',error)}
-  try{new PerformanceObserver(list=>list.getEntries().forEach(entry=>emit('LONG_TASK',{durationMs:Math.round(entry.duration),startMs:Math.round(entry.startTime)}))).observe({type:'longtask',buffered:true})}catch(_){ }
-  const nativeFetch=window.fetch.bind(window);
-  window.fetch=async(input,init)=>{const url=typeof input==='string'?input:String(input?.url||'');const id=`f${elapsed()}-${Math.random().toString(36).slice(2,7)}`,started=performance.now();emit('FETCH_START',{id,url,method:String(init?.method||input?.method||'GET'),cache:String(init?.cache||'')});try{const response=await nativeFetch(input,init);emit('FETCH_END',{id,url,status:response.status,ok:response.ok,durationMs:Math.round(performance.now()-started),contentLength:response.headers.get('content-length')||''});return response}catch(error){recordError('FETCH',error);emit('FETCH_FAIL',{id,url,durationMs:Math.round(performance.now()-started),error:String(error?.stack||error)});throw error}};
-  const XO=XMLHttpRequest.prototype.open,XS=XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open=function(method,url,...rest){this.__gvAudit={method:String(method),url:String(url),started:0};return XO.call(this,method,url,...rest)};
-  XMLHttpRequest.prototype.send=function(...args){const a=this.__gvAudit||{method:'?',url:'?',started:0};a.started=performance.now();emit('XHR_START',{method:a.method,url:a.url});const done=type=>emit(type,{method:a.method,url:a.url,status:Number(this.status||0),durationMs:Math.round(performance.now()-a.started)});this.addEventListener('load',()=>done('XHR_END'),{once:true});this.addEventListener('error',()=>done('XHR_FAIL'),{once:true});this.addEventListener('timeout',()=>done('XHR_TIMEOUT'),{once:true});return XS.apply(this,args)};
-  window.addEventListener('load',event=>{const t=event.target;if(t&&t!==window&&('src'in t||'href'in t))emit('RESOURCE_LOAD',{tag:t.tagName||'',url:String(t.currentSrc||t.src||t.href||'')})},true);
-  window.addEventListener('error',event=>{const t=event.target;if(t&&t!==window&&('src'in t||'href'in t)){emit('RESOURCE_ERROR',{tag:t.tagName||'',url:String(t.currentSrc||t.src||t.href||'')})}else{recordError('JS_ERROR',event);emit('JS_ERROR',{message:String(event.message||event.error||''),source:String(event.filename||''),line:event.lineno||0,col:event.colno||0,stack:String(event.error?.stack||'')})}},true);
-  window.addEventListener('unhandledrejection',event=>{recordError('PROMISE_REJECTION',event);emit('PROMISE_REJECTION',{reason:String(event.reason?.stack||event.reason||'')})});
-  const originalError=console.error.bind(console),originalWarn=console.warn.bind(console);console.error=(...args)=>{emit('CONSOLE_ERROR',{args:args.map(safe)});originalError(...args)};console.warn=(...args)=>{emit('CONSOLE_WARN',{args:args.map(safe)});originalWarn(...args)};
-  for(const name of ['gv-viewer-startup-visible','gv-viewer-shell-ready','gv-viewer-random-ready','gv-viewer-full-ready'])document.addEventListener(name,event=>emit('VIEWER_EVENT',{name,detail:safe(event.detail||{})}));
-  snapshot();setInterval(()=>{second++;const s=snapshot();emit('BOOT_HEARTBEAT',{second:s.second,viewerCore:s.viewerCore,random:s.randomApi,diagnostics:s.diagnostics,future:s.future,next:s.next,canvases:s.canvasCount,aladinRoot:s.aladinRoot,aladinCanvas:s.aladinCanvas,images:s.images.length})},1000);
-  setTimeout(()=>{if(!window.__GV_ANALYTICS_STARTUP_READY__)saveNow('JS_FAILSAFE_15S',{message:'Startup not ready at 15 seconds'}).catch(()=>{})},15000);
-  emit('BOOT_INSTRUMENTATION_READY');
-})();
-</script>
+<title>GALAXY VIEWER 12O DIAGNOSTICS</title>
 <style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:"Space Age",sans-serif}
-#gv-cover,#gv-cover *,#gv-error,#gv-error *{font-family:"Space Age",sans-serif!important}
-#gv-cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;gap:15px;align-items:center;justify-content:center;background:linear-gradient(145deg,#020812,#061d45 55%,#0b4aa2)}
-#gv-cover img{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.title{font-size:18px;color:#eaf8ff;letter-spacing:1px}.mode{font-size:12px;color:#78ffab;letter-spacing:1.5px}.sub{font-size:10px;color:#9be5ff;letter-spacing:.7px}.timer{font-size:9px;color:#dff8ff;letter-spacing:.8px}
-#gv-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#ff9b7a;white-space:pre-wrap;font-size:12px;line-height:1.45;overflow:auto}
-#gv-error button{margin-top:18px;padding:10px 14px;border:1px solid #7CCBFF;border-radius:5px;background:#081B3A;color:#EAF8FF;font-size:11px}#gv-save-status{margin-top:10px;color:#78ffab;font-size:10px}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
+#gvdiag{position:fixed;left:0;right:0;bottom:0;z-index:2147483647;box-sizing:border-box;padding:8px;background:#000;border-top:1px solid #58bfff;font:11px monospace;display:flex;gap:8px;align-items:center}
+#status{flex:1;color:#9be5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#download{height:44px;padding:0 12px;border:1px solid #78ffab;border-radius:5px;background:#081b3a;color:#fff;font:700 10px monospace}
+#error{display:none;position:fixed;inset:0 0 61px 0;z-index:2147483646;margin:0;padding:14px;overflow:auto;background:#000;color:#ff9b7a;white-space:pre-wrap;font:11px/1.4 monospace}
 </style>
 </head>
 <body>
-<div id="gv-cover"><img src="../../viewer/artwork/icon.svg" alt="Galaxy Viewer"><div class="title">GALAXY VIEWER</div><div class="mode">ANALYTICS MODE · FAST START 12M</div><div class="sub">SECOND-BY-SECOND STARTUP AUDIT ACTIVE</div><div class="timer" id="gv-fast-timer">0.0 SECONDS</div></div>
-<div id="gv-error"><div id="gv-error-text"></div><button id="gv-save-audit">SAVE AUDIT NOW</button><div id="gv-save-status"></div></div>
+
+<pre id="error"></pre>
+
+<div id="gvdiag">
+  <span id="status">12O DIAGNOSTICS · BOOTING</span>
+  <button id="download">DOWNLOAD REPORT</button>
+</div>
+
 <script>
-(async()=>{
+(()=>{
 'use strict';
-const A=window.__GV_ANALYTICS_AUDIT__,emit=A.emit,saveNow=window.__GV_ANALYTICS_SAVE_NOW__;
-const VIEWER='GV-beta-0012M.py',VIEWER_URL='../../viewer/'+VIEWER,VIEWER_TIMEOUT_MS=15000;
-const cover=document.getElementById('gv-cover'),errorBox=document.getElementById('gv-error'),errorText=document.getElementById('gv-error-text'),saveButton=document.getElementById('gv-save-audit'),saveStatus=document.getElementById('gv-save-status'),timer=document.getElementById('gv-fast-timer');
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));const pageStarted=performance.now();
-const timerId=setInterval(()=>{if(timer)timer.textContent=((performance.now()-pageStarted)/1000).toFixed(1)+' SECONDS'},100);
-const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
-async function fail(error){clearInterval(timerId);emit('LAUNCH_FAIL',{error:String(error?.stack||error)});errorBox.style.display='block';errorText.textContent='GALAXY VIEWER ANALYTICS FAILED\n\n'+String(error?.stack||error);try{const f=await saveNow('LAUNCH_FAIL',{error:String(error?.stack||error)});saveStatus.textContent='AUDIT AUTO-SAVED: '+f}catch(saveError){saveStatus.textContent='AUTO-SAVE FAILED: '+String(saveError?.message||saveError)}}
-saveButton.addEventListener('click',async()=>{saveStatus.textContent='SAVING AUDIT...';try{const f=await saveNow('MANUAL_FAILURE_SCREEN');saveStatus.textContent='AUDIT SAVED: '+f}catch(error){saveStatus.textContent='SAVE FAILED: '+String(error?.message||error)}});
-function mountHtml(html){const template=document.createElement('template');template.innerHTML=html;for(const node of [...template.content.childNodes]){if(node.nodeName==='SCRIPT'){const script=document.createElement('script');for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);script.textContent=node.textContent;document.body.appendChild(script)}else document.body.appendChild(node)}}
-async function prepareViewer(){emit('VIEWER_PREPARE_START',{viewer:VIEWER,url:VIEWER_URL});const source=await text(VIEWER_URL);emit('VIEWER_SOURCE_RECEIVED',{viewer:VIEWER,chars:source.length});const html=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],js=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(html.length!==1||js.length!==1)throw new Error('ANALYTICS VIEWER EXTRACTION FAILED: '+VIEWER);return{html:html[0][1],js:js[0][1]}}
-async function initializeViewer(p){emit('VIEWER_INITIALIZE_START',{viewer:VIEWER});mountHtml(p.html);const script=document.createElement('script');script.textContent=p.js;document.body.appendChild(script);emit('VIEWER_SCRIPT_MOUNTED',{viewer:VIEWER});const started=performance.now();while(performance.now()-started<VIEWER_TIMEOUT_MS){const root=document.getElementById('aladin-cosmic-command-test'),canvas=root?.querySelector('canvas');if(canvas){window.__GV_ANALYTICS_STARTUP_READY__=true;emit('VIEWER_CANVAS_READY',{durationMs:Math.round(performance.now()-started),totalMs:Math.round(performance.now()-pageStarted)});try{window.GalaxyViewerNativeAudit?.mark?.('VIEWER_READY','12M')}catch(_){};clearInterval(timerId);cover?.remove();return}await sleep(100)}throw new Error('15 SECOND STARTUP FAILURE: '+VIEWER)}
-try{emit('ANALYTICS_FAST_LAUNCH_START',{viewer:VIEWER});const prepared=await prepareViewer();await initializeViewer(prepared);emit('ANALYTICS_FAST_LAUNCH_READY',{totalMs:Math.round(performance.now()-pageStarted)})}catch(error){console.error(error);await fail(error)}
+
+const VIEWER='GV-beta-0012O.py';
+const VIEWER_URL='../../viewer/'+VIEWER;
+
+const start=performance.now();
+const events=[];
+const errors=[];
+const snapshots=[];
+
+const status=document.getElementById('status');
+const errorBox=document.getElementById('error');
+
+const elapsed=()=>Math.round(performance.now()-start);
+
+function safe(v){
+  try{
+    if(v instanceof Error)return {message:v.message,stack:v.stack||''};
+    return JSON.parse(JSON.stringify(v));
+  }catch(_){
+    return String(v);
+  }
+}
+
+function emit(type,detail={}){
+  const item={
+    at:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    type:String(type),
+    detail:safe(detail)
+  };
+  events.push(item);
+  status.textContent=(item.elapsedMs/1000).toFixed(1)+'s · '+item.type;
+  try{
+    window.GalaxyViewerAndroid?.mark?.(String(type),JSON.stringify(item.detail));
+  }catch(_){}
+}
+
+function err(type,e){
+  const item={
+    at:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    type,
+    message:String(e?.stack||e?.message||e)
+  };
+  errors.push(item);
+  emit(type,item);
+}
+
+function snap(){
+  let telemetry=null;
+  try{telemetry=window.GalaxyRandomGalaxy?.getPrefetchTelemetry?.()||null}catch(e){}
+
+  const s={
+    at:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    readyState:document.readyState,
+    windowA:Boolean(window.A),
+    aladinInitType:typeof window.A?.init,
+    aladinApi:Boolean(window.aladin_cosmic_command_test),
+    viewerCore:Boolean(window.GalaxyViewerCore),
+    randomApi:Boolean(window.GalaxyRandomGalaxy),
+    randomVersion:String(window.GalaxyRandomGalaxy?.VERSION||''),
+    root:Boolean(document.getElementById('aladin-cosmic-command-test')),
+    startupWait:Boolean(document.getElementById('gv-startup-wait')),
+    canvasCount:document.querySelectorAll('#aladin-cosmic-command-test canvas').length,
+    telemetry:safe(telemetry)
+  };
+
+  snapshots.push(s);
+
+  if(s.canvasCount>0 && s.viewerCore && !window.__GV_ANALYTICS_STARTUP_READY__){
+    window.__GV_ANALYTICS_STARTUP_READY__=true;
+    emit('VIEWER_READY',s);
+  }
+
+  return s;
+}
+
+function nativeAudit(){
+  try{
+    const raw=window.GalaxyViewerNativeAudit?.getNativeAudit?.();
+    if(!raw)return null;
+    try{return JSON.parse(raw)}catch(_){return raw}
+  }catch(e){
+    return {error:String(e)};
+  }
+}
+
+function report(reason){
+  return {
+    schema:'galaxy-viewer-12n-diagnostics',
+    reason,
+    exportedAt:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    viewer:VIEWER,
+    startupReady:Boolean(window.__GV_ANALYTICS_STARTUP_READY__),
+    current:snap(),
+    events,
+    errors,
+    snapshots,
+    resources:performance.getEntriesByType('resource').map(r=>({
+      name:r.name,
+      initiatorType:r.initiatorType,
+      durationMs:Math.round(r.duration),
+      transferSize:Number(r.transferSize||0)
+    })),
+    nativeAudit:nativeAudit()
+  };
+}
+
+async function saveReport(){
+  const filename='Galaxy-Viewer-12O-Diagnostics-'+
+    new Date().toISOString().replace(/[:.]/g,'-')+'.json';
+
+  const json=JSON.stringify(report('MANUAL_BUTTON'),null,2);
+
+  if(window.GalaxyViewerDownloads?.saveJson){
+    window.GalaxyViewerDownloads.saveJson(filename,json);
+    status.textContent='REPORT SAVED · '+filename;
+    return;
+  }
+
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  status.textContent='REPORT DOWNLOADED · '+filename;
+}
+
+document.getElementById('download').onclick=()=>saveReport().catch(e=>err('REPORT_SAVE_FAILURE',e));
+
+window.addEventListener('error',e=>{
+  if(e.target && e.target!==window){
+    err('RESOURCE_ERROR',(e.target.src||e.target.href||e.target.tagName||''));
+  }else{
+    err('JS_ERROR',e.error||e.message);
+  }
+},true);
+
+window.addEventListener('unhandledrejection',e=>err('PROMISE_REJECTION',e.reason));
+
+const nativeFetch=window.fetch.bind(window);
+
+window.fetch=async(input,init)=>{
+  const url=typeof input==='string'?input:String(input?.url||'');
+  const t=performance.now();
+  emit('FETCH_START',{url});
+  try{
+    const response=await nativeFetch(input,init);
+    emit('FETCH_END',{
+      url,
+      status:response.status,
+      ok:response.ok,
+      durationMs:Math.round(performance.now()-t)
+    });
+    return response;
+  }catch(e){
+    err('FETCH_FAILURE',e);
+    throw e;
+  }
+};
+
+window.__GV_ANALYTICS_AUDIT__={
+  version:'12O-DIAGNOSTICS-0001',
+  emit,
+  events,
+  errors,
+  snapshots,
+  exportData:()=>report('API_EXPORT')
+};
+
+window.__GV_ANALYTICS_SAVE_NOW__=saveReport;
+
+function mountHtml(html){
+  const t=document.createElement('template');
+  t.innerHTML=html;
+
+  for(const node of [...t.content.childNodes]){
+    if(node.nodeName==='SCRIPT'){
+      const s=document.createElement('script');
+      for(const a of [...node.attributes])s.setAttribute(a.name,a.value);
+      s.textContent=node.textContent;
+      document.body.appendChild(s);
+    }else{
+      document.body.appendChild(node);
+    }
+  }
+}
+
+async function launch(){
+  emit('VIEWER_FETCH_START',{viewer:VIEWER});
+
+  const response=await fetch(
+    VIEWER_URL+'?diag='+Date.now(),
+    {cache:'no-store'}
+  );
+
+  if(!response.ok)throw new Error('VIEWER HTTP '+response.status);
+
+  const source=await response.text();
+
+  emit('VIEWER_FETCH_END',{chars:source.length});
+
+  const html=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+  const js=source.match(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/);
+
+  if(!html)throw new Error('12O HTML EXTRACTION FAILED');
+  if(!js)throw new Error('12O JAVASCRIPT EXTRACTION FAILED');
+
+  emit('VIEWER_EXTRACTED',{
+    htmlChars:html[1].length,
+    jsChars:js[1].length
+  });
+
+  mountHtml(html[1]);
+
+  const script=document.createElement('script');
+  script.textContent=js[1];
+  document.body.appendChild(script);
+
+  emit('VIEWER_SCRIPT_MOUNTED');
+}
+
+setInterval(snap,1000);
+
+setTimeout(()=>{
+  if(!window.__GV_ANALYTICS_STARTUP_READY__){
+    emit('STARTUP_NOT_READY_15S',snap());
+  }
+},15000);
+
+launch().catch(e=>{
+  err('LAUNCH_FAILURE',e);
+  errorBox.style.display='block';
+  errorBox.textContent='GALAXY VIEWER 12O STARTUP FAILURE\n\n'+String(e?.stack||e);
+});
+
 })();
 </script>
+
 </body>
 </html>

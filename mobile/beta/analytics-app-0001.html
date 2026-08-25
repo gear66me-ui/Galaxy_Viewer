@@ -3,67 +3,271 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#061d45">
-<title>GALAXY VIEWER ANALYTICS</title>
-<script>
-(() => {
-  'use strict';
-  const bootPerf=performance.now(),bootEpoch=Date.now(),events=[],resources=[];
-  const MAX_EVENTS=15000,MAX_RESOURCES=15000;
-  const elapsed=()=>Math.round(performance.now()-bootPerf);
-  const trim=(a,max)=>{if(a.length>max)a.splice(0,a.length-max)};
-  const safe=v=>{try{return typeof v==='string'?v:JSON.parse(JSON.stringify(v))}catch(_){return String(v)}};
-  const emit=(type,detail={})=>{events.push({at:new Date().toISOString(),elapsedMs:elapsed(),type:String(type),detail:safe(detail)});trim(events,MAX_EVENTS)};
-  const addResource=entry=>{resources.push({at:new Date().toISOString(),elapsedMs:elapsed(),name:String(entry.name||''),initiatorType:String(entry.initiatorType||''),durationMs:Math.round(Number(entry.duration||0)),transferSize:Number(entry.transferSize||0),encodedBodySize:Number(entry.encodedBodySize||0),decodedBodySize:Number(entry.decodedBodySize||0)});trim(resources,MAX_RESOURCES)};
-  window.__GV_ANALYTICS_AUDIT__={version:'0001',startedAt:new Date(bootEpoch).toISOString(),bootEpoch,emit,events,resources,exportData:()=>({version:'0001',startedAt:new Date(bootEpoch).toISOString(),elapsedMs:elapsed(),events:[...events],resources:[...resources]})};
-  emit('BOOT_SCRIPT_START',{href:location.href,userAgent:navigator.userAgent});
-  try{new PerformanceObserver(list=>list.getEntries().forEach(addResource)).observe({type:'resource',buffered:true})}catch(error){emit('PERFORMANCE_OBSERVER_FAILED',{error:String(error)})}
-  const nativeFetch=window.fetch.bind(window);
-  window.fetch=async(input,init)=>{
-    const url=typeof input==='string'?input:String(input?.url||'');const id=`f${elapsed()}-${Math.random().toString(36).slice(2,7)}`,started=performance.now();
-    emit('FETCH_START',{id,url,method:String(init?.method||input?.method||'GET'),cache:String(init?.cache||'')});
-    try{const response=await nativeFetch(input,init);emit('FETCH_END',{id,url,status:response.status,ok:response.ok,durationMs:Math.round(performance.now()-started),contentLength:response.headers.get('content-length')||''});return response}catch(error){emit('FETCH_FAIL',{id,url,durationMs:Math.round(performance.now()-started),error:String(error?.stack||error)});throw error}
-  };
-  const XO=XMLHttpRequest.prototype.open,XS=XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open=function(method,url,...rest){this.__gvAudit={method:String(method),url:String(url),started:0};return XO.call(this,method,url,...rest)};
-  XMLHttpRequest.prototype.send=function(...args){const a=this.__gvAudit||{method:'?',url:'?',started:0};a.started=performance.now();emit('XHR_START',{method:a.method,url:a.url});const done=type=>emit(type,{method:a.method,url:a.url,status:Number(this.status||0),durationMs:Math.round(performance.now()-a.started)});this.addEventListener('load',()=>done('XHR_END'),{once:true});this.addEventListener('error',()=>done('XHR_FAIL'),{once:true});this.addEventListener('timeout',()=>done('XHR_TIMEOUT'),{once:true});return XS.apply(this,args)};
-  window.addEventListener('error',event=>{const t=event.target;if(t&&t!==window&&('src'in t||'href'in t)){emit('RESOURCE_ERROR',{tag:t.tagName||'',url:String(t.currentSrc||t.src||t.href||'')})}else emit('JS_ERROR',{message:String(event.message||event.error||''),source:String(event.filename||''),line:event.lineno||0,col:event.colno||0,stack:String(event.error?.stack||'')})},true);
-  window.addEventListener('unhandledrejection',event=>emit('PROMISE_REJECTION',{reason:String(event.reason?.stack||event.reason||'')}));
-  const originalError=console.error.bind(console),originalWarn=console.warn.bind(console);
-  console.error=(...args)=>{emit('CONSOLE_ERROR',{args:args.map(safe)});originalError(...args)};
-  console.warn=(...args)=>{emit('CONSOLE_WARN',{args:args.map(safe)});originalWarn(...args)};
-  let second=0;setInterval(()=>{second++;emit('BOOT_HEARTBEAT',{second,readyState:document.readyState,images:document.images.length,canvases:document.querySelectorAll('canvas').length,viewerCore:Boolean(window.GalaxyViewerCore),random:Boolean(window.GalaxyRandomGalaxy),diagnostics:Boolean(window.GalaxyViewerDiagnostics)})},1000);
-  emit('BOOT_INSTRUMENTATION_READY');
-})();
-</script>
+<title>GALAXY VIEWER 12O DIAGNOSTICS</title>
 <style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
-#gv-cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:linear-gradient(145deg,#020812,#061d45 55%,#0b4aa2)}
-#gv-cover img{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.title{font:400 18px "Space Age",sans-serif;color:#eaf8ff;letter-spacing:1px}.mode{font:700 12px monospace;color:#78ffab;letter-spacing:1.5px}.sub{font:10px monospace;color:#9be5ff}
-#gv-splash{position:fixed;inset:0;z-index:2147483646;width:100%;height:100%;border:0;background:#000;visibility:hidden}#gv-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#ff9b7a;white-space:pre-wrap;font:12px/1.45 monospace}
+#gvdiag{position:fixed;left:0;right:0;bottom:0;z-index:2147483647;box-sizing:border-box;padding:8px;background:#000;border-top:1px solid #58bfff;font:11px monospace;display:flex;gap:8px;align-items:center}
+#status{flex:1;color:#9be5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#download{height:44px;padding:0 12px;border:1px solid #78ffab;border-radius:5px;background:#081b3a;color:#fff;font:700 10px monospace}
+#error{display:none;position:fixed;inset:0 0 61px 0;z-index:2147483646;margin:0;padding:14px;overflow:auto;background:#000;color:#ff9b7a;white-space:pre-wrap;font:11px/1.4 monospace}
 </style>
 </head>
 <body>
-<div id="gv-cover"><img src="../../viewer/artwork/icon.svg" alt="Galaxy Viewer"><div class="title">GALAXY VIEWER</div><div class="mode">ANALYTICS MODE · 12L</div><div class="sub">SECOND-BY-SECOND STARTUP AUDIT ACTIVE</div></div>
-<iframe id="gv-splash" title="GALAXY VIEWER SPLASH"></iframe><div id="gv-error"></div>
+
+<pre id="error"></pre>
+
+<div id="gvdiag">
+  <span id="status">12O DIAGNOSTICS · BOOTING</span>
+  <button id="download">DOWNLOAD REPORT</button>
+</div>
+
 <script>
-(async()=>{
+(()=>{
 'use strict';
-const A=window.__GV_ANALYTICS_AUDIT__,emit=A.emit;
-const VIEWER='GV-beta-0012L.py',VIEWER_URL='../../viewer/'+VIEWER,SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html',ICON_HOLD_MS=3000,POST_SPLASH_HOLD_MS=1000,VIEWER_TIMEOUT_MS=45000;
-const cover=document.getElementById('gv-cover'),splash=document.getElementById('gv-splash'),errorBox=document.getElementById('gv-error');
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
-const fail=error=>{emit('LAUNCH_FAIL',{error:String(error?.stack||error)});errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER ANALYTICS FAILED\n\n'+String(error?.stack||error)};
-function installCatalogImagePolicy(){const wrapped=window.fetch.bind(window);window.fetch=async(input,init)=>{const raw=typeof input==='string'?input:String(input?.url||'');const response=await wrapped(input,init);if(!/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i.test(raw)||!response.ok)return response;emit('CATALOG_POLICY_APPLY',{url:raw});const payload=await response.clone().json();if(Array.isArray(payload?.entries))payload.entries=payload.entries.map(entry=>{if(!entry||typeof entry!=='object')return entry;const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(v=>String(v||'').trim()).filter(Boolean):[];const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry});const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})}}
-function mountHtml(html){const template=document.createElement('template');template.innerHTML=html;for(const node of [...template.content.childNodes]){if(node.nodeName==='SCRIPT'){const script=document.createElement('script');for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);script.textContent=node.textContent;document.body.appendChild(script)}else document.body.appendChild(node)}}
-async function prepareViewer(){emit('VIEWER_PREPARE_START',{viewer:VIEWER,url:VIEWER_URL});const source=await text(VIEWER_URL);emit('VIEWER_SOURCE_RECEIVED',{viewer:VIEWER,chars:source.length});const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(!htmlMatch||!jsMatches.length)throw new Error('ANALYTICS VIEWER EXTRACTION FAILED: '+VIEWER);emit('VIEWER_EXTRACTED',{htmlChars:htmlMatch[1].length,scripts:jsMatches.length});return{viewer:VIEWER,html:htmlMatch[1],scripts:jsMatches.map(m=>m[1])}}
-async function initializeViewer(p){emit('VIEWER_INITIALIZE_START',{viewer:p.viewer});installCatalogImagePolicy();mountHtml(p.html);for(const [index,source] of p.scripts.entries()){emit('VIEWER_INLINE_SCRIPT_START',{index,chars:source.length});const script=document.createElement('script');script.textContent=source;document.body.appendChild(script);emit('VIEWER_INLINE_SCRIPT_MOUNTED',{index})}const started=performance.now();while(performance.now()-started<VIEWER_TIMEOUT_MS){const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas')){emit('VIEWER_CANVAS_READY',{durationMs:Math.round(performance.now()-started)});return p.viewer}await sleep(1000);emit('VIEWER_WAIT_SECOND',{seconds:Math.floor((performance.now()-started)/1000),root:Boolean(root),canvas:Boolean(root?.querySelector('canvas')),core:Boolean(window.GalaxyViewerCore),random:Boolean(window.GalaxyRandomGalaxy),diag:Boolean(window.GalaxyViewerDiagnostics)})}throw new Error('ANALYTICS VIEWER STARTUP TIMEOUT: '+p.viewer)}
-function splashAssets(html){const base=new URL(SPLASH_URL,location.href),doc=new DOMParser().parseFromString(html,'text/html'),urls=new Set();for(const n of doc.querySelectorAll('[src]')){const r=n.getAttribute('src');if(r&&!r.startsWith('data:')&&!r.startsWith('blob:'))urls.add(new URL(r,base).href)}for(const n of doc.querySelectorAll('link[href]')){const r=n.getAttribute('href');if(r&&!r.startsWith('data:')&&!r.startsWith('blob:'))urls.add(new URL(r,base).href)}for(const m of html.matchAll(/url\((['\"]?)(.*?)\1\)/gi)){const r=String(m[2]||'').trim();if(r&&!r.startsWith('data:')&&!r.startsWith('blob:'))urls.add(new URL(r,base).href)}return[...urls]}
-async function preloadSplash(){emit('SPLASH_PRELOAD_START');const response=await fetch(SPLASH_URL,{cache:'reload'});if(!response.ok)throw new Error('HTTP '+response.status+' '+SPLASH_URL);const html=await response.text(),assets=splashAssets(html);emit('SPLASH_ASSETS_FOUND',{count:assets.length});await Promise.all(assets.map(async url=>{const r=await fetch(url,{cache:'reload'});if(!r.ok)throw new Error('HTTP '+r.status+' '+url);await r.arrayBuffer()}));const baseHref=new URL('./',new URL(SPLASH_URL,location.href)).href,tag='<base href="'+baseHref+'">';emit('SPLASH_PRELOAD_END',{count:assets.length});return /<head(?:\s[^>]*)?>/i.test(html)?html.replace(/<head(\s[^>]*)?>/i,m=>m+tag):tag+html}
-async function runSplash(html){emit('SPLASH_RUN_START');const done=new Promise((resolve,reject)=>{let settled=false;const timer=setTimeout(()=>{if(!settled){settled=true;reject(new Error('SPLASH COMPLETION TIMEOUT'))}},30000);splash.addEventListener('load',()=>{try{const w=splash.contentWindow;if(!w)throw new Error('SPLASH WINDOW UNAVAILABLE');w.addEventListener('galaxy-splash-complete',()=>{if(!settled){settled=true;clearTimeout(timer);emit('SPLASH_COMPLETE');resolve()}},{once:true})}catch(e){clearTimeout(timer);reject(e)}},{once:true});splash.addEventListener('error',()=>{clearTimeout(timer);reject(new Error('SPLASH FAILED TO LOAD'))},{once:true})});splash.style.visibility='visible';cover.style.display='none';splash.srcdoc=html;await done}
-try{emit('ANALYTICS_LAUNCH_START',{viewer:VIEWER});const minimum=sleep(ICON_HOLD_MS),sp=preloadSplash(),vp=prepareViewer();const [splashHtml,viewer]=await Promise.all([Promise.all([minimum,sp]).then(([,h])=>h),vp]);emit('PRELOAD_PHASE_COMPLETE');await runSplash(splashHtml);cover.style.display='flex';cover.querySelector('img').style.display='none';cover.querySelector('.title').style.display='none';cover.querySelector('.mode').textContent='ANALYTICS MODE · INITIALIZING 12L';const viewerReady=initializeViewer(viewer);await Promise.all([viewerReady,sleep(POST_SPLASH_HOLD_MS)]);emit('ANALYTICS_LAUNCH_READY');if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove()}catch(error){console.error(error);fail(error)}
+
+const VIEWER='GV-beta-0012O.py';
+const VIEWER_URL='../../viewer/'+VIEWER;
+
+const start=performance.now();
+const events=[];
+const errors=[];
+const snapshots=[];
+
+const status=document.getElementById('status');
+const errorBox=document.getElementById('error');
+
+const elapsed=()=>Math.round(performance.now()-start);
+
+function safe(v){
+  try{
+    if(v instanceof Error)return {message:v.message,stack:v.stack||''};
+    return JSON.parse(JSON.stringify(v));
+  }catch(_){
+    return String(v);
+  }
+}
+
+function emit(type,detail={}){
+  const item={
+    at:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    type:String(type),
+    detail:safe(detail)
+  };
+  events.push(item);
+  status.textContent=(item.elapsedMs/1000).toFixed(1)+'s · '+item.type;
+  try{
+    window.GalaxyViewerAndroid?.mark?.(String(type),JSON.stringify(item.detail));
+  }catch(_){}
+}
+
+function err(type,e){
+  const item={
+    at:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    type,
+    message:String(e?.stack||e?.message||e)
+  };
+  errors.push(item);
+  emit(type,item);
+}
+
+function snap(){
+  let telemetry=null;
+  try{telemetry=window.GalaxyRandomGalaxy?.getPrefetchTelemetry?.()||null}catch(e){}
+
+  const s={
+    at:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    readyState:document.readyState,
+    windowA:Boolean(window.A),
+    aladinInitType:typeof window.A?.init,
+    aladinApi:Boolean(window.aladin_cosmic_command_test),
+    viewerCore:Boolean(window.GalaxyViewerCore),
+    randomApi:Boolean(window.GalaxyRandomGalaxy),
+    randomVersion:String(window.GalaxyRandomGalaxy?.VERSION||''),
+    root:Boolean(document.getElementById('aladin-cosmic-command-test')),
+    startupWait:Boolean(document.getElementById('gv-startup-wait')),
+    canvasCount:document.querySelectorAll('#aladin-cosmic-command-test canvas').length,
+    telemetry:safe(telemetry)
+  };
+
+  snapshots.push(s);
+
+  if(s.canvasCount>0 && s.viewerCore && !window.__GV_ANALYTICS_STARTUP_READY__){
+    window.__GV_ANALYTICS_STARTUP_READY__=true;
+    emit('VIEWER_READY',s);
+  }
+
+  return s;
+}
+
+function nativeAudit(){
+  try{
+    const raw=window.GalaxyViewerNativeAudit?.getNativeAudit?.();
+    if(!raw)return null;
+    try{return JSON.parse(raw)}catch(_){return raw}
+  }catch(e){
+    return {error:String(e)};
+  }
+}
+
+function report(reason){
+  return {
+    schema:'galaxy-viewer-12n-diagnostics',
+    reason,
+    exportedAt:new Date().toISOString(),
+    elapsedMs:elapsed(),
+    viewer:VIEWER,
+    startupReady:Boolean(window.__GV_ANALYTICS_STARTUP_READY__),
+    current:snap(),
+    events,
+    errors,
+    snapshots,
+    resources:performance.getEntriesByType('resource').map(r=>({
+      name:r.name,
+      initiatorType:r.initiatorType,
+      durationMs:Math.round(r.duration),
+      transferSize:Number(r.transferSize||0)
+    })),
+    nativeAudit:nativeAudit()
+  };
+}
+
+async function saveReport(){
+  const filename='Galaxy-Viewer-12O-Diagnostics-'+
+    new Date().toISOString().replace(/[:.]/g,'-')+'.json';
+
+  const json=JSON.stringify(report('MANUAL_BUTTON'),null,2);
+
+  if(window.GalaxyViewerDownloads?.saveJson){
+    window.GalaxyViewerDownloads.saveJson(filename,json);
+    status.textContent='REPORT SAVED · '+filename;
+    return;
+  }
+
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  status.textContent='REPORT DOWNLOADED · '+filename;
+}
+
+document.getElementById('download').onclick=()=>saveReport().catch(e=>err('REPORT_SAVE_FAILURE',e));
+
+window.addEventListener('error',e=>{
+  if(e.target && e.target!==window){
+    err('RESOURCE_ERROR',(e.target.src||e.target.href||e.target.tagName||''));
+  }else{
+    err('JS_ERROR',e.error||e.message);
+  }
+},true);
+
+window.addEventListener('unhandledrejection',e=>err('PROMISE_REJECTION',e.reason));
+
+const nativeFetch=window.fetch.bind(window);
+
+window.fetch=async(input,init)=>{
+  const url=typeof input==='string'?input:String(input?.url||'');
+  const t=performance.now();
+  emit('FETCH_START',{url});
+  try{
+    const response=await nativeFetch(input,init);
+    emit('FETCH_END',{
+      url,
+      status:response.status,
+      ok:response.ok,
+      durationMs:Math.round(performance.now()-t)
+    });
+    return response;
+  }catch(e){
+    err('FETCH_FAILURE',e);
+    throw e;
+  }
+};
+
+window.__GV_ANALYTICS_AUDIT__={
+  version:'12O-DIAGNOSTICS-0001',
+  emit,
+  events,
+  errors,
+  snapshots,
+  exportData:()=>report('API_EXPORT')
+};
+
+window.__GV_ANALYTICS_SAVE_NOW__=saveReport;
+
+function mountHtml(html){
+  const t=document.createElement('template');
+  t.innerHTML=html;
+
+  for(const node of [...t.content.childNodes]){
+    if(node.nodeName==='SCRIPT'){
+      const s=document.createElement('script');
+      for(const a of [...node.attributes])s.setAttribute(a.name,a.value);
+      s.textContent=node.textContent;
+      document.body.appendChild(s);
+    }else{
+      document.body.appendChild(node);
+    }
+  }
+}
+
+async function launch(){
+  emit('VIEWER_FETCH_START',{viewer:VIEWER});
+
+  const response=await fetch(
+    VIEWER_URL+'?diag='+Date.now(),
+    {cache:'no-store'}
+  );
+
+  if(!response.ok)throw new Error('VIEWER HTTP '+response.status);
+
+  const source=await response.text();
+
+  emit('VIEWER_FETCH_END',{chars:source.length});
+
+  const html=source.match(/display\(HTML\("""([\s\S]*?)"""\)\)/);
+  const js=source.match(/display\(Javascript\(r?"""([\s\S]*?)"""\)\)/);
+
+  if(!html)throw new Error('12O HTML EXTRACTION FAILED');
+  if(!js)throw new Error('12O JAVASCRIPT EXTRACTION FAILED');
+
+  emit('VIEWER_EXTRACTED',{
+    htmlChars:html[1].length,
+    jsChars:js[1].length
+  });
+
+  mountHtml(html[1]);
+
+  const script=document.createElement('script');
+  script.textContent=js[1];
+  document.body.appendChild(script);
+
+  emit('VIEWER_SCRIPT_MOUNTED');
+}
+
+setInterval(snap,1000);
+
+setTimeout(()=>{
+  if(!window.__GV_ANALYTICS_STARTUP_READY__){
+    emit('STARTUP_NOT_READY_15S',snap());
+  }
+},15000);
+
+launch().catch(e=>{
+  err('LAUNCH_FAILURE',e);
+  errorBox.style.display='block';
+  errorBox.textContent='GALAXY VIEWER 12O STARTUP FAILURE\n\n'+String(e?.stack||e);
+});
+
 })();
 </script>
+
 </body>
 </html>
