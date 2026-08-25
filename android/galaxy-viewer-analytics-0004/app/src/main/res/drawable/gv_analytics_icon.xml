@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient android:angle="315" android:startColor="#020812" android:centerColor="#0B4AA2" android:endColor="#18A8E8" />
+            <corners android:radius="22dp" />
+        </shape>
+    </item>
+    <item android:left="18dp" android:top="18dp" android:right="18dp" android:bottom="18dp">
+        <bitmap android:src="@drawable/gv_app_icon" android:gravity="center" />
+    </item>
+</layer-list>
