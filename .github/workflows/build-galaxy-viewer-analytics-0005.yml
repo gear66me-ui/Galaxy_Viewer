@@ -1,0 +1,148 @@
+name: Build Galaxy Viewer Analytics 0005
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - "viewer/GV-beta-0012M.py"
+      - "mobile/beta/analytics-app-0003.html"
+      - "android/galaxy-viewer-analytics-0004/**"
+      - ".github/workflows/build-galaxy-viewer-analytics-0005.yml"
+
+permissions:
+  contents: read
+
+env:
+  APK_NAME: Galaxy-Viewer-Analytics-0005.apk
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+
+      - name: Verify fast-start contract
+        run: |
+          set -euo pipefail
+          grep -q "GV-beta-0012M.py" mobile/beta/analytics-app-0003.html
+          grep -q "VIEWER_TIMEOUT_MS=15000" mobile/beta/analytics-app-0003.html
+          grep -q "JS_FAILSAFE_15S" mobile/beta/analytics-app-0003.html
+          grep -q 'font-family:"Space Age"' mobile/beta/analytics-app-0003.html
+          grep -q "12M_ALADIN_PRELOAD_START" viewer/GV-beta-0012M.py
+          grep -q "12M_BASE12F_MEMORY_HIT" viewer/GV-beta-0012M.py
+          grep -q "analytics-app-0003.html" android/galaxy-viewer-analytics-0004/app/src/main/java/com/gear66me/galaxyviewer/analytics/MainActivity.java
+          grep -q "NATIVE_WATCHDOG_MS = 16000L" android/galaxy-viewer-analytics-0004/app/src/main/java/com/gear66me/galaxyviewer/analytics/MainActivity.java
+          grep -q "R.font.space_age" android/galaxy-viewer-analytics-0004/app/src/main/java/com/gear66me/galaxyviewer/analytics/MainActivity.java
+          grep -q "versionName 'analytics-4'" android/galaxy-viewer-analytics-0004/app/build.gradle
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local repository server
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 --bind 127.0.0.1 > /tmp/gv-http.log 2>&1 &
+          echo $! > /tmp/gv-http.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8000/mobile/beta/analytics-app-0003.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/gv-http.log
+          exit 1
+
+      - name: Browser gate — canvas under 15 seconds and Space Age loaded
+        run: |
+          set -euo pipefail
+          cat > /tmp/gv-smoke.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true,args:['--use-gl=swiftshader','--enable-webgl','--ignore-gpu-blocklist']});
+            const page=await browser.newPage({viewport:{width:412,height:915}});
+            const logs=[];
+            page.on('console',m=>{const line=`CONSOLE ${m.type()} ${m.text()}`;logs.push(line);console.log(line)});
+            page.on('pageerror',e=>{const line=`PAGEERROR ${e.stack||e}`;logs.push(line);console.error(line)});
+            const started=Date.now();
+            await page.goto('http://127.0.0.1:8000/mobile/beta/analytics-app-0003.html?source=ci&analytics=ci',{waitUntil:'domcontentloaded',timeout:10000});
+            try{
+              await page.waitForSelector('#aladin-cosmic-command-test canvas',{state:'attached',timeout:15000});
+            }catch(error){
+              await page.screenshot({path:'analytics-0005-smoke-failure.png',fullPage:true});
+              const text=await page.locator('body').innerText().catch(()=>'<body unavailable>');
+              console.error('BODY AT FAILURE:\n'+text);
+              console.error(logs.slice(-80).join('\n'));
+              throw error;
+            }
+            const elapsed=Date.now()-started;
+            if(elapsed>15000)throw new Error(`CANVAS TOO SLOW: ${elapsed}ms`);
+            const font=await page.evaluate(async()=>{await document.fonts.ready;return document.fonts.check('12px "Space Age"')});
+            if(!font)throw new Error('SPACE AGE FONT DID NOT LOAD');
+            const cover=await page.locator('#gv-cover').count();
+            if(cover!==0)throw new Error('ANALYTICS COVER STILL PRESENT AFTER CANVAS READY');
+            await page.screenshot({path:'analytics-0005-smoke-pass.png',fullPage:true});
+            console.log(`BROWSER GATE PASS — CANVAS ${elapsed}ms — SPACE AGE ${font}`);
+            await browser.close();
+          })().catch(error=>{console.error(error.stack||error);process.exit(1)});
+          NODE
+          node /tmp/gv-smoke.cjs
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 35
+        run: |
+          set -euo pipefail
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+          yes | sdkmanager --licenses >/dev/null || true
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build Analytics APK
+        run: |
+          set -euo pipefail
+          gradle --no-daemon -p android/galaxy-viewer-analytics-0004 :app:assembleDebug
+
+      - name: Stage and verify APK
+        run: |
+          set -euo pipefail
+          APK="android/galaxy-viewer-analytics-0004/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          cp "$APK" "$APK_NAME"
+          sha256sum "$APK_NAME" > "$APK_NAME.sha256"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK_NAME"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK_NAME" > analytics-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.analytics'" analytics-badging.txt
+          grep -q "versionName='analytics-4'" analytics-badging.txt
+          grep -q "application-label:'GALAXY VIEWER ANALYTICS'" analytics-badging.txt
+          test -s android/galaxy-viewer-analytics-0004/app/build/generated/res/canonicalAssets/font/space_age.otf
+
+      - name: Upload Analytics APK and browser proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-Analytics-0005
+          path: |
+            Galaxy-Viewer-Analytics-0005.apk
+            Galaxy-Viewer-Analytics-0005.apk.sha256
+            analytics-badging.txt
+            analytics-0005-smoke-pass.png
+          if-no-files-found: error
+          retention-days: 30
