@@ -1,0 +1,142 @@
+name: Spitzer V19 Provenance Audit
+on:
+  push:
+    branches: [spitzer-curator-verified-v20]
+    paths:
+      - '.github/workflows/spitzer-v19-provenance-audit.yml'
+      - 'tmp/spitzer-v19-review-state.json'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: spitzer-curator-verified-v20
+      - name: Audit 500 reviewed candidates
+        run: |
+          python -m pip install --quiet requests
+          python <<'PY'
+          import json,re,hashlib,concurrent.futures,time
+          from collections import Counter,defaultdict
+          import requests
+          from pathlib import Path
+
+          pairs=json.load(open('tmp/spitzer-v19-review-state.json'))
+          state={str(i).lower():d for i,d in pairs}
+          ids=[str(i).lower() for i,d in pairs]
+          s=requests.Session();s.headers['User-Agent']='GalaxyViewer-ProvenanceAudit/1'
+          feed=s.get('https://www.astropix.org/d2d/913.json',timeout=60).json()
+          cols=feed.get('Collections') or []
+          if int(feed.get('Count') or 0)!=705 or len(cols)!=705: raise SystemExit('official 705 feed gate failed')
+          fmap={str(r.get('ID') or '').lower():r for r in cols}
+
+          def vals_for_key(obj, needle):
+            out=[]
+            def walk(x):
+              if isinstance(x,dict):
+                for k,v in x.items():
+                  if str(k).lower()==needle:
+                    if isinstance(v,list): out.extend(str(z) for z in v)
+                    elif isinstance(v,(str,int,float)): out.append(str(v))
+                  walk(v)
+              elif isinstance(x,list):
+                for z in x: walk(z)
+            walk(obj);return out
+
+          def thumbnail(rec,rid):
+            for a in rec.get('Assets') or []:
+              for rr in a.get('Resources') or []:
+                if str(rr.get('ResourceType','')).lower()=='thumbnail' and str(rr.get('MediaType','')).lower()=='image' and rr.get('URL'):
+                  return str(rr['URL'])
+            return f'https://www.astropix.org/archive/spitzer/{rid}/spitzer_{rid}_320.jpg'
+
+          def norm_facilities(rec):
+            raw=vals_for_key(rec,'facility')
+            # fallback textual clues only when structured facility metadata is absent
+            if not raw:
+              txt=' '.join([str(rec.get('Title','')),str(rec.get('Credit','')),str(rec.get('Caption',''))]).lower()
+              for pat,label in [('spitzer','Spitzer'),('hubble','Hubble'),('chandra','Chandra'),('jwst','JWST'),('webb','JWST'),('herschel','Herschel'),('galex','GALEX'),('wise','WISE')]:
+                if pat in txt: raw.append(label)
+            out=[]
+            for x in raw:
+              q=x.strip();l=q.lower()
+              if 'spitzer' in l: q='Spitzer'
+              elif 'hubble' in l or l=='hst': q='Hubble'
+              elif 'chandra' in l: q='Chandra'
+              elif 'jwst' in l or 'webb' in l: q='JWST'
+              elif 'herschel' in l: q='Herschel'
+              elif 'galex' in l: q='GALEX'
+              elif 'wise' in l: q='WISE'
+              if q and q not in out: out.append(q)
+            return out
+
+          def check_one(rid):
+            rec=fmap.get(rid)
+            infeed=rec is not None
+            url=thumbnail(rec,rid) if rec else f'https://www.astropix.org/archive/spitzer/{rid}/spitzer_{rid}_320.jpg'
+            ok=False;err='';ctype='';n=0;sha=None
+            try:
+              q=requests.get(url,headers={'User-Agent':'GalaxyViewer-ProvenanceAudit/1'},timeout=(7,25),allow_redirects=True)
+              b=q.content;ctype=(q.headers.get('content-type') or '').lower();n=len(b)
+              ok=q.status_code==200 and ctype.startswith('image/') and n>=1000
+              if ok: sha=hashlib.sha256(b).hexdigest()
+              else: err=f'HTTP {q.status_code}; type={ctype}; bytes={n}'
+            except Exception as e: err=repr(e)
+            if not rec:
+              return {'id':rid,'decision':state.get(rid),'officialFeedMatch':False,'imageUrl':url,'linkWorking':ok,'linkError':err,'recommendedDatabase':'INVALID_NOT_IN_OFFICIAL_FEED','imageType':None,'galaxyRelated':False,'facilities':[],'instruments':[],'bands':[],'sha256':sha}
+            fac=norm_facilities(rec)
+            inst=list(dict.fromkeys(vals_for_key(rec,'instrument')))
+            bands=list(dict.fromkeys(vals_for_key(rec,'band')))
+            types=list(dict.fromkeys(vals_for_key(rec,'type')))
+            itype=str(rec.get('Type') or (types[0] if types else ''))
+            cats=[str(x) for x in ((rec.get('Subject') or {}).get('Category') or [])]
+            names=[str(x) for x in ((rec.get('Subject') or {}).get('Name') or [])]
+            galaxy=any('galaxy' in x.lower() or 'cosmology' in x.lower() for x in cats)
+            major=[x for x in fac if x in {'Spitzer','Hubble','Chandra','JWST'}]
+            if not ok: route='BROKEN_LINK'
+            elif itype and itype.lower()!='observation': route='NON_OBSERVATION'
+            elif not galaxy: route='NON_GALAXY'
+            elif len(set(major))>1: route='MULTI_OBSERVATORY'
+            elif major: route=major[0].upper()
+            elif fac: route='OTHER_OBSERVATORY'
+            else: route='PROVENANCE_REVIEW'
+            return {'id':rid,'decision':state.get(rid),'title':rec.get('Title'),'officialFeedMatch':True,'imageUrl':url,'sourceUrl':rec.get('ReferenceURL'),'linkWorking':ok,'linkError':err,'imageType':itype,'galaxyRelated':galaxy,'subjectCategories':cats,'subjectNames':names,'facilities':fac,'instruments':inst,'bands':bands,'recommendedDatabase':route,'sha256':sha,'bytes':n}
+
+          rows=[]
+          with concurrent.futures.ThreadPoolExecutor(max_workers=28) as ex:
+            futs=[ex.submit(check_one,rid) for rid in ids]
+            for i,f in enumerate(concurrent.futures.as_completed(futs),1):
+              rows.append(f.result())
+              if i%50==0: print(i,'/',len(ids))
+          order={rid:i for i,rid in enumerate(ids)};rows.sort(key=lambda r:order[r['id']])
+          decisions=Counter((r['decision'] or 'UNREVIEWED') for r in rows)
+          routes=Counter(r['recommendedDatabase'] for r in rows)
+          maybe=[r for r in rows if r['decision']=='MAYBE']
+          keep=[r for r in rows if r['decision']=='KEEP']
+          maybe_routes=Counter(r['recommendedDatabase'] for r in maybe)
+          keep_routes=Counter(r['recommendedDatabase'] for r in keep)
+          report={
+            'schema':'gv-image-provenance-triage-0001','sourceBackup':'spitzer-curator-v19-500-new-backup','officialAstroPixSpitzerFeedCount':705,
+            'recordCount':len(rows),'decisionCounts':dict(decisions),'officialFeedMatches':sum(r['officialFeedMatch'] for r in rows),'notInOfficialFeed':sum(not r['officialFeedMatch'] for r in rows),
+            'workingLinks':sum(r['linkWorking'] for r in rows),'brokenLinks':sum(not r['linkWorking'] for r in rows),
+            'maybeCount':len(maybe),'maybeWorkingLinks':sum(r['linkWorking'] for r in maybe),'maybeBrokenLinks':sum(not r['linkWorking'] for r in maybe),'maybeRoutes':dict(maybe_routes),
+            'keepCount':len(keep),'keepWorkingLinks':sum(r['linkWorking'] for r in keep),'keepBrokenLinks':sum(not r['linkWorking'] for r in keep),'keepRoutes':dict(keep_routes),
+            'allRoutes':dict(routes),'generatedAt':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'records':rows}
+          Path('spitzer-v19-provenance-audit.json').write_text(json.dumps(report,indent=2,ensure_ascii=False))
+          # convenience split DBs: only KEEP/MAYBE, valid working galaxy observations
+          eligible=[r for r in rows if r['decision'] in ('KEEP','MAYBE') and r['linkWorking'] and r['galaxyRelated'] and str(r['imageType']).lower()=='observation']
+          split=defaultdict(list)
+          for r in eligible: split[r['recommendedDatabase']].append(r)
+          Path('spitzer-v19-selected-database-routing.json').write_text(json.dumps({'schema':'gv-selected-image-routing-0001','counts':{k:len(v) for k,v in split.items()},'databases':split},indent=2,ensure_ascii=False))
+          print(json.dumps({k:v for k,v in report.items() if k!='records'},indent=2))
+          PY
+      - name: Commit audit outputs
+        run: |
+          git config user.name 'Galaxy Viewer Audit'
+          git config user.email 'actions@users.noreply.github.com'
+          git add spitzer-v19-provenance-audit.json spitzer-v19-selected-database-routing.json
+          git commit -m 'Add Spitzer v19 provenance and broken-link audit' || exit 0
+          git push origin HEAD:spitzer-curator-verified-v20
