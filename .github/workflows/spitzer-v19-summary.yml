@@ -1,0 +1,33 @@
+name: Spitzer V19 Audit Summary
+on:
+  push:
+    branches: [spitzer-curator-verified-v20]
+    paths: ['.github/workflows/spitzer-v19-summary.yml']
+permissions:
+  contents: write
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: spitzer-curator-verified-v20
+      - name: Build compact summary
+        run: |
+          python <<'PY'
+          import json
+          from collections import Counter,defaultdict
+          a=json.load(open('spitzer-v19-provenance-audit.json'))
+          rows=a['records']; maybe=[r for r in rows if r.get('decision')=='MAYBE']; keep=[r for r in rows if r.get('decision')=='KEEP']
+          valid=[r for r in rows if r.get('decision') in ('KEEP','MAYBE') and r.get('linkWorking') and r.get('galaxyRelated') and r.get('recommendedDatabase') in ('SPITZER','HUBBLE','CHANDRA','JWST','MULTI_OBSERVATORY','OTHER_OBSERVATORY')]
+          by=Counter(r['recommendedDatabase'] for r in valid)
+          out={'decisionCounts':a['decisionCounts'],'officialFeedMatches':a['officialFeedMatches'],'notInOfficialFeed':a['notInOfficialFeed'],'workingLinks':a['workingLinks'],'brokenLinks':a['brokenLinks'],'maybeWorking':sum(r.get('linkWorking') for r in maybe),'maybeBroken':sum(not r.get('linkWorking') for r in maybe),'maybeWorkingRecords':[{'id':r['id'],'title':r.get('title'),'route':r.get('recommendedDatabase'),'facilities':r.get('facilities'),'galaxyRelated':r.get('galaxyRelated'),'imageUrl':r.get('imageUrl')} for r in maybe if r.get('linkWorking')],'keepValidGalaxy':sum(r in valid for r in keep),'keepWorkingNonGalaxy':sum(r.get('linkWorking') and not r.get('galaxyRelated') for r in keep),'keepBrokenOrInvalid':sum((not r.get('linkWorking')) or (not r.get('officialFeedMatch')) for r in keep),'validSelectedGalaxyByDatabase':dict(by),'validSelectedGalaxyRecords':[{'id':r['id'],'decision':r.get('decision'),'title':r.get('title'),'route':r.get('recommendedDatabase'),'facilities':r.get('facilities'),'imageUrl':r.get('imageUrl')} for r in valid]}
+          json.dump(out,open('spitzer-v19-executive-summary.json','w'),indent=2,ensure_ascii=False)
+          PY
+      - name: Commit summary
+        run: |
+          git config user.name 'Galaxy Viewer Audit'
+          git config user.email 'actions@users.noreply.github.com'
+          git add spitzer-v19-executive-summary.json
+          git commit -m 'Add Spitzer v19 executive audit summary' || exit 0
+          git push origin HEAD:spitzer-curator-verified-v20
