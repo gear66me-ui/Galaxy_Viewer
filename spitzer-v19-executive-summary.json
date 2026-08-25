@@ -1,0 +1,346 @@
+{
+  "decisionCounts": {
+    "MAYBE": 202,
+    "KEEP": 123,
+    "REJECT": 171,
+    "UNREVIEWED": 4
+  },
+  "officialFeedMatches": 290,
+  "notInOfficialFeed": 210,
+  "workingLinks": 290,
+  "brokenLinks": 210,
+  "maybeWorking": 5,
+  "maybeBroken": 197,
+  "maybeWorkingRecords": [
+    {
+      "id": "ssc2008-03a1",
+      "title": "SPITZER | Young Stars in Their Baby Blanket of Dust: Rho Ophiuchi",
+      "route": "NON_GALAXY",
+      "facilities": [
+        "Spitzer"
+      ],
+      "galaxyRelated": false,
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2008-03a1/spitzer_ssc2008-03a1_320.jpg"
+    },
+    {
+      "id": "sig05-008b",
+      "title": "SPITZER | Jupiter-Family Comet Shoemaker-Levy 3",
+      "route": "NON_GALAXY",
+      "facilities": [
+        "Spitzer"
+      ],
+      "galaxyRelated": false,
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig05-008b/spitzer_sig05-008b_320.jpg"
+    },
+    {
+      "id": "sig05-024a",
+      "title": "SPITZER | Nebula Hosting a New Star Cluster ",
+      "route": "NON_GALAXY",
+      "facilities": [
+        "Spitzer"
+      ],
+      "galaxyRelated": false,
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig05-024a/spitzer_sig05-024a_320.jpg"
+    },
+    {
+      "id": "ssc2005-24a1",
+      "title": "SPITZER | NGC 1333 in the Infrared",
+      "route": "NON_GALAXY",
+      "facilities": [
+        "Spitzer"
+      ],
+      "galaxyRelated": false,
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2005-24a1/spitzer_ssc2005-24a1_320.jpg"
+    },
+    {
+      "id": "sig14-023",
+      "title": "SPITZER | Take a Splash Into the Cosmos",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "galaxyRelated": true,
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig14-023/spitzer_sig14-023_320.jpg"
+    }
+  ],
+  "keepValidGalaxy": 26,
+  "keepWorkingNonGalaxy": 90,
+  "keepBrokenOrInvalid": 7,
+  "validSelectedGalaxyByDatabase": {
+    "SPITZER": 26,
+    "MULTI_OBSERVATORY": 1
+  },
+  "validSelectedGalaxyRecords": [
+    {
+      "id": "ssc2009-03b1",
+      "decision": "KEEP",
+      "title": "SPITZER | Spiral Galaxy M101 - Spitzer Space Telescope",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2009-03b1/spitzer_ssc2009-03b1_320.jpg"
+    },
+    {
+      "id": "ssc2005-20a2",
+      "decision": "KEEP",
+      "title": "SPITZER | Spitzer/MIPS View of the Andromeda Galaxy",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2005-20a2/spitzer_ssc2005-20a2_320.jpg"
+    },
+    {
+      "id": "ssc2006-14a1",
+      "decision": "KEEP",
+      "title": "SPITZER | Andromeda",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2006-14a1/spitzer_ssc2006-14a1_320.jpg"
+    },
+    {
+      "id": "ssc2003-06c1",
+      "decision": "KEEP",
+      "title": "SPITZER | Spiral Galaxy Messier 81",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2003-06c1/spitzer_ssc2003-06c1_320.jpg"
+    },
+    {
+      "id": "sig06-006c",
+      "decision": "KEEP",
+      "title": "SPITZER | Distant Galaxy Cluster",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig06-006c/spitzer_sig06-006c_320.jpg"
+    },
+    {
+      "id": "ssc2009-20a1",
+      "decision": "KEEP",
+      "title": "SPITZER | NASA's Great Observatories Examine the Galaxy Center",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2009-20a1/spitzer_ssc2009-20a1_320.jpg"
+    },
+    {
+      "id": "ssc2004-12a3",
+      "decision": "KEEP",
+      "title": "SPITZER | Spitzer Mid-Inrared View of NGC 7331",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2004-12a3/spitzer_ssc2004-12a3_320.jpg"
+    },
+    {
+      "id": "ssc2010-02c",
+      "decision": "KEEP",
+      "title": "SPITZER | Dusty, Little Galaxy",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2010-02c/spitzer_ssc2010-02c_320.jpg"
+    },
+    {
+      "id": "ssc2006-02a1",
+      "decision": "KEEP",
+      "title": "SPITZER | Spitzer View of the Center of the Milky Way",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2006-02a1/spitzer_ssc2006-02a1_320.jpg"
+    },
+    {
+      "id": "ssc2006-02b1",
+      "decision": "KEEP",
+      "title": "SPITZER | Spitzer 8.0 micron View of the Milky Way Center",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2006-02b1/spitzer_ssc2006-02b1_320.jpg"
+    },
+    {
+      "id": "ssc2023-01a",
+      "decision": "KEEP",
+      "title": "SPITZER | The Infrared Face of the Phantom Galaxy (M74)",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2023-01a/spitzer_ssc2023-01a_320.jpg"
+    },
+    {
+      "id": "ssc2019-05a",
+      "decision": "KEEP",
+      "title": "SPITZER | Spitzer Captures Messier 87 (EHT)",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2019-05a/spitzer_ssc2019-05a_320.jpg"
+    },
+    {
+      "id": "sig05-025a",
+      "decision": "KEEP",
+      "title": "SPITZER | An Infrared Slice of the Milky Way ",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig05-025a/spitzer_sig05-025a_320.jpg"
+    },
+    {
+      "id": "ssc2005-03b",
+      "decision": "KEEP",
+      "title": "SPITZER | At the Heart of Blobs",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2005-03b/spitzer_ssc2005-03b_320.jpg"
+    },
+    {
+      "id": "ssc2005-08b",
+      "decision": "KEEP",
+      "title": "SPITZER | Shimmering in Infrared Light",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2005-08b/spitzer_ssc2005-08b_320.jpg"
+    },
+    {
+      "id": "ssc2008-01b",
+      "decision": "KEEP",
+      "title": "SPITZER | Galaxies of all Shapes Host Black Holes",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2008-01b/spitzer_ssc2008-01b_320.jpg"
+    },
+    {
+      "id": "ssc2008-14b",
+      "decision": "KEEP",
+      "title": "SPITZER | The Pinwheel Galaxy, M101, in the Infrared",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2008-14b/spitzer_ssc2008-14b_320.jpg"
+    },
+    {
+      "id": "sig16-18",
+      "decision": "KEEP",
+      "title": "SPITZER | 'Pandora's Cluster' Seen by Spitzer",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig16-18/spitzer_sig16-18_320.jpg"
+    },
+    {
+      "id": "sig14-023",
+      "decision": "MAYBE",
+      "title": "SPITZER | Take a Splash Into the Cosmos",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig14-023/spitzer_sig14-023_320.jpg"
+    },
+    {
+      "id": "sig05-021",
+      "decision": "KEEP",
+      "title": "SPITZER | Dwarf Galaxies Forming in Tidal Tails",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig05-021/spitzer_sig05-021_320.jpg"
+    },
+    {
+      "id": "sig05-002a",
+      "decision": "KEEP",
+      "title": "SPITZER | NGC 5907 in the Infrared",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig05-002a/spitzer_sig05-002a_320.jpg"
+    },
+    {
+      "id": "ssc2004-14a1",
+      "decision": "KEEP",
+      "title": "SPITZER | Composite view of the Antennae Galaxies",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2004-14a1/spitzer_ssc2004-14a1_320.jpg"
+    },
+    {
+      "id": "ssc2004-19a1",
+      "decision": "KEEP",
+      "title": "SPITZER | Visible Light View of the Spiral Galaxy M51 (\"Whirlpool Galaxy\")",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2004-19a1/spitzer_ssc2004-19a1_320.jpg"
+    },
+    {
+      "id": "ssc2005-11a1",
+      "decision": "KEEP",
+      "title": "SPITZER | Spitzer and Hubble View of the Sombrero Galaxy",
+      "route": "MULTI_OBSERVATORY",
+      "facilities": [
+        "Spitzer",
+        "Hubble"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2005-11a1/spitzer_ssc2005-11a1_320.jpg"
+    },
+    {
+      "id": "ssc2010-02b",
+      "decision": "KEEP",
+      "title": "SPITZER | Little Galaxy with a Tail",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2010-02b/spitzer_ssc2010-02b_320.jpg"
+    },
+    {
+      "id": "ssc2015-03a",
+      "decision": "KEEP",
+      "title": "SPITZER | What Feeds the Beast in a Galaxy Cluster? (annotated)",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/ssc2015-03a/spitzer_ssc2015-03a_320.jpg"
+    },
+    {
+      "id": "sig14-004b",
+      "decision": "KEEP",
+      "title": "SPITZER | M82 Galaxy with Supernova",
+      "route": "SPITZER",
+      "facilities": [
+        "Spitzer"
+      ],
+      "imageUrl": "https://www.astropix.org/archive/spitzer/sig14-004b/spitzer_sig14-004b_320.jpg"
+    }
+  ]
+}
