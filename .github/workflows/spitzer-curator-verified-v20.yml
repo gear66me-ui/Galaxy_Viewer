@@ -1,0 +1,179 @@
+name: Spitzer Curator Verified V20
+
+on:
+  push:
+    branches: [spitzer-curator-verified-v20]
+    paths:
+      - '.github/workflows/spitzer-curator-verified-v20.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: spitzer-curator-verified-v20
+
+      - name: Build and verify curator
+        shell: bash
+        run: |
+          python -m pip install --quiet requests
+          python <<'PY'
+          import concurrent.futures, hashlib, html, json, os, sys, time
+          from pathlib import Path
+          import requests
+
+          FEED='https://www.astropix.org/d2d/913.json'
+          KNOWN_EXCLUDED=set(json.loads(r'''["sig05-002", "sig05-006a", "sig05-011", "sig05-013", "sig05-014", "sig05-015", "sig05-016", "sig05-017", "sig05-019b", "sig05-021", "sig06-003", "sig06-005", "sig06-010", "sig06-015", "sig06-015e", "sig06-018c", "sig06-024", "sig07-015", "sig08-008", "sig09-003", "sig09-004", "sig09-006", "sig11-017", "sig12-008", "sig13-007", "sig14-023", "sig16-18", "ssc2003-06c", "ssc2003-06c1", "ssc2003-06d5", "ssc2004-07b", "ssc2004-07b1", "ssc2004-09a1", "ssc2004-10a", "ssc2004-10b", "ssc2004-10c", "ssc2004-12a", "ssc2004-12a1", "ssc2004-12a2", "ssc2004-12a3", "ssc2004-14a2", "ssc2004-14a3", "ssc2004-19a2", "ssc2005-03a", "ssc2005-03a1", "ssc2005-11a2", "ssc2005-11a3", "ssc2005-19a", "ssc2005-19a2", "ssc2005-19b1", "ssc2005-20a3", "ssc2006-08a1", "ssc2006-09a1", "ssc2006-11a1", "ssc2006-11b1", "ssc2006-17a1", "ssc2006-17b1", "ssc2008-12a", "ssc2008-12a1", "ssc2008-12b", "ssc2008-14a", "ssc2009-03a", "ssc2009-03a1", "ssc2009-03a3", "ssc2009-03b", "ssc2009-03b1", "ssc2009-03b2", "ssc2009-03b3", "ssc2009-06a1", "ssc2009-08a1", "ssc2009-08b1", "ssc2009-14a1", "ssc2009-15a2", "ssc2010-02a1", "ssc2010-02c", "ssc2011-10a", "ssc2011-10a2", "ssc2012-01b", "ssc2012-06a", "ssc2012-12a", "ssc2012-12a1", "ssc2012-12a3", "ssc2013-07a1", "ssc2013-07a2", "ssc2013-07a3", "ssc2017-14a1", "ssc2018-05a", "ssc2019-03a", "ssc2019-03c", "ssc2019-05a", "ssc2019-05b", "ssc2019-05c", "ssc2019-06a", "ssc2019-11a", "ssc2019-11b", "ssc2019-13a", "ssc2019-15a", "ssc2019-15b", "ssc2019-15c", "ssc2019-15d", "ssc2021-06b", "ssc2023-01b", "ssc2023-02", "ssc2023-04", "ssc2024-02a", "ssc2024-02b"]'''))
+
+          sess=requests.Session()
+          sess.headers.update({'User-Agent':'GalaxyViewer-SpitzerCuratorVerify/20'})
+          last=None
+          for attempt in range(4):
+              try:
+                  rr=sess.get(FEED,timeout=45)
+                  rr.raise_for_status()
+                  data=rr.json(); break
+              except Exception as e:
+                  last=e; time.sleep(2+attempt*2)
+          else:
+              raise RuntimeError(f'Cannot fetch AstroPix feed: {last}')
+
+          collections=data.get('Collections') or []
+          advertised=int(data.get('Count') or 0)
+          if advertised != 705 or len(collections) != 705:
+              raise RuntimeError(f'Authoritative gate failed: advertised={advertised}, records={len(collections)}')
+
+          def thumb(rec):
+              for a in rec.get('Assets') or []:
+                  for r in a.get('Resources') or []:
+                      if str(r.get('MediaType','')).lower()=='image' and str(r.get('ResourceType','')).lower()=='thumbnail' and r.get('URL'):
+                          return r
+              return None
+
+          raw=[]
+          all_ids=[]
+          all_urls=[]
+          for rec in collections:
+              rid=str(rec.get('ID') or '').strip().lower()
+              tr=thumb(rec)
+              if not rid or not tr: continue
+              url=str(tr.get('URL') or '').strip()
+              all_ids.append(rid); all_urls.append(url)
+              raw.append({
+                  'id':rid,
+                  'title':str(rec.get('Title') or rid).replace('SPITZER | ','').strip(),
+                  'img':url,
+                  'source':str(rec.get('ReferenceURL') or f'https://www.astropix.org/image/spitzer/{rid}'),
+                  'credit':str(rec.get('Credit') or ''),
+                  'date':str(rec.get('PublicationDate') or '')[:10],
+                  'categories':list((rec.get('Subject') or {}).get('Category') or []),
+                  'names':list((rec.get('Subject') or {}).get('Name') or []),
+                  'feedFileSize':tr.get('FileSize'),
+                  'dimensions':tr.get('Dimensions') or []
+              })
+
+          duplicate_ids=len(all_ids)-len(set(all_ids))
+          duplicate_urls=len(all_urls)-len(set(all_urls))
+          if duplicate_ids:
+              raise RuntimeError(f'Feed contains duplicate IDs: {duplicate_ids}')
+
+          # Deduplicate URL before verification and exclude every record already selected/reviewed in known state.
+          seen_url=set(); candidates=[]
+          for r in raw:
+              if r['id'] in KNOWN_EXCLUDED: continue
+              if r['img'] in seen_url: continue
+              seen_url.add(r['img']); candidates.append(r)
+
+          def verify(r):
+              url=r['img']; err=''
+              for attempt in range(3):
+                  try:
+                      q=requests.get(url,headers={'User-Agent':'GalaxyViewer-SpitzerCuratorVerify/20'},timeout=(7,25),allow_redirects=True)
+                      ctype=(q.headers.get('content-type') or '').lower()
+                      b=q.content
+                      ok=(q.status_code==200 and ctype.startswith('image/') and len(b)>=1000 and (b[:3]==b'\xff\xd8\xff' or b[:8]==b'\x89PNG\r\n\x1a\n' or b[:4] in (b'GIF8',b'RIFF')))
+                      if ok:
+                          return r, hashlib.sha256(b).hexdigest(), len(b), q.status_code, ctype, ''
+                      err=f'status={q.status_code} type={ctype} bytes={len(b)}'
+                  except Exception as e:
+                      err=repr(e)
+                  time.sleep(0.4*(attempt+1))
+              return r, None, 0, None, '', err
+
+          verified=[]; failures=[]
+          with concurrent.futures.ThreadPoolExecutor(max_workers=28) as ex:
+              futs=[ex.submit(verify,r) for r in candidates]
+              for i,f in enumerate(concurrent.futures.as_completed(futs),1):
+                  r,sha,n,status,ctype,err=f.result()
+                  if sha:
+                      r=dict(r); r['sha256']=sha; r['verifiedBytes']=n; verified.append(r)
+                  else:
+                      failures.append({'id':r['id'],'url':r['img'],'error':err})
+                  if i%50==0: print(f'verified {i}/{len(candidates)}')
+
+          # Drop exact duplicate image CONTENT even if AstroPix exposed it under different IDs/URLs.
+          verified.sort(key=lambda x:x['id'])
+          seen_hash={}; unique=[]; duplicate_content=[]
+          for r in verified:
+              h=r['sha256']
+              if h in seen_hash:
+                  duplicate_content.append({'dropped':r['id'],'sameAs':seen_hash[h],'sha256':h})
+                  continue
+              seen_hash[h]=r['id']; unique.append(r)
+
+          if len(unique) < 500:
+              raise RuntimeError(f'Acceptance gate failed: only {len(unique)} unique, working, new images survived; need >=500')
+
+          meta={
+              'source':FEED,
+              'advertisedCount':advertised,
+              'feedRecords':len(collections),
+              'uniqueFeedIds':len(set(all_ids)),
+              'duplicateFeedIds':duplicate_ids,
+              'duplicateFeedUrls':duplicate_urls,
+              'knownReviewedOrSelectedExcluded':len(KNOWN_EXCLUDED),
+              'knownExcludedPresentInFeed':len(set(all_ids)&KNOWN_EXCLUDED),
+              'candidateUrlsTested':len(candidates),
+              'workingImageUrls':len(verified),
+              'failedImageUrls':len(failures),
+              'duplicateImageContentDropped':len(duplicate_content),
+              'embeddedVerifiedUniqueNew':len(unique),
+              'verificationMethod':'HTTP GET 200 + image/* MIME + image signature + >=1000 bytes + SHA-256 exact-content dedupe',
+              'generatedAt':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),
+              'failures':failures,
+              'duplicateContent':duplicate_content,
+          }
+
+          records_json=json.dumps(unique,separators=(',',':'),ensure_ascii=False).replace('</','<\\/')
+          meta_json=json.dumps(meta,separators=(',',':'),ensure_ascii=False).replace('</','<\\/')
+
+          page=r'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Spitzer WOW Curator v20 — VERIFIED</title><style>
+          *{box-sizing:border-box}html,body{overscroll-behavior:none}:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color-scheme:dark}body{margin:0;background:#06080d;color:#f7f8fc}header{position:sticky;top:0;z-index:50;background:#06080df5;border-bottom:1px solid #394255;padding:6px}.top,.nav{display:flex;gap:5px;align-items:center;flex-wrap:wrap}h1{font-size:15px;margin:0}#status{font-size:10px;color:#c5d0df;margin-left:auto}button,select{border:1px solid #4b556d;background:#171e2b;color:#fff;border-radius:8px;padding:7px 9px;font-weight:850}.good{background:#143b25}.bad{background:#411717}.maybe{background:#49340d}.info{background:#172f4f}.lock{background:#12402b}.verify{font-size:9px;line-height:1.35;margin-top:5px;padding:5px 7px;border-radius:7px;background:#0e2f22;color:#d8ffe7}.warn{background:#4b1717!important;color:#ffdede!important}main{padding:4px}.pageHead{display:flex;gap:8px;align-items:center;margin:2px 0 6px}.pageTitle{font-weight:900}.pageCount{font-size:10px;font-weight:900;padding:4px 7px;border-radius:8px;background:#6d28d9}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.card{border:1px solid #343d50;border-radius:8px;overflow:hidden;background:#0b1018;min-width:0}.card.keep{outline:3px solid #57d88b}.card.reject{outline:3px solid #ef4444}.card.maybeSel{outline:3px solid #e8b84d}.card img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain;background:#020305}.meta{padding:3px}.title{font-size:8px;font-weight:850;line-height:1.15;min-height:18px}.id{font-size:6px;color:#9eabc0;word-break:break-all}.badges{display:flex;gap:2px;flex-wrap:wrap;margin-top:2px}.badge{font-size:6px;padding:2px 3px;border-radius:4px;background:#24412f;color:#dcffe8}.actions{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:3px}.actions button{font-size:6px;padding:4px 0}#toast{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#101928;border:1px solid #75839b;padding:8px;border-radius:8px;display:none;z-index:100}@media(max-width:700px){h1{font-size:12px}button,select{font-size:9px;padding:6px}.grid{gap:3px}.title{font-size:7px}.id,.badge{font-size:6px}}
+          </style></head><body><header><div class="top"><h1>Spitzer WOW Curator v20 — SERVER VERIFIED — 200/PAGE</h1><span id="status"></span></div><div class="nav"><button id="refreshLock" class="lock">🔒 REFRESH LOCK: ON</button><button id="prev" class="info">◀ PREVIOUS</button><button id="next" class="info">NEXT ▶</button><select id="jump"></select><select id="filter"><option value="ALL">ALL NEW</option><option value="UNREVIEWED">UNREVIEWED</option><option value="KEEP">KEEP</option><option value="MAYBE">MAYBE</option><option value="REJECT">NO</option></select><button id="nextUn" class="info">NEXT UNREVIEWED ▶</button><button id="keepPage" class="good">KEEP PAGE</button><button id="noPage" class="bad">NO PAGE</button><button id="clearPage" class="bad">CLEAR PAGE</button><button id="undo" class="maybe">UNDO</button><button id="download" class="info">DOWNLOAD BACKUP</button></div><div id="verification" class="verify"></div></header><main><div class="pageHead"><div id="pageTitle" class="pageTitle"></div><div id="pageCount" class="pageCount"></div></div><div id="grid" class="grid"></div></main><div id="toast"></div><script>
+          const META=__META__;const EMBEDDED=__RECORDS__;const PAGE_SIZE=200;const KEY='spitzer-curator-v20-verified';const OLD_KEYS=['spitzer-curator-v19-direct-assets','spitzer-curator-v19-500-new','spitzer-curator-v19-500-new-no-repeats','spitzer-curator-v18-635-new-real-assets','spitzer-curator-v17-new-only','spitzer-curator-v16-705-paged-refresh-locked','spitzer-curator-v15-705-paged','spitzer-curator-v13-500plus','spitzer-curator-v12-705-feed-cors-fallback'];
+          let S;try{S=JSON.parse(localStorage.getItem(KEY))||{decisions:{},page:0,filter:'ALL',history:[]}}catch(e){S={decisions:{},page:0,filter:'ALL',history:[]}};S.decisions||={};S.history||=[];if(!Number.isInteger(S.page))S.page=0;S.filter||='ALL';
+          const touched=new Set();for(const k of OLD_KEYS){try{const x=JSON.parse(localStorage.getItem(k)||'null');if(x&&x.decisions)for(const id of Object.keys(x.decisions))touched.add(String(id).toLowerCase())}catch(e){}}for(const id of Object.keys(S.decisions))touched.delete(String(id).toLowerCase());
+          const ITEMS=EMBEDDED.filter(x=>!touched.has(x.id));const hidden=EMBEDDED.length-ITEMS.length;let refreshLocked=true;const $=id=>document.getElementById(id);function save(){localStorage.setItem(KEY,JSON.stringify(S));updateStatus()}function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',1200)}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+          function filtered(){const f=S.filter;if(f==='ALL')return ITEMS;if(f==='UNREVIEWED')return ITEMS.filter(x=>!S.decisions[x.id]);return ITEMS.filter(x=>S.decisions[x.id]===f)}function slice(){const a=filtered(),pages=Math.max(1,Math.ceil(a.length/PAGE_SIZE));S.page=Math.max(0,Math.min(S.page,pages-1));return{a,pages,items:a.slice(S.page*PAGE_SIZE,S.page*PAGE_SIZE+PAGE_SIZE)}}function decide(id,v){S.history.push({id,prev:S.decisions[id]??null});S.decisions[id]=v;save();render(false)}function render(scroll=true){const {a,pages,items}=slice();$('grid').innerHTML='';for(const x of items){const d=S.decisions[x.id]||'';const c=document.createElement('div');c.className='card '+(d==='KEEP'?'keep':d==='REJECT'?'reject':d==='MAYBE'?'maybeSel':'');const cats=(x.categories||[]).filter(v=>/galaxy/i.test(v)).slice(0,2);c.innerHTML=`<img loading="lazy" referrerpolicy="no-referrer" src="${esc(x.img)}"><div class="meta"><div class="title">${esc(x.title)}</div><div class="id">${esc(x.id)}</div><div class="badges"><span class="badge">✅ LINK VERIFIED</span>${cats.map(v=>`<span class="badge">${esc(v)}</span>`).join('')}</div><div class="actions"><button class="good k">KEEP</button><button class="bad n">NO</button><button class="maybe m">MAYBE</button><button class="info s">SOURCE</button></div></div>`;c.querySelector('.k').onclick=()=>decide(x.id,'KEEP');c.querySelector('.n').onclick=()=>decide(x.id,'REJECT');c.querySelector('.m').onclick=()=>decide(x.id,'MAYBE');c.querySelector('.s').onclick=()=>window.open(x.source,'_blank','noopener');$('grid').appendChild(c)}$('pageTitle').textContent=`PAGE ${S.page+1} OF ${pages}`;$('pageCount').textContent=`${items.length} CARDS • ${a.length} IN FILTER`;$('prev').disabled=S.page===0;$('next').disabled=S.page>=pages-1;const j=$('jump');j.innerHTML='';for(let i=0;i<pages;i++){const o=document.createElement('option');o.value=i;o.textContent=`PAGE ${i+1} · ${i*PAGE_SIZE+1}-${Math.min((i+1)*PAGE_SIZE,a.length)}`;j.appendChild(o)}j.value=String(S.page);updateStatus();if(scroll)scrollTo(0,0)}function updateStatus(){const rev=ITEMS.filter(x=>S.decisions[x.id]).length;$('status').textContent=`${ITEMS.length} UNIQUE NEW • ${rev} reviewed • ${hidden} old hidden`}
+          const v=$('verification');v.textContent=`VERIFIED BUILD: AstroPix advertised ${META.advertisedCount}; feed records ${META.feedRecords}; unique feed IDs ${META.uniqueFeedIds}; candidate links tested ${META.candidateUrlsTested}; working image URLs ${META.workingImageUrls}; failed ${META.failedImageUrls}; exact duplicate image content dropped ${META.duplicateImageContentDropped}; embedded verified unique new ${META.embeddedVerifiedUniqueNew}; previously reviewed on this device hidden ${hidden}; VISIBLE NOW ${ITEMS.length}. Verification: ${META.verificationMethod}.`;if(ITEMS.length<500)v.classList.add('warn');
+          $('prev').onclick=()=>{if(S.page>0){S.page--;save();render()}};$('next').onclick=()=>{const p=slice().pages;if(S.page<p-1){S.page++;save();render()}};$('jump').onchange=e=>{S.page=+e.target.value;save();render()};$('filter').onchange=e=>{S.filter=e.target.value;S.page=0;save();render()};$('nextUn').onclick=()=>{const a=filtered();const i=a.findIndex(x=>!S.decisions[x.id]);if(i<0)return toast('No unreviewed cards');S.page=Math.floor(i/PAGE_SIZE);save();render()};$('keepPage').onclick=()=>{for(const x of slice().items)S.decisions[x.id]='KEEP';save();render(false)};$('noPage').onclick=()=>{for(const x of slice().items)S.decisions[x.id]='REJECT';save();render(false)};$('clearPage').onclick=()=>{for(const x of slice().items)delete S.decisions[x.id];save();render(false)};$('undo').onclick=()=>{const h=S.history.pop();if(!h)return toast('Nothing to undo');if(h.prev===null)delete S.decisions[h.id];else S.decisions[h.id]=h.prev;save();render(false)};$('download').onclick=()=>{const out={schema:'spitzer-curator-v20-verified',verification:META,visibleUniqueNew:ITEMS.length,hiddenPreviouslyReviewed:hidden,decisions:S.decisions,keepIds:Object.entries(S.decisions).filter(([,v])=>v==='KEEP').map(([id])=>id),items:ITEMS};const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='spitzer-curator-v20-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};$('refreshLock').onclick=()=>{refreshLocked=!refreshLocked;$('refreshLock').textContent=refreshLocked?'🔒 REFRESH LOCK: ON':'🔓 REFRESH LOCK: OFF'};window.addEventListener('beforeunload',e=>{save();if(refreshLocked){e.preventDefault();e.returnValue=''}});$('filter').value=S.filter;render(false);
+          </script></body></html>'''
+          page=page.replace('__META__',meta_json).replace('__RECORDS__',records_json)
+          out=Path('spitzer-curator-v20-verified.html');out.write_text(page,encoding='utf-8')
+          Path('spitzer-curator-v20-verification.json').write_text(json.dumps(meta,indent=2),encoding='utf-8')
+          print(json.dumps({k:v for k,v in meta.items() if k not in ('failures','duplicateContent')},indent=2))
+          PY
+
+      - name: Commit verified outputs
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add spitzer-curator-v20-verified.html spitzer-curator-v20-verification.json
+          git commit -m 'Generate verified Spitzer curator v20'
+          git push origin HEAD:spitzer-curator-verified-v20
