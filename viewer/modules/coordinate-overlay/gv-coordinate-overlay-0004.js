@@ -1,7 +1,7 @@
 (function(global){
   'use strict';
 
-  const VERSION='0003';
+  const VERSION='0004';
   const GEOMETRY=Object.freeze({
     width:290,height:36,icrsdLeft:9,galLeft:19,dividerCenterX:64.5,
     xFieldLeft:78,xDecimalFromFieldLeft:37.5,lambdaCenterX:179.5,
