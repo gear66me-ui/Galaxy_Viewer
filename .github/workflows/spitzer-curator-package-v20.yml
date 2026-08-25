@@ -1,0 +1,38 @@
+name: Package Spitzer Curator V20
+
+on:
+  push:
+    branches: [spitzer-curator-verified-v20]
+    paths:
+      - '.github/workflows/spitzer-curator-package-v20.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: spitzer-curator-verified-v20
+      - name: Confirm verified outputs
+        run: |
+          test -s spitzer-curator-v20-verified.html
+          test -s spitzer-curator-v20-verification.json
+          python - <<'PY'
+          import json
+          m=json.load(open('spitzer-curator-v20-verification.json'))
+          assert m['advertisedCount']==705
+          assert m['feedRecords']==705
+          assert m['failedImageUrls']==0
+          assert m['embeddedVerifiedUniqueNew']>=500
+          print(m)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spitzer-curator-v20-verified
+          path: |
+            spitzer-curator-v20-verified.html
+            spitzer-curator-v20-verification.json
+          if-no-files-found: error
