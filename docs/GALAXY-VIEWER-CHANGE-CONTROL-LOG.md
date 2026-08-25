@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-b5a7fb4dafbc — GV-ECO-0012N
+
+**Recorded:** 2026-08-25T00:51:36-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`b5a7fb4dafbcd4f910452ef23a5e422e7fcc6793`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/b5a7fb4dafbcd4f910452ef23a5e422e7fcc6793)  
+**Parent/baseline:** `ee5fd68b7b25d75a110bbd002e49a0f5641f0a46`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ee5fd68b7b25d75a110bbd002e49a0f5641f0a46...b5a7fb4dafbcd4f910452ef23a5e422e7fcc6793)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `GV-ECO-0012N`  
+**Requirements:** `REQ-096`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `docs/engineering-change-orders/0012N/GV-ECO-0012N.md`
+- Actual: `docs/engineering-change-orders/0012N/GV-ECO-0012N.md`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `docs/engineering-change-orders/0012N/GV-ECO-0012N.md`
+
+- Git status: `M`
+- SHA-256 before: `bf2ffcd49bfc1085837ad26b0331b3e11493718bf47efc5f65686bf853d99794`
+- SHA-256 after: `46853a6bfa5a95f26af43c6a760a9c3bbc2a6b3ea15c4c2028491f3aeff5176a`
+- Bytes: `10396` -> `7813`
+- Lines: `211` -> `159`
+- Characters: `10360` -> `7793`
+- Inserted lines: `52`
+- Deleted lines: `104`
+- Inserted characters: `1192`
+- Deleted characters: `3759`
+- Changed diff blocks: `33`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-8607aa183379 — GV-ECO-0012N
 
 **Recorded:** 2026-08-25T00:48:03-05:00  
