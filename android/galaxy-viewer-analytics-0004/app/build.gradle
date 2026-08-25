@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+}
+
+def generatedResDir = layout.buildDirectory.dir('generated/res/canonicalAssets').get().asFile
+
+android {
+    namespace 'com.gear66me.galaxyviewer.analytics'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.gear66me.galaxyviewer.analytics'
+        minSdk 29
+        targetSdk 35
+        versionCode 4
+        versionName 'analytics-4'
+    }
+
+    sourceSets {
+        main {
+            res.srcDir generatedResDir
+        }
+    }
+}
+
+tasks.register('prepareCanonicalAssets') {
+    doLast {
+        copy {
+            from rootProject.file('../../viewer/artwork/icon_transparent.png')
+            into new File(generatedResDir, 'drawable')
+            rename { 'gv_app_icon.png' }
+        }
+        copy {
+            from rootProject.file('../../viewer/artwork/Fonts/Space Age Regular/Space Age Regular.otf')
+            into new File(generatedResDir, 'font')
+            rename { 'space_age.otf' }
+        }
+    }
+}
+
+tasks.named('preBuild').configure {
+    dependsOn tasks.named('prepareCanonicalAssets')
+}
