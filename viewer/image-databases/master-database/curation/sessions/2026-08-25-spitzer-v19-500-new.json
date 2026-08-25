@@ -1,0 +1,38 @@
+{
+  "schema": "gv-curation-session",
+  "sessionId": "2026-08-25-spitzer-v19-500-new",
+  "sourceBackup": {
+    "name": "spitzer-curator-v19-500-new-backup-2026-08-25T05-04-50-961Z.json",
+    "sha256": "ea27fe10e217941f2f73890dd6a3c9060cc01174c13b663f4803bd12b2be035f",
+    "bytes": 237985,
+    "exportedAt": "2026-08-25T05:04:50.942Z",
+    "schema": "spitzer-curator-v19-500-new"
+  },
+  "provider": "AstroPix",
+  "collection": "Spitzer",
+  "recordCount": 500,
+  "decisionCounts": {
+    "KEEP": 123,
+    "REJECT": 171,
+    "MAYBE": 202,
+    "UNREVIEWED": 4
+  },
+  "linkAndProvenanceAudit": {
+    "officialAstroPixSpitzerFeedCount": 705,
+    "officialFeedMatches": 290,
+    "notInOfficialFeed": 210,
+    "workingLinks": 290,
+    "brokenLinks": 210,
+    "maybeWorking": 5,
+    "maybeBroken": 197,
+    "keepWorking": 116,
+    "keepBrokenOrInvalid": 7,
+    "note": "Legacy v19 used guessed/non-authoritative candidate IDs. Broken or invalid entries remain preserved as reviewed history so they are not shown again."
+  },
+  "decisionSnapshot": "../gv-curation-master-0001.json",
+  "policy": {
+    "keepMeans": "interesting astronomy image, including galaxies, nebulae, clusters, remnants and other visually/scientifically interesting material",
+    "normalNewQueueMustExclude": ["KEEP", "REJECT", "MAYBE", "BROKEN", "DUPLICATE"],
+    "maybeRevisitRequiresExplicitMode": true
+  }
+}
