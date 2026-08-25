@@ -1,0 +1,2126 @@
+{
+  "schema": "gv-curation-selected-previews",
+  "version": "0001",
+  "provider": "AstroPix",
+  "collection": "Spitzer",
+  "sourceMaster": "../../gv-curation-master-0001.json",
+  "requestedKeepCount": 123,
+  "archivedPreviewCount": 116,
+  "missingFromOfficialFeedCount": 7,
+  "failedDownloadCount": 0,
+  "missingFromOfficialFeed": [
+    "ssc2009-03b",
+    "ssc2004-04b",
+    "ssc2007-17a",
+    "ssc2005-19a3",
+    "ssc2006-01a",
+    "ssc2006-03a2",
+    "ssc2009-06a"
+  ],
+  "failedDownloads": [],
+  "records": [
+    {
+      "id": "ssc2004-15a1",
+      "title": "SPITZER | Composite View of Kepler's Supernova Remnant - SN 1604",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-15a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-15a1/spitzer_ssc2004-15a1_320.jpg",
+      "previewBytes": 40984,
+      "previewSha256": "20cfb1d7808ffba8b3e0ddfea9e1880b5a7241255145e6fa5c7c29b8cb204d52",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-15a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant",
+        "Star : Evolutionary Stage : Supernova"
+      ],
+      "names": [
+        "Kepler's Supernova Remnant",
+        "SN 1604"
+      ]
+    },
+    {
+      "id": "ssc2004-15b1",
+      "title": "SPITZER | Spitzer View of Kepler's Supernova Remnant - SN 1604",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-15b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-15b1/spitzer_ssc2004-15b1_320.jpg",
+      "previewBytes": 64441,
+      "previewSha256": "dda7236a9fe4f52030a9acacec57d946635f6045b97d06e8f95b24631354a454",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-15b1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant",
+        "Star : Evolutionary Stage : Supernova"
+      ],
+      "names": [
+        "Kepler's Supernova Remnant",
+        "SN 1604"
+      ]
+    },
+    {
+      "id": "ssc2004-22d2",
+      "title": "SPITZER | Debris Disks Around Sun-Like Star HD 107146",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-22d2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-22d2/spitzer_ssc2004-22d2_320.jpg",
+      "previewBytes": 40141,
+      "previewSha256": "c448b5b14043c5a1b38af8b26b6f1a2cca6158f92e25099634febc168868594e",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-22d2",
+      "facilities": [],
+      "categories": [
+        "Star : Spectral Type : G",
+        "Star : Circumstellar Material : Disk : Debris"
+      ],
+      "names": [
+        "HD 107146"
+      ]
+    },
+    {
+      "id": "ssc2004-22f",
+      "title": "SPITZER | Model of AU Microscopii Disk",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-22f.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-22f/spitzer_ssc2004-22f_320.jpg",
+      "previewBytes": 27546,
+      "previewSha256": "3264f4c81d6a09c4d242b5aea7db1fc72c87735501d58bab103afee60b00a72e",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-22f",
+      "facilities": [],
+      "categories": [
+        "Star : Circumstellar Material : Planetary System",
+        "Star : Circumstellar Material : Disk : Protoplanetary",
+        "Star : Circumstellar Material : Disk : Debris"
+      ],
+      "names": [
+        "AU Microscopii"
+      ]
+    },
+    {
+      "id": "ssc2005-14c1",
+      "title": "SPITZER | Hubble, Spitzer and Chandra Image of Cassiopeia A",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-14c1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-14c1/spitzer_ssc2005-14c1_320.jpg",
+      "previewBytes": 61210,
+      "previewSha256": "a3a33b1d8c87721b55bf3b599e8d8737deb43c55b113f73e078ac21e56f606bd",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-14c1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant",
+        "Nebula : Appearance : Reflection : Light Echo"
+      ],
+      "names": [
+        "Cassiopeia A",
+        "Cas A"
+      ]
+    },
+    {
+      "id": "ssc2006-16a1",
+      "title": "SPITZER | Orion in the Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-16a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-16a1/spitzer_ssc2006-16a1_320.jpg",
+      "previewBytes": 36438,
+      "previewSha256": "2d0bf5dab365d4d02316557a92b81062cad4c16161b61ffc3c13c5b55e996995",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-16a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Orion Nebula",
+        "Messier 42",
+        "M42",
+        "NGC 1976"
+      ]
+    },
+    {
+      "id": "ssc2006-16b1",
+      "title": "SPITZER | The Sword of Orion in the Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-16b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-16b1/spitzer_ssc2006-16b1_320.jpg",
+      "previewBytes": 31106,
+      "previewSha256": "b44ca838ba119135717ea2f3d37c2322afc2f1946172630b285fa2ebb3a613ce",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-16b1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Orion Nebula",
+        "Messier 42",
+        "M42",
+        "NGC 1976"
+      ]
+    },
+    {
+      "id": "ssc2009-03b1",
+      "title": "SPITZER | Spiral Galaxy M101 - Spitzer Space Telescope",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-03b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-03b1/spitzer_ssc2009-03b1_320.jpg",
+      "previewBytes": 68301,
+      "previewSha256": "e4d5d41f4e8a981ae7c8fb79c3aae158c3bbb669461d532d6d422d976dbef4ff",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-03b1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral",
+        "Galaxy : Activity : Normal"
+      ],
+      "names": [
+        "Pinwheel Galaxy",
+        "Messier 101",
+        "M101"
+      ]
+    },
+    {
+      "id": "ssc2004-08a1",
+      "title": "SPITZER | Star Formation in RCW 49",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-08a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-08a1/spitzer_ssc2004-08a1_320.jpg",
+      "previewBytes": 49937,
+      "previewSha256": "21f33b458bbc9e03db976fe554fac5c120a92792dfef64582cde2dc3a576e199",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-08a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission : H II Region"
+      ],
+      "names": [
+        "NGC 3247",
+        "RCW 49",
+        "Gum 29"
+      ]
+    },
+    {
+      "id": "ssc2005-20a2",
+      "title": "SPITZER | Spitzer/MIPS View of the Andromeda Galaxy",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-20a2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-20a2/spitzer_ssc2005-20a2_320.jpg",
+      "previewBytes": 29842,
+      "previewSha256": "2263dd31b1b9e1f88a69cb1dfa5330a2cbc1e75101612d83dfe3d198d861be06",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-20a2",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "Andromeda Galaxy",
+        "Messier 31",
+        "M31",
+        "NGC 224"
+      ]
+    },
+    {
+      "id": "ssc2006-14a1",
+      "title": "SPITZER | Andromeda",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-14a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-14a1/spitzer_ssc2006-14a1_320.jpg",
+      "previewBytes": 35551,
+      "previewSha256": "3a0eef843d894c187c48312507e9a702253c031bbfaa26982dab9ae0def61807",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-14a1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "Andromeda Galaxy",
+        "Messier 31",
+        "M31",
+        "NGC 224",
+        "Messier 32",
+        "M32",
+        "Messier 110",
+        "M110"
+      ]
+    },
+    {
+      "id": "ssc2003-06c1",
+      "title": "SPITZER | Spiral Galaxy Messier 81",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2003-06c1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2003-06c1/spitzer_ssc2003-06c1_320.jpg",
+      "previewBytes": 49692,
+      "previewSha256": "b9c5981e2b1d7cd0bb33b26731857e489ad1dc91019196c3f9f82a1c1b209767",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2003-06c1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "Bode's Galaxy",
+        "Messier 81",
+        "M81",
+        "NGC 3031",
+        "UGC 5318"
+      ]
+    },
+    {
+      "id": "ssc2004-04a1",
+      "title": "SPITZER | Star Formation in Henize 206",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-04a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-04a1/spitzer_ssc2004-04a1_320.jpg",
+      "previewBytes": 59918,
+      "previewSha256": "d28c70e673b8945e093109248f08b5810fb6adfc0b17e43d1087eb1ddc235c41",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-04a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Henize 206"
+      ]
+    },
+    {
+      "id": "ssc2004-04a2",
+      "title": "SPITZER | Visible-light image of Henize 206 ",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-04a2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-04a2/spitzer_ssc2004-04a2_320.jpg",
+      "previewBytes": 72322,
+      "previewSha256": "baf23b9e952bbae12ba97b99e7543a0817d5b038a6e8e609e81416480726a13b",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-04a2",
+      "facilities": [],
+      "categories": [
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Henize 206"
+      ]
+    },
+    {
+      "id": "ssc2004-04a3",
+      "title": "SPITZER | Spitzer/IRAC image of Star Formation in Henize 206",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-04a3.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-04a3/spitzer_ssc2004-04a3_320.jpg",
+      "previewBytes": 64548,
+      "previewSha256": "365389743ad682442835e00bd98b662d496ae778d1dbf3c6c3bb23c9f5384573",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-04a3",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Henize 206"
+      ]
+    },
+    {
+      "id": "ssc2004-04a4",
+      "title": "SPITZER | Spitzer/MIPS image of Star Formation in Henize 206",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-04a4.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-04a4/spitzer_ssc2004-04a4_320.jpg",
+      "previewBytes": 39416,
+      "previewSha256": "9daefe3d4bc67920e057a276670f3747aa8a126b57a61b556a91fea62c5095d7",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-04a4",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Henize 206"
+      ]
+    },
+    {
+      "id": "ssc2005-02a2",
+      "title": "SPITZER | Spitzer/IRAC+MIPS View of the Trifid Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-02a2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-02a2/spitzer_ssc2005-02a2_320.jpg",
+      "previewBytes": 62477,
+      "previewSha256": "556210160776729db1864a8ec85d47b3e49afc8f4fe796863616aa98fc0cdc93",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-02a2",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Trifid Nebula",
+        "Messier 20",
+        "M20"
+      ]
+    },
+    {
+      "id": "ssc2005-02a3",
+      "title": "SPITZER | Spitzer/IRAC View of the Trifid Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-02a3.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-02a3/spitzer_ssc2005-02a3_320.jpg",
+      "previewBytes": 69020,
+      "previewSha256": "9e472a3dae11abf7cca9aff95110d28f574a5716b7ff6c92d9039cfed4136353",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-02a3",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Protostar"
+      ],
+      "names": [
+        "Trifid Nebula",
+        "Messier 20",
+        "M20"
+      ]
+    },
+    {
+      "id": "ssc2005-02a4",
+      "title": "SPITZER | Spitzer/MIPS View of the Trifid Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-02a4.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-02a4/spitzer_ssc2005-02a4_320.jpg",
+      "previewBytes": 44206,
+      "previewSha256": "90a60aae80893fe3c2ee6c93f406518d0c0b3126204652e2c5c52d41e2a2aeec",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-02a4",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Trifid Nebula",
+        "Messier 20",
+        "M20"
+      ]
+    },
+    {
+      "id": "ssc2005-02b4",
+      "title": "SPITZER | Spitzer/IRAC Image of the Trifid Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-02b4.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-02b4/spitzer_ssc2005-02b4_320.jpg",
+      "previewBytes": 93118,
+      "previewSha256": "0ad99fcee68a4afc58b446a2d5b619cd40af4ce1b2a337b933ca455a05f8d1b5",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-02b4",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Protostar"
+      ],
+      "names": [
+        "Trifid Nebula",
+        "Messier 20",
+        "M20"
+      ]
+    },
+    {
+      "id": "ssc2007-20b",
+      "title": "SPITZER | Cosmic Ornament of Gas and Dust: Supernova Remnant Cassiopeia A",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2007-20b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2007-20b/spitzer_ssc2007-20b_320.jpg",
+      "previewBytes": 36244,
+      "previewSha256": "d84b56a399dc8387440ad48655ee1c6f49172e5b0f5165828443a99fa8f1cc9d",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2007-20b",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Cassiopeia A",
+        "Cas A"
+      ]
+    },
+    {
+      "id": "sig06-006c",
+      "title": "SPITZER | Distant Galaxy Cluster",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-006c.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-006c/spitzer_sig06-006c_320.jpg",
+      "previewBytes": 87446,
+      "previewSha256": "08c071940af729ef821f24b0213986c8b113817530bae6d4e33a4bfbd1387d3c",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-006c",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Grouping : Cluster"
+      ],
+      "names": [
+        "ISCS J1434.7+3519"
+      ]
+    },
+    {
+      "id": "ssc2005-23a1",
+      "title": "SPITZER | W5 in the Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-23a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-23a1/spitzer_ssc2005-23a1_320.jpg",
+      "previewBytes": 55775,
+      "previewSha256": "df7d9e40f10431d9148fb236d86ab1f086d9deaeb22b4e0fcd08e6fb93309902",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-23a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Mountains of Creation",
+        "W5"
+      ]
+    },
+    {
+      "id": "ssc2009-19a1",
+      "title": "SPITZER | Big Band of Dust",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-19a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-19a1/spitzer_ssc2009-19a1_320.jpg",
+      "previewBytes": 48270,
+      "previewSha256": "13604c47680c7399c04ee89c7415f3e13747df54e676129f79a4735ad6d3bbf1",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-19a1",
+      "facilities": [],
+      "categories": [
+        "Planet : Ring",
+        "Planet : Type : Gas Giant"
+      ],
+      "names": [
+        "Saturn"
+      ]
+    },
+    {
+      "id": "ssc2009-20a1",
+      "title": "SPITZER | NASA's Great Observatories Examine the Galaxy Center",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-20a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-20a1/spitzer_ssc2009-20a1_320.jpg",
+      "previewBytes": 43123,
+      "previewSha256": "eff1b3569e5538309bce97039f797a2806dc646c88b552b666698e9874877ba2",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-20a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Interstellar Medium",
+        "Galaxy : Component : Center/Core"
+      ],
+      "names": [
+        "Galactic Center",
+        "Milky Way"
+      ]
+    },
+    {
+      "id": "ssc2004-12a3",
+      "title": "SPITZER | Spitzer Mid-Inrared View of NGC 7331",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-12a3.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-12a3/spitzer_ssc2004-12a3_320.jpg",
+      "previewBytes": 32548,
+      "previewSha256": "6fca67290da8eac264909ae3002725333ec7299574747ec734aa5de2cbc42227",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-12a3",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "NGC 7331",
+        "UGC 12113"
+      ]
+    },
+    {
+      "id": "sig05-028a",
+      "title": "SPITZER | NGC 2264 in the Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-028a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-028a/spitzer_sig05-028a_320.jpg",
+      "previewBytes": 50163,
+      "previewSha256": "585962e884ed471116427448b17491d67a6e7dc529728af76371b0a7b3886148",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-028a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Grouping : Cluster"
+      ],
+      "names": [
+        "NGC 2264",
+        "Snowflake Cluster",
+        "Christmas Tree Cluster"
+      ]
+    },
+    {
+      "id": "sig05-028b",
+      "title": "SPITZER | Spitzer/IRAC View of NGC 2264",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-028b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-028b/spitzer_sig05-028b_320.jpg",
+      "previewBytes": 48971,
+      "previewSha256": "313aa6f811bef98d5334555bff62bd466de590de09f326277274f682c6a242c2",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-028b",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Grouping : Cluster"
+      ],
+      "names": [
+        "NGC 2264",
+        "Snowflake Cluster",
+        "Christmas Tree Cluster"
+      ]
+    },
+    {
+      "id": "sig06-012c",
+      "title": "SPITZER | The (Almost) Invisible Aftermath of a Massive Star's Death",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-012c.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-012c/spitzer_sig06-012c_320.jpg",
+      "previewBytes": 69683,
+      "previewSha256": "9bf343f0c7de103087b49625db5bff402843aa3a2e2817847ef310fa39d9dcce",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-012c",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "SSTGFLS J222557+601148"
+      ]
+    },
+    {
+      "id": "ssc2010-02c",
+      "title": "SPITZER | Dusty, Little Galaxy",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2010-02c.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2010-02c/spitzer_ssc2010-02c_320.jpg",
+      "previewBytes": 48235,
+      "previewSha256": "c1d61971679472568470efde6a440776d49f61848b77b2c098b78c6da771ace4",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2010-02c",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Barred",
+        "Galaxy : Size : Dwarf",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "SMC",
+        "Small Magellanic Cloud",
+        "NGC 292"
+      ]
+    },
+    {
+      "id": "ssc2005-22b",
+      "title": "SPITZER | Out of the Darkness Comes Stars",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-22b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-22b/spitzer_ssc2005-22b_320.jpg",
+      "previewBytes": 46689,
+      "previewSha256": "30b6f965dbd9741ad19a9c97fb8ab02b4be3a8be2cb56769157f060983440439",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-22b",
+      "facilities": [],
+      "categories": [
+        "Star : Population : III"
+      ],
+      "names": []
+    },
+    {
+      "id": "ssc2006-01a1",
+      "title": "SPITZER | Infrared Helix",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-01a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-01a1/spitzer_ssc2006-01a1_320.jpg",
+      "previewBytes": 70418,
+      "previewSha256": "9d54c66dc867d137cc0dc70fd4c319e643ab4536e686bb589874687103217414",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-01a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Planetary"
+      ],
+      "names": [
+        "Helix Nebula",
+        "NGC 7293"
+      ]
+    },
+    {
+      "id": "ssc2006-01b1",
+      "title": "SPITZER | Spitzer and Hubble View of the Helix Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-01b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-01b1/spitzer_ssc2006-01b1_320.jpg",
+      "previewBytes": 62353,
+      "previewSha256": "35c55a0fa87d30a99e0f58fae0bb8e6d5cc7af6bfad8e8b6ca0d1cbb542efbd3",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-01b1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Planetary"
+      ],
+      "names": [
+        "Helix Nebula",
+        "NGC 7293"
+      ]
+    },
+    {
+      "id": "ssc2006-02a1",
+      "title": "SPITZER | Spitzer View of the Center of the Milky Way",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-02a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-02a1/spitzer_ssc2006-02a1_320.jpg",
+      "previewBytes": 56268,
+      "previewSha256": "dcab1bd007c9c6853c03bbf63f773b4846d8f872cf2153fa8d245ae7fb25e10b",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-02a1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "Galactic Center",
+        "Milky Way"
+      ]
+    },
+    {
+      "id": "ssc2006-02b1",
+      "title": "SPITZER | Spitzer 8.0 micron View of the Milky Way Center",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-02b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-02b1/spitzer_ssc2006-02b1_320.jpg",
+      "previewBytes": 48684,
+      "previewSha256": "8a6721811667f8c083a0f84c513d372989d97f2ffc745812622a3b4602cf7e9a",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-02b1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Interstellar Medium",
+        "Nebula : Type : Star Formation",
+        "Galaxy : Component : Center/Core"
+      ],
+      "names": [
+        "Galactic Center",
+        "Milky Way"
+      ]
+    },
+    {
+      "id": "ssc2006-03a1",
+      "title": "SPITZER | A Hidden, Massive Star Cluser Awash with Red Supergiants",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-03a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-03a1/spitzer_ssc2006-03a1_320.jpg",
+      "previewBytes": 75796,
+      "previewSha256": "b58b05820afaafc2b23d6f2c4d0f33b0c561c483e53e1b00d25f6a66d66f5b31",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-03a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Grouping : Cluster",
+        "Star : Evolutionary Stage : Red Supergiant"
+      ],
+      "names": []
+    },
+    {
+      "id": "ssc2006-03b",
+      "title": "SPITZER | Artist's Impression of Massive Star Cluster",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-03b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-03b/spitzer_ssc2006-03b_320.jpg",
+      "previewBytes": 60357,
+      "previewSha256": "1295609dd5aed0a0fa4f01f51395046d26897a582cfa7d2a54f803e696ac154d",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-03b",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster : Open",
+        "Star : Evolutionary Stage : Red Supergiant",
+        "Star : Evolutionary Stage : Young Stellar Object",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "W 42"
+      ]
+    },
+    {
+      "id": "ssc2007-01a1",
+      "title": "SPITZER | Cosmic Epic Unfolds in Infrared: The Eagle Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2007-01a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2007-01a1/spitzer_ssc2007-01a1_320.jpg",
+      "previewBytes": 80638,
+      "previewSha256": "6918f3bdc4eff6eaa4e561aeeb9773f29890db1abee462e286f9b13f7b497b23",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2007-01a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Protostar",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Eagle Nebula",
+        "Messier 16",
+        "M16",
+        "NGC 6611"
+      ]
+    },
+    {
+      "id": "ssc2007-01c1",
+      "title": "SPITZER | Infrared View of M16, the Eagle Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2007-01c1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2007-01c1/spitzer_ssc2007-01c1_320.jpg",
+      "previewBytes": 84221,
+      "previewSha256": "61d5dee5b842cde5b33fd8ac09674df60f124d65d77e959634924cbda35c206d",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2007-01c1",
+      "facilities": [],
+      "categories": [
+        "Star : Evolutionary Stage : Protostar",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Eagle Nebula",
+        "Messier 16",
+        "M16",
+        "NGC 6611"
+      ]
+    },
+    {
+      "id": "ssc2008-03b1",
+      "title": "SPITZER | Young Stars in Their Baby Blanket of Dust: Rho Ophiuchi",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-03b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-03b1/spitzer_ssc2008-03b1_320.jpg",
+      "previewBytes": 37501,
+      "previewSha256": "a8fa81f9d71f6500b8242f56deec8267e30462fe378cc695d7e1bb5f4ee558bf",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-03b1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Young Stellar Object",
+        "Nebula : Appearance : Dark : Molecular Cloud"
+      ],
+      "names": [
+        "Rho Oph",
+        "Rho Ophiuchi"
+      ]
+    },
+    {
+      "id": "ssc2008-15a1",
+      "title": "SPITZER | W5 Star Formation Region",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-15a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-15a1/spitzer_ssc2008-15a1_320.jpg",
+      "previewBytes": 51836,
+      "previewSha256": "5a68907f20ea50fbb930bb7fea239a09aef03432caa59b9427aeb7ec165de377",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-15a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission : H II Region"
+      ],
+      "names": [
+        "W5",
+        "IC 1848",
+        "Soul Nebula"
+      ]
+    },
+    {
+      "id": "ssc2009-15a1",
+      "title": "SPITZER | Cygnus Star Forming Region DR22",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-15a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-15a1/spitzer_ssc2009-15a1_320.jpg",
+      "previewBytes": 70498,
+      "previewSha256": "ba639900fb08084c797739e5ff885c96353b1c6003a4e2c6a3341e0b89a415bf",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-15a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Dark",
+        "Star : Grouping : Cluster",
+        "Star : Spectral Type : O"
+      ],
+      "names": [
+        "Cygnus Region",
+        "DR22"
+      ]
+    },
+    {
+      "id": "ssc2009-15a3",
+      "title": "SPITZER | Planetary Nebula NGC 4361",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-15a3.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-15a3/spitzer_ssc2009-15a3_320.jpg",
+      "previewBytes": 56343,
+      "previewSha256": "06e082d4ef996fe0f1bef5ec8409f18987da015b757b934f3e5078fd08665f1c",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-15a3",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Planetary"
+      ],
+      "names": [
+        "NGC 4361"
+      ]
+    },
+    {
+      "id": "ssc2023-01a",
+      "title": "SPITZER | The Infrared Face of the Phantom Galaxy (M74)",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2023-01a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2023-01a/spitzer_ssc2023-01a_320.jpg",
+      "previewBytes": 64130,
+      "previewSha256": "c1c2bc49011e8b738f86e9cf58fb248e2144c9b1ded1660d9a5484e42a12dbb0",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2023-01a",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "Phantom Galaxy",
+        "M74"
+      ]
+    },
+    {
+      "id": "ssc2019-05a",
+      "title": "SPITZER | Spitzer Captures Messier 87 (EHT)",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2019-05a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2019-05a/spitzer_ssc2019-05a_320.jpg",
+      "previewBytes": 50656,
+      "previewSha256": "bea053ac099e9f340fa4071c197b311baa435d03d2de93beec21a0da9aef00ec",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2019-05a",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Elliptical",
+        "Galaxy : Size : Giant",
+        "Galaxy : Grouping : Cluster",
+        "Nebula : Type : Jet",
+        "Star : Evolutionary Stage : Black Hole"
+      ],
+      "names": [
+        "Messier 87",
+        "M87",
+        "NGC 4486",
+        "Virgo A",
+        "Virgo Cluster"
+      ]
+    },
+    {
+      "id": "sig05-020a",
+      "title": "SPITZER | Infrared Black Widow Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-020a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-020a/spitzer_sig05-020a_320.jpg",
+      "previewBytes": 75480,
+      "previewSha256": "f52b40dd65b22855b5b562dfea6a8b1b447d6f69bdc2f8e67993ed576c46ba07",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-020a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Black Widow Nebula"
+      ]
+    },
+    {
+      "id": "sig06-016",
+      "title": "SPITZER | Dusty Death of a Massive Star",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-016.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-016/spitzer_sig06-016_320.jpg",
+      "previewBytes": 59311,
+      "previewSha256": "277c15773a2b232a0ef0672c16e685e76ea9c2495e40719353c86f9cf4d4cc41",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-016",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "E0102",
+        "E0102.2-7219",
+        "N76"
+      ]
+    },
+    {
+      "id": "sig06-016a",
+      "title": "SPITZER | Supernova Remnant 1E0102.2-7219 Revealed by NASA's Spitzer Space Telescope",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-016a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-016a/spitzer_sig06-016a_320.jpg",
+      "previewBytes": 84880,
+      "previewSha256": "c860cce1d6621b8c6519a9f3dfe3426a83af20bb9afe5909fe86b310414c6cb8",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-016a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "E0102",
+        "E0102.2-7219",
+        "N76"
+      ]
+    },
+    {
+      "id": "ssc2004-06a1",
+      "title": "SPITZER | Spitzer IRAC view of Star Formation in the DR21 Region",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-06a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-06a1/spitzer_ssc2004-06a1_320.jpg",
+      "previewBytes": 38915,
+      "previewSha256": "37d08c5dfb6bf41bae9c5eed470ac9bba390eb042f22c8b16c66d7322846b5f1",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-06a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Dark",
+        "Nebula : Type : Jet"
+      ],
+      "names": [
+        "DR21"
+      ]
+    },
+    {
+      "id": "ssc2004-06b1",
+      "title": "SPITZER | Star Formation in the DR21 Region",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-06b1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-06b1/spitzer_ssc2004-06b1_320.jpg",
+      "previewBytes": 41883,
+      "previewSha256": "7959d63e6b76cff91ab27dfd4b25b804b3c6c248cefb3af2b0192878958faed5",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-06b1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Dark",
+        "Nebula : Type : Jet",
+        "Star : Circumstellar Material : Outflow"
+      ],
+      "names": [
+        "DR21"
+      ]
+    },
+    {
+      "id": "ssc2005-12a1",
+      "title": "SPITZER | Carina Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-12a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-12a1/spitzer_ssc2005-12a1_320.jpg",
+      "previewBytes": 65863,
+      "previewSha256": "774baa604a4b8a95037129b2808314283f2e0fa380e9a8f7525a6c5660ec090c",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-12a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Type : Variable"
+      ],
+      "names": [
+        "Carina Nebula",
+        "NGC 3372"
+      ]
+    },
+    {
+      "id": "ssc2006-13a1",
+      "title": "SPITZER | Comet 73P/Schwassman-Wachmann 3",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-13a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-13a1/spitzer_ssc2006-13a1_320.jpg",
+      "previewBytes": 32131,
+      "previewSha256": "d7739203d62f5f6856656035dc8af6add009f9e7c30c29212030ccb1a08d8491",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-13a1",
+      "facilities": [],
+      "categories": [
+        "Interplanetary Body : Comet : Tail"
+      ],
+      "names": [
+        "Comet 73P",
+        "Comet Schwassman-Wachmann 3"
+      ]
+    },
+    {
+      "id": "ssc2006-21a1",
+      "title": "SPITZER | Orion Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-21a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-21a1/spitzer_ssc2006-21a1_320.jpg",
+      "previewBytes": 59504,
+      "previewSha256": "b893638444e4839a5bd39df9424ae33371acc7ac926628f7a7293ef6e8557afb",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-21a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Orion Nebula",
+        "Messier 42",
+        "M42",
+        "NGC 1976"
+      ]
+    },
+    {
+      "id": "ssc2006-21a2",
+      "title": "SPITZER | Hubble's sharpest view of the Orion Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-21a2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-21a2/spitzer_ssc2006-21a2_320.jpg",
+      "previewBytes": 66199,
+      "previewSha256": "e2882bacdceebf826bce47ca45e31cd86a53198b423fbd9b0e05b707d471dd7a",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-21a2",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission : H II Region"
+      ],
+      "names": [
+        "Messier 42",
+        "Messier 43",
+        "Orion Nebula"
+      ]
+    },
+    {
+      "id": "ssc2007-19a1",
+      "title": "SPITZER | Baby Picture of our Solar System: The Spinning Top Star in Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2007-19a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2007-19a1/spitzer_ssc2007-19a1_320.jpg",
+      "previewBytes": 66952,
+      "previewSha256": "7eb520d413d6cbea26cdf12351f726acd2540bf1b2ac48f80da9fca0ae1ff8e8",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2007-19a1",
+      "facilities": [],
+      "categories": [
+        "Star : Evolutionary Stage : Protostar",
+        "Nebula : Type : Jet",
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Dark",
+        "Star : Circumstellar Material : Outflow"
+      ],
+      "names": [
+        "L1157"
+      ]
+    },
+    {
+      "id": "ssc2007-19a2",
+      "title": "SPITZER | Spinning Top Star: Visible Light View",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2007-19a2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2007-19a2/spitzer_ssc2007-19a2_320.jpg",
+      "previewBytes": 71064,
+      "previewSha256": "e0184ec092e71570962e2ce14be3ab298b82096ac8974fe3b57e3d11f53f60f1",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2007-19a2",
+      "facilities": [],
+      "categories": [
+        "Star : Evolutionary Stage : Protostar",
+        "Nebula : Type : Jet",
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Dark"
+      ],
+      "names": [
+        "L1157"
+      ]
+    },
+    {
+      "id": "ssc2008-18a2",
+      "title": "SPITZER | Anatomy of a Busted Comet",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-18a2.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-18a2/spitzer_ssc2008-18a2_320.jpg",
+      "previewBytes": 66041,
+      "previewSha256": "1311b19496a198061d089ad7397ca7f0554b280361dc882b6faed403aba722d3",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-18a2",
+      "facilities": [],
+      "categories": [
+        "Interplanetary Body : Comet : Coma",
+        "Interplanetary Body : Comet : Nucleus"
+      ],
+      "names": [
+        "Comet Holmes"
+      ]
+    },
+    {
+      "id": "ssc2009-21a1",
+      "title": "SPITZER | Twin Brown Dwarfs Wrapped in a Blanket",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-21a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-21a1/spitzer_ssc2009-21a1_320.jpg",
+      "previewBytes": 51510,
+      "previewSha256": "0f9131c40f1b41b4b8dfade3a60a21a6e576daa2ce1338d0b1b4ab27cc4298b7",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-21a1",
+      "facilities": [],
+      "categories": [
+        "Star : Type : Brown Dwarf",
+        "Star : Evolutionary Stage : Protostar",
+        "Star : Evolutionary Stage : Young Stellar Object",
+        "Star : Grouping : Binary"
+      ],
+      "names": [
+        "Proto Brown Dwarf",
+        "SSTB213 J041757"
+      ]
+    },
+    {
+      "id": "sig05-001a",
+      "title": "SPITZER | The Infrared View of RCW 79 ",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-001a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-001a/spitzer_sig05-001a_320.jpg",
+      "previewBytes": 73541,
+      "previewSha256": "035349e4611c038ec368e95825ff49f9f2b1f0070a4fe384656733eff45f11c6",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-001a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "RCW 79"
+      ]
+    },
+    {
+      "id": "sig05-003a",
+      "title": "SPITZER | Crab Nebula Supernova Remnant (Spitzer/IRAC Image)",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-003a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-003a/spitzer_sig05-003a_320.jpg",
+      "previewBytes": 33334,
+      "previewSha256": "0127f927059dda3e432c3f12be9bf05a3535a3c24079a7955c7dad9f5e857fa1",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-003a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Crab Nebula",
+        "Messier 1",
+        "M1",
+        "NGC 1952"
+      ]
+    },
+    {
+      "id": "sig05-004a",
+      "title": "SPITZER | Crab Nebula Supernova Remnant (Spitzer/IRAC-MIPS Image)",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-004a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-004a/spitzer_sig05-004a_320.jpg",
+      "previewBytes": 32960,
+      "previewSha256": "547527b1eee6633ad04aeb503d8faaf7421e0c18e2c9b05600d595bea75c6fc9",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-004a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Crab Nebula",
+        "Messier 1",
+        "M1",
+        "NGC 1952"
+      ]
+    },
+    {
+      "id": "sig05-025a",
+      "title": "SPITZER | An Infrared Slice of the Milky Way ",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-025a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-025a/spitzer_sig05-025a_320.jpg",
+      "previewBytes": 33438,
+      "previewSha256": "6835531f76a3710045d850c4155c702d681fbe285ecb64fa96f5556326aa52d9",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-025a",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral"
+      ],
+      "names": [
+        "Galactic Plane",
+        "Milky Way"
+      ]
+    },
+    {
+      "id": "sig06-002a",
+      "title": "SPITZER | Spitzer Infrared View of Herbig-Haro 49/50: A Cosmic Tornado",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-002a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-002a/spitzer_sig06-002a_320.jpg",
+      "previewBytes": 51347,
+      "previewSha256": "bcd548093b0395d74c6d6d8002a3cf9fca3ac636e433f8f9ae7b69fd871b03b3",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-002a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Type : Jet"
+      ],
+      "names": [
+        "Herbig-Haro 49/50",
+        "HH 49/50"
+      ]
+    },
+    {
+      "id": "sig06-020a",
+      "title": "SPITZER | Baby Stars in the Witch Head Nebula Revealed by Spitzer",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-020a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-020a/spitzer_sig06-020a_320.jpg",
+      "previewBytes": 36055,
+      "previewSha256": "ddd4d50320181f9bb5055967974d3ff07af0cd2a30105c60d414986189fa602c",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-020a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Witch Head Nebula"
+      ]
+    },
+    {
+      "id": "sig06-021a",
+      "title": "SPITZER | Spitzer View of IRAS 2214+5948",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-021a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-021a/spitzer_sig06-021a_320.jpg",
+      "previewBytes": 87276,
+      "previewSha256": "4d62d6baaff84a5ca70814d5b55d81bdea40a0258635424c6cc93f280f87a243",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-021a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "IRAS 2214+5948"
+      ]
+    },
+    {
+      "id": "sig06-023",
+      "title": "SPITZER | A Star's Close Encounter",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-023.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-023/spitzer_sig06-023_320.jpg",
+      "previewBytes": 35319,
+      "previewSha256": "5943eb7fb13ea98a41b4c820474a48ec23c42a051f179a8133643a7574e37419",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-023",
+      "facilities": [],
+      "categories": [
+        "Star : Spectral Type : O",
+        "Star : Circumstellar Material : Disk : Protoplanetary"
+      ],
+      "names": [
+        "HD206267",
+        "2MASSJ21385699+5730455",
+        "IC1396"
+      ]
+    },
+    {
+      "id": "ssc2004-01a1",
+      "title": "SPITZER | The Tarantula Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-01a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-01a1/spitzer_ssc2004-01a1_320.jpg",
+      "previewBytes": 52260,
+      "previewSha256": "86ec7e485091daa5f14ba97517800f053dbdbd5acd835ae543b83791db059665",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-01a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Tarantula Nebula",
+        "30 Doradus",
+        "NGC 2070"
+      ]
+    },
+    {
+      "id": "ssc2004-02a1",
+      "title": "SPITZER | Reflection Nebula NGC 7129",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-02a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-02a1/spitzer_ssc2004-02a1_320.jpg",
+      "previewBytes": 49915,
+      "previewSha256": "dd0c7610cd211bd3f6e6c1c83858acf02773850f43e8a13ee8d0d67b6470c7a9",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-02a1",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster : Open",
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Reflection"
+      ],
+      "names": [
+        "NGC 7129"
+      ]
+    },
+    {
+      "id": "ssc2004-07a1",
+      "title": "SPITZER | Stellar Nursery Sharpless 140",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-07a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-07a1/spitzer_ssc2004-07a1_320.jpg",
+      "previewBytes": 34838,
+      "previewSha256": "650c1b9d72e92af9e93cc9454be80c2f3226db1efa020a093deb6e624d1a1ed6",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-07a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Sharpless 140"
+      ]
+    },
+    {
+      "id": "ssc2004-18a1",
+      "title": "SPITZER | Star Formation Region DR 6",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-18a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-18a1/spitzer_ssc2004-18a1_320.jpg",
+      "previewBytes": 51963,
+      "previewSha256": "b61463df4596bbe0d4c60bc00b3e75bce413fa2a5e62065cb0b39373866d981d",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-18a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "DR 6"
+      ]
+    },
+    {
+      "id": "ssc2005-03b",
+      "title": "SPITZER | At the Heart of Blobs",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-03b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-03b/spitzer_ssc2005-03b_320.jpg",
+      "previewBytes": 40410,
+      "previewSha256": "6bccffb32aed5693ee641b5b16bab2e50394b1132a9fd6ed83f2162faa97ea41",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-03b",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Interacting",
+        "Galaxy : Grouping : Cluster"
+      ],
+      "names": []
+    },
+    {
+      "id": "ssc2005-07a1",
+      "title": "SPITZER | Infrared Ring Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-07a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-07a1/spitzer_ssc2005-07a1_320.jpg",
+      "previewBytes": 54480,
+      "previewSha256": "2dea0a8849107caaa6884991158391824be781d990df78ba83089e7c46ee3a57",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-07a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Planetary"
+      ],
+      "names": [
+        "Ring Nebula",
+        "Messier 57",
+        "M57",
+        "NGC 6720"
+      ]
+    },
+    {
+      "id": "ssc2005-08b",
+      "title": "SPITZER | Shimmering in Infrared Light",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-08b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-08b/spitzer_ssc2005-08b_320.jpg",
+      "previewBytes": 47530,
+      "previewSha256": "e6566703bcdc994291c690e731efd8edbeb76bb9c1f9dbe3be9754a04730164c",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-08b",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Size : Giant"
+      ],
+      "names": []
+    },
+    {
+      "id": "ssc2006-19a1",
+      "title": "SPITZER | Infrared Cassiopeia A",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2006-19a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2006-19a1/spitzer_ssc2006-19a1_320.jpg",
+      "previewBytes": 74623,
+      "previewSha256": "ef75cc95fab14180fd1189af6398857ab76ef786fdb8174f5c5938550bf23bd3",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2006-19a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Cassiopeia A",
+        "Cas A",
+        "3C461"
+      ]
+    },
+    {
+      "id": "ssc2008-01b",
+      "title": "SPITZER | Galaxies of all Shapes Host Black Holes",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-01b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-01b/spitzer_ssc2008-01b_320.jpg",
+      "previewBytes": 39233,
+      "previewSha256": "7f62dab64d6c8cf16fa00ff3795aee508d8982ca0bf13500cf926d0616b65860",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-01b",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral",
+        "Galaxy : Component : Bulge",
+        "Galaxy : Component : Central Black Hole"
+      ],
+      "names": []
+    },
+    {
+      "id": "ssc2008-07a1",
+      "title": "SPITZER | Globular Cluster Omega Centauri Looks Radiant in Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-07a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-07a1/spitzer_ssc2008-07a1_320.jpg",
+      "previewBytes": 83791,
+      "previewSha256": "93728fc5618cac6822e23073cdf5475a71613f7ade4ea59291f1c2f66ad77a54",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-07a1",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster : Globular"
+      ],
+      "names": [
+        "Omega Centauri",
+        "Omega Cen"
+      ]
+    },
+    {
+      "id": "ssc2008-08a1",
+      "title": "SPITZER | Ring Around a Magnetar",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-08a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-08a1/spitzer_ssc2008-08a1_320.jpg",
+      "previewBytes": 41507,
+      "previewSha256": "699fcb0af6095f771b22a50e74e8748f015680f095ca371017a1e0256129d844",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-08a1",
+      "facilities": [],
+      "categories": [
+        "Star : Evolutionary Stage : Neutron Star : Magnetar",
+        "Star : Circumstellar Material : Outflow"
+      ],
+      "names": [
+        "SGR 1900+14"
+      ]
+    },
+    {
+      "id": "ssc2008-09a1",
+      "title": "SPITZER | Light Echoes in Supernova Remnant Cassiopeia A",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-09a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-09a1/spitzer_ssc2008-09a1_320.jpg",
+      "previewBytes": 47455,
+      "previewSha256": "e36a418575831db3a2f342a0b0b13db56c879c878b365f609c62fa23fd2863e4",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-09a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant",
+        "Nebula : Appearance : Reflection : Light Echo"
+      ],
+      "names": [
+        "Cassiopeia A",
+        "Cas A"
+      ]
+    },
+    {
+      "id": "ssc2008-14b",
+      "title": "SPITZER | The Pinwheel Galaxy, M101, in the Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-14b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-14b/spitzer_ssc2008-14b_320.jpg",
+      "previewBytes": 78317,
+      "previewSha256": "cf2f5d7d87330c6a50f4cc6ba9a5d5daad2575f9d144ad3ee267c0dd269c5536",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-14b",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral",
+        "Galaxy : Component : Disk"
+      ],
+      "names": [
+        "Pinwheel galaxy",
+        "M101",
+        "Messier 101",
+        "NGC 5457"
+      ]
+    },
+    {
+      "id": "ssc2008-16a1",
+      "title": "SPITZER | Cassiopeia A: Supernova Flashback",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-16a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-16a1/spitzer_ssc2008-16a1_320.jpg",
+      "previewBytes": 39354,
+      "previewSha256": "ab63971e1c2ee86c71c40e97f0d650939b232cbfc0a96586a87e52c13a5ed85c",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-16a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Cassiopeia A"
+      ]
+    },
+    {
+      "id": "ssc2008-17a1",
+      "title": "SPITZER | Stellar Work of Art",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-17a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-17a1/spitzer_ssc2008-17a1_320.jpg",
+      "previewBytes": 68432,
+      "previewSha256": "1b1a45aa055886dbd38978eb5cc51bd6001464db300d471c0203db7095508f93",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-17a1",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster",
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission : H II Region"
+      ],
+      "names": [
+        "NGC 346"
+      ]
+    },
+    {
+      "id": "ssc2008-21a1",
+      "title": "SPITZER | M17: Celestial Sea of Stars",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2008-21a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2008-21a1/spitzer_ssc2008-21a1_320.jpg",
+      "previewBytes": 69102,
+      "previewSha256": "4e73573c9133852ad0625848e762b9932d4152f18f6f41c4a3003e3b3b6d05cb",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-21a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Spectral Type : O"
+      ],
+      "names": [
+        "Omega Nebula",
+        "Swan Nebula",
+        "Messier 17",
+        "M17",
+        "NGC 6618"
+      ]
+    },
+    {
+      "id": "ssc2009-17a1",
+      "title": "SPITZER | Trigger-Happy Cloud",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2009-17a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2009-17a1/spitzer_ssc2009-17a1_320.jpg",
+      "previewBytes": 57716,
+      "previewSha256": "ffc775746a163e15a9f503ccfc57c5863f778d2a68cb953944e3a43e545df86f",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2009-17a1",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Young Stellar Object"
+      ],
+      "names": [
+        "Cepheus B"
+      ]
+    },
+    {
+      "id": "sig16-18",
+      "title": "SPITZER | 'Pandora's Cluster' Seen by Spitzer",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig16-18.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig16-18/spitzer_sig16-18_320.jpg",
+      "previewBytes": 56322,
+      "previewSha256": "457705a081e3cf713ea66d8ddd1ea524433d22f72833ad7c70474ff30c44fa37",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig16-18",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Grouping : Cluster"
+      ],
+      "names": [
+        "Abell 2744",
+        "Pandora's Cluster"
+      ]
+    },
+    {
+      "id": "sig05-021",
+      "title": "SPITZER | Dwarf Galaxies Forming in Tidal Tails",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-021.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-021/spitzer_sig05-021_320.jpg",
+      "previewBytes": 55120,
+      "previewSha256": "aac444ad5a7c7abae2624ac260af0f396f07f5802cec129b192a3254eebe6df6",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-021",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Interacting",
+        "Galaxy : Size : Dwarf",
+        "Galaxy : Activity : Starburst"
+      ],
+      "names": [
+        "NGC 5291"
+      ]
+    },
+    {
+      "id": "sig05-002a",
+      "title": "SPITZER | NGC 5907 in the Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig05-002a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig05-002a/spitzer_sig05-002a_320.jpg",
+      "previewBytes": 37357,
+      "previewSha256": "9d4bf12e8974855b43c4f305a3ff2c801fe03775330463ef091c91fc21e13494",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig05-002a",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Irregular"
+      ],
+      "names": [
+        "Splinter Galaxy",
+        "NGC 5907"
+      ]
+    },
+    {
+      "id": "sig06-004",
+      "title": "SPITZER | Double Helix Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-004.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-004/spitzer_sig06-004_320.jpg",
+      "previewBytes": 56864,
+      "previewSha256": "b5ac2a83d1caa15531afef6288a945b48445d8db94a8b40967c6ca67d98e50e4",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-004",
+      "facilities": [],
+      "categories": [
+        "Nebula",
+        "Star : Evolutionary Stage : Red Giant",
+        "Star : Evolutionary Stage : Red Supergiant"
+      ],
+      "names": [
+        "Double Helix Nebula"
+      ]
+    },
+    {
+      "id": "sig06-011",
+      "title": "SPITZER | Comet Stepping Stones",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-011.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-011/spitzer_sig06-011_320.jpg",
+      "previewBytes": 36768,
+      "previewSha256": "1d6f51d64e25a9d0ee173050c511528e0af948211ccea1348409732cf5fdb03b",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-011",
+      "facilities": [],
+      "categories": [
+        "Interplanetary Body : Comet : Tail : Dust"
+      ],
+      "names": [
+        "Comet Schwassman-Wachmann 3",
+        "Comet 73P"
+      ]
+    },
+    {
+      "id": "sig06-013",
+      "title": "SPITZER | Baby Stars Brewing in the Witch Head Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-013.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-013/spitzer_sig06-013_320.jpg",
+      "previewBytes": 45961,
+      "previewSha256": "b75b45ec315466f15b1fd1b52b8c96796a65182f8dd2404ebb2077339755c8fb",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-013",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Witch Head Nebula"
+      ]
+    },
+    {
+      "id": "sig06-026",
+      "title": "SPITZER | Seeing Stars in Serpens",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-026.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-026/spitzer_sig06-026_320.jpg",
+      "previewBytes": 51663,
+      "previewSha256": "eb97e9ca3d0306a92c733e9e1e27a5a30d856c7fd693feeb2571cf32f5ccfa0e",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-026",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster",
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Serpens Cluster A"
+      ]
+    },
+    {
+      "id": "sig06-027",
+      "title": "SPITZER | Perseus' Stellar Neighbors",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-027.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-027/spitzer_sig06-027_320.jpg",
+      "previewBytes": 42345,
+      "previewSha256": "16f859ea56219867f6a88ac0fb1a2a7ce391ff4d38a6be2d3a596ea572155598",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-027",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "IC 348"
+      ]
+    },
+    {
+      "id": "sig06-028",
+      "title": "SPITZER | NASA's Great Observatory View of the Crab Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-028.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-028/spitzer_sig06-028_320.jpg",
+      "previewBytes": 46825,
+      "previewSha256": "6b077be13819e63b53aa15ef34e6e99240e89031e49b2b332e6eca26a83aa8f0",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-028",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "Crab Nebula",
+        "Messier 1",
+        "M1",
+        "NGC 1952"
+      ]
+    },
+    {
+      "id": "sig06-029",
+      "title": "SPITZER | Red Giant Plunging Through Space",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-029.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-029/spitzer_sig06-029_320.jpg",
+      "previewBytes": 43455,
+      "previewSha256": "2a90e39e7d6010dd4b616c1bc2ec077145a5ec10a46d954d49041a9d020238e4",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-029",
+      "facilities": [],
+      "categories": [
+        "Star : Evolutionary Stage : Red Giant",
+        "Star : Type : Variable"
+      ],
+      "names": [
+        "R Hydrae",
+        "R Hya",
+        "HD117287",
+        "AAVSO 1324-22"
+      ]
+    },
+    {
+      "id": "sig06-030",
+      "title": "SPITZER | Stellar Debris in the Large Magellanic Cloud",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig06-030.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig06-030/spitzer_sig06-030_320.jpg",
+      "previewBytes": 71695,
+      "previewSha256": "6f005371ca7b4f9e7cbeaf3c73d67a467e721ea8c779f0feff683a39c233c070",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig06-030",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "N49"
+      ]
+    },
+    {
+      "id": "sig07-003a",
+      "title": "SPITZER | Spitzer Image of HD168625: Ready to go Supernova?",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig07-003a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig07-003a/spitzer_sig07-003a_320.jpg",
+      "previewBytes": 58635,
+      "previewSha256": "2f82203c04914d11f41c565f79d4c0d1b879d05b77b0c529b47a52a0db5c1c68",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig07-003a",
+      "facilities": [],
+      "categories": [
+        "Star : Type : Variable",
+        "Star : Evolutionary Stage : Blue Supergiant",
+        "Star : Evolutionary Stage : Supernova",
+        "Star : Circumstellar Material : Outflow",
+        "Nebula : Type : Supernova Remnant"
+      ],
+      "names": [
+        "HD 168625"
+      ]
+    },
+    {
+      "id": "sig07-016",
+      "title": "SPITZER | Spitzer Celebrates Fourth Anniversary with Celestial Fireworks",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig07-016.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig07-016/spitzer_sig07-016_320.jpg",
+      "previewBytes": 69195,
+      "previewSha256": "dac87fe4ba5e2522d017a0700de30844ea7c5a04e253b92d726f3af293d5696e",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig07-016",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Planetary"
+      ],
+      "names": [
+        "Helix Nebula",
+        "NGC 7293"
+      ]
+    },
+    {
+      "id": "sig07-017",
+      "title": "SPITZER | The Coronet Cluster in X-Ray and Infrared ",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig07-017.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig07-017/spitzer_sig07-017_320.jpg",
+      "previewBytes": 49863,
+      "previewSha256": "7573b959fc39ad9402ad6162a1492f37d907b2c0b40f59dff14a867e189c5a70",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig07-017",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster",
+        "Star : Evolutionary Stage : Young Stellar Object",
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Coronet Cluster"
+      ]
+    },
+    {
+      "id": "sig07-018",
+      "title": "SPITZER | Infrared Coronet Cluster",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig07-018.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig07-018/spitzer_sig07-018_320.jpg",
+      "previewBytes": 52642,
+      "previewSha256": "c267c228aa5b25bb205d63acff1c7d21ea40a18064ee8e9aed622fe35f0b6a46",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig07-018",
+      "facilities": [],
+      "categories": [
+        "Star : Grouping : Cluster",
+        "Star : Evolutionary Stage : Young Stellar Object",
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission"
+      ],
+      "names": [
+        "Coronet Cluster"
+      ]
+    },
+    {
+      "id": "sig07-022",
+      "title": "SPITZER | Bubbly Little Star: HH 46/47",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig07-022.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig07-022/spitzer_sig07-022_320.jpg",
+      "previewBytes": 66544,
+      "previewSha256": "44cde0c122ad7ad0b21145d188e0f165bfa2157ea0024680a5a51b8d2b6f2063",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig07-022",
+      "facilities": [],
+      "categories": [
+        "Star : Evolutionary Stage : Protostar",
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Young Stellar Object",
+        "Star : Circumstellar Material : Outflow"
+      ],
+      "names": [
+        "HH 46/47"
+      ]
+    },
+    {
+      "id": "sig08-012",
+      "title": "SPITZER | HH 211: Laser-Sharp Jet Splits Water",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig08-012.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig08-012/spitzer_sig08-012_320.jpg",
+      "previewBytes": 34781,
+      "previewSha256": "c35bd10d146b9cc9fdb00b2b6e19a2e8d6c6439a45ac74cad6c7e30e47964570",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig08-012",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Jet",
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Protostar",
+        "Star : Circumstellar Material : Outflow"
+      ],
+      "names": [
+        "HH 211"
+      ]
+    },
+    {
+      "id": "sig08-017",
+      "title": "SPITZER | Devastated Stellar Neighborhood",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig08-017.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig08-017/spitzer_sig08-017_320.jpg",
+      "previewBytes": 54981,
+      "previewSha256": "e3f17ca0187149f3dcf9fe94747f7de4dcc0037b6749fd71b8cb23a4d2b04579",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig08-017",
+      "facilities": [],
+      "categories": [
+        "Star : Spectral Type : O",
+        "Star : Circumstellar Material : Disk : Protoplanetary",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "W5"
+      ]
+    },
+    {
+      "id": "sig08-018",
+      "title": "SPITZER | 2-Channel RCW 49",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig08-018.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig08-018/spitzer_sig08-018_320.jpg",
+      "previewBytes": 51193,
+      "previewSha256": "615d8f129c1d1b3633b48e6e774c075fcbdd7915912b9f6d155b72c3ee7e31ef",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig08-018",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Appearance : Emission : H II Region"
+      ],
+      "names": [
+        "NGC 3247",
+        "RCW 49",
+        "Gum 29"
+      ]
+    },
+    {
+      "id": "sig09-001",
+      "title": "SPITZER | 'Cat's Eye' Planetary Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig09-001.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig09-001/spitzer_sig09-001_320.jpg",
+      "previewBytes": 56278,
+      "previewSha256": "b948d2183bc2476f2e53d1898b1256fa272a30326d04ee9b5c23399f17c675fc",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig09-001",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Planetary"
+      ],
+      "names": [
+        "Cat's Eye Nebula",
+        "NGC 6543"
+      ]
+    },
+    {
+      "id": "ssc2004-14a1",
+      "title": "SPITZER | Composite view of the Antennae Galaxies",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-14a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-14a1/spitzer_ssc2004-14a1_320.jpg",
+      "previewBytes": 39860,
+      "previewSha256": "d00f7e3463d91219849db38bb9c89d687165e2e48c89672e81118f20af64f569",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-14a1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Interacting"
+      ],
+      "names": [
+        "Antennae Galaxies",
+        "NGC 4038",
+        "NGC 4039",
+        "Arp 244"
+      ]
+    },
+    {
+      "id": "ssc2004-19a1",
+      "title": "SPITZER | Visible Light View of the Spiral Galaxy M51 (\"Whirlpool Galaxy\")",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2004-19a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2004-19a1/spitzer_ssc2004-19a1_320.jpg",
+      "previewBytes": 34365,
+      "previewSha256": "151074b9c1407c6ad67c67258500150ef049bbe6a5a80b998e9cc9e45eaf5903",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2004-19a1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Grouping : Pair",
+        "Galaxy : Type : Spiral",
+        "Galaxy : Type : Interacting"
+      ],
+      "names": [
+        "Whirlpool Galaxy",
+        "M51",
+        "Messier 51",
+        "NGC 5194",
+        "NGC 5195"
+      ]
+    },
+    {
+      "id": "ssc2005-04a",
+      "title": "SPITZER | Riding a Trail of Debris",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-04a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-04a/spitzer_ssc2005-04a_320.jpg",
+      "previewBytes": 46489,
+      "previewSha256": "9f5ce18f10fea547a15beeda451a77739c549a77ce0d4e7aecf58141e3be8806",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-04a",
+      "facilities": [],
+      "categories": [
+        "Interplanetary Body : Comet : Tail : Dust"
+      ],
+      "names": [
+        "Comet Encke"
+      ]
+    },
+    {
+      "id": "ssc2005-11a1",
+      "title": "SPITZER | Spitzer and Hubble View of the Sombrero Galaxy",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2005-11a1.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2005-11a1/spitzer_ssc2005-11a1_320.jpg",
+      "previewBytes": 33792,
+      "previewSha256": "d05f41ab46937d2e1fa27792d5e3a75703b4130a2694e6dd9b89ab99644ca40b",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2005-11a1",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Elliptical",
+        "Galaxy : Type : Lenticular",
+        "Galaxy : Component : Ring",
+        "Galaxy : Type : Ring"
+      ],
+      "names": [
+        "Sombrero Galaxy",
+        "Messier 104",
+        "M104",
+        "NGC 4594"
+      ]
+    },
+    {
+      "id": "ssc2010-02b",
+      "title": "SPITZER | Little Galaxy with a Tail",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2010-02b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2010-02b/spitzer_ssc2010-02b_320.jpg",
+      "previewBytes": 57060,
+      "previewSha256": "1c26616a9cc85d84756c43a1bed2303eab2ec8d0dcc2bb070046c041122ca6b5",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2010-02b",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Barred",
+        "Galaxy : Size : Dwarf",
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "SMC",
+        "Small Magellanic Cloud",
+        "NGC 292"
+      ]
+    },
+    {
+      "id": "ssc2015-03a",
+      "title": "SPITZER | What Feeds the Beast in a Galaxy Cluster? (annotated)",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2015-03a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2015-03a/spitzer_ssc2015-03a_320.jpg",
+      "previewBytes": 38835,
+      "previewSha256": "920607a39136493587e600b56ed4ea36c8269521498eb8531652fe7cd6c0022d",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2015-03a",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Grouping : Cluster",
+        "Galaxy : Type : Interacting"
+      ],
+      "names": [
+        "SpARCS1049+56"
+      ]
+    },
+    {
+      "id": "sig14-012",
+      "title": "SPITZER | Warm Spitzer Sees 'Serpent' Star-Forming Cloud Spawning Stars",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig14-012.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig14-012/spitzer_sig14-012_320.jpg",
+      "previewBytes": 70878,
+      "previewSha256": "c849d087da1bebceeeab775e80730975c2fcc2ad1e84984bcab0c135318453a5",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig14-012",
+      "facilities": [],
+      "categories": [
+        "Nebula : Appearance : Dark",
+        "Nebula : Type : Star Formation",
+        "Star : Evolutionary Stage : Protostar"
+      ],
+      "names": [
+        "Serpens Cloud"
+      ]
+    },
+    {
+      "id": "ssc2015-02c",
+      "title": "SPITZER | Location of Nearest Rocky Exoplanet Known",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2015-02c.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2015-02c/spitzer_ssc2015-02c_320.jpg",
+      "previewBytes": 25406,
+      "previewSha256": "5bda8b13e3da9d81cb50590d46f0d3055ed6b069dc1a118bb26701867a3d3502",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2015-02c",
+      "facilities": [],
+      "categories": [
+        "Planet : Type : Terrestrial",
+        "Planet : Special Cases : Transiting",
+        "Sky Phenomenon : Night Sky : Constellation"
+      ],
+      "names": [
+        "HD 219134 b",
+        "Cassiopeia"
+      ]
+    },
+    {
+      "id": "sig14-004b",
+      "title": "SPITZER | M82 Galaxy with Supernova",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/sig14-004b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/sig14-004b/spitzer_sig14-004b_320.jpg",
+      "previewBytes": 40102,
+      "previewSha256": "35feb5e6495c582ed4bf23086ea999afc1471c90497b9800785eaefc2b434d62",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/sig14-004b",
+      "facilities": [],
+      "categories": [
+        "Galaxy : Type : Spiral",
+        "Galaxy : Type : Irregular",
+        "Galaxy : Activity : Starburst",
+        "Star : Evolutionary Stage : Supernova"
+      ],
+      "names": [
+        "Messier 82",
+        "M82",
+        "NGC 3034",
+        "Cigar Galaxy",
+        "SN 2014J"
+      ]
+    },
+    {
+      "id": "ssc2023-05",
+      "title": "SPITZER | Revisiting the Eagle Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2023-05.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2023-05/spitzer_ssc2023-05_320.jpg",
+      "previewBytes": 55376,
+      "previewSha256": "1260d872f7f157acd2c5827467d7e98207ec4cfa0e152f3d83ca02fda6c9ee78",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2023-05",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Eagle Nebula",
+        "M16",
+        "NGC 6611"
+      ]
+    },
+    {
+      "id": "ssc2022-07a",
+      "title": "SPITZER | Dusty Orion Nebula in Infrared",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2022-07a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2022-07a/spitzer_ssc2022-07a_320.jpg",
+      "previewBytes": 39050,
+      "previewSha256": "5ff9eb2b8b48dcc1942a9db2b4bb5c84211c09bc168dd922cb77625c067b5de1",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2022-07a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation"
+      ],
+      "names": [
+        "Orion Nebula",
+        "M42",
+        "NGC 1976"
+      ]
+    },
+    {
+      "id": "ssc2018-14a",
+      "title": "SPITZER | The Cat's Paw Nebula MIPS & IRAC",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2018-14a.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2018-14a/spitzer_ssc2018-14a_320.jpg",
+      "previewBytes": 32011,
+      "previewSha256": "2dce08b6886a1c3303f9e1dae9f1c515bc29499209bf9c068adb08579d880b10",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2018-14a",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Nebula : Type : Interstellar Medium",
+        "Nebula : Appearance : Emission",
+        "Nebula : Appearance : Dark"
+      ],
+      "names": [
+        "Cat's Paw Nebula",
+        "Bear Claw Nebula",
+        "NGC 6334",
+        "Gum 64"
+      ]
+    },
+    {
+      "id": "ssc2019-17b",
+      "title": "SPITZER | The Jack-o-Lantern Nebula",
+      "previewPath": "viewer/image-databases/master-database/curation/selected-previews/astropix-spitzer/ssc2019-17b.jpg",
+      "previewUrl": "https://www.astropix.org/archive/spitzer/ssc2019-17b/spitzer_ssc2019-17b_320.jpg",
+      "previewBytes": 39808,
+      "previewSha256": "16472a00e23b28fd3bd87f9dedcd8a366db479f58fc8e6f149507d77b9d0b0ae",
+      "sourceUrl": "https://www.astropix.org/image/spitzer/ssc2019-17b",
+      "facilities": [],
+      "categories": [
+        "Nebula : Type : Star Formation",
+        "Star : Spectral Type : O"
+      ],
+      "names": [
+        "Jack-o'-lantern Nebula"
+      ]
+    }
+  ]
+}
