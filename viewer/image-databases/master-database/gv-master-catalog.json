@@ -1,8 +1,14 @@
 {
-  "version": "0001",
+  "version": "0002",
   "catalogs": {
     "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json",
     "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
     "chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json"
+  },
+  "curation": {
+    "master": "viewer/image-databases/master-database/curation/gv-curation-master-0001.json",
+    "sessions": "viewer/image-databases/master-database/curation/sessions/",
+    "selectedPreviews": "viewer/image-databases/master-database/curation/selected-previews/",
+    "audits": "viewer/image-databases/master-database/curation/audits/"
   }
 }
