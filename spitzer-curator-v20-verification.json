@@ -1,0 +1,19 @@
+{
+  "source": "https://www.astropix.org/d2d/913.json",
+  "advertisedCount": 705,
+  "feedRecords": 705,
+  "uniqueFeedIds": 705,
+  "duplicateFeedIds": 0,
+  "duplicateFeedUrls": 0,
+  "knownReviewedOrSelectedExcluded": 106,
+  "knownExcludedPresentInFeed": 85,
+  "candidateUrlsTested": 620,
+  "workingImageUrls": 620,
+  "failedImageUrls": 0,
+  "duplicateImageContentDropped": 0,
+  "embeddedVerifiedUniqueNew": 620,
+  "verificationMethod": "HTTP GET 200 + image/* MIME + image signature + >=1000 bytes + SHA-256 exact-content dedupe",
+  "generatedAt": "2026-08-25T03:04:23Z",
+  "failures": [],
+  "duplicateContent": []
+}
