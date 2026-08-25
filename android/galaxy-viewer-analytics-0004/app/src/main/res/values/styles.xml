@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="GalaxyViewerAnalyticsTheme" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">#061D45</item>
+        <item name="android:colorBackground">#061D45</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:windowSplashScreenBackground">#061D45</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#061D45</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/gv_analytics_icon</item>
+    </style>
+</resources>
