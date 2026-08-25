@@ -1,0 +1,80 @@
+name: Install Canonical Curation Catalog
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.tmp/gv-curation-catalog.tar.xz'
+      - '.github/workflows/install-curation-catalog.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install clean curation catalogs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf viewer/image-databases/master-database/curation
+          rm -rf viewer/image-databases/master-database/curation-catalog
+          mkdir -p viewer/image-databases/master-database/curation-catalog
+          rm -rf /tmp/gv-curation-catalog
+          tar -xJf .tmp/gv-curation-catalog.tar.xz -C /tmp
+          cp -a /tmp/gv-curation-catalog/. viewer/image-databases/master-database/curation-catalog/
+
+          cat > viewer/image-databases/master-database/gv-master-catalog.json <<'JSON'
+          {
+            "version": "0001",
+            "catalogs": {
+              "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json",
+              "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
+              "chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0001.json"
+            }
+          }
+          JSON
+
+          rm -f .tmp/gv-curation-catalog.tar.xz
+          rm -f .github/workflows/install-curation-catalog.yml
+
+      - name: Verify curation masters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          root=pathlib.Path('viewer/image-databases/master-database/curation-catalog')
+          expected={
+            'Spitzer':'gv-curation-spitzer.json',
+            'Hubble':'gv-curation-hubble.json',
+            'Chandra':'gv-curation-chandra.json',
+            'JWST':'gv-curation-jwst.json',
+          }
+          for sat,name in expected.items():
+              p=root/sat/name
+              d=json.load(open(p))
+              assert d['satellite']==sat
+              keys=[r['curationKey'] for r in d['records']]
+              assert len(keys)==len(set(keys))
+              assert all(r.get('decision') in {'KEEP','REJECT','MAYBE','UNREVIEWED'} for r in d['records'])
+              assert all(r.get('urlStatus') in {'VALID','INVALID_URL','UNKNOWN'} for r in d['records'])
+              print(sat, len(d['records']))
+          PY
+
+      - name: Commit canonical curation catalogs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A viewer/image-databases/master-database .tmp .github/workflows/install-curation-catalog.yml
+          git commit -m '[skip ci] Install canonical satellite curation catalogs'
+          git push origin beta
