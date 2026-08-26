@@ -60,6 +60,158 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-65d4db22edcc — ECO-20260826-12Q-BOOT-FONT-REPAIR-034
+
+**Recorded:** 2026-08-25T23:08:50-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`65d4db22edccefbe374eba567cc9c0faebce22eb`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/65d4db22edccefbe374eba567cc9c0faebce22eb)  
+**Parent/baseline:** `e1540a5453978f1fb4533ea596796140321fb70f`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e1540a5453978f1fb4533ea596796140321fb70f...65d4db22edccefbe374eba567cc9c0faebce22eb)  
+**Author:** gear66me-ui  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260826-12Q-BOOT-FONT-REPAIR-034`  
+**Requirements:** `REQ-160-001,REQ-160-002,REQ-160-003,REQ-160-004,REQ-160-005,REQ-160-006,REQ-160-007,REQ-160-008,REQ-160-009`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `7`  
+**Actual changed paths:** `7`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/GV-beta-0012Q.py, viewer/gv-current-viewer.json, viewer/modules/coordinate-overlay/gv-coordinate-overlay-0005.js, viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js, viewer/modules/hamburger-menu/gv-hamburger-menu-0006.js, viewer/modules/random-galaxy/gv-random-galaxy-0047.js, viewer/modules/target-simbad/gv-target-simbad-0003.js`
+- Actual: `viewer/GV-beta-0012Q.py, viewer/gv-current-viewer.json, viewer/modules/coordinate-overlay/gv-coordinate-overlay-0005.js, viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js, viewer/modules/hamburger-menu/gv-hamburger-menu-0006.js, viewer/modules/random-galaxy/gv-random-galaxy-0047.js, viewer/modules/target-simbad/gv-target-simbad-0003.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0012Q.py`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `0d0990e8af1f11c57588bfb62e2ec80faf3470e50cf42605fc07d6466abea9a1`
+- Bytes: `0` -> `103982`
+- Lines: `0` -> `2008`
+- Characters: `0` -> `103973`
+- Inserted lines: `2008`
+- Deleted lines: `0`
+- Inserted characters: `103973`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/gv-current-viewer.json`
+
+- Git status: `M`
+- SHA-256 before: `7255aee38de4016fe511c47518f98d83687c22c8dc3cb718543b33ee20b3ea1c`
+- SHA-256 after: `85554212acd0259e3f630ed4a246df80614974a29284accdd697c8e4c0cabb89`
+- Bytes: `55` -> `55`
+- Lines: `4` -> `4`
+- Characters: `55` -> `55`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `2`
+- Deleted characters: `2`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/coordinate-overlay/gv-coordinate-overlay-0005.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `79e6b3be38600396659134632865ced397198a8ee8c7a10f8130ed4a4766d917`
+- Bytes: `0` -> `9283`
+- Lines: `0` -> `105`
+- Characters: `0` -> `9282`
+- Inserted lines: `105`
+- Deleted lines: `0`
+- Inserted characters: `9282`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `589d0b71d79f63bc8c1ceb4437a9281ed2b7d990f00647d32aa8eed4d715842c`
+- Bytes: `0` -> `28862`
+- Lines: `0` -> `489`
+- Characters: `0` -> `28862`
+- Inserted lines: `489`
+- Deleted lines: `0`
+- Inserted characters: `28862`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/hamburger-menu/gv-hamburger-menu-0006.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `51359391084a058270cedb45812df20f23f8d1605832f4ee7236682bbacc918b`
+- Bytes: `0` -> `1828`
+- Lines: `0` -> `42`
+- Characters: `0` -> `1828`
+- Inserted lines: `42`
+- Deleted lines: `0`
+- Inserted characters: `1828`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/random-galaxy/gv-random-galaxy-0047.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `a91868f160099aafeaaffca5c42abdc3bfa71fdd3256ce6cd68f57c2fe37d002`
+- Bytes: `0` -> `250110`
+- Lines: `0` -> `5272`
+- Characters: `0` -> `250073`
+- Inserted lines: `5272`
+- Deleted lines: `0`
+- Inserted characters: `250073`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/target-simbad/gv-target-simbad-0003.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `115524e019c3f78a62945b9fcdd65522c6084042bc631d8000f897b97004328f`
+- Bytes: `0` -> `10722`
+- Lines: `0` -> `159`
+- Characters: `0` -> `10722`
+- Inserted lines: `159`
+- Deleted lines: `0`
+- Inserted characters: `10722`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-de733c9100c3 — ECO-20260825-REQ157-TEST-RELEASE-032
 
 **Recorded:** 2026-08-25T20:55:14-05:00  
