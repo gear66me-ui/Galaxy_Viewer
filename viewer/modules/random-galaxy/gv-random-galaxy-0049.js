@@ -1,5 +1,5 @@
 /*
-GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0048
+GALAXY VIEWER ENGINEERING CHANGE ORDER — RANDOM GALAXY 0049
 AUTHORIZED BASELINE: gv-random-galaxy-0010.js blob a4a9ddb3c28751dfbbf9fcdf04278c80e1020013.
 AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science banner, exact retained decoded-image handoff for immediate HD display, and generic provider identity. Touch-through interaction, 36px provider controls, top-centered HD viewing, no post-arrival reframing, and configured travel behavior are preserved.
 */
@@ -14,8 +14,8 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
   });
 
   const FONT_NAMES = Object.freeze({
-    spaceAge: 'GV Random Galaxy Space Age 0048',
-    digits: 'GV Random Galaxy Digits 0048'
+    spaceAge: 'GV Random Galaxy Space Age 0049',
+    digits: 'GV Random Galaxy Digits 0049'
   });
 
   const DEFAULT_PROVIDER_ICON_URL = 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';
@@ -3381,7 +3381,7 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
     }
 
     async #getProviderCandidate(excludeName) {
-      if (!this.provider) throw new Error('Random Galaxy 0048 requires a local galaxy provider.');
+      if (!this.provider) throw new Error('Random Galaxy 0049 requires a local galaxy provider.');
       const raw = await this.provider({ excludeName: cleanText(excludeName), module: this });
       return this.#normalizeProviderCandidate(raw && raw.destination ? raw.destination : raw);
     }
