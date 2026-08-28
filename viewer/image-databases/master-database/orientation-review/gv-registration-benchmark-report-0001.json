@@ -1,0 +1,1109 @@
+{
+  "schema": "gv-registration-benchmark-report-0001",
+  "predictionCount": 151,
+  "humanGoldCount": 150,
+  "overall": {
+    "goldCount": 150,
+    "comparedCount": 0,
+    "failedOrMissingCount": 150,
+    "rotationMedianAbsErrorDeg": null,
+    "rotationP90AbsErrorDeg": null,
+    "rotationWithin1DegPct": 0,
+    "rotationWithin5DegPct": 0,
+    "rotationWithin10DegPct": 0,
+    "fovMedianRelativeErrorPct": null,
+    "fovP90RelativeErrorPct": null,
+    "fovWithin5Pct": 0,
+    "fovWithin10Pct": 0,
+    "fovWithin25Pct": 0,
+    "bothRotation5DegAndFov10Pct": 0
+  },
+  "byCatalog": {
+    "Chandra": {
+      "goldCount": 81,
+      "comparedCount": 0,
+      "failedOrMissingCount": 81,
+      "rotationMedianAbsErrorDeg": null,
+      "rotationP90AbsErrorDeg": null,
+      "rotationWithin1DegPct": 0,
+      "rotationWithin5DegPct": 0,
+      "rotationWithin10DegPct": 0,
+      "fovMedianRelativeErrorPct": null,
+      "fovP90RelativeErrorPct": null,
+      "fovWithin5Pct": 0,
+      "fovWithin10Pct": 0,
+      "fovWithin25Pct": 0,
+      "bothRotation5DegAndFov10Pct": 0
+    },
+    "JWST": {
+      "goldCount": 69,
+      "comparedCount": 0,
+      "failedOrMissingCount": 69,
+      "rotationMedianAbsErrorDeg": null,
+      "rotationP90AbsErrorDeg": null,
+      "rotationWithin1DegPct": 0,
+      "rotationWithin5DegPct": 0,
+      "rotationWithin10DegPct": 0,
+      "fovMedianRelativeErrorPct": null,
+      "fovP90RelativeErrorPct": null,
+      "fovWithin5Pct": 0,
+      "fovWithin10Pct": 0,
+      "fovWithin25Pct": 0,
+      "bothRotation5DegAndFov10Pct": 0
+    }
+  },
+  "worstRotation": [],
+  "worstFov": [],
+  "failed": [
+    {
+      "key": "Chandra:chandra-2026-m83",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2025-m31",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2023-m84",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2019-teacup",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2019-ngc3079",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2017-ic10",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2017-ngc4696",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2016-ngc5195",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2015-ngc2276",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2014-ngc2207",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2014-m82",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2014-m106",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2013-ngc1232",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2013-ngc6240",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2012-ngc3627",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2012-ngc922",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2012-m101",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-n3115",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-arp147",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-antennae",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-ngc1399",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2009-ngc6872",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2009-n604",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2008-m81",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2007-sombrero",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2007-ngc1365",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2006-n2841",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2006-n5746",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2006-cartwheel",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2026-m87",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2024-cena",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2019-cyga",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2017-arp299",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2016-ngc5128",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2016-ic2497",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2016-pictora",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2012-ngc4178",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-n3393",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-vv340",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-n4151",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-ngc1068",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2023-3c297",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2022-h1821",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2018-ring",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2018-m51",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2014-m51",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2013-m31",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2012-m83",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-m82",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-he210",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-m31",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-m82",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2009-ngc6240",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2009-m101",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2008-m101",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2008-m84",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2007-m51",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2007-m31",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2006-m31",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2026-redpotato",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2023-cena",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2021-m87",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2018-j1354",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2017-m31",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2015-rgg118",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2014-rxj1131",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2014-cena",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2013-4c2930",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2012-gb1428",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2011-cid",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-m87",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2010-cid42",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2009-3c305",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2009-cena",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2008-m87",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2008-cena",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2007-3c321",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2002-1140",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2001-0144",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2001-1138",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "Chandra:chandra-2007-3c442a",
+      "catalog": "Chandra",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2207a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2211b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2410c",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403c",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403f",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2608a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403l",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2307b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403h",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403j",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403k",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403m",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403n",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403o",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403p",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403q",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403r",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403s",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2403t",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2412a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2411a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2405b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2403b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:LeoP",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2604b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2310d",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2306a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2602a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2511a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2212a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2423a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:arp220a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2420g",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2402a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2502a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2407a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2301a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:WLMb",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2406a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2312a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2303a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2606a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2601a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2505a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:questionmark1",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:elgordo1",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2428a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:webb-first-deep-field",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2305a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2406d",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2507a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2503a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2615b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:supernova-encore1",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2209c",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2305b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2309a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2410b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2410a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2308d",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2306c",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2423b",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2208a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2410a",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:potm2405c",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2306d",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2306e",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    },
+    {
+      "key": "JWST:weic2306f",
+      "catalog": "JWST",
+      "status": "failed",
+      "confidence": 0.0,
+      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+    }
+  ]
+}
