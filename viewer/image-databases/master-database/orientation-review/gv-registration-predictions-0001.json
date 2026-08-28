@@ -1,6 +1,6 @@
 {
   "schema": "gv-registration-predictions-0001",
-  "generatedAt": "2026-08-28T20:04:06Z",
+  "generatedAt": "2026-08-28T20:24:16Z",
   "survey": "P/DSS2/color",
   "renderSize": 640,
   "predictionCount": 151,
@@ -15,9 +15,38 @@
       "catalogFovDeg": 0.15833333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2026/m83/m83.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 204.25095810803052,
+      "predictedDecDeg": -29.86503684698134,
+      "predictedFovDeg": 0.11873043356191844,
+      "predictedRotationDeg": 0.047370137288879274,
+      "confidence": 0.977360629392521,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3335526071095378,
+            0.0011025346894793298,
+            -6.187025445315904
+          ],
+          [
+            -0.0011025346894793298,
+            1.3335526071095378,
+            12.314220186264718
+          ]
+        ],
+        "rotation_deg": -0.047370137288879274,
+        "scale": 1.3335530628780345,
+        "tx_px": -6.187025445315904,
+        "ty_px": 12.314220186264718,
+        "confidence": 0.977360629392521,
+        "matches": 74,
+        "inliers": 59,
+        "inlier_ratio": 0.7972972972972973,
+        "median_error_px": 0.9610580205917358,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2025-m31",
@@ -29,9 +58,38 @@
       "catalogFovDeg": 3.2,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2025/m31/m31.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 10.277844138000866,
+      "predictedDecDeg": 42.50260708790027,
+      "predictedFovDeg": 3.0374731023619668,
+      "predictedRotationDeg": 91.70415356883777,
+      "confidence": 0.18631804801933646,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.03132994254060748,
+            1.0530413123800175,
+            366.74069970153425
+          ],
+          [
+            -1.0530413123800175,
+            -0.03132994254060748,
+            774.6557594198684
+          ]
+        ],
+        "rotation_deg": -91.70415356883777,
+        "scale": 1.0535072713933338,
+        "tx_px": 366.74069970153425,
+        "ty_px": 774.6557594198684,
+        "confidence": 0.18631804801933646,
+        "matches": 12,
+        "inliers": 3,
+        "inlier_ratio": 0.25,
+        "median_error_px": 2.26918888092041,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2023-m84",
@@ -43,9 +101,38 @@
       "catalogFovDeg": 0.15,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2023/m84/m84.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 186.27294644286647,
+      "predictedDecDeg": 12.89141521864819,
+      "predictedFovDeg": 0.07900096059290383,
+      "predictedRotationDeg": -173.7356166282245,
+      "confidence": 0.21225204731947,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -1.8873738429348563,
+            -0.20718055017600795,
+            1040.5396323575312
+          ],
+          [
+            0.20718055017600795,
+            -1.8873738429348563,
+            899.3176161098326
+          ]
+        ],
+        "rotation_deg": 173.7356166282245,
+        "scale": 1.8987110900202593,
+        "tx_px": 1040.5396323575312,
+        "ty_px": 899.3176161098326,
+        "confidence": 0.21225204731947,
+        "matches": 18,
+        "inliers": 4,
+        "inlier_ratio": 0.2222222222222222,
+        "median_error_px": 6.866455078125e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2019-teacup",
@@ -57,9 +144,27 @@
       "catalogFovDeg": 0.004445,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2019/teacup/teacup.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 217.6245833333,
+      "predictedDecDeg": 13.6530555556,
+      "predictedFovDeg": 0.004445,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2019-ngc3079",
@@ -71,9 +176,38 @@
       "catalogFovDeg": 0.05333333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2019/ngc3079/ngc3079.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 150.88208998370249,
+      "predictedDecDeg": 55.32250744152372,
+      "predictedFovDeg": 0.8251194564425343,
+      "predictedRotationDeg": -74.1732576542662,
+      "confidence": 0.11020202814413155,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.017628434138989665,
+            -0.06218676477873864,
+            759.5339383717653
+          ],
+          [
+            0.06218676477873864,
+            0.017628434138989665,
+            294.50058431751995
+          ]
+        ],
+        "rotation_deg": 74.1732576542662,
+        "scale": 0.0646371054723126,
+        "tx_px": 759.5339383717653,
+        "ty_px": 294.50058431751995,
+        "confidence": 0.11020202814413155,
+        "matches": 7,
+        "inliers": 3,
+        "inlier_ratio": 0.42857142857142855,
+        "median_error_px": 2.158146858215332,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2017-ic10",
@@ -85,9 +219,38 @@
       "catalogFovDeg": 0.1716666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2017/ic10/ic10.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 5.072724822332233,
+      "predictedDecDeg": 59.30043942330666,
+      "predictedFovDeg": 0.12994987574786068,
+      "predictedRotationDeg": 39.66181155126448,
+      "confidence": 0.9849511739531183,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.016956065187587,
+            0.8431488192177901,
+            -186.11401598305014
+          ],
+          [
+            -0.8431488192177901,
+            1.016956065187587,
+            443.1232610447123
+          ]
+        ],
+        "rotation_deg": -39.66181155126448,
+        "scale": 1.3210221685763541,
+        "tx_px": -186.11401598305014,
+        "ty_px": 443.1232610447123,
+        "confidence": 0.9849511739531183,
+        "matches": 226,
+        "inliers": 177,
+        "inlier_ratio": 0.7831858407079646,
+        "median_error_px": 0.6258040070533752,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2017-ngc4696",
@@ -99,9 +262,27 @@
       "catalogFovDeg": 0.03666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2017/ngc4696/ngc4696.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 192.20375,
+      "predictedDecDeg": -41.3123333333,
+      "predictedFovDeg": 0.03666666666666667,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 5,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2016-ngc5195",
@@ -113,9 +294,38 @@
       "catalogFovDeg": 0.16666666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2016/ngc5195/ngc5195.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 202.4124454254143,
+      "predictedDecDeg": 47.213492408011064,
+      "predictedFovDeg": 0.1373726715273901,
+      "predictedRotationDeg": -0.07142916842609298,
+      "confidence": 0.9824377086774945,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.2132437645509317,
+            -0.0015125204479734266,
+            -230.93251475907803
+          ],
+          [
+            0.0015125204479734266,
+            1.2132437645509317,
+            -252.20841386543998
+          ]
+        ],
+        "rotation_deg": 0.07142916842609298,
+        "scale": 1.2132447073611416,
+        "tx_px": -230.93251475907803,
+        "ty_px": -252.20841386543998,
+        "confidence": 0.9824377086774945,
+        "matches": 59,
+        "inliers": 45,
+        "inlier_ratio": 0.7627118644067796,
+        "median_error_px": 0.7352685928344727,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2015-ngc2276",
@@ -127,9 +337,38 @@
       "catalogFovDeg": 0.075,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2015/ngc2276/ngc2276.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 111.74000289346594,
+      "predictedDecDeg": 85.75563220157781,
+      "predictedFovDeg": 0.05614684791563437,
+      "predictedRotationDeg": 0.15382569110941052,
+      "confidence": 0.7954221589849723,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3357780977176699,
+            0.0035862586125536,
+            -55.90980864638881
+          ],
+          [
+            -0.0035862586125536,
+            1.3357780977176699,
+            18.763504851370016
+          ]
+        ],
+        "rotation_deg": -0.15382569110941052,
+        "scale": 1.3357829118509763,
+        "tx_px": -55.90980864638881,
+        "ty_px": 18.763504851370016,
+        "confidence": 0.7954221589849723,
+        "matches": 29,
+        "inliers": 19,
+        "inlier_ratio": 0.6551724137931034,
+        "median_error_px": 2.332334280014038,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2014-ngc2207",
@@ -141,9 +380,38 @@
       "catalogFovDeg": 0.08333333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2014/ngc2207/ngc2207.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 94.10544617439903,
+      "predictedDecDeg": -21.375002560166017,
+      "predictedFovDeg": 0.060964258893766776,
+      "predictedRotationDeg": -11.724443252028847,
+      "confidence": 0.22592676371332776,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3384019685381492,
+            -0.2777652457628963,
+            225.3703913826594
+          ],
+          [
+            0.2777652457628963,
+            1.3384019685381492,
+            -305.0672096060025
+          ]
+        ],
+        "rotation_deg": 11.724443252028847,
+        "scale": 1.3669211246961235,
+        "tx_px": 225.3703913826594,
+        "ty_px": -305.0672096060025,
+        "confidence": 0.22592676371332776,
+        "matches": 16,
+        "inliers": 5,
+        "inlier_ratio": 0.3125,
+        "median_error_px": 1.8815455436706543,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2014-m82",
@@ -155,9 +423,38 @@
       "catalogFovDeg": 0.2125,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2014/m82/m82.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 148.9675,
+      "predictedDecDeg": 69.6797222222,
+      "predictedFovDeg": 0.2125,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.036162053585729145,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            351.7477722167969
+          ],
+          [
+            0.0,
+            0.0,
+            572.6594848632812
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 351.7477722167969,
+        "ty_px": 572.6594848632812,
+        "confidence": 0.036162053585729145,
+        "matches": 20,
+        "inliers": 3,
+        "inlier_ratio": 0.15,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2014-m106",
@@ -169,9 +466,38 @@
       "catalogFovDeg": 0.11,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2014/m106/m106.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 184.73655662975165,
+      "predictedDecDeg": 47.301423400600285,
+      "predictedFovDeg": 0.08074937585688102,
+      "predictedRotationDeg": -34.24318767777584,
+      "confidence": 0.6100240163394148,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.126104462905005,
+            -0.7665412916986745,
+            314.4882348723616
+          ],
+          [
+            0.7665412916986745,
+            1.126104462905005,
+            -293.45384330557886
+          ]
+        ],
+        "rotation_deg": 34.24318767777584,
+        "scale": 1.3622396313621339,
+        "tx_px": 314.4882348723616,
+        "ty_px": -293.45384330557886,
+        "confidence": 0.6100240163394148,
+        "matches": 14,
+        "inliers": 8,
+        "inlier_ratio": 0.5714285714285714,
+        "median_error_px": 1.5896525382995605,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2013-ngc1232",
@@ -183,9 +509,38 @@
       "catalogFovDeg": 0.11333333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2013/ngc1232/ngc1232.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 47.45449140870959,
+      "predictedDecDeg": -20.5758208520051,
+      "predictedFovDeg": 0.08341814229798493,
+      "predictedRotationDeg": 0.25198872520487714,
+      "confidence": 0.9589817974602076,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3586041852176651,
+            0.005975224474825066,
+            102.23046614270619
+          ],
+          [
+            -0.005975224474825066,
+            1.3586041852176651,
+            25.381547345651093
+          ]
+        ],
+        "rotation_deg": -0.25198872520487714,
+        "scale": 1.358617324855855,
+        "tx_px": 102.23046614270619,
+        "ty_px": 25.381547345651093,
+        "confidence": 0.9589817974602076,
+        "matches": 68,
+        "inliers": 55,
+        "inlier_ratio": 0.8088235294117647,
+        "median_error_px": 1.8362212181091309,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2013-ngc6240",
@@ -197,9 +552,27 @@
       "catalogFovDeg": 0.05,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2013/ngc6240/ngc6240.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 253.2458333333,
+      "predictedDecDeg": 2.4004722222,
+      "predictedFovDeg": 0.05,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2012-ngc3627",
@@ -211,9 +584,38 @@
       "catalogFovDeg": 0.11333333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2012/ngc3627/ngc3627.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 170.0624285158759,
+      "predictedDecDeg": 12.991843596554165,
+      "predictedFovDeg": 0.08438756376709021,
+      "predictedRotationDeg": 45.01876477349357,
+      "confidence": 0.48639524533697553,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.9493403369723007,
+            0.9499623720804403,
+            -175.20114337650458
+          ],
+          [
+            -0.9499623720804403,
+            0.9493403369723007,
+            433.52122895903307
+          ]
+        ],
+        "rotation_deg": -45.01876477349357,
+        "scale": 1.34300989712339,
+        "tx_px": -175.20114337650458,
+        "ty_px": 433.52122895903307,
+        "confidence": 0.48639524533697553,
+        "matches": 22,
+        "inliers": 8,
+        "inlier_ratio": 0.36363636363636365,
+        "median_error_px": 1.6952636241912842,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2012-ngc922",
@@ -225,9 +627,38 @@
       "catalogFovDeg": 0.02666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2012/ngc922/ngc922.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 36.2683333333,
+      "predictedDecDeg": -24.7880555556,
+      "predictedFovDeg": 0.02666666666666667,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.24138764987615088,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            261.9390563964844
+          ],
+          [
+            0.0,
+            0.0,
+            664.861083984375
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 261.9390563964844,
+        "ty_px": 664.861083984375,
+        "confidence": 0.24138764987615088,
+        "matches": 15,
+        "inliers": 10,
+        "inlier_ratio": 0.6666666666666666,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2012-m101",
@@ -239,9 +670,38 @@
       "catalogFovDeg": 0.28,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2012/m101/m101.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 210.80116958571236,
+      "predictedDecDeg": 54.34880433055421,
+      "predictedFovDeg": 0.2883940708869789,
+      "predictedRotationDeg": 0.11643652338663674,
+      "confidence": 0.987480092186684,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.970891741849897,
+            0.001973049596132916,
+            118.9608260051054
+          ],
+          [
+            -0.001973049596132916,
+            0.970891741849897,
+            121.1454259727379
+          ]
+        ],
+        "rotation_deg": -0.11643652338663674,
+        "scale": 0.9708937466669748,
+        "tx_px": 118.9608260051054,
+        "ty_px": 121.1454259727379,
+        "confidence": 0.987480092186684,
+        "matches": 218,
+        "inliers": 195,
+        "inlier_ratio": 0.8944954128440367,
+        "median_error_px": 0.5171576142311096,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2011-n3115",
@@ -253,9 +713,38 @@
       "catalogFovDeg": 0.125,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/n3115/n3115.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 150.86780761794884,
+      "predictedDecDeg": -7.237195374757803,
+      "predictedFovDeg": 1.3728904761657468,
+      "predictedRotationDeg": 155.80643575243099,
+      "confidence": 0.07690897793062909,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.08305161362898768,
+            0.03731366270788433,
+            723.9884352503642
+          ],
+          [
+            -0.03731366270788433,
+            -0.08305161362898768,
+            299.8112577886855
+          ]
+        ],
+        "rotation_deg": -155.80643575243099,
+        "scale": 0.09104877786690171,
+        "tx_px": 723.9884352503642,
+        "ty_px": 299.8112577886855,
+        "confidence": 0.07690897793062909,
+        "matches": 19,
+        "inliers": 3,
+        "inlier_ratio": 0.15789473684210525,
+        "median_error_px": 1.0028890371322632,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2011-arp147",
@@ -267,9 +756,38 @@
       "catalogFovDeg": 0.015000000000000001,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/arp147/arp147.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 48.0,
+      "predictedDecDeg": 2.9851689240446376e+16,
+      "predictedFovDeg": 1.1858697437713776e+17,
+      "predictedRotationDeg": 134.67157524100207,
+      "confidence": 0.14929266659855892,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -8.892738705084051e-20,
+            8.995275596632762e-20,
+            724.5230102539062
+          ],
+          [
+            -8.995275596632762e-20,
+            -8.892738705084051e-20,
+            428.740234375
+          ]
+        ],
+        "rotation_deg": -134.67157524100207,
+        "scale": 1.2648944016647273e-19,
+        "tx_px": 724.5230102539062,
+        "ty_px": 428.740234375,
+        "confidence": 0.14929266659855892,
+        "matches": 23,
+        "inliers": 8,
+        "inlier_ratio": 0.34782608695652173,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2010-antennae",
@@ -281,9 +799,27 @@
       "catalogFovDeg": 0.056666666666666664,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/antennae/antennae.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 180.4708333333,
+      "predictedDecDeg": -18.8694444444,
+      "predictedFovDeg": 0.056666666666666664,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 5,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2010-ngc1399",
@@ -295,9 +831,38 @@
       "catalogFovDeg": 0.05,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/ngc1399/ngc1399.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 164.0,
+      "predictedDecDeg": 2.89966307015233e+16,
+      "predictedFovDeg": 1.1033515842520374e+17,
+      "predictedRotationDeg": 53.70931677840915,
+      "confidence": 0.04784873997626169,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            2.682200889837837e-19,
+            3.652618754747061e-19,
+            618.0443725585938
+          ],
+          [
+            -3.652618754747061e-19,
+            2.682200889837837e-19,
+            456.3150329589844
+          ]
+        ],
+        "rotation_deg": -53.70931677840915,
+        "scale": 4.531647093604803e-19,
+        "tx_px": 618.0443725585938,
+        "ty_px": 456.3150329589844,
+        "confidence": 0.04784873997626169,
+        "matches": 13,
+        "inliers": 3,
+        "inlier_ratio": 0.23076923076923078,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2009-ngc6872",
@@ -309,9 +874,38 @@
       "catalogFovDeg": 0.09638833333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2009/ngc6872/ngc6872.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 304.22988358643676,
+      "predictedDecDeg": -70.76968865180035,
+      "predictedFovDeg": 0.07065865910333977,
+      "predictedRotationDeg": 0.1304454175026626,
+      "confidence": 0.5036548514139367,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3641368906275344,
+            0.0031057385935576586,
+            -22.05933686713202
+          ],
+          [
+            -0.0031057385935576586,
+            1.3641368906275344,
+            -188.78432776814634
+          ]
+        ],
+        "rotation_deg": -0.1304454175026626,
+        "scale": 1.3641404260497412,
+        "tx_px": -22.05933686713202,
+        "ty_px": -188.78432776814634,
+        "confidence": 0.5036548514139367,
+        "matches": 42,
+        "inliers": 12,
+        "inlier_ratio": 0.2857142857142857,
+        "median_error_px": 1.3652682304382324,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2009-n604",
@@ -323,9 +917,38 @@
       "catalogFovDeg": 0.019,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2009/n604/n604.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 248.0,
+      "predictedDecDeg": 2.3111483164930828e+16,
+      "predictedFovDeg": 2.5121542291427414e+17,
+      "predictedRotationDeg": 44.788197097619936,
+      "confidence": 0.08458743820111378,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            5.367744338064806e-20,
+            5.3282048915451915e-20,
+            588.454345703125
+          ],
+          [
+            -5.3282048915451915e-20,
+            5.367744338064806e-20,
+            237.19004821777344
+          ]
+        ],
+        "rotation_deg": -44.788197097619936,
+        "scale": 7.563229908254336e-20,
+        "tx_px": 588.454345703125,
+        "ty_px": 237.19004821777344,
+        "confidence": 0.08458743820111378,
+        "matches": 18,
+        "inliers": 7,
+        "inlier_ratio": 0.3888888888888889,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2008-m81",
@@ -337,9 +960,27 @@
       "catalogFovDeg": 0.05,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2008/m81/m81.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 148.8883333333,
+      "predictedDecDeg": 69.0652777778,
+      "predictedFovDeg": 0.05,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2007-sombrero",
@@ -351,9 +992,38 @@
       "catalogFovDeg": 0.14,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2007/sombrero/sombrero.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 189.94873390638486,
+      "predictedDecDeg": -11.611615579552387,
+      "predictedFovDeg": 0.187177164157393,
+      "predictedRotationDeg": 55.45677317704828,
+      "confidence": 0.07406914917973255,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.4241110162972705,
+            0.6160890861826884,
+            -20.25300878116919
+          ],
+          [
+            -0.6160890861826884,
+            0.4241110162972705,
+            488.14154510610445
+          ]
+        ],
+        "rotation_deg": -55.45677317704828,
+        "scale": 0.7479544880927741,
+        "tx_px": -20.25300878116919,
+        "ty_px": 488.14154510610445,
+        "confidence": 0.07406914917973255,
+        "matches": 23,
+        "inliers": 3,
+        "inlier_ratio": 0.13043478260869565,
+        "median_error_px": 0.0,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2007-ngc1365",
@@ -365,9 +1035,38 @@
       "catalogFovDeg": 0.10833333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2007/ngc1365/ngc1365.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 53.39547111099546,
+      "predictedDecDeg": -36.13988101329125,
+      "predictedFovDeg": 0.12085486749533925,
+      "predictedRotationDeg": 0.27255446482357837,
+      "confidence": 0.974666329272315,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.8963818326447175,
+            0.004264096162089163,
+            -14.692335967339659
+          ],
+          [
+            -0.004264096162089163,
+            0.8963818326447175,
+            14.749449808428132
+          ]
+        ],
+        "rotation_deg": -0.27255446482357837,
+        "scale": 0.8963919747585772,
+        "tx_px": -14.692335967339659,
+        "ty_px": 14.749449808428132,
+        "confidence": 0.974666329272315,
+        "matches": 75,
+        "inliers": 59,
+        "inlier_ratio": 0.7866666666666666,
+        "median_error_px": 1.0835192203521729,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2006-n2841",
@@ -379,9 +1078,38 @@
       "catalogFovDeg": 0.09583333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2006/n2841/n2841.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 140.5071037818506,
+      "predictedDecDeg": 50.97654622040452,
+      "predictedFovDeg": 0.08281175224228647,
+      "predictedRotationDeg": -179.29630572917353,
+      "confidence": 0.22022580757986987,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -1.1571558743249892,
+            -0.014212650764026953,
+            676.9699833660188
+          ],
+          [
+            0.014212650764026953,
+            -1.1571558743249892,
+            760.3031183376831
+          ]
+        ],
+        "rotation_deg": 179.29630572917353,
+        "scale": 1.1572431537609418,
+        "tx_px": 676.9699833660188,
+        "ty_px": 760.3031183376831,
+        "confidence": 0.22022580757986987,
+        "matches": 14,
+        "inliers": 4,
+        "inlier_ratio": 0.2857142857142857,
+        "median_error_px": 0.9602929353713989,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2006-n5746",
@@ -393,9 +1121,38 @@
       "catalogFovDeg": 0.22166666666666668,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2006/n5746/n5746.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 221.23280458402996,
+      "predictedDecDeg": 1.9558242560793537,
+      "predictedFovDeg": 0.24851668180382663,
+      "predictedRotationDeg": 90.1731763977029,
+      "confidence": 0.8260007872067368,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.002695940184388057,
+            0.8919548279053838,
+            4.8453559129855055
+          ],
+          [
+            -0.8919548279053838,
+            -0.002695940184388057,
+            574.5724669923784
+          ]
+        ],
+        "rotation_deg": -90.1731763977029,
+        "scale": 0.8919589021458336,
+        "tx_px": 4.8453559129855055,
+        "ty_px": 574.5724669923784,
+        "confidence": 0.8260007872067368,
+        "matches": 51,
+        "inliers": 25,
+        "inlier_ratio": 0.49019607843137253,
+        "median_error_px": 0.43460971117019653,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2006-cartwheel",
@@ -407,9 +1164,38 @@
       "catalogFovDeg": 0.044445,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2006/cartwheel/cartwheel.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 9.422829586396366,
+      "predictedDecDeg": -33.71127571877073,
+      "predictedFovDeg": 0.03338337865303155,
+      "predictedRotationDeg": 89.85846962062915,
+      "confidence": 0.6151650920487264,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0032886618382306884,
+            1.3313471013814688,
+            65.93910707467992
+          ],
+          [
+            -1.3313471013814688,
+            0.0032886618382306884,
+            706.0293487129254
+          ]
+        ],
+        "rotation_deg": -89.85846962062915,
+        "scale": 1.3313511631622685,
+        "tx_px": 65.93910707467992,
+        "ty_px": 706.0293487129254,
+        "confidence": 0.6151650920487264,
+        "matches": 24,
+        "inliers": 12,
+        "inlier_ratio": 0.5,
+        "median_error_px": 2.046501398086548,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2026-m87",
@@ -421,9 +1207,27 @@
       "catalogFovDeg": 0.0125,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2026/m87/m87.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 187.7058333333,
+      "predictedDecDeg": 12.3911111111,
+      "predictedFovDeg": 0.0125,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 0,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2024-cena",
@@ -435,9 +1239,27 @@
       "catalogFovDeg": 0.05,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2024/cena/cena.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 201.3650833333,
+      "predictedDecDeg": -43.0191111111,
+      "predictedFovDeg": 0.05,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2019-cyga",
@@ -449,9 +1271,38 @@
       "catalogFovDeg": 0.041666666666666664,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2019/cyga/cyga.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 299.84699370138554,
+      "predictedDecDeg": 40.752430504756276,
+      "predictedFovDeg": 0.001963273073388371,
+      "predictedRotationDeg": 149.19628780072534,
+      "confidence": 0.09260012537588519,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -18.22905525009099,
+            10.86829868521278,
+            10321.914745344766
+          ],
+          [
+            -10.86829868521278,
+            -18.22905525009099,
+            7113.210532611569
+          ]
+        ],
+        "rotation_deg": -149.19628780072534,
+        "scale": 21.22306225835159,
+        "tx_px": 10321.914745344766,
+        "ty_px": 7113.210532611569,
+        "confidence": 0.09260012537588519,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 0.0004770319501403719,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2017-arp299",
@@ -463,9 +1314,38 @@
       "catalogFovDeg": 0.04666666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2017/arp299/arp299.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 172.15715239090434,
+      "predictedDecDeg": 58.5681742852947,
+      "predictedFovDeg": 0.0030213832685845295,
+      "predictedRotationDeg": -130.94728320948045,
+      "confidence": 0.1141529055081931,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -10.122406618320262,
+            -11.666158068546121,
+            4247.897752886053
+          ],
+          [
+            11.666158068546121,
+            -10.122406618320262,
+            1292.9034172770698
+          ]
+        ],
+        "rotation_deg": 130.94728320948045,
+        "scale": 15.445464053466234,
+        "tx_px": 4247.897752886053,
+        "ty_px": 1292.9034172770698,
+        "confidence": 0.1141529055081931,
+        "matches": 8,
+        "inliers": 3,
+        "inlier_ratio": 0.375,
+        "median_error_px": 0.00027634843718260527,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2016-ngc5128",
@@ -477,9 +1357,38 @@
       "catalogFovDeg": 0.2783333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2016/ngc5128/ngc5128.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 160.0,
+      "predictedDecDeg": -1.5852170125098793e+18,
+      "predictedFovDeg": 3.135495312647373e+18,
+      "predictedRotationDeg": 69.27994763365005,
+      "confidence": 0.05038714408346671,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            3.1406504636827707e-20,
+            8.30270119995167e-20,
+            354.87139892578125
+          ],
+          [
+            -8.30270119995167e-20,
+            3.1406504636827707e-20,
+            596.2344970703125
+          ]
+        ],
+        "rotation_deg": -69.27994763365005,
+        "scale": 8.876853752918863e-20,
+        "tx_px": 354.87139892578125,
+        "ty_px": 596.2344970703125,
+        "confidence": 0.05038714408346671,
+        "matches": 34,
+        "inliers": 6,
+        "inlier_ratio": 0.17647058823529413,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2016-ic2497",
@@ -491,9 +1400,27 @@
       "catalogFovDeg": 0.014166666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2016/ic2497/ic2497.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 145.2670833333,
+      "predictedDecDeg": 34.7326944444,
+      "predictedFovDeg": 0.014166666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2016-pictora",
@@ -505,9 +1432,38 @@
       "catalogFovDeg": 0.16666666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2016/pictora/pictora.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 79.9570833333,
+      "predictedDecDeg": -45.7791666667,
+      "predictedFovDeg": 0.16666666666666666,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.1587953421838432,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            679.674072265625
+          ],
+          [
+            0.0,
+            0.0,
+            639.916748046875
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 679.674072265625,
+        "ty_px": 639.916748046875,
+        "confidence": 0.1587953421838432,
+        "matches": 25,
+        "inliers": 9,
+        "inlier_ratio": 0.36,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2012-ngc4178",
@@ -519,9 +1475,38 @@
       "catalogFovDeg": 0.16666666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2012/ngc4178/ngc4178.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 183.19410099929735,
+      "predictedDecDeg": 10.866915158780138,
+      "predictedFovDeg": 0.12361977696423221,
+      "predictedRotationDeg": 0.07771301296500031,
+      "confidence": 0.6631869993002492,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3482188485768476,
+            0.0018286549899461286,
+            3.895470889314806
+          ],
+          [
+            -0.0018286549899461286,
+            1.3482188485768476,
+            6.750628132879331
+          ]
+        ],
+        "rotation_deg": -0.07771301296500031,
+        "scale": 1.3482200887232592,
+        "tx_px": 3.895470889314806,
+        "ty_px": 6.750628132879331,
+        "confidence": 0.6631869993002492,
+        "matches": 25,
+        "inliers": 13,
+        "inlier_ratio": 0.52,
+        "median_error_px": 0.9688935875892639,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2011-n3393",
@@ -533,9 +1518,27 @@
       "catalogFovDeg": 0.0034716666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/n3393/n3393.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 162.0979166667,
+      "predictedDecDeg": -25.1619444444,
+      "predictedFovDeg": 0.0034716666666666667,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 0,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2011-vv340",
@@ -547,9 +1550,38 @@
       "catalogFovDeg": 0.03666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/vv340/vv340.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 224.00779172332878,
+      "predictedDecDeg": 24.622416132005476,
+      "predictedFovDeg": 0.5006154168135388,
+      "predictedRotationDeg": 69.86738034421442,
+      "confidence": 0.09608144325277193,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.02520988501308399,
+            0.06876791095501042,
+            310.1032474638021
+          ],
+          [
+            -0.06876791095501042,
+            0.02520988501308399,
+            715.7086183682354
+          ]
+        ],
+        "rotation_deg": -69.86738034421442,
+        "scale": 0.07324318316054512,
+        "tx_px": 310.1032474638021,
+        "ty_px": 715.7086183682354,
+        "confidence": 0.09608144325277193,
+        "matches": 10,
+        "inliers": 3,
+        "inlier_ratio": 0.3,
+        "median_error_px": 1.2615044116973877,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2011-n4151",
@@ -561,9 +1593,38 @@
       "catalogFovDeg": 0.05,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/n4151/n4151.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 182.6375602896156,
+      "predictedDecDeg": 39.37675873472143,
+      "predictedFovDeg": 0.1373637969702077,
+      "predictedRotationDeg": -137.95619313784016,
+      "confidence": 0.11629748171676073,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.2703161330879506,
+            -0.24376823249413668,
+            682.6095631179841
+          ],
+          [
+            0.24376823249413668,
+            -0.2703161330879506,
+            545.2583231679871
+          ]
+        ],
+        "rotation_deg": 137.95619313784016,
+        "scale": 0.363996927158648,
+        "tx_px": 682.6095631179841,
+        "ty_px": 545.2583231679871,
+        "confidence": 0.11629748171676073,
+        "matches": 7,
+        "inliers": 2,
+        "inlier_ratio": 0.2857142857142857,
+        "median_error_px": 0.0,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2010-ngc1068",
@@ -575,9 +1636,27 @@
       "catalogFovDeg": 0.016666666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/ngc1068/ngc1068.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 40.6695833333,
+      "predictedDecDeg": -0.0133333333,
+      "predictedFovDeg": 0.016666666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 0,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2023-3c297",
@@ -589,9 +1668,27 @@
       "catalogFovDeg": 0.006666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2023/3c297/3c297.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 214.3504166667,
+      "predictedDecDeg": -4.0135833333,
+      "predictedFovDeg": 0.006666666666666667,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2022-h1821",
@@ -603,9 +1700,38 @@
       "catalogFovDeg": 0.10666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2022/h1821/h1821.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 96.0,
+      "predictedDecDeg": -2.437421942114387e+18,
+      "predictedFovDeg": 4.35186573197949e+18,
+      "predictedRotationDeg": -55.81992259347791,
+      "confidence": 0.05196845630066128,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3769928645872858e-20,
+            -2.0276997375918525e-20,
+            781.3001098632812
+          ],
+          [
+            2.0276997375918525e-20,
+            1.3769928645872858e-20,
+            183.81114196777344
+          ]
+        ],
+        "rotation_deg": 55.81992259347791,
+        "scale": 2.4510560122025703e-20,
+        "tx_px": 781.3001098632812,
+        "ty_px": 183.81114196777344,
+        "confidence": 0.05196845630066128,
+        "matches": 17,
+        "inliers": 4,
+        "inlier_ratio": 0.23529411764705882,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2018-ring",
@@ -617,9 +1743,38 @@
       "catalogFovDeg": 0.05416666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2018/ring/ring.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 100.82277046492077,
+      "predictedDecDeg": -74.23741963592907,
+      "predictedFovDeg": 0.039416925498888734,
+      "predictedRotationDeg": -19.69446880589491,
+      "confidence": 0.25489061289732423,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.2938118081214813,
+            -0.46311078608898953,
+            423.3147387055614
+          ],
+          [
+            0.46311078608898953,
+            1.2938118081214813,
+            -228.40473261038227
+          ]
+        ],
+        "rotation_deg": 19.69446880589491,
+        "scale": 1.3741981643949823,
+        "tx_px": 423.3147387055614,
+        "ty_px": -228.40473261038227,
+        "confidence": 0.25489061289732423,
+        "matches": 13,
+        "inliers": 5,
+        "inlier_ratio": 0.38461538461538464,
+        "median_error_px": 1.3669990301132202,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2018-m51",
@@ -631,9 +1786,38 @@
       "catalogFovDeg": 0.1,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2018/m51/m51.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 202.46859647299144,
+      "predictedDecDeg": 47.19946554335591,
+      "predictedFovDeg": 0.07636648430402407,
+      "predictedRotationDeg": -0.043280289664940144,
+      "confidence": 0.6779892355760719,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.3094745997691046,
+            -0.000989155767633992,
+            7.63831490010628
+          ],
+          [
+            0.000989155767633992,
+            1.3094745997691046,
+            47.74349790040364
+          ]
+        ],
+        "rotation_deg": 0.043280289664940144,
+        "scale": 1.309474973365123,
+        "tx_px": 7.63831490010628,
+        "ty_px": 47.74349790040364,
+        "confidence": 0.6779892355760719,
+        "matches": 30,
+        "inliers": 15,
+        "inlier_ratio": 0.5,
+        "median_error_px": 1.0371553897857666,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2014-m51",
@@ -645,9 +1829,38 @@
       "catalogFovDeg": 0.16666666666666666,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2014/m51/m51.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 202.46831986258695,
+      "predictedDecDeg": 47.213412442205644,
+      "predictedFovDeg": 0.11860743169618605,
+      "predictedRotationDeg": -0.04015600854876295,
+      "confidence": 0.914908100696717,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.4051954700485634,
+            -0.0009848378192324674,
+            -168.04857224065285
+          ],
+          [
+            0.0009848378192324674,
+            1.4051954700485634,
+            79.87280808172478
+          ]
+        ],
+        "rotation_deg": 0.04015600854876295,
+        "scale": 1.4051958151626176,
+        "tx_px": -168.04857224065285,
+        "ty_px": 79.87280808172478,
+        "confidence": 0.914908100696717,
+        "matches": 41,
+        "inliers": 26,
+        "inlier_ratio": 0.6341463414634146,
+        "median_error_px": 0.835048258304596,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2013-m31",
@@ -659,9 +1872,38 @@
       "catalogFovDeg": 2.0,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2013/m31/m31.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 10.674377512800312,
+      "predictedDecDeg": 41.26167478072676,
+      "predictedFovDeg": 1.6287517765776531,
+      "predictedRotationDeg": 0.007153089823353393,
+      "confidence": 0.984492281151563,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.227934184431805,
+            0.00015330140611902255,
+            -0.0025546230209095456
+          ],
+          [
+            -0.00015330140611902255,
+            1.227934184431805,
+            0.16664001287202537
+          ]
+        ],
+        "rotation_deg": -0.007153089823353393,
+        "scale": 1.2279341940012596,
+        "tx_px": -0.0025546230209095456,
+        "ty_px": 0.16664001287202537,
+        "confidence": 0.984492281151563,
+        "matches": 95,
+        "inliers": 82,
+        "inlier_ratio": 0.8631578947368421,
+        "median_error_px": 0.645677924156189,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2012-m83",
@@ -673,9 +1915,38 @@
       "catalogFovDeg": 0.29333333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2012/m83/m83.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 204.086728171358,
+      "predictedDecDeg": -29.915205591930835,
+      "predictedFovDeg": 0.31059743315305205,
+      "predictedRotationDeg": -0.0038969688157999825,
+      "confidence": 0.9896024727201918,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.9444164740096348,
+            -6.423442678143758e-05,
+            -9.889962539644417
+          ],
+          [
+            6.423442678143758e-05,
+            0.9444164740096348,
+            -7.072039467090291
+          ]
+        ],
+        "rotation_deg": 0.0038969688157999825,
+        "scale": 0.9444164761940851,
+        "tx_px": -9.889962539644417,
+        "ty_px": -7.072039467090291,
+        "confidence": 0.9896024727201918,
+        "matches": 243,
+        "inliers": 207,
+        "inlier_ratio": 0.8518518518518519,
+        "median_error_px": 0.42710188031196594,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2011-m82",
@@ -687,9 +1958,38 @@
       "catalogFovDeg": 0.2125,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/m82/m82.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 184.0,
+      "predictedDecDeg": 1.2595293894325896e+16,
+      "predictedFovDeg": 5.3229272196577837e+17,
+      "predictedRotationDeg": -132.3713065342009,
+      "confidence": 0.08167666897034455,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -2.690449216815922e-19,
+            -2.9493827800414775e-19,
+            383.10650634765625
+          ],
+          [
+            2.9493827800414775e-19,
+            -2.690449216815922e-19,
+            463.1281433105469
+          ]
+        ],
+        "rotation_deg": 132.3713065342009,
+        "scale": 3.992164296652958e-19,
+        "tx_px": 383.10650634765625,
+        "ty_px": 463.1281433105469,
+        "confidence": 0.08167666897034455,
+        "matches": 12,
+        "inliers": 5,
+        "inlier_ratio": 0.4166666666666667,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2011-he210",
@@ -701,9 +2001,27 @@
       "catalogFovDeg": 0.006945000000000001,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/he210/he210.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 129.063125,
+      "predictedDecDeg": -26.4094444444,
+      "predictedFovDeg": 0.006945000000000001,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2010-m31",
@@ -715,9 +2033,38 @@
       "catalogFovDeg": 1.0,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/m31/m31.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 10.684903440320255,
+      "predictedDecDeg": 41.26951617814038,
+      "predictedFovDeg": 0.5696967907636001,
+      "predictedRotationDeg": -0.01715368707829301,
+      "confidence": 0.9867459207518093,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            1.7553196215884515,
+            -0.0005255222054159725,
+            -255.26393981102825
+          ],
+          [
+            0.0005255222054159725,
+            1.7553196215884515,
+            -255.47772234737727
+          ]
+        ],
+        "rotation_deg": 0.01715368707829301,
+        "scale": 1.7553197002560568,
+        "tx_px": -255.26393981102825,
+        "ty_px": -255.47772234737727,
+        "confidence": 0.9867459207518093,
+        "matches": 150,
+        "inliers": 125,
+        "inlier_ratio": 0.8333333333333334,
+        "median_error_px": 0.548547089099884,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2010-m82",
@@ -729,9 +2076,38 @@
       "catalogFovDeg": 0.030000000000000002,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/m82/m82.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 148.8972986331889,
+      "predictedDecDeg": 69.69535158182443,
+      "predictedFovDeg": 0.0827825404589977,
+      "predictedRotationDeg": -20.617727487905146,
+      "confidence": 0.19685288654886668,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.3391840688412561,
+            -0.12761069517747733,
+            190.8455724259305
+          ],
+          [
+            0.12761069517747733,
+            0.3391840688412561,
+            257.35105921231803
+          ]
+        ],
+        "rotation_deg": 20.617727487905146,
+        "scale": 0.36239525670100736,
+        "tx_px": 190.8455724259305,
+        "ty_px": 257.35105921231803,
+        "confidence": 0.19685288654886668,
+        "matches": 9,
+        "inliers": 2,
+        "inlier_ratio": 0.2222222222222222,
+        "median_error_px": 7.62939453125e-06,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2009-ngc6240",
@@ -743,9 +2119,38 @@
       "catalogFovDeg": 2.066666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2009/ngc6240/ngc6240.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 253.2458333333,
+      "predictedDecDeg": 2.4004722222,
+      "predictedFovDeg": 2.066666666666667,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.09584128435495994,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            637.4314575195312
+          ],
+          [
+            0.0,
+            0.0,
+            194.50790405273438
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 637.4314575195312,
+        "ty_px": 194.50790405273438,
+        "confidence": 0.09584128435495994,
+        "matches": 15,
+        "inliers": 7,
+        "inlier_ratio": 0.4666666666666667,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2009-m101",
@@ -757,9 +2162,38 @@
       "catalogFovDeg": 0.3,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2009/m101/m101.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 210.70575808325154,
+      "predictedDecDeg": 54.354718203696116,
+      "predictedFovDeg": 0.35097546882926994,
+      "predictedRotationDeg": -0.19070530091199833,
+      "confidence": 0.9875303207388528,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.8547558586641077,
+            -0.0028450101661162044,
+            20.53712557181498
+          ],
+          [
+            0.0028450101661162044,
+            0.8547558586641077,
+            41.34861065608691
+          ]
+        ],
+        "rotation_deg": 0.19070530091199833,
+        "scale": 0.8547605933847567,
+        "tx_px": 20.53712557181498,
+        "ty_px": 41.34861065608691,
+        "confidence": 0.9875303207388528,
+        "matches": 161,
+        "inliers": 108,
+        "inlier_ratio": 0.6708074534161491,
+        "median_error_px": 0.5150145888328552,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2008-m101",
@@ -771,9 +2205,38 @@
       "catalogFovDeg": 0.28,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2008/m101/m101.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 210.8025,
+      "predictedDecDeg": 54.3491666667,
+      "predictedFovDeg": 0.28,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.03546166897034453,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            572.7120971679688
+          ],
+          [
+            0.0,
+            0.0,
+            497.178466796875
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 572.7120971679688,
+        "ty_px": 497.178466796875,
+        "confidence": 0.03546166897034453,
+        "matches": 33,
+        "inliers": 4,
+        "inlier_ratio": 0.12121212121212122,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2008-m84",
@@ -785,9 +2248,38 @@
       "catalogFovDeg": 0.15,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2008/m84/m84.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 186.1745807660965,
+      "predictedDecDeg": 12.858664589769505,
+      "predictedFovDeg": 0.2672999149450294,
+      "predictedRotationDeg": -151.84363888974042,
+      "confidence": 0.22681917775123567,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.49476060135206645,
+            -0.26480333334900735,
+            822.3214757721369
+          ],
+          [
+            0.26480333334900735,
+            -0.49476060135206645,
+            393.139149674955
+          ]
+        ],
+        "rotation_deg": 151.84363888974042,
+        "scale": 0.5611674063975953,
+        "tx_px": 822.3214757721369,
+        "ty_px": 393.139149674955,
+        "confidence": 0.22681917775123567,
+        "matches": 8,
+        "inliers": 3,
+        "inlier_ratio": 0.375,
+        "median_error_px": 2.2394185066223145,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2007-m51",
@@ -799,9 +2291,27 @@
       "catalogFovDeg": 0.05333333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2007/m51/m51.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 202.4695833333,
+      "predictedDecDeg": 47.1952777778,
+      "predictedFovDeg": 0.05333333333333334,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2007-m31",
@@ -813,9 +2323,38 @@
       "catalogFovDeg": 0.21333333333333335,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2007/m31/m31.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 10.882688453985972,
+      "predictedDecDeg": 41.36530564171177,
+      "predictedFovDeg": 0.4367139934808033,
+      "predictedRotationDeg": -0.3652149379758671,
+      "confidence": 0.6294873179948558,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.4884867501756378,
+            -0.0031137559505639615,
+            439.9890451440727
+          ],
+          [
+            0.0031137559505639615,
+            0.4884867501756378,
+            254.9665956077008
+          ]
+        ],
+        "rotation_deg": 0.3652149379758671,
+        "scale": 0.4884966740657255,
+        "tx_px": 439.9890451440727,
+        "ty_px": 254.9665956077008,
+        "confidence": 0.6294873179948558,
+        "matches": 17,
+        "inliers": 9,
+        "inlier_ratio": 0.5294117647058824,
+        "median_error_px": 0.24428994953632355,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2006-m31",
@@ -827,9 +2366,38 @@
       "catalogFovDeg": 0.4666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2006/m31/m31.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 10.525532870860038,
+      "predictedDecDeg": 41.38374982399266,
+      "predictedFovDeg": 1.0258168800409415,
+      "predictedRotationDeg": 169.27428591259172,
+      "confidence": 0.2057845104804906,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.44697422659361863,
+            0.08466443653453812,
+            490.52403268997745
+          ],
+          [
+            -0.08466443653453812,
+            -0.44697422659361863,
+            401.76623401753193
+          ]
+        ],
+        "rotation_deg": -169.27428591259172,
+        "scale": 0.4549219999655703,
+        "tx_px": 490.52403268997745,
+        "ty_px": 401.76623401753193,
+        "confidence": 0.2057845104804906,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 7.62939453125e-06,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2026-redpotato",
@@ -841,9 +2409,27 @@
       "catalogFovDeg": 0.005555,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2026/redpotato/redpotato.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 10.3829166667,
+      "predictedDecDeg": -49.6176944444,
+      "predictedFovDeg": 0.005555,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 0,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2023-cena",
@@ -855,9 +2441,38 @@
       "catalogFovDeg": 0.2783333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2023/cena/cena.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 201.3637128580119,
+      "predictedDecDeg": -43.01811537030874,
+      "predictedFovDeg": 0.11962683821133137,
+      "predictedRotationDeg": 0.27645971091221483,
+      "confidence": 0.18423847789228204,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            2.326652592651476,
+            0.01122649347839319,
+            -321.4561593029044
+          ],
+          [
+            -0.01122649347839319,
+            2.326652592651476,
+            -303.5833647591741
+          ]
+        ],
+        "rotation_deg": -0.27645971091221483,
+        "scale": 2.326679677361638,
+        "tx_px": -321.4561593029044,
+        "ty_px": -303.5833647591741,
+        "confidence": 0.18423847789228204,
+        "matches": 42,
+        "inliers": 5,
+        "inlier_ratio": 0.11904761904761904,
+        "median_error_px": 0.1868867725133896,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2021-m87",
@@ -869,9 +2484,38 @@
       "catalogFovDeg": 1.0416666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2021/m87/m87.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 204.23201560620575,
+      "predictedDecDeg": -18.073202503700536,
+      "predictedFovDeg": 95.28397956223075,
+      "predictedRotationDeg": -132.5045125004481,
+      "confidence": 0.11259762429207083,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.007386344342129585,
+            -0.008059505930146317,
+            514.5430805699882
+          ],
+          [
+            0.008059505930146317,
+            -0.007386344342129585,
+            452.96424854762586
+          ]
+        ],
+        "rotation_deg": 132.5045125004481,
+        "scale": 0.010932233009709105,
+        "tx_px": 514.5430805699882,
+        "ty_px": 452.96424854762586,
+        "confidence": 0.11259762429207083,
+        "matches": 20,
+        "inliers": 7,
+        "inlier_ratio": 0.35,
+        "median_error_px": 2.178433418273926,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2018-j1354",
@@ -883,9 +2527,38 @@
       "catalogFovDeg": 0.010278333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2018/j1354/j1354.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 208.62475299439436,
+      "predictedDecDeg": 13.46993318345863,
+      "predictedFovDeg": 0.010871361531688916,
+      "predictedRotationDeg": -45.51006329423071,
+      "confidence": 0.21726784338202945,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.6625565085722492,
+            -0.6744593174414681,
+            439.8648708453061
+          ],
+          [
+            0.6744593174414681,
+            0.6625565085722492,
+            221.20558273477673
+          ]
+        ],
+        "rotation_deg": 45.51006329423071,
+        "scale": 0.945450420664701,
+        "tx_px": 439.8648708453061,
+        "ty_px": 221.20558273477673,
+        "confidence": 0.21726784338202945,
+        "matches": 7,
+        "inliers": 2,
+        "inlier_ratio": 0.2857142857142857,
+        "median_error_px": 2.09808349609375e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2017-m31",
@@ -897,9 +2570,38 @@
       "catalogFovDeg": 1.0,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2017/m31/m31.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 11.164510196040538,
+      "predictedDecDeg": 41.61902805338097,
+      "predictedFovDeg": 0.521536272290159,
+      "predictedRotationDeg": -119.4529042279385,
+      "confidence": 0.9816081045006013,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.9428068731067155,
+            -1.6696061398263284,
+            756.4700003888834
+          ],
+          [
+            1.6696061398263284,
+            -0.9428068731067155,
+            183.26814152631576
+          ]
+        ],
+        "rotation_deg": 119.4529042279385,
+        "scale": 1.917412178464254,
+        "tx_px": 756.4700003888834,
+        "ty_px": 183.26814152631576,
+        "confidence": 0.9816081045006013,
+        "matches": 78,
+        "inliers": 56,
+        "inlier_ratio": 0.717948717948718,
+        "median_error_px": 0.7717301845550537,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2015-rgg118",
@@ -911,9 +2613,27 @@
       "catalogFovDeg": 0.05333333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2015/rgg118/rgg118.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 230.7708333333,
+      "predictedDecDeg": 11.7648888889,
+      "predictedFovDeg": 0.05333333333333334,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2014-rxj1131",
@@ -925,9 +2645,38 @@
       "catalogFovDeg": 0.02,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2014/rxj1131/rxj1131.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 112.0,
+      "predictedDecDeg": 9.1651472534366e+17,
+      "predictedFovDeg": 1.4534609878573356e+18,
+      "predictedRotationDeg": 128.09603367315694,
+      "confidence": 0.30438764987615086,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -8.489823983936669e-21,
+            1.0829017651582113e-20,
+            705.8462524414062
+          ],
+          [
+            -1.0829017651582113e-20,
+            -8.489823983936669e-21,
+            39.199134826660156
+          ]
+        ],
+        "rotation_deg": -128.09603367315694,
+        "scale": 1.3760259248157474e-20,
+        "tx_px": 705.8462524414062,
+        "ty_px": 39.199134826660156,
+        "confidence": 0.30438764987615086,
+        "matches": 27,
+        "inliers": 20,
+        "inlier_ratio": 0.7407407407407407,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2014-cena",
@@ -939,9 +2688,38 @@
       "catalogFovDeg": 0.2783333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2014/cena/cena.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 201.30478824754886,
+      "predictedDecDeg": -43.02513003839517,
+      "predictedFovDeg": 0.1930641838150351,
+      "predictedRotationDeg": -176.240022849724,
+      "confidence": 0.21645521983848748,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -1.4385590361055471,
+            -0.09453972192340918,
+            1069.7198914660917
+          ],
+          [
+            0.09453972192340918,
+            -1.4385590361055471,
+            872.412694382069
+          ]
+        ],
+        "rotation_deg": 176.240022849724,
+        "scale": 1.4416621862913228,
+        "tx_px": 1069.7198914660917,
+        "ty_px": 872.412694382069,
+        "confidence": 0.21645521983848748,
+        "matches": 17,
+        "inliers": 4,
+        "inlier_ratio": 0.23529411764705882,
+        "median_error_px": 6.463726458605379e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2013-4c2930",
@@ -953,9 +2731,27 @@
       "catalogFovDeg": 0.0125,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2013/4c2930/4c2930.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 130.01,
+      "predictedDecDeg": 29.8173888889,
+      "predictedFovDeg": 0.0125,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2012-gb1428",
@@ -967,9 +2763,27 @@
       "catalogFovDeg": 0.011388333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2012/gb1428/gb1428.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 217.59875,
+      "predictedDecDeg": 42.0768055556,
+      "predictedFovDeg": 0.011388333333333334,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2011-cid",
@@ -981,9 +2795,27 @@
       "catalogFovDeg": 0.004166666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2011/cid/cid.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 150.1210833333,
+      "predictedDecDeg": 2.0920361111,
+      "predictedFovDeg": 0.004166666666666667,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2010-m87",
@@ -995,9 +2827,38 @@
       "catalogFovDeg": 0.23333333333333334,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/m87/m87.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 336.0,
+      "predictedDecDeg": -1.8985152892556808e+18,
+      "predictedFovDeg": 7.812062076420521e+18,
+      "predictedRotationDeg": 142.60621231639644,
+      "confidence": 0.11670303449153552,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -2.3729813551275315e-20,
+            1.813873583595996e-20,
+            244.16690063476562
+          ],
+          [
+            -1.813873583595996e-20,
+            -2.3729813551275315e-20,
+            443.5915222167969
+          ]
+        ],
+        "rotation_deg": -142.60621231639644,
+        "scale": 2.986834091316469e-20,
+        "tx_px": 244.16690063476562,
+        "ty_px": 443.5915222167969,
+        "confidence": 0.11670303449153552,
+        "matches": 45,
+        "inliers": 9,
+        "inlier_ratio": 0.2,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2010-cid42",
@@ -1009,9 +2870,27 @@
       "catalogFovDeg": 0.008333333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2010/cid42/cid42.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 150.1210833333,
+      "predictedDecDeg": 2.0920361111,
+      "predictedFovDeg": 0.008333333333333333,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 0,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2009-3c305",
@@ -1023,9 +2902,27 @@
       "catalogFovDeg": 0.0016666666666666668,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2009/3c305/3c305.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 222.3390416667,
+      "predictedDecDeg": 63.2705555556,
+      "predictedFovDeg": 0.0016666666666666668,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 0,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2009-cena",
@@ -1037,9 +2934,38 @@
       "catalogFovDeg": 0.405,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2009/cena/cena.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 201.38268071170904,
+      "predictedDecDeg": -43.01780735739191,
+      "predictedFovDeg": 0.44724379842307005,
+      "predictedRotationDeg": -0.02449492824458431,
+      "confidence": 0.9627617813205938,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.905546291344618,
+            -0.000387136591359862,
+            16.75921085511267
+          ],
+          [
+            0.000387136591359862,
+            0.905546291344618,
+            -3.525171689261629
+          ]
+        ],
+        "rotation_deg": 0.02449492824458431,
+        "scale": 0.9055463740983849,
+        "tx_px": 16.75921085511267,
+        "ty_px": -3.525171689261629,
+        "confidence": 0.9627617813205938,
+        "matches": 100,
+        "inliers": 60,
+        "inlier_ratio": 0.6,
+        "median_error_px": 0.3268863558769226,
+        "warning": null
+      }
     },
     {
       "key": "Chandra:chandra-2008-m87",
@@ -1051,9 +2977,38 @@
       "catalogFovDeg": 0.18333333333333332,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2008/m87/m87.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 187.67075181768394,
+      "predictedDecDeg": 12.42844907590776,
+      "predictedFovDeg": 0.1282136815190528,
+      "predictedRotationDeg": -119.25665569724929,
+      "confidence": 0.2057842882903299,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.6988266818554548,
+            -1.2475048863841738,
+            903.8111967233646
+          ],
+          [
+            1.2475048863841738,
+            -0.6988266818554548,
+            -67.3830483295612
+          ]
+        ],
+        "rotation_deg": 119.25665569724929,
+        "scale": 1.4299046027009967,
+        "tx_px": 903.8111967233646,
+        "ty_px": -67.3830483295612,
+        "confidence": 0.2057842882903299,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 2.3788710677763447e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2008-cena",
@@ -1065,9 +3020,38 @@
       "catalogFovDeg": 0.28,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2008/cena/cena.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 201.3650833333,
+      "predictedDecDeg": -43.0191111111,
+      "predictedFovDeg": 0.28,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.03956767940059225,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            645.6984252929688
+          ],
+          [
+            0.0,
+            0.0,
+            562.2984619140625
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 645.6984252929688,
+        "ty_px": 562.2984619140625,
+        "confidence": 0.03956767940059225,
+        "matches": 59,
+        "inliers": 6,
+        "inlier_ratio": 0.1016949152542373,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2007-3c321",
@@ -1079,9 +3063,38 @@
       "catalogFovDeg": 0.007500000000000001,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2007/3c321/3c321.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 232.9279166667,
+      "predictedDecDeg": 24.0736111111,
+      "predictedFovDeg": 0.007500000000000001,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.11543820743188302,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            585.5767211914062
+          ],
+          [
+            0.0,
+            0.0,
+            159.9803009033203
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 585.5767211914062,
+        "ty_px": 159.9803009033203,
+        "confidence": 0.11543820743188302,
+        "matches": 6,
+        "inliers": 5,
+        "inlier_ratio": 0.8333333333333334,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2002-1140",
@@ -1093,9 +3106,38 @@
       "catalogFovDeg": 0.06666666666666667,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2002/1140/1140_xray.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 192.1495833333,
+      "predictedDecDeg": -5.8008333333,
+      "predictedFovDeg": 0.06666666666666667,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.24768764987615088,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            251.99249267578125
+          ],
+          [
+            0.0,
+            0.0,
+            285.3338623046875
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 251.99249267578125,
+        "ty_px": 285.3338623046875,
+        "confidence": 0.24768764987615088,
+        "matches": 16,
+        "inliers": 11,
+        "inlier_ratio": 0.6875,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "Chandra:chandra-2001-0144",
@@ -1107,9 +3149,27 @@
       "catalogFovDeg": 0.08333333333333333,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2001/0144/0144_xray.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 190.7075,
+      "predictedDecDeg": 2.6877777778,
+      "predictedFovDeg": 0.08333333333333333,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "Chandra:chandra-2001-1138",
@@ -1121,9 +3181,38 @@
       "catalogFovDeg": 0.041666666666666664,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2001/1138/1138_xray_opt.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 190.53221846365528,
+      "predictedDecDeg": 32.540720003532435,
+      "predictedFovDeg": 0.04265398553147054,
+      "predictedRotationDeg": -65.47262358025868,
+      "confidence": 0.20578440557646588,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.40551894653661985,
+            -0.8887045876765086,
+            429.39598733085006
+          ],
+          [
+            0.8887045876765086,
+            0.40551894653661985,
+            -163.64713334189742
+          ]
+        ],
+        "rotation_deg": 65.47262358025868,
+        "scale": 0.9768528344420377,
+        "tx_px": 429.39598733085006,
+        "ty_px": -163.64713334189742,
+        "confidence": 0.20578440557646588,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 1.52587890625e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "Chandra:chandra-2007-3c442a",
@@ -1135,9 +3224,38 @@
       "catalogFovDeg": 0.36666666666666664,
       "sourceImageUrl": "https://chandra.harvard.edu/photo/2007/3c442a/3c442a.jpg",
       "catalogSource": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 272.0,
+      "predictedDecDeg": 4.791047579413085e+18,
+      "predictedFovDeg": 2.1759912030508614e+19,
+      "predictedRotationDeg": -163.29426645507456,
+      "confidence": 0.1380780344915355,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -1.6139359173185437e-20,
+            -4.8438002756493014e-21,
+            240.8321075439453
+          ],
+          [
+            4.8438002756493014e-21,
+            -1.6139359173185437e-20,
+            113.6418228149414
+          ]
+        ],
+        "rotation_deg": 163.29426645507456,
+        "scale": 1.6850558318093357e-20,
+        "tx_px": 240.8321075439453,
+        "ty_px": 113.6418228149414,
+        "confidence": 0.1380780344915355,
+        "matches": 32,
+        "inliers": 9,
+        "inlier_ratio": 0.28125,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2207a",
@@ -1149,9 +3267,38 @@
       "catalogFovDeg": 0.07483333333333334,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/large/potm2207a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 339.1776646223463,
+      "predictedDecDeg": 34.089926613951114,
+      "predictedFovDeg": 0.10930736248574148,
+      "predictedRotationDeg": 166.66012643487147,
+      "confidence": 0.1838611188456396,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.6661419603402412,
+            0.15795885736196855,
+            749.9820194716849
+          ],
+          [
+            -0.15795885736196855,
+            -0.6661419603402412,
+            354.0139009754137
+          ]
+        ],
+        "rotation_deg": -166.66012643487147,
+        "scale": 0.6846138414792957,
+        "tx_px": 749.9820194716849,
+        "ty_px": 354.0139009754137,
+        "confidence": 0.1838611188456396,
+        "matches": 11,
+        "inliers": 2,
+        "inlier_ratio": 0.18181818181818182,
+        "median_error_px": 3.0517578125e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:weic2211b",
@@ -1163,9 +3310,38 @@
       "catalogFovDeg": 0.036000000000000004,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/large/weic2211b.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 356.0,
+      "predictedDecDeg": -4634860236889268.0,
+      "predictedFovDeg": 9.100838693388662e+16,
+      "predictedRotationDeg": 140.45012241981487,
+      "confidence": 0.111973207431883,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -3.0501079465061834e-19,
+            2.518777661220642e-19,
+            476.4177551269531
+          ],
+          [
+            -2.518777661220642e-19,
+            -3.0501079465061834e-19,
+            564.5518798828125
+          ]
+        ],
+        "rotation_deg": -140.45012241981487,
+        "scale": 3.955679384379413e-19,
+        "tx_px": 476.4177551269531,
+        "ty_px": 564.5518798828125,
+        "confidence": 0.111973207431883,
+        "matches": 6,
+        "inliers": 4,
+        "inlier_ratio": 0.6666666666666666,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:weic2403b",
@@ -1177,9 +3353,38 @@
       "catalogFovDeg": 0.033,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/large/weic2403b.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 353.55057298600804,
+      "predictedDecDeg": -36.058693597034335,
+      "predictedFovDeg": 0.04193897263139728,
+      "predictedRotationDeg": -85.79396240875309,
+      "confidence": 0.21726807941605697,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.057710725947853,
+            -0.7847384144628062,
+            413.4308306921551
+          ],
+          [
+            0.7847384144628062,
+            0.057710725947853,
+            -55.35263916578492
+          ]
+        ],
+        "rotation_deg": 85.79396240875309,
+        "scale": 0.7868576154699319,
+        "tx_px": 413.4308306921551,
+        "ty_px": -55.35263916578492,
+        "confidence": 0.21726807941605697,
+        "matches": 7,
+        "inliers": 2,
+        "inlier_ratio": 0.2857142857142857,
+        "median_error_px": 3.814697265625e-06,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:weic2410c",
@@ -1191,9 +3396,27 @@
       "catalogFovDeg": 0.012666666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/large/weic2410c.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 148.965125,
+      "predictedDecDeg": 69.6792833333,
+      "predictedFovDeg": 0.012666666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403c",
@@ -1205,9 +3428,27 @@
       "catalogFovDeg": 0.05466666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/wallpaper2/weic2403c.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 24.174375,
+      "predictedDecDeg": 15.7806138889,
+      "predictedFovDeg": 0.05466666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403f",
@@ -1219,9 +3460,38 @@
       "catalogFovDeg": 0.04583333333333333,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/wallpaper2/weic2403f.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 53.382018280174165,
+      "predictedDecDeg": -36.13181635622542,
+      "predictedFovDeg": 0.01266773287089449,
+      "predictedRotationDeg": -40.61595820364887,
+      "confidence": 0.17898913485606482,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            2.746476135137457,
+            -2.3553419827234627,
+            -405.440331856085
+          ],
+          [
+            2.3553419827234627,
+            2.746476135137457,
+            -1080.4161678417413
+          ]
+        ],
+        "rotation_deg": 40.61595820364887,
+        "scale": 3.618116501228129,
+        "tx_px": -405.440331856085,
+        "ty_px": -1080.4161678417413,
+        "confidence": 0.17898913485606482,
+        "matches": 12,
+        "inliers": 2,
+        "inlier_ratio": 0.16666666666666666,
+        "median_error_px": 4.4271662773098797e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:weic2608a",
@@ -1233,9 +3503,27 @@
       "catalogFovDeg": 0.032,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2608a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 202.4975,
+      "predictedDecDeg": 47.2272888889,
+      "predictedFovDeg": 0.032,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403l",
@@ -1247,9 +3535,27 @@
       "catalogFovDeg": 0.035833333333333335,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/large/weic2403l.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 139.4704583333,
+      "predictedDecDeg": -22.3533944444,
+      "predictedFovDeg": 0.035833333333333335,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2307b",
@@ -1261,9 +3567,27 @@
       "catalogFovDeg": 0.11283333333333333,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/large/potm2307b.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 296.242375,
+      "predictedDecDeg": -14.8057444444,
+      "predictedFovDeg": 0.11283333333333333,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403h",
@@ -1275,9 +3599,38 @@
       "catalogFovDeg": 0.050499999999999996,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403h.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 55.5393363603498,
+      "predictedDecDeg": -47.22793771005963,
+      "predictedFovDeg": 0.031616179276514104,
+      "predictedRotationDeg": 158.03092859958915,
+      "confidence": 0.2057837728888935,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -1.4812982072717784,
+            0.5975533865769496,
+            470.53528544582844
+          ],
+          [
+            -0.5975533865769496,
+            -1.4812982072717784,
+            1088.7868009145595
+          ]
+        ],
+        "rotation_deg": -158.03092859958915,
+        "scale": 1.597283452827383,
+        "tx_px": 470.53528544582844,
+        "ty_px": 1088.7868009145595,
+        "confidence": 0.2057837728888935,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 6.127265078248456e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:weic2403j",
@@ -1289,9 +3642,27 @@
       "catalogFovDeg": 0.0605,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403j.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 65.0006666667,
+      "predictedDecDeg": -54.936925,
+      "predictedFovDeg": 0.0605,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403k",
@@ -1303,9 +3674,27 @@
       "catalogFovDeg": 0.063,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403k.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 71.4285,
+      "predictedDecDeg": -59.2438305556,
+      "predictedFovDeg": 0.063,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403m",
@@ -1317,9 +3706,38 @@
       "catalogFovDeg": 0.06066666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403m.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 160.97883435136964,
+      "predictedDecDeg": 11.730340702781131,
+      "predictedFovDeg": 0.0227664765923525,
+      "predictedRotationDeg": -40.63965955770729,
+      "confidence": 0.23257906756358834,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            2.022057309881329,
+            -1.73554203087219,
+            -179.54628318049745
+          ],
+          [
+            1.73554203087219,
+            2.022057309881329,
+            -483.0218894795646
+          ]
+        ],
+        "rotation_deg": 40.63965955770729,
+        "scale": 2.6647367422258585,
+        "tx_px": -179.54628318049745,
+        "ty_px": -483.0218894795646,
+        "confidence": 0.23257906756358834,
+        "matches": 6,
+        "inliers": 2,
+        "inlier_ratio": 0.3333333333333333,
+        "median_error_px": 3.0517578125e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:weic2403n",
@@ -1331,9 +3749,27 @@
       "catalogFovDeg": 0.058666666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403n.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 170.059625,
+      "predictedDecDeg": 12.9840361111,
+      "predictedFovDeg": 0.058666666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 3,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403o",
@@ -1345,9 +3781,38 @@
       "catalogFovDeg": 0.06083333333333333,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403o.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 184.7242663543985,
+      "predictedDecDeg": 14.398656840730427,
+      "predictedFovDeg": 0.13863853383735988,
+      "predictedRotationDeg": 24.865082814214247,
+      "confidence": 0.08289088831016733,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.3981152149578234,
+            0.18450411755993723,
+            460.07615659433736
+          ],
+          [
+            -0.18450411755993723,
+            0.3981152149578234,
+            164.35977232248882
+          ]
+        ],
+        "rotation_deg": -24.865082814214247,
+        "scale": 0.43879094541419733,
+        "tx_px": 460.07615659433736,
+        "ty_px": 164.35977232248882,
+        "confidence": 0.08289088831016733,
+        "matches": 11,
+        "inliers": 2,
+        "inlier_ratio": 0.18181818181818182,
+        "median_error_px": 0.0,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:weic2403p",
@@ -1359,9 +3824,38 @@
       "catalogFovDeg": 0.036166666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403p.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 185.4882083333,
+      "predictedDecDeg": 4.4707694444,
+      "predictedFovDeg": 0.036166666666666666,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.06268897666265222,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            216.35153198242188
+          ],
+          [
+            0.0,
+            0.0,
+            265.3698425292969
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 216.35153198242188,
+        "ty_px": 265.3698425292969,
+        "confidence": 0.06268897666265222,
+        "matches": 9,
+        "inliers": 3,
+        "inlier_ratio": 0.3333333333333333,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:weic2403q",
@@ -1373,9 +3867,27 @@
       "catalogFovDeg": 0.036333333333333336,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403q.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 185.7413333333,
+      "predictedDecDeg": 15.8184638889,
+      "predictedFovDeg": 0.036333333333333336,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 3,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403r",
@@ -1387,9 +3899,27 @@
       "catalogFovDeg": 0.03266666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403r.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 188.5840833333,
+      "predictedDecDeg": 8.1968138889,
+      "predictedFovDeg": 0.03266666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403s",
@@ -1401,9 +3931,27 @@
       "catalogFovDeg": 0.0605,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403s.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 199.7108333333,
+      "predictedDecDeg": -21.0341888889,
+      "predictedFovDeg": 0.0605,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2403t",
@@ -1415,9 +3963,27 @@
       "catalogFovDeg": 0.036166666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2403t.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 347.4460833333,
+      "predictedDecDeg": -43.4289055556,
+      "predictedFovDeg": 0.036166666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 3,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2412a",
@@ -1429,9 +3995,27 @@
       "catalogFovDeg": 0.0375,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2412a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 124.6913333333,
+      "predictedDecDeg": -25.4998583333,
+      "predictedFovDeg": 0.0375,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 4,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2411a",
@@ -1443,9 +4027,38 @@
       "catalogFovDeg": 0.037333333333333336,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2411a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 86.757,
+      "predictedDecDeg": -34.2493388889,
+      "predictedFovDeg": 0.037333333333333336,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.1899680694565705,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            585.167236328125
+          ],
+          [
+            0.0,
+            0.0,
+            628.1066284179688
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 585.167236328125,
+        "ty_px": 628.1066284179688,
+        "confidence": 0.1899680694565705,
+        "matches": 22,
+        "inliers": 10,
+        "inlier_ratio": 0.45454545454545453,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2405b",
@@ -1457,9 +4070,38 @@
       "catalogFovDeg": 0.0945,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2405b.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 187.1443328274623,
+      "predictedDecDeg": 44.20390053771498,
+      "predictedFovDeg": 0.13815678557436126,
+      "predictedRotationDeg": -144.13898997495272,
+      "confidence": 0.20578444564622422,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.5543457395939683,
+            -0.40070477061011894,
+            378.9421801955408
+          ],
+          [
+            0.40070477061011894,
+            -0.5543457395939683,
+            116.20930645314051
+          ]
+        ],
+        "rotation_deg": 144.13898997495272,
+        "scale": 0.6840054913490766,
+        "tx_px": 378.9421801955408,
+        "ty_px": 116.20930645314051,
+        "confidence": 0.20578444564622422,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 1.2344619790383149e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:potm2403b",
@@ -1471,9 +4113,38 @@
       "catalogFovDeg": 0.0175,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2403b.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 143.51,
+      "predictedDecDeg": 55.2409111111,
+      "predictedFovDeg": 0.0175,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.11166859204726763,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            733.1421508789062
+          ],
+          [
+            0.0,
+            0.0,
+            30.487224578857422
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 733.1421508789062,
+        "ty_px": 30.487224578857422,
+        "confidence": 0.11166859204726763,
+        "matches": 10,
+        "inliers": 6,
+        "inlier_ratio": 0.6,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:LeoP",
@@ -1485,9 +4156,38 @@
       "catalogFovDeg": 0.017166666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/LeoP.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 155.4424166667,
+      "predictedDecDeg": 18.0917805556,
+      "predictedFovDeg": 0.017166666666666667,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.122368207431883,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            281.9562683105469
+          ],
+          [
+            0.0,
+            0.0,
+            287.89495849609375
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 281.9562683105469,
+        "ty_px": 287.89495849609375,
+        "confidence": 0.122368207431883,
+        "matches": 8,
+        "inliers": 7,
+        "inlier_ratio": 0.875,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2604b",
@@ -1499,9 +4199,27 @@
       "catalogFovDeg": 0.0355,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2604b.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 40.6690416667,
+      "predictedDecDeg": 0.012375,
+      "predictedFovDeg": 0.0355,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2310d",
@@ -1513,9 +4231,38 @@
       "catalogFovDeg": 0.0925,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2310d.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 204.25298361383196,
+      "predictedDecDeg": -29.895658707695777,
+      "predictedFovDeg": 0.05765547483134167,
+      "predictedRotationDeg": 73.58428002470569,
+      "confidence": 0.23257895299286832,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.45339891973327334,
+            1.5389583396789237,
+            -319.970330930297
+          ],
+          [
+            -1.5389583396789237,
+            0.45339891973327334,
+            506.30426516205443
+          ]
+        ],
+        "rotation_deg": -73.58428002470569,
+        "scale": 1.6043576134025135,
+        "tx_px": -319.970330930297,
+        "ty_px": 506.30426516205443,
+        "confidence": 0.23257895299286832,
+        "matches": 6,
+        "inliers": 2,
+        "inlier_ratio": 0.3333333333333333,
+        "median_error_px": 3.885003025061451e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:potm2306a",
@@ -1527,9 +4274,38 @@
       "catalogFovDeg": 0.03666666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2306a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 156.9656666667,
+      "predictedDecDeg": -43.9029083333,
+      "predictedFovDeg": 0.03666666666666667,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.05926386677254233,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            730.2536010742188
+          ],
+          [
+            0.0,
+            0.0,
+            554.9102172851562
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 730.2536010742188,
+        "ty_px": 554.9102172851562,
+        "confidence": 0.05926386677254233,
+        "matches": 14,
+        "inliers": 4,
+        "inlier_ratio": 0.2857142857142857,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2602a",
@@ -1541,9 +4317,27 @@
       "catalogFovDeg": 0.036000000000000004,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2602a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 201.3277916667,
+      "predictedDecDeg": -21.1338888889,
+      "predictedFovDeg": 0.036000000000000004,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2511a",
@@ -1555,9 +4349,38 @@
       "catalogFovDeg": 0.09766666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2511a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 187.5317821649698,
+      "predictedDecDeg": 41.79414957332964,
+      "predictedFovDeg": 0.21058842815748594,
+      "predictedRotationDeg": -100.48643165251924,
+      "confidence": 0.24027927091420836,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.08440917005670312,
+            -0.45603380166010304,
+            462.64766883091966
+          ],
+          [
+            0.45603380166010304,
+            -0.08440917005670312,
+            -188.61325153551041
+          ]
+        ],
+        "rotation_deg": 100.48643165251924,
+        "scale": 0.46377983596338856,
+        "tx_px": 462.64766883091966,
+        "ty_px": -188.61325153551041,
+        "confidence": 0.24027927091420836,
+        "matches": 9,
+        "inliers": 3,
+        "inlier_ratio": 0.3333333333333333,
+        "median_error_px": 1.5728399375802837e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:potm2212a",
@@ -1569,9 +4392,38 @@
       "catalogFovDeg": 0.035833333333333335,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2212a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 345.8130416667,
+      "predictedDecDeg": 8.8747083333,
+      "predictedFovDeg": 0.035833333333333335,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.0578658997395753,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            459.54449462890625
+          ],
+          [
+            0.0,
+            0.0,
+            513.8434448242188
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 459.54449462890625,
+        "ty_px": 513.8434448242188,
+        "confidence": 0.0578658997395753,
+        "matches": 10,
+        "inliers": 3,
+        "inlier_ratio": 0.3,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:weic2423a",
@@ -1583,9 +4435,38 @@
       "catalogFovDeg": 0.04183333333333333,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2423a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 163.06721789644251,
+      "predictedDecDeg": 30.043473655684593,
+      "predictedFovDeg": 0.0668030702103583,
+      "predictedRotationDeg": 61.27380726614413,
+      "confidence": 0.22659372665518202,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.3009760194834851,
+            0.5491478170665133,
+            182.625707117478
+          ],
+          [
+            -0.5491478170665133,
+            0.3009760194834851,
+            260.03630948127835
+          ]
+        ],
+        "rotation_deg": -61.27380726614413,
+        "scale": 0.6262187232054308,
+        "tx_px": 182.625707117478,
+        "ty_px": 260.03630948127835,
+        "confidence": 0.22659372665518202,
+        "matches": 9,
+        "inliers": 3,
+        "inlier_ratio": 0.3333333333333333,
+        "median_error_px": 1.0629135370254517,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:arp220a",
@@ -1597,9 +4478,27 @@
       "catalogFovDeg": 0.02666666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/arp220a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 233.7379166667,
+      "predictedDecDeg": 23.5030555556,
+      "predictedFovDeg": 0.02666666666666667,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:weic2420g",
@@ -1611,9 +4510,38 @@
       "catalogFovDeg": 0.03666666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/weic2420g.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 144.42863405115904,
+      "predictedDecDeg": 2.78162777301154,
+      "predictedFovDeg": 0.06970218670838817,
+      "predictedRotationDeg": -107.20839751012333,
+      "confidence": 0.2707239403105973,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            -0.15563015427631988,
+            -0.502499066592751,
+            679.3097598837055
+          ],
+          [
+            0.502499066592751,
+            -0.15563015427631988,
+            14.330520432573906
+          ]
+        ],
+        "rotation_deg": 107.20839751012333,
+        "scale": 0.5260475804018655,
+        "tx_px": 679.3097598837055,
+        "ty_px": 14.330520432573906,
+        "confidence": 0.2707239403105973,
+        "matches": 11,
+        "inliers": 5,
+        "inlier_ratio": 0.45454545454545453,
+        "median_error_px": 1.9625468254089355,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:potm2402a",
@@ -1625,9 +4553,38 @@
       "catalogFovDeg": 0.0375,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2402a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 344.0,
+      "predictedDecDeg": -2.048324651532781e+17,
+      "predictedFovDeg": 4.932305656259695e+17,
+      "predictedRotationDeg": 51.68287611572646,
+      "confidence": 0.06268897666265222,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            4.7139227979185485e-20,
+            5.96519527032569e-20,
+            280.4642639160156
+          ],
+          [
+            -5.96519527032569e-20,
+            4.7139227979185485e-20,
+            672.797119140625
+          ]
+        ],
+        "rotation_deg": -51.68287611572646,
+        "scale": 7.602935140973664e-20,
+        "tx_px": 280.4642639160156,
+        "ty_px": 672.797119140625,
+        "confidence": 0.06268897666265222,
+        "matches": 9,
+        "inliers": 3,
+        "inlier_ratio": 0.3333333333333333,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2502a",
@@ -1639,9 +4596,38 @@
       "catalogFovDeg": 0.03666666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2502a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 101.4714996054387,
+      "predictedDecDeg": -18.219158152125296,
+      "predictedFovDeg": 0.01636348182246996,
+      "predictedRotationDeg": 20.001893320125486,
+      "confidence": 0.20578409086499194,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            2.1056020989854853,
+            0.7664552865351456,
+            -316.09682004772276
+          ],
+          [
+            -0.7664552865351456,
+            2.1056020989854853,
+            -141.4175066840498
+          ]
+        ],
+        "rotation_deg": -20.001893320125486,
+        "scale": 2.2407619029048473,
+        "tx_px": -316.09682004772276,
+        "ty_px": -141.4175066840498,
+        "confidence": 0.20578409086499194,
+        "matches": 8,
+        "inliers": 2,
+        "inlier_ratio": 0.25,
+        "median_error_px": 3.814697265625e-05,
+        "warning": "few_inliers"
+      }
     },
     {
       "key": "JWST:potm2407a",
@@ -1653,9 +4639,38 @@
       "catalogFovDeg": 0.08133333333333333,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2407a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 88.0,
+      "predictedDecDeg": -2.698854745314544e+17,
+      "predictedFovDeg": 5.2542098732103226e+17,
+      "predictedRotationDeg": 69.74356393401536,
+      "confidence": 0.050631284354959914,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            5.3594024596609926e-20,
+            1.4522272199663567e-19,
+            454.0185852050781
+          ],
+          [
+            -1.4522272199663567e-19,
+            5.3594024596609926e-20,
+            364.94622802734375
+          ]
+        ],
+        "rotation_deg": -69.74356393401536,
+        "scale": 1.5479650660326338e-19,
+        "tx_px": 454.0185852050781,
+        "ty_px": 364.94622802734375,
+        "confidence": 0.050631284354959914,
+        "matches": 12,
+        "inliers": 3,
+        "inlier_ratio": 0.25,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2301a",
@@ -1667,9 +4682,27 @@
       "catalogFovDeg": 0.036166666666666666,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2301a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 254.6371666667,
+      "predictedDecDeg": 34.275875,
+      "predictedFovDeg": 0.036166666666666666,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:WLMb",
@@ -1681,9 +4714,38 @@
       "catalogFovDeg": 0.03666666666666667,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/WLMb.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 0.4920833333,
+      "predictedDecDeg": -15.4608333333,
+      "predictedFovDeg": 0.03666666666666667,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.3673876498761509,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            79.52396392822266
+          ],
+          [
+            0.0,
+            0.0,
+            190.04144287109375
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 79.52396392822266,
+        "ty_px": 190.04144287109375,
+        "confidence": 0.3673876498761509,
+        "matches": 44,
+        "inliers": 38,
+        "inlier_ratio": 0.8636363636363636,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2406a",
@@ -1695,9 +4757,38 @@
       "catalogFovDeg": 0.005833333333333333,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2406a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
-      "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "status": "ok",
+      "predictedRaDeg": 172.965,
+      "predictedDecDeg": -12.5330555556,
+      "predictedFovDeg": 0.005833333333333333,
+      "predictedRotationDeg": 0.0,
+      "confidence": 0.10060452611320167,
+      "registration": {
+        "ok": true,
+        "method": "sift-ransac",
+        "matrix": [
+          [
+            0.0,
+            -0.0,
+            488.6876220703125
+          ],
+          [
+            0.0,
+            0.0,
+            382.7586669921875
+          ]
+        ],
+        "rotation_deg": 0.0,
+        "scale": 0.0,
+        "tx_px": 488.6876220703125,
+        "ty_px": 382.7586669921875,
+        "confidence": 0.10060452611320167,
+        "matches": 7,
+        "inliers": 4,
+        "inlier_ratio": 0.5714285714285714,
+        "median_error_px": 0.0,
+        "warning": "extreme_scale"
+      }
     },
     {
       "key": "JWST:potm2312a",
@@ -1709,9 +4800,27 @@
       "catalogFovDeg": 0.0245,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2312a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 186.7176666667,
+      "predictedDecDeg": 21.8729916667,
+      "predictedFovDeg": 0.0245,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2302a",
@@ -1723,9 +4832,27 @@
       "catalogFovDeg": 0.0375,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2302a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 322.4079583333,
+      "predictedDecDeg": 0.0920416667,
+      "predictedFovDeg": 0.0375,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 2,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2303a",
@@ -1737,9 +4864,27 @@
       "catalogFovDeg": 0.0385,
       "sourceImageUrl": "https://cdn.esawebb.org/archives/images/screen/potm2303a.jpg",
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
-      "status": "failed",
+      "status": "low-confidence",
+      "predictedRaDeg": 186.7037083333,
+      "predictedDecDeg": 21.8331222222,
+      "predictedFovDeg": 0.0385,
+      "predictedRotationDeg": 0.0,
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "registration": {
+        "ok": false,
+        "method": "sift-ransac",
+        "matrix": null,
+        "rotation_deg": null,
+        "scale": null,
+        "tx_px": null,
+        "ty_px": null,
+        "confidence": 0.0,
+        "matches": 1,
+        "inliers": 0,
+        "inlier_ratio": 0.0,
+        "median_error_px": null,
+        "warning": "insufficient_good_matches"
+      }
     },
     {
       "key": "JWST:potm2606a",
@@ -1753,7 +4898,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2601a",
@@ -1767,7 +4912,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2505a",
@@ -1781,7 +4926,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:questionmark1",
@@ -1795,7 +4940,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:elgordo1",
@@ -1809,7 +4954,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2428a",
@@ -1823,7 +4968,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:webb-first-deep-field",
@@ -1837,7 +4982,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2305a",
@@ -1851,7 +4996,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2406d",
@@ -1865,7 +5010,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2507a",
@@ -1879,7 +5024,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2503a",
@@ -1893,7 +5038,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2615b",
@@ -1907,7 +5052,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:supernova-encore1",
@@ -1921,7 +5066,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2209c",
@@ -1935,7 +5080,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2305b",
@@ -1949,7 +5094,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2309a",
@@ -1963,7 +5108,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2410b",
@@ -1977,7 +5122,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2410a",
@@ -1991,7 +5136,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2308d",
@@ -2005,7 +5150,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2306c",
@@ -2019,7 +5164,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2423b",
@@ -2033,7 +5178,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2208a",
@@ -2047,7 +5192,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2410a",
@@ -2061,7 +5206,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:potm2405c",
@@ -2075,7 +5220,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2306d",
@@ -2089,7 +5234,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2306e",
@@ -2103,7 +5248,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     },
     {
       "key": "JWST:weic2306f",
@@ -2117,7 +5262,7 @@
       "catalogSource": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
       "status": "failed",
       "confidence": 0.0,
-      "warning": "RuntimeError: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+      "warning": "RuntimeError: RangeError: WebAssembly.instantiate(): Out of memory: Cannot allocate Wasm memory for new instance"
     }
   ]
 }
