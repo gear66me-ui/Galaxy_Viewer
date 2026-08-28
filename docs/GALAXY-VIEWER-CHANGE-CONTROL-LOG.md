@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-4e0b10bd223b — ECO-058
+
+**Recorded:** 2026-08-28T01:26:44-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`4e0b10bd223b255766bae293b2b7b23f716e60a7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/4e0b10bd223b255766bae293b2b7b23f716e60a7)  
+**Parent/baseline:** `0158871d3769c9b1ed587f63529a1b5d1845e3b7`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/0158871d3769c9b1ed587f63529a1b5d1845e3b7...4e0b10bd223b255766bae293b2b7b23f716e60a7)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-058`  
+**Requirements:** `promote verified ECO-057 12AB/0057 repair`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/gv-current-viewer.json`
+- Actual: `viewer/gv-current-viewer.json`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/gv-current-viewer.json`
+
+- Git status: `M`
+- SHA-256 before: `5dad260ce66d0e8edc818fc40a2cbc3329bbea02c04fe0716d10e526e1439063`
+- SHA-256 after: `945568173a714502b7057a6fbd6c8429d476ac722acd7ac5a5f047d96f82b286`
+- Bytes: `57` -> `57`
+- Lines: `4` -> `4`
+- Characters: `57` -> `57`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `2`
+- Deleted characters: `2`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-c2ef4d259b3b — ECO-056
 
 **Recorded:** 2026-08-28T01:12:00-05:00  
