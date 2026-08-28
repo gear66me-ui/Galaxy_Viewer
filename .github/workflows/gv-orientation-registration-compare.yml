@@ -5,6 +5,7 @@ on:
     branches: [beta]
     paths:
       - '.github/workflows/gv-orientation-registration-compare.yml'
+      - 'viewer/image-databases/master-database/orientation-review/gv-registration-predictions-0001.json'
   workflow_dispatch:
 
 permissions:
@@ -22,7 +23,7 @@ jobs:
       - name: Compare blind predictions to human gold
         run: |
           python - <<'PY'
-          import json, math, statistics
+          import json, math
           from pathlib import Path
           root=Path('viewer/image-databases/master-database/orientation-review')
           pred=json.load(open(root/'gv-registration-predictions-0001.json',encoding='utf-8'))
@@ -66,12 +67,14 @@ jobs:
                 'fovWithin25Pct':pct(sum(r['fovRelativeError']<=.25 for r in c),len(c)),
                 'bothRotation5DegAndFov10Pct':pct(sum(r['rotationAbsErrorDeg']<=5 and r['fovRelativeError']<=.10 for r in c),len(c)),
               }
-          out={'schema':'gv-registration-benchmark-report-0001','predictionCount':len(pred['predictions']),'humanGoldCount':len(gold['rows']),'overall':metrics(rows),'byCatalog':{},'worstRotation':sorted(comp,key=lambda r:r['rotationAbsErrorDeg'],reverse=True)[:20],'worstFov':sorted(comp,key=lambda r:r['fovRelativeError'],reverse=True)[:20],'failed':[r for r in rows if r['status']!='compared']}
+          out={'schema':'gv-registration-benchmark-report-0002','predictionCount':len(pred['predictions']),'humanGoldCount':len(gold['rows']),'overall':metrics(rows),'byCatalog':{},'worstRotation':sorted(comp,key=lambda r:r['rotationAbsErrorDeg'],reverse=True)[:20],'worstFov':sorted(comp,key=lambda r:r['fovRelativeError'],reverse=True)[:20],'failed':[r for r in rows if r['status']!='compared']}
           for cat in sorted(set(r['catalog'] for r in rows)):
               out['byCatalog'][cat]=metrics([r for r in rows if r['catalog']==cat])
-          path=root/'gv-registration-benchmark-report-0001.json'
+          path=root/'gv-registration-benchmark-report-0002.json'
           path.write_text(json.dumps(out,indent=2),encoding='utf-8')
+          print('OVERALL')
           print(json.dumps(out['overall'],indent=2))
+          print('BY CATALOG')
           print(json.dumps(out['byCatalog'],indent=2))
           PY
 
@@ -79,10 +82,10 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/image-databases/master-database/orientation-review/gv-registration-benchmark-report-0001.json
+          git add viewer/image-databases/master-database/orientation-review/gv-registration-benchmark-report-0002.json
           if git diff --cached --quiet; then
             echo 'No report changes.'
           else
-            git commit -m 'Compare blind registration predictions to 150 human reviews'
+            git commit -m 'Compare 0003 registration predictions to 150 human reviews'
             git push origin HEAD:beta
           fi
