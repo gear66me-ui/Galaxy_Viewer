@@ -1,0 +1,88 @@
+name: GV Orientation Registration Compare
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/gv-orientation-registration-compare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Compare blind predictions to human gold
+        run: |
+          python - <<'PY'
+          import json, math, statistics
+          from pathlib import Path
+          root=Path('viewer/image-databases/master-database/orientation-review')
+          pred=json.load(open(root/'gv-registration-predictions-0001.json',encoding='utf-8'))
+          gold=json.load(open(root/'gv-human-gold-0009-min.json',encoding='utf-8'))
+          pm={p['key']:p for p in pred['predictions']}
+          rows=[]
+          for catalog,archive,hr,hf in gold['rows']:
+              key=f'{catalog}:{archive}'
+              p=pm.get(key)
+              if not p:
+                  rows.append({'key':key,'catalog':catalog,'status':'missing_prediction'})
+                  continue
+              pr=p.get('predictedRotationDeg')
+              pf=p.get('predictedFovDeg')
+              ok=isinstance(pr,(int,float)) and isinstance(pf,(int,float)) and pf>0 and p.get('status')!='failed'
+              if not ok:
+                  rows.append({'key':key,'catalog':catalog,'status':p.get('status','failed'),'confidence':p.get('confidence',0),'warning':p.get('warning')})
+                  continue
+              dr=abs(((float(pr)-float(hr)+180)%360)-180)
+              fr=abs(float(pf)-float(hf))/max(float(hf),1e-12)
+              rows.append({'key':key,'catalog':catalog,'status':'compared','confidence':float(p.get('confidence',0) or 0),'humanRotationDeg':hr,'predictedRotationDeg':pr,'rotationAbsErrorDeg':dr,'humanFovDeg':hf,'predictedFovDeg':pf,'fovRelativeError':fr,'warning':p.get('warning') or p.get('registration',{}).get('warning')})
+          comp=[r for r in rows if r['status']=='compared']
+          def pct(n,d): return 100*n/d if d else 0
+          def metrics(arr):
+              c=[r for r in arr if r['status']=='compared']
+              rot=sorted(r['rotationAbsErrorDeg'] for r in c)
+              fov=sorted(r['fovRelativeError'] for r in c)
+              def q(a,p):
+                  if not a:return None
+                  i=(len(a)-1)*p; lo=math.floor(i); hi=math.ceil(i)
+                  return a[lo] if lo==hi else a[lo]*(hi-i)+a[hi]*(i-lo)
+              return {
+                'goldCount':len(arr),'comparedCount':len(c),'failedOrMissingCount':len(arr)-len(c),
+                'rotationMedianAbsErrorDeg':q(rot,.5),'rotationP90AbsErrorDeg':q(rot,.9),
+                'rotationWithin1DegPct':pct(sum(r['rotationAbsErrorDeg']<=1 for r in c),len(c)),
+                'rotationWithin5DegPct':pct(sum(r['rotationAbsErrorDeg']<=5 for r in c),len(c)),
+                'rotationWithin10DegPct':pct(sum(r['rotationAbsErrorDeg']<=10 for r in c),len(c)),
+                'fovMedianRelativeErrorPct':(q(fov,.5)*100 if fov else None),'fovP90RelativeErrorPct':(q(fov,.9)*100 if fov else None),
+                'fovWithin5Pct':pct(sum(r['fovRelativeError']<=.05 for r in c),len(c)),
+                'fovWithin10Pct':pct(sum(r['fovRelativeError']<=.10 for r in c),len(c)),
+                'fovWithin25Pct':pct(sum(r['fovRelativeError']<=.25 for r in c),len(c)),
+                'bothRotation5DegAndFov10Pct':pct(sum(r['rotationAbsErrorDeg']<=5 and r['fovRelativeError']<=.10 for r in c),len(c)),
+              }
+          out={'schema':'gv-registration-benchmark-report-0001','predictionCount':len(pred['predictions']),'humanGoldCount':len(gold['rows']),'overall':metrics(rows),'byCatalog':{},'worstRotation':sorted(comp,key=lambda r:r['rotationAbsErrorDeg'],reverse=True)[:20],'worstFov':sorted(comp,key=lambda r:r['fovRelativeError'],reverse=True)[:20],'failed':[r for r in rows if r['status']!='compared']}
+          for cat in sorted(set(r['catalog'] for r in rows)):
+              out['byCatalog'][cat]=metrics([r for r in rows if r['catalog']==cat])
+          path=root/'gv-registration-benchmark-report-0001.json'
+          path.write_text(json.dumps(out,indent=2),encoding='utf-8')
+          print(json.dumps(out['overall'],indent=2))
+          print(json.dumps(out['byCatalog'],indent=2))
+          PY
+
+      - name: Commit benchmark report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/master-database/orientation-review/gv-registration-benchmark-report-0001.json
+          if git diff --cached --quiet; then
+            echo 'No report changes.'
+          else
+            git commit -m 'Compare blind registration predictions to 150 human reviews'
+            git push origin HEAD:beta
+          fi
