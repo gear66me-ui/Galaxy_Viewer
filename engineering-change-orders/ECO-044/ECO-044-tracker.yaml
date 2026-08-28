@@ -1,0 +1,21 @@
+eco_id: ECO-044G
+repository: gear66me-ui/Galaxy_Viewer
+branch: beta
+user_go: true
+archive_authorized: false
+requirements: REQ-001-REQ-043
+status: committed_candidate_pending_runtime_validation
+candidate_blobs:
+  viewer/GV-beta-0012U.py: 7fbce0d60dc40ef9294d39ab41794be63d57ae71
+  viewer/modules/random-galaxy/gv-random-galaxy-0051.js: 7b3bc9a6dc4877588d9024c4ffa27e6b4fc5e013
+  viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js: 4b2a3bfbbac505be761040649c6f6b2aeafaa329
+  viewer/modules/diagnostics/gv-diagnostics-0005.js: fee47cb570b821ea6c8d684774f16e705fccefcb
+verification:
+  source_audit_passes: 3
+  syntax: PASS
+  runtime: UNVERIFIED
+  visual: UNVERIFIED
+  physical_device: UNVERIFIED
+historical_limit:
+  original_12U_and_0051_pre_043A_blobs_available: false
+commit_sha_evidence: containing_commit_reported_by_post_commit_verification
