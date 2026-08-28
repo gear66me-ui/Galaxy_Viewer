@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate blind predictions for unresolved Chandra and JWST records
         run: |
-          python viewer/image-databases/master-database/orientation-review/gv-orientation-register-0002.py \
+          python viewer/image-databases/master-database/orientation-review/gv-orientation-register-0003.py \
             --catalog 'Chandra=viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json' \
             --catalog 'JWST=viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json' \
             --only-missing-orientation \
@@ -60,6 +60,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No prediction changes to commit.'
           else
-            git commit -m 'Regenerate blind orientation registration predictions with 0002 renderer'
+            git commit -m 'Regenerate blind orientation registration predictions with 0003 renderer'
             git push origin HEAD:beta
           fi
