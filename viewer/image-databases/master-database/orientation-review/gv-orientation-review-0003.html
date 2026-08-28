@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>Galaxy Viewer — Orientation Alignment Station 0003</title>
+<style>
+:root{color-scheme:dark;--bg:#06090e;--panel:#0f151f;--panel2:#151d29;--line:#2a3545;--text:#eef4ff;--muted:#9eacc0;--good:#55e39a;--warn:#ffd166;--bad:#ff6b6b;--accent:#8ab4ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select{font:inherit}a{color:var(--accent)}
+.top{position:sticky;top:0;z-index:100;background:rgba(6,9,14,.97);border-bottom:1px solid var(--line);padding:9px 12px}.row,.toolbar,.controls,.actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}h1{font-size:17px;margin:0 8px 0 0}.pill{padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:#0b1119;font-size:12px}.goodtxt{color:var(--good)}.warntxt{color:var(--warn)}.badtxt{color:var(--bad)}
+button,.btn{border:1px solid var(--line);background:#172130;color:var(--text);border-radius:8px;padding:8px 10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.primary{border-color:#3562a5!important;background:#18345d!important}.good{border-color:#2b7a56!important}.warn{border-color:#8a7130!important}.bad{border-color:#8a3d45!important}input,select{background:#090d13;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px}.toolbar{margin-top:7px}.toolbar #search{flex:1;min-width:180px}
+main{max-width:1700px;margin:auto;padding:12px}.intro{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:11px;margin-bottom:12px}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px;margin-top:8px}.sum{background:#0b1119;border:1px solid var(--line);border-radius:9px;padding:8px}.sum b{display:block;font-size:20px}.sum small{color:var(--muted)}
+#cards{display:flex;flex-direction:column;gap:16px}.card{border:1px solid var(--line);background:var(--panel);border-radius:13px;overflow:hidden;scroll-margin-top:105px}.card.active{outline:2px solid var(--accent)}.card.confirmed{border-color:#2b7a56}.card.skipped{border-color:#826c2f}.head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 11px;background:#0b1119;border-bottom:1px solid var(--line)}.idx{font-weight:800;color:var(--accent)}.cat{font-weight:800}.title{font-weight:750;font-size:17px;flex:1}.status{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 7px}.status.confirmed{color:var(--good)}.status.skipped{color:var(--warn)}
+.compare{display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1fr);min-height:590px}.pane{padding:10px}.pane+.pane{border-left:1px solid var(--line)}.pane-title{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.pane-title b{font-size:14px}.imageview,.sky-slot{height:480px;border:1px solid var(--line);border-radius:10px;background:#030507;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}.imageview img{width:100%;height:100%;object-fit:contain}.noimage,.slotmsg{color:var(--muted);padding:24px;text-align:center}.meta{display:grid;grid-template-columns:max-content 1fr;gap:4px 9px;font-size:12px;margin-top:8px}.meta dt{color:var(--muted)}.meta dd{margin:0;overflow-wrap:anywhere}
+.rotate-panel{margin-top:9px;padding:9px;background:var(--panel2);border:1px solid var(--line);border-radius:10px}.rotate-line{display:grid;grid-template-columns:auto 1fr 92px;gap:8px;align-items:center}.rotate-line input[type=range]{width:100%;padding:0}.anglebox{text-align:center}.generated{font-size:15px;font-weight:800;margin-top:8px;padding:9px;border:1px dashed #526177;border-radius:8px}.orientation-input{width:100%;margin-top:7px}.note{width:100%;margin-top:7px}.small{font-size:11px;color:var(--muted)}
+#aladinParking{position:fixed;left:-10000px;top:-10000px;width:20px;height:20px;overflow:hidden}#aladinHost{width:100%;height:480px;position:relative;border-radius:10px;overflow:hidden;background:#000}.aladinCanvas{width:100%;height:100%}
+.compassShell{position:absolute;z-index:40;top:14px;right:14px;width:116px;height:116px;border-radius:50%;background:rgba(0,0,0,.64);border:2px solid rgba(255,255,255,.86);pointer-events:none;box-shadow:0 2px 12px #000}.compassDial{position:absolute;inset:6px;transform-origin:50% 50%}.compassDial .n{position:absolute;top:-2px;left:44px;font-weight:950;font-size:22px}.compassDial .e{position:absolute;top:43px;left:1px;font-weight:900;font-size:18px}.compassDial .v{position:absolute;left:51px;top:21px;width:3px;height:67px;background:white}.compassDial .v:before{content:"";position:absolute;top:-4px;left:-6px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid white}.compassDial .h{position:absolute;left:18px;top:52px;width:67px;height:3px;background:white}.compassDial .h:before{content:"";position:absolute;left:-4px;top:-6px;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:14px solid white}.compassAngle{position:absolute;left:0;right:0;bottom:5px;text-align:center;font-size:10px;font-weight:800;color:var(--accent)}
+.skyinfo{position:absolute;z-index:35;left:10px;bottom:10px;background:rgba(0,0,0,.72);border-radius:7px;padding:5px 7px;font-size:11px;pointer-events:none;max-width:72%}.aladinStatus{position:absolute;z-index:35;left:10px;top:10px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.35);border-radius:7px;padding:5px 7px;font-size:11px;pointer-events:none}
+.sky-controls{margin-top:8px}.survey{min-width:180px}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);padding:28px}.method{margin-top:7px;padding:7px;border-left:3px solid var(--accent);background:#0b1119;font-size:12px}.method strong{color:var(--good)}
+@media(max-width:850px){.top{position:relative}.compare{grid-template-columns:1fr}.pane+.pane{border-left:0;border-top:1px solid var(--line)}.imageview,.sky-slot,#aladinHost{height:62vh;min-height:390px}.rotate-line{grid-template-columns:1fr 92px}.rotate-line label{grid-column:1/-1}.compassShell{width:102px;height:102px}.compassDial{transform-origin:50% 50%;scale:.86;transform-origin:top left}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="row"><h1>GALAXY VIEWER — ORIENTATION ALIGNMENT STATION 0003</h1><span class="pill goodtxt">SOURCE IMAGE FIXED</span><span class="pill goodtxt">ROTATE ALADIN</span><span class="pill">N / E LIVE COMPASS</span><span class="pill" id="aladinGlobal">Aladin idle</span><span class="pill" id="loadState">Loading catalogs…</span></div>
+ <div class="toolbar"><input id="search" placeholder="Search galaxy / archive ID / catalog"><button id="unresolvedBtn">UNRESOLVED ONLY</button><button id="exportBtn" class="primary">DOWNLOAD CORRECTIONS</button><button id="copyAllBtn">COPY CORRECTIONS</button></div>
+</header>
+<main>
+<section class="intro"><strong>Visual registration method:</strong> the published image on the left is never rotated, transformed, or cropped. Activate Aladin on the right at the catalog RA/Dec/FOV, then rotate <strong>Aladin itself</strong> until its astronomical structures have the same orientation as the published image. The live compass shows where celestial north and east lie in that rotated view. Copy the generated orientation phrase when the two views match.<div class="method"><strong>Important:</strong> positive Aladin rotation is counter-clockwise/toward east. In this station that corresponds to <em>North is X° left of vertical</em>; negative rotation corresponds to <em>right of vertical</em>. One Aladin WebGL canvas is reused for the whole page.</div><div class="summary" id="summary"></div></section>
+<div id="cards"></div><div class="footer" id="footer"></div>
+</main>
+
+<!-- One shared live Aladin instance. It moves into the active record only. -->
+<div id="aladinParking">
+ <div id="aladinHost">
+  <div id="aladinCanvas" class="aladinCanvas"></div>
+  <div class="aladinStatus" id="aladinStatus">NOT LOADED</div>
+  <div class="compassShell"><div class="compassDial" id="compassDial"><span class="n">N</span><span class="e">E</span><i class="v"></i><i class="h"></i></div><div class="compassAngle" id="compassAngle">0.0°</div></div>
+  <div class="skyinfo" id="skyInfo">Aladin not activated</div>
+ </div>
+</div>
+
+<script>
+'use strict';
+const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
+const CATALOGS=[
+ {name:'Chandra',revision:'0002',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json'},
+ {name:'Hubble',revision:'0025',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json'},
+ {name:'JWST',revision:'0002',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json'},
+ {name:'Spitzer',revision:'0009',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0009.json'}
+];
+const STORAGE='gv-orientation-alignment-0003';
+let rows=[],review=loadReview(),aladin=null,aladinLoadPromise=null,activeKey=null,activeRow=null,activeCard=null,unresolvedOnly=false;
+
+function loadReview(){try{return JSON.parse(localStorage.getItem(STORAGE)||'{}')}catch{return{}}}
+function saveReview(){localStorage.setItem(STORAGE,JSON.stringify(review))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function missing(v){return v==null||(typeof v==='string'&&!v.trim())}
+function entries(d){if(Array.isArray(d))return d;for(const k of ['entries','galaxies','records','items','data','catalog'])if(Array.isArray(d?.[k]))return d[k];return[]}
+function rid(r,c,i){return `${c.name}:${r.archiveId||r.id||r.designation||r.name||i}`}
+function rname(r){return r.displayName||r.name||r.title||r.designation||r.archiveId||'Unnamed record'}
+function imageUrl(r){return r.selectedImageUrl||r.githubImageUrl||r.esaPublicationJpeg||r.publicationJpeg||r.imageUrl||r.jpegUrl||r.image||(Array.isArray(r.jpegCandidates)?r.jpegCandidates[0]:null)||null}
+function sourceUrl(r){return r.sourceUrl||r.sourcePageUrl||r.sourcePage||r.archiveUrl||r.infoUrl||r.webUrl||null}
+function nval(v){const n=Number(v);return Number.isFinite(n)?n:null}
+function sexa(s){return String(s??'').trim().replace(/[hHdDmMsS°'"]/g,' ').split(/[:\s]+/).filter(Boolean).map(Number)}
+function raDeg(r){for(const k of ['ra','RA','raDeg','raDegrees']){const n=nval(r[k]);if(n!=null)return n}const a=sexa(r.raText||r.RAText||r.ra_hms);if(a.length>=3&&a.every(Number.isFinite))return 15*(Math.abs(a[0])+a[1]/60+a[2]/3600)*(a[0]<0?-1:1);return null}
+function decDeg(r){for(const k of ['dec','Dec','DEC','decDeg','decDegrees']){const n=nval(r[k]);if(n!=null)return n}const raw=String(r.decText||r.DecText||r.dec_dms||'').trim(),a=sexa(raw);if(a.length>=3&&a.every(Number.isFinite)){const sign=/^-/.test(raw)?-1:1;return sign*(Math.abs(a[0])+a[1]/60+a[2]/3600)}return null}
+function fovDeg(r){let v=r.fieldOfView??r.fov??r.FOV;if(typeof v==='number'&&Number.isFinite(v))return v;if(Array.isArray(v)){const z=v.map(Number).filter(Number.isFinite);return z.length?Math.max(...z):1}const s=String(v??'').toLowerCase(),nums=(s.match(/\d+(?:\.\d+)?/g)||[]).map(Number);if(!nums.length)return 1;let m=Math.max(...nums);if(/arcsec|arcsecond|″/.test(s))m/=3600;else if(/arcmin|arcminute|′/.test(s))m/=60;else if(/degree|\bdeg\b|°/.test(s))m=m;else if(m>20)m/=60;return Math.max(m,1/3600)}
+function fovText(r){return r.fieldOfView??r.fov??r.FOV??''}
+function normRot(v){let x=Number(v)||0;while(x>180)x-=360;while(x<=-180)x+=360;return Math.round(x*10)/10}
+function phraseFromAladinRotation(v){const r=normRot(v);if(Math.abs(r)<0.05)return 'North is up (0.0°)';return `North is ${Math.abs(r).toFixed(1)}° ${r>0?'left':'right'} of vertical`}
+function updateCompass(v){const r=normRot(v);document.getElementById('compassDial').style.transform=`rotate(${-r}deg)`;document.getElementById('compassAngle').textContent=`${r>=0?'+':''}${r.toFixed(1)}°`;const side=Math.abs(r)<0.05?'NORTH UP':`N ${Math.abs(r).toFixed(1)}° ${r>0?'LEFT':'RIGHT'}`;document.getElementById('aladinStatus').textContent=side}
+function setCardState(card,key){const s=review[key]||{};card.classList.remove('confirmed','skipped');if(s.status)card.classList.add(s.status);card.dataset.status=s.status||'';const st=card.querySelector('.status');st.textContent=s.status?s.status.toUpperCase():'UNRESOLVED';st.className='status '+(s.status||'')}
+
+async function loadCatalogs(){
+ const results=await Promise.all(CATALOGS.map(async c=>{try{const x=await fetch(c.url,{cache:'no-store'});if(!x.ok)throw Error(`HTTP ${x.status}`);const d=await x.json(),a=entries(d),m=a.filter(r=>missing(r.orientation));return{c,a,m}}catch(e){return{c,a:[],m:[],error:String(e)}}}));
+ rows=[];for(const x of results)x.m.forEach((record,i)=>rows.push({catalog:x.c,record,key:rid(record,x.c,i)}));
+ document.getElementById('loadState').textContent=`${rows.length} missing`;
+ document.getElementById('summary').innerHTML=results.map(x=>`<div class="sum"><span>${esc(x.c.name)} ${x.c.revision}</span><b>${x.error?'ERROR':x.m.length}</b><small>${x.error?esc(x.error):`${x.a.length} total`}</small></div>`).join('')+`<div class="sum"><span>GRAND MISSING</span><b>${rows.length}</b><small>orientation queue</small></div>`;
+ render();document.getElementById('footer').textContent=`End of one-page queue — ${rows.length} missing-orientation records.`;
+}
+function render(){const out=document.getElementById('cards');out.innerHTML='';rows.forEach((row,i)=>out.appendChild(makeCard(row,i)));filterCards()}
+
+function makeCard(row,i){
+ const {catalog:c,record:r,key}=row,s=review[key]||{},im=imageUrl(r),src=sourceUrl(r),nm=rname(r),rot=normRot(s.aladinRotationDeg||0),ra=raDeg(r),dec=decDeg(r),fov=fovDeg(r);
+ const initialPhrase=s.orientation||phraseFromAladinRotation(rot);
+ const card=document.createElement('section');card.className='card '+(s.status||'');card.dataset.key=key;card.dataset.status=s.status||'';card.dataset.search=[c.name,c.revision,nm,r.archiveId,r.designation,r.title].join(' ').toLowerCase();
+ card.innerHTML=`
+<div class="head"><span class="idx">#${i+1}</span><span class="cat">${esc(c.name)} ${c.revision}</span><span class="title">${esc(nm)}</span><span class="status ${s.status||''}">${s.status?s.status.toUpperCase():'UNRESOLVED'}</span></div>
+<div class="compare">
+ <div class="pane">
+  <div class="pane-title"><b>PUBLISHED IMAGE — FIXED / UNTOUCHED</b>${src?`<a class="btn" href="${esc(src)}" target="_blank">OPEN SOURCE ↗</a>`:''}</div>
+  <div class="imageview">${im?`<img class="pubimg" loading="lazy" decoding="async" src="${esc(im)}" alt="${esc(nm)}">`:'<div class="noimage">No image URL in catalog.</div>'}</div>
+  <dl class="meta"><dt>Archive ID</dt><dd>${esc(r.archiveId||r.id||'')}</dd><dt>Designation</dt><dd>${esc(r.designation||'')}</dd><dt>RA</dt><dd>${esc(r.raText??r.ra??r.RA??'')} ${ra!=null?`<span class="small">(${ra.toFixed(7)}°)</span>`:''}</dd><dt>Dec</dt><dd>${esc(r.decText??r.dec??r.Dec??'')} ${dec!=null?`<span class="small">(${dec.toFixed(7)}°)</span>`:''}</dd><dt>FOV</dt><dd>${esc(fovText(r))} <span class="small">→ Aladin ${fov.toFixed(5)}°</span></dd><dt>Image URL</dt><dd>${im?`<a href="${esc(im)}" target="_blank">open full image ↗</a>`:'—'}</dd></dl>
+ </div>
+ <div class="pane">
+  <div class="pane-title"><b>ALADIN — ROTATE THIS TO MATCH LEFT IMAGE</b><span class="pill goodtxt">LIVE N / E POINTER</span></div>
+  <div class="sky-slot"><div class="slotmsg"><button class="activate primary">ACTIVATE ALADIN HERE</button><div class="small" style="margin-top:10px">Uses the frozen Aladin Lite 3.8.2 CDN build used by Galaxy Viewer. One WebGL canvas only.</div></div></div>
+  <div class="sky-controls controls"><button class="recenter primary">RECENTER RA/DEC/FOV</button><select class="survey"><option value="P/DSS2/color">DSS2 Color</option><option value="P/PanSTARRS/DR1/color-z-zg-g">Pan-STARRS</option><option value="P/2MASS/color">2MASS</option></select><button class="gridbtn">GRID ON/OFF</button></div>
+  <div class="rotate-panel">
+   <div class="rotate-line"><label>Aladin rotation</label><input class="rot" type="range" min="-180" max="180" step="0.1" value="${rot}"><input class="anglebox" type="number" min="-180" max="180" step="0.1" value="${rot}"></div>
+   <div class="controls" style="margin-top:7px"><button data-d="-10">−10°</button><button data-d="-1">−1°</button><button data-d="-0.1">−0.1°</button><button data-d="0.1">+0.1°</button><button data-d="1">+1°</button><button data-d="10">+10°</button><button class="resetrot">RESET 0°</button></div>
+   <div class="generated">COPY THIS: <span class="phrase">${esc(initialPhrase)}</span></div>
+   <input class="orientation-input" value="${esc(initialPhrase)}" aria-label="orientation text">
+   <input class="note" value="${esc(s.note||'')}" placeholder="Optional review note">
+   <div class="actions" style="margin-top:7px"><button class="copyori primary">COPY ORIENTATION</button><button class="confirm good">CONFIRM</button><button class="skip warn">SKIP / NEEDS CHECK</button><button class="resetreview">RESET REVIEW</button></div>
+  </div>
+  <div class="method"><strong>How:</strong> leave the published image alone. Rotate Aladin until the galaxy/stars line up with the left image. The N/E compass over Aladin moves with the celestial orientation; the generated sentence is the catalog orientation.</div>
+ </div>
+</div>`;
+ const slider=card.querySelector('.rot'),angle=card.querySelector('.anglebox'),phrase=card.querySelector('.phrase'),ori=card.querySelector('.orientation-input'),note=card.querySelector('.note');
+
+ async function setRotation(v,save=true){
+   const z=normRot(v);slider.value=z;angle.value=z;
+   if(activeKey!==key||!aladin)await activateAladin(row,card,false);
+   if(aladin){try{aladin.setRotation(z)}catch(e){showAladinError(e)}}
+   updateCompass(z);const p=phraseFromAladinRotation(z);phrase.textContent=p;ori.value=p;
+   if(save){review[key]={...(review[key]||{}),aladinRotationDeg:z,orientation:p};saveReview()}
+   updateSkyInfo(row,z);
+ }
+ slider.oninput=()=>setRotation(slider.value);
+ angle.onchange=()=>setRotation(angle.value);
+ card.querySelectorAll('button[data-d]').forEach(b=>b.onclick=()=>setRotation(Number(angle.value)+Number(b.dataset.d)));
+ card.querySelector('.resetrot').onclick=()=>setRotation(0);
+ card.querySelector('.activate').onclick=()=>activateAladin(row,card,false);
+ card.querySelector('.recenter').onclick=()=>activateAladin(row,card,false,true);
+ card.querySelector('.survey').onchange=e=>{if(activeKey===key&&aladin){try{aladin.setBaseImageLayer(e.target.value)}catch(err){showAladinError(err)}}};
+ card.querySelector('.gridbtn').onclick=()=>{if(activeKey===key&&aladin){const current=card.dataset.grid==='1';try{aladin.setCooGrid(!current);card.dataset.grid=current?'0':'1'}catch(e){showAladinError(e)}}};
+ card.querySelector('.copyori').onclick=async()=>{try{await navigator.clipboard.writeText(ori.value);card.querySelector('.copyori').textContent='COPIED ✓';setTimeout(()=>card.querySelector('.copyori').textContent='COPY ORIENTATION',900)}catch{ori.select();document.execCommand('copy')}};
+ card.querySelector('.confirm').onclick=()=>{const p=ori.value.trim();if(!p)return alert('Orientation is blank.');const z=normRot(angle.value);review[key]={...(review[key]||{}),status:'confirmed',aladinRotationDeg:z,orientation:p,note:note.value.trim(),reviewedAt:new Date().toISOString(),catalog:c.name,revision:c.revision,archiveId:r.archiveId||r.id||null,name:nm,sourceUrl:src,imageUrl:im,method:'visual_registration_by_rotating_aladin_against_fixed_published_image'};saveReview();setCardState(card,key);filterCards()};
+ card.querySelector('.skip').onclick=()=>{review[key]={...(review[key]||{}),status:'skipped',aladinRotationDeg:normRot(angle.value),orientation:ori.value.trim(),note:note.value.trim(),reviewedAt:new Date().toISOString(),catalog:c.name,revision:c.revision,archiveId:r.archiveId||r.id||null,name:nm,sourceUrl:src,imageUrl:im,method:'manual_check_required'};saveReview();setCardState(card,key);filterCards()};
+ card.querySelector('.resetreview').onclick=()=>{delete review[key];saveReview();slider.value=0;angle.value=0;phrase.textContent=phraseFromAladinRotation(0);ori.value=phraseFromAladinRotation(0);note.value='';if(activeKey===key&&aladin){try{aladin.setRotation(0)}catch{}updateCompass(0);updateSkyInfo(row,0)}setCardState(card,key);filterCards()};
+ return card;
+}
+
+function setGlobalAladin(text,kind=''){const el=document.getElementById('aladinGlobal');el.textContent=text;el.className='pill '+(kind||'')}
+function webgl2Available(){try{const c=document.createElement('canvas');return !!c.getContext('webgl2')}catch{return false}}
+async function loadAladinLibrary(){
+ if(window.A?.init){setGlobalAladin('Aladin library present','goodtxt');await window.A.init;return}
+ if(aladinLoadPromise)return aladinLoadPromise;
+ aladinLoadPromise=(async()=>{
+   setGlobalAladin('Loading Aladin 3.8.2…','warntxt');
+   if(!webgl2Available())throw Error('WebGL2 is unavailable in this browser/device');
+   await new Promise((resolve,reject)=>{
+     const existing=[...document.scripts].find(s=>s.src===ALADIN_URL);
+     if(existing){
+       if(window.A?.init){resolve();return}
+       existing.addEventListener('load',resolve,{once:true});
+       existing.addEventListener('error',()=>reject(Error('Aladin script failed to load')),{once:true});
+       setTimeout(()=>reject(Error('Aladin script load timed out')),20000);return;
+     }
+     const script=document.createElement('script');script.src=ALADIN_URL;script.charset='utf-8';script.dataset.gvOrientationAladin='3.8.2';
+     script.addEventListener('load',resolve,{once:true});script.addEventListener('error',()=>reject(Error('Aladin script failed to load')),{once:true});document.head.appendChild(script);
+     setTimeout(()=>reject(Error('Aladin script load timed out')),20000);
+   });
+   if(!window.A?.init)throw Error('Aladin loaded but window.A.init is missing');
+   setGlobalAladin('Aladin WASM initializing…','warntxt');await window.A.init;setGlobalAladin('Aladin 3.8.2 ready','goodtxt');
+ })().catch(e=>{aladinLoadPromise=null;setGlobalAladin('ALADIN LOAD FAILED','badtxt');throw e});
+ return aladinLoadPromise;
+}
+async function ensureAladin(){
+ if(aladin)return aladin;
+ await loadAladinLibrary();
+ document.getElementById('aladinStatus').textContent='CREATING VIEW';
+ aladin=A.aladin('#aladinCanvas',{survey:'P/DSS2/color',target:'0 +0',fov:1,projection:'TAN',cooFrame:'ICRSd',northPoleOrientation:0,lockNorthUp:false,showReticle:true,showCooGrid:true,showCooGridControl:true,showZoomControl:true,showLayersControl:true,showFullscreenControl:true,inertia:false});
+ try{aladin.setRotation(0)}catch{}
+ updateCompass(0);return aladin;
+}
+function showAladinError(e){const msg=String(e?.message||e);document.getElementById('aladinStatus').textContent='ERROR';document.getElementById('skyInfo').textContent='Aladin error: '+msg;setGlobalAladin('Aladin error','badtxt')}
+function updateSkyInfo(row,rot){
+ const ra=raDeg(row.record),dec=decDeg(row.record),fov=fovDeg(row.record);
+ document.getElementById('skyInfo').textContent=`RA ${ra?.toFixed(7)??'?'}° • Dec ${dec?.toFixed(7)??'?'}° • FOV ${fov.toFixed(5)}° • TAN • rotation ${normRot(rot).toFixed(1)}°`;
+}
+async function activateAladin(row,card,resetRotation=false,recenterOnly=false){
+ const ra=raDeg(row.record),dec=decDeg(row.record),fov=fovDeg(row.record);if(ra==null||dec==null){alert('This record has no usable RA/Dec.');return}
+ document.querySelectorAll('.card.active').forEach(x=>x.classList.remove('active'));card.classList.add('active');
+ const slot=card.querySelector('.sky-slot');slot.innerHTML='';slot.appendChild(document.getElementById('aladinHost'));activeKey=row.key;activeRow=row;activeCard=card;
+ document.getElementById('aladinStatus').textContent='LOADING…';
+ try{
+   const a=await ensureAladin(),survey=card.querySelector('.survey').value;
+   try{a.setBaseImageLayer(survey)}catch{}
+   a.gotoRaDec(ra,dec);a.setFoV(fov);try{a.setProjection('TAN')}catch{}try{a.setCooGrid(true)}catch{}card.dataset.grid='1';
+   const saved=normRot(resetRotation?0:(review[row.key]?.aladinRotationDeg||card.querySelector('.anglebox').value||0));
+   if(!recenterOnly||resetRotation)try{a.setRotation(saved)}catch{}
+   card.querySelector('.rot').value=saved;card.querySelector('.anglebox').value=saved;card.querySelector('.phrase').textContent=phraseFromAladinRotation(saved);card.querySelector('.orientation-input').value=review[row.key]?.orientation||phraseFromAladinRotation(saved);
+   updateCompass(saved);updateSkyInfo(row,saved);setGlobalAladin('Aladin 3.8.2 active','goodtxt');
+   requestAnimationFrame(()=>{window.dispatchEvent(new Event('resize'));setTimeout(()=>window.dispatchEvent(new Event('resize')),120)});
+ }catch(e){showAladinError(e)}
+}
+function filterCards(){const q=document.getElementById('search').value.trim().toLowerCase();document.querySelectorAll('.card').forEach(card=>{const okSearch=!q||card.dataset.search.includes(q),okStatus=!unresolvedOnly||card.dataset.status!=='confirmed';card.classList.toggle('hidden',!(okSearch&&okStatus))})}
+function correctionPayload(){
+ const corrections=rows.filter(x=>review[x.key]?.status==='confirmed').map(x=>({catalog:x.catalog.name,revision:x.catalog.revision,archiveId:x.record.archiveId||x.record.id||null,name:rname(x.record),orientation:review[x.key].orientation,aladinRotationDeg:review[x.key].aladinRotationDeg,method:review[x.key].method||'visual_registration_by_rotating_aladin_against_fixed_published_image',sourceUrl:sourceUrl(x.record),imageUrl:imageUrl(x.record),note:review[x.key].note||'',reviewedAt:review[x.key].reviewedAt||null}));
+ return{schema:'gv-orientation-corrections-0003',generatedAt:new Date().toISOString(),aladinVersion:'3.8.2',referenceFrame:'Aladin Lite TAN / ICRSd / freely rotatable / source image fixed',conversionRule:'positive Aladin rotation = North left of vertical; negative Aladin rotation = North right of vertical',confirmedCount:corrections.length,corrections};
+}
+function jsonText(){return JSON.stringify(correctionPayload(),null,2)}
+document.getElementById('search').oninput=filterCards;
+document.getElementById('unresolvedBtn').onclick=e=>{unresolvedOnly=!unresolvedOnly;e.target.textContent=unresolvedOnly?'SHOW ALL':'UNRESOLVED ONLY';filterCards()};
+document.getElementById('exportBtn').onclick=()=>{const blob=new Blob([jsonText()],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gv-orientation-corrections-0003.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+document.getElementById('copyAllBtn').onclick=async()=>{try{await navigator.clipboard.writeText(jsonText());document.getElementById('copyAllBtn').textContent='COPIED ✓';setTimeout(()=>document.getElementById('copyAllBtn').textContent='COPY CORRECTIONS',900)}catch{alert('Clipboard permission was blocked. Use DOWNLOAD CORRECTIONS.')}};
+loadCatalogs();
+</script>
+</body>
+</html>
