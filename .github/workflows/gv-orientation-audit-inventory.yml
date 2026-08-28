@@ -1,0 +1,91 @@
+name: GV Orientation Audit Inventory
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/gv-orientation-audit-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Build exact audit inventory
+        run: |
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+
+          root=Path('viewer/image-databases/master-database/orientation-review')
+          catalogs=[
+            ('Chandra','0002',Path('viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json')),
+            ('Hubble','0025',Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json')),
+            ('JWST','0002',Path('viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json')),
+            ('Spitzer','0009',Path('viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0009.json')),
+          ]
+          def entries(o):
+            if isinstance(o,list): return o
+            if isinstance(o,dict):
+              for k in ('entries','galaxies','records','items','data','catalog'):
+                if isinstance(o.get(k),list): return o[k]
+            return []
+          def num(r,*ks):
+            for k in ks:
+              try:
+                v=float(r[k])
+                if math.isfinite(v): return v
+              except Exception: pass
+            return None
+          def image(r):
+            for k in ('selectedImageUrl','githubImageUrl','esaPublicationJpeg','publicationJpeg','imageUrl','jpegUrl','image'):
+              v=r.get(k)
+              if isinstance(v,str) and v.strip(): return v.strip()
+            jc=r.get('jpegCandidates')
+            if isinstance(jc,list):
+              for v in jc:
+                if isinstance(v,str) and v.strip(): return v.strip()
+            return ''
+          out={'schema':'gv-orientation-audit-inventory-0001','catalogs':{},'totals':{}}
+          t={k:0 for k in ('records','withImage','withRaDec','eligible','orientationPresent','orientationMissing','eligibleMissingOrientation')}
+          for name,rev,path in catalogs:
+            a=entries(json.load(open(path,encoding='utf-8')))
+            d={k:0 for k in t}
+            d['records']=len(a)
+            for r in a:
+              has_img=bool(image(r))
+              has_coord=num(r,'ra','RA','raDeg','raDegrees') is not None and num(r,'dec','Dec','DEC','decDeg','decDegrees') is not None
+              has_ori=r.get('orientation') not in (None,'')
+              if has_img:d['withImage']+=1
+              if has_coord:d['withRaDec']+=1
+              if has_img and has_coord:d['eligible']+=1
+              if has_ori:d['orientationPresent']+=1
+              else:d['orientationMissing']+=1
+              if has_img and has_coord and not has_ori:d['eligibleMissingOrientation']+=1
+            out['catalogs'][name]={'revision':rev,'path':str(path),**d}
+            for k in t:t[k]+=d[k]
+          out['totals']=t
+          p=root/'gv-orientation-audit-inventory-0001.json'
+          p.write_text(json.dumps(out,indent=2),encoding='utf-8')
+          print(json.dumps(out,indent=2))
+          PY
+
+      - name: Commit inventory
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/master-database/orientation-review/gv-orientation-audit-inventory-0001.json
+          if git diff --cached --quiet; then
+            echo 'No inventory changes.'
+          else
+            git commit -m 'Inventory current orientation audit queue'
+            git push origin HEAD:beta
+          fi
