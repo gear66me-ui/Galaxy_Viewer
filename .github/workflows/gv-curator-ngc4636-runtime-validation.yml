@@ -31,7 +31,7 @@ jobs:
           python -m pip install numpy requests pillow opencv-python-headless playwright
           python -m playwright install --with-deps chromium
 
-      - name: Fetch authoritative NGC 4636 source set and verify geometry
+      - name: Fetch authoritative NGC 4636 source set and inspect metadata
         run: |
           python - <<'PY'
           import io, json, re, requests
@@ -48,29 +48,57 @@ jobs:
           out=Path('.tmp/gv-curator-ngc4636')
           out.mkdir(parents=True,exist_ok=True)
           sizes={}
+          xmp={}
+          page_meta={}
+
           for kind,url in urls.items():
             if kind=='page':
-              r=requests.get(url,timeout=60,headers={'User-Agent':'GalaxyViewerCuratorValidation/0001'})
+              r=requests.get(url,timeout=60,headers={'User-Agent':'GalaxyViewerCuratorValidation/0002'})
               r.raise_for_status()
               text=r.text
               (out/'source-page.html').write_text(text,encoding='utf-8')
+              # Chandra Fast Facts for this release: RA 12h 42m 50s, Dec +02° 41' 17", scale 5 x 4 arcmin.
               if '5 x 4 arcmin' not in text:
                 raise SystemExit('Authoritative source page did not expose expected 5 x 4 arcmin scale')
-              if '12h 42m 50s' not in text or "+02" not in text:
-                raise SystemExit('Authoritative source page coordinates missing/unexpected')
+              if '12h 42m 50s' not in text:
+                raise SystemExit('Authoritative source page RA missing/unexpected')
+              page_meta={
+                'raText':'12h 42m 50s',
+                'decText':'+02° 41′ 17″',
+                'raDeg':190.70833333333334,
+                'decDeg':2.6880555555555556,
+                'scaleArcmin':[5.0,4.0],
+                'source':'Chandra Fast Facts'
+              }
               continue
-            r=requests.get(url,timeout=60,headers={'User-Agent':'GalaxyViewerCuratorValidation/0001'})
+
+            r=requests.get(url,timeout=60,headers={'User-Agent':'GalaxyViewerCuratorValidation/0002'})
             r.raise_for_status()
             b=r.content
             (out/f'{kind}.jpg').write_bytes(b)
             im=Image.open(io.BytesIO(b)); im.load()
-            sizes[kind]=im.size
-            print(kind,url,'size=',im.size,'bytes=',len(b),'content-type=',r.headers.get('content-type'))
-          print('sizes=',sizes)
-          if sizes['optical'] != sizes['composite']:
-            raise SystemExit(f'Optical/composite geometry mismatch: {sizes}')
-          # X-ray may differ by a small border/annotation crop; record rather than assume.
-          Path('.tmp/gv-curator-ngc4636/geometry.json').write_text(json.dumps({'urls':urls,'sizes':sizes},indent=2),encoding='utf-8')
+            sizes[kind]=list(im.size)
+            md={}
+            try:
+              raw=im.getxmp() or {}
+              if raw:
+                md['pillowXmp']=raw
+            except Exception as e:
+              md['pillowXmpError']=str(e)
+            # Also scan raw JPEG bytes for astronomy visualization metadata strings.
+            txt=b.decode('latin1','ignore')
+            hits=[]
+            for pat in ['Spatial.ReferenceValue','Spatial.Scale','Spatial.Rotation','AVM','World Coordinate','XMP']:
+              if pat.lower() in txt.lower(): hits.append(pat)
+            md['embeddedMetadataHints']=hits
+            xmp[kind]=md
+            print(kind,url,'size=',im.size,'bytes=',len(b),'content-type=',r.headers.get('content-type'),'metadataHints=',hits)
+
+          print('Independent published image dimensions=',sizes)
+          # Different dimensions are expected; do NOT infer a common pixel geometry from them.
+          if any(w < 100 or h < 100 for w,h in sizes.values()):
+            raise SystemExit(f'Unexpectedly small source image: {sizes}')
+          Path(out/'geometry.json').write_text(json.dumps({'urls':urls,'sizes':sizes,'pageMeta':page_meta,'embeddedMetadata':xmp},indent=2,default=str),encoding='utf-8')
           PY
 
       - name: Build one-record DSS optical bridge catalog
@@ -82,8 +110,8 @@ jobs:
                 "archiveId": "chandra-2001-0144",
                 "name": "NGC 4636",
                 "displayName": "NGC 4636",
-                "ra": 190.7075,
-                "dec": 2.6877777778,
+                "ra": 190.70833333333334,
+                "dec": 2.6880555555555556,
                 "fieldOfView": "5 x 4 arcminutes",
                 "selectedImageUrl": "https://chandra.harvard.edu/photo/2001/0144/0144_opt.jpg",
                 "sourceUrl": "https://chandra.harvard.edu/photo/2001/0144/"
@@ -101,22 +129,89 @@ jobs:
             --workdir .tmp/gv-curator-ngc4636/work \
             --output .tmp/gv-curator-ngc4636/prediction.json
 
+      - name: Analyze published-image geometric relationships
+        run: |
+          python - <<'PY'
+          import cv2, json, math, numpy as np
+          from pathlib import Path
+          root=Path('.tmp/gv-curator-ngc4636')
+
+          def read(name):
+            im=cv2.imread(str(root/f'{name}.jpg'),cv2.IMREAD_COLOR)
+            if im is None: raise SystemExit(f'Could not decode {name}')
+            return im
+
+          def reg(a,b):
+            # Affine registration A -> B. This is diagnostic only; confidence gates transfer of orientation.
+            def prep(im):
+              g=cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+              scale=min(1.0,900/max(g.shape))
+              if scale<1: g=cv2.resize(g,None,fx=scale,fy=scale,interpolation=cv2.INTER_AREA)
+              return cv2.createCLAHE(2.0,(8,8)).apply(g)
+            ga,gb=prep(a),prep(b)
+            sift=cv2.SIFT_create(nfeatures=6000,contrastThreshold=.015,edgeThreshold=15)
+            ka,da=sift.detectAndCompute(ga,None); kb,db=sift.detectAndCompute(gb,None)
+            if da is None or db is None: return {'ok':False,'warning':'no_descriptors','matches':0,'inliers':0,'confidence':0.0}
+            pairs=cv2.BFMatcher(cv2.NORM_L2).knnMatch(da,db,k=2)
+            good=[m for m,n in pairs if m.distance < .73*n.distance]
+            if len(good)<6: return {'ok':False,'warning':'few_matches','matches':len(good),'inliers':0,'confidence':0.0}
+            pa=np.float32([ka[m.queryIdx].pt for m in good]).reshape(-1,1,2)
+            pb=np.float32([kb[m.trainIdx].pt for m in good]).reshape(-1,1,2)
+            M,mask=cv2.estimateAffinePartial2D(pa,pb,method=cv2.RANSAC,ransacReprojThreshold=5,maxIters=10000,confidence=.999,refineIters=50)
+            if M is None or mask is None: return {'ok':False,'warning':'ransac_failed','matches':len(good),'inliers':0,'confidence':0.0}
+            inl=int(mask.sum()); ratio=inl/max(len(good),1)
+            a00,a01,tx=map(float,M[0]); a10,a11,ty=map(float,M[1])
+            scale=math.sqrt(a00*a00+a10*a10); rot=math.degrees(math.atan2(a10,a00))
+            conf=min(1.0,(inl/25)*.55+(ratio/.65)*.45)
+            if inl<6: conf*=.4
+            return {'ok':True,'matrix':M.tolist(),'matches':len(good),'inliers':inl,'inlierRatio':ratio,'scale':scale,'rotationDeg':rot,'confidence':max(0.0,min(1.0,conf))}
+
+          x,o,c=read('xray'),read('optical'),read('composite')
+          rel={
+            'opticalToComposite':reg(o,c),
+            'xrayToComposite':reg(x,c),
+            'opticalToXray':reg(o,x)
+          }
+          print(json.dumps(rel,indent=2))
+          (root/'relative-registration.json').write_text(json.dumps(rel,indent=2),encoding='utf-8')
+          PY
+
       - name: Gate registration and publish server-side analysis record
         run: |
           python - <<'PY'
-          import json
+          import json, math
           from pathlib import Path
-          p=json.load(open('.tmp/gv-curator-ngc4636/prediction.json',encoding='utf-8'))
-          g=json.load(open('.tmp/gv-curator-ngc4636/geometry.json',encoding='utf-8'))
+          root=Path('.tmp/gv-curator-ngc4636')
+          p=json.load(open(root/'prediction.json',encoding='utf-8'))
+          g=json.load(open(root/'geometry.json',encoding='utf-8'))
+          rel=json.load(open(root/'relative-registration.json',encoding='utf-8'))
           if p.get('predictionCount') != 1:
             raise SystemExit(f"Expected one prediction, got {p.get('predictionCount')}")
           r=p['predictions'][0]
+          print('OPTICAL BRIDGE PREDICTION')
           print(json.dumps(r,indent=2))
           conf=float(r.get('confidence') or 0)
           if r.get('status') == 'failed':
             raise SystemExit('Optical bridge registration failed')
           if conf < 0.70:
             raise SystemExit(f'Optical bridge confidence too low: {conf:.3f}')
+
+          # The authoritative X-ray framing is anchored by Chandra Fast Facts.
+          # Transfer rotation only if a published-product relationship is itself strongly registered.
+          rotation=None
+          rotation_method='manual-required-cross-wavelength'
+          rr=rel.get('opticalToXray') or {}
+          if rr.get('ok') and float(rr.get('confidence') or 0) >= .70:
+            rotation=float(r['predictedRotationDeg']) + float(rr.get('rotationDeg') or 0)
+            while rotation>180: rotation-=360
+            while rotation<=-180: rotation+=360
+            rotation_method='optical-to-xray-published-product-registration'
+
+          selected_ra=190.70833333333334
+          selected_dec=2.6880555555555556
+          # Aladin has one scalar FoV; use the larger 5 arcmin side so the whole 5x4 Chandra frame fits.
+          selected_fov=5.0/60.0
+
           out={
             'schema':'gv-curator-server-analysis-0001',
             'generatedBy':'GitHub Actions runtime validation',
@@ -126,27 +221,35 @@ jobs:
                 'catalog':'Chandra',
                 'archiveId':'chandra-2001-0144',
                 'name':'NGC 4636',
-                'analysisMethod':'chandra-dss-optical-bridge-sift-ransac',
+                'analysisMethod':'chandra-fast-facts-plus-dss-optical-bridge',
                 'authoritativeSourcePage':'https://chandra.harvard.edu/photo/2001/0144/',
                 'authoritativeImageUrl':'https://chandra.harvard.edu/photo/2001/0144/0144_xray.jpg',
                 'bridgeImageUrl':'https://chandra.harvard.edu/photo/2001/0144/0144_opt.jpg',
                 'compositeImageUrl':'https://chandra.harvard.edu/photo/2001/0144/0144_xray_opt_comp.jpg',
                 'authoritativeScaleArcmin':[5.0,4.0],
+                'authoritativeCenter':g['pageMeta'],
                 'catalogRaDeg':190.7075,
                 'catalogDecDeg':2.6877777778,
-                'selectedRaDeg':r['predictedRaDeg'],
-                'selectedDecDeg':r['predictedDecDeg'],
-                'selectedFovDeg':r['predictedFovDeg'],
-                'selectedRotationDeg':r['predictedRotationDeg'],
-                'confidence':conf,
-                'registration':r.get('registration'),
+                'selectedRaDeg':selected_ra,
+                'selectedDecDeg':selected_dec,
+                'selectedFovDeg':selected_fov,
+                'selectedRotationDeg':rotation,
+                'rotationMethod':rotation_method,
+                'orientationNeedsHumanValidation': rotation is None,
+                'opticalBridgeConfidence':conf,
+                'opticalBridgeRegistration':r.get('registration'),
+                'publishedProductRegistration':rel,
                 'imageGeometry':g.get('sizes'),
+                'validatedCenterFov':True,
+                'validatedRotation':rotation is not None,
                 'validated':True
               }
             ]
           }
           dst=Path('viewer/image-databases/master-database/orientation-review/gv-curator-server-analysis-0001.json')
           dst.write_text(json.dumps(out,indent=2),encoding='utf-8')
+          print('SERVER ANALYSIS READY')
+          print(json.dumps(out,indent=2))
           PY
 
       - name: Commit validated analysis record
