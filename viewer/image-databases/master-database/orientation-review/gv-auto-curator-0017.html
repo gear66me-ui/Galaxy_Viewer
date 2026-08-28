@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Loading Galaxy Viewer Auto Curator 0017…</title></head>
+<body style="margin:0;background:#06090e;color:white;font:14px system-ui;padding:18px">Loading Galaxy Viewer Auto Curator 0017…
+<script>
+(async()=>{
+'use strict';
+try{
+ const r=await fetch('./gv-auto-curator-0015.html?v=0017-base',{cache:'no-store'});if(!r.ok)throw Error(`0015 baseline HTTP ${r.status}`);let h=await r.text();
+ h=h.replaceAll('0015','0017');
+
+ // Preserve the 0016 real-pixel/CORS-analysis behavior exactly in the 0017 lineage.
+ const needle="const Q=s=>document.querySelector(s);let markersVisible0017=true;";
+ const replacement=`const Q=s=>document.querySelector(s);
+const directLoadImage0017=loadImage;
+window.__gvLastImageAccess0017='NOT READ';
+function proxyImageLoad0017(proxyUrl,label){return new Promise((res,rej)=>{const im=new Image();im.crossOrigin='anonymous';im.referrerPolicy='no-referrer';im.onload=()=>{window.__gvLastImageAccess0017=label;res(im)};im.onerror=()=>rej(Error(label+' failed'));im.src=proxyUrl})}
+loadImage=async function(url){
+ if(!url)throw Error('no source image URL');
+ try{const im=await directLoadImage0017(url);window.__gvLastImageAccess0017='DIRECT SOURCE PIXELS';return im}catch(directError){}
+ const stripped=String(url).replace(/^https?:\\/\\//i,'');
+ const proxies=[
+  ['CORS ANALYSIS PROXY — WESERV','https://wsrv.nl/?url='+encodeURIComponent(stripped)+'&output=jpg'],
+  ['CORS ANALYSIS PROXY — CORSPROXY.IO','https://corsproxy.io/?url='+encodeURIComponent(url)]
+ ];
+ let last=null;
+ for(const [label,purl] of proxies){try{return await proxyImageLoad0017(purl,label)}catch(e){last=e}}
+ window.__gvLastImageAccess0017='PIXEL ACCESS FAILED';
+ throw Error('source image pixel access blocked: direct CORS and both analysis proxies failed'+(last?' ('+last.message+')':''));
+};
+let markersVisible0017=true;`;
+ if(!h.includes(needle))throw Error('0017 pixel patch anchor not found in 0015 baseline');
+ h=h.replace(needle,replacement);
+ h=h.replace("renderFinal0017();await drawOverlay0017();return out","renderFinal0017();const ev0017=Q('#analysisEvidence0017');if(ev0017)ev0017.textContent+='\\nPIXEL ACCESS: '+(window.__gvLastImageAccess0017||'UNKNOWN');await drawOverlay0017();const obj0017=Q('#analysisObject0017');if(obj0017)obj0017.textContent+=' · '+(window.__gvLastImageAccess0017||'PIXELS UNKNOWN');return out");
+ h=h.replace("Q('#analysisEvidence0017').textContent+='\\nSOURCE OVERLAY unavailable: '+e.message","Q('#analysisEvidence0017').textContent+='\\nSOURCE OVERLAY unavailable: '+e.message+' · pixel path '+(window.__gvLastImageAccess0017||'UNKNOWN')");
+
+ // Inject 0017 changes into the final 0014-derived page built by the transformed 0015 wrapper.
+ const innerAnchor=" document.open();document.write(h);document.close();";
+ const finalPatchCode=String.raw`
+ // 0017 fine rotation: restore explicit one-tenth-degree nudge buttons while retaining the 0.1° slider/input step.
+ h=h.replace('<button data-r="-1">−1°</button><input id="rotRange"','<button data-r="-1">−1°</button><button data-r="-0.1">−0.1°</button><input id="rotRange"');
+ h=h.replace('<input id="rotRange" type="range" min="-180" max="180" step=".1" value="0"><button data-r="1">+1°</button>','<input id="rotRange" type="range" min="-180" max="180" step=".1" value="0"><button data-r="0.1">+0.1°</button><button data-r="1">+1°</button>');
+
+ // 0017 server-validated analysis feed. It is loaded before queue construction and overrides only matching validated prediction keys.
+ const predAnchor0017="const PREDICTIONS_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/orientation-review/gv-registration-predictions-0001.json';";
+ if(!h.includes(predAnchor0017))throw Error('0017 predictions URL anchor missing');
+ h=h.replace(predAnchor0017,predAnchor0017+"\nconst SERVER_ANALYSIS_URL0017='./gv-curator-server-analysis-0001.json?v=0017';");
+ const bootFetchAnchor0017="const [pr,...cats]=await Promise.all([fetch(PREDICTIONS_URL,{cache:'no-store'}).then(r=>r.ok?r.json():{}),...CATALOGS.map";
+ const bootFetchReplacement0017="const [pr,sr0017,...cats]=await Promise.all([fetch(PREDICTIONS_URL,{cache:'no-store'}).then(r=>r.ok?r.json():{}),fetch(SERVER_ANALYSIS_URL0017,{cache:'no-store'}).then(r=>r.ok?r.json():{}),...CATALOGS.map";
+ if(!h.includes(bootFetchAnchor0017))throw Error('0017 boot fetch anchor missing');
+ h=h.replace(bootFetchAnchor0017,bootFetchReplacement0017);
+ const predLoadAnchor0017="for(const p of pr.predictions||[])if(p?.key)preds.set(p.key,p);rows=[];";
+ const predLoadReplacement0017="for(const p of pr.predictions||[])if(p?.key)preds.set(p.key,p);for(const s0017 of sr0017.records||[])if(s0017?.key&&s0017.validated)preds.set(s0017.key,{key:s0017.key,predictedRaDeg:s0017.selectedRaDeg,predictedDecDeg:s0017.selectedDecDeg,predictedFovDeg:s0017.selectedFovDeg,predictedRotationDeg:s0017.selectedRotationDeg,confidence:1,serverValidated:true,registration:{method:s0017.analysisMethod||'server-validated',matches:'validated',inliers:'validated',inlier_ratio:1,scale:1,warning:null,serverValidated:true,source:s0017.authoritativeSourcePage,aladinReadback:s0017.aladinReadback}});rows=[];";
+ if(!h.includes(predLoadAnchor0017))throw Error('0017 prediction-load anchor missing');
+ h=h.replace(predLoadAnchor0017,predLoadReplacement0017);
+
+ if(!h.includes('data-r="-0.1"')||!h.includes('data-r="0.1"'))throw Error('0017 ±0.1° controls were not installed');
+ if(!h.includes('SERVER_ANALYSIS_URL0017'))throw Error('0017 server-analysis feed was not installed');
+`;
+ if(!h.includes(innerAnchor))throw Error('0017 final-page injection anchor missing');
+ h=h.replace(innerAnchor,finalPatchCode+'\n'+innerAnchor);
+
+ document.open();document.write(h);document.close();
+}catch(e){document.body.textContent='0017 STARTUP ERROR: '+e.message}
+})();
+</script>
+</body></html>
