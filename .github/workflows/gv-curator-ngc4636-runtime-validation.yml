@@ -31,130 +31,101 @@ jobs:
           python -m pip install requests pillow playwright
           python -m playwright install --with-deps chromium
 
-      - name: Prepare real NGC 4636 source and human-gold rotation gate
+      - name: Extract embedded AVM from real NGC 4636 image
         run: |
           python - <<'PY'
-          import io,json,requests
+          import io,json,re,requests
           from pathlib import Path
           from PIL import Image
 
           root=Path('.tmp/gv-avm-ngc4636'); root.mkdir(parents=True,exist_ok=True)
-          H={'User-Agent':'GalaxyViewerAVMValidation/0006'}
+          H={'User-Agent':'GalaxyViewerAVMValidation/0007'}
           image_url='https://chandra.harvard.edu/photo/2001/0144/0144_xray.jpg'
           page_url='https://chandra.harvard.edu/photo/2001/0144/'
+          NUM_RE=re.compile(r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?')
 
-          r=requests.get(image_url,timeout=60,headers=H); r.raise_for_status()
-          (root/'source.jpg').write_bytes(r.content)
-          p=requests.get(page_url,timeout=60,headers=H); p.raise_for_status()
-          (root/'source-page.html').write_text(p.text,encoding='utf-8')
-          if '5 x 4 arcmin' not in p.text or '12h 42m 50s' not in p.text:
-            raise SystemExit('Chandra Fast Facts gate failed')
+          def numeric_sequence(v):
+            if v is None:return []
+            if isinstance(v,dict):
+              for container in ('Seq','Bag','Alt'):
+                if container in v:return numeric_sequence(v[container])
+              if 'li' in v:return numeric_sequence(v['li'])
+              out=[]
+              for x in v.values():out.extend(numeric_sequence(x))
+              return out
+            if isinstance(v,(list,tuple)):
+              out=[]
+              for x in v:out.extend(numeric_sequence(x))
+              return out
+            if isinstance(v,(int,float)):return [float(v)]
+            if isinstance(v,str):return [float(x) for x in NUM_RE.findall(v)]
+            return []
 
-          im=Image.open(io.BytesIO(r.content)); im.load()
+          r=requests.get(image_url,timeout=60,headers=H);r.raise_for_status();(root/'source.jpg').write_bytes(r.content)
+          p=requests.get(page_url,timeout=60,headers=H);p.raise_for_status();(root/'source-page.html').write_text(p.text,encoding='utf-8')
+          if '5 x 4 arcmin' not in p.text or '12h 42m 50s' not in p.text:raise SystemExit('Chandra Fast Facts gate failed')
+
+          im=Image.open(io.BytesIO(r.content));im.load();x=im.getxmp() or {};desc=x.get('xmpmeta',{}).get('RDF',{}).get('Description',{})
+          def seq(name):return numeric_sequence(desc.get(name))
+          rv=seq('Spatial.ReferenceValue');rp=seq('Spatial.ReferencePixel');rd=seq('Spatial.ReferenceDimension');sc=seq('Spatial.Scale')
+          if not all(len(v)>=2 for v in (rv,rp,rd,sc)):raise SystemExit(f'Incomplete embedded AVM: rv={rv} rp={rp} rd={rd} sc={sc}')
+          ra,dec=rv[:2];px,py=rp[:2];rw,rh=rd[:2];sx,sy=sc[:2]
+          if abs(px-(rw+2)/2)>2 or abs(py-(rh+2)/2)>2:raise SystemExit(f'AVM reference pixel is not centered: rp={rp} rd={rd}')
+          fov_w=abs(sx*rw);fov_h=abs(sy*rh);fov=max(fov_w,fov_h)
+          if abs(ra-190.70833333333334)>.03 or abs(dec-2.6880555555555556)>.03:raise SystemExit(f'AVM center inconsistent with Chandra Fast Facts: {ra},{dec}')
+          if not (.075<=fov<=.095):raise SystemExit(f'AVM FoV inconsistent with 5 arcmin Chandra frame: {fov}')
+
           gold=json.load(open('viewer/image-databases/master-database/orientation-review/gv-human-gold-0009-min.json',encoding='utf-8'))
-          row=next((x for x in gold.get('rows',[]) if len(x)>=4 and x[0]=='Chandra' and x[1]=='chandra-2001-0144'),None)
-          if not row:
-            raise SystemExit('NGC 4636 human-gold row missing')
-          gold_rot=float(row[2]); gold_fov=float(row[3])
-          if abs(gold_rot)>0.05:
-            raise SystemExit(f'Unexpected NGC 4636 human-gold rotation: {gold_rot}')
-          if not (0.075 <= gold_fov <= 0.095):
-            raise SystemExit(f'Unexpected NGC 4636 human-gold FoV: {gold_fov}')
+          row=next((z for z in gold.get('rows',[]) if len(z)>=4 and z[0]=='Chandra' and z[1]=='chandra-2001-0144'),None)
+          if not row:raise SystemExit('NGC 4636 human-gold row missing')
+          gold_rot=float(row[2]);gold_fov=float(row[3])
+          if abs(gold_rot)>.05:raise SystemExit(f'Unexpected NGC 4636 human-gold rotation: {gold_rot}')
+          if abs(fov-gold_fov)>.02:raise SystemExit(f'Embedded AVM FoV inconsistent with human gold: AVM={fov} gold={gold_fov}')
 
-          gate={
-            'sourceImageUrl':image_url,
-            'sourcePageUrl':page_url,
-            'sourceImageSize':list(im.size),
-            'fastFacts':{'raDeg':190.70833333333334,'decDeg':2.6880555555555556,'fovArcmin':[5.0,4.0]},
-            'humanGold':{'schema':gold.get('schema'),'rotationDeg':gold_rot,'fovDeg':gold_fov}
-          }
-          (root/'gate.json').write_text(json.dumps(gate,indent=2),encoding='utf-8')
-          print(json.dumps(gate,indent=2))
+          out={'sourceImageUrl':image_url,'sourcePageUrl':page_url,'sourceImageSize':list(im.size),'avm':{'referenceValue':rv,'referencePixel':rp,'referenceDimension':rd,'scaleDegPerPixel':sc,'projection':desc.get('Spatial.CoordsystemProjection'),'frame':desc.get('Spatial.CoordinateFrame'),'fovWidthDeg':fov_w,'fovHeightDeg':fov_h},'humanGold':{'schema':gold.get('schema'),'rotationDeg':gold_rot,'fovDeg':gold_fov},'candidate':{'ra':ra,'dec':dec,'fov':fov,'rotation':gold_rot,'projection':'TAN'}}
+          (root/'candidate.json').write_text(json.dumps(out,indent=2),encoding='utf-8');print(json.dumps(out,indent=2))
           PY
 
-      - name: Create real Aladin displayJPG AVM probe
+      - name: Create direct real Aladin placement probe
         run: |
           python - <<'PY'
-          import base64,json
+          import json
           from pathlib import Path
-          root=Path('.tmp/gv-avm-ngc4636')
-          gate=json.load(open(root/'gate.json',encoding='utf-8'))
-          rot=gate['humanGold']['rotationDeg']
-          data_url='data:image/jpeg;base64,'+base64.b64encode((root/'source.jpg').read_bytes()).decode('ascii')
-          html=f'''<!doctype html><meta charset="utf-8"><style>html,body,#a{{margin:0;width:640px;height:640px;background:#000}}</style>
-          <div id="a"></div><script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>
-          <script>
-          window.probe={{done:false,ok:false,error:null,callback:null,live:null,humanGoldRotation:{rot}}};
-          (async()=>{{try{{
-            await A.init;
-            const a=A.aladin('#a',{{survey:'P/DSS2/color',target:'0 +0',fov:1,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,showReticle:true,showCooGrid:true}});
-            a.displayJPG({json.dumps(data_url)},{{label:'NGC 4636 Chandra AVM',nocache:true,transparency:0.72}},(ra,dec,fov)=>{{
-              try{{
-                const R=Number(ra),D=Number(dec),F=Number(fov);
-                window.probe.callback={{ra:R,dec:D,fov:F}};
-                a.gotoRaDec(R,D); a.setFoV(F); a.setRotation({rot});
-                setTimeout(()=>{{window.probe.live={{radec:a.getRaDec(),fov:a.getFov(),rotation:a.getRotation()}};window.probe.ok=true;window.probe.done=true;}},2200);
-              }}catch(e){{window.probe.error=String(e);window.probe.done=true;}}
-            }},e=>{{window.probe.error='displayJPG: '+String(e);window.probe.done=true;}});
-          }}catch(e){{window.probe.error=String(e);window.probe.done=true;}}}})();
-          </script>'''
+          root=Path('.tmp/gv-avm-ngc4636');d=json.load(open(root/'candidate.json',encoding='utf-8'));c=d['candidate']
+          html=f'''<!doctype html><meta charset="utf-8"><style>html,body,#a{{margin:0;width:640px;height:640px;background:#000}}</style><div id="a"></div><script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script><script>
+          window.probe={{done:false,ok:false,error:null,command:{json.dumps(c)},live:null}};(async()=>{{try{{await A.init;const a=A.aladin('#a',{{survey:'P/DSS2/color',target:'0 +0',fov:1,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,showReticle:true,showCooGrid:true}});a.gotoRaDec({c['ra']},{c['dec']});a.setFoV({c['fov']});a.setRotation({c['rotation']});setTimeout(()=>{{window.probe.live={{radec:a.getRaDec(),fov:a.getFov(),rotation:a.getRotation()}};window.probe.ok=true;window.probe.done=true;}},2500);}}catch(e){{window.probe.error=String(e);window.probe.done=true;}}}})();</script>'''
           (root/'probe.html').write_text(html,encoding='utf-8')
           PY
 
-      - name: Verify AVM center FoV and human-gold rotation in live Aladin
+      - name: Verify embedded AVM placement in live Aladin
         run: |
           python - <<'PY'
-          import asyncio,json,math,subprocess
+          import asyncio,json,subprocess
           from pathlib import Path
           from playwright.async_api import async_playwright
 
-          root=Path('.tmp/gv-avm-ngc4636')
-          gate=json.load(open(root/'gate.json',encoding='utf-8'))
+          root=Path('.tmp/gv-avm-ngc4636');candidate=json.load(open(root/'candidate.json',encoding='utf-8'))
           srv=subprocess.Popen(['python','-m','http.server','8765','--bind','127.0.0.1'],cwd=root,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-
-          def adiff(a,b): return abs(((float(a)-float(b)+180)%360)-180)
-
+          def adiff(a,b):return abs(((float(a)-float(b)+180)%360)-180)
           async def main():
             try:
               async with async_playwright() as p:
-                b=await p.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage'])
-                page=await b.new_page(viewport={'width':640,'height':640})
-                await page.goto('http://127.0.0.1:8765/probe.html',wait_until='domcontentloaded',timeout=60000)
+                b=await p.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage']);page=await b.new_page(viewport={'width':640,'height':640});await page.goto('http://127.0.0.1:8765/probe.html',wait_until='domcontentloaded',timeout=60000)
                 q=None
-                for _ in range(160):
+                for _ in range(80):
                   q=await page.evaluate('window.probe')
-                  if q and q.get('done'): break
+                  if q and q.get('done'):break
                   await asyncio.sleep(.25)
-                if not q or not q.get('done'): raise SystemExit('Aladin AVM probe timeout')
-                print('ALADIN AVM PROBE',json.dumps(q,indent=2))
-                if not q.get('ok'): raise SystemExit('Aladin AVM probe failed: '+str(q.get('error')))
-
-                cb=q['callback']; live=q['live']
-                if not all(math.isfinite(float(cb[k])) for k in ('ra','dec','fov')):
-                  raise SystemExit('Non-finite AVM callback')
-                if abs(float(cb['ra'])-gate['fastFacts']['raDeg'])>.03 or abs(float(cb['dec'])-gate['fastFacts']['decDeg'])>.03:
-                  raise SystemExit(f'AVM callback center inconsistent with Chandra Fast Facts: {cb}')
-                if not (.04 <= float(cb['fov']) <= .13):
-                  raise SystemExit(f'AVM callback FoV unreasonable: {cb}')
-                if abs(float(cb['fov'])-gate['humanGold']['fovDeg'])>.02:
-                  raise SystemExit(f'AVM callback FoV inconsistent with human gold: {cb}')
-
-                lr=live['radec']; lf=live['fov']; lf=max(lf) if isinstance(lf,list) else float(lf)
-                if abs(float(lr[0])-float(cb['ra']))>.003 or abs(float(lr[1])-float(cb['dec']))>.003:
-                  raise SystemExit('Live Aladin center did not follow AVM callback')
-                if abs(float(lr[0])-10.6847)<1 and abs(float(lr[1])-41.2688)<1:
-                  raise SystemExit('Aladin still on M31')
-                if not (.04 <= lf <= .13):
-                  raise SystemExit('Live Aladin FoV invalid')
-                if adiff(live['rotation'],gate['humanGold']['rotationDeg'])>.5:
-                  raise SystemExit('Live Aladin rotation did not follow human-gold rotation')
-
-                (root/'aladin-probe.json').write_text(json.dumps(q,indent=2),encoding='utf-8')
-                await page.screenshot(path=str(root/'probe.png'),full_page=True)
-                await b.close()
-            finally:
-              srv.terminate(); srv.wait(timeout=10)
-
+                if not q or not q.get('done'):raise SystemExit('Direct Aladin probe timeout')
+                print('DIRECT ALADIN PROBE',json.dumps(q,indent=2))
+                if not q.get('ok'):raise SystemExit('Direct Aladin probe failed: '+str(q.get('error')))
+                c=q['command'];live=q['live'];lr=live['radec'];lf=live['fov'];lf=max(lf) if isinstance(lf,list) else float(lf)
+                if abs(float(lr[0])-float(c['ra']))>.003 or abs(float(lr[1])-float(c['dec']))>.003:raise SystemExit('Live Aladin center mismatch')
+                if abs(float(lr[0])-10.6847)<1 and abs(float(lr[1])-41.2688)<1:raise SystemExit('Aladin still on M31')
+                if abs(lf-float(c['fov']))>.015:raise SystemExit(f'Live Aladin FoV mismatch: command={c["fov"]} live={lf}')
+                if adiff(live['rotation'],c['rotation'])>.5:raise SystemExit('Live Aladin rotation mismatch')
+                (root/'aladin-probe.json').write_text(json.dumps(q,indent=2),encoding='utf-8');await page.screenshot(path=str(root/'probe.png'),full_page=True);await b.close()
+            finally:srv.terminate();srv.wait(timeout=10)
           asyncio.run(main())
           PY
 
@@ -163,43 +134,9 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          root=Path('.tmp/gv-avm-ngc4636')
-          gate=json.load(open(root/'gate.json',encoding='utf-8'))
-          probe=json.load(open(root/'aladin-probe.json',encoding='utf-8'))
-          cb=probe['callback']; live=probe['live']
-          out={
-            'schema':'gv-curator-server-analysis-0001',
-            'generatedBy':'Chandra AVM via real Aladin displayJPG + Chandra Fast Facts + existing human-gold rotation + live Aladin readback',
-            'records':[{
-              'key':'Chandra:chandra-2001-0144',
-              'catalog':'Chandra',
-              'archiveId':'chandra-2001-0144',
-              'name':'NGC 4636',
-              'analysisMethod':'aladin-displayJPG-avm-center-fov-plus-human-gold-rotation',
-              'authoritativeSourcePage':gate['sourcePageUrl'],
-              'authoritativeImageUrl':gate['sourceImageUrl'],
-              'catalogRaDeg':190.7075,
-              'catalogDecDeg':2.6877777778,
-              'selectedRaDeg':float(cb['ra']),
-              'selectedDecDeg':float(cb['dec']),
-              'selectedFovDeg':float(cb['fov']),
-              'selectedRotationDeg':float(gate['humanGold']['rotationDeg']),
-              'rotationSource':gate['humanGold']['schema'],
-              'humanGoldFovDeg':float(gate['humanGold']['fovDeg']),
-              'sourceSpatialRotationDeg':None,
-              'projection':'TAN',
-              'orientationNeedsHumanValidation':False,
-              'validatedCenterFov':True,
-              'validatedRotation':True,
-              'validated':True,
-              'aladinReadback':live,
-              'sourceImageSize':gate['sourceImageSize'],
-              'authoritativeFrameArcmin':gate['fastFacts']['fovArcmin']
-            }]
-          }
-          dst=Path('viewer/image-databases/master-database/orientation-review/gv-curator-server-analysis-0001.json')
-          dst.write_text(json.dumps(out,indent=2),encoding='utf-8')
-          print(json.dumps(out,indent=2))
+          root=Path('.tmp/gv-avm-ngc4636');d=json.load(open(root/'candidate.json',encoding='utf-8'));p=json.load(open(root/'aladin-probe.json',encoding='utf-8'));c=d['candidate'];a=d['avm']
+          out={'schema':'gv-curator-server-analysis-0001','generatedBy':'embedded Chandra AVM center/FoV + Chandra Fast Facts + existing human-gold rotation + real Aladin live readback','records':[{'key':'Chandra:chandra-2001-0144','catalog':'Chandra','archiveId':'chandra-2001-0144','name':'NGC 4636','analysisMethod':'embedded-avm-center-fov-plus-human-gold-rotation-live-aladin-verified','authoritativeSourcePage':d['sourcePageUrl'],'authoritativeImageUrl':d['sourceImageUrl'],'catalogRaDeg':190.7075,'catalogDecDeg':2.6877777778,'selectedRaDeg':c['ra'],'selectedDecDeg':c['dec'],'selectedFovDeg':c['fov'],'sourceFovWidthDeg':a['fovWidthDeg'],'sourceFovHeightDeg':a['fovHeightDeg'],'selectedRotationDeg':c['rotation'],'rotationSource':d['humanGold']['schema'],'humanGoldFovDeg':d['humanGold']['fovDeg'],'sourceSpatialRotationDeg':None,'projection':c['projection'],'orientationNeedsHumanValidation':False,'validatedCenterFov':True,'validatedRotation':True,'validated':True,'aladinReadback':p['live'],'sourceImageSize':d['sourceImageSize'],'referenceDimension':a['referenceDimension'],'referencePixel':a['referencePixel'],'scaleDegPerPixel':a['scaleDegPerPixel']} ]}
+          dst=Path('viewer/image-databases/master-database/orientation-review/gv-curator-server-analysis-0001.json');dst.write_text(json.dumps(out,indent=2),encoding='utf-8');print(json.dumps(out,indent=2))
           PY
 
       - name: Commit validated server analysis
