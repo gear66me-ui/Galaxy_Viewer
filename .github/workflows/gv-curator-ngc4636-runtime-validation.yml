@@ -39,7 +39,7 @@ jobs:
           from PIL import Image
 
           root=Path('.tmp/gv-avm-ngc4636'); root.mkdir(parents=True,exist_ok=True)
-          H={'User-Agent':'GalaxyViewerAVMValidation/0005'}
+          H={'User-Agent':'GalaxyViewerAVMValidation/0006'}
           image_url='https://chandra.harvard.edu/photo/2001/0144/0144_xray.jpg'
           page_url='https://chandra.harvard.edu/photo/2001/0144/'
 
@@ -75,11 +75,12 @@ jobs:
       - name: Create real Aladin displayJPG AVM probe
         run: |
           python - <<'PY'
-          import json
+          import base64,json
           from pathlib import Path
           root=Path('.tmp/gv-avm-ngc4636')
           gate=json.load(open(root/'gate.json',encoding='utf-8'))
           rot=gate['humanGold']['rotationDeg']
+          data_url='data:image/jpeg;base64,'+base64.b64encode((root/'source.jpg').read_bytes()).decode('ascii')
           html=f'''<!doctype html><meta charset="utf-8"><style>html,body,#a{{margin:0;width:640px;height:640px;background:#000}}</style>
           <div id="a"></div><script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>
           <script>
@@ -87,7 +88,7 @@ jobs:
           (async()=>{{try{{
             await A.init;
             const a=A.aladin('#a',{{survey:'P/DSS2/color',target:'0 +0',fov:1,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,showReticle:true,showCooGrid:true}});
-            a.displayJPG('/source.jpg',{{label:'NGC 4636 Chandra AVM',nocache:true,transparency:0.72}},(ra,dec,fov)=>{{
+            a.displayJPG({json.dumps(data_url)},{{label:'NGC 4636 Chandra AVM',nocache:true,transparency:0.72}},(ra,dec,fov)=>{{
               try{{
                 const R=Number(ra),D=Number(dec),F=Number(fov);
                 window.probe.callback={{ra:R,dec:D,fov:F}};
