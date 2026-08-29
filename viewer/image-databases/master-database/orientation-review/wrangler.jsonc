@@ -1,6 +1,6 @@
 {
-  "name": "gv-cloudflare-auto-astrometry-curator-0023",
-  "main": "gv-cloudflare-auto-astrometry-curator-0023-worker.js",
+  "name": "gv-cloudflare-auto-astrometry-curator-0015",
+  "main": "gv-cloudflare-auto-astrometry-curator-0024-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
