@@ -1,0 +1,67 @@
+name: Deploy Astrometry Curator to Cloudflare
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [beta]
+    paths:
+      - 'viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-*-worker.js'
+      - 'viewer/image-databases/master-database/orientation-review/wrangler.jsonc'
+      - '.github/workflows/deploy-astrometry-curator-cloudflare.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ASTROMETRY_API_KEY: ${{ secrets.ASTROMETRY_API_KEY }}
+      WORKDIR: viewer/image-databases/master-database/orientation-review
+      LIVE_URL: https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+
+      - name: Verify required deployment secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID ASTROMETRY_API_KEY; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::$v is not configured in GitHub Actions secrets"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ]
+
+      - name: Install Wrangler
+        run: npm install --global wrangler@4
+
+      - name: Store Astrometry key in Cloudflare Worker
+        working-directory: ${{ env.WORKDIR }}
+        shell: bash
+        run: printf '%s' "$ASTROMETRY_API_KEY" | wrangler secret put ASTROMETRY_API_KEY --config wrangler.jsonc
+
+      - name: Deploy stable Worker
+        working-directory: ${{ env.WORKDIR }}
+        run: wrangler deploy --config wrangler.jsonc
+
+      - name: Verify live revision 0025
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 20); do
+            body="$(curl -fsS "$LIVE_URL/api/health" || true)"
+            echo "$body"
+            if echo "$body" | grep -q '"revision":"0025"' && echo "$body" | grep -q '"key_configured":true'; then
+              echo '=== CLOUDFLARE 0025 LIVE — PASS ==='
+              exit 0
+            fi
+            sleep 3
+          done
+          echo '::error::Live Worker did not report revision 0025 with server key configured'
+          exit 1
