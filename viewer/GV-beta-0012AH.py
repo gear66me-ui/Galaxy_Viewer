@@ -41,7 +41,7 @@ display(Javascript(r"""
     'use strict';
     const VERSION='12AH';
     const DISPLAY_VERSION='12AH';
-    const ALADIN_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin/aladin-classic-0001.js';
+    const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
     const HAMBURGER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js';
     const HAMBURGER_EXTENSION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0006.js';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js';
@@ -116,7 +116,7 @@ display(Javascript(r"""
         aladinPreloadPromise=(async()=>{
             try{
                 if(!window.A?.init){
-                    await loadScript(ALADIN_URL,'gvAladinLocal0001');
+                    await loadScript(ALADIN_URL,'gvAladin382');
                 }
 
                 if(!window.A?.init){
