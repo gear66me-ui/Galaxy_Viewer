@@ -11,6 +11,18 @@ const CLIENT=String.raw`<style id="gv45-style">
 <script>(()=>{
 'use strict';
 function install0045(){
+  const compare=document.querySelector('main > section.compare')||document.querySelector('.compare');
+  const readouts=document.querySelector('main > section.readouts')||document.querySelector('.readouts');
+  const rot=document.getElementById('rotRange');
+  const rotRow=rot?.closest?.('.controls');
+  const applyRot=[...document.querySelectorAll('button')].find(b=>/^APPLY\s+ROT(?:ATION)?$/i.test((b.textContent||'').trim()));
+  const applyRow=applyRot?.closest?.('.controls');
+  if(compare&&readouts&&rotRow){
+    if(compare.nextElementSibling!==rotRow)compare.insertAdjacentElement('afterend',rotRow);
+    if(applyRow&&applyRow!==rotRow&&rotRow.nextElementSibling!==applyRow)rotRow.insertAdjacentElement('afterend',applyRow);
+    const lastOrientationRow=applyRow&&applyRow!==rotRow?applyRow:rotRow;
+    if(lastOrientationRow.nextElementSibling!==readouts)lastOrientationRow.insertAdjacentElement('afterend',readouts);
+  }
   const b=document.querySelector('#gv26apply');
   if(b){b.disabled=true;b.textContent='★ MACHINE ASTROMETRY · SAFE RECOVERY — DISABLED';b.title='Legacy SIFT movement is disabled. Gaia machine solve will be restored only after catalog/image/Aladin baseline is healthy.'}
   if(!document.querySelector('#gv45Recovery')){
