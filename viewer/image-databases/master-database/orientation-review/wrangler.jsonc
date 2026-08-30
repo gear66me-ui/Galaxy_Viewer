@@ -1,7 +1,7 @@
 {
-  // Cloudflare Builds trigger: 2026-08-29 — GV 0032 load-hang repair + safe machine feedback
+  // Cloudflare Builds trigger: 2026-08-29 — GV 0033 normalize visible deployment timestamps
   "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0032-worker.js",
+  "main": "gv-cloudflare-auto-astrometry-curator-0033-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
