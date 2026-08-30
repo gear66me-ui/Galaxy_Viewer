@@ -60,6 +60,78 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-e6d61c025904 — ECO-20260830-12AR-CHECKPOINT-BEFORE-REQ028-028A
+
+**Recorded:** 2026-08-30T01:13:51-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`e6d61c025904705d4df015a3a1ae662ed5f2e05c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/e6d61c025904705d4df015a3a1ae662ed5f2e05c)  
+**Parent/baseline:** `24357fd49fd2dd9a2b2f051dda4aaaed1e7a6a43`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/24357fd49fd2dd9a2b2f051dda4aaaed1e7a6a43...e6d61c025904705d4df015a3a1ae662ed5f2e05c)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260830-12AR-CHECKPOINT-BEFORE-REQ028-028A`  
+**Requirements:** `REQ-028A`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `2`  
+**Actual changed paths:** `2`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/GV-beta-0012AR.py, viewer/modules/random-galaxy/gv-random-galaxy-0081.js`
+- Actual: `viewer/GV-beta-0012AR.py, viewer/modules/random-galaxy/gv-random-galaxy-0081.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0012AR.py`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `ec3c799b02cc8c7885a2c330eb36b1889fdcc6f0a7cb836a28df60d3f99f8a37`
+- Bytes: `0` -> `52655`
+- Lines: `0` -> `1224`
+- Characters: `0` -> `52646`
+- Inserted lines: `1224`
+- Deleted lines: `0`
+- Inserted characters: `52646`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/random-galaxy/gv-random-galaxy-0081.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `a904780e4d1f3c5c0ba5b6e4e04ee206e2f2ad55976d0a5e2d21dd0f8f955bc1`
+- Bytes: `0` -> `313400`
+- Lines: `0` -> `7093`
+- Characters: `0` -> `313357`
+- Inserted lines: `7093`
+- Deleted lines: `0`
+- Inserted characters: `313357`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-6e6aae2d8956 — ECO-20260830-REQ085-HUBBLE-CATALOG-TARGET-001
 
 **Recorded:** 2026-08-30T00:51:48-05:00  
