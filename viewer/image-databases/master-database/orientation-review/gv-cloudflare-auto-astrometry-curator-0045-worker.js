@@ -128,11 +128,12 @@ function patchCatalogRevision(h){
   const old=matches[0][0];
   const revisionMatches=old.match(/\brevision\s*:\s*['"][^'"]+['"]/g)||[];
   const urlCount=(old.match(/viewer\/image-databases\/Hubble\/databases\/gv-hubble-galaxies-full-[^'"}]+\.json/g)||[]).length;
-  if(revisionMatches.length!==1||urlCount!==1)return{ok:false,counts:{...counts,revision:revisionMatches.length,url:urlCount}};
-  const good=old
-    .replace(/(\brevision\s*:\s*['"])[^'"]+(['"])/,(_,a,b)=>a+'0025'+b)
-    .replace(/gv-hubble-galaxies-full-[^'"}]+\.json/,'gv-hubble-galaxies-full-0025.json');
-  return{ok:true,h:h.slice(0,matches[0].index)+good+h.slice(matches[0].index+old.length),counts:{...counts,revision:1,url:1}};
+  if(revisionMatches.length>1||urlCount!==1)return{ok:false,counts:{...counts,revision:revisionMatches.length,url:urlCount}};
+  let good=old.replace(/gv-hubble-galaxies-full-[^'"}]+\.json/,'gv-hubble-galaxies-full-0025.json');
+  if(revisionMatches.length===1){
+    good=good.replace(/(\brevision\s*:\s*['"])[^'"]+(['"])/,(_,a,b)=>a+'0025'+b);
+  }
+  return{ok:true,h:h.slice(0,matches[0].index)+good+h.slice(matches[0].index+old.length),counts:{...counts,revision:revisionMatches.length,url:1}};
 }
 function patchSourceMetadata(h){
   const readoutOld='<span>ROT</span><b id="catRot">—</b></div></div>';
