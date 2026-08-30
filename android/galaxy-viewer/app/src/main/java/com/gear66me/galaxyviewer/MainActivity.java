@@ -55,7 +55,9 @@ public final class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
 
-        webView.addJavascriptInterface(new DownloadBridge(this), "GalaxyViewerAndroid");
+        DownloadBridge downloadBridge = new DownloadBridge(this);
+        webView.addJavascriptInterface(downloadBridge, "GalaxyViewerAndroid");
+        webView.addJavascriptInterface(downloadBridge, "GalaxyViewerDownloads");
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             private boolean allowed(Uri uri) {
@@ -113,6 +115,41 @@ public final class MainActivity extends Activity {
 
         DownloadBridge(Context context) {
             this.context = context.getApplicationContext();
+        }
+
+        @JavascriptInterface
+        public void saveJson(String filename, String json) {
+            try {
+                String safe = filename == null || filename.isEmpty()
+                        ? "Galaxy-Viewer-Diagnostics.json"
+                        : filename;
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Downloads.DISPLAY_NAME, safe);
+                values.put(MediaStore.Downloads.MIME_TYPE, "application/json");
+                values.put(
+                        MediaStore.Downloads.RELATIVE_PATH,
+                        Environment.DIRECTORY_DOWNLOADS + "/Galaxy Viewer");
+
+                Uri target = context.getContentResolver().insert(
+                        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        values);
+                if (target == null)
+                    throw new IllegalStateException("Could not create Android download");
+
+                try (OutputStream output =
+                             context.getContentResolver().openOutputStream(target)) {
+                    if (output == null)
+                        throw new IllegalStateException("Could not open Android download");
+                    output.write(
+                            (json == null ? "" : json)
+                                    .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                }
+
+                Toast.makeText(context, "Diagnostics saved", Toast.LENGTH_SHORT).show();
+            } catch (Exception error) {
+                Toast.makeText(context, "Diagnostics download failed", Toast.LENGTH_LONG).show();
+            }
         }
 
         @JavascriptInterface
