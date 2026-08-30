@@ -24,6 +24,14 @@ function install0045(){
     const lastOrientationRow=applyRow&&applyRow!==rotRow?applyRow:rotRow;
     if(lastOrientationRow.nextElementSibling!==readouts)lastOrientationRow.insertAdjacentElement('afterend',readouts);
   }
+  const published=document.getElementById('published');
+  if(published&&!published.dataset.gv45DimsBound){
+    published.dataset.gv45DimsBound='1';
+    published.addEventListener('load',()=>{
+      const d=document.getElementById('catDims');
+      if(d&&published.naturalWidth&&published.naturalHeight)d.textContent=published.naturalWidth+' × '+published.naturalHeight+' px';
+    });
+  }
   const b=document.querySelector('#gv26apply');
   if(b){b.disabled=true;b.textContent='★ MACHINE ASTROMETRY · SAFE RECOVERY — DISABLED';b.title='Legacy SIFT movement is disabled. Gaia machine solve will be restored only after catalog/image/Aladin baseline is healthy.'}
   if(!document.querySelector('#gv45Recovery')){
@@ -73,6 +81,15 @@ function patchCatalogRevision(h){
   if(counts.bad!==1)return{ok:false,counts};
   return{ok:true,h:h.replace(bad,good),counts};
 }
+function patchSourceMetadata(h){
+  const readoutOld='<span>ROT</span><b id="catRot">—</b></div></div>';
+  const readoutNew='<span>ROT</span><b id="catRot">—</b><span>DIM</span><b id="catDims">—</b></div></div>';
+  const showOld="$('#catRot').textContent=b.rot===null?'MISSING':`${b.rot.toFixed(2)}°`;";
+  const showNew="$('#catRot').textContent=b.rot===null?'MISSING':`${b.rot.toFixed(2)}°`;$('#catDims').textContent=String(x.r.pixelSize||x.r.pixel_size||'LOADING…');";
+  const counts={readout:count(h,readoutOld),show:count(h,showOld)};
+  if(counts.readout!==1||counts.show!==1)return{ok:false,counts};
+  return{ok:true,h:h.replace(readoutOld,readoutNew).replace(showOld,showNew),counts};
+}
 function json(o,status=200){return new Response(JSON.stringify(o),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})}
 async function page(request,env){
   const r=await base0026.fetch(request,env);let h=await r.text();
@@ -80,7 +97,8 @@ async function page(request,env){
   const hd=patchHdSourcePriority(p.h);if(!hd.ok)return new Response('0045 STARTUP ERROR: HD source anchor counts '+JSON.stringify(hd.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
   const ai=patchAladinEarlyInit(hd.h);if(!ai.ok)return new Response('0045 STARTUP ERROR: Aladin init anchor counts '+JSON.stringify(ai.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
   const cat=patchCatalogRevision(ai.h);if(!cat.ok)return new Response('0045 STARTUP ERROR: Hubble catalog anchor counts '+JSON.stringify(cat.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
-  h=cat.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
+  const sm=patchSourceMetadata(cat.h);if(!sm.ok)return new Response('0045 STARTUP ERROR: source metadata anchor counts '+JSON.stringify(sm.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
+  h=sm.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
   h=h.slice(0,i)+CLIENT+h.slice(i);
   h=h.replaceAll('GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0026','GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0045');
   const headers=new Headers(r.headers);headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');headers.set('x-gv-revision',REV);headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);headers.set('x-gv-recovery-baseline','0026');headers.set('x-gv-legacy-sift-movement','disabled');headers.set('x-gv-source-image-priority','hdUrl-hd_url-then-existing');
