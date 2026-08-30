@@ -88,13 +88,33 @@ function patchAladinEarlyInit(h){
   const boot="async function boot(){";
   const init="await A.init;";
   const ctor="aladin=A.aladin('#aladin'";
-  const tail=";setInterval(updateLive,350);";
-  const counts={boot:count(h,boot),init:count(h,init),constructor:count(h,ctor),interval:count(h,tail)};
-  if(counts.boot!==1||counts.init!==1||counts.constructor!==1||counts.interval!==1)return{ok:false,counts};
-  const bootAt=h.indexOf(boot),initAt=h.indexOf(init,bootAt),ctorAt=h.indexOf(ctor,initAt),tailAt=h.indexOf(tail,ctorAt);
-  if(!(bootAt>=0&&bootAt<initAt&&initAt<ctorAt&&ctorAt<tailAt))return{ok:false,counts:{...counts,order:false}};
-  const neutral="aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 0',fov:1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});setInterval(updateLive,350);";
-  h=h.slice(0,ctorAt)+"applyState(init);"+h.slice(tailAt+tail.length);
+  const counts={boot:count(h,boot),init:count(h,init),constructor:count(h,ctor)};
+  if(counts.boot!==1||counts.init!==1||counts.constructor!==1)return{ok:false,counts};
+  const bootAt=h.indexOf(boot),initAt=h.indexOf(init,bootAt),ctorAt=h.indexOf(ctor,initAt);
+  if(!(bootAt>=0&&bootAt<initAt&&initAt<ctorAt))return{ok:false,counts:{...counts,order:false}};
+  const openAt=h.indexOf('(',ctorAt);
+  if(openAt<0)return{ok:false,counts:{...counts,constructorBoundary:false}};
+  let depth=0,quote='',escape=false,closeAt=-1;
+  for(let i=openAt;i<h.length;i++){
+    const ch=h[i];
+    if(quote){
+      if(escape){escape=false;continue}
+      if(ch==='\\'){escape=true;continue}
+      if(ch===quote){quote='';continue}
+      continue;
+    }
+    if(ch==="'"||ch==='"'||ch==='`'){quote=ch;continue}
+    if(ch==='('){depth++;continue}
+    if(ch===')'){
+      depth--;
+      if(depth===0){closeAt=i;break}
+      if(depth<0)break;
+    }
+  }
+  if(closeAt<0)return{ok:false,counts:{...counts,constructorBoundary:false}};
+  let endAt=closeAt+1;if(h[endAt]===';')endAt++;
+  const neutral="aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 0',fov:1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});";
+  h=h.slice(0,ctorAt)+"applyState(init);"+h.slice(endAt);
   const insertAt=h.indexOf(init,bootAt)+init.length;
   h=h.slice(0,insertAt)+neutral+h.slice(insertAt);
   return{ok:true,h,counts};
