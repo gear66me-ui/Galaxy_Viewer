@@ -1,7 +1,7 @@
 {
-  // Cloudflare Builds trigger: 2026-08-29 — GV 0034 orientation controls immediately below images
+  // Cloudflare Builds trigger: 2026-08-29 — GV 0035 lock orientation controls and preserve manual rotation
   "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0034-worker.js",
+  "main": "gv-cloudflare-auto-astrometry-curator-0035-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
