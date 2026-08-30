@@ -1,7 +1,7 @@
 {
-  // Cloudflare Builds trigger: 2026-08-29
+  // Cloudflare Builds trigger: 2026-08-29 — GV 0030 visible Colombia deployment stamp
   "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0029-worker.js",
+  "main": "gv-cloudflare-auto-astrometry-curator-0030-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
