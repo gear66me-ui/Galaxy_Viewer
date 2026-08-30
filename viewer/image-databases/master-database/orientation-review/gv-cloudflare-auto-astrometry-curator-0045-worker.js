@@ -146,13 +146,18 @@ function patchSourceMetadata(h){
   return{ok:true,h:h.slice(0,matches[0].index)+good+h.slice(matches[0].index+old.length),counts};
 }
 function patchLiveMetadata(h){
-  const readoutOld='<span>ROT</span><b id="liveRot">—</b></div></div></section>';
-  const readoutNew='<span>ROT</span><b id="liveRot">—</b><span>PARITY</span><b id="liveParity">—</b><span>VALID</span><b id="liveValid">TARGET NOT VERIFIED</b></div></div></section>';
-  const updateOld="$('#dockRot').textContent=rt;$('#rotRange').value=r;$('#rotDeg').value=r.toFixed(1)}";
-  const updateNew="$('#dockRot').textContent=rt;const me=$('#mirrorState,#mirror,#mirrorX'),mv=!!me&&/ON|TRUE|MIRROR/i.test(String(me.textContent||me.value||'')),g=$('#targetGate');$('#liveParity').textContent=mv?'MIRRORED':'NORMAL';$('#liveValid').textContent=g?.textContent||'TARGET NOT VERIFIED';$('#rotRange').value=r;$('#rotDeg').value=r.toFixed(1)}";
-  const counts={readout:count(h,readoutOld),update:count(h,updateOld)};
-  if(counts.readout!==1||counts.update!==1)return{ok:false,counts};
-  return{ok:true,h:h.replace(readoutOld,readoutNew).replace(updateOld,updateNew),counts};
+  const rotationReadout='id="gv26arot"';
+  const coordinateReadout='id="gv26coords"';
+  const rotationUpdate="if(q('#gv26arot'))q('#gv26arot').textContent=";
+  const coordinateUpdate="if(q('#gv26coords'))q('#gv26coords').textContent=";
+  const counts={
+    rotationReadout:count(h,rotationReadout),
+    coordinateReadout:count(h,coordinateReadout),
+    rotationUpdate:count(h,rotationUpdate),
+    coordinateUpdate:count(h,coordinateUpdate)
+  };
+  if(counts.rotationReadout!==1||counts.coordinateReadout!==1||counts.rotationUpdate!==1||counts.coordinateUpdate!==1)return{ok:false,counts};
+  return{ok:true,h,counts};
 }
 function json(o,status=200){return new Response(JSON.stringify(o),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})}
 async function page(request,env){
