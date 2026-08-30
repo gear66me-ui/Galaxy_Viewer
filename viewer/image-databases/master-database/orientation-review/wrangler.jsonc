@@ -1,7 +1,7 @@
 {
-  // Cloudflare Builds trigger: 2026-08-29 — GV 0043 disable legacy SIFT movement + standalone Gaia solver
+  // Cloudflare Builds trigger: 2026-08-29 — GV 0044 syntax + Hubble catalog + key health repair
   "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0043-worker.js",
+  "main": "gv-cloudflare-auto-astrometry-curator-0044-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
