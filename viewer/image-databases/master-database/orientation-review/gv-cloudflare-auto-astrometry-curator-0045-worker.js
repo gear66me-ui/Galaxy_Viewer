@@ -32,6 +32,16 @@ function install0045(){
       if(d&&published.naturalWidth&&published.naturalHeight)d.textContent=published.naturalWidth+' × '+published.naturalHeight+' px';
     });
   }
+  const survey=document.getElementById('survey');
+  if(survey&&!survey.dataset.gv45SurveyBound){
+    survey.dataset.gv45SurveyBound='1';
+    survey.addEventListener('change',()=>{
+      const id=String(survey.value||'').trim();
+      if(!id)return;
+      if(typeof aladin?.setBaseImageLayer==='function')aladin.setBaseImageLayer(id);
+      else if(typeof aladin?.setImageSurvey==='function')aladin.setImageSurvey(id);
+    });
+  }
   const b=document.querySelector('#gv26apply');
   if(b){b.disabled=true;b.textContent='★ MACHINE ASTROMETRY · SAFE RECOVERY — DISABLED';b.title='Legacy SIFT movement is disabled. Gaia machine solve will be restored only after catalog/image/Aladin baseline is healthy.'}
   if(!document.querySelector('#gv45Recovery')){
