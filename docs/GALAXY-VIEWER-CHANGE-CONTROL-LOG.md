@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-1a0d63b3ee29 — ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-008
+
+**Recorded:** 2026-08-30T18:14:00-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1a0d63b3ee291a5dd9f8f62fc56a5c0885e4d867`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1a0d63b3ee291a5dd9f8f62fc56a5c0885e4d867)  
+**Parent/baseline:** `66fe9dd05566d6c714edf928d9159de733c066fd`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/66fe9dd05566d6c714edf928d9159de733c066fd...1a0d63b3ee291a5dd9f8f62fc56a5c0885e4d867)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-008`  
+**Requirements:** `REQ-115,REQ-116,REQ-117,REQ-118`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/image-databases/master-database/orientation-review/wrangler.jsonc`
+- Actual: `viewer/image-databases/master-database/orientation-review/wrangler.jsonc`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/image-databases/master-database/orientation-review/wrangler.jsonc`
+
+- Git status: `M`
+- SHA-256 before: `443cdc2ee44915d0788021273a32175c093c07a04d2fbcfc3b03a9967e451182`
+- SHA-256 after: `07104526a60b1ed6b5e5c1a59da42aadf521e295269d37614f5f7429b347c619`
+- Bytes: `263` -> `263`
+- Lines: `7` -> `7`
+- Characters: `261` -> `261`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `1`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-ceed1d39e3d9 — ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-008
 
 **Recorded:** 2026-08-30T18:13:38-05:00  
