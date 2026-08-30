@@ -136,13 +136,14 @@ function patchCatalogRevision(h){
   return{ok:true,h:h.slice(0,matches[0].index)+good+h.slice(matches[0].index+old.length),counts:{...counts,revision:revisionMatches.length,url:1}};
 }
 function patchSourceMetadata(h){
-  const readoutOld='<span>ROT</span><b id="catRot">—</b></div></div>';
-  const readoutNew='<span>ROT</span><b id="catRot">—</b><span>DIM</span><b id="catDims">—</b></div></div>';
-  const showOld="$('#catRot').textContent=b.rot===null?'MISSING':`${b.rot.toFixed(2)}°`;";
-  const showNew="$('#catRot').textContent=b.rot===null?'MISSING':`${b.rot.toFixed(2)}°`;$('#catDims').textContent=String(x.r.pixelSize||x.r.pixel_size||'LOADING…');";
-  const counts={readout:count(h,readoutOld),show:count(h,showOld)};
-  if(counts.readout!==1||counts.show!==1)return{ok:false,counts};
-  return{ok:true,h:h.replace(readoutOld,readoutNew).replace(showOld,showNew),counts};
+  const rotPattern=/<b\s+id=['"]catRot['"][^>]*>[^<]*<\/b>/g;
+  const rotMatches=[...h.matchAll(rotPattern)];
+  const dimsCount=(h.match(/\bid=['"]catDims['"]/g)||[]).length;
+  const counts={catRot:rotMatches.length,catDims:dimsCount};
+  if(rotMatches.length!==1||dimsCount!==0)return{ok:false,counts};
+  const old=rotMatches[0][0];
+  const good=old+'<span>DIM</span><b id="catDims">—</b>';
+  return{ok:true,h:h.slice(0,rotMatches[0].index)+good+h.slice(rotMatches[0].index+old.length),counts};
 }
 function patchLiveMetadata(h){
   const readoutOld='<span>ROT</span><b id="liveRot">—</b></div></div></section>';
