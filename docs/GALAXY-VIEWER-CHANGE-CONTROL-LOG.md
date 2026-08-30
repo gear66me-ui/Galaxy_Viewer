@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-ceed1d39e3d9 — ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-008
+
+**Recorded:** 2026-08-30T18:13:38-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ceed1d39e3d95f9317f606cf53890472177e038a`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ceed1d39e3d95f9317f606cf53890472177e038a)  
+**Parent/baseline:** `a4eb04d7c93c3b7d85879d9a4d0a0e13aba246cf`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/a4eb04d7c93c3b7d85879d9a4d0a0e13aba246cf...ceed1d39e3d95f9317f606cf53890472177e038a)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-008`  
+**Requirements:** `REQ-115,REQ-116,REQ-117,REQ-118`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-0048-worker.js`
+- Actual: `viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-0048-worker.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-0048-worker.js`
+
+- Git status: `M`
+- SHA-256 before: `feb331287499aef248d23810ced21f2c333468ba2d7eb70c1ea2b763881933df`
+- SHA-256 after: `84fbd1b5bbebbc483666d97d146bf3fbc202c691f0eeb5519f7cfbcd0f6b3330`
+- Bytes: `13211` -> `13784`
+- Lines: `51` -> `213`
+- Characters: `13170` -> `13743`
+- Inserted lines: `181`
+- Deleted lines: `19`
+- Inserted characters: `573`
+- Deleted characters: `0`
+- Changed diff blocks: `6`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-fd2ab4c1bd87 — ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-007
 
 **Recorded:** 2026-08-30T18:08:59-05:00  
