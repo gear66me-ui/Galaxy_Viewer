@@ -46,7 +46,7 @@ display(Javascript(r"""
     const HAMBURGER_EXTENSION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0006.js';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js';
-    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0085.js';
+    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0086.js';
     const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0011.js?v=12AR-FLIGHT-RECORDER';
     const DOWNLOAD_SERVICE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-service/gv-download-service-0001.js';
     const DOWNLOAD_ANALYTICS_BASE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-analytics/gv-download-analytics-0002.js';
@@ -165,7 +165,7 @@ display(Javascript(r"""
         loadScript(HAMBURGER_URL,'gvHamburger0005').then(()=>loadScript(HAMBURGER_EXTENSION_URL,'gvHamburger0006')),
         loadScript(COORDINATE_URL,'gvCoordinate0006'),
         loadScript(TARGET_URL,'gvTarget0004'),
-        loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0085'),
+        loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0086'),
         loadScript(DIAGNOSTICS_URL,'gvDiagnostics0011'),
         loadScript(DOWNLOAD_SERVICE_URL,'gvDownloadService0001').then(()=>loadScript(DOWNLOAD_ANALYTICS_BASE_URL,'gvDownloadAnalytics0002')).then(()=>loadScript(DOWNLOAD_ANALYTICS_URL,'gvDownloadAnalytics0003'))
     ]);
@@ -760,9 +760,9 @@ display(Javascript(r"""
 
     // HOME / observable-universe presentation is owned by Random Galaxy
     if(
-        window.GalaxyRandomGalaxy?.VERSION!=='0085' ||
+        window.GalaxyRandomGalaxy?.VERSION!=='0086' ||
         typeof window.GalaxyRandomGalaxy.bootstrapHomePresentation!=='function'
-    )throw new Error('RANDOM GALAXY 0085 HOME BOOTSTRAP EXPORT MISSING');
+    )throw new Error('RANDOM GALAXY 0086 HOME BOOTSTRAP EXPORT MISSING');
 
     window.GalaxyRandomGalaxy.bootstrapHomePresentation(root);
 
@@ -857,7 +857,7 @@ display(Javascript(r"""
     startupTiming.catalogReadyAt=performance.now();
 
     // ==================== RANDOM NAVIGATION ====================
-    if(window.GalaxyRandomGalaxy?.VERSION!=='0085')throw new Error('RANDOM GALAXY 0085 EXPORT MISSING OR VERSION MISMATCH');
+    if(window.GalaxyRandomGalaxy?.VERSION!=='0086')throw new Error('RANDOM GALAXY 0086 EXPORT MISSING OR VERSION MISMATCH');
     let randomNavigationWindow=null;
 
     let earthReturnApi=Object.freeze({
