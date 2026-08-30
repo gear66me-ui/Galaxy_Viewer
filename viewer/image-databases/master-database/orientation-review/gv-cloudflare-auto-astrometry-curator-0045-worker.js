@@ -67,8 +67,8 @@ function patchAladinEarlyInit(h){
   return{ok:true,h:h.replace(earlyOld,earlyNew).replace(lateOld,lateNew),counts};
 }
 function patchCatalogRevision(h){
-  const bad='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0026.json';
-  const good='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json';
+  const bad="{name:'Hubble',revision:'0026',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0026.json'}";
+  const good="{name:'Hubble',revision:'0025',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json'}";
   const counts={bad:count(h,bad)};
   if(counts.bad!==1)return{ok:false,counts};
   return{ok:true,h:h.replace(bad,good),counts};
