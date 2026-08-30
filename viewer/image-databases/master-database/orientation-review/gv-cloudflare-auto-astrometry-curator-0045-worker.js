@@ -7,6 +7,7 @@ const BUILD_STAMP_ISO='2026-08-29T21:19:00-05:00';
 const CLIENT=String.raw`<style id="gv45-style">
 #gv45Recovery{margin:6px 8px;padding:7px 9px;border:1px solid #2f8b60;border-radius:8px;background:#0d2c20;color:#8fffc0;font:900 10px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}
 #gv26apply:disabled{opacity:.72!important;cursor:not-allowed!important}
+.compare{grid-template-columns:1fr 1fr!important}
 </style>
 <script>(()=>{
 'use strict';
