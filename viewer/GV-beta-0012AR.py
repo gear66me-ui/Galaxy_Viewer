@@ -47,7 +47,7 @@ display(Javascript(r"""
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js';
     const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0081.js';
-    const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0006.js?v=12AQ-FLIGHT-RECORDER';
+    const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0007.js?v=12AQ-FLIGHT-RECORDER';
     const DOWNLOAD_SERVICE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-service/gv-download-service-0001.js';
     const DOWNLOAD_ANALYTICS_BASE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-analytics/gv-download-analytics-0002.js';
     const DOWNLOAD_ANALYTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-analytics/gv-download-analytics-0003.js';
@@ -166,7 +166,7 @@ display(Javascript(r"""
         loadScript(COORDINATE_URL,'gvCoordinate0006'),
         loadScript(TARGET_URL,'gvTarget0004'),
         loadScript(RANDOM_GALAXY_URL,'gvRandomGalaxy0081'),
-        loadScript(DIAGNOSTICS_URL,'gvDiagnostics0006'),
+        loadScript(DIAGNOSTICS_URL,'gvDiagnostics0007'),
         loadScript(DOWNLOAD_SERVICE_URL,'gvDownloadService0001').then(()=>loadScript(DOWNLOAD_ANALYTICS_BASE_URL,'gvDownloadAnalytics0002')).then(()=>loadScript(DOWNLOAD_ANALYTICS_URL,'gvDownloadAnalytics0003'))
     ]);
 
