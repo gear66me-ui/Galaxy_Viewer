@@ -120,11 +120,19 @@ function patchAladinEarlyInit(h){
   return{ok:true,h,counts};
 }
 function patchCatalogRevision(h){
-  const bad="{name:'Hubble',revision:'0026',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0026.json'}";
-  const good="{name:'Hubble',revision:'0025',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json'}";
-  const counts={bad:count(h,bad)};
-  if(counts.bad!==1)return{ok:false,counts};
-  return{ok:true,h:h.replace(bad,good),counts};
+  const objectPattern=/\{[^{}]*name\s*:\s*['"]Hubble['"][^{}]*\}/g;
+  const hubblePath='viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-';
+  const matches=[...h.matchAll(objectPattern)].filter(m=>m[0].includes(hubblePath));
+  const counts={hubbleObjects:matches.length};
+  if(matches.length!==1)return{ok:false,counts};
+  const old=matches[0][0];
+  const revisionMatches=old.match(/\brevision\s*:\s*['"][^'"]+['"]/g)||[];
+  const urlCount=(old.match(/viewer\/image-databases\/Hubble\/databases\/gv-hubble-galaxies-full-[^'"}]+\.json/g)||[]).length;
+  if(revisionMatches.length!==1||urlCount!==1)return{ok:false,counts:{...counts,revision:revisionMatches.length,url:urlCount}};
+  const good=old
+    .replace(/(\brevision\s*:\s*['"])[^'"]+(['"])/,(_,a,b)=>a+'0025'+b)
+    .replace(/gv-hubble-galaxies-full-[^'"}]+\.json/,'gv-hubble-galaxies-full-0025.json');
+  return{ok:true,h:h.slice(0,matches[0].index)+good+h.slice(matches[0].index+old.length),counts:{...counts,revision:1,url:1}};
 }
 function patchSourceMetadata(h){
   const readoutOld='<span>ROT</span><b id="catRot">—</b></div></div>';
