@@ -90,6 +90,15 @@ function patchSourceMetadata(h){
   if(counts.readout!==1||counts.show!==1)return{ok:false,counts};
   return{ok:true,h:h.replace(readoutOld,readoutNew).replace(showOld,showNew),counts};
 }
+function patchLiveMetadata(h){
+  const readoutOld='<span>ROT</span><b id="liveRot">—</b></div></div></section>';
+  const readoutNew='<span>ROT</span><b id="liveRot">—</b><span>PARITY</span><b id="liveParity">—</b><span>VALID</span><b id="liveValid">TARGET NOT VERIFIED</b></div></div></section>';
+  const updateOld="$('#dockRot').textContent=rt;$('#rotRange').value=r;$('#rotDeg').value=r.toFixed(1)}";
+  const updateNew="$('#dockRot').textContent=rt;const me=$('#mirrorState,#mirror,#mirrorX'),mv=!!me&&/ON|TRUE|MIRROR/i.test(String(me.textContent||me.value||'')),g=$('#targetGate');$('#liveParity').textContent=mv?'MIRRORED':'NORMAL';$('#liveValid').textContent=g?.textContent||'TARGET NOT VERIFIED';$('#rotRange').value=r;$('#rotDeg').value=r.toFixed(1)}";
+  const counts={readout:count(h,readoutOld),update:count(h,updateOld)};
+  if(counts.readout!==1||counts.update!==1)return{ok:false,counts};
+  return{ok:true,h:h.replace(readoutOld,readoutNew).replace(updateOld,updateNew),counts};
+}
 function json(o,status=200){return new Response(JSON.stringify(o),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})}
 async function page(request,env){
   const r=await base0026.fetch(request,env);let h=await r.text();
@@ -98,7 +107,8 @@ async function page(request,env){
   const ai=patchAladinEarlyInit(hd.h);if(!ai.ok)return new Response('0045 STARTUP ERROR: Aladin init anchor counts '+JSON.stringify(ai.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
   const cat=patchCatalogRevision(ai.h);if(!cat.ok)return new Response('0045 STARTUP ERROR: Hubble catalog anchor counts '+JSON.stringify(cat.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
   const sm=patchSourceMetadata(cat.h);if(!sm.ok)return new Response('0045 STARTUP ERROR: source metadata anchor counts '+JSON.stringify(sm.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
-  h=sm.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
+  const lm=patchLiveMetadata(sm.h);if(!lm.ok)return new Response('0045 STARTUP ERROR: live metadata anchor counts '+JSON.stringify(lm.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
+  h=lm.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
   h=h.slice(0,i)+CLIENT+h.slice(i);
   h=h.replaceAll('GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0026','GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0045');
   const headers=new Headers(r.headers);headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');headers.set('x-gv-revision',REV);headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);headers.set('x-gv-recovery-baseline','0026');headers.set('x-gv-legacy-sift-movement','disabled');headers.set('x-gv-source-image-priority','hdUrl-hd_url-then-existing');
