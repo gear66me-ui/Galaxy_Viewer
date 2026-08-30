@@ -57,12 +57,22 @@ function patchHdSourcePriority(h){
   if(counts.imageOf!==1||counts.fallbackCandidates!==1)return{ok:false,counts};
   return{ok:true,h:h.replace(imageOfOld,imageOfNew).replace(candidatesOld,candidatesNew),counts};
 }
+function patchAladinEarlyInit(h){
+  const earlyOld="await A.init;const [pr,...cats]=await Promise.all([";
+  const earlyNew="await A.init;aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 0',fov:1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});setInterval(updateLive,350);const [pr,...cats]=await Promise.all([";
+  const lateOld="aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:`${init.ra??0} ${init.dec??0}`,fov:init.fov||1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});setInterval(updateLive,350);";
+  const lateNew="applyState(init);";
+  const counts={earlyInit:count(h,earlyOld),lateInit:count(h,lateOld)};
+  if(counts.earlyInit!==1||counts.lateInit!==1)return{ok:false,counts};
+  return{ok:true,h:h.replace(earlyOld,earlyNew).replace(lateOld,lateNew),counts};
+}
 function json(o,status=200){return new Response(JSON.stringify(o),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})}
 async function page(request,env){
   const r=await base0026.fetch(request,env);let h=await r.text();
   const p=patchLegacy(h);if(!p.ok)return new Response('0045 STARTUP ERROR: legacy movement anchor counts '+JSON.stringify(p.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
   const hd=patchHdSourcePriority(p.h);if(!hd.ok)return new Response('0045 STARTUP ERROR: HD source anchor counts '+JSON.stringify(hd.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
-  h=hd.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
+  const ai=patchAladinEarlyInit(hd.h);if(!ai.ok)return new Response('0045 STARTUP ERROR: Aladin init anchor counts '+JSON.stringify(ai.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
+  h=ai.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
   h=h.slice(0,i)+CLIENT+h.slice(i);
   h=h.replaceAll('GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0026','GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0045');
   const headers=new Headers(r.headers);headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');headers.set('x-gv-revision',REV);headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);headers.set('x-gv-recovery-baseline','0026');headers.set('x-gv-legacy-sift-movement','disabled');headers.set('x-gv-source-image-priority','hdUrl-hd_url-then-existing');
