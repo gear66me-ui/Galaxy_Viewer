@@ -1,75 +1,55 @@
 import gv0029 from './gv-cloudflare-auto-astrometry-curator-0029-worker.js';
 
 const REV='0030';
-const BUILD_STAMP_COLOMBIA='2026-08-29 19:12:46 COT';
-const BUILD_STAMP_ISO='2026-08-29T19:12:46-05:00';
-const LAYOUT_FROM="if(box.nextElementSibling!==controls)box.insertAdjacentElement('afterend',controls);";
-const LAYOUT_TO="if(read.previousElementSibling!==controls)read.insertAdjacentElement('beforebegin',controls);";
+const BUILD_STAMP_COLOMBIA="2026-08-29 19:22:14 COT";
+const BUILD_STAMP_ISO="2026-08-29T19:22:14-05:00";
+const SCOPE_PATCH_GZ_B64='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';
 
-const STATUS_BANNER=String.raw`<style>
-#gv30DeployStamp{position:sticky;top:0;z-index:2147483647;box-sizing:border-box;width:100%;padding:5px 8px;background:#07131f;border-bottom:1px solid #2f8b60;color:#7dffb5;font:800 10px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center;letter-spacing:.2px}
-#gv30DeployStamp strong{color:#fff}#gv30DeployStamp .now{color:#ffd166}
-#gv29ControlsHotfix::before{content:'ANGLE ADJUSTMENT';display:block;margin:0 0 5px;color:#7dffb5;font:900 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.5px}
-@media(max-width:700px){#gv30DeployStamp{font-size:9px;padding:4px 5px;line-height:1.2}#gv29ControlsHotfix::before{font-size:9px;margin-bottom:3px}}
-</style>
-<div id="gv30DeployStamp" role="status" aria-live="polite"><strong>GV 0030 LIVE</strong> · BUILD 2026-08-29 19:12:46 COT · LAYOUT: IMAGES → ANGLE → SOURCE/LIVE · <span class="now" id="gv30ColombiaClock">COLOMBIA NOW —</span></div>
-<script>(()=>{'use strict';
-const el=document.getElementById('gv30ColombiaClock');
-const f=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-function tick(){if(el)el.textContent='COLOMBIA NOW '+f.format(new Date())+' COT'}
-function enforceAngleOrder(){const read=document.querySelector('.readouts'),controls=document.querySelector('#analyzeBtn')?.closest('.panel');if(read&&controls&&read.previousElementSibling!==controls)read.insertAdjacentElement('beforebegin',controls)}
-tick();enforceAngleOrder();setInterval(tick,1000);setInterval(enforceAngleOrder,250);
-console.log('[GV0030][DEPLOY] build '+${JSON.stringify(BUILD_STAMP_COLOMBIA)}+'; order IMAGES > ANGLE > SOURCE/LIVE; inherited solver/UI from 0029');
-})();</script>`;
-
-function injectAfterBody(html){
-  const m=html.match(/<body(?:\s[^>]*)?>/i);
-  if(!m)return null;
-  const i=m.index+m[0].length;
-  return html.slice(0,i)+STATUS_BANNER+html.slice(i);
+async function gunzipText(b64){
+  const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Response(stream).text();
 }
+function stripScriptContaining(html,needle){
+  const n=html.indexOf(needle);if(n<0)return {html,removed:false};
+  const s=html.lastIndexOf('<script',n),e=html.indexOf('</script>',n);
+  if(s<0||e<0)return {html,removed:false};
+  return {html:html.slice(0,s)+`<script>console.log('[GV0030] removed broken 0029 cross-scope patch: ${needle}')</script>`+html.slice(e+9),removed:true};
+}
+function injectSameScope(html,patch){
+  const anchor='boot();',i=html.indexOf(anchor);
+  if(i<0)return {html,applied:false};
+  return {html:html.slice(0,i)+patch+'\n'+html.slice(i),applied:true};
+}
+const STATUS_BANNER=String.raw`<style>
+#gv30DeployStamp{position:sticky;top:0;z-index:2147483647;box-sizing:border-box;width:100%;padding:5px 8px;background:#07131f;border-bottom:1px solid #2f8b60;color:#7dffb5;font:800 10px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center}
+#gv30DeployStamp strong{color:#fff}#gv30DeployStamp .now{color:#ffd166}
+#gv30MachineGate,#gv30Sync{margin:0 6px 6px;padding:6px 8px;border:1px solid #42566f;border-radius:8px;background:#09121f;font:800 10px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+#gv30MachineGate.good,#gv30Sync.good{border-color:#2f8b60;color:#57e39b}#gv30MachineGate.warn,#gv30Sync.warn{border-color:#9b8130;color:#ffd166}#gv30MachineGate.bad{border-color:#a94750;color:#ff7575}
+#gv30AnglePanel{margin-bottom:6px}#gv30AngleTitle{margin:0 0 5px;color:#7dffb5;font:900 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.5px}
+@media(max-width:700px){#gv30DeployStamp{font-size:9px;padding:4px 5px;line-height:1.2}#gv30MachineGate,#gv30Sync{font-size:9px;margin:0 4px 4px;padding:5px 6px}#gv30AngleTitle{font-size:9px;margin-bottom:3px}#gv30AnglePanel{padding:5px;margin-bottom:4px}}
+</style>
+<div id="gv30DeployStamp" role="status" aria-live="polite"><strong>GV 0030 LIVE</strong> · BUILD 2026-08-29 19:22:14 COT · MACHINE BUTTON = GAIA ASTROMETRY · <span class="now" id="gv30ColombiaClock">COLOMBIA NOW —</span></div>
+<script>(()=>{'use strict';const el=document.getElementById('gv30ColombiaClock'),f=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});function tick(){if(el)el.textContent='COLOMBIA NOW '+f.format(new Date())+' COT'}tick();setInterval(tick,1000)})();</script>`;
+function injectAfterBody(html){const m=html.match(/<body(?:\s[^>]*)?>/i);if(!m)return null;const i=m.index+m[0].length;return html.slice(0,i)+STATUS_BANNER+html.slice(i)}
 
 async function page(request,env){
-  const r=await gv0029.fetch(request,env);
-  let h=await r.text();
-  const layoutPatched=h.includes(LAYOUT_FROM);
-  if(layoutPatched)h=h.replace(LAYOUT_FROM,LAYOUT_TO);
+  const r=await gv0029.fetch(request,env);let h=await r.text();
+  const removedSolver=stripScriptContaining(h,'const oldShow29=showCurrent;');h=removedSolver.html;
+  const removedHotfix=stripScriptContaining(h,'let gv29LastKey=');h=removedHotfix.html;
+  const patch=await gunzipText(SCOPE_PATCH_GZ_B64);
+  const scoped=injectSameScope(h,patch);h=scoped.html;
+  h=h.replaceAll('GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0029','GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0030');
   const out=injectAfterBody(h);
   if(out==null)return new Response('0030 STARTUP ERROR: body anchor missing',{status:500});
   const headers=new Headers(r.headers);
-  headers.set('content-type','text/html; charset=utf-8');
-  headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');
-  headers.set('pragma','no-cache');
-  headers.set('expires','0');
-  headers.set('x-gv-revision',REV);
-  headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);
-  headers.set('x-gv-layout-order','images-angle-source-live');
-  headers.set('x-gv-layout-patch',layoutPatched?'applied':'fallback-guard');
+  headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');headers.set('pragma','no-cache');headers.set('expires','0');
+  headers.set('x-gv-revision',REV);headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);headers.set('x-gv-layout-order','images-angle-source-live');headers.set('x-gv-machine-scope',scoped.applied?'same-scope-installed':'anchor-missing');headers.set('x-gv-0029-broken-solver-removed',removedSolver.removed?'yes':'no');headers.set('x-gv-0029-hotfix-removed',removedHotfix.removed?'yes':'no');
   return new Response(out,{status:r.status,headers});
 }
-
 async function health(request,env){
-  const r=await gv0029.fetch(request,env);
-  let data={};
-  try{data=await r.json()}catch{}
-  data={...data,
-    ok:true,
-    revision:REV,
-    service:'gv-cloudflare-auto-astrometry-curator-0030',
-    inherited_from:'0029',
-    build_stamp_colombia:BUILD_STAMP_COLOMBIA,
-    build_stamp_iso:BUILD_STAMP_ISO,
-    timezone:'America/Bogota',
-    deployment_visibility:'visible-banner-and-live-colombia-clock',
-    layout_order:['images','angle-adjustment-controls','source-image-data','live-validation-data'],
-    features:[...new Set([...(Array.isArray(data.features)?data.features:[]),'visible-deployment-stamp','live-colombia-clock','angle-controls-immediately-below-images','no-store-root'])]
-  };
-  return new Response(JSON.stringify(data,null,2),{status:200,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0','x-gv-revision':REV,'x-gv-build-colombia':BUILD_STAMP_COLOMBIA,'x-gv-layout-order':'images-angle-source-live'}});
+  const r=await gv0029.fetch(request,env);let data={};try{data=await r.json()}catch{}
+  data={...data,ok:true,revision:REV,service:'gv-cloudflare-auto-astrometry-curator-0030',inherited_from:'0029-api',build_stamp_colombia:BUILD_STAMP_COLOMBIA,build_stamp_iso:BUILD_STAMP_ISO,timezone:'America/Bogota',architecture:'same-scope-gaia-stellar-gated',machine_button:'APPLY MACHINE ASTROMETRY',catalog_rotation_seed:false,deployment_visibility:'visible-banner-and-live-colombia-clock',layout_order:['images','angle-adjustment-controls','source-image-data','live-validation-data'],features:[...new Set([...(Array.isArray(data.features)?data.features:[]),'same-scope-machine-solver','apply-machine-button-runs-gaia','catalog-rotation-prohibited-as-machine-seed','broken-0029-cross-scope-solver-removed','visible-deployment-stamp','live-colombia-clock','angle-controls-immediately-below-images','no-store-root'])]};
+  return new Response(JSON.stringify(data,null,2),{status:200,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0','x-gv-revision':REV,'x-gv-build-colombia':BUILD_STAMP_COLOMBIA,'x-gv-machine-scope':'same-scope-gaia','x-gv-layout-order':'images-angle-source-live'}});
 }
-
-export default {async fetch(request,env){
-  const u=new URL(request.url);
-  if(u.pathname==='/'||u.pathname==='/index.html')return page(request,env);
-  if(u.pathname==='/api/health')return health(request,env);
-  return gv0029.fetch(request,env);
-}};
+export default {async fetch(request,env){const u=new URL(request.url);if(u.pathname==='/'||u.pathname==='/index.html')return page(request,env);if(u.pathname==='/api/health')return health(request,env);return gv0029.fetch(request,env)}};
