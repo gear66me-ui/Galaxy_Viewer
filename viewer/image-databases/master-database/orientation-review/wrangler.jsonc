@@ -1,7 +1,7 @@
 {
-  // Cloudflare Builds trigger: 2026-08-29 — GV 0037 preserve native Gaia click path + manual orientation
+  // Cloudflare Builds trigger: 2026-08-29 — GV 0038 block pre-solve reset; final Gaia applies RA/Dec/FOV/rotation
   "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0037-worker.js",
+  "main": "gv-cloudflare-auto-astrometry-curator-0038-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
