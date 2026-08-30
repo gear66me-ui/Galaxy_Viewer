@@ -85,13 +85,19 @@ function patchHdSourcePriority(h){
   return{ok:true,h:h.replace(imageOfOld,imageOfNew).replace(candidatesOld,candidatesNew),counts};
 }
 function patchAladinEarlyInit(h){
-  const earlyOld="await A.init;const [pr,...cats]=await Promise.all([";
-  const earlyNew="await A.init;aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 0',fov:1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});setInterval(updateLive,350);const [pr,...cats]=await Promise.all([";
-  const lateOld="aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:`${init.ra??0} ${init.dec??0}`,fov:init.fov||1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});setInterval(updateLive,350);";
-  const lateNew="applyState(init);";
-  const counts={earlyInit:count(h,earlyOld),lateInit:count(h,lateOld)};
-  if(counts.earlyInit!==1||counts.lateInit!==1)return{ok:false,counts};
-  return{ok:true,h:h.replace(earlyOld,earlyNew).replace(lateOld,lateNew),counts};
+  const boot="async function boot(){";
+  const init="await A.init;";
+  const ctor="aladin=A.aladin('#aladin'";
+  const tail=";setInterval(updateLive,350);";
+  const counts={boot:count(h,boot),init:count(h,init),constructor:count(h,ctor),interval:count(h,tail)};
+  if(counts.boot!==1||counts.init!==1||counts.constructor!==1||counts.interval!==1)return{ok:false,counts};
+  const bootAt=h.indexOf(boot),initAt=h.indexOf(init,bootAt),ctorAt=h.indexOf(ctor,initAt),tailAt=h.indexOf(tail,ctorAt);
+  if(!(bootAt>=0&&bootAt<initAt&&initAt<ctorAt&&ctorAt<tailAt))return{ok:false,counts:{...counts,order:false}};
+  const neutral="aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 0',fov:1.5,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});setInterval(updateLive,350);";
+  h=h.slice(0,ctorAt)+"applyState(init);"+h.slice(tailAt+tail.length);
+  const insertAt=h.indexOf(init,bootAt)+init.length;
+  h=h.slice(0,insertAt)+neutral+h.slice(insertAt);
+  return{ok:true,h,counts};
 }
 function patchCatalogRevision(h){
   const bad="{name:'Hubble',revision:'0026',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0026.json'}";
