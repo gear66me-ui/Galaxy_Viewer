@@ -60,6 +60,78 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-0f5b213fcc57 — ECO-20260830-ASTROMETRY-LEFT-IMAGE-FULL-FRAME-010
+
+**Recorded:** 2026-08-30T18:36:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0f5b213fcc5779532e1698e7f18272e2cb699a94`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0f5b213fcc5779532e1698e7f18272e2cb699a94)  
+**Parent/baseline:** `d1cfb2d800f6803d03ef0955b6aae5c7053fdc4e`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/d1cfb2d800f6803d03ef0955b6aae5c7053fdc4e...0f5b213fcc5779532e1698e7f18272e2cb699a94)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260830-ASTROMETRY-LEFT-IMAGE-FULL-FRAME-010`  
+**Requirements:** `REQ-124`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `2`  
+**Actual changed paths:** `2`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-0049-worker.js, viewer/image-databases/master-database/orientation-review/wrangler.jsonc`
+- Actual: `viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-0049-worker.js, viewer/image-databases/master-database/orientation-review/wrangler.jsonc`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/image-databases/master-database/orientation-review/gv-cloudflare-auto-astrometry-curator-0049-worker.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `53e0034737e45cdd680b1d7f2dadb3db5cad70bb0b6140851fbaf2a505c32e21`
+- Bytes: `0` -> `1307`
+- Lines: `0` -> `25`
+- Characters: `0` -> `1307`
+- Inserted lines: `25`
+- Deleted lines: `0`
+- Inserted characters: `1307`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/image-databases/master-database/orientation-review/wrangler.jsonc`
+
+- Git status: `M`
+- SHA-256 before: `07104526a60b1ed6b5e5c1a59da42aadf521e295269d37614f5f7429b347c619`
+- SHA-256 after: `b65dd2701ecbaac347a1eaca44aea18465c7bdec392984d557558639cfc902fe`
+- Bytes: `263` -> `263`
+- Lines: `7` -> `7`
+- Characters: `261` -> `261`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `1`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-1a0d63b3ee29 — ECO-20260830-ASTROMETRY-STARTUP-RECOVERY-008
 
 **Recorded:** 2026-08-30T18:14:00-05:00  
