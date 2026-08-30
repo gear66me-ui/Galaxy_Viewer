@@ -48,18 +48,28 @@ function patchLegacy(h){
      .replaceAll('AUTO APPLIED','LEGACY SIFT DISPLAY ONLY');
   return{ok:true,h,counts};
 }
+function patchHdSourcePriority(h){
+  const imageOfOld="function imageOf(r){return r.selectedImageUrl||r.githubImageUrl||r.esaPublicationJpeg||r.publicationJpeg||r.imageUrl||r.jpegUrl||r.image||(Array.isArray(r.jpegCandidates)?r.jpegCandidates[0]:'')||''}";
+  const imageOfNew="function imageOf(r){return r.hdUrl||r.hd_url||r.selectedImageUrl||r.githubImageUrl||r.esaPublicationJpeg||r.publicationJpeg||r.imageUrl||r.jpegUrl||r.image||(Array.isArray(r.jpegCandidates)?r.jpegCandidates[0]:'')||''}";
+  const candidatesOld="const raw=[r.selectedImageUrl,r.githubImageUrl,r.esaPublicationJpeg,r.publicationJpeg,r.imageUrl,r.jpegUrl,r.image,...(Array.isArray(r.jpegCandidates)?r.jpegCandidates:[])];";
+  const candidatesNew="const raw=[r.hdUrl,r.hd_url,r.selectedImageUrl,r.githubImageUrl,r.esaPublicationJpeg,r.publicationJpeg,r.imageUrl,r.jpegUrl,r.image,...(Array.isArray(r.jpegCandidates)?r.jpegCandidates:[])];";
+  const counts={imageOf:count(h,imageOfOld),fallbackCandidates:count(h,candidatesOld)};
+  if(counts.imageOf!==1||counts.fallbackCandidates!==1)return{ok:false,counts};
+  return{ok:true,h:h.replace(imageOfOld,imageOfNew).replace(candidatesOld,candidatesNew),counts};
+}
 function json(o,status=200){return new Response(JSON.stringify(o),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}})}
 async function page(request,env){
   const r=await base0026.fetch(request,env);let h=await r.text();
   const p=patchLegacy(h);if(!p.ok)return new Response('0045 STARTUP ERROR: legacy movement anchor counts '+JSON.stringify(p.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
-  h=p.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
+  const hd=patchHdSourcePriority(p.h);if(!hd.ok)return new Response('0045 STARTUP ERROR: HD source anchor counts '+JSON.stringify(hd.counts),{status:500,headers:{'content-type':'text/plain; charset=utf-8'}});
+  h=hd.h;const i=h.lastIndexOf('</body>');if(i<0)return new Response('0045 STARTUP ERROR: body anchor missing',{status:500});
   h=h.slice(0,i)+CLIENT+h.slice(i);
   h=h.replaceAll('GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0026','GV CLOUDFLARE AUTO ASTROMETRY CURATOR 0045');
-  const headers=new Headers(r.headers);headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');headers.set('x-gv-revision',REV);headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);headers.set('x-gv-recovery-baseline','0026');headers.set('x-gv-legacy-sift-movement','disabled');
+  const headers=new Headers(r.headers);headers.set('content-type','text/html; charset=utf-8');headers.set('cache-control','no-store, no-cache, must-revalidate, max-age=0');headers.set('x-gv-revision',REV);headers.set('x-gv-build-colombia',BUILD_STAMP_COLOMBIA);headers.set('x-gv-recovery-baseline','0026');headers.set('x-gv-legacy-sift-movement','disabled');headers.set('x-gv-source-image-priority','hdUrl-hd_url-then-existing');
   return new Response(h,{status:200,headers});
 }
 async function health(env){
   const keyConfigured=Boolean(String(env?.ASTROMETRY_API_KEY||'').trim());
-  return json({ok:true,revision:REV,service:'gv-cloudflare-auto-astrometry-curator-0045',build_stamp_colombia:BUILD_STAMP_COLOMBIA,build_stamp_iso:BUILD_STAMP_ISO,key_source:'server-secret',key_configured:keyConfigured,mode:'safe-recovery',base_page:'0026',catalog_route:'0026 baseline passthrough',image_route:'0026 baseline passthrough',aladin:'0026 baseline',legacy_sift_movement:false,machine_astrometry:'disabled-until-baseline-proven'});
+  return json({ok:true,revision:REV,service:'gv-cloudflare-auto-astrometry-curator-0045',build_stamp_colombia:BUILD_STAMP_COLOMBIA,build_stamp_iso:BUILD_STAMP_ISO,key_source:'server-secret',key_configured:keyConfigured,mode:'safe-recovery',base_page:'0026',catalog_route:'0026 baseline passthrough',image_route:'0026 baseline passthrough',aladin:'0026 baseline',source_image_priority:['hdUrl','hd_url','selectedImageUrl','githubImageUrl','esaPublicationJpeg','publicationJpeg','imageUrl','jpegUrl','image','jpegCandidates[0]'],legacy_sift_movement:false,machine_astrometry:'disabled-until-baseline-proven'});
 }
 export default{async fetch(request,env){const u=new URL(request.url);if(u.pathname==='/'||u.pathname==='/index.html')return page(request,env);if(u.pathname==='/api/health')return health(env);return base0026.fetch(request,env)}};
