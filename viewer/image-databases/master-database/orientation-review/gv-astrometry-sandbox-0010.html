@@ -10,7 +10,7 @@
 <script>
 (async()=>{
 'use strict';
-const BASE='https://api.github.com/repos/gear66me-ui/Galaxy_Viewer/git/blobs/882a71f1ecbf459dcf51c35072ea903d2e461eeb';
+const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/d2a29ebdb1de3f7ce4de9511f6f6bf05fa22038c/viewer/image-databases/master-database/orientation-review/gv-astrometry-sandbox-0010.html';
 const PATCH=String.raw`
 /* === ECO-20260831-ASTROMETRY-CROSS-SURVEY-013 === */
 const ECO013='ECO-013',PRIMARY_SURVEY_013='P/DSS2/color',DIAG_MAX_013=200,MAX_ANCHORS_013=10;
@@ -81,7 +81,7 @@ function installAnchorTestButton013(){if(document.querySelector('#anchorTest013'
 setTimeout(()=>{ensureResult013();installAnchorTestButton013();button013('RUN ALADIN ORIENT','idle');log('ECO 018 READY',{workflow:'hidden FOV -> hidden anchors -> hidden solver proposal -> visible Aladin unchanged',diagnostic_max:DIAG_MAX_013,default_survey:PRIMARY_SURVEY_013,automatic_visible_fov:false,automatic_visible_rotation:false,automatic_visible_application:false,visible_state_guard:true})},0);
 `;
 try{
- const r=await fetch(BASE,{cache:'no-store',headers:{Accept:'application/vnd.github+json'}});if(!r.ok)throw Error('baseline blob HTTP '+r.status);const blob=await r.json();if(blob?.encoding!=='base64'||typeof blob?.content!=='string')throw Error('baseline blob payload invalid');const bytes=Uint8Array.from(atob(blob.content.replace(/\s/g,'')),c=>c.charCodeAt(0));let html=new TextDecoder('utf-8',{fatal:true}).decode(bytes);html=html.replace('<title>Galaxy Viewer Astrometry Sandbox 0010</title>','<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 013</title>');html=html.replace('</scr'+'ipt>\n</body>\n</html>',PATCH+'\n</scr'+'ipt>\n</body>\n</html>');document.open();document.write(html);document.close();
+ const r=await fetch(BASE,{cache:'no-store'});if(!r.ok)throw Error('baseline HTTP '+r.status);let html=await r.text();html=html.replace('<title>Galaxy Viewer Astrometry Sandbox 0010</title>','<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 013</title>');html=html.replace('</scr'+'ipt>\n</body>\n</html>',PATCH+'\n</scr'+'ipt>\n</body>\n</html>');document.open();document.write(html);document.close();
 }catch(e){document.querySelector('#boot').innerHTML='<span class="bad">ECO-013 bootstrap failed: '+String(e?.message||e)+'</span>'}
 })();
 </script>
