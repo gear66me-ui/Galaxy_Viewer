@@ -3,147 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 012</title>
+<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 013</title>
 <style>html,body{margin:0;background:#05080d;color:#eef5ff;font:13px system-ui,sans-serif}.boot{padding:18px}.bad{color:#ff7b7b}</style>
 </head>
-<body><div id="boot" class="boot">Loading Astrometry Sandbox 0010 / ECO-012…</div>
+<body><div id="boot" class="boot">Loading Astrometry Sandbox 0010 / ECO-013…</div>
 <script>
 (async()=>{
 'use strict';
 const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/d2a29ebdb1de3f7ce4de9511f6f6bf05fa22038c/viewer/image-databases/master-database/orientation-review/gv-astrometry-sandbox-0010.html';
 const PATCH=String.raw`
-/* === ECO-20260831-ASTROMETRY-REAL-ANCHORS-012 === */
-const ECO012='ECO-012',DIAG_MAX_LINES=200,DIAG_TARGET_LINES=120,PRIMARY_SURVEY='P/DSS2/color';
-const MISSION_SURVEYS_012={
- Hubble:[
-  ['P/DSS2/color','DSS2 color','DEFAULT optical color reference'],
-  ['P/DESI-Legacy-Surveys/DR10/color','DESI Legacy DR10 color','high-resolution optical color'],
-  ['P/PanSTARRS/DR1/color-z-zg-g','PanSTARRS DR1 color','optical color comparison'],
-  ['P/SDSS9/color','SDSS9 color','optical color comparison'],
-  ['P/GALEXGR6_7/color','GALEX GR6/7 color','ultraviolet color comparison']],
- JWST:[
-  ['P/DSS2/color','DSS2 color','DEFAULT optical registration reference'],
-  ['ESAVO/P/Spitzer/IRAC134-RGB-bright','Spitzer IRAC RGB','infrared color comparison'],
-  ['P/allWISE/color','AllWISE color','infrared all-sky comparison'],
-  ['P/2MASS/color','2MASS color','near-infrared comparison'],
-  ['P/DESI-Legacy-Surveys/DR10/color','DESI Legacy DR10 color','optical structure comparison']],
- Spitzer:[
-  ['P/DSS2/color','DSS2 color','DEFAULT optical registration reference'],
-  ['ESAVO/P/Spitzer/IRAC134-RGB-bright','Spitzer IRAC RGB','Spitzer infrared color'],
-  ['P/GLIMPSE360','GLIMPSE360','Spitzer infrared comparison'],
-  ['P/allWISE/color','AllWISE color','mid-infrared comparison'],
-  ['P/2MASS/color','2MASS color','near-infrared comparison']],
- Chandra:[
-  ['P/DSS2/color','DSS2 color','DEFAULT optical registration reference'],
-  ['cxc.harvard.edu/P/cda/hips/allsky/rgb','Chandra CXC RGB','Chandra X-ray survey'],
-  ['ESDC/P/XMM/EPIC-RGB','XMM EPIC RGB','X-ray comparison'],
-  ['P/DESI-Legacy-Surveys/DR10/color','DESI Legacy DR10 color','optical host reference'],
-  ['P/PanSTARRS/DR1/color-z-zg-g','PanSTARRS DR1 color','optical host reference']]
+/* === ECO-20260831-ASTROMETRY-CROSS-SURVEY-013 === */
+const ECO013='ECO-013',PRIMARY_SURVEY_013='P/DSS2/color',DIAG_MAX_013=200,MAX_ANCHORS_013=10;
+const SURVEYS_013={
+ Hubble:[['P/DSS2/color','DSS2 color'],['P/DESI-Legacy-Surveys/DR10/color','DESI Legacy DR10 color'],['P/PanSTARRS/DR1/color-z-zg-g','PanSTARRS DR1 color'],['P/SDSS9/color','SDSS9 color'],['P/GALEXGR6_7/color','GALEX GR6/7 color']],
+ JWST:[['P/DSS2/color','DSS2 color'],['ESAVO/P/Spitzer/IRAC134-RGB-bright','Spitzer IRAC RGB'],['P/allWISE/color','AllWISE color'],['P/2MASS/color','2MASS color'],['P/DESI-Legacy-Surveys/DR10/color','DESI Legacy DR10 color']],
+ Spitzer:[['P/DSS2/color','DSS2 color'],['ESAVO/P/Spitzer/IRAC134-RGB-bright','Spitzer IRAC RGB'],['P/GLIMPSE360','GLIMPSE360'],['P/allWISE/color','AllWISE color'],['P/2MASS/color','2MASS color']],
+ Chandra:[['P/DSS2/color','DSS2 color'],['cxc.harvard.edu/P/cda/hips/allsky/rgb','Chandra CXC RGB'],['ESDC/P/XMM/EPIC-RGB','XMM EPIC RGB'],['P/DESI-Legacy-Surveys/DR10/color','DESI Legacy DR10 color'],['P/PanSTARRS/DR1/color-z-zg-g','PanSTARRS DR1 color']]
 };
 
-const _legacyLog012=log;
+function ensureResult013(){
+ let e=document.querySelector('#solverResult013');if(e)return e;
+ e=document.createElement('section');e.id='solverResult013';e.className='panel';e.style.cssText='border:1px solid #2b3748;border-radius:10px;padding:9px;background:#09111b;margin-bottom:8px;font:12px ui-monospace,monospace;white-space:pre-wrap';e.textContent='ASTROMETRY RESULT\nSTATUS: READY';
+ const controls=document.querySelector('.controls');controls?.insertAdjacentElement('afterend',e);return e;
+}
+function result013(lines,status='warn'){const e=ensureResult013();e.textContent=['ASTROMETRY RESULT',...lines].join('\n');e.style.color=status==='good'?'#65e7a4':status==='bad'?'#ff7b7b':'#ffd166'}
+function button013(text,state='run'){const b=document.querySelector('#orient');if(!b)return;b.textContent=text;b.style.background=state==='run'?'#8a5a00':state==='good'?'#146c43':state==='bad'?'#842029':'#173f69';b.style.color='#fff'}
+const legacyLog013=log;
 log=function(event,data={},level='INFO'){
- const noisy=/^(ORIENT SAMPLE|IMAGE PREFETCH PASS|SURVEY AUTO SELECT)$/;
- if(noisy.test(String(event)))return null;
- const slimData=(()=>{try{
-  const d=JSON.parse(JSON.stringify(data||{}));
-  if(Array.isArray(d.matched_details))d.matched_details=d.matched_details.slice(0,10).map(x=>({id:x.id,source_index:x.source_index,aladin_index:x.aladin_index,residual:x.residual}));
-  if(d.star){delete d.star.matched_details;delete d.star.unmatched_prominent;delete d.star.transform;}
-  if(d.morphology&&typeof d.morphology==='object')d.morphology={confidence:d.morphology.confidence,axis_confidence:d.morphology.axis_confidence};
-  if(Array.isArray(d.candidates)&&d.candidates.length>5)d.candidates=d.candidates.slice(0,5);
-  return d;
- }catch{return{note:'diagnostic serialization failed'}}})();
- const r={line:++lineNo,timestamp:new Date().toISOString(),elapsed_ms:+(performance.now()-t0).toFixed(1),event,data:slimData,level};
- audit.push(r);while(audit.length>DIAG_MAX_LINES)audit.shift();
- $('#diag').textContent=audit.map(x=>String(x.line).padStart(4,'0')+'  '+x.event.padEnd(29)+' '+JSON.stringify(x.data)).join('\n');
- return r;
+ if(/^ORIENT SAMPLE$/.test(String(event)))return null;
+ let d=data;try{d=JSON.parse(JSON.stringify(data||{}));if(d.star){delete d.star.matched_details;delete d.star.unmatched_prominent;delete d.star.transform}if(Array.isArray(d.matched_details))d.matched_details=d.matched_details.slice(0,10).map(x=>({id:x.id,residual:x.residual}))}catch{d={note:'serialization failed'}}
+ const r={line:++lineNo,timestamp:new Date().toISOString(),elapsed_ms:+(performance.now()-t0).toFixed(1),event,data:d,level};audit.push(r);while(audit.length>DIAG_MAX_013)audit.shift();document.querySelector('#diag').textContent=audit.map(x=>String(x.line).padStart(4,'0')+'  '+x.event.padEnd(28)+' '+JSON.stringify(x.data)).join('\n');return r;
 };
 
-rankSurveys=function(){
- const mission=$('#mission').value,list=MISSION_SURVEYS_012[mission]||MISSION_SURVEYS_012.Hubble;
- return list.map((x,i)=>({priority:i+1,id:x[0],name:x[1],score:100-i*10,reason:x[2],family:mission}));
-};
-populateSurveyMenu=function(){
- surveyRanking=rankSurveys(record);const sel=$('#survey'),override=manualSurveyOverrides.get(surveyKey());sel.innerHTML='';
- for(const s of surveyRanking){const o=document.createElement('option');o.value=s.id;o.textContent=s.priority+' — '+s.name+(s.priority===1?'  [DEFAULT]':'');sel.appendChild(o)}
- currentSurveyId=override||PRIMARY_SURVEY;sel.value=currentSurveyId;if(!sel.value){currentSurveyId=PRIMARY_SURVEY;sel.value=PRIMARY_SURVEY}sel.disabled=false;
- log('SURVEY RANKING',{mission:$('#mission').value,current:currentSurveyId,manual_override:override||null,candidates:surveyRanking.map(s=>({priority:s.priority,id:s.id,name:s.name}))});return currentSurveyId;
-};
+rankSurveys=function(){const m=document.querySelector('#mission').value,list=SURVEYS_013[m]||SURVEYS_013.Hubble;return list.map((x,i)=>({priority:i+1,id:x[0],name:x[1],score:100-i*10,reason:i===0?'DEFAULT':'ALTERNATE',family:m}))};
+populateSurveyMenu=function(){surveyRanking=rankSurveys(record);const sel=document.querySelector('#survey'),override=manualSurveyOverrides.get(surveyKey());sel.innerHTML='';for(const s of surveyRanking){const o=document.createElement('option');o.value=s.id;o.textContent=s.priority+' — '+s.name+(s.priority===1?' [DEFAULT]':'');sel.appendChild(o)}currentSurveyId=override||PRIMARY_SURVEY_013;sel.value=currentSurveyId;sel.disabled=false;log('SURVEY RANKING',{mission:document.querySelector('#mission').value,current:currentSurveyId,candidates:surveyRanking.map(x=>({priority:x.priority,id:x.id,name:x.name}))});return currentSurveyId};
 
-function q012(v,a,b){return Math.max(a,Math.min(b,v))}
-function stellarRank012(stars,max=24){
- const a=[...(stars||[])];if(!a.length)return[];
- const maxB=Math.max(...a.map(p=>Number(p.b)||0),1),maxC=Math.max(...a.map(p=>Number(p.compact)||0),1);
- for(const p of a){
-  const bright=q012((Number(p.b)||0)/maxB,0,1),compact=q012((Number(p.compact)||0)/maxC,0,1),persist=q012((Number(p.persistenceCount)||1)/3,0,1),iso=q012((Number(p.isolation)||0)/.15,0,1);
-  p.astroQuality=bright*5.0+compact*2.2+persist*1.7+iso*1.5+(p.offGalaxy?.35:0)-(p.offGalaxy?0:.25);
- }
- a.sort((x,y)=>y.astroQuality-x.astroQuality);
- const out=[];for(const p of a){if(out.length>=max)break;if(out.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>=.035))out.push(p)}
- for(const p of a){if(out.length>=max)break;if(!out.includes(p))out.push(p)}
- return out;
-}
-function leverage012(points){let m=0;for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++)m=Math.max(m,Math.hypot(points[i].x-points[j].x,points[i].y-points[j].y));return m}
-function mirrored012(points,axis){return points.map(p=>({...p,x:axis==='x'?1-p.x:p.x,y:axis==='y'?1-p.y:p.y}))}
-function geomSummary012(g){return g?{ok:!!g.ok,inliers:g.inliers||0,residual:+Number(g.residual||1).toFixed(5),rotation_correction_deg:g.rotation_correction_deg==null?null:+Number(g.rotation_correction_deg).toFixed(2),scale_correction:g.scale_correction==null?null:+Number(g.scale_correction).toFixed(4),coverage:+Number(g.spatial_coverage||0).toFixed(2),pairs:g.pair_matches||0,triangles:g.triangle_matches||0,score:+Number(g.score||100).toFixed(2)}:null}
-function trustedGeom012(g,src){return !!(g?.ok&&g.inliers>=4&&g.spatial_coverage>=.75&&g.pair_matches>=3&&g.triangle_matches>=1&&leverage012(src)>=.30&&Number.isFinite(g.scale_correction)&&g.scale_correction>.35&&g.scale_correction<2.8)}
-function selectConfirmed012(details,max=10){
- const ranked=[...(details||[])].sort((a,b)=>(Number(a.residual)||1)-(Number(b.residual)||1)),out=[];
- for(const m of ranked){if(out.length>=max)break;if(out.every(q=>Math.hypot(m.source.x-q.source.x,m.source.y-q.source.y)>=.08))out.push(m)}
- for(const m of ranked){if(out.length>=max)break;if(!out.includes(m))out.push(m)}
- return out.map((m,i)=>({...m,id:'A'+String(i+1).padStart(2,'0')}));
-}
-function drawCandidates012(stars){
- const S=overlayContext('#sourceAnchors'),pick=stellarRank012(stars,10);for(let i=0;i<pick.length;i++){const p=pick[i],x=p.x*S.w,y=p.y*S.h;S.g.strokeStyle='#ffd166';S.g.fillStyle='#ffd166';S.g.lineWidth=2;S.g.beginPath();S.g.arc(x,y,7,0,Math.PI*2);S.g.stroke();S.g.fillText('S'+String(i+1).padStart(2,'0'),x+8,y-8)}return pick;
-}
-function drawConfirmed012(details){
- const S=overlayContext('#sourceAnchors');overlayContext('#aladinAnchors');const matches=selectConfirmed012(details,10);
- for(const m of matches){const x=m.source.x*S.w,y=m.source.y*S.h;S.g.strokeStyle='#5ee7ff';S.g.fillStyle='#5ee7ff';S.g.lineWidth=2.2;S.g.beginPath();S.g.arc(x,y,8,0,Math.PI*2);S.g.stroke();S.g.fillText(m.id,x+9,y-9)}
- installSkyAnchorsFromScreen(matches);return matches;
-}
-async function surveyFrame012(){const snap=await captureAladin(),data=await imageDataFromUrl(snap),m=features(data),stars=stellarRank012(detectStars(data,m),24);return{data,morph:m,stars}}
-async function optionalGaia012(srcStars){
- const c=currentCenter()||[record.ra,record.dec],F=currentFov()||fov(record.fieldOfView)||.1,r=Math.max(.006,Math.min(2,F*.9));
- try{const raw=await queryGaia(c[0],c[1],r),pts=gaiaPlanePoints(raw,c[0],c[1],r,48);if(pts.length<4){log('GAIA OPTIONAL',{usable:pts.length,status:'INSUFFICIENT — SOLUTION RETAINED'});return{usable:pts.length,validated:false}}
-  const g=starGeometry(srcStars,pts);log('GAIA OPTIONAL',{usable:pts.length,validated:g.inliers>=4,inliers:g.inliers,coverage:g.spatial_coverage,rotation_check:g.rotation_correction_deg});return{usable:pts.length,validated:g.inliers>=4,inliers:g.inliers};
- }catch(e){log('GAIA OPTIONAL',{status:'UNAVAILABLE — SOLUTION RETAINED',message:String(e?.message||e)},'WARN');return{usable:0,validated:false}}
-}
-async function solveConstellation012({withGaia=false}={}){
- if(!record||!aladin)throw Error('record/Aladin not loaded');
- const start=readLiveState(),sourceData=imageDataFromImage($('#source')),sourceMorph=features(sourceData),rawSource=detectStars(sourceData,sourceMorph),sourceStars=stellarRank012(rawSource,24);
- clearAnchorOverlays();drawCandidates012(sourceStars);log('SOLVER START',{engine:'two-image stellar constellation',survey:currentSurveyId,start:{ra:start.ra,dec:start.dec,fov:start.fov,rot:start.rot},source_detected:rawSource.length,source_candidates:sourceStars.length});
- if(sourceStars.length<4||leverage012(sourceStars)<.30)return{accepted:false,reasons:['SOURCE_ANCHOR_LEVERAGE_FAIL'],start};
- action('CONSTELLATION SOLVE — CAPTURING '+($('#survey').selectedOptions[0]?.textContent||currentSurveyId));
- gaiaMatchCatalog?.hide?.();const initial=await surveyFrame012();
- log('REFERENCE FRAME',{survey:currentSurveyId,reference_candidates:initial.stars.length});
- if(initial.stars.length<4)return{accepted:false,reasons:['REFERENCE_STARS_TOO_FEW'],start};
- const normal=starGeometry(sourceStars,initial.stars),mx=starGeometry(sourceStars,mirrored012(initial.stars,'x')),my=starGeometry(sourceStars,mirrored012(initial.stars,'y'));
- const mirrors=[mx,my].filter(g=>g?.ok).sort((a,b)=>a.score-b.score),mirrorBest=mirrors[0]||null;
- log('CONSTELLATION HYPOTHESES',{normal:geomSummary012(normal),mirror_best:geomSummary012(mirrorBest)});
- if(!trustedGeom012(normal,sourceStars)){return{accepted:false,reasons:['NO_TRUSTED_NORMAL_PARITY'],start,normal,mirrorBest}}
- if(mirrorBest&&mirrorBest.inliers>normal.inliers+1&&mirrorBest.score<normal.score*.85){return{accepted:false,reasons:['PARITY_AMBIGUITY_OR_MIRROR'],start,normal,mirrorBest}}
- const correction=Number(normal.rotation_correction_deg)||0,predRot=norm(Number(start.rot||0)-correction),predFov=q012(Number(start.fov||currentFov())/Number(normal.scale_correction||1),Number(start.fov)*.4,Number(start.fov)*2.5);
- log('PREDICTED TRANSFORM',{rotation_correction_deg:+correction.toFixed(2),predicted_rotation_deg:+predRot.toFixed(2),predicted_fov_deg:+predFov.toFixed(6)});
- applyState({ra:start.ra,dec:start.dec,fov:predFov,rot:predRot,survey:currentSurveyId});await sleep(700);
- const verify=await surveyFrame012(),vg=starGeometry(sourceStars,verify.stars),verified=trustedGeom012(vg,sourceStars)&&Math.abs(Number(vg.rotation_correction_deg)||999)<=8&&Number(vg.scale_correction)>.72&&Number(vg.scale_correction)<1.38;
- log('VERIFICATION CAPTURE',{verified,geometry:geomSummary012(vg)});
- if(!verified){applyState(start);await sleep(350);retainAladinState();updateLive();clearAnchorOverlays();drawCandidates012(sourceStars);return{accepted:false,reasons:['SECOND_CAPTURE_VERIFICATION_FAIL'],start,normal,verify:vg}}
- const matches=drawConfirmed012(vg.matched_details||[]);const final=readLiveState();orientBest={label:'ECO-012 survey constellation',accepted:true,ra:final.ra,dec:final.dec,fov:final.fov,rot:final.rot,anchors:{count:matches.length,ids:matches.map(m=>m.id),spatial_coverage:vg.spatial_coverage},star:geomSummary012(vg),survey:currentSurveyId};
- $('#sBestRot').textContent=Number(final.rot).toFixed(2)+'°';$('#sBestFov').textContent=Number(final.fov).toFixed(6)+'°';$('#sBestScore').textContent=Number(vg.score).toFixed(2);$('#sStar').textContent=vg.inliers+' confirmed survey stars';$('#sConsensus').textContent=vg.pair_matches+' pairs · '+vg.triangle_matches+' triangles · '+Math.round(vg.spatial_coverage*100)+'% coverage';
- let gaia=null;if(withGaia)gaia=await optionalGaia012(sourceStars);
- log('FINAL SOLUTION',{accepted:true,survey:currentSurveyId,rotation_deg:+Number(final.rot).toFixed(2),fov_deg:+Number(final.fov).toFixed(6),anchors:matches.map(m=>m.id),gaia});retainAladinState();updateLive();return{accepted:true,final,matches,gaia};
-}
-runOrient=async function(){if(!record||busy)return;busy=true;const btn=$('#orient'),old=btn.textContent;btn.disabled=true;btn.textContent='ORIENTING…';try{const start=readLiveState();$('#sStartRot').textContent=Number(start.rot||0).toFixed(2)+'°';$('#sBaseline').textContent='CURRENT '+currentSurveyId;action('RUNNING SURVEY CONSTELLATION SOLVER…');const out=await solveConstellation012({withGaia:false});if(out.accepted){action('ORIENT COMPLETE — VERIFIED CONSTELLATION','good');$('#status').textContent='ORIENT COMPLETE';$('#status').className='good'}else{action('NO TRUSTED SOLUTION — '+out.reasons.join(' / '),'bad');$('#status').textContent='NO TRUSTED SOLUTION';$('#status').className='bad';log('SOLVER REJECT',{reasons:out.reasons})}}finally{busy=false;btn.disabled=false;btn.textContent=old}}
-runAstrometry=async function(){if(!record||busy)return;busy=true;const btn=$('#astro'),old=btn.textContent;btn.disabled=true;btn.textContent='SOLVING…';try{action('ASTROMETRY — SURVEY CONSTELLATION + OPTIONAL GAIA…');const out=await solveConstellation012({withGaia:true});if(out.accepted){action('ASTROMETRY COMPLETE — SURVEY SOLUTION VERIFIED','good');$('#status').textContent='ASTROMETRY COMPLETE';$('#status').className='good'}else{action('NO TRUSTED SOLUTION — '+out.reasons.join(' / '),'bad');$('#status').textContent='NO TRUSTED SOLUTION';$('#status').className='bad';log('ASTROMETRY REJECT',{reasons:out.reasons})}}finally{busy=false;btn.disabled=false;btn.textContent=old}}
-pack=function(){const o=orientBest||null;return{sandbox:SANDBOX,eco:ECO012,record:record?{archiveId:record.archiveId,name:record.name,ra:record.ra,dec:record.dec,fieldOfView:record.fieldOfView,orientation:record.orientation}:null,index:recordIndex,live:readLiveState(),survey:{current:currentSurveyId,ranking:surveyRanking.slice(0,5).map(s=>({priority:s.priority,id:s.id,name:s.name})),manualOverride:manualSurveyOverrides.get(surveyKey())||null},solution:o?{accepted:o.accepted,ra:o.ra,dec:o.dec,fov:o.fov,rot:o.rot,survey:o.survey,anchors:o.anchors,star:o.star}:null,diagnostic_lines:audit.length,audit:audit.slice(-DIAG_MAX_LINES)}};
-log('ECO-012 READY',{default_survey:PRIMARY_SURVEY,diagnostic_max_lines:DIAG_MAX_LINES,solver:'two-image constellation; Gaia optional; second-capture verification'});
-/* === END ECO-012 === */
+function imgDataScaled013(im,size){const c=document.createElement('canvas');c.width=size;c.height=size;const g=c.getContext('2d',{willReadFrequently:true});g.fillStyle='#000';g.fillRect(0,0,size,size);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';const s=Math.min(size/im.naturalWidth,size/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;g.drawImage(im,(size-w)/2,(size-h)/2,w,h);return g.getImageData(0,0,size,size)}
+function downsample013(data,size){const a=document.createElement('canvas');a.width=data.width;a.height=data.height;a.getContext('2d').putImageData(data,0,0);const b=document.createElement('canvas');b.width=size;b.height=size;const g=b.getContext('2d',{willReadFrequently:true});g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(a,0,0,size,size);return g.getImageData(0,0,size,size)}
+function mergePersistent013(Ap,Bp,max=18){const out=[];for(const a of Ap){let best=null,bd=.045;for(const b of Bp){const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<bd){bd=d;best=b}}if(best)out.push({...a,persist013:2,robust013:(Number(a.b)||0)+(Number(best.b)||0),compact013:(Number(a.compact)||0)+(Number(best.compact)||0)})}out.sort((a,b)=>b.robust013-a.robust013||b.compact013-a.compact013);const spaced=[];for(const p of out){if(spaced.length>=max)break;if(spaced.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>.045))spaced.push(p)}return spaced}
+function robustSource013(){const im=document.querySelector('#source'),d1=imgDataScaled013(im,192),m1=features(d1),s1=detectStars(d1,m1,48),d2=imgDataScaled013(im,128),m2=features(d2),s2=detectStars(d2,m2,40);return{morph:m1,stars:mergePersistent013(s1,s2,18),raw1:s1.length,raw2:s2.length}}
+function robustReference013(data){const d1=downsample013(data,192),m1=features(d1),s1=detectStars(d1,m1,48),d2=downsample013(data,128),m2=features(d2),s2=detectStars(d2,m2,40);return{morph:m1,stars:mergePersistent013(s1,s2,18),raw1:s1.length,raw2:s2.length}}
+function drawSource013(stars){const S=overlayContext('#sourceAnchors');for(let i=0;i<Math.min(MAX_ANCHORS_013,stars.length);i++){const p=stars[i],x=p.x*S.w,y=p.y*S.h;S.g.strokeStyle='#ffd166';S.g.fillStyle='#ffd166';S.g.lineWidth=2.2;S.g.beginPath();S.g.arc(x,y,8,0,Math.PI*2);S.g.stroke();S.g.fillText('S'+String(i+1).padStart(2,'0'),x+9,y-9)}}
+function geomRank013(g){if(!g?.ok)return-1e9;return(g.inliers||0)*120+(g.spatial_coverage||0)*60+(g.pair_matches||0)*5+(g.triangle_matches||0)*10-(g.residual||1)*500-(g.score||100)}
+async function eval013(srcStars,label){await sleep(320);const snap=await captureAladin(),data=await imageDataFromUrl(snap),ref=robustReference013(data),normal=starGeometry(srcStars,ref.stars),mx=starGeometry(srcStars,ref.stars.map(p=>({...p,x:1-p.x}))),my=starGeometry(srcStars,ref.stars.map(p=>({...p,y:1-p.y})));const candidates=[{parity:'NORMAL',g:normal},{parity:'MIRROR-X',g:mx},{parity:'MIRROR-Y',g:my}].sort((a,b)=>geomRank013(b.g)-geomRank013(a.g));const best=candidates[0];return{label,ref,best,normal,candidates,score:-geomRank013(best.g),ra:(currentCenter()||[record.ra,record.dec])[0],dec:(currentCenter()||[record.ra,record.dec])[1],fov:currentFov(),rot:currentRot()}}
+function trusted013(s){const g=s?.best?.g;return!!(g?.ok&&g.inliers>=4&&g.spatial_coverage>=.75&&g.pair_matches>=3&&g.triangle_matches>=1&&g.residual<.05)}
+function normalTrusted013(s){return trusted013(s)&&s.best.parity==='NORMAL'}
+function finalAnchors013(s){const details=(s.best.g.matched_details||[]).slice().sort((a,b)=>a.residual-b.residual),out=[];for(const m of details){if(out.length>=MAX_ANCHORS_013)break;if(out.every(q=>Math.hypot(m.source.x-q.source.x,m.source.y-q.source.y)>.07))out.push(m)}for(const m of details){if(out.length>=MAX_ANCHORS_013)break;if(!out.includes(m))out.push(m)}out.forEach((m,i)=>m.id='A'+String(i+1).padStart(2,'0'));const S=overlayContext('#sourceAnchors');for(const m of out){const x=m.source.x*S.w,y=m.source.y*S.h;S.g.strokeStyle='#5ee7ff';S.g.fillStyle='#5ee7ff';S.g.lineWidth=2.3;S.g.beginPath();S.g.arc(x,y,8,0,Math.PI*2);S.g.stroke();S.g.fillText(m.id,x+9,y-9)}installSkyAnchorsFromScreen(out);return out}
+async function restore013(s){applyState(s);await sleep(300);retainAladinState();updateLive()}
+
+runOrient=async function(){if(!record||busy)return;busy=true;const b=document.querySelector('#orient'),old=b.textContent,start=readLiveState(),F0=currentFov()||fov(record.fieldOfView)||.1;try{
+ button013('● ANALYZING SOURCE…','run');b.disabled=true;result013(['STATUS: ANALYZING SOURCE','SURVEY: '+currentSurveyId]);clearAnchorOverlays();const src=robustSource013();drawSource013(src.stars);log('SOURCE ROBUST',{scale192:src.raw1,scale128:src.raw2,persistent:src.stars.length});if(src.stars.length<4){result013(['STATUS: NO TRUSTED SOLUTION','REASON: TOO FEW DSS2-VISIBLE SOURCE STARS'],'bad');return}
+ button013('● ROTATION SEARCH…','run');let best=null;const rots=[];for(let r=-180;r<180;r+=15)rots.push(r);for(let i=0;i<rots.length;i++){const rr=rots[i];action('ROTATION SEARCH '+(i+1)+'/'+rots.length+' · '+rr+'°');result013(['STATUS: ROTATION SEARCH '+(i+1)+' / '+rots.length,'BEST: '+(best?Number(best.rot).toFixed(1)+'°':'—'),'SURVEY: '+currentSurveyId]);applyState({ra:start.ra,dec:start.dec,fov:F0,rot:rr,survey:currentSurveyId});const s=await eval013(src.stars,'coarse '+rr);if(!best||geomRank013(s.best.g)>geomRank013(best.best.g))best=s}
+ log('COARSE SEARCH',{best_rotation:best.rot,parity:best.best.parity,inliers:best.best.g?.inliers||0,coverage:best.best.g?.spatial_coverage||0});
+ const fovs=[F0*.7,F0*.85,F0,F0*1.2,F0*1.4].filter(v=>v>0&&v<180);button013('● FOV SEARCH…','run');for(let i=0;i<fovs.length;i++){applyState({ra:start.ra,dec:start.dec,fov:fovs[i],rot:best.rot,survey:currentSurveyId});const s=await eval013(src.stars,'fov '+fovs[i]);if(geomRank013(s.best.g)>geomRank013(best.best.g))best=s}
+ const centerRot=best.rot;button013('● FINE ROTATION…','run');for(let d=-15;d<=15;d+=3){const rr=norm(centerRot+d);applyState({ra:start.ra,dec:start.dec,fov:best.fov,rot:rr,survey:currentSurveyId});const s=await eval013(src.stars,'fine '+rr);if(geomRank013(s.best.g)>geomRank013(best.best.g))best=s}
+ const ultra=best.rot;for(let d=-3;d<=3;d+=1){const rr=norm(ultra+d);applyState({ra:start.ra,dec:start.dec,fov:best.fov,rot:rr,survey:currentSurveyId});const s=await eval013(src.stars,'ultra '+rr);if(geomRank013(s.best.g)>geomRank013(best.best.g))best=s}
+ log('SEARCH BEST',{rotation:best.rot,fov:best.fov,parity:best.best.parity,inliers:best.best.g?.inliers||0,coverage:best.best.g?.spatial_coverage||0,pairs:best.best.g?.pair_matches||0,triangles:best.best.g?.triangle_matches||0,residual:best.best.g?.residual||null});
+ if(!normalTrusted013(best)){await restore013(start);clearAnchorOverlays();drawSource013(src.stars);button013('NO TRUSTED SOLUTION','bad');result013(['STATUS: NO TRUSTED SOLUTION','PARITY: '+(best.best?.parity||'NONE'),'MATCHED: '+(best.best?.g?.inliers||0),'COVERAGE: '+Math.round((best.best?.g?.spatial_coverage||0)*100)+'%','REASON: CROSS-SURVEY CONSTELLATION NOT VERIFIED'],'bad');document.querySelector('#status').textContent='NO TRUSTED SOLUTION';document.querySelector('#status').className='bad';log('SOLVER REJECT',{reason:'UNVERIFIED_OR_NONNORMAL_PARITY'});return}
+ button013('● VERIFYING SOLUTION…','run');applyState({ra:best.ra,dec:best.dec,fov:best.fov,rot:best.rot,survey:currentSurveyId});const verify=await eval013(src.stars,'verify'),ok=normalTrusted013(verify)&&Math.abs(Number(verify.best.g.rotation_correction_deg)||0)<10;if(!ok){await restore013(start);clearAnchorOverlays();drawSource013(src.stars);button013('NO TRUSTED SOLUTION','bad');result013(['STATUS: NO TRUSTED SOLUTION','REASON: SECOND-CAPTURE VERIFICATION FAILED'],'bad');log('VERIFY FAIL',{inliers:verify.best.g?.inliers||0,coverage:verify.best.g?.spatial_coverage||0,parity:verify.best?.parity});return}
+ const anchors=finalAnchors013(verify);orientBest={label:'ECO-013 cross-survey render search',accepted:true,ra:verify.ra,dec:verify.dec,fov:verify.fov,rot:verify.rot,parity:'NORMAL',anchors:anchors.map(m=>m.id)};retainAladinState();updateLive();document.querySelector('#sBestRot').textContent=Number(verify.rot).toFixed(2)+'°';document.querySelector('#sBestFov').textContent=Number(verify.fov).toFixed(6)+'°';document.querySelector('#sStar').textContent=(verify.best.g.inliers||0)+' confirmed survey stars';document.querySelector('#sConsensus').textContent=(verify.best.g.pair_matches||0)+' pairs · '+(verify.best.g.triangle_matches||0)+' triangles · '+Math.round((verify.best.g.spatial_coverage||0)*100)+'% coverage';button013('VERIFIED ✓','good');result013(['STATUS: VERIFIED','SURVEY: '+currentSurveyId,'MATCHED: '+verify.best.g.inliers,'COVERAGE: '+Math.round(verify.best.g.spatial_coverage*100)+'%','PARITY: NORMAL','ROTATION: '+Number(verify.rot).toFixed(2)+'°','FOV: '+Number(verify.fov).toFixed(6)+'°','ANCHORS: '+anchors.map(m=>m.id).join(', ')],'good');document.querySelector('#status').textContent='ORIENT COMPLETE';document.querySelector('#status').className='good';log('FINAL SOLUTION',{rotation:verify.rot,fov:verify.fov,anchors:anchors.map(m=>m.id)});
+ }catch(e){await restore013(start);button013('FAILED','bad');result013(['STATUS: FAILED','ERROR: '+String(e?.message||e)],'bad');log('FAILURE',{message:String(e?.message||e)},'ERROR')}finally{busy=false;b.disabled=false;if(b.textContent==='● ANALYZING SOURCE…'||b.textContent==='● ROTATION SEARCH…'||b.textContent==='● FOV SEARCH…'||b.textContent==='● FINE ROTATION…'||b.textContent==='● VERIFYING SOLUTION…')button013(old,'idle')}};
+runAstrometry=async function(){await runOrient();if(orientBest?.accepted){try{const c=currentCenter()||[record.ra,record.dec],F=currentFov()||fov(record.fieldOfView)||.1,r=Math.max(.006,Math.min(2,F*.9)),raw=await queryGaia(c[0],c[1],r);log('GAIA OPTIONAL',{sources:(raw||[]).length,status:(raw||[]).length>=4?'AVAILABLE':'INSUFFICIENT — SURVEY SOLUTION RETAINED'})}catch(e){log('GAIA OPTIONAL',{status:'UNAVAILABLE — SURVEY SOLUTION RETAINED',message:String(e?.message||e)},'WARN')}}};
+setTimeout(()=>{ensureResult013();button013('RUN ALADIN ORIENT','idle');log('ECO 013 READY',{engine:'restored rendered rotation/FOV search + DSS2-scale persistent anchors',diagnostic_max:DIAG_MAX_013,default_survey:PRIMARY_SURVEY_013})},0);
 `;
 try{
- const r=await fetch(BASE,{cache:'no-store'});if(!r.ok)throw Error('baseline HTTP '+r.status);let html=await r.text();
- const marker="$('#fetchCatalog').onclick=";if(!html.includes(marker))throw Error('baseline injection marker missing');
- html=html.replace(marker,PATCH+'\n'+marker).replace("anchor_eco:'011'","anchor_eco:'012'").replace("mode:'multi-anchor-orientation-plus-gaia-precision'","mode:'two-image-constellation-plus-optional-gaia'");
- document.open();document.write(html);document.close();
-}catch(e){document.getElementById('boot').innerHTML='<b class="bad">ECO-012 LOAD FAILED:</b> '+String(e?.message||e)}
+ const r=await fetch(BASE,{cache:'no-store'});if(!r.ok)throw Error('baseline HTTP '+r.status);let html=await r.text();html=html.replace('<title>Galaxy Viewer Astrometry Sandbox 0010</title>','<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 013</title>');html=html.replace('</script>\n</body>\n</html>',PATCH+'\n</script>\n</body>\n</html>');document.open();document.write(html);document.close();
+}catch(e){document.querySelector('#boot').innerHTML='<span class="bad">ECO-013 bootstrap failed: '+String(e?.message||e)+'</span>'}
 })();
-</script></body></html>
+</script>
+</body>
+</html>
