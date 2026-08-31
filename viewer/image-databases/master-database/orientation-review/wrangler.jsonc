@@ -1,7 +1,7 @@
 {
   // Cloudflare Builds trigger: 2026-08-29 — GV 0045 safe recovery baseline
   "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0050-worker.js",
+  "main": "gv-cloudflare-auto-astrometry-curator-0051-worker.js",
   "compatibility_date": "2026-08-29",
   "workers_dev": true
 }
