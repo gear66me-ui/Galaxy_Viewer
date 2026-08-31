@@ -67,7 +67,7 @@ runAstrometry=async function(){await runOrient();if(orientBest?.accepted){try{co
 setTimeout(()=>{ensureResult013();button013('RUN ALADIN ORIENT','idle');log('ECO 013 READY',{engine:'restored rendered rotation/FOV search + DSS2-scale persistent anchors',diagnostic_max:DIAG_MAX_013,default_survey:PRIMARY_SURVEY_013})},0);
 `;
 try{
- const r=await fetch(BASE,{cache:'no-store'});if(!r.ok)throw Error('baseline HTTP '+r.status);let html=await r.text();html=html.replace('<title>Galaxy Viewer Astrometry Sandbox 0010</title>','<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 013</title>');html=html.replace('</script>\n</body>\n</html>',PATCH+'\n</script>\n</body>\n</html>');document.open();document.write(html);document.close();
+ const r=await fetch(BASE,{cache:'no-store'});if(!r.ok)throw Error('baseline HTTP '+r.status);let html=await r.text();html=html.replace('<title>Galaxy Viewer Astrometry Sandbox 0010</title>','<title>Galaxy Viewer Astrometry Sandbox 0010 — ECO 013</title>');html=html.replace('</scr'+'ipt>\n</body>\n</html>',PATCH+'\n</scr'+'ipt>\n</body>\n</html>');document.open();document.write(html);document.close();
 }catch(e){document.querySelector('#boot').innerHTML='<span class="bad">ECO-013 bootstrap failed: '+String(e?.message||e)+'</span>'}
 })();
 </script>
