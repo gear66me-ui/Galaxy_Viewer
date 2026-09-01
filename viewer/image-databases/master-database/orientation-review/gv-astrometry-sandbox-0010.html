@@ -37,6 +37,25 @@ async function runTriangleSolver024(mode='ORIENT'){if(!record||!aladin||busy)ret
 runOrient=async function(){return runTriangleSolver024('ORIENT')};
 runAstrometry=async function(){return runTriangleSolver024('ASTROMETRY')};
 `;
+const diagnosticRecoveryErrors025=[];
+function recordRecoveryError025(label,value){try{diagnosticRecoveryErrors025.push(label+': '+String(value?.message||value||'unknown error'))}catch{diagnosticRecoveryErrors025.push(label+': unknown error')}}
+window.addEventListener('error',e=>recordRecoveryError025('WINDOW ERROR',e?.error||e?.message));
+window.addEventListener('unhandledrejection',e=>recordRecoveryError025('UNHANDLED REJECTION',e?.reason));
+function installDiagnosticsRecovery025(){
+ const diag=()=>document.querySelector('#diag');
+ const stamp=()=>new Date().toISOString();
+ const append=(event,detail='')=>{const d=diag();if(!d)return;const line=stamp()+'  '+event+(detail?'  '+detail:'');if(!d.textContent.trim()||d.textContent.trim()==='Waiting.')d.textContent=line;else d.textContent+='\n'+line;d.scrollTop=d.scrollHeight};
+ const status=(text,kind='warn')=>{const a=document.querySelector('#actionStatus');if(a){a.textContent=text;a.className='action '+kind}};
+ append('DIAGNOSTICS RECOVERY ACTIVE','ECO-025');
+ for(const x of diagnosticRecoveryErrors025)append('STARTUP ERROR',x);
+ window.addEventListener('error',e=>append('WINDOW ERROR',String(e?.error?.stack||e?.message||e?.error||'unknown error')));
+ window.addEventListener('unhandledrejection',e=>append('UNHANDLED REJECTION',String(e?.reason?.stack||e?.reason||'unknown rejection')));
+ const fetchButton=document.querySelector('#fetchCatalog');
+ if(fetchButton)fetchButton.addEventListener('click',()=>{append('FETCH CATALOG CLICK','mission='+(document.querySelector('#mission')?.value||'unknown'));setTimeout(()=>{const t=diag()?.textContent||'';if(!/CATALOG FETCH INPUT|CATALOG HTTP|CATALOG RECORDS|FAILURE/.test(t))append('FETCH CATALOG STALLED','no catalog diagnostic observed after click')},1600)},true);
+ const copyButton=document.querySelector('#copy');
+ if(copyButton)copyButton.addEventListener('click',async e=>{e.preventDefault();e.stopImmediatePropagation();const text=diag()?.textContent||'';let copied=false,reason='';try{if(!navigator.clipboard?.writeText)throw Error('Clipboard API unavailable');await navigator.clipboard.writeText(text);copied=true}catch(err){reason=String(err?.message||err);try{const area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.left='-10000px';area.style.top='0';document.body.appendChild(area);area.focus();area.select();copied=!!document.execCommand('copy');area.remove();if(!copied)reason='execCommand copy returned false'}catch(fallbackError){reason=String(fallbackError?.message||fallbackError)}}if(copied){append('COPY DIAGNOSTICS','characters='+text.length+' method=clipboard-or-fallback');status('DIAGNOSTICS COPIED','good')}else{append('DIAGNOSTICS COPY FAILED',reason||'unknown reason');status('DIAGNOSTICS COPY FAILED — '+(reason||'unknown reason'),'bad')}},true);
+ setTimeout(()=>{const t=diag()?.textContent||'';if(t.trim()==='Waiting.'||(!/BOOT|CATALOG FETCH INPUT|ECO 0|SOURCE ROBUST|TRIANGLE/.test(t)&&/DIAGNOSTICS RECOVERY ACTIVE/.test(t))){append('CORE INITIALIZATION FAILED OR STALLED','base diagnostics never started');status('CORE INITIALIZATION FAILED OR STALLED','bad')}else append('CORE INITIALIZATION CHECK','base diagnostics active')},500);
+}
 try{
  const r=await fetch(BLOB_URL,{cache:'no-store',headers:{'Accept':'application/vnd.github+json'}});
  if(!r.ok)throw Error('baseline blob HTTP '+r.status);
@@ -50,7 +69,13 @@ try{
  if(count!==1)throw Error('ECO-021A insertion anchor count '+count);
  html=html.replace(INSERT_BEFORE,PATCH021+'\n'+PATCH024+'\n'+INSERT_BEFORE);
  document.open();document.write(html);document.close();
-}catch(e){document.querySelector('#boot').innerHTML='<span class="bad">ECO-021A bootstrap failed: '+String(e?.message||e)+'</span>'}
+ setTimeout(installDiagnosticsRecovery025,0);
+}catch(e){
+ const message='ECO-021A bootstrap failed: '+String(e?.message||e);
+ const boot=document.querySelector('#boot');if(boot)boot.innerHTML='<span class="bad">'+message+'</span>';
+ let d=document.querySelector('#diag');if(!d){d=document.createElement('pre');d.id='diag';d.className='boot bad';(boot||document.body).insertAdjacentElement?.('afterend',d);if(!d.isConnected)document.body.appendChild(d)}
+ d.textContent='DIAGNOSTICS RECOVERY ACTIVE — ECO-025\nBOOTSTRAP ERROR: '+message;
+}
 })();
 </script>
 </body>
