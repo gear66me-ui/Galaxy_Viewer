@@ -1,0 +1,1207 @@
+======================================================================
+GALAXY VIEWER — RANDOM NAVIGATION / TRAVEL ENGINE SPECIFICATION
+======================================================================
+
+PURPOSE
+-------
+
+Define the production navigation architecture for Galaxy Viewer Random
+Galaxy travel.
+
+The engine shall:
+
+1. Preserve a genuinely random experience.
+2. Select candidate galaxies from the complete eligible catalog.
+3. Plan navigation using a 100-galaxy candidate pool.
+4. Prefer spatial travel legs between 60° and 130°.
+5. Limit image-orientation change to <= 90° whenever feasible.
+6. ALWAYS rotate by the shortest angular direction.
+7. Maintain a 10-destination prepared/prefetched future queue.
+8. Prepare the next 100-galaxy planning batch before the current route
+   is exhausted.
+9. Execute travel with one parametric timing model controlled primarily
+   by TOTAL_TRAVEL_TIME.
+10. Minimize visible stutter, especially on slower mobile hardware.
+11. Keep planning, downloading, decoding and preparation OUTSIDE the
+    visible travel critical path whenever possible.
+
+
+======================================================================
+1. EMPIRICAL BASIS
+======================================================================
+
+The navigation constants below are based on Galaxy Viewer Monte Carlo
+studies using the real 1,146-record catalog.
+
+SPATIAL ROUTING STUDY
+---------------------
+
+Hard spatial band:
+
+    60° <= angular separation <= 130°
+
+500-board high-pool Monte Carlo:
+
+POOL 60
+    Success:       99.60%
+    Mean sigma:     7.925°
+    Median sigma:   6.901°
+    P95 sigma:     15.156°
+    Median plan:  708.2 ms
+    P95 plan:    1196.0 ms
+
+POOL 70
+    Success:       99.60%
+    Mean sigma:     7.421°
+    Median sigma:   6.469°
+    P95 sigma:     13.507°
+    Median plan:  900.9 ms
+    P95 plan:    1488.7 ms
+
+POOL 80
+    Success:       99.40%
+    Mean sigma:     7.279°
+    Median sigma:   6.586°
+    P95 sigma:     12.772°
+    Median plan: 1102.3 ms
+    P95 plan:    1733.7 ms
+
+POOL 100
+    Success:      100.00%
+    Mean sigma:     6.895°
+    Median sigma:   6.183°
+    P95 sigma:     12.302°
+    Median plan: 1503.5 ms
+    P95 plan:    2334.8 ms
+
+ENGINEERING DECISION:
+
+    PLANNING_POOL_SIZE = 100
+
+Pool 100 gives the strongest demonstrated spatial-route robustness and
+the lowest route sigma while remaining computationally inexpensive
+relative to the approximately 20-second visible travel interval.
+
+
+======================================================================
+2. ORIENTATION DATA
+======================================================================
+
+Catalog records contain orientation in several representations.
+
+Examples:
+
+    "North is 117.2° right of vertical"
+    "North is 8.5° left of vertical"
+    "North is up"
+    "157.00"
+    None
+
+All orientations shall be normalized internally to:
+
+    0° <= orientation < 360°
+
+Missing orientation shall use the existing Galaxy Viewer rule:
+
+    DEFAULT_ORIENTATION = 0°
+
+meaning North-up.
+
+Audit result:
+
+    Catalog records:       1146
+    Parsed/defaulted:      1146
+    Missing -> North-up:    151
+    Unrecognized:             0
+
+
+======================================================================
+3. SHORTEST-PATH ROTATION
+======================================================================
+
+NEVER calculate image rotation using ordinary absolute subtraction.
+
+For orientations A and B:
+
+    d = abs(B - A) mod 360
+
+    ROTATION_DISTANCE =
+        min(d, 360 - d)
+
+Therefore:
+
+    0° <= ROTATION_DISTANCE <= 180°
+
+Examples:
+
+    359° ->   0° =   1°
+    350° ->  10° =  20°
+     10° -> 350° =  20°
+      0° -> 180° = 180°
+
+The animation shall also use the corresponding signed shortest path.
+
+No navigation operation may rotate 359° when the equivalent movement is
+1° in the opposite direction.
+
+
+======================================================================
+4. OBSERVED ROTATION DISTRIBUTION
+======================================================================
+
+Pool-60 rotation Monte Carlo:
+
+    Boards:             500
+    Pairwise samples:   885,000
+
+    Mean rotation:       78.117°
+    Median rotation:     73.700°
+    SD:                  53.421°
+
+    P05:                  1.500°
+    P25:                 30.000°
+    P50:                 73.700°
+    P75:                122.500°
+    P90:                156.700°
+    P95:                167.900°
+    P99:                178.100°
+
+These are UNFILTERED pairwise orientation differences.
+
+The purpose of route planning is therefore not to assume rotations are
+naturally small. It is to exploit the candidate pool to select a route
+whose individual transitions are small.
+
+
+======================================================================
+5. ROTATION HARD-LIMIT STUDY
+======================================================================
+
+Matched-board confirmation:
+
+    LIMIT       SUCCESS
+
+    <= 75°       98.60%
+    <= 80°       99.40%
+    <= 85°       99.40%
+    <= 90°       99.80%
+    <= 95°       99.60%
+    <=100°       99.80%
+    <=105°      100.00%
+
+ENGINEERING TARGET:
+
+    ROTATION_TARGET = 90°
+
+The 90° threshold is the preferred production operating limit.
+
+It provides essentially complete feasibility while cutting the
+maximum normal orientation movement in half relative to the theoretical
+180° maximum.
+
+105° demonstrated complete feasibility on the matched study and is
+therefore suitable as a controlled fallback rather than the normal
+target.
+
+
+======================================================================
+6. CANDIDATE SELECTION
+======================================================================
+
+At creation of a planning batch:
+
+    1. Begin with the complete eligible Galaxy Viewer catalog.
+
+    2. Remove:
+         - current galaxy
+         - destinations already in immediate history
+         - destinations already present in future[]
+         - duplicate destination keys
+         - quarantined/broken records
+         - records failing required asset/provider eligibility
+
+    3. RANDOMLY SAMPLE:
+
+           PLANNING_POOL_SIZE = 100
+
+       WITHOUT replacement.
+
+IMPORTANT:
+
+The 100 candidates are RANDOM.
+
+RA, Dec, FOV and orientation MUST NOT be used to choose the initial
+100 candidates.
+
+Those properties are used AFTER random selection to determine the best
+ORDER of those candidates.
+
+This distinction preserves randomability.
+
+
+======================================================================
+7. ROUTE VARIABLES
+======================================================================
+
+Each candidate shall expose at minimum:
+
+    destinationKey
+    RA
+    Dec
+    FOV
+    orientation
+    provider
+    HD image identity/resource information
+
+For candidate transition i -> j calculate:
+
+    SKY_DISTANCE(i,j)
+
+using great-circle angular separation.
+
+Calculate:
+
+    ROTATION_DISTANCE(i,j)
+
+using shortest-path circular rotation.
+
+FOV shall also be retained for transition choreography and zoom
+preparation.
+
+Therefore route planning considers:
+
+    SKY POSITION
+        RA + Dec -> great-circle distance
+
+    ORIENTATION
+        shortest circular rotation
+
+    FOV
+        required final framing / zoom state
+
+
+======================================================================
+8. PRIMARY LEG ACCEPTANCE
+======================================================================
+
+Preferred transition:
+
+    60° <= SKY_DISTANCE <= 130°
+
+AND
+
+    ROTATION_DISTANCE <= 90°
+
+This is the NORMAL operating envelope.
+
+
+======================================================================
+9. CONTROLLED FALLBACK
+======================================================================
+
+Do NOT fail navigation merely because no <=90° transition can be found.
+
+Use deterministic relaxation.
+
+LEVEL 0 — NORMAL
+    Sky:       60°–130°
+    Rotation: <= 90°
+
+LEVEL 1 — ROTATION CUSHION
+    Sky:       60°–130°
+    Rotation: <=105°
+
+LEVEL 2 — ROTATION RELAXATION
+    Sky:       60°–130°
+    Rotation: <=120°
+
+LEVEL 3 — SPATIAL RELAXATION
+    Permit controlled expansion of the spatial band while preserving
+    shortest-path rotation.
+
+LEVEL 4 — LAST RESORT
+    Select the best available legal candidate.
+
+Absolute rotation is NEVER greater than 180° because shortest-path
+rotation is mandatory.
+
+Fallback use shall be recorded in diagnostics.
+
+
+======================================================================
+10. ROUTE OPTIMIZATION OBJECTIVE
+======================================================================
+
+The optimizer shall NOT simply minimize sky distance.
+
+It shall seek a smooth sequence satisfying the hard/preferred
+constraints.
+
+Primary priorities, in order:
+
+    1. Produce a complete usable route.
+    2. Preserve the preferred 60°–130° sky band.
+    3. Preserve <=90° rotation where feasible.
+    4. Minimize variation in sky-leg distance.
+    5. Minimize unnecessary orientation movement.
+    6. Avoid extreme FOV discontinuities where possible.
+    7. Preserve randomness among approximately equivalent choices.
+
+Conceptually:
+
+    COST =
+        spatial_variance_cost
+      + rotation_cost
+      + fov_transition_cost
+      + fallback_penalty
+
+Hard violations receive substantially larger penalties than ordinary
+optimization costs.
+
+Do NOT optimize so aggressively that the resulting sequence becomes
+visibly deterministic.
+
+
+======================================================================
+11. CURRENT ROUTE + FUTURE QUEUE ARCHITECTURE
+======================================================================
+
+These are TWO DIFFERENT structures.
+
+A. PLANNED ROUTE
+
+    Up to 100 ordered destinations resulting from the current
+    planning batch.
+
+B. PREPARED FUTURE QUEUE
+
+    The next 10 destinations actually being prepared for immediate
+    navigation.
+
+Constants:
+
+    PLANNING_POOL_SIZE       = 100
+    PREFETCH_TARGET          = 10
+    PREFETCH_PRIORITY_LEVEL  = 5
+    PREFETCH_EMERGENCY_LEVEL = 3
+    NEXT_PLAN_TRIGGER        = 10
+
+
+======================================================================
+12. PREFETCH POLICY
+======================================================================
+
+The engine should attempt to maintain:
+
+    future.length = 10
+
+For those destinations prepare the complete destination bundle:
+
+    HD image
+    decoded image where practical
+    final RA
+    final Dec
+    final FOV
+    final orientation
+    provider/source/archive state
+    any other destination-specific resources
+
+The destination bundle belongs STRICTLY to its destination key.
+
+Never substitute assets prepared for another destination.
+
+
+======================================================================
+13. PREFETCH WATERMARKS
+======================================================================
+
+NORMAL:
+
+    future >= 10
+
+No urgent action.
+
+REFILL:
+
+    future < 10
+
+Background preparation continues.
+
+PRIORITY:
+
+    future <= 5
+
+Increase preparation priority and suppress unnecessary background work.
+
+EMERGENCY:
+
+    future <= 3
+
+Destination preparation receives highest background priority.
+
+The visible animation should still begin whenever the next destination
+has satisfied its required readiness contract.
+
+
+======================================================================
+14. NEXT 100-GALAXY PLANNING TRIGGER
+======================================================================
+
+Do NOT fetch/replan another 100 candidates every time one destination
+is consumed.
+
+Continue consuming the existing optimized route.
+
+When:
+
+    CURRENT_ROUTE_REMAINING <= 10
+
+begin asynchronously constructing the NEXT 100-candidate planning
+batch.
+
+This provides approximately ten complete visible navigation cycles of
+planning cushion.
+
+
+======================================================================
+15. ROUTE HANDOFF
+======================================================================
+
+The next 100-candidate batch MUST NOT be optimized independently of the
+current route endpoint.
+
+Anchor the next route to:
+
+    CURRENT_ROUTE_FINAL_DESTINATION
+
+The first destination of the next route should therefore preferably
+satisfy:
+
+    60° <= SKY_DISTANCE <= 130°
+
+and:
+
+    ROTATION_DISTANCE <= 90°
+
+relative to the current route's final destination.
+
+Use the normal fallback ladder if required.
+
+This prevents an ugly discontinuity at the boundary between planning
+batches.
+
+
+======================================================================
+16. TEN-DESTINATION PREFETCH ORDER
+======================================================================
+
+The prepared queue shall follow the optimized route order.
+
+Example:
+
+    Optimized route:
+
+        G01
+        G02
+        G03
+        ...
+        G100
+
+Initial future queue:
+
+        G01 ... G10
+
+After G01 is consumed:
+
+        G02 ... G10
+
+and begin preparing:
+
+        G11
+
+Result:
+
+        G02 ... G11
+
+The route order MUST NOT be silently reshuffled by asynchronous
+download completion.
+
+FIFO route ownership remains authoritative.
+
+
+======================================================================
+17. NAVIGATION COMMIT SEMANTICS
+======================================================================
+
+The head destination is:
+
+    future[0]
+
+Navigation claims only that destination.
+
+The destination is not considered consumed merely because travel
+begins.
+
+Recommended lifecycle:
+
+    READY
+      ->
+    CLAIMED
+      ->
+    TRAVELING
+      ->
+    ARRIVED
+      ->
+    COMMITTED
+
+If travel fails before commit:
+
+    rollback / retry according to existing navigation recovery rules.
+
+Do not skip randomly to another prepared destination merely because its
+download finished earlier.
+
+
+======================================================================
+18. PARAMETRIC TRAVEL MODEL
+======================================================================
+
+The visible travel choreography shall be controlled by ONE principal
+parameter:
+
+    T = TOTAL_TRAVEL_TIME
+
+Production baseline:
+
+    T = 20.0 seconds
+
+All phase durations are derived from T.
+
+Do NOT scatter independent hard-coded durations throughout the module.
+
+
+======================================================================
+19. NORMALIZED TRAVEL CLOCK
+======================================================================
+
+Define:
+
+    u = clamp(t / T, 0, 1)
+
+where:
+
+    t = elapsed navigation time
+    T = requested total travel time
+
+All animation channels are functions of u.
+
+Changing T therefore stretches or compresses the complete maneuver
+without rewriting phase constants.
+
+
+======================================================================
+20. BASELINE 20-SECOND CHOREOGRAPHY
+======================================================================
+
+Recommended normalized phases:
+
+    PHASE A — DEPARTURE / ZOOM OUT
+        u = 0.000 -> 0.330
+        0.0 -> 6.6 sec at T=20
+
+    PHASE B — PRIMARY SKY ARC
+        u = 0.330 -> 0.670
+        6.6 -> 13.4 sec
+
+    PHASE C — ARRIVAL / ZOOM IN
+        u = 0.670 -> 1.000
+        13.4 -> 20.0 sec
+
+These are not three abrupt animations.
+
+They shall OVERLAP smoothly.
+
+
+======================================================================
+21. TRANSLATION / SKY MOTION
+======================================================================
+
+Sky translation should begin before maximum zoom-out is complete and
+continue into the beginning of zoom-in.
+
+Recommended translation window:
+
+    u approximately 0.20 -> 0.80
+
+At T = 20 sec:
+
+    approximately 4.0 -> 16.0 sec
+
+The central/high-speed portion of the sky movement therefore occurs
+while the viewer is relatively far zoomed out.
+
+This reduces apparent image velocity and rendering load.
+
+
+======================================================================
+22. ROTATION CHOREOGRAPHY
+======================================================================
+
+Rotation shall occur concurrently with translation.
+
+Do NOT:
+
+    zoom out
+    stop
+    rotate
+    stop
+    translate
+    stop
+    zoom in
+
+Instead blend the channels.
+
+Recommended rotation window:
+
+    u approximately 0.25 -> 0.75
+
+At T = 20 sec:
+
+    approximately 5.0 -> 15.0 sec
+
+Most rotation should occur near bird's-eye / maximum zoom-out where
+its visual and rendering impact is smallest.
+
+
+======================================================================
+23. FOV CHOREOGRAPHY
+======================================================================
+
+Let:
+
+    F0 = current destination FOV
+    F1 = target destination FOV
+    FB = bird's-eye travel FOV
+
+The camera shall smoothly transition:
+
+    F0 -> FB -> F1
+
+Avoid linear interpolation directly in FOV when it creates visually
+uneven zoom speed.
+
+Prefer interpolation in logarithmic zoom space:
+
+    z = ln(FOV)
+
+and interpolate z smoothly.
+
+Then:
+
+    FOV = exp(z)
+
+
+======================================================================
+24. EASING
+======================================================================
+
+Position, zoom and rotation shall not use constant velocity with abrupt
+starts/stops.
+
+Use a smooth easing function with zero or near-zero endpoint velocity.
+
+Suitable baseline:
+
+    smoothstep(u) = 3u² - 2u³
+
+Preferred where supported:
+
+    smootherstep(u) =
+        6u^5 - 15u^4 + 10u^3
+
+This gives:
+
+    zero velocity at endpoints
+    zero acceleration discontinuity at endpoints for smootherstep
+    smooth acceleration
+    smooth deceleration
+
+
+======================================================================
+25. MAXIMUM VELOCITY / ACCELERATION PHILOSOPHY
+======================================================================
+
+Do NOT define one fixed angular velocity independent of trip length.
+
+The trajectory is parameterized by:
+
+    angular distance
+    total travel time
+    normalized easing curve
+
+Therefore larger trips naturally produce larger peak velocity while
+remaining bounded by the same choreography.
+
+For a normalized smootherstep position law:
+
+    position(u) =
+        6u^5 - 15u^4 + 10u^3
+
+and sky distance D:
+
+    theta(t) = D * position(t/T)
+
+Velocity and acceleration are derivatives of this trajectory.
+
+The engine should derive them mathematically rather than manually
+tuning unrelated velocity constants.
+
+
+======================================================================
+26. DEVICE PERFORMANCE CUSHION
+======================================================================
+
+The production baseline shall initially be:
+
+    TOTAL_TRAVEL_TIME = 20 seconds
+
+This deliberately contains performance cushion for slower phones.
+
+Benchmark candidates:
+
+    15 sec
+    16 sec
+    17 sec
+    18 sec
+    19 sec
+    20 sec
+    21 sec
+    22 sec
+    23 sec
+    24 sec
+    25 sec
+
+The final production default shall be selected from measured device
+frame-time/stutter results rather than subjective appearance alone.
+
+If the fastest reliably smooth value on the reference phone is T_fast,
+a slower-device safety margin may then be applied before selecting the
+general default.
+
+
+======================================================================
+27. PERFORMANCE MEASUREMENTS
+======================================================================
+
+For each tested T record at minimum:
+
+    total frames
+    dropped/late frames
+    mean frame interval
+    median frame interval
+    P95 frame interval
+    P99 frame interval
+    maximum frame interval
+    long-frame count
+    main-thread long tasks where available
+    destination readiness delays
+    HD swap delay
+    Aladin update delay
+    trip distance
+    rotation distance
+    FOV ratio
+
+Testing should include:
+
+    short sky / short rotation
+    long sky / short rotation
+    short sky / large rotation
+    long sky / large rotation
+    large FOV change
+    provider/HD-image transition
+
+Do not benchmark only visually easy trips.
+
+
+======================================================================
+28. PERFORMANCE RULE
+======================================================================
+
+The visible animation thread shall NOT perform:
+
+    catalog downloads
+    route optimization
+    large JSON parsing
+    HD image downloads
+    expensive image decoding
+    archive initialization
+    unnecessary DOM reconstruction
+
+during the critical high-motion portion of travel whenever those
+operations can be performed beforehand or asynchronously.
+
+The purpose of the 100-route planner and 10-destination future queue is
+to make visible navigation primarily an animation operation rather
+than a preparation operation.
+
+
+======================================================================
+29. MANUAL NAVIGATION-OFF MODE
+======================================================================
+
+Provide a user setting allowing travel animation to be disabled.
+
+Example:
+
+    Navigation Animation
+        ON
+        OFF
+
+ON:
+
+    Execute normal cinematic parametric travel.
+
+OFF:
+
+    Transition directly to the prepared destination using the safest
+    practical immediate camera/image update.
+
+The same route planner and prepared queue remain active.
+
+Turning animation OFF does NOT disable intelligent destination
+selection or prefetching.
+
+
+======================================================================
+30. RANDOMABILITY REQUIREMENT
+======================================================================
+
+The planner shall preserve the perception and statistical behavior of
+random exploration.
+
+Therefore:
+
+    RANDOMNESS chooses the candidate population.
+
+    OPTIMIZATION chooses the route through that population.
+
+Do NOT globally choose the "best" 100 galaxies from the complete
+catalog based on geometry.
+
+That would progressively bias the experience toward preferred sky
+regions/orientations.
+
+Every eligible galaxy must continue to have a meaningful opportunity
+to enter future planning batches.
+
+
+======================================================================
+31. DIAGNOSTICS
+======================================================================
+
+For every planned leg record:
+
+    source destination key
+    target destination key
+
+    sky_distance_deg
+    rotation_distance_deg
+    signed_rotation_deg
+
+    source_fov
+    target_fov
+    fov_ratio
+
+    constraint_level
+
+    planning_pool_id
+    route_position
+
+    prepared state
+    preparation duration
+
+    requested travel T
+    actual travel duration
+
+    frame timing statistics
+
+This allows future tuning to be evidence-based.
+
+
+======================================================================
+32. INITIAL PRODUCTION CONSTANTS
+======================================================================
+
+PLANNING_POOL_SIZE        = 100
+
+SKY_TARGET_MIN_DEG        = 60
+SKY_TARGET_MAX_DEG        = 130
+
+ROTATION_TARGET_DEG       = 90
+ROTATION_FALLBACK_1_DEG   = 105
+ROTATION_FALLBACK_2_DEG   = 120
+ROTATION_ABSOLUTE_MAX_DEG = 180
+
+PREFETCH_TARGET           = 10
+PREFETCH_PRIORITY_LEVEL   = 5
+PREFETCH_EMERGENCY_LEVEL  = 3
+
+NEXT_PLAN_TRIGGER         = 10
+
+TOTAL_TRAVEL_TIME         = 20.0 sec
+
+TRANSLATION_START_U       ~= 0.20
+TRANSLATION_END_U         ~= 0.80
+
+ROTATION_START_U          ~= 0.25
+ROTATION_END_U            ~= 0.75
+
+ZOOM_OUT_PRIMARY_END_U    ~= 0.33
+ZOOM_IN_PRIMARY_START_U   ~= 0.67
+
+EASING                    = smootherstep
+
+
+======================================================================
+33. IMPLEMENTATION ARCHITECTURE
+======================================================================
+
+Implement navigation as a SEPARATE JavaScript module.
+
+Suggested responsibility boundary:
+
+    gv-navigation-engine.js
+
+The module owns:
+
+    candidate selection
+    route construction
+    route optimization
+    shortest-path rotation
+    route handoff
+    planning watermarks
+    parametric travel timing
+    normalized easing
+    camera trajectory calculation
+    navigation diagnostics
+
+Existing Galaxy Viewer modules should remain responsible for their
+existing image preparation, provider, Aladin, history and archive
+functions unless an explicitly approved interface change is required.
+
+Do NOT duplicate those systems inside the navigation module.
+
+
+======================================================================
+34. REQUIRED ENGINE STATE
+======================================================================
+
+Conceptually:
+
+    NavigationEngine {
+        currentDestination
+        currentRoute
+        routeCursor
+        nextRoute
+        future[]
+        history[]
+
+        planningPromise
+        preparationState
+
+        totalTravelTime
+
+        diagnostics
+    }
+
+Only one authoritative owner should mutate route position.
+
+Avoid multiple independent timers/controllers deciding which galaxy is
+next.
+
+
+======================================================================
+35. HIGH-LEVEL STATE MACHINE
+======================================================================
+
+IDLE
+  |
+  v
+ENSURE_FUTURE
+  |
+  v
+READY
+  |
+  v
+CLAIM_HEAD
+  |
+  v
+TRAVEL
+  |
+  v
+ARRIVE
+  |
+  v
+COMMIT
+  |
+  +------> REFILL FUTURE
+  |
+  +------> CHECK NEXT-100 TRIGGER
+  |
+  v
+READY
+
+
+Background:
+
+CURRENT_ROUTE_REMAINING > 10
+        |
+        v
+No next-route planning required.
+
+
+CURRENT_ROUTE_REMAINING <= 10
+        |
+        v
+Randomly sample next candidate pool
+        |
+        v
+Optimize anchored next route
+        |
+        v
+Store NEXT_ROUTE
+        |
+        v
+Prepare first destinations as capacity becomes available.
+
+
+======================================================================
+36. CRITICAL INVARIANTS
+======================================================================
+
+The implementation MUST preserve all of these:
+
+A. Initial 100 candidates are randomly sampled.
+
+B. Optimization changes ORDER, not candidate identity.
+
+C. Sky separation uses spherical/great-circle geometry.
+
+D. Rotation always uses circular shortest path.
+
+E. Preferred spatial envelope is 60°–130°.
+
+F. Preferred rotation envelope is <=90°.
+
+G. Missing orientation means North-up / 0°.
+
+H. future[0] is the authoritative next destination.
+
+I. Asynchronous completion cannot reorder the route.
+
+J. Prepared assets are destination-key scoped.
+
+K. Next planning batch begins with 10 route destinations remaining.
+
+L. Next route is anchored to the endpoint of the current route.
+
+M. Travel duration is controlled parametrically through T.
+
+N. Changing T must NOT require rewriting individual phase durations.
+
+O. Heavy preparation should occur outside visible travel whenever
+   possible.
+
+P. Route/planning failures use controlled fallback rather than freezing
+   Random Galaxy.
+
+Q. Diagnostics record every constraint relaxation.
+
+
+======================================================================
+37. ACCEPTANCE CRITERIA
+======================================================================
+
+The implementation is acceptable only when tests demonstrate:
+
+[ ] 100-candidate random planning pool.
+
+[ ] No duplicate candidates within a pool.
+
+[ ] 60°–130° preferred spatial legs.
+
+[ ] <=90° preferred rotation legs.
+
+[ ] Shortest-path rotation verified across 0°/360° boundary.
+
+[ ] Missing orientations correctly become 0°.
+
+[ ] Controlled 105°/120° fallback works.
+
+[ ] 10 prepared destinations maintained during normal operation.
+
+[ ] Priority behavior activates at <=5.
+
+[ ] Emergency behavior activates at <=3.
+
+[ ] Next 100 planning begins at 10 remaining route destinations.
+
+[ ] Route-boundary handoff is anchored correctly.
+
+[ ] Async preparation cannot reorder destinations.
+
+[ ] Destination-key ownership remains strict.
+
+[ ] TOTAL_TRAVEL_TIME alone scales the complete animation.
+
+[ ] 20-second baseline executes without phase discontinuities.
+
+[ ] Zoom, translation and rotation overlap smoothly.
+
+[ ] No unnecessary blocking work occurs during high-motion travel.
+
+[ ] Navigation OFF mode works without disabling route planning.
+
+[ ] Existing history/back/forward semantics remain intact.
+
+[ ] Existing provider/archive/HD functionality remains intact.
+
+[ ] Diagnostics prove actual sky distance, rotation and timing.
+
+
+======================================================================
+38. CHANGE-CONTROL REQUIREMENT
+======================================================================
+
+BEFORE WRITING CODE:
+
+1. Identify the existing files/functions that currently own:
+       Random destination selection
+       future queue
+       prefetch
+       navigation/travel animation
+       Aladin movement
+       orientation
+       HD preparation
+       history
+       commit/rollback
+
+2. Report the exact integration seams.
+
+3. Identify the minimum files that require modification.
+
+4. Do NOT modify unrelated UI, artwork, providers, history behavior,
+   diagnostics, archive behavior or image databases.
+
+5. Present the proposed implementation/change set for authorization
+   before repository writes.
+
+The specification above is the target behavior.
+
+Do not reinterpret the constants or architecture without explicitly
+identifying the proposed deviation first.
+
+
+======================================================================
+END — GALAXY VIEWER RANDOM NAVIGATION / TRAVEL ENGINE SPECIFICATION
+======================================================================
