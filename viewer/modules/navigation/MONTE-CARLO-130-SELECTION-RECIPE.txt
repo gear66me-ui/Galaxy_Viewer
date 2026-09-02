@@ -1,0 +1,276 @@
+======================================================================
+GALAXY VIEWER — MONTE CARLO 130 SELECTION RECIPE
+======================================================================
+
+STATUS
+------
+Navigation selection methodology / requirements reference.
+
+PURPOSE
+-------
+Define the methodology used to select and order a 100-galaxy navigation
+route from a 130-galaxy candidate pool while simultaneously controlling
+sky-travel angle and image-orientation rotation.
+
+
+======================================================================
+1. PRODUCTION PARAMETERS
+======================================================================
+
+Candidate pool size             : 130 galaxies
+Final ordered route             : 100 unique galaxies
+
+Sky-travel target               : 95 degrees
+Sky-travel allowable range      : 60 to 130 degrees
+Sky-travel nominal bandwidth    : 95 +/- 35 degrees
+
+Rotation target                 : 75 degrees
+Rotation allowable range        : 45 to 105 degrees
+Rotation nominal bandwidth      : 75 +/- 30 degrees
+
+The 130 candidates are planning metadata candidates. Selection of 130
+candidates SHALL NOT imply downloading or decoding HD assets for all 130.
+Expensive preload work remains limited to the active future-navigation
+queue.
+
+
+======================================================================
+2. ELIGIBILITY
+======================================================================
+
+A galaxy is eligible for the joint navigation solver only when the
+current authoritative catalog record provides all data required for the
+transition calculation, including:
+
+- valid right ascension (RA);
+- valid declination (Dec);
+- valid image orientation;
+- valid galaxy/provider identity required by the viewer.
+
+Duplicate records SHALL be removed before candidate-pool selection.
+Current authoritative catalog revisions SHALL be used; historical or
+superseded catalog revisions SHALL NOT be mixed into the planning pool.
+
+
+======================================================================
+3. SKY-TRAVEL CALCULATION
+======================================================================
+
+Angular separation between galaxies A and B SHALL be calculated as a
+spherical great-circle distance using RA and Dec, not as planar coordinate
+distance.
+
+For right ascensions alpha1, alpha2 and declinations delta1, delta2:
+
+D = acos(
+      sin(delta1) * sin(delta2)
+      + cos(delta1) * cos(delta2) * cos(alpha1 - alpha2)
+    )
+
+All angular quantities SHALL be evaluated consistently in radians during
+the trigonometric calculation and converted to degrees for comparison.
+
+A travel edge is acceptable only when:
+
+60 degrees <= D(A,B) <= 130 degrees.
+
+
+======================================================================
+4. IMAGE-ROTATION CALCULATION
+======================================================================
+
+Catalog orientation descriptions SHALL first be normalized into a common
+signed angular convention.
+
+For two normalized image orientations thetaA and thetaB, required image
+rotation SHALL be the shortest circular rotation:
+
+R(A,B) = abs(((thetaB - thetaA + 180) mod 360) - 180)
+
+Therefore:
+
+0 degrees <= R(A,B) <= 180 degrees.
+
+A rotation edge is acceptable only when:
+
+45 degrees <= R(A,B) <= 105 degrees.
+
+Left/right catalog descriptions SHALL NOT be compared as raw strings.
+They SHALL be converted to the normalized angular convention before the
+shortest-path rotation is calculated.
+
+
+======================================================================
+5. JOINT COMPATIBILITY GRAPH
+======================================================================
+
+The 130 selected candidates SHALL be represented as a compatibility graph.
+Each galaxy is a node.
+
+An edge between galaxies A and B exists ONLY when BOTH requirements pass:
+
+1. 60 degrees <= sky travel <= 130 degrees; AND
+2. 45 degrees <= shortest image rotation <= 105 degrees.
+
+A transition failing either requirement is incompatible and SHALL NOT be
+used in the nominal route.
+
+
+======================================================================
+6. ROUTE ORDERING METHODOLOGY
+======================================================================
+
+The solver SHALL attempt to construct an ordered route containing 100
+unique galaxies from the 130-candidate compatibility graph.
+
+At each route step the solver SHALL:
+
+1. identify unused compatible neighbors of the current galaxy;
+2. exclude every candidate failing either joint constraint;
+3. evaluate each remaining candidate's number of future unused compatible
+   neighbors;
+4. preferentially choose the candidate with the fewest remaining valid
+   options.
+
+This is a constrained-first / minimum-remaining-options graph traversal
+(Warnsdorff-style heuristic). Its purpose is to place difficult nodes
+before flexible nodes and reduce late-route dead ends.
+
+If multiple candidates have equivalent future compatibility, the solver
+SHOULD use randomized tie-breaking so that navigation remains variable
+between sessions rather than producing one deterministic route.
+
+No galaxy SHALL appear more than once in the same 100-galaxy route.
+
+
+======================================================================
+7. FAILURE / RESTART HANDLING
+======================================================================
+
+If a route reaches a dead end before 100 unique galaxies have been ordered,
+the solver SHALL NOT immediately relax the travel or rotation constraints.
+
+The solver SHALL first abandon that attempted ordering and restart from a
+different viable start/order using the same candidate pool.
+
+The validated Monte Carlo methodology used approximately 30 internal route
+restart attempts per sampled pool.
+
+If repeated ordering attempts fail, the implementation may replace reserve
+candidates from the wider eligible catalog and solve again. Constraint
+relaxation is not the first-line recovery mechanism.
+
+
+======================================================================
+8. ROUTE COMMITMENT AND PRELOAD SEPARATION
+======================================================================
+
+The 130-candidate set is a planning pool. The production navigation route
+contains 100 galaxies.
+
+The route SHOULD be solved/validated before it is treated as ready for
+navigation.
+
+The remaining approximately 30 candidates provide selection headroom and
+need not become active destinations.
+
+Candidate-pool planning SHALL operate on lightweight metadata wherever
+possible. HD download, image decode, Aladin preparation, archive/source
+preload, and other expensive preparation SHALL remain restricted to the
+active future/prefetch queue rather than all 130 planning candidates.
+
+This separation is intended to keep route planning outside the visible
+navigation critical path and avoid materially increasing application
+startup/travel latency merely because the planning pool is 130.
+
+
+======================================================================
+9. MONTE CARLO BASIS
+======================================================================
+
+Current-catalog audit used these authoritative catalog revisions:
+
+- Chandra : gv-chandra-galaxies-full-0002.json
+- Hubble : gv-hubble-galaxies-full-0025.json
+- JWST   : gv-jwst-galaxies-full-0002.json
+- Spitzer: gv-spitzer-galaxies-full-0009.json
+
+Joint audit input:
+
+Raw usable records             : 995
+Unique usable galaxies         : 940
+
+For travel 60-130 degrees and rotation 45-105 degrees, the full
+compatibility graph produced:
+
+Mean compatible neighbors      : 145.79
+Median compatible neighbors    : 132.50
+Minimum compatible neighbors   : 63
+Maximum compatible neighbors   : 343
+Zero-edge galaxies             : 0
+
+Monte Carlo requirement:
+
+Final route length             : 100 galaxies
+Runs per tested pool size      : 500
+
+Observed route-completion rates:
+
+Candidate pool 100             : 58.80 percent
+Candidate pool 110             : 95.80 percent
+Candidate pool 120             : 99.40 percent
+Candidate pool 130             : 100.00 percent
+Candidate pool 150             : 99.80 percent
+
+The 150-versus-130 inversion is consistent with finite Monte Carlo sampling
+and randomized heuristic behavior and SHALL NOT be interpreted as evidence
+that increasing the candidate pool mathematically reduces feasibility.
+
+Based on the measured robustness and the small metadata-planning cost of
+10 additional candidates beyond 120, the selected production planning pool
+is 130 candidates.
+
+
+======================================================================
+10. AUTHORITATIVE RECIPE SUMMARY
+======================================================================
+
+GALAXY VIEWER RANDOM NAVIGATION SELECTION
+
+Candidate pool:
+    130 galaxies
+
+Final route:
+    100 unique galaxies
+
+Travel requirement:
+    60 degrees <= angular separation <= 130 degrees
+    nominal target = 95 degrees
+    nominal bandwidth = +/- 35 degrees
+
+Rotation requirement:
+    45 degrees <= shortest image rotation <= 105 degrees
+    nominal target = 75 degrees
+    nominal bandwidth = +/- 30 degrees
+
+Selection method:
+    Build a joint compatibility graph.
+    Travel AND rotation requirements must both pass.
+
+Ordering method:
+    Constrained-first graph traversal.
+    Prefer the candidate with the fewest remaining valid unused options.
+    Randomize equivalent candidates.
+
+Failure handling:
+    Restart route ordering before relaxing constraints.
+    Replace reserve candidates if repeated route solving fails.
+
+Performance architecture:
+    130 candidates are lightweight planning candidates only.
+    Expensive download/decode/preload work remains limited to the active
+    navigation/future queue.
+
+======================================================================
+END — MONTE CARLO 130 SELECTION RECIPE
+======================================================================
