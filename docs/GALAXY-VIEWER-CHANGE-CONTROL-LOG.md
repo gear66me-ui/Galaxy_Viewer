@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-0fb5a8f96ad9 — ECO-20260902-NAVIGATION-0001-IDENTITY-RECOVERY-001D
+
+**Recorded:** 2026-09-02T09:27:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`0fb5a8f96ad9519f7805b3e4f575bfb7929d7270`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/0fb5a8f96ad9519f7805b3e4f575bfb7929d7270)  
+**Parent/baseline:** `40b4467212419a0165ec61df21cad1adac176683`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/40b4467212419a0165ec61df21cad1adac176683...0fb5a8f96ad9519f7805b3e4f575bfb7929d7270)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260902-NAVIGATION-0001-IDENTITY-RECOVERY-001D`  
+**Requirements:** `REQ-001,REQ-002,REQ-003,REQ-004,REQ-005,REQ-006`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/modules/navigation/gv-navigation-0001.js`
+- Actual: `viewer/modules/navigation/gv-navigation-0001.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/modules/navigation/gv-navigation-0001.js`
+
+- Git status: `M`
+- SHA-256 before: `d5136a977db0f7133031fa09183c23280db48637482c68f4dd37016e3e420676`
+- SHA-256 after: `c1bd1b31798208c9efcc4a86f8a90cf3a1e580710074d86ce8143ed9d6b2d908`
+- Bytes: `15552` -> `16285`
+- Lines: `448` -> `449`
+- Characters: `15535` -> `16266`
+- Inserted lines: `309`
+- Deleted lines: `308`
+- Inserted characters: `7024`
+- Deleted characters: `6293`
+- Changed diff blocks: `54`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-6c94c5de534b — ECO-20260902-12AR01-NAVIGATION-ADMIN-001C
 
 **Recorded:** 2026-09-02T02:22:23-05:00  
