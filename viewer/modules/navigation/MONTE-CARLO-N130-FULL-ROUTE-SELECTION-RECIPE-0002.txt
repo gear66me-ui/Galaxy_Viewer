@@ -1,0 +1,341 @@
+======================================================================
+GALAXY VIEWER — N=130 FULL-ROUTE NAVIGATION SELECTION RECIPE 0002
+======================================================================
+
+PURPOSE
+-------
+Define the temporary/production-facing selection and ordering methodology
+for a navigation queue containing exactly 130 unique galaxies.
+
+The selector shall fetch/select 130 eligible galaxies, order ALL 130 into
+one continuous route, and commit the batch only when every consecutive
+transition satisfies BOTH the travel-angle and image-rotation envelopes.
+
+======================================================================
+1. SELECTION CONSTANTS
+======================================================================
+
+NAV_BATCH_SIZE            = 130
+ROUTE_REQUIRED_LENGTH     = 130
+
+TRAVEL_TARGET_DEG         = 95
+TRAVEL_MIN_DEG            = 60
+TRAVEL_MAX_DEG            = 130
+TRAVEL_HALF_BAND_DEG      = 35
+
+ROTATION_TARGET_DEG       = 75
+ROTATION_MIN_DEG          = 40
+ROTATION_MAX_DEG          = 110
+ROTATION_HALF_BAND_DEG    = 35
+
+ROUTE_RESTART_ATTEMPTS    = 30
+QUEUE_TARGET              = 130
+QUEUE_REFILL_TRIGGER      = 120
+
+The 130 records are planning metadata. Selection of 130 galaxies SHALL NOT
+cause download/decode/preload of all 130 HD assets.
+
+======================================================================
+2. ELIGIBILITY AND DEDUPLICATION
+======================================================================
+
+A route-eligible record shall provide:
+- unique navigation identity;
+- valid right ascension;
+- valid declination;
+- valid image orientation;
+- valid provider/catalog identity;
+- metadata needed by Random Galaxy.
+
+Only current authoritative catalog revisions shall be used. Historical or
+superseded revisions shall not be mixed into the same candidate universe.
+Deduplicate the eligible catalog before drawing the 130-galaxy batch.
+
+======================================================================
+3. SKY-TRAVEL CALCULATION
+======================================================================
+
+Use spherical great-circle separation, not planar RA/Dec distance.
+
+For RA alpha1/alpha2 and declination delta1/delta2:
+
+cos(D) = sin(delta1)*sin(delta2)
+       + cos(delta1)*cos(delta2)*cos(alpha1-alpha2)
+
+D = acos(clamp(cos(D),-1,+1))
+
+Evaluate trigonometric inputs in radians and convert D to degrees.
+
+A spatial edge passes only when:
+
+60 degrees <= D(A,B) <= 130 degrees.
+
+======================================================================
+4. ORIENTATION NORMALIZATION AND ROTATION
+======================================================================
+
+Normalize catalog orientation descriptions into one signed angular system.
+Examples:
+
+North is 49.8 degrees right of vertical -> +49.8 degrees
+North is 49.8 degrees left of vertical  -> -49.8 degrees
+North is up                              ->   0.0 degrees
+
+Normalize signed angles with:
+
+normalizeSigned(x) = ((x + 180) mod 360) - 180
+
+For galaxy A orientation thetaA and B orientation thetaB, shortest image
+rotation is:
+
+R(A,B) = abs(((thetaB-thetaA+180) mod 360)-180)
+
+Therefore 0 <= R <= 180 degrees.
+
+A rotation edge passes only when:
+
+40 degrees <= R(A,B) <= 110 degrees.
+
+Do not compare raw LEFT/RIGHT strings and do not use absolute orientation
+from North as the transition cost.
+
+======================================================================
+5. JOINT COMPATIBILITY GRAPH
+======================================================================
+
+Build a 130-node undirected compatibility graph for the sampled batch.
+Create edge A<->B only when BOTH conditions pass:
+
+60 <= travel(A,B) <= 130 degrees
+AND
+40 <= rotation(A,B) <= 110 degrees
+
+Retain travelDeg and rotationDeg per edge for diagnostics.
+
+Before route solving:
+1. calculate degree for every node;
+2. reject the uncommitted batch immediately if any node has degree 0;
+3. preferably verify graph connectivity;
+4. reject and resample the entire uncommitted batch if disconnected.
+
+======================================================================
+6. FULL 130-NODE ORDERING
+======================================================================
+
+Required output:
+
+orderedRoute.length == 130
+unique(orderedRoute).length == 130
+
+All sampled galaxies must appear exactly once in the accepted route.
+
+Treat ordering as a constrained Hamiltonian-path search on the 130-node
+compatibility graph.
+
+Use a constrained-first / minimum-remaining-options heuristic:
+1. find unused compatible neighbors of the current node;
+2. for each candidate, count its future unused compatible neighbors;
+3. prefer the candidate with the FEWEST remaining options;
+4. randomize ties among equally ranked candidates.
+
+Prefer lower-degree viable nodes as start candidates, with randomized ties.
+This is Warnsdorff-style ordering intended to place difficult nodes before
+flexible nodes and reduce late-route dead ends.
+
+======================================================================
+7. RESTART / RESAMPLE POLICY
+======================================================================
+
+For each sampled 130-galaxy batch, allow approximately 30 solver restarts.
+Each restart may use a different start node and randomized tie-breaking.
+
+If no complete 130-node route is found:
+- do NOT weaken the 60-130 travel envelope;
+- do NOT weaken the 40-110 rotation envelope;
+- do NOT silently drop individual galaxies from an accepted batch;
+- reject the entire UNCOMMITTED sample and draw a new 130-galaxy sample.
+
+Optional future enhancement: limited depth-first backtracking may be added
+before full batch resampling if runtime testing shows value.
+
+======================================================================
+8. ROUTE ACCEPTANCE
+======================================================================
+
+A batch is accepted only if:
+
+route.length == 130
+unique(route).length == 130
+
+and, for every i=0 through 128:
+
+60 <= travel(route[i],route[i+1]) <= 130 degrees
+AND
+40 <= rotation(route[i],route[i+1]) <= 110 degrees
+
+No exception transitions are permitted in the nominal route.
+
+Once accepted:
+
+activeNavigationQueue = orderedRoute
+
+All 130 become valid future destinations.
+
+======================================================================
+9. REFILL / BATCH SEAM
+======================================================================
+
+Queue target = 130 ordered galaxies.
+When 120 remain, begin solving the next 130-galaxy batch in the background.
+
+The last committed galaxy of the current queue shall be the anchor for the
+next batch. The first galaxy of the new batch must satisfy the SAME joint
+constraints relative to the current tail:
+
+60 <= seam travel <= 130 degrees
+AND
+40 <= seam rotation <= 110 degrees
+
+Do not append a new batch with an unchecked seam.
+
+======================================================================
+10. PRELOAD SEPARATION
+======================================================================
+
+Full-route planning uses lightweight metadata only:
+ID, RA, Dec, orientation, provider, and downstream asset references.
+
+Do not fetch/decode all 130 HD assets during route planning. Existing active
+future/prefetch logic remains responsible for HD requests, decode, Aladin
+preparation, and archive/source preload. Keep route planning outside the
+visible travel critical path.
+
+======================================================================
+11. CAMERA / TRAVEL-TIME NOTE
+======================================================================
+
+Route selection is independent of animation timing. Current performance
+work is validating total navigation travel times down to approximately six
+seconds without visible stutter. Do not change the travel/rotation selection
+bands merely to treat rendering stutter; diagnose rendering/download/preload
+critical paths separately.
+
+======================================================================
+12. MONTE CARLO BASIS
+======================================================================
+
+Current authoritative-catalog audit used:
+- Chandra gv-chandra-galaxies-full-0002.json
+- Hubble  gv-hubble-galaxies-full-0025.json
+- JWST    gv-jwst-galaxies-full-0002.json
+- Spitzer gv-spitzer-galaxies-full-0009.json
+
+Audit population:
+raw usable records   = 995
+unique usable records = 940
+
+For travel 60-130 degrees and rotation 40-110 degrees, compatibility graph:
+mean compatible neighbors   = 170.74
+median compatible neighbors = 158
+minimum compatible neighbors = 73
+maximum compatible neighbors = 383
+zero-edge galaxies = 0
+
+10,000-run sensitivity study using a 100-galaxy required route:
+Pool 100 = 89.190 percent
+Pool 110 = 99.700 percent
+Pool 120 = 99.950 percent
+Pool 125 = 99.970 percent
+Pool 130 = 99.990 percent
+Pool 135 = 100.000 percent
+Pool 140 = 100.000 percent
+Pool 150 = 99.990 percent
+
+IMPORTANT VALIDATION DISTINCTION:
+The percentages above validated candidate-pool N -> route length 100.
+They did NOT prove that every sampled set of 130 galaxies can always be
+ordered into a full 130-node route.
+
+Therefore the implementation defined by this document shall instrument and
+validate the NEW requirement:
+
+SAMPLE SIZE         = 130
+REQUIRED ROUTE SIZE = 130
+POST-COMMIT DISCARD = 0
+
+======================================================================
+13. REQUIRED DIAGNOSTICS
+======================================================================
+
+For every accepted batch record:
+NAV_BATCH_ID
+SAMPLED_COUNT = 130
+ROUTE_COUNT = 130
+UNIQUE_COUNT = 130
+TRAVEL_MIN_OBSERVED
+TRAVEL_MAX_OBSERVED
+TRAVEL_MEAN
+TRAVEL_MEDIAN
+TRAVEL_SD
+ROTATION_MIN_OBSERVED
+ROTATION_MAX_OBSERVED
+ROTATION_MEAN
+ROTATION_MEDIAN
+ROTATION_SD
+MIN_NODE_DEGREE
+MEAN_NODE_DEGREE
+MAX_NODE_DEGREE
+ROUTE_RESTARTS
+BATCH_RESAMPLES
+SOLVE_TIME_MS
+CONSTRAINT_PASS
+
+======================================================================
+14. SCOPE GUARD — DO NOT CHANGE
+======================================================================
+
+This selection implementation shall not alter unrelated Random Galaxy or
+viewer behavior unless separately authorized. Specifically do not change:
+- visible camera choreography;
+- travel animation equations;
+- zoom-out/zoom-in equations;
+- camera altitude equations;
+- dome geometry;
+- Earth pointer;
+- HD presentation behavior;
+- Aladin behavior;
+- archive/source overlays;
+- history / Back / Forward semantics;
+- existing preload worker limits;
+- provider artwork;
+- catalog contents;
+- catalog orientation values;
+- application startup sequence.
+
+Authorized selection scope is limited to:
+- candidate sampling;
+- angular compatibility;
+- rotation compatibility;
+- 130-node ordering;
+- batch seam validation;
+- route diagnostics.
+
+======================================================================
+FINAL DEFINITION
+======================================================================
+
+FETCH: 130 eligible unique galaxies
+BUILD: joint compatibility graph
+EDGE: travel 60-130 degrees AND rotation 40-110 degrees
+ORDER: all 130, no repeats, constrained-first heuristic, randomized ties
+ACCEPT: only a complete 130/130 route
+FAILURE: reject/resample uncommitted batch; do not relax constraints
+QUEUE: 130 ordered galaxies
+REFILL: begin next 130-batch planning at 120 remaining
+SEAM: current tail -> next first galaxy must pass identical constraints
+PRELOAD: metadata planning only for the full 130; expensive preparation
+         remains limited to the active prefetch queue
+
+======================================================================
+END — N=130 FULL-ROUTE NAVIGATION SELECTION RECIPE 0002
+======================================================================
