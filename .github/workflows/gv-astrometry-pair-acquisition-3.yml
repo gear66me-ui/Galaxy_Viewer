@@ -1,0 +1,73 @@
+name: ASTROMETRY PAIR ACQUISITION — 3 GALAXIES
+run-name: ASTROMETRY PAIR ACQUISITION — 3 GALAXIES
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/gv-astrometry-pair-acquisition-3.yml'
+      - 'test/astrometry-pairs/gv_acquire_pairs.py'
+
+permissions:
+  contents: write
+
+jobs:
+  acquire:
+    name: ASTROMETRY PAIR ACQUISITION — 3 GALAXIES
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.GV_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          token: ${{ secrets.GV_GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install acquisition dependency
+        run: python -m pip install requests
+
+      - name: Acquire 3 provider + DSS2 pairs
+        run: |
+          rm -rf test/astrometry-pairs/generated
+          python test/astrometry-pairs/gv_acquire_pairs.py \
+            --catalog viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json \
+            --limit 3 \
+            --out test/astrometry-pairs/generated
+
+      - name: Verify pair files
+        run: |
+          echo '=== GENERATED FILES ==='
+          find test/astrometry-pairs/generated -maxdepth 2 -type f -printf '%p %s bytes\n' | sort
+          test -f test/astrometry-pairs/generated/PAIR-0001-heic2018b/01_PROVIDER.jpg
+          test -f test/astrometry-pairs/generated/PAIR-0001-heic2018b/02_DSS2_NORTH_UP.jpg
+          test -f test/astrometry-pairs/generated/MANIFEST.json
+
+      - name: Commit acquired pairs to beta
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add test/astrometry-pairs/generated
+          if git diff --cached --quiet; then
+            echo 'No pair changes to commit.'
+            exit 0
+          fi
+          git commit -m 'ASTROMETRY PAIR ACQUISITION — 3 GALAXIES [skip ci]'
+          git push origin HEAD:beta
+
+      - name: Upload same files as artifact backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASTROMETRY-PAIR-ACQUISITION-3-GALAXIES
+          path: test/astrometry-pairs/generated/
+          retention-days: 14
