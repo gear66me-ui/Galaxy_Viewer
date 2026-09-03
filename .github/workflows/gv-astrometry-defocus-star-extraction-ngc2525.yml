@@ -1,0 +1,61 @@
+name: ASTROMETRY DEFOCUS STAR EXTRACTION — NGC 2525
+run-name: ASTROMETRY DEFOCUS STAR EXTRACTION — NGC 2525
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/gv-astrometry-defocus-star-extraction-ngc2525.yml'
+      - 'test/astrometry-source-diagnostic/gv_ngc2525_defocus_star_extraction.py'
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ secrets.GV_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          token: ${{ secrets.GV_GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install extraction dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy opencv-python-headless sep
+
+      - name: Run defocus star extraction matrix
+        run: |
+          python test/astrometry-source-diagnostic/gv_ngc2525_defocus_star_extraction.py
+
+      - name: Commit diagnostic outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add test/astrometry-source-diagnostic/generated/NGC2525-defocus
+          if git diff --cached --quiet; then
+            echo 'No diagnostic output changes.'
+          else
+            git commit -m 'ASTROMETRY DEFOCUS STAR EXTRACTION — NGC 2525 results'
+            git push origin HEAD:beta
+          fi
+
+      - name: Upload extraction artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASTROMETRY-DEFOCUS-STAR-EXTRACTION-NGC2525
+          path: test/astrometry-source-diagnostic/generated/NGC2525-defocus/
+          if-no-files-found: warn
+          retention-days: 14
