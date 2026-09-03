@@ -1,7 +1,7 @@
 {
-  // Cloudflare Builds trigger: 2026-08-29 — GV 0045 safe recovery baseline
-  "name": "gv-cloudflare-auto-astrometry-curator-0015",
-  "main": "gv-cloudflare-auto-astrometry-curator-0055-worker.js",
-  "compatibility_date": "2026-08-29",
+  // Isolated Triangle Consensus Sandbox 0006 deployment
+  "name": "gv-triangle-consensus-sandbox-0006",
+  "main": "gv-triangle-consensus-sandbox-0006-worker.js",
+  "compatibility_date": "2026-09-02",
   "workers_dev": true
 }
