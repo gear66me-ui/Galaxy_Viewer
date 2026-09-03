@@ -1,4 +1,5 @@
-name: GV Astrometry 10-Record Proof
+name: ASTROMETRY — 10 GALAXY DSS2 TEST
+run-name: ASTROMETRY — 10 GALAXY DSS2 TEST
 
 on:
   workflow_dispatch:
@@ -75,7 +76,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gv-astrometry-10-${{ github.run_number }}
+          name: ASTROMETRY-10-GALAXY-DSS2-TEST-${{ github.run_number }}
           path: artifacts/gv-astrometry-10/
           if-no-files-found: warn
           retention-days: 14
