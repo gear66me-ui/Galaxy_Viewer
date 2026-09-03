@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ASTROMETRY — 10 GALAXY DSS2 REVIEW</title>
+<style>
+:root{color-scheme:dark;--bg:#070b12;--panel:#101826;--line:#283448;--txt:#eef4ff;--muted:#9fb0c9;--yes:#36d17c;--no:#ff6677;--blue:#4da3ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1200px;margin:auto;padding:12px}.top{position:sticky;top:0;z-index:20;background:rgba(7,11,18,.96);backdrop-filter:blur(8px);padding:10px 0;border-bottom:1px solid var(--line)}h1{font-size:20px;margin:0 0 6px}.sub{font-size:13px;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}.label{padding:8px 10px;font-weight:700;font-size:13px;border-bottom:1px solid var(--line)}.viewport{position:relative;aspect-ratio:1/1;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}.viewport img{width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}.solution img{position:absolute;left:50%;top:50%;width:100%;height:100%;object-fit:contain;transform-origin:center center}.meta{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}.name{font-size:20px;font-weight:800}.row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.kv{background:#0b111c;border:1px solid var(--line);border-radius:10px;padding:8px}.k{font-size:11px;color:var(--muted)}.v{font-size:15px;font-weight:700;margin-top:2px;overflow-wrap:anywhere}.controls{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}.control{display:grid;grid-template-columns:110px 1fr 74px;gap:8px;align-items:center;margin:8px 0}.control input[type=range]{width:100%}.control input[type=number]{width:74px;background:#0b111c;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px}.buttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}button{border:0;border-radius:11px;padding:13px 10px;font-size:16px;font-weight:800;color:white;background:#23324a}button.yes{background:#167c47}button.no{background:#9f2f3c}button.next{background:#245d9f}button.download{width:100%;margin-top:10px;background:#6741b8}.progress{font-size:14px;color:var(--muted);margin-top:5px}.status{font-size:14px;font-weight:700;margin-top:8px;min-height:20px}.small{font-size:12px;color:var(--muted);margin-top:8px}.done{color:var(--yes)}.bad{color:var(--no)}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr 1fr}.control{grid-template-columns:92px 1fr 68px}.buttons{grid-template-columns:1fr 1fr}.buttons .next{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>ASTROMETRY — 10 GALAXY DSS2 REVIEW</h1>
+    <div id="progress" class="progress"></div>
+  </div>
+
+  <div class="meta">
+    <div id="name" class="name"></div>
+    <div id="idline" class="sub"></div>
+    <div class="row">
+      <div class="kv"><div class="k">CANDIDATE ROTATION</div><div id="candRot" class="v"></div></div>
+      <div class="kv"><div class="k">CANDIDATE FOV</div><div id="candFov" class="v"></div></div>
+      <div class="kv"><div class="k">CATALOG FOV</div><div id="catFov" class="v"></div></div>
+      <div class="kv"><div class="k">RA / DEC</div><div id="radec" class="v"></div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">LEFT — PROVIDER / HUBBLE</div>
+      <div class="viewport"><img id="provider" alt="provider"></div>
+    </div>
+    <div class="card">
+      <div class="label">RIGHT — DSS2 AT REVIEW SOLUTION</div>
+      <div class="viewport solution"><img id="dss2" alt="DSS2"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control"><b>Rotation °</b><input id="rot" type="range" min="-180" max="180" step="0.1"><input id="rotN" type="number" min="-180" max="180" step="0.1"></div>
+    <div class="control"><b>Scale</b><input id="scale" type="range" min="0.35" max="2.20" step="0.005"><input id="scaleN" type="number" min="0.35" max="2.20" step="0.005"></div>
+    <div class="control"><b>X shift</b><input id="tx" type="range" min="-160" max="160" step="0.5"><input id="txN" type="number" min="-160" max="160" step="0.5"></div>
+    <div class="control"><b>Y shift</b><input id="ty" type="range" min="-160" max="160" step="0.5"><input id="tyN" type="number" min="-160" max="160" step="0.5"></div>
+    <div class="small">Adjust the right image only if needed. YES records the values currently shown. NO records rejection. NEXT skips without changing the current decision.</div>
+    <div class="buttons">
+      <button class="yes" id="yes">YES — MATCH</button>
+      <button class="no" id="no">NO — WRONG</button>
+      <button class="next" id="next">NEXT ▶</button>
+    </div>
+    <div id="status" class="status"></div>
+    <button class="download" id="download">DOWNLOAD REVIEW JSON</button>
+  </div>
+</div>
+<script>
+const DATA=[
+{index:1,id:'heic2018b',name:'NGC 2525',ra:121.4072916667,dec:-11.4265944444,fov:0.043167,image:'https://cdn.esahubble.org/archives/images/large/heic2018b.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.043167000&projection=TAN&coordsys=icrs&ra=121.407291666700&dec=-11.426594444400&format=jpg',rot:20,scale:.66,tx:-21.807,ty:50.358,candidate_fov:.065404545},
+{index:2,id:'potw1345a',name:'Antennae Galaxies / NGC 4038 / NGC 4039',ra:180.47425,dec:-18.8753805556,fov:.046667,image:'https://cdn.esahubble.org/archives/images/publicationjpg/potw1345a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.046667000&projection=TAN&coordsys=icrs&ra=180.474250000000&dec=-18.875380555600&format=jpg',rot:65,scale:.66,tx:-9.016,ty:-10.742,candidate_fov:.070707576},
+{index:3,id:'heic0817a',name:'NGC 1275',ra:49.951625,dec:41.5113888889,fov:.064333,image:'https://cdn.esahubble.org/archives/images/publicationjpg/heic0817a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.064333000&projection=TAN&coordsys=icrs&ra=49.951625000000&dec=41.511388888900&format=jpg',rot:29,scale:.66,tx:-53.225,ty:-57.908,candidate_fov:.097474242},
+{index:4,id:'potw2049a',name:'NGC 1792',ra:76.30825,dec:-37.9802166667,fov:.0445,image:'https://cdn.esahubble.org/archives/images/publicationjpg/potw2049a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.044500000&projection=TAN&coordsys=icrs&ra=76.308250000000&dec=-37.980216666700&format=jpg',rot:35,scale:.66,tx:91.555,ty:-9.611,candidate_fov:.067424242},
+{index:5,id:'opo0328a',name:'M 104 / Sombrero Galaxy',ra:189.9970416667,dec:-11.6227472222,fov:.1595,image:'https://cdn.esahubble.org/archives/images/publicationjpg/opo0328a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.159500000&projection=TAN&coordsys=icrs&ra=189.997041666700&dec=-11.622747222200&format=jpg',rot:-1,scale:.66,tx:20.663,ty:-59.005,candidate_fov:.241666667},
+{index:6,id:'potw1811a',name:'NGC 1015',ra:39.5487916667,dec:-1.3186222222,fov:.037833,image:'https://cdn.esahubble.org/archives/images/publicationjpg/potw1811a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.037833000&projection=TAN&coordsys=icrs&ra=39.548791666700&dec=-1.318622222200&format=jpg',rot:41,scale:.66,tx:97.893,ty:-39.778,candidate_fov:.057322727},
+{index:7,id:'heic0506a',name:'Messier 51 / Whirlpool Galaxy',ra:202.4680833333,dec:47.213175,fov:.159333,image:'https://cdn.esahubble.org/archives/images/publicationjpg/heic0506a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.159333000&projection=TAN&coordsys=icrs&ra=202.468083333300&dec=47.213175000000&format=jpg',rot:38,scale:.66,tx:-11.35,ty:3.785,candidate_fov:.241413636},
+{index:8,id:'opo0511a',name:'Fornax A / NGC 1316',ra:50.673875,dec:-37.2082777778,fov:.0455,image:'https://cdn.esahubble.org/archives/images/large/opo0511a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.045500000&projection=TAN&coordsys=icrs&ra=50.673875000000&dec=-37.208277777800&format=jpg',rot:17,scale:.66,tx:-19.793,ty:78.735,candidate_fov:.068939394},
+{index:9,id:'opo0501a',name:'NGC 1300',ra:49.91925,dec:-19.41205,fov:.092333,image:'https://cdn.esahubble.org/archives/images/publicationjpg/opo0501a.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.092333000&projection=TAN&coordsys=icrs&ra=49.919250000000&dec=-19.412050000000&format=jpg',rot:32,scale:.66,tx:35.83,ty:5.459,candidate_fov:.139898485},
+{index:10,id:'heic0206b',name:'Mice Galaxies / NGC 4676',ra:191.5433333333,dec:30.7274361111,fov:.0535,image:'https://cdn.esahubble.org/archives/images/large/heic0206b.jpg',reference_url:'https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1200&height=1200&fov=0.053500000&projection=TAN&coordsys=icrs&ra=191.543333333300&dec=30.727436111100&format=jpg',rot:68,scale:.66,tx:-11.763,ty:66.539,candidate_fov:.081060606}
+];
+const $=s=>document.querySelector(s);let i=0;const key='gv_astrometry_review_10_v1';let reviews=JSON.parse(localStorage.getItem(key)||'{}');
+function n(v,d=3){return Number(v).toFixed(d)}
+function setPair(id,val){$('#'+id).value=val;$('#'+id+'N').value=val}
+function sync(id){const a=$('#'+id),b=$('#'+id+'N');a.addEventListener('input',()=>{b.value=a.value;apply()});b.addEventListener('input',()=>{a.value=b.value;apply()})}
+['rot','scale','tx','ty'].forEach(sync);
+function apply(){const r=Number($('#rot').value),s=Number($('#scale').value),x=Number($('#tx').value),y=Number($('#ty').value);$('#dss2').style.transform=`translate(calc(-50% + ${x}px),calc(-50% + ${y}px)) rotate(${r}deg) scale(${s})`}
+function render(){const d=DATA[i],saved=reviews[d.id];$('#progress').textContent=`Galaxy ${i+1} of ${DATA.length} · reviewed ${Object.keys(reviews).length}/${DATA.length}`;$('#name').textContent=d.name;$('#idline').textContent=`${d.id} · record ${d.index}`;$('#candRot').textContent=n(d.rot,1)+'°';$('#candFov').textContent=n(d.candidate_fov,6)+'°';$('#catFov').textContent=n(d.fov,6)+'°';$('#radec').textContent=n(d.ra,6)+' / '+n(d.dec,6);$('#provider').src=d.image;$('#dss2').src=d.reference_url;setPair('rot',saved?.review_rotation_deg??d.rot);setPair('scale',saved?.review_scale??d.scale);setPair('tx',saved?.review_translation_px_at_384?.x??d.tx);setPair('ty',saved?.review_translation_px_at_384?.y??d.ty);apply();$('#status').textContent=saved?`Saved: ${saved.decision.toUpperCase()}`:'';$('#status').className='status '+(saved?.decision==='yes'?'done':saved?.decision==='no'?'bad':'')}
+function save(decision){const d=DATA[i],scale=Number($('#scale').value);reviews[d.id]={index:d.index,id:d.id,name:d.name,decision,ra:d.ra,dec:d.dec,catalog_fov_deg:d.fov,candidate_rotation_deg:d.rot,candidate_fov_deg:d.candidate_fov,review_rotation_deg:Number($('#rot').value),review_scale:scale,review_fov_deg:d.fov/scale,review_translation_px_at_384:{x:Number($('#tx').value),y:Number($('#ty').value)},provider_image:d.image,dss2_reference_url:d.reference_url,reviewed_at:new Date().toISOString()};localStorage.setItem(key,JSON.stringify(reviews));render();if(i<DATA.length-1){setTimeout(()=>{i++;render()},180)}else{setTimeout(()=>download(true),250)}}
+function download(auto=false){const ordered=DATA.map(d=>reviews[d.id]||{index:d.index,id:d.id,name:d.name,decision:'unreviewed'});const out={schema:'gv-astrometry-human-review-0001',source:'ASTROMETRY — 10 GALAXY DSS2 REVIEW',generated_at:new Date().toISOString(),complete:ordered.every(r=>r.decision!=='unreviewed'),results:ordered};const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gv-astrometry-10-human-review.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);if(auto){$('#status').textContent='All 10 reviewed — JSON downloaded automatically.';$('#status').className='status done'}}
+$('#yes').onclick=()=>save('yes');$('#no').onclick=()=>save('no');$('#next').onclick=()=>{if(i<DATA.length-1){i++;render()}else{i=0;render()}};$('#download').onclick=()=>download(false);render();
+</script>
+</body>
+</html>
