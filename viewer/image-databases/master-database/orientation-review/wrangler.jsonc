@@ -1,5 +1,5 @@
 {
-  // Isolated Triangle Consensus Sandbox 0006 deployment
+  // Cloudflare build trigger: ECO-072 multi-triangle consensus 2026-09-03
   "name": "gv-triangle-consensus-sandbox-0006",
   "main": "gv-triangle-consensus-sandbox-0006-worker.js",
   "compatibility_date": "2026-09-02",
