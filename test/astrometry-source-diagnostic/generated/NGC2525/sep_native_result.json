@@ -1,0 +1,29 @@
+{
+  "status": "SOLVE_FAIL",
+  "submission": {
+    "status": "success",
+    "subid": 15972822,
+    "hash": "3cb90525a4438152313a4e975c054b7e13322747"
+  },
+  "request": {
+    "publicly_visible": "n",
+    "allow_modifications": "d",
+    "allow_commercial_use": "d",
+    "scale_units": "degwidth",
+    "scale_type": "ul",
+    "scale_lower": 0.028058549999999998,
+    "scale_upper": 0.06259215,
+    "center_ra": 121.4072916667,
+    "center_dec": -11.4265944444,
+    "radius": 0.12,
+    "image_width": 3657,
+    "image_height": 3920,
+    "positional_error": 2.0,
+    "tweak_order": 2,
+    "crpix_center": true
+  },
+  "job_id": 16808389,
+  "job_status": {
+    "status": "failure"
+  }
+}

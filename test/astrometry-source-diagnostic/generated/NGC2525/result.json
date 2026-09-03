@@ -1,6 +1,6 @@
 {
-  "schema": "gv-ngc2525-source-diagnostic-0001",
-  "elapsed_s": 16.25,
+  "schema": "gv-ngc2525-source-diagnostic-0002",
+  "elapsed_s": 53.97,
   "image": {
     "width": 3657,
     "height": 3920
@@ -15,35 +15,127 @@
     "dao": 50,
     "image2xy": 0
   },
-  "image2xy_error": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 380: invalid start byte",
-  "astrometry": {
-    "status": "SOLVE_FAIL",
-    "submission": {
-      "status": "success",
-      "subid": 15972733,
-      "hash": "3cb90525a4438152313a4e975c054b7e13322747"
+  "image2xy_error": "../util/cfitsutils.h:26:cfitserr: This does not look like a FITS file.\n../util/cfitsutils.h:26:cfitserr: generated/NGC2525/01_PROVIDER.jpg\n../util/cfitsutils.h:26:cfitserr: /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/test/astrometry-source-diagnostic/\n../util/cfitsutils.h:26:cfitserr: ffopen could not interpret primary array header of file: \n../util/cfitsutils.h:26:cfitserr: \ufffd\ufffd\ufffd\ufffd\n../util/cfitsutils.h:26:cfitserr: Extension doesn't start with SIMPLE or XTENSION keyword. (ffrhdu)\n../util/cfitsutils.h:26:cfitserr: 1st key not SIMPLE or XTENSION\nimage2xy-files.c:47:image2xy_files: Failed to open FITS input file /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/test/astrometry-source-diagnostic/generated/NGC2525/01_PROVIDER.jpg\nimage2xy-main.c:191:main: image2xy failed.\n",
+  "solve_matrix": {
+    "sep_native": {
+      "status": "SOLVE_FAIL",
+      "submission": {
+        "status": "success",
+        "subid": 15972822,
+        "hash": "3cb90525a4438152313a4e975c054b7e13322747"
+      },
+      "request": {
+        "publicly_visible": "n",
+        "allow_modifications": "d",
+        "allow_commercial_use": "d",
+        "scale_units": "degwidth",
+        "scale_type": "ul",
+        "scale_lower": 0.028058549999999998,
+        "scale_upper": 0.06259215,
+        "center_ra": 121.4072916667,
+        "center_dec": -11.4265944444,
+        "radius": 0.12,
+        "image_width": 3657,
+        "image_height": 3920,
+        "positional_error": 2.0,
+        "tweak_order": 2,
+        "crpix_center": true
+      },
+      "job_id": 16808389,
+      "job_status": {
+        "status": "failure"
+      }
     },
-    "request": {
-      "publicly_visible": "n",
-      "allow_modifications": "d",
-      "allow_commercial_use": "d",
-      "scale_units": "degwidth",
-      "scale_type": "ul",
-      "scale_lower": 0.028058549999999998,
-      "scale_upper": 0.06259215,
-      "center_ra": 121.4072916667,
-      "center_dec": -11.4265944444,
-      "radius": 0.12,
-      "image_width": 3657,
-      "image_height": 3920,
-      "positional_error": 2.0,
-      "tweak_order": 2,
-      "crpix_center": true,
-      "parity": 2
+    "sep_yflip": {
+      "status": "SOLVE_FAIL",
+      "submission": {
+        "status": "success",
+        "subid": 15972823,
+        "hash": "e069bb6ae0bdbaf0070049f9cd414af99e5334fa"
+      },
+      "request": {
+        "publicly_visible": "n",
+        "allow_modifications": "d",
+        "allow_commercial_use": "d",
+        "scale_units": "degwidth",
+        "scale_type": "ul",
+        "scale_lower": 0.028058549999999998,
+        "scale_upper": 0.06259215,
+        "center_ra": 121.4072916667,
+        "center_dec": -11.4265944444,
+        "radius": 0.12,
+        "image_width": 3657,
+        "image_height": 3920,
+        "positional_error": 2.0,
+        "tweak_order": 2,
+        "crpix_center": true
+      },
+      "job_id": 16808390,
+      "job_status": {
+        "status": "failure"
+      }
     },
-    "job_id": 16808302,
-    "job_status": {
-      "status": "failure"
+    "dao_native": {
+      "status": "SOLVE_FAIL",
+      "submission": {
+        "status": "success",
+        "subid": 15972824,
+        "hash": "36d75d43ce64bbd1de39dcbfdabf7345febcc619"
+      },
+      "request": {
+        "publicly_visible": "n",
+        "allow_modifications": "d",
+        "allow_commercial_use": "d",
+        "scale_units": "degwidth",
+        "scale_type": "ul",
+        "scale_lower": 0.028058549999999998,
+        "scale_upper": 0.06259215,
+        "center_ra": 121.4072916667,
+        "center_dec": -11.4265944444,
+        "radius": 0.12,
+        "image_width": 3657,
+        "image_height": 3920,
+        "positional_error": 2.0,
+        "tweak_order": 2,
+        "crpix_center": true
+      },
+      "job_id": 16808391,
+      "job_status": {
+        "status": "failure"
+      }
+    },
+    "dao_yflip": {
+      "status": "SOLVE_FAIL",
+      "submission": {
+        "status": "success",
+        "subid": 15972825,
+        "hash": "97f1cacb7a9c2d25a15f60467fa91108319282bb"
+      },
+      "request": {
+        "publicly_visible": "n",
+        "allow_modifications": "d",
+        "allow_commercial_use": "d",
+        "scale_units": "degwidth",
+        "scale_type": "ul",
+        "scale_lower": 0.028058549999999998,
+        "scale_upper": 0.06259215,
+        "center_ra": 121.4072916667,
+        "center_dec": -11.4265944444,
+        "radius": 0.12,
+        "image_width": 3657,
+        "image_height": 3920,
+        "positional_error": 2.0,
+        "tweak_order": 2,
+        "crpix_center": true
+      },
+      "job_id": 16808392,
+      "job_status": {
+        "status": "failure"
+      }
+    },
+    "image2xy_native": {
+      "status": "SKIPPED_TOO_FEW_SOURCES",
+      "count": 0
     }
   }
 }
