@@ -42,6 +42,20 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install numpy requests opencv-python-headless sep photutils astropy
 
+      - name: Apply Photutils compatibility shim
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('test/astrometry-source-diagnostic/gv_ngc2525_source_diagnostic.py')
+          s=p.read_text()
+          old="""    for row in tbl:\n        x=float(row['xcentroid']); y=float(row['ycentroid']); flux=float(row['flux'])\n        if mask[int(np.clip(round(y),0,h-1)),int(np.clip(round(x),0,w-1))]: continue\n        rows.append({'x':x,'y':y,'flux':flux,'rank':flux})\n    return uniformize(rows,w,h)"""
+          new="""    names=list(getattr(tbl,'colnames',[]) or [])\n    xkey=next((k for k in ('xcentroid','x_centroid','x','xcen') if k in names),None)\n    ykey=next((k for k in ('ycentroid','y_centroid','y','ycen') if k in names),None)\n    fkey=next((k for k in ('flux','peak','flux_fit') if k in names),None)\n    if not xkey or not ykey:\n        print('DAO SKIPPED — unsupported Photutils columns:', names)\n        return []\n    for row in tbl:\n        try:\n            x=float(row[xkey]); y=float(row[ykey]); flux=float(row[fkey]) if fkey else 1.0\n        except Exception:\n            continue\n        if not (math.isfinite(x) and math.isfinite(y) and math.isfinite(flux)): continue\n        if mask[int(np.clip(round(y),0,h-1)),int(np.clip(round(x),0,w-1))]: continue\n        rows.append({'x':x,'y':y,'flux':flux,'rank':flux})\n    return uniformize(rows,w,h)"""
+          if old not in s:
+              raise SystemExit('DAO patch seam not found')
+          p.write_text(s.replace(old,new,1))
+          print('DAO compatibility shim applied')
+          PY
+
       - name: Run controlled source extraction and constrained Astrometry.net solve
         run: |
           python test/astrometry-source-diagnostic/gv_ngc2525_source_diagnostic.py
