@@ -1,0 +1,64 @@
+name: GV Astrometry 10-Record Proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Number of usable Hubble records to process
+        required: false
+        default: '10'
+
+permissions:
+  contents: read
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install registration dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy requests opencv-python-headless
+
+      - name: Run Hubble 0025 DSS2 registration proof
+        run: |
+          python test/astrometry-batch/gv_pair_register.py \
+            --catalog viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json \
+            --limit "${{ inputs.limit || '10' }}" \
+            --out artifacts/gv-astrometry-10
+
+      - name: Print result table
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('artifacts/gv-astrometry-10/results.json')
+          if not p.exists():
+              print('NO RESULTS JSON')
+              raise SystemExit(0)
+          d=json.loads(p.read_text())
+          print('IDX | ID | STATUS | ROT(deg) | FOV(deg) | SCORE')
+          print('-'*78)
+          for r in d.get('results',[]):
+              print(f"{r.get('index',''):>3} | {r.get('id','')[:22]:22} | {r.get('status',''):6} | {str(r.get('aladin_rotation_candidate_deg','')):>9} | {str(r.get('corrected_fov_deg_candidate','')):>11} | {str(r.get('score','')):>7}")
+          PY
+
+      - name: Upload forensic artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gv-astrometry-10-${{ github.run_number }}
+          path: artifacts/gv-astrometry-10/
+          if-no-files-found: warn
+          retention-days: 14
