@@ -1,0 +1,38 @@
+[
+  {
+    "sigma_px": 0.0,
+    "candidate_count": 1113,
+    "selected_count": 30,
+    "overlay": "selected_sigma_0p0.jpg"
+  },
+  {
+    "sigma_px": 1.0,
+    "candidate_count": 2029,
+    "selected_count": 30,
+    "overlay": "selected_sigma_1p0.jpg"
+  },
+  {
+    "sigma_px": 1.5,
+    "candidate_count": 2026,
+    "selected_count": 30,
+    "overlay": "selected_sigma_1p5.jpg"
+  },
+  {
+    "sigma_px": 2.0,
+    "candidate_count": 1685,
+    "selected_count": 30,
+    "overlay": "selected_sigma_2p0.jpg"
+  },
+  {
+    "sigma_px": 2.5,
+    "candidate_count": 1242,
+    "selected_count": 30,
+    "overlay": "selected_sigma_2p5.jpg"
+  },
+  {
+    "sigma_px": 3.0,
+    "candidate_count": 922,
+    "selected_count": 30,
+    "overlay": "selected_sigma_3p0.jpg"
+  }
+]
