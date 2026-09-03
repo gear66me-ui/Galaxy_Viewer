@@ -1,0 +1,20 @@
+{
+  "catalog_index": 3,
+  "id": "heic0817a",
+  "name": "NGC 1275",
+  "ra": 49.951625,
+  "dec": 41.5113888889,
+  "fov": 0.064333,
+  "provider_url": "https://cdn.esahubble.org/archives/images/publicationjpg/heic0817a.jpg",
+  "pair_number": 3,
+  "reference": "P/DSS2/color",
+  "reference_orientation_deg": 0,
+  "reference_url": "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1600&height=1600&fov=0.064333000&projection=TAN&coordsys=icrs&ra=49.951625000000&dec=41.511388888900&format=jpg",
+  "provider_file": "PAIR-0003-heic0817a/01_PROVIDER.jpg",
+  "reference_file": "PAIR-0003-heic0817a/02_DSS2_NORTH_UP.jpg",
+  "provider_bytes": 4166244,
+  "reference_bytes": 87299,
+  "provider_content_type": "image/jpeg",
+  "reference_content_type": "image/jpeg",
+  "analysis_status": "UNANALYZED"
+}

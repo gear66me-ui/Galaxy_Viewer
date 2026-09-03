@@ -1,0 +1,20 @@
+{
+  "catalog_index": 1,
+  "id": "heic2018b",
+  "name": "NGC 2525",
+  "ra": 121.4072916667,
+  "dec": -11.4265944444,
+  "fov": 0.043167,
+  "provider_url": "https://cdn.esahubble.org/archives/images/large/heic2018b.jpg",
+  "pair_number": 1,
+  "reference": "P/DSS2/color",
+  "reference_orientation_deg": 0,
+  "reference_url": "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?hips=P%2FDSS2%2Fcolor&width=1600&height=1600&fov=0.043167000&projection=TAN&coordsys=icrs&ra=121.407291666700&dec=-11.426594444400&format=jpg",
+  "provider_file": "PAIR-0001-heic2018b/01_PROVIDER.jpg",
+  "reference_file": "PAIR-0001-heic2018b/02_DSS2_NORTH_UP.jpg",
+  "provider_bytes": 6004561,
+  "reference_bytes": 102011,
+  "provider_content_type": "image/jpeg",
+  "reference_content_type": "image/jpeg",
+  "analysis_status": "UNANALYZED"
+}
