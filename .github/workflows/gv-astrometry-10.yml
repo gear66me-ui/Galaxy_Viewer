@@ -7,6 +7,12 @@ on:
         description: Number of usable Hubble records to process
         required: false
         default: '10'
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/workflows/gv-astrometry-10.yml'
+      - 'test/astrometry-batch/gv_pair_register.py'
 
 permissions:
   contents: read
@@ -15,11 +21,22 @@ jobs:
   solve:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.GV_GITHUB_TOKEN }}
     steps:
       - name: Checkout beta
         uses: actions/checkout@v4
         with:
           ref: beta
+
+      - name: Verify GitHub token is available
+        shell: bash
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo 'GV_GITHUB_TOKEN is not available to this workflow.'
+            exit 1
+          fi
+          echo 'GV_GITHUB_TOKEN available: YES'
 
       - name: Set up Python
         uses: actions/setup-python@v5
