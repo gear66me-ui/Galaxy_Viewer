@@ -487,7 +487,6 @@ OFF by default. No permanent monkey-patching. No navigation-law ownership.
 
     try{
       runRecord.destination=await randomGalaxy.travelToRandom();
-      return runRecord.destination;
     }catch(error){
       runRecord.error={
         name:String(error?.name||'Error'),
@@ -498,8 +497,9 @@ OFF by default. No permanent monkey-patching. No navigation-law ownership.
     }finally{
       cancelAnimationFrame(runRecord.rafId);
 
-      for(const [method,{original,wrapped}] of originals){
-        if(aladin[method]===wrapped)aladin[method]=original;
+      for(const [method,state] of originals){
+        if(aladin[method]===state.wrapped)
+          aladin[method]=state.original;
       }
 
       if(randomGalaxy.options)
@@ -507,9 +507,26 @@ OFF by default. No permanent monkey-patching. No navigation-law ownership.
 
       const endedAt=performance.now();
       runRecord.summary=summarize(runRecord,endedAt);
-      lastTelemetry=runRecord;
+
+      lastTelemetry=Object.freeze({
+        schema:runRecord.schema,
+        moduleVersion:runRecord.moduleVersion,
+        viewerVersion:runRecord.viewerVersion,
+        randomGalaxyVersion:runRecord.randomGalaxyVersion,
+        generatedAt:runRecord.generatedAt,
+        configuration:Object.freeze({...runRecord.configuration}),
+        startState:Object.freeze({...runRecord.startState}),
+        destination:runRecord.destination,
+        error:runRecord.error,
+        summary:runRecord.summary,
+        commands:runRecord.commands,
+        frames:runRecord.frames
+      });
+
       activeRun=null;
     }
+
+    return lastTelemetry;
   }
 
   window.GalaxyViewerNavigationPerformance=Object.freeze({
