@@ -1,0 +1,5 @@
+SOURCE GATE: PASS
+AR15 : /data/data/com.termux/files/home/GV_AR05_PUSH/viewer/GV-beta-0012AR-15-DOE.py
+RG94 : /data/data/com.termux/files/home/GV_AR05_PUSH/viewer/modules/random-galaxy/gv-random-galaxy-0094-DOE.js
+LAB03: /data/data/com.termux/files/home/GV_AR05_PUSH/viewer/modules/diagnostics/gv-stutter-lab-0003.js
+RG VERSION ANCHOR COUNT=1

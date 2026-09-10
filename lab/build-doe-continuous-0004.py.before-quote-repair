@@ -1,0 +1,220 @@
+from pathlib import Path
+
+W=Path.home()/"GV_AR05_PUSH"
+
+AR0=W/"viewer/GV-beta-0012AR-15-DOE.py"
+AR=W/"viewer/GV-beta-0012AR-16-DOE.py"
+
+RG0=W/"viewer/modules/random-galaxy/gv-random-galaxy-0094-DOE.js"
+RG=W/"viewer/modules/random-galaxy/gv-random-galaxy-0095-DOE.js"
+
+LAB0=W/"viewer/modules/diagnostics/gv-stutter-lab-0003.js"
+LAB=W/"viewer/modules/diagnostics/gv-stutter-lab-0004.js"
+
+for p in (AR0,RG0,LAB0):
+    if not p.is_file():
+        raise SystemExit(f"MISSING SOURCE: {p}")
+
+for p in (AR,RG,LAB):
+    if p.exists():
+        raise SystemExit(f"OUTPUT ALREADY EXISTS: {p}")
+
+ar=AR0.read_text()
+rg=RG0.read_text()
+lab=LAB0.read_text()
+
+print("SOURCE GATE: PASS")
+print("AR15 :",AR0)
+print("RG94 :",RG0)
+print("LAB03:",LAB0)
+
+# ------------------------------------------------------------
+# RANDOM GALAXY 0095 — CONTINUOUS PRODUCTION-STYLE ARC
+# ------------------------------------------------------------
+
+import re
+
+# Identity.
+if rg.count("const VERSION=0094;") != 1:
+    raise SystemExit(
+        f"RG VERSION ANCHOR COUNT={rg.count(chr(99)+chr(111)+chr(110)+chr(115)+chr(116)+chr(32)+chr(86)+chr(69)+chr(82)+chr(83)+chr(73)+chr(79)+chr(78)+chr(61)+chr(39)+chr(48)+chr(48)+chr(57)+chr(52)+chr(39)+chr(59))}"
+    )
+
+rg=rg.replace(
+    "const VERSION=0094;",
+    "const VERSION=0095;",
+    1
+)
+
+# Replace the artificial separated/L-shaped FOV profile with the
+# production-style continuous zoom arc:
+#
+#   start FOV -> max FOV -> destination FOV
+#
+# Translation/rotation still use translateStart/translationComplete,
+# but FOV no longer waits at max FOV during motion.
+pattern = re.compile(
+    r"""    #fovAt\(t, startFov, destinationFov, immediate = false\) \{
+.*?
+    \}
+    #distanceProgress\(t\) \{""",
+    re.S
+)
+
+replacement = """    #fovAt(t, startFov, destinationFov, immediate = false) {
+      if (immediate) {
+        const progress = clamp01(t);
+        return Math.exp(
+          Math.log(startFov) +
+          (Math.log(destinationFov)-Math.log(startFov))*progress
+        );
+      }
+
+      // DOE 0095 — continuous production-style camera arc.
+      //
+      // FOV changes continuously for the entire flight:
+      //
+      //   start FOV
+      //      \\
+      //       \\   zoom outward
+      //        \\____ maximum FOV near the midpoint
+      //             \\
+      //              \\ zoom inward
+      //               \\ destination FOV
+      //
+      // Translation + rotation overlap this curve according to the
+      // DOE motion window. There is no hard hold at maximum FOV.
+
+      const turn =
+        clamp01(Number(this.options.turnPoint));
+
+      const maximum =
+        Number(this.options.maxFov);
+
+      const safeTurn =
+        Math.max(.000001,Math.min(.999999,turn));
+
+      if (t <= safeTurn) {
+        const progress =
+          navigationSmootherstep(
+            t/safeTurn
+          );
+
+        return Math.exp(
+          Math.log(startFov) +
+          (Math.log(maximum)-Math.log(startFov))*progress
+        );
+      }
+
+      const progress =
+        navigationSmootherstep(
+          (t-safeTurn)/
+          Math.max(1-safeTurn,.000001)
+        );
+
+      return Math.exp(
+        Math.log(maximum) +
+        (Math.log(destinationFov)-Math.log(maximum))*progress
+      );
+    }
+    #distanceProgress(t) {"""
+
+rg,n = pattern.subn(replacement,rg,count=1)
+
+if n != 1:
+    raise SystemExit(
+        f"CONTINUOUS FOV FUNCTION REPLACEMENT COUNT={n}"
+    )
+
+print("RG0095 CONTINUOUS FOV ARC STAGED: PASS")
+
+# ------------------------------------------------------------
+# EXACT DOE MEASUREMENT START
+# ------------------------------------------------------------
+
+start_anchor = """        const started = performance.now();
+        await new Promise((resolve, reject) => {"""
+
+if rg.count(start_anchor) != 1:
+    raise SystemExit(
+        f"ANIMATION START ANCHOR COUNT={rg.count(start_anchor)}"
+    )
+
+rg=rg.replace(
+    start_anchor,
+    """        const started = performance.now();
+
+        // DOE 0095 — measurement begins on the same authoritative
+        // performance clock used by the animation itself.
+        global.GVStutterLab?.beginAnimation?.({
+          firstHomeTrip,
+          startedPerfMs:started,
+          durationMs:duration,
+          source,
+          destination
+        });
+
+        await new Promise((resolve, reject) => {""",
+    1
+)
+
+print("RG0095 EXACT ANIMATION START HOOK STAGED: PASS")
+
+# ------------------------------------------------------------
+# EXACT DOE MEASUREMENT END
+# ------------------------------------------------------------
+
+end_anchor = """        });
+        // Allow the already-final viewport to paint before declaring
+        // arrival. This performs no additional rotation/recenter/zoom."""
+
+if rg.count(end_anchor) != 1:
+    raise SystemExit(
+        f"ANIMATION END ANCHOR COUNT={rg.count(end_anchor)}"
+    )
+
+rg=rg.replace(
+    end_anchor,
+    """        });
+
+        // DOE 0095 — stop measurement immediately after the
+        // authoritative travel animation resolves. Post-arrival paint,
+        // UI work and background refill are outside the response window.
+        global.GVStutterLab?.endAnimation?.({
+          firstHomeTrip,
+          endedPerfMs:performance.now(),
+          destination
+        });
+
+        // Allow the already-final viewport to paint before declaring
+        // arrival. This performs no additional rotation/recenter/zoom.""",
+    1
+)
+
+print("RG0095 EXACT ANIMATION END HOOK STAGED: PASS")
+
+# ------------------------------------------------------------
+# AR16 LOADER / VERSION STAGING
+# ------------------------------------------------------------
+
+ar_replacements = [
+    ("12AR-15-DOE","12AR-16-DOE"),
+    ("gv-stutter-lab-0003.js","gv-stutter-lab-0004.js"),
+    ("gvStutterLab0003","gvStutterLab0004"),
+    ("gv-random-galaxy-0094-DOE.js","gv-random-galaxy-0095-DOE.js"),
+    ("gvRandomGalaxy0094Doe","gvRandomGalaxy0095Doe"),
+    ("VERSION!==0094","VERSION!==0095"),
+    ("RANDOM GALAXY 0094 HOME BOOTSTRAP EXPORT MISSING",
+     "RANDOM GALAXY 0095 HOME BOOTSTRAP EXPORT MISSING"),
+    ("RANDOM GALAXY 0094 EXPORT MISSING OR VERSION MISMATCH",
+     "RANDOM GALAXY 0095 EXPORT MISSING OR VERSION MISMATCH")
+]
+
+for old,new in ar_replacements:
+    if old not in ar:
+        raise SystemExit(
+            f"AR16 REQUIRED ANCHOR MISSING: {old}"
+        )
+    ar=ar.replace(old,new)
+
+print("AR16 LOADER / VERSION PATCH STAGED: PASS")
