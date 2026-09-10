@@ -1,0 +1,188 @@
+'use strict';
+
+const fs=require('fs');
+
+const rgPath=process.argv[2];
+if(!rgPath)throw new Error('RG0096 PATH REQUIRED');
+
+const source=fs.readFileSync(rgPath,'utf8');
+
+function extractFunction(name){
+  const needles=[
+    `async function ${name}(`,
+    `function ${name}(`
+  ];
+  let start=-1;
+  for(const needle of needles){
+    start=source.indexOf(needle);
+    if(start>=0)break;
+  }
+  if(start<0)throw new Error(`FUNCTION NOT FOUND: ${name}`);
+
+  const brace=source.indexOf('{',start);
+  if(brace<0)throw new Error(`OPEN BRACE NOT FOUND: ${name}`);
+
+  let depth=0;
+  let quote=null;
+  let escaped=false;
+  let template=false;
+
+  for(let i=brace;i<source.length;i++){
+    const c=source[i];
+
+    if(quote){
+      if(escaped){escaped=false;continue;}
+      if(c==='\\'){escaped=true;continue;}
+      if(c===quote){quote=null;continue;}
+      continue;
+    }
+
+    if(template){
+      if(escaped){escaped=false;continue;}
+      if(c==='\\'){escaped=true;continue;}
+      if(c==='`'){template=false;continue;}
+      continue;
+    }
+
+    if(c===String.fromCharCode(39)||c===String.fromCharCode(34)){quote=c;continue;}
+    if(c==='`'){template=true;continue;}
+    if(c==='{')depth++;
+    else if(c==='}'){
+      depth--;
+      if(depth===0)return source.slice(start,i+1);
+    }
+  }
+
+  throw new Error(`FUNCTION END NOT FOUND: ${name}`);
+}
+
+const ensureText=extractFunction('ensureNavigationPlanner');
+const advanceText=extractFunction('advanceNavigationPlannerAfterArrival');
+const requestText=extractFunction('requestRandomNavigation');
+
+if(!source.includes('void ensureNavigationPlanner(bootstrap).catch')){
+  throw new Error('BACKGROUND BOOTSTRAP PLANNER START NOT FOUND');
+}
+if(!requestText.includes('await advanceNavigationPlannerAfterArrival(arrived);')){
+  throw new Error('POST-ARRIVAL AWAIT NOT FOUND');
+}
+if(!requestText.includes('randomRequestPending=false;')){
+  throw new Error('REQUEST FINALLY CLEAR NOT FOUND');
+}
+
+let navigationPlanner=null;
+let navigationPlannerPromise=null;
+let bootstrapDestinationKey='BOOTSTRAP';
+let bootstrapCommitted=false;
+let randomRequestPending=false;
+
+const sessionVisitedKeys=new Set();
+const remembered=[];
+const catalog=Array.from({length:130},(_,i)=>({id:`G${i}`,ra:i,dec:0,fovDegrees:1}));
+const bootstrap={id:'BOOTSTRAP',ra:180,dec:0,fovDegrees:1};
+
+const keyOf=x=>x?.id||'';
+const currentBlockedKeys=()=>new Set();
+const isQuarantinedFutureKey=()=>false;
+const rememberCommittedDestination=x=>remembered.push(keyOf(x));
+
+let createCalls=0;
+let initializeCalls=0;
+let initializeResolved=false;
+
+const fakePlanner={
+  async initialize(anchor){
+    initializeCalls++;
+    if(keyOf(anchor)!=='BOOTSTRAP')throw new Error('WRONG INITIALIZE ANCHOR');
+    await new Promise(resolve=>setTimeout(resolve,150));
+    initializeResolved=true;
+    return {ready:true};
+  },
+  peekNext(){return null;},
+  getUpcoming(){return [];},
+  async commitNext(){},
+  remaining(){return 100;}
+};
+
+async function ensureNavigationModule0004(){
+  return {
+    create({catalog:eligibleCatalog}){
+      createCalls++;
+      if(eligibleCatalog.length!==130)
+        throw new Error(`ELIGIBLE CATALOG MISMATCH: ${eligibleCatalog.length}`);
+      return fakePlanner;
+    }
+  };
+}
+
+const ensureNavigationPlanner=eval(`(${ensureText})`);
+const advanceNavigationPlannerAfterArrival=eval(`(${advanceText})`);
+
+(async()=>{
+  let heartbeat=0;
+  let heartbeatBeforeResolve=0;
+  const timer=setInterval(()=>{
+    heartbeat++;
+    if(!initializeResolved)heartbeatBeforeResolve++;
+  },1);
+
+  const backgroundPromise=ensureNavigationPlanner(bootstrap);
+
+  await new Promise(resolve=>setTimeout(resolve,10));
+
+  if(initializeCalls!==1)
+    throw new Error(`BACKGROUND INITIALIZE CALLS BEFORE ARRIVAL: ${initializeCalls}`);
+
+  randomRequestPending=true;
+  const arrivalStart=Date.now();
+
+  try{
+    await advanceNavigationPlannerAfterArrival(bootstrap);
+  }finally{
+    randomRequestPending=false;
+  }
+
+  const arrivalWaitMs=Date.now()-arrivalStart;
+  await backgroundPromise;
+
+  const plannerAgain=await ensureNavigationPlanner(bootstrap);
+
+  clearInterval(timer);
+
+  console.log('EXACT RG FUNCTIONS EXTRACTED: PASS');
+  console.log('BACKGROUND BOOTSTRAP START STATIC CHECK: PASS');
+  console.log('POST-ARRIVAL AWAIT STATIC CHECK: PASS');
+  console.log('REQUEST FINALLY CLEAR STATIC CHECK: PASS');
+  console.log('PLANNER CREATE CALLS:',createCalls);
+  console.log('PLANNER INITIALIZE CALLS:',initializeCalls);
+  console.log('BOOTSTRAP COMMITTED:',bootstrapCommitted);
+  console.log('REMEMBERED DESTINATIONS:',remembered.join(','));
+  console.log('ARRIVAL WAIT MS:',arrivalWaitMs);
+  console.log('MAIN THREAD HEARTBEAT TICKS:',heartbeat);
+  console.log('HEARTBEAT BEFORE PLANNER RESOLVE:',heartbeatBeforeResolve);
+  console.log('RANDOM REQUEST PENDING AFTER FINALLY:',randomRequestPending);
+  console.log('PLANNER INSTANCE REUSED:',plannerAgain===fakePlanner);
+
+  if(createCalls!==1)throw new Error('PLANNER CREATED MORE THAN ONCE');
+  if(initializeCalls!==1)throw new Error('PLANNER INITIALIZED MORE THAN ONCE');
+  if(!bootstrapCommitted)throw new Error('BOOTSTRAP NOT COMMITTED');
+  if(remembered.length!==1||remembered[0]!=='BOOTSTRAP')
+    throw new Error('BOOTSTRAP REMEMBER COMMIT MISMATCH');
+  if(heartbeatBeforeResolve<=0)
+    throw new Error('MAIN THREAD DID NOT HEARTBEAT WHILE PLANNER PENDING');
+  if(randomRequestPending!==false)
+    throw new Error('RANDOM REQUEST PENDING DID NOT CLEAR');
+  if(plannerAgain!==fakePlanner)
+    throw new Error('PLANNER INSTANCE NOT REUSED');
+
+  console.log('ONE PLANNER PROMISE / ONE INITIALIZATION: PASS');
+  console.log('BOOTSTRAP ARRIVAL HANDOFF: PASS');
+  console.log('MAIN THREAD RESPONSIVE WHILE PLANNER PENDING: PASS');
+  console.log('RANDOM BUTTON PENDING STATE CAN CLEAR AFTER HANDOFF: PASS');
+  console.log('RG0096 BOOTSTRAP / WORKER HANDOFF MOCK: PASS');
+})().catch(error=>{
+  clearInterval?.();
+  console.error('RG0096 BOOTSTRAP / WORKER HANDOFF MOCK: FAIL');
+  console.error(String(error?.stack||error));
+  process.exitCode=1;
+});
