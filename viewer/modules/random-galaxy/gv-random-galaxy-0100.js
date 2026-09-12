@@ -171,27 +171,6 @@ AUTHORIZED CHANGES: readable compact arrival presentation, five-field HD science
       Math.atan2(z, Math.sqrt(x * x + y * y)) * 180 / Math.PI
     ];
   }
-  function greatCirclePosition(ra1, dec1, ra2, dec2, progress) {
-    const a = toVector(ra1, dec1);
-    const b = toVector(ra2, dec2);
-    let dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-    dot = clamp(dot, -1, 1);
-    const omega = Math.acos(dot);
-    const sinOmega = Math.sin(omega);
-    if (Math.abs(sinOmega) < 1e-7) {
-      return [
-        Number(ra1) + (Number(ra2) - Number(ra1)) * progress,
-        Number(dec1) + (Number(dec2) - Number(dec1)) * progress
-      ];
-    }
-    const s1 = Math.sin((1 - progress) * omega) / sinOmega;
-    const s2 = Math.sin(progress * omega) / sinOmega;
-    return vectorToRaDec([
-      a[0] * s1 + b[0] * s2,
-      a[1] * s1 + b[1] * s2,
-      a[2] * s1 + b[2] * s2
-    ]);
-  }
   function angularSeparationRadians(a, b) {
     const va = toVector(a.ra, a.dec);
     const vb = toVector(b.ra, b.dec);
@@ -1899,13 +1878,21 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
     const originalShowHD=randomGalaxy.showHD.bind(randomGalaxy);
     randomGalaxy.showHD=function(){
         const result=originalShowHD();
+
+        // A blocked HD request returns null while navigation owns the
+        // viewer. Do not schedule presentation work for a view that did
+        // not open.
+        if(result==null)return result;
+
         const destination=currentArchiveDestination();
         if(destination)preloadArchiveSource(destination);
-        requestAnimationFrame(()=>requestAnimationFrame(settleHdPresentation));
+
+        requestAnimationFrame(()=>
+          requestAnimationFrame(settleHdPresentation)
+        );
+
         return result;
     };
-    randomGalaxy.viewHdButton?.addEventListener('click',()=>requestAnimationFrame(settleHdPresentation),true);
-    randomGalaxy.providerIconButton?.addEventListener('click',()=>requestAnimationFrame(settleHdPresentation),true);
     const handleViewerResize=()=>requestAnimationFrame(reconcileViewerPresentation);
     const handleViewerPageShow=()=>requestAnimationFrame(reconcileViewerPresentation);
     window.addEventListener('resize',handleViewerResize);
@@ -2460,8 +2447,8 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
             try{
                 if(typeof isolated.setFrame==='function')isolated.setFrame('ICRSd');
                 if(typeof isolated.setProjection==='function')isolated.setProjection('SIN');
-                if(typeof isolated.setRotation==='function'&&Number.isFinite(Number(destination.aladinRotation)))isolated.setRotation(Number(destination.aladinRotation));
-                if(typeof isolated.gotoRaDec==='function')isolated.gotoRaDec(destination.ra,destination.dec);
+                if(typeof isolated.setRotation==='function'&&Number.isFinite(Number(destination.aladinRotation)))window.GalaxyViewerNavigation.commandSetRotation(isolated,Number(destination.aladinRotation));
+                if(typeof isolated.gotoRaDec==='function')window.GalaxyViewerNavigation.commandGotoRaDec(isolated,destination.ra,destination.dec);
 
                 const finalFov=Number(destination.fovDegrees);
                 const dwell=milliseconds=>new Promise(resolve=>{
@@ -2497,13 +2484,13 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
                             completed=false;
                             break;
                         }
-                        isolated.setFov(finalFov*multiplier);
+                        window.GalaxyViewerNavigation.commandSetFov(isolated,finalFov*multiplier);
                         completed=await dwell(milliseconds);
                         if(!completed||backgroundWorkSuspended)break;
                     }
                 }else{
                     if(typeof isolated.setFov==='function')
-                        isolated.setFov(destination.fovDegrees);
+                        window.GalaxyViewerNavigation.commandSetFov(isolated,destination.fovDegrees);
                     completed=await dwell(ALADIN_PREWARM_DWELL_MS);
                 }
             }catch(error){
@@ -4501,36 +4488,6 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
     #isHomeDeparture(source, startFov) {
       return !(finiteNumber(source && source.distance) > 0) && Number(startFov) >= 300;
     }
-    #translationProgress(t, immediate = false) {
-      if (immediate) return clamp01(t);
-      if (t <= 4/15) return 0;
-      if (t >= 11/15) return 1;
-      const I=(u)=>u**6-3*u**5+2.5*u**4;
-      if (t < 11/30) {
-        const u=(t-4/15)/(1.5/15);
-        return (3/11)*I(u);
-      }
-      if (t <= 19/30) return 3/22+(30/11)*(t-11/30);
-      const u=(11/15-t)/(1.5/15);
-      return 1-(3/11)*I(u);
-    }
-    #fovAt(t, startFov, destinationFov, immediate = false) {
-      if (immediate) {
-        const u=clamp01(t);
-        return Math.exp(Math.log(startFov)+(Math.log(destinationFov)-Math.log(startFov))*u);
-      }
-      const maximum=Number(this.options.maxFov);
-      if (t <= 11/30) {
-        const u=navigationSmootherstep(clamp01(t/(11/30)));
-        return Math.exp(Math.log(startFov)+(Math.log(maximum)-Math.log(startFov))*u);
-      }
-      if (t <= 19/30) return maximum;
-      const u=navigationSmootherstep(clamp01((t-19/30)/(11/30)));
-      return Math.exp(Math.log(maximum)+(Math.log(destinationFov)-Math.log(maximum))*u);
-    }
-    #distanceProgress(t) {
-      return navigationSmootherstep(t);
-    }
     #showDistance(source, destination, route) {
       this.routeEl.textContent = route.exactRoute ? `${source.name.toUpperCase()} TO ${destination.name.toUpperCase()}` : `TO ${destination.name.toUpperCase()}`;
       this.distanceRenderer.render(0);
@@ -4707,7 +4664,7 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         try {
           if (Number.isFinite(Number(target.rotation)) &&
               typeof this.aladin.setRotation === 'function')
-            this.aladin.setRotation(Number(target.rotation));
+            window.GalaxyViewerNavigation.commandSetRotation(this.aladin,Number(target.rotation));
         } catch (error) {
           console.warn(
             'GALAXY RANDOM ALADIN RECOVERY ROTATION SKIPPED',
@@ -4719,7 +4676,7 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         try {
           if (typeof this.aladin.gotoRaDec === 'function')
               global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_BEGIN",{t:Number(t),ra:Number(destination.ra),dec:Number(destination.dec)});
-            this.aladin.gotoRaDec(Number(target.ra), Number(target.dec));
+            window.GalaxyViewerNavigation.commandGotoRaDec(this.aladin,Number(target.ra), Number(target.dec));
         } catch (error) {
           console.warn(
             'GALAXY RANDOM ALADIN RECOVERY POSITION FAILED',
@@ -4732,7 +4689,7 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
           if (Number.isFinite(Number(target.fov)) &&
               Number(target.fov) > 0 &&
               typeof this.aladin.setFov === 'function')
-            this.aladin.setFov(Number(target.fov));
+            window.GalaxyViewerNavigation.commandSetFov(this.aladin,Number(target.fov));
         } catch (error) {
           console.warn(
             'GALAXY RANDOM ALADIN RECOVERY FOV FAILED',
@@ -4951,21 +4908,108 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         busy:Boolean(this.busy),
         destroyed:Boolean(this.destroyed)
       });
+
+      global.GalaxyBlackBox?.recordCheckpoint?.('RANDOM_REQUEST',{
+        busy:Boolean(this.busy),
+        hdOpen:Boolean(this.hdOpen),
+        arrived:Boolean(this.arrived)
+      });
+
+      // Claim the navigation/HD interlock synchronously, before the
+      // first await, so VIEW HD cannot start in the ready-await window.
+      if (this.destroyed || this.busy) {
+        global.GalaxyBlackBox?.recordCheckpoint?.('RANDOM_BLOCKED_BUSY',{
+          busy:Boolean(this.busy),
+          destroyed:Boolean(this.destroyed),
+          hdOpen:Boolean(this.hdOpen)
+        });
+        return null;
+      }
+
+      const priorControlState={
+        randomDisabled:Boolean(this.randomButton?.disabled),
+        viewHdDisabled:Boolean(this.viewHdButton?.disabled),
+        providerDisabled:Boolean(this.providerIconButton?.disabled)
+      };
+
+      this.busy = true;
+
+      if (this.randomButton)
+        this.randomButton.disabled = true;
+
+      if (this.viewHdButton)
+        this.viewHdButton.disabled = true;
+
+      if (this.providerIconButton)
+        this.providerIconButton.disabled = true;
+
+      global.GalaxyBlackBox?.recordCheckpoint?.('RANDOM_HD_LOCKED',{
+        hdOpen:Boolean(this.hdOpen)
+      });
+
+      if (this.hdOpen) {
+        global.GalaxyBlackBox?.recordCheckpoint?.('RANDOM_CANCEL_HD',{});
+        this.backToSky({ recover:false, interlockOwner:'navigation' });
+        global.GalaxyBlackBox?.recordCheckpoint?.('HD_CLOSED_FOR_NAV',{});
+      }
+
       GV_TRACE.enabled&&gvTrace(4602,'PORTRAIT_REQUEST');
       requestPortraitOrientation('random-travel').catch(() => {});
-      GV_TRACE.enabled&&gvTrace(4603,'READY_AWAIT_BEGIN',{state:this.__gvReadyState||'UNKNOWN'});
-      await this.ready;
-      GV_TRACE.enabled&&gvTrace(4603,'READY_AWAIT_END',{state:this.__gvReadyState||'UNKNOWN'});
-      GV_TRACE.enabled&&gvTrace(4604,'TRAVEL_GUARD',{busy:Boolean(this.busy),destroyed:Boolean(this.destroyed)});
-      if (this.destroyed || this.busy) return null;
-      this.busy = true;
+
+      GV_TRACE.enabled&&gvTrace(4603,'READY_AWAIT_BEGIN',{
+        state:this.__gvReadyState||'UNKNOWN'
+      });
+
+      try {
+        await this.ready;
+      } catch (error) {
+        this.busy = false;
+
+        if (this.randomButton)
+          this.randomButton.disabled = priorControlState.randomDisabled;
+
+        if (this.viewHdButton)
+          this.viewHdButton.disabled = priorControlState.viewHdDisabled;
+
+        if (this.providerIconButton)
+          this.providerIconButton.disabled = priorControlState.providerDisabled;
+
+        global.GalaxyBlackBox?.recordCheckpoint?.('RANDOM_READY_FAILED',{
+          message:String(error?.message||error||'UNKNOWN')
+        });
+
+        global.GalaxyBlackBox?.recordCheckpoint?.(
+          'RANDOM_READY_FAILED_CONTROLS_RESTORED',
+          {
+            randomDisabled:Boolean(this.randomButton?.disabled),
+            viewHdDisabled:Boolean(this.viewHdButton?.disabled),
+            providerDisabled:Boolean(this.providerIconButton?.disabled)
+          }
+        );
+
+        throw error;
+      }
+
+      GV_TRACE.enabled&&gvTrace(4603,'READY_AWAIT_END',{
+        state:this.__gvReadyState||'UNKNOWN'
+      });
+
+      if (this.destroyed) {
+        this.busy = false;
+        return null;
+      }
+
+      GV_TRACE.enabled&&gvTrace(4604,'TRAVEL_GUARD',{
+        busy:Boolean(this.busy),
+        destroyed:Boolean(this.destroyed)
+      });
+
       this.#hideRefreshSky();
       this.#hideHomePresentation();
       setRandomWaitComet(this.randomButton, true);
       this.arrived = false;
       this.#hideCard();
-      this.backToSky({ recover: false });
-      if (this.randomButton) this.randomButton.disabled = true;
+
       try {
         GV_TRACE.enabled&&gvTrace(4614,'STATUS_FINDING');
         this.#setStatus('FINDING GALAXY');
@@ -5005,391 +5049,33 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         GV_TRACE.enabled&&gvTrace(4639,'ROUTE_CALC_END',{routeValue:Number(route?.value)});
         this.#beginTravelHud(destination, route, firstHomeTrip);
         this.#showDistance(source, destination, route);
-        const baseDestinationRA=Number(destination.ra);
-        const baseDestinationDec=Number(destination.dec);
-        const baseDestinationFov=destinationFov;
-        const targetRotation=finiteNumber(destination.aladinRotation)??0;
-        const duration =
-          Number(firstHomeTrip ? this.options.firstHomeTravelSeconds : this.options.travelSeconds) * 1000;
-        const firstHomeTranslationCompleteEnd=firstHomeTrip
-          ? clamp01(
-              Number(this.options.firstHomeTranslationSeconds)/
-              Number(this.options.firstHomeTravelSeconds)
-            )
-          : 0;
-        const aladinTravelHz=15;
-        const turnPoint=Number(this.options.turnPoint);
-        const rotationStartPoint=firstHomeTrip
-          ? 0
-          : Number(this.options.translateStart);
-        const alignmentStart=firstHomeTrip
-          ? firstHomeTranslationCompleteEnd
-          : Number(this.options.translationComplete);
-        const rotationEndPoint=firstHomeTrip
-          ? alignmentStart
-          : Number(this.options.translate90);
-        const rotationStart=finiteNumber(this.currentGalaxy?.aladinRotation)??0;
-        const rotationDelta=normalizeFullRotationDelta(
-          Number(targetRotation)-Number(rotationStart)
-        );
-        let destinationCenterApplied=false;
-        let finalRotationApplied=false;
-        let lastAladinSample=-1;
-        let lastBlackBoxSample=-1;
-        GV_TRACE.enabled&&gvTrace(4658,'RAF_SETUP_COMPLETE',{
-          baseDestinationRA,
-          baseDestinationDec,
-          baseDestinationFov,
-          targetRotation,
-          duration,
-          turnPoint,
-          rotationStartPoint,
-          alignmentStart,
-          translateStart:Number(this.options.translateStart),
-          translationComplete:Number(this.options.translationComplete),
-          travelSeconds:Number(firstHomeTrip ? this.options.firstHomeTravelSeconds : this.options.travelSeconds),
-          aladinTravelHz
-        });
-        const started = performance.now();
-        try{
-          global.dispatchEvent(new CustomEvent("gv-black-box-nav-start",{detail:{
-            moduleVersion:VERSION,
-            firstHomeTrip,
-            startedPerfMs:started,
-            durationMs:duration,
-            source:{name:String(source?.name||""),ra:Number(source?.ra),dec:Number(source?.dec)},
-            destination:{name:String(destination?.name||""),ra:Number(destination?.ra),dec:Number(destination?.dec),fov:Number(destinationFov),rotation:Number(targetRotation)},
-            start:{ra:Number(startRA),dec:Number(startDec),fov:Number(startFov),rotation:Number(rotationStart)},
-            choreography:{
-              travelSeconds:Number(firstHomeTrip?this.options.firstHomeTravelSeconds:this.options.travelSeconds),
-              maxFov:Number(this.options.maxFov),
-              translateStart:Number(this.options.translateStart),
-              translate90:Number(this.options.translate90),
-              translationComplete:Number(this.options.translationComplete),
-              rotationStartPoint:Number(rotationStartPoint),
-              rotationEndPoint:Number(rotationEndPoint)
-            }
-          }}));
-        }catch(_){}
-
-
-        await new Promise((resolve, reject) => {
-          const frame = (now) => {
-            try {
-            const t = Math.min(1, (now - started) / duration);
-            GV_TRACE.enabled&&gvTrace(4662,'RAF_FRAME_EXECUTED',{t,now});
-
-            const aladinSample=Math.floor((now-started)*aladinTravelHz/1000);
-            if(
-              t < 1 &&
-              aladinSample!==lastAladinSample
-            ){
-              const alignmentProgress=firstHomeTrip
-                ? 0
-                : (
-                    t<=alignmentStart
-                      ? 0
-                      : smootherstep((t-alignmentStart)/(1-alignmentStart))
-                  );
-
-              let currentFov;
-
-              if(firstHomeTrip){
-                // First trip choreography:
-                // 0-4 s: translate + rotate, FOV frozen.
-                // 4-9 s: center + rotation frozen, zoom to destination.
-                if(t<=firstHomeTranslationCompleteEnd){
-                  currentFov=startFov;
-                }else{
-                  const leg2Progress=smootherstep(
-                    clamp01(
-                      (t-firstHomeTranslationCompleteEnd)/
-                      Math.max(1-firstHomeTranslationCompleteEnd,.000001)
-                    )
-                  );
-                  currentFov=Math.exp(
-                    Math.log(startFov)+
-                    (Math.log(destinationFov)-Math.log(startFov))*leg2Progress
-                  );
-                }
-              }else{
-                const baseTravelFov=this.#fovAt(
-                  t,startFov,baseDestinationFov,false
-                );
-                const correctedTravelFov=this.#fovAt(
-                  t,startFov,destinationFov,false
-                );
-                const normalAlignmentProgress=t<=alignmentStart
-                  ? 0
-                  : smootherstep((t-alignmentStart)/(1-alignmentStart));
-                currentFov=normalAlignmentProgress>0
-                  ? Math.exp(
-                      Math.log(baseTravelFov)+
-                      (Math.log(correctedTravelFov)-Math.log(baseTravelFov))*
-                      normalAlignmentProgress
-                    )
-                  : baseTravelFov;
-              }
-
-              GV_TRACE.enabled&&gvTrace(4690,'RAF_SET_FOV',{t,currentFov});
-              this.aladin.setFov(currentFov);
-
-              if(firstHomeTrip){
-                if(t<firstHomeTranslationCompleteEnd){
-                  const translationProgress=smootherstep(
-                    clamp01(
-                      t/Math.max(firstHomeTranslationCompleteEnd,.000001)
-                    )
-                  );
-                  const [travelRa,travelDec]=greatCirclePosition(
-                    startRA,
-                    startDec,
-                    Number(destination.ra),
-                    Number(destination.dec),
-                    translationProgress
-                  );
-                  GV_TRACE.enabled&&gvTrace(
-                    4696,
-                    "RAF_GOTO_HOME_L_LEG1",
-                    {t,travelRa,travelDec,translationProgress}
-                  );
-              global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_BEGIN",{t:Number(t),ra:Number(destination.ra),dec:Number(destination.dec)});
-                  this.aladin.gotoRaDec(travelRa,travelDec);
-                }else if(!destinationCenterApplied){
-                  GV_TRACE.enabled&&gvTrace(
-                    4696,
-                    "RAF_GOTO_HOME_L_ENDPOINT",
-                    {t,ra:Number(destination.ra),dec:Number(destination.dec)}
-                  );
-              global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_BEGIN",{t:Number(t),ra:Number(destination.ra),dec:Number(destination.dec)});
-                  this.aladin.gotoRaDec(
-                    Number(destination.ra),
-                    Number(destination.dec)
-                  );
-                  destinationCenterApplied=true;
-                }
-              }else{
-                const translationProgress=this.#translationProgress(t);
-
-                if(
-                  translationProgress>0 &&
-                  !destinationCenterApplied &&
-                  alignmentProgress<=0
-                ){
-                  const [travelRa,travelDec]=greatCirclePosition(
-                    startRA,
-                    startDec,
-                    baseDestinationRA,
-                    baseDestinationDec,
-                    translationProgress
-                  );
-
-                  GV_TRACE.enabled&&gvTrace(4696,'RAF_GOTO_BASE_PROGRESS',{
-                    t,
-                    travelRa,
-                    travelDec,
-                    translationProgress
-                  });
-
-              global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_BEGIN",{t:Number(t),ra:Number(destination.ra),dec:Number(destination.dec)});
-                  this.aladin.gotoRaDec(travelRa,travelDec);
-                }
-
-                if(translationProgress>=1)
-                  destinationCenterApplied=true;
-              }
-
-              // Resolve orientation while the sky is still wide. Rotation
-              // is complete by alignmentStart; the final approach only
-              // converges center and FOV.
-              if(
-                t>=rotationStartPoint &&
-                t<rotationEndPoint &&
-                Number.isFinite(Number(targetRotation)) &&
-                typeof this.aladin.setRotation==='function'
-              ){
-                const rotationProgress=firstHomeTrip?smootherstep(
-                  (t-rotationStartPoint)/(rotationEndPoint-rotationStartPoint)
-                ):clamp01((t-rotationStartPoint)/(rotationEndPoint-rotationStartPoint));
-                GV_TRACE.enabled&&gvTrace(4712,'RAF_ROTATE_PROGRESS',{t,rotationProgress});
-                this.aladin.setRotation(
-                  Number(rotationStart)+
-                  rotationDelta*rotationProgress
-                );
-              }else if(
-                !finalRotationApplied &&
-                t>=rotationEndPoint &&
-                Number.isFinite(Number(targetRotation)) &&
-                typeof this.aladin.setRotation==='function'
-              ){
-                GV_TRACE.enabled&&gvTrace(4722,'RAF_ROTATE_TARGET_EARLY',{t,targetRotation});
-                GV_TRACE.enabled&&gvTrace(4722,'RAF_ROTATE_TARGET_FINAL',{t,targetRotation});
-              this.aladin.setRotation(Number(targetRotation));
-                finalRotationApplied=true;
-              }
-
-              if(!firstHomeTrip&&!destinationCenterApplied&&alignmentProgress>0){
-                const raDelta=((Number(destination.ra)-baseDestinationRA+540)%360)-180;
-                const alignedRa=(baseDestinationRA+raDelta*alignmentProgress+360)%360;
-                const alignedDec=
-                    baseDestinationDec+
-                    (Number(destination.dec)-baseDestinationDec)*alignmentProgress;
-                GV_TRACE.enabled&&gvTrace(4732,'RAF_GOTO_ALIGNED',{t,alignedRa,alignedDec,alignmentProgress});
-              global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_BEGIN",{t:Number(t),ra:Number(destination.ra),dec:Number(destination.dec)});
-                this.aladin.gotoRaDec(alignedRa,alignedDec);
-              }
-
-              const blackBoxSample=Math.floor((now-started)*4/1000);
-              if(blackBoxSample!==lastBlackBoxSample){
-                lastBlackBoxSample=blackBoxSample;
-                try{
-                  const actualCoords=typeof this.aladin.getRaDec==='function'
-                    ? this.aladin.getRaDec()
-                    : null;
-                  const actualFov=typeof this.aladin.getFov==='function'
-                    ? this.aladin.getFov()
-                    : null;
-                  const actualRotation=typeof this.aladin.getRotation==='function'
-                    ? this.aladin.getRotation()
-                    : null;
-                  const translationProgress=firstHomeTrip
-                    ? (
-                        t<firstHomeTranslationCompleteEnd
-                          ? smootherstep(clamp01(t/Math.max(firstHomeTranslationCompleteEnd,.000001)))
-                          : 1
-                      )
-                    : this.#translationProgress(t);
-                  const phase=firstHomeTrip
-                    ? (
-                        t<firstHomeTranslationCompleteEnd
-                          ? 'FIRST_HOME_TRANSLATE_ROTATE'
-                          : 'FIRST_HOME_ZOOM'
-                      )
-                    : (
-                        t<=4/15 ? 'ZOOM_OUT' :
-                        t<=11/30 ? 'ACCEL_TRANSLATE_ZOOM_OUT' :
-                        t<=19/30 ? 'CRUISE_ROTATE' :
-                        t<=11/15 ? 'DECEL_TRANSLATE_ZOOM_IN' :
-                        'ZOOM_IN_ONLY'
-                      );
-                  let commandedRotation=Number(rotationStart);
-                  if(t>=rotationEndPoint){
-                    commandedRotation=Number(targetRotation);
-                  }else if(t>=rotationStartPoint){
-                    const rp=firstHomeTrip
-                      ? smootherstep((t-rotationStartPoint)/(rotationEndPoint-rotationStartPoint))
-                      : clamp01((t-rotationStartPoint)/(rotationEndPoint-rotationStartPoint));
-                    commandedRotation=Number(rotationStart)+rotationDelta*rp;
-                  }
-                  global.dispatchEvent(new CustomEvent('gv-black-box-nav-sample',{detail:{
-                    moduleVersion:VERSION,
-                    elapsedMs:now-started,
-                    t,
-                    phase,
-                    translationProgress,
-                    commandedFov:Number(currentFov),
-                    commandedRotation,
-                    actualRa:Array.isArray(actualCoords)?Number(actualCoords[0]):null,
-                    actualDec:Array.isArray(actualCoords)?Number(actualCoords[1]):null,
-                    actualFov:Number.isFinite(Number(actualFov))?Number(actualFov):null,
-                    actualRotation:Number.isFinite(Number(actualRotation))?Number(actualRotation):null,
-                    destinationCenterApplied:Boolean(destinationCenterApplied),
-                    finalRotationApplied:Boolean(finalRotationApplied)
-                  }}));
-                }catch(_){}
-              }
-
-              lastAladinSample=aladinSample;
-            }
-
-            GV_TRACE.enabled&&gvTrace(4738,'RAF_DISTANCE_RENDER',{t});
-            this.distanceRenderer.render(
-              route.value*this.#distanceProgress(t)
-            );
-
+        await window.GalaxyViewerNavigation.flyViewport({
+          aladin:this.aladin,
+          source,
+          destination,
+          routeValue:Number(route?.value)||0,
+          startRA,
+          startDec,
+          startFov,
+          destinationFov,
+          firstHomeTrip,
+          rotationStart:
+            finiteNumber(this.currentGalaxy?.aladinRotation)??0,
+          onDistanceProgress:value=>{
+            this.distanceRenderer.render(value);
+          },
+          onTimelineProgress:t=>{
             if(this.progressFill)
-              this.progressFill.style.width=`${(t*100).toFixed(1)}%`;
-
-
-            if(t<1){
-              GV_TRACE.enabled&&gvTrace(4746,'RAF_SCHEDULE_NEXT',{t});
-              requestAnimationFrame(frame);
-              return;
-            }
-
-            // A severely delayed animation frame can jump directly
-            // across alignmentStart. In that exceptional case establish the
-            // final orientation here, still before the arrival frame paints.
-            if(
-              !finalRotationApplied &&
-              Number.isFinite(Number(targetRotation)) &&
-              typeof this.aladin.setRotation==='function'
-            ){
-              this.aladin.setRotation(Number(targetRotation));
-              finalRotationApplied=true;
-            }
-
-            // t=1 is already the authoritative HD-guided viewport.
-            // Complete it before arrival is declared; no landing correction.
-            if(!firstHomeTrip){
-              GV_TRACE.enabled&&gvTrace(
-                4764,
-                "RAF_FINAL_GOTO",
-                {t,ra:Number(destination.ra),dec:Number(destination.dec)}
-              );
-              global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_BEGIN",{t:Number(t),ra:Number(destination.ra),dec:Number(destination.dec)});
-              this.aladin.gotoRaDec(
-                Number(destination.ra),
-                Number(destination.dec)
-              );
-            }
-              global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_GOTO_END",{t:Number(t)});
-            GV_TRACE.enabled&&gvTrace(4768,'RAF_FINAL_FOV',{t,destinationFov});
-            this.aladin.setFov(destinationFov);
-            global.GalaxyBlackBox?.recordCheckpoint?.("FINAL_FOV_DONE",{t:Number(t),fov:Number(destinationFov)});
-            this.distanceRenderer.render(route.value);
-
-            if(this.progressFill)
-              this.progressFill.style.width='100%';
-
-            GV_TRACE.enabled&&gvTrace(4774,'RAF_RESOLVE',{t});
-            resolve();
-            } catch (error) {
-              GV_TRACE.enabled&&gvTraceError(4775,'RAF_EXCEPTION',error);
-              try{
-                global.dispatchEvent(new CustomEvent('gv-black-box-nav-error',{detail:{
-                  moduleVersion:VERSION,
-                  endedPerfMs:performance.now(),
-                  elapsedMs:performance.now()-started,
-                  durationMs:duration,
-                  firstHomeTrip,
-                  destination:{name:String(destination?.name||''),ra:Number(destination?.ra),dec:Number(destination?.dec)},
-                  error:{
-                    name:String(error?.name||'Error'),
-                    message:String(error?.message||error||'Unknown error'),
-                    stack:String(error?.stack||'')
-                  }
-                }}));
-              }catch(_){}
-              reject(error);
-            }
-          };
-          requestAnimationFrame(frame);
+              this.progressFill.style.width=
+                `${(t*100).toFixed(1)}%`;
+          },
+          trace:(code,label,detail)=>{
+            GV_TRACE.enabled&&gvTrace(code,label,detail);
+          },
+          traceError:(code,label,error)=>{
+            GV_TRACE.enabled&&gvTraceError(code,label,error);
+          }
         });
-
-
-        try{
-          global.dispatchEvent(new CustomEvent('gv-black-box-nav-finish',{detail:{
-            moduleVersion:VERSION,
-            endedPerfMs:performance.now(),
-            elapsedMs:performance.now()-started,
-            durationMs:duration,
-            firstHomeTrip,
-            destination:{name:String(destination?.name||''),ra:Number(destination.ra),dec:Number(destination.dec)}
-          }}));
-        }catch(_){}
-
-        global.GalaxyBlackBox?.recordCheckpoint?.("NAV_FINISH_DISPATCHED",{elapsedMs:performance.now()-started});
         // Allow the already-final viewport to paint before declaring
         // arrival. This performs no additional rotation/recenter/zoom.
         GV_TRACE.enabled&&gvTrace(4783,'ARRIVAL_PAINT_WAIT_BEGIN',null);
@@ -5441,8 +5127,29 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         this.activeDestination = null;
         this.#hideDistance();
         this.#endTravelHud();
-        if (this.randomButton) this.randomButton.disabled = true;
 
+        // A real travel failure clears activeDestination below/above, so
+        // HD must remain unavailable. This is availability state, not a
+        // leaked HD/navigation interlock.
+        if (this.viewHdButton)
+          this.viewHdButton.disabled = true;
+
+        if (this.providerIconButton)
+          this.providerIconButton.disabled = true;
+
+        if (this.randomButton)
+          this.randomButton.disabled = true;
+
+        global.GalaxyBlackBox?.recordCheckpoint?.(
+          'TRAVEL_EXCEPTION_CONTROLS_SAFE',
+          {
+            randomDisabled:Boolean(this.randomButton?.disabled),
+            viewHdDisabled:Boolean(this.viewHdButton?.disabled),
+            providerDisabled:Boolean(this.providerIconButton?.disabled),
+            activeDestination:Boolean(this.activeDestination),
+            arrived:Boolean(this.arrived)
+          }
+        );
 
         throw error;
       }
@@ -5679,17 +5386,57 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
     }
 
     showHD() {
+      global.GalaxyBlackBox?.recordCheckpoint?.('HD_OPEN_REQUEST',{
+        busy:Boolean(this.busy),
+        hdOpen:Boolean(this.hdOpen),
+        arrived:Boolean(this.arrived)
+      });
+
+      // Navigation owns the viewer while busy.  Even if a stale UI
+      // control receives a click, HD must not start.
+      if (this.destroyed || this.busy) {
+        global.GalaxyBlackBox?.recordCheckpoint?.('HD_OPEN_BLOCKED_NAV_BUSY',{
+          busy:Boolean(this.busy),
+          destroyed:Boolean(this.destroyed)
+        });
+        return null;
+      }
+
       requestPortraitOrientation('hd-view').catch(() => {});
       this.#hideRefreshSky();
+
       const destination = this.activeDestination;
       const validatedHdUrl = validHttpsUrl(destination?.hdUrl);
-      if (!destination || !validatedHdUrl) throw new Error('No usable HD image is available for the active destination.');
+
+      if (!destination || !validatedHdUrl)
+        throw new Error('No usable HD image is available for the active destination.');
+
+      if (this.hdOpen)
+        return validatedHdUrl.href;
+
+      // Snapshot the pre-HD control state so normal BACK TO SKY restores
+      // exactly what existed before HD claimed the interaction lock.
+      this._hdInterlockSnapshot={
+        randomDisabled:Boolean(this.randomButton?.disabled),
+        viewHdDisabled:Boolean(this.viewHdButton?.disabled),
+        providerDisabled:Boolean(this.providerIconButton?.disabled)
+      };
+
+      if (this.randomButton)
+        this.randomButton.disabled = true;
+
+      if (this.viewHdButton)
+        this.viewHdButton.disabled = true;
+
+      if (this.providerIconButton)
+        this.providerIconButton.disabled = true;
+
+      global.GalaxyBlackBox?.recordCheckpoint?.('HD_RANDOM_LOCKED',{});
 
       // Preserve the user's exact sky position/zoom before HD obscures Aladin.
-      if (!this.hdOpen)
-        this.hdSkySnapshot =
-          this.#captureAladinState() ||
-          this.#exactActiveAladinState(destination);
+      this.hdSkySnapshot =
+        this.#captureAladinState() ||
+        this.#exactActiveAladinState(destination);
 
       const preparedImage = destination.preparedHdImage instanceof HTMLImageElement && destination.preparedHdImage.complete && destination.preparedHdImage.naturalWidth ? destination.preparedHdImage : null;
       this.#populateHdScience(destination);
@@ -5765,9 +5512,41 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         this.hdSkySnapshot ||
         this.#exactActiveAladinState();
 
+      const interlockSnapshot=this._hdInterlockSnapshot||null;
+      this._hdInterlockSnapshot=null;
+
+      const releaseHdInterlock=()=>{
+        // If Random navigation has already claimed ownership, it keeps all
+        // conflicting controls locked.  Arrival code will re-enable HD.
+        if (this.busy) {
+          global.GalaxyBlackBox?.recordCheckpoint?.('HD_CLOSED_NAV_OWNS_LOCK',{});
+          return;
+        }
+
+        if (interlockSnapshot) {
+          if (this.randomButton)
+            this.randomButton.disabled=
+              Boolean(interlockSnapshot.randomDisabled);
+
+          if (this.viewHdButton)
+            this.viewHdButton.disabled=
+              Boolean(interlockSnapshot.viewHdDisabled);
+
+          if (this.providerIconButton)
+            this.providerIconButton.disabled=
+              Boolean(interlockSnapshot.providerDisabled);
+        }
+
+        global.GalaxyBlackBox?.recordCheckpoint?.('HD_CLOSED',{
+          recover:Boolean(recover)
+        });
+      };
+
       this.hdOverlay.classList.remove('gvrg-hd-open');
+
       if (this.hdImage === this.hdFallbackImage)
         this.hdFallbackImage.removeAttribute('src');
+
       this.hdFallbackImage.onload = null;
       this.hdFallbackImage.onerror = null;
       this.#resetHdTransform();
@@ -5778,10 +5557,14 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
         requestAnimationFrame(() => {
           this.#restoreAladinState(restoreState,'hd-return');
           this.#armRefreshSkyWatchdog('hd-return');
-          requestAnimationFrame(() =>
-            this.#checkAndRecoverStaleAladin('hd-return-postcheck')
-          );
+
+          requestAnimationFrame(() => {
+            this.#checkAndRecoverStaleAladin('hd-return-postcheck');
+            releaseHdInterlock();
+          });
         });
+      } else {
+        releaseHdInterlock();
       }
     }
     setPreparedHdResource(key, preparedHdUrl, preparedSource = '', preparedHdImage = null) {
@@ -6307,21 +6090,9 @@ function navigation0004Url(){
 }
 
 function applyNavigation0004RuntimeConfig(api=null){
-  if(!randomGalaxy?.options)return;
-
-  const constants=api?.CONSTANTS||{};
-
-  const bootstrapSeconds=
-    Number(constants.BOOTSTRAP_TRAVEL_SECONDS)||9;
-
-  const normalSeconds=
-    Number(constants.NORMAL_TRAVEL_SECONDS)||18;
-
-  const birdseye=
-    Number(constants.BIRDSEYE_FOV_DEG)||200;
-
-  randomGalaxy.options.firstHomeTravelSeconds=bootstrapSeconds;
-  randomGalaxy.options.maxFov=birdseye;
+  // Navigation 0004 owns active-flight choreography. Random keeps this
+  // hook only as a module/config availability checkpoint.
+  return api?.CONSTANTS||null;
 }
 
 function ensureNavigationModule0004(){
