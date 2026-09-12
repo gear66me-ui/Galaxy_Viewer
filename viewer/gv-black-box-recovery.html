@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><title>GV Black Box Recovery</title>
+<body style="background:#080b10;color:#d8f7ff;font:14px monospace;white-space:pre-wrap">
+<h2>GALAXY VIEWER — BLACK BOX RECOVERY</h2><button id="save" disabled>SAVE JSON</button><pre id="out">LOADING...</pre>
+<script src="modules/diagnostics/gv-black-box-0001.js"></script>
+<script>
+(async()=>{const out=document.getElementById("out"),save=document.getElementById("save");try{const runs=await GalaxyBlackBox.getIncompleteRuns();if(!runs.length){out.textContent="NO ACTIVE FLIGHTS FOUND";return;}const b=await GalaxyBlackBox.getRunBundle(runs[0].id);out.textContent=JSON.stringify(b,null,2);save.disabled=false;save.onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(b,null,2)],{type:"application/json"}));a.download="gv-black-box-"+b.run.id+".json";a.click();};}catch(e){out.textContent="ERROR: "+(e.stack||e);}})();
+</script>
