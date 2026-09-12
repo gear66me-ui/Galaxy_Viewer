@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>GV Black Box Recovery All</title>
+<body style="background:#080b10;color:#d8f7ff;font:14px monospace;white-space:pre-wrap">
+<h2>GALAXY VIEWER - BLACK BOX RECOVERY ALL RUNS</h2>
+<button id="save" disabled>SAVE JSON</button>
+<pre id="out">LOADING...</pre>
+<script src="modules/diagnostics/gv-black-box-0001.js"></script>
+<script>
+(async()=>{
+  const out=document.getElementById('out');
+  const save=document.getElementById('save');
+  try{
+    const db=await GalaxyBlackBox.openDb();
+    const runs=await new Promise((resolve,reject)=>{
+      const tx=db.transaction('runs','readonly');
+      const req=tx.objectStore('runs').getAll();
+      req.onsuccess=()=>resolve(req.result||[]);
+      req.onerror=()=>reject(req.error);
+    });
+    db.close();
+    runs.sort((a,b)=>String(b.startedAt||'').localeCompare(String(a.startedAt||'')));
+    if(!runs.length){
+      out.textContent='NO RUN RECORDS FOUND';
+      return;
+    }
+    const newest=runs[0];
+    const bundle=await GalaxyBlackBox.getRunBundle(newest.id);
+    const report={
+      runCount:runs.length,
+      statuses:runs.map(r=>({
+        id:r.id,
+        status:r.status,
+        startedAt:r.startedAt,
+        endedAt:r.endedAt,
+        moduleVersion:r.metadata&&r.metadata.moduleVersion,
+        destination:r.metadata&&r.metadata.destination
+      })),
+      newestBundle:bundle
+    };
+    out.textContent=JSON.stringify(report,null,2);
+    save.disabled=false;
+    save.onclick=()=>{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+      a.download='gv-black-box-recovery-all.json';
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    };
+  }catch(e){
+    out.textContent='ERROR: '+(e.stack||e);
+  }
+})();
+</script>
