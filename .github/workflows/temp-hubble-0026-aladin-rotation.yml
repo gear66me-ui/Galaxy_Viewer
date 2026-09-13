@@ -1,0 +1,144 @@
+name: HUBBLE 0026 — ADD ALADIN ROTATION
+
+on:
+  push:
+    paths:
+      - '.github/workflows/temp-hubble-0026-aladin-rotation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-hubble-0026:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v5
+        with:
+          ref: beta
+          fetch-depth: 0
+          token: ${{ secrets.GV_GITHUB_TOKEN || github.token }}
+
+      - name: Create Hubble 0026
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          from datetime import datetime, timezone
+
+          src = Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json')
+          dst = Path('viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0026.json')
+
+          if not src.exists():
+              raise SystemExit(f'STOP: source not found: {src}')
+          if dst.exists():
+              raise SystemExit(f'STOP: destination already exists: {dst}')
+
+          root = json.loads(src.read_text(encoding='utf-8'))
+
+          def find_records(x):
+              if isinstance(x, dict):
+                  for key in ('entries','galaxies','records','objects','data','items'):
+                      v = x.get(key)
+                      if isinstance(v, list) and v and all(isinstance(i, dict) for i in v):
+                          return v
+                  candidates=[]
+                  for v in x.values():
+                      r=find_records(v)
+                      if r:
+                          candidates.append(r)
+                  if candidates:
+                      return max(candidates, key=len)
+              elif isinstance(x, list) and x and all(isinstance(i, dict) for i in x):
+                  return x
+              return None
+
+          records = find_records(root) or []
+          if len(records) != 910:
+              raise SystemExit(f'STOP: expected 910 Hubble records, found {len(records)}')
+
+          pat = re.compile(r'^\s*North\s+is\s+([+-]?\d+(?:\.\d+)?)\s*°?\s*(right|left)\s+of\s+vertical\s*$', re.I)
+
+          converted = 0
+          failures = []
+          examples = []
+
+          for i, r in enumerate(records):
+              raw = r.get('orientation')
+              value = None
+
+              if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+                  value = float(raw) % 360.0
+              elif isinstance(raw, str):
+                  s = raw.strip()
+                  try:
+                      value = float(s) % 360.0
+                  except ValueError:
+                      m = pat.match(s)
+                      if m:
+                          deg = float(m.group(1))
+                          side = m.group(2).lower()
+                          value = (deg if side == 'right' else -deg) % 360.0
+
+              if value is None:
+                  failures.append((i, r.get('archiveId'), r.get('name'), raw))
+                  continue
+
+              value = round(value, 6)
+              if value == 360.0 or abs(value) < 1e-12:
+                  value = 0.0
+              r['aladinRotation'] = value
+              converted += 1
+              if len(examples) < 10:
+                  examples.append((r.get('archiveId'), raw, value))
+
+          if failures:
+              print('FAILED ORIENTATIONS:')
+              for x in failures[:25]:
+                  print(x)
+              raise SystemExit(f'STOP: {len(failures)} orientations could not be converted')
+
+          if converted != 910:
+              raise SystemExit(f'STOP: expected 910 conversions, got {converted}')
+
+          if isinstance(root, dict):
+              if 'version' in root:
+                  root['version'] = 'full-0026'
+              if 'generatedAt' in root:
+                  root['generatedAt'] = datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
+
+          dst.write_text(json.dumps(root, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          # Round-trip verification.
+          check = json.loads(dst.read_text(encoding='utf-8'))
+          check_records = find_records(check) or []
+          numeric = sum(isinstance(r.get('aladinRotation'), (int,float)) and not isinstance(r.get('aladinRotation'), bool) for r in check_records)
+          if len(check_records) != 910 or numeric != 910:
+              raise SystemExit(f'STOP: verification failed records={len(check_records)} numeric={numeric}')
+
+          print('=== HUBBLE 0026 ALADIN ROTATION MIGRATION ===')
+          print('SOURCE:', src)
+          print('OUTPUT:', dst)
+          print('RECORDS:', len(records))
+          print('ALADIN ROTATIONS WRITTEN:', converted)
+          print('FAILURES: 0')
+          print('ORIGINAL orientation FIELD: PRESERVED')
+          print('EXAMPLES:')
+          for a,b,c in examples:
+              print(f'  {a}: {b!r} -> {c}')
+          print('VALIDATION: PASS')
+          PY
+
+      - name: Commit Hubble 0026
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0026.json
+          git rm .github/workflows/temp-hubble-0026-aladin-rotation.yml
+          git commit -m 'data: add Hubble 0026 numeric aladinRotation'
+          git push origin HEAD:beta
+          echo 'HUBBLE 0026 COMMIT COMPLETE'
