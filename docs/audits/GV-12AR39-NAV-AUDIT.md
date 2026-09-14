@@ -16,15 +16,15 @@
 ## Byte / character / token-word / line / function tally
 | Transition | Old bytes | New bytes | Δ bytes | chars + | chars - | words + | words - | lines + | lines - | funcs + | funcs - |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| navigation 0016 → 0017 | 31952 | 32807 | +855 | 2126 | 1271 | 290 | 194 | 61 | 55 | 2 | 0 |
+| navigation 0016 → 0017 | 31952 | 32818 | +866 | 2275 | 1409 | 309 | 218 | 68 | 62 | 2 | 0 |
 | worker 0005 → 0006 | 1367 | 1367 | +0 | 6 | 6 | 6 | 6 | 5 | 5 | 0 | 0 |
 | viewer 12AR-38 → 12AR-39 | 61945 | 62144 | +199 | 295 | 99 | 68 | 15 | 12 | 11 | 0 | 0 |
 
 ### Navigation
 - Old SHA-256: `3b40dd99104a1ca367824c67de06fca36884016e8360ba003f189a1cef333864`
-- New SHA-256: `4ba703c25188d1ea3ccb8c6d438ac1644f17b9b6e0479dfc0c381b63db7e0ed7`
-- Old/new characters: 31948 / 32803 (+855)
-- Old/new tokenized words/symbols: 7967 / 8063
+- New SHA-256: `f634de20dd25d603372ef74feea6a78eaf59bc530d447a9714f6b16dd1cfa861`
+- Old/new characters: 31948 / 32814 (+866)
+- Old/new tokenized words/symbols: 7967 / 8058
 - Old/new lines: 1068 / 1074
 - Old/new functions: 39 / 41
 - Functions added: `['flightNavigationSmootherstep', 'getLastCommandedRotation']`

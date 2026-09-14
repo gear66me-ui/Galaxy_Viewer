@@ -1,5 +1,5 @@
 /*
- * GALAXY VIEWER — RANDOM NAVIGATION MODULE 0002
+ * GALAXY VIEWER — RANDOM NAVIGATION MODULE 0017
  *
  * PURPOSE
  *   Metadata-only 130 -> 100 random route planner.
@@ -14,9 +14,9 @@
  *
  * STARTUP / TRAVEL
  *   Bootstrap random galaxy: exactly once per application launch
- *   Bootstrap trip:           9 seconds
- *   Normal trip:             18 seconds
- *   Birdseye FOV:            200 degrees
+ *   Bootstrap trip:         7.5 seconds
+ *   Normal trip:              17 seconds
+ *   Birdseye FOV:             120 degrees
  *
  * IMPORTANT
  *   This module plans metadata only.
@@ -801,7 +801,7 @@
 
   // ==========================================================
   // ACTIVE VIEWPORT FLIGHT ENGINE — NAVIGATION 0017
-  // Restored 12AR-style phased choreography. No ellipse, no tangent solver,
+  // Restored exact 12AR continuous choreography. No ellipse, no tangent solver,
   // no travel-plane state equations. Navigation is the sole visible-camera owner.
   // ==========================================================
 
@@ -930,8 +930,8 @@
       destination:{name:String(destination?.name||''),ra:destinationRA,dec:destinationDec,fov:finalFov,rotation:targetRotation},
       start:{ra:Number(startRA),dec:Number(startDec),fov:startFovNumber,rotation:actualStartRotation},
       choreography:firstHomeTrip
-        ? {geometry:'12AR_SIMPLE_L',translateStraightSeconds:4,bendSeconds:1,finalStraightZoomSeconds:5,translationAtBend:0.90}
-        : {geometry:'12AR_SIMPLE_SYMMETRIC',zoomOutOnlySeconds:4,outBlendSeconds:1,straightSeconds:7,inBlendSeconds:1,zoomInOnlySeconds:4}
+        ? {geometry:'12AR_FIRST_TRANSLATE_ROTATE_THEN_ZOOM',translateRotateSeconds:4,finalZoomSeconds:3.5,translationEndFraction:4/7.5}
+        : {geometry:'12AR_CONTINUOUS_SYMMETRIC',fovApexFraction:0.50,translateStartFraction:0.30,translateEndFraction:0.70,easing:'S7'}
     }}));}catch(_){}
 
     await new Promise((resolve,reject)=>{
