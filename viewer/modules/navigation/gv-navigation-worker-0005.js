@@ -2,12 +2,12 @@
 
 const WORKER_VERSION='0005';
 
-importScripts('gv-navigation-0013.js');
+importScripts('gv-navigation-0016.js');
 
 const api=self.GalaxyViewerNavigation;
 
-if(!api || api.VERSION!=='0013'){
-  throw new Error('NAVIGATION WORKER 0005 — NAVIGATION 0013 LOAD FAILURE');
+if(!api || api.VERSION!=='0016'){
+  throw new Error('NAVIGATION WORKER 0005 — NAVIGATION 0016 LOAD FAILURE');
 }
 
 self.onmessage=event=>{
