@@ -1,4 +1,4 @@
-name: AR40 Random Hotfix
+name: AR45 Temporary Registered Runner
 on:
   push:
     branches: [beta]
@@ -11,32 +11,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {ref: beta}
-      - uses: actions/setup-node@v4
-        with: {node-version: '22'}
-      - name: Build AR40
+      - name: Run AR45 builder payload
         run: |
           python - <<'PY'
           from pathlib import Path
-          import json
-          r=Path('viewer/modules/random-galaxy/gv-random-galaxy-0112.js').read_text()
-          r=r.replace("const VERSION='0112';","const VERSION='0113';",1)
-          old="this.#setStatus(`ARRIVED ${destination.name.toUpperCase()}`);\n        if (this.randomButton) this.randomButton.disabled = true;"
-          new="this.#setStatus(`ARRIVED ${destination.name.toUpperCase()}`);\n        if (this.randomButton) this.randomButton.disabled = false;"
-          if old not in r: raise SystemExit('arrival button anchor missing')
-          r=r.replace(old,new,1)
-          Path('viewer/modules/random-galaxy/gv-random-galaxy-0113.js').write_text(r)
-          p=Path('viewer/GV-beta-0012AR-39.py').read_text()
-          for a,b in [('12AR-39','12AR-40'),('gv-random-galaxy-0112.js','gv-random-galaxy-0113.js'),("RANDOM_GALAXY_VERSION='0112'","RANDOM_GALAXY_VERSION='0113'")]: p=p.replace(a,b)
-          Path('viewer/GV-beta-0012AR-40.py').write_text(p)
-          Path('viewer/gv-current-viewer.json').write_text(json.dumps({'version':'12AR-40.py','viewer':'GV-beta-0012AR-40.py'},indent=2)+'\n')
+          import textwrap
+          wf=Path('.github/workflows/ar45-reticle-build.yml').read_text()
+          marker="          python - <<'PY'\n"
+          if marker not in wf:
+              raise SystemExit('AR45 builder Python marker missing')
+          block=wf.split(marker,1)[1].split("\n          PY",1)[0]
+          exec(textwrap.dedent(block),{'__name__':'__main__'})
           PY
-          node --check viewer/modules/random-galaxy/gv-random-galaxy-0113.js
-          python -m py_compile viewer/GV-beta-0012AR-40.py
-          grep -q "VERSION='0113'" viewer/modules/random-galaxy/gv-random-galaxy-0113.js
-          grep -q "randomButton.disabled = false" viewer/modules/random-galaxy/gv-random-galaxy-0113.js
+          python -m py_compile viewer/GV-beta-0012AR-45.py
           git diff --check
+          grep -q "const VERSION='12AR-45';" viewer/GV-beta-0012AR-45.py
+          grep -q "function readCelestialNorthBearing" viewer/GV-beta-0012AR-45.py
+          grep -q "function readEarthBearing" viewer/GV-beta-0012AR-45.py
+          grep -q "northLabel.textContent='N'" viewer/GV-beta-0012AR-45.py
+          grep -q "earthIcon.textContent='🌎'" viewer/GV-beta-0012AR-45.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/modules/random-galaxy/gv-random-galaxy-0113.js viewer/GV-beta-0012AR-40.py viewer/gv-current-viewer.json
-          git commit -m 'AR40 fix Random button release after arrival'
+          git add viewer/GV-beta-0012AR-45.py
+          git commit -m 'AR45 full AR41 baseline with ICRSd and cosmic directional reticle'
           git push origin beta
