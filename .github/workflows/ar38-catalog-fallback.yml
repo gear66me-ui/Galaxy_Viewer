@@ -21,7 +21,7 @@ jobs:
         run: |
           cat > /tmp/build_ar38.py <<'PY'
           from pathlib import Path
-          import json, re
+          import json
 
           src=Path('viewer/GV-beta-0012AR-37.py')
           dst=Path('viewer/GV-beta-0012AR-38.py')
@@ -51,23 +51,38 @@ jobs:
           }
 
 """
-          marker='    async function loadMasterCatalog(){'
-          if marker not in s: raise SystemExit('AR38 PATCH FAILED: loadMasterCatalog missing')
+          marker="    async function loadMasterCatalog(){"
+          assert s.count(marker)==1, f'master marker count={s.count(marker)}'
           s=s.replace(marker,helper+marker,1)
 
-          s,n1=re.subn(
-              r"(\s*)const response=await fetch\(MASTER_CATALOG_URL,\{cache:'no-store'\}\);\s*if\(!response\.ok\)throw new Error\('MASTER CATALOG RETURNED HTTP '\+response\.status\);\s*const payload=await response\.json\(\);",
-              lambda m: m.group(1)+"const payload=await fetchJsonWithFallback(MASTER_CATALOG_URL,'MASTER CATALOG');",
-              s,count=1
-          )
-          if n1!=1: raise SystemExit(f'AR38 PATCH FAILED: master fetch replacements={n1}')
+          a="        const response=await fetch(MASTER_CATALOG_URL,{cache:'no-store'});"
+          b="        if(!response.ok)throw new Error('MASTER CATALOG RETURNED HTTP '+response.status);"
+          c="        const payload=await response.json();"
+          assert s.count(a)==1 and s.count(b)==1, f'master fetch lines {s.count(a)}/{s.count(b)}'
+          s=s.replace(a,"        const payload=await fetchJsonWithFallback(MASTER_CATALOG_URL,'MASTER CATALOG');",1)
+          s=s.replace(b,'',1)
+          # Remove only the first payload-from-response following master replacement.
+          master_pos=s.index("const payload=await fetchJsonWithFallback(MASTER_CATALOG_URL")
+          cpos=s.find(c,master_pos)
+          assert cpos>=0, 'master response.json line missing'
+          s=s[:cpos]+s[cpos+len(c):]
 
-          s,n2=re.subn(
-              r"(\s*)const response=await fetch\(url,\{cache:'no-store'\}\);\s*if\(!response\.ok\)\s*throw new Error\(`GALAXY CATALOG \$\{key\} RETURNED HTTP \$\{response\.status\}`\);\s*const payload=await response\.json\(\);",
-              lambda m: m.group(1)+"const payload=await fetchJsonWithFallback(url,`GALAXY CATALOG ${key}`);",
-              s,count=1
-          )
-          if n2!=1: raise SystemExit(f'AR38 PATCH FAILED: catalog fetch replacements={n2}')
+          d="        const response=await fetch(url,{cache:'no-store'});"
+          e="            throw new Error(`GALAXY CATALOG ${key} RETURNED HTTP ${response.status}`);"
+          f="        const payload=await response.json();"
+          assert s.count(d)>=1 and s.count(e)==1, f'catalog fetch lines {s.count(d)}/{s.count(e)}'
+          dpos=s.index(d,s.index('async function loadGalaxyCatalog'))
+          s=s[:dpos]+"        const payload=await fetchJsonWithFallback(url,`GALAXY CATALOG ${key}`);"+s[dpos+len(d):]
+          # delete matching if + throw + response-json block in loadGalaxyCatalog only
+          section_start=s.index('async function loadGalaxyCatalog')
+          section_end=s.index('function shuffledCopy',section_start)
+          section=s[section_start:section_end]
+          section=section.replace("        if(!response.ok)\n            throw new Error(`GALAXY CATALOG ${key} RETURNED HTTP ${response.status}`);\n\n        const payload=await response.json();",'',1)
+          s=s[:section_start]+section+s[section_end:]
+
+          assert "fetch(MASTER_CATALOG_URL,{cache:'no-store'})" not in s
+          load_section=s[s.index('async function loadGalaxyCatalog'):s.index('function shuffledCopy')]
+          assert "fetch(url,{cache:'no-store'})" not in load_section
 
           dst.write_text(s,encoding='utf-8')
           Path('viewer/gv-current-viewer.json').write_text(json.dumps({'version':'12AR-38.py','viewer':'GV-beta-0012AR-38.py'},indent=2)+'\n',encoding='utf-8')
@@ -78,6 +93,8 @@ jobs:
           grep -q "async function fetchJsonWithFallback" viewer/GV-beta-0012AR-38.py
           grep -q "for(let attempt=1;attempt<=3;attempt++)" viewer/GV-beta-0012AR-38.py
           grep -q "gear66me-ui.github.io/Galaxy_Viewer/" viewer/GV-beta-0012AR-38.py
+          grep -q "const NAVIGATION_VERSION='0016'" viewer/GV-beta-0012AR-38.py
+          grep -q "const RANDOM_GALAXY_VERSION='0112'" viewer/GV-beta-0012AR-38.py
           grep -q 'GV-beta-0012AR-38.py' viewer/gv-current-viewer.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
