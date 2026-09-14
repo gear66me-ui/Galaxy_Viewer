@@ -1,0 +1,219 @@
+name: AR39 restore 12AR choreography and harden Hubble
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/ar39-trigger.txt'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Build and audit AR39
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re,math,shutil,subprocess
+
+          root=Path('.')
+          nav16=root/'viewer/modules/navigation/gv-navigation-0016.js'
+          nav17=root/'viewer/modules/navigation/gv-navigation-0017.js'
+          worker5=root/'viewer/modules/navigation/gv-navigation-worker-0005.js'
+          worker6=root/'viewer/modules/navigation/gv-navigation-worker-0006.js'
+          ar38=root/'viewer/GV-beta-0012AR-38.py'
+          ar39=root/'viewer/GV-beta-0012AR-39.py'
+          pointer=root/'viewer/gv-current-viewer.json'
+          hubble=root/'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0031.json'
+
+          for p in [nav16,worker5,ar38,pointer,hubble]:
+              if not p.exists(): raise SystemExit(f'MISSING {p}')
+
+          # ---------- Hubble catalog audit ----------
+          H=json.loads(hubble.read_text())
+          entries=H.get('entries',[])
+          def positive(v):
+              try: return math.isfinite(float(v)) and float(v)>0
+              except: return False
+          def distance(e):
+              v=(e.get('science') or {}).get('distanceMly',e.get('distance'))
+              if isinstance(v,(int,float)): return float(v) if positive(v) else None
+              s=str(v or '').lower().replace(',','')
+              m=re.search(r'([0-9]+(?:\.[0-9]+)?)\s*(billion|million|thousand)\s+light\s*-?\s*years?',s)
+              if m:
+                  n=float(m.group(1)); return n*1000 if m.group(2)=='billion' else n if m.group(2)=='million' else n/1000
+              m=re.search(r'([0-9]+(?:\.[0-9]+)?)\s+light\s*-?\s*years?',s)
+              return float(m.group(1))/1_000_000 if m else None
+          eligible=[]; reasons={}
+          for e in entries:
+              why=[]
+              try:
+                  ra=float(e.get('ra')); dec=float(e.get('dec'))
+              except: ra=dec=float('nan')
+              if not str(e.get('name') or e.get('title') or '').strip(): why.append('name')
+              if not math.isfinite(ra) or not 0<=ra<360: why.append('ra')
+              if not math.isfinite(dec) or not -90<=dec<=90: why.append('dec')
+              if not positive(distance(e)): why.append('distance')
+              if not str(e.get('constellation') or '').strip(): why.append('constellation')
+              if not positive(e.get('fovDegrees')): why.append('fov')
+              try: rot=float(e.get('aladinRotation')); okrot=math.isfinite(rot)
+              except: okrot=False
+              if not okrot: why.append('rotation')
+              if why:
+                  for w in why: reasons[w]=reasons.get(w,0)+1
+              else: eligible.append(e)
+          print('HUBBLE 0031 RAW',len(entries))
+          print('HUBBLE 0031 ELIGIBLE',len(eligible))
+          print('HUBBLE 0031 REJECTIONS',reasons)
+          if len(entries)<800: raise SystemExit('HUBBLE RAW COUNT unexpectedly low')
+          if len(eligible)<700: raise SystemExit(f'HUBBLE ELIGIBILITY unexpectedly low: {len(eligible)}')
+
+          # ---------- Navigation 0017: literal 12AR global choreography ----------
+          s=nav16.read_text()
+          s=s.replace("const VERSION='0016';","const VERSION='0017';",1)
+          s=s.replace('BOOTSTRAP_TRAVEL_SECONDS:10','BOOTSTRAP_TRAVEL_SECONDS:7.5')
+          s=s.replace('BOOTSTRAP_TRAVEL_SECONDS: 10','BOOTSTRAP_TRAVEL_SECONDS: 7.5')
+
+          replacement=r'''function flightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
+    const duration=firstHomeTrip?7.5:17;
+    const t=flightClamp01((Math.max(0,Number(sec)||0))/duration);
+
+    // 12AR choreography restored literally from Random 0093.
+    // First Earth trip: translate+rotate for first 4 s with FOV frozen,
+    // then coordinates locked and pure log zoom to destination.
+    if(firstHomeTrip){
+      const translationEnd=flightClamp01(4/duration);
+      if(t<translationEnd){
+        const p=flightSmootherstep(t/translationEnd);
+        return {
+          phase:'12AR_FIRST_TRANSLATE_ROTATE',
+          translation:p,
+          fov:startFov,
+          rotation:startRotation+flightNormalizeRotationDelta(targetRotation-startRotation)*p
+        };
+      }
+      const p=flightSmootherstep((t-translationEnd)/Math.max(1-translationEnd,0.000001));
+      return {
+        phase:'12AR_FIRST_FINAL_ZOOM',
+        translation:1,
+        fov:flightLogLerp(startFov,finalFov,p),
+        rotation:targetRotation
+      };
+    }
+
+    // 12AR normal trip, one continuous global timeline:
+    // FOV zooms out 0..50%, then zooms in 50..100%.
+    // Translation and rotation occur only 30..70% using one continuous smootherstep.
+    const translateStart=0.30;
+    const translationComplete=0.70;
+    let translation;
+    if(t<=translateStart) translation=0;
+    else if(t>=translationComplete) translation=1;
+    else translation=flightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
+
+    let fov;
+    if(t<=0.50){
+      const p=flightNavigationSmootherstep(t/0.50);
+      fov=flightLogLerp(startFov,maxFov,p);
+    }else{
+      const p=flightNavigationSmootherstep((t-0.50)/0.50);
+      fov=flightLogLerp(maxFov,finalFov,p);
+    }
+
+    const rotation=startRotation+flightNormalizeRotationDelta(targetRotation-startRotation)*translation;
+    return {phase:'12AR_CONTINUOUS_TRIP',translation,fov,rotation};
+  }'''
+
+          pat=re.compile(r"function flightStateAt\(sec,\{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation\}\)\{.*?\n  \}\n\n  function ",re.S)
+          m=pat.search(s)
+          if not m: raise SystemExit('flightStateAt function not found exactly once')
+          s=s[:m.start()]+replacement+'\n\n  function '+s[m.end():]
+
+          # 12AR uses 7th-order navigation smootherstep. Add if not already present.
+          helper="function flightNavigationSmootherstep(value){const t=flightClamp01(value);return 35*t*t*t*t-84*t*t*t*t*t+70*t*t*t*t*t*t-20*t*t*t*t*t*t*t;}\n"
+          anchor="function flightSmootherstep(value)"
+          pos=s.find(anchor)
+          if pos<0: raise SystemExit('flightSmootherstep anchor missing')
+          s=s[:pos]+helper+s[pos:]
+
+          # Assert old phase tree is gone.
+          for token in ['ZOOM_OUT_ONLY','TRANSLATE_ZOOM_OUT_BLEND','STRAIGHT_TRANSLATE_ROTATE','TRANSLATE_ZOOM_IN_BLEND','FINAL_ZOOM_IN_ONLY']:
+              if token in s: raise SystemExit('OLD STOP/GO PHASE STILL PRESENT: '+token)
+          if '12AR_CONTINUOUS_TRIP' not in s or 'translateStart=0.30' not in s or 'translationComplete=0.70' not in s:
+              raise SystemExit('12AR choreography gate failed')
+          nav17.write_text(s)
+
+          # ---------- Worker 0006 matched to Navigation 0017 ----------
+          w=worker5.read_text()
+          w=w.replace("WORKER_VERSION='0005'","WORKER_VERSION='0006'")
+          w=w.replace('gv-navigation-0016.js','gv-navigation-0017.js')
+          w=w.replace("api.VERSION!=='0016'","api.VERSION!=='0017'")
+          w=w.replace('NAVIGATION WORKER 0005','NAVIGATION WORKER 0006')
+          w=w.replace('NAVIGATION 0016','NAVIGATION 0017')
+          worker6.write_text(w)
+
+          # Make Navigation 0017 request Worker 0006.
+          ns=nav17.read_text()
+          ns=ns.replace("WORKER_VERSION:'0005'","WORKER_VERSION:'0006'")
+          ns=ns.replace("WORKER_VERSION: '0005'","WORKER_VERSION: '0006'")
+          ns=ns.replace('gv-navigation-worker-0005.js','gv-navigation-worker-0006.js')
+          nav17.write_text(ns)
+
+          # ---------- AR39 ----------
+          p=ar38.read_text()
+          for a,b in [
+              ('12AR-38','12AR-39'),
+              ('GV-beta-0012AR-38.py','GV-beta-0012AR-39.py'),
+              ('gv-navigation-0016.js','gv-navigation-0017.js'),
+              ("NAVIGATION_VERSION='0016'","NAVIGATION_VERSION='0017'")
+          ]:
+              p=p.replace(a,b)
+
+          # Hubble must not silently disappear. The prior loader swallowed per-provider
+          # failure and continued with the other three catalogs. Keep retries/fallback,
+          # but make Hubble mandatory before planner initialization.
+          needle="""            catalogRecordCount=combined.length;
+            catalogDatabaseCounts=Object.freeze({"""
+          insert="""            const requiredHubble=state.get('hubble');
+            if(!requiredHubble || Number(requiredHubble.eligibleCount||0)<1){
+                throw new Error('HUBBLE CATALOG REQUIRED — ZERO ELIGIBLE HUBBLE RECORDS');
+            }
+            console.log('GALAXY VIEWER HUBBLE READY',{
+                raw:Number(requiredHubble.rawCount||0),
+                eligible:Number(requiredHubble.eligibleCount||0)
+            });
+
+            catalogRecordCount=combined.length;
+            catalogDatabaseCounts=Object.freeze({"""
+          if needle not in p: raise SystemExit('AR39 catalog count insertion anchor missing')
+          p=p.replace(needle,insert,1)
+          ar39.write_text(p)
+
+          pointer.write_text(json.dumps({'version':'12AR-39.py','viewer':'GV-beta-0012AR-39.py'},indent=2)+'\n')
+
+          # ---------- Static gates ----------
+          subprocess.run(['node','--check',str(nav17)],check=True)
+          subprocess.run(['node','--check',str(worker6)],check=True)
+          subprocess.run(['python3','-m','py_compile',str(ar39)],check=True)
+          txt=nav17.read_text()
+          assert "const VERSION='0017'" in txt
+          assert 'gv-navigation-worker-0006.js' in txt
+          assert '12AR_CONTINUOUS_TRIP' in txt
+          assert 'flightNavigationSmootherstep' in txt
+          at=ar39.read_text()
+          assert "NAVIGATION_VERSION='0017'" in at and 'gv-navigation-0017.js' in at
+          assert 'HUBBLE CATALOG REQUIRED' in at
+          print('AR39 STATIC GATES PASS')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/GV-beta-0012AR-39.py viewer/gv-current-viewer.json viewer/modules/navigation/gv-navigation-0017.js viewer/modules/navigation/gv-navigation-worker-0006.js
+          git commit -m "AR39 restore 12AR choreography and require Hubble catalog"
+          git push origin beta
