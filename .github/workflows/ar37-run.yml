@@ -1,0 +1,38 @@
+name: AR37 one-shot runner
+on:
+  push:
+    branches: [ beta ]
+    paths:
+      - '.github/ar37-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Execute AR37 builder body
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, textwrap
+          text=Path('.github/workflows/ar37-builder.yml').read_text()
+          m=re.search(r"python - <<'PY'\n(.*?)\n          PY",text,re.S)
+          if not m:
+              raise SystemExit('AR37 builder Python body not found')
+          code=textwrap.dedent(m.group(1))
+          exec(compile(code,'ar37-builder-extracted','exec'),{'__name__':'__main__'})
+          PY
+          node --check viewer/modules/navigation/gv-navigation-0016.js
+          node --check viewer/modules/navigation/gv-navigation-worker-0005.js
+          node --check viewer/modules/random-galaxy/gv-random-galaxy-0112.js
+          python -m py_compile viewer/GV-beta-0012AR-37.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/modules/navigation/gv-navigation-0016.js viewer/modules/navigation/gv-navigation-worker-0005.js viewer/modules/random-galaxy/gv-random-galaxy-0112.js viewer/GV-beta-0012AR-37.py
+          git commit -m 'AR37 restore simple 12AR navigation choreography'
+          git push origin beta
