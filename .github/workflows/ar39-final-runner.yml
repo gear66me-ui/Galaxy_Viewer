@@ -1,0 +1,29 @@
+name: AR39 Final Forensic Runner
+on:
+  push:
+    branches:
+      - beta
+    paths:
+      - '.github/ar39-final-runner-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Build and audit AR39
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ar39_final_nav_audit.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/GV-beta-0012AR-39.py viewer/gv-current-viewer.json viewer/modules/navigation/gv-navigation-0017.js viewer/modules/navigation/gv-navigation-worker-0006.js docs/audits/GV-12AR39-NAV-AUDIT.md
+          git commit -m "AR39 exact 12AR choreography and strict rotation audit"
+          git push origin beta
