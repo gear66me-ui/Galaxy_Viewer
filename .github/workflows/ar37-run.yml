@@ -19,12 +19,12 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re, textwrap
+          import re
           text=Path('.github/workflows/ar37-builder.yml').read_text()
           m=re.search(r"python - <<'PY'\n(.*?)\n          PY",text,re.S)
           if not m:
               raise SystemExit('AR37 builder Python body not found')
-          code=textwrap.dedent(m.group(1))
+          code='\n'.join(line[10:] if line.startswith('          ') else line for line in m.group(1).splitlines())
           exec(compile(code,'ar37-builder-extracted','exec'),{'__name__':'__main__'})
           PY
           node --check viewer/modules/navigation/gv-navigation-0016.js
