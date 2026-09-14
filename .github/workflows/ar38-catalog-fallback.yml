@@ -1,11 +1,15 @@
-name: AR38 catalog fallback builder
+name: AR38 Catalog Fallback Builder
+
 on:
   push:
-    branches: [ beta ]
+    branches:
+      - beta
     paths:
-      - '.github/ar38-trigger.txt'
+      - .github/ar38-trigger.txt
+
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,78 +18,83 @@ jobs:
         with:
           ref: beta
           fetch-depth: 0
-      - name: Build AR38
+      - name: Build and validate AR38
         shell: bash
         run: |
-          python - <<'PY'
+          cat > /tmp/build_ar38.py <<'PY'
           from pathlib import Path
           import json
 
           src = Path('viewer/GV-beta-0012AR-37.py')
           dst = Path('viewer/GV-beta-0012AR-38.py')
-          s = src.read_text()
-          s = s.replace('12AR-37','12AR-38')
+          s = src.read_text(encoding='utf-8')
+          s = s.replace('12AR-37', '12AR-38')
 
-          old = """    async function loadMasterCatalog(){
-        const response=await fetch(MASTER_CATALOG_URL,{cache:'no-store'});
-        if(!response.ok)throw new Error('MASTER CATALOG RETURNED HTTP '+response.status);
+          old_master = """    async function loadMasterCatalog(){
+              const response=await fetch(MASTER_CATALOG_URL,{cache:'no-store'});
+              if(!response.ok)throw new Error('MASTER CATALOG RETURNED HTTP '+response.status);
 
-        const payload=await response.json();
-        const catalogs=payload?.catalogs;
-"""
-          new = """    async function fetchJsonWithFallback(primaryUrl,label){
-        const urls=[String(primaryUrl||'').trim()];
-        try{
-            const parsed=new URL(primaryUrl);
-            if(parsed.hostname==='raw.githubusercontent.com' && parsed.pathname.startsWith('/gear66me-ui/Galaxy_Viewer/beta/')){
-                const rel=parsed.pathname.replace('/gear66me-ui/Galaxy_Viewer/beta/','');
-                urls.push('https://gear66me-ui.github.io/Galaxy_Viewer/'+rel);
-            }
-        }catch(_){}
-        let lastError=null;
-        for(const url of [...new Set(urls.filter(Boolean))]){
-            for(let attempt=1;attempt<=3;attempt++){
-                try{
-                    const response=await fetch(url,{cache:'no-store'});
-                    if(response.ok)return await response.json();
-                    lastError=new Error(`${label} RETURNED HTTP ${response.status} FROM ${url}`);
-                }catch(error){lastError=error;}
-                if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt));
-            }
-        }
-        throw lastError||new Error(`${label} LOAD FAILED`);
-    }
+              const payload=await response.json();
+              const catalogs=payload?.catalogs;
+          """
+          new_master = """    async function fetchJsonWithFallback(primaryUrl,label){
+              const urls=[String(primaryUrl||'').trim()];
+              try{
+                  const parsed=new URL(primaryUrl);
+                  if(parsed.hostname==='raw.githubusercontent.com' && parsed.pathname.startsWith('/gear66me-ui/Galaxy_Viewer/beta/')){
+                      const rel=parsed.pathname.replace('/gear66me-ui/Galaxy_Viewer/beta/','');
+                      urls.push('https://gear66me-ui.github.io/Galaxy_Viewer/'+rel);
+                  }
+              }catch(_){}
+              let lastError=null;
+              for(const url of [...new Set(urls.filter(Boolean))]){
+                  for(let attempt=1;attempt<=3;attempt++){
+                      try{
+                          const response=await fetch(url,{cache:'no-store'});
+                          if(response.ok)return await response.json();
+                          lastError=new Error(`${label} RETURNED HTTP ${response.status} FROM ${url}`);
+                      }catch(error){
+                          lastError=error;
+                      }
+                      if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt));
+                  }
+              }
+              throw lastError||new Error(`${label} LOAD FAILED`);
+          }
 
-    async function loadMasterCatalog(){
-        const payload=await fetchJsonWithFallback(MASTER_CATALOG_URL,'MASTER CATALOG');
-        const catalogs=payload?.catalogs;
-"""
-          if old not in s:
-              raise SystemExit('AR38 PATCH FAILED: loadMasterCatalog baseline not found')
-          s = s.replace(old,new,1)
+          async function loadMasterCatalog(){
+              const payload=await fetchJsonWithFallback(MASTER_CATALOG_URL,'MASTER CATALOG');
+              const catalogs=payload?.catalogs;
+          """
+          if old_master not in s:
+              raise SystemExit('AR38 PATCH FAILED: master loader baseline not found')
+          s = s.replace(old_master, new_master, 1)
 
-          old2 = """        const response=await fetch(url,{cache:'no-store'});
-        if(!response.ok)
-            throw new Error(`GALAXY CATALOG ${key} RETURNED HTTP ${response.status}`);
+          old_catalog = """        const response=await fetch(url,{cache:'no-store'});
+              if(!response.ok)
+                  throw new Error(`GALAXY CATALOG ${key} RETURNED HTTP ${response.status}`);
 
-        const payload=await response.json();
-"""
-          new2 = """        const payload=await fetchJsonWithFallback(url,`GALAXY CATALOG ${key}`);
-"""
-          if old2 not in s:
-              raise SystemExit('AR38 PATCH FAILED: loadGalaxyCatalog baseline not found')
-          s = s.replace(old2,new2,1)
+              const payload=await response.json();
+          """
+          new_catalog = """        const payload=await fetchJsonWithFallback(url,`GALAXY CATALOG ${key}`);
+          """
+          if old_catalog not in s:
+              raise SystemExit('AR38 PATCH FAILED: catalog loader baseline not found')
+          s = s.replace(old_catalog, new_catalog, 1)
 
-          dst.write_text(s)
-          Path('viewer/gv-current-viewer.json').write_text(json.dumps({
-              'version':'12AR-38.py',
-              'viewer':'GV-beta-0012AR-38.py'
-          },indent=2)+'\n')
-          print('AR38 PATCH COMPLETE')
+          dst.write_text(s, encoding='utf-8')
+          Path('viewer/gv-current-viewer.json').write_text(
+              json.dumps({'version':'12AR-38.py','viewer':'GV-beta-0012AR-38.py'}, indent=2)+'\n',
+              encoding='utf-8'
+          )
+          print('AR38 CATALOG FALLBACK PATCH COMPLETE')
           PY
+          python /tmp/build_ar38.py
           python -m py_compile viewer/GV-beta-0012AR-38.py
-          grep -q "fetchJsonWithFallback" viewer/GV-beta-0012AR-38.py
-          grep -q "12AR-38" viewer/GV-beta-0012AR-38.py
+          grep -q "async function fetchJsonWithFallback" viewer/GV-beta-0012AR-38.py
+          grep -q "urls.push('https://gear66me-ui.github.io/Galaxy_Viewer/'" viewer/GV-beta-0012AR-38.py
+          grep -q "for(let attempt=1;attempt<=3;attempt++)" viewer/GV-beta-0012AR-38.py
+          grep -q 'GV-beta-0012AR-38.py' viewer/gv-current-viewer.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/GV-beta-0012AR-38.py viewer/gv-current-viewer.json
