@@ -21,9 +21,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/ar39_final_nav_audit.py')
+          s=p.read_text()
+          anchor="nav17.write_text(s)"
+          injection="""# Final forensic cleanup: telemetry/comments must describe the executing 12AR algorithm, never the removed stop/go model.\ns=s.replace('GALAXY VIEWER — RANDOM NAVIGATION MODULE 0002','GALAXY VIEWER — RANDOM NAVIGATION MODULE 0017',1)\ns=s.replace('Bootstrap trip:           9 seconds','Bootstrap trip:         7.5 seconds',1)\ns=s.replace('Normal trip:             18 seconds','Normal trip:              17 seconds',1)\ns=s.replace('Birdseye FOV:            200 degrees','Birdseye FOV:             120 degrees',1)\ns=s.replace('Restored 12AR-style phased choreography.','Restored exact 12AR continuous choreography.',1)\ns=s.replace(\"? {geometry:'12AR_SIMPLE_L',translateStraightSeconds:4,bendSeconds:1,finalStraightZoomSeconds:5,translationAtBend:0.90}\\n        : {geometry:'12AR_SIMPLE_SYMMETRIC',zoomOutOnlySeconds:4,outBlendSeconds:1,straightSeconds:7,inBlendSeconds:1,zoomInOnlySeconds:4}\",\"? {geometry:'12AR_FIRST_TRANSLATE_ROTATE_THEN_ZOOM',translateRotateSeconds:4,finalZoomSeconds:3.5,translationEndFraction:4/7.5}\\n        : {geometry:'12AR_CONTINUOUS_SYMMETRIC',fovApexFraction:0.50,translateStartFraction:0.30,translateEndFraction:0.70,easing:'S7'}\",1)\nif '12AR_SIMPLE_SYMMETRIC' in s or 'zoomOutOnlySeconds' in s: raise SystemExit('STALE STOP/GO TELEMETRY DESCRIPTION REMAINS')\n"""+anchor
+          if anchor not in s: raise SystemExit('BUILDER nav17 write anchor missing')
+          s=s.replace(anchor,injection,1)
+          p.write_text(s)
+          PY
           python3 scripts/ar39_final_nav_audit.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/GV-beta-0012AR-39.py viewer/gv-current-viewer.json viewer/modules/navigation/gv-navigation-0017.js viewer/modules/navigation/gv-navigation-worker-0006.js docs/audits/GV-12AR39-NAV-AUDIT.md
-          git commit -m "AR39 exact 12AR choreography and strict rotation audit"
+          git commit -m "AR39 final exact 12AR navigation forensic pass"
           git push origin beta
