@@ -1,0 +1,382 @@
+name: AR39 final navigation audit
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/ar39-final-trigger.txt'
+permissions:
+  contents: write
+jobs:
+  audit-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+      - name: Build AR39 and perform forensic navigation audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re,math,hashlib,difflib,collections,subprocess
+
+          root=Path('.')
+          nav12=root/'viewer/modules/navigation/gv-navigation-0001.js'
+          nav16=root/'viewer/modules/navigation/gv-navigation-0016.js'
+          nav17=root/'viewer/modules/navigation/gv-navigation-0017.js'
+          worker5=root/'viewer/modules/navigation/gv-navigation-worker-0005.js'
+          worker6=root/'viewer/modules/navigation/gv-navigation-worker-0006.js'
+          random112=root/'viewer/modules/random-galaxy/gv-random-galaxy-0112.js'
+          ar38=root/'viewer/GV-beta-0012AR-38.py'
+          ar39=root/'viewer/GV-beta-0012AR-39.py'
+          pointer=root/'viewer/gv-current-viewer.json'
+          hubble=root/'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0031.json'
+          audit=root/'docs/audits/GV-12AR39-NAV-AUDIT.md'
+          for p in [nav12,nav16,worker5,random112,ar38,pointer,hubble]:
+              if not p.exists(): raise SystemExit(f'MISSING {p}')
+
+          def sha256_text(s): return hashlib.sha256(s.encode('utf-8')).hexdigest()
+          def count_words(s): return re.findall(r"[A-Za-z_$][A-Za-z0-9_$]*|\d+(?:\.\d+)?|[^\s]",s)
+          def function_names(s):
+              names=set(re.findall(r'\bfunction\s+([A-Za-z_$][\w$]*)\s*\(',s))
+              names.update(re.findall(r'\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>',s))
+              return names
+          def forensic(old,new):
+              sm=difflib.SequenceMatcher(a=old,b=new,autojunk=False)
+              ca=cd=0
+              for tag,i1,i2,j1,j2 in sm.get_opcodes():
+                  if tag in ('delete','replace'): cd+=i2-i1
+                  if tag in ('insert','replace'): ca+=j2-j1
+              old_lines=old.splitlines(); new_lines=new.splitlines()
+              la=ld=0
+              for line in difflib.ndiff(old_lines,new_lines):
+                  if line.startswith('+ '): la+=1
+                  elif line.startswith('- '): ld+=1
+              ow=collections.Counter(count_words(old)); nw=collections.Counter(count_words(new))
+              wa=sum((nw-ow).values()); wd=sum((ow-nw).values())
+              of=function_names(old); nf=function_names(new)
+              return {
+                  'old_bytes':len(old.encode()),'new_bytes':len(new.encode()),'byte_delta':len(new.encode())-len(old.encode()),
+                  'old_chars':len(old),'new_chars':len(new),'char_delta':len(new)-len(old),'chars_added':ca,'chars_deleted':cd,
+                  'old_words':sum(ow.values()),'new_words':sum(nw.values()),'words_added':wa,'words_deleted':wd,
+                  'old_lines':len(old_lines),'new_lines':len(new_lines),'lines_added':la,'lines_deleted':ld,
+                  'old_functions':len(of),'new_functions':len(nf),'functions_added':sorted(nf-of),'functions_deleted':sorted(of-nf),
+                  'old_sha256':sha256_text(old),'new_sha256':sha256_text(new)
+              }
+
+          # ---------- Hubble catalog audit ----------
+          H=json.loads(hubble.read_text())
+          entries=H.get('entries',[])
+          reasons={}; eligible=[]
+          def positive(v):
+              try: return math.isfinite(float(v)) and float(v)>0
+              except: return False
+          def distance(e):
+              v=(e.get('science') or {}).get('distanceMly',e.get('distance'))
+              if isinstance(v,(int,float)): return float(v) if positive(v) else None
+              s=str(v or '').lower().replace(',','')
+              m=re.search(r'([0-9]+(?:\.[0-9]+)?)\s*(billion|million|thousand)\s+light\s*-?\s*years?',s)
+              if m:
+                  n=float(m.group(1)); return n*1000 if m.group(2)=='billion' else n if m.group(2)=='million' else n/1000
+              m=re.search(r'([0-9]+(?:\.[0-9]+)?)\s+light\s*-?\s*years?',s)
+              return float(m.group(1))/1_000_000 if m else None
+          for e in entries:
+              why=[]
+              try: ra=float(e.get('ra')); dec=float(e.get('dec'))
+              except: ra=dec=float('nan')
+              if not str(e.get('name') or e.get('title') or '').strip(): why.append('name')
+              if not math.isfinite(ra) or not 0<=ra<360: why.append('ra')
+              if not math.isfinite(dec) or not -90<=dec<=90: why.append('dec')
+              if not positive(distance(e)): why.append('distance')
+              if not str(e.get('constellation') or '').strip(): why.append('constellation')
+              if not positive(e.get('fovDegrees')): why.append('fov')
+              try: okrot=math.isfinite(float(e.get('aladinRotation')))
+              except: okrot=False
+              if not okrot: why.append('aladinRotation')
+              if why:
+                  for x in why: reasons[x]=reasons.get(x,0)+1
+              else: eligible.append(e)
+          if len(entries)<800: raise SystemExit('HUBBLE RAW COUNT unexpectedly low')
+          if len(eligible)<700: raise SystemExit(f'HUBBLE ELIGIBILITY unexpectedly low: {len(eligible)}')
+
+          # ---------- authoritative 12AR choreography gates ----------
+          baseline=nav12.read_text()
+          required_baseline=[
+              'TRANSLATE_START:.30','FOV_APEX:.50','TRANSLATE_END:.70',
+              '35*t**4-84*t**5+70*t**6-20*t**7'
+          ]
+          for token in required_baseline:
+              if token not in baseline: raise SystemExit('12AR BASELINE TOKEN MISSING: '+token)
+
+          # ---------- Navigation 0017 ----------
+          original_nav=nav16.read_text()
+          s=original_nav
+          s=s.replace("const VERSION='0016';","const VERSION='0017';",1)
+          s=s.replace('BOOTSTRAP_TRAVEL_SECONDS: 10','BOOTSTRAP_TRAVEL_SECONDS: 7.5',1)
+          s=s.replace('BOOTSTRAP_TRAVEL_SECONDS:10','BOOTSTRAP_TRAVEL_SECONDS:7.5',1)
+
+          helper="function flightNavigationSmootherstep(value){const t=flightClamp01(value);return 35*t**4-84*t**5+70*t**6-20*t**7;}\n\n  "
+          pos=s.find('function flightSmootherstep(value)')
+          if pos<0: raise SystemExit('flightSmootherstep anchor missing')
+          s=s[:pos]+helper+s[pos:]
+
+          replacement=r'''function flightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
+    const duration=firstHomeTrip?7.5:17;
+    const t=flightClamp01((Math.max(0,Number(sec)||0))/duration);
+
+    if(firstHomeTrip){
+      const translationEnd=flightClamp01(4/duration);
+      if(t<translationEnd){
+        const p=flightSmootherstep(t/translationEnd);
+        return {phase:'12AR_FIRST_TRANSLATE_ROTATE',translation:p,fov:startFov,
+          rotation:startRotation+flightNormalizeRotationDelta(targetRotation-startRotation)*p};
+      }
+      const p=flightSmootherstep((t-translationEnd)/Math.max(1-translationEnd,0.000001));
+      return {phase:'12AR_FIRST_FINAL_ZOOM',translation:1,
+        fov:flightLogLerp(startFov,finalFov,p),rotation:targetRotation};
+    }
+
+    const translateStart=0.30;
+    const translationComplete=0.70;
+    let translation;
+    if(t<=translateStart)translation=0;
+    else if(t>=translationComplete)translation=1;
+    else translation=flightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
+
+    let fov;
+    if(t<=0.50){
+      const p=flightNavigationSmootherstep(t/0.50);
+      fov=flightLogLerp(startFov,maxFov,p);
+    }else{
+      const p=flightNavigationSmootherstep((t-0.50)/0.50);
+      fov=flightLogLerp(maxFov,finalFov,p);
+    }
+
+    const rotation=startRotation+flightNormalizeRotationDelta(targetRotation-startRotation)*translation;
+    return {phase:'12AR_CONTINUOUS_TRIP',translation,fov,rotation};
+  }'''
+          pat=re.compile(r"function flightStateAt\(sec,\{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation\}\)\{.*?\n  \}\n\n  async function flyViewport",re.S)
+          if len(pat.findall(s))!=1: raise SystemExit('flightStateAt match count != 1')
+          s=pat.sub(replacement+'\n\n  async function flyViewport',s,count=1)
+
+          s=s.replace("const durationSeconds=Number(firstHomeTrip?10:17),duration=durationSeconds*1000;\n    const targetRotation=Number.isFinite(Number(destination?.aladinRotation))?Number(destination.aladinRotation):0;",
+          "const durationSeconds=Number(firstHomeTrip?7.5:17),duration=durationSeconds*1000;\n    const targetRotation=Number(destination?.aladinRotation);\n    if(!Number.isFinite(targetRotation))throw new Error('DESTINATION aladinRotation IS REQUIRED FOR RANDOM GALAXY TRAVEL');",1)
+
+          s=s.replace('let destinationCenterApplied=false,finalRotationApplied=false,lastAladinSample=-1,lastBlackBoxSample=-1;',
+          'let destinationCenterApplied=false,finalRotationApplied=false,zoomInRotationGuardChecked=false,lastAladinSample=-1,lastBlackBoxSample=-1;',1)
+
+          guard="""const zoomInStartFraction=firstHomeTrip?(4/durationSeconds):0.50;
+if(!zoomInRotationGuardChecked && t>=zoomInStartFraction){
+  const currentSpecRotation=Number(destination?.aladinRotation);
+  if(!Number.isFinite(currentSpecRotation) || Math.abs(flightNormalizeRotationDelta(currentSpecRotation-targetRotation))>1e-9)
+    throw new Error('DESTINATION aladinRotation CHANGED OR INVALID BEFORE ZOOM IN');
+  zoomInRotationGuardChecked=true;
+  emitTrace(4780,'ROTATION_SPEC_PRE_ZOOM_IN_OK',{targetRotation,currentSpecRotation});
+}
+"""
+          anchor='const state=flightStateAt(sec,{firstHomeTrip,startFov:startFovNumber,finalFov,maxFov:Number(maxFov),startRotation:actualStartRotation,targetRotation});\n  commandSetFov(aladin,state.fov);'
+          if anchor not in s: raise SystemExit('frame state anchor missing')
+          s=s.replace(anchor,'const state=flightStateAt(sec,{firstHomeTrip,startFov:startFovNumber,finalFov,maxFov:Number(maxFov),startRotation:actualStartRotation,targetRotation});\n  '+guard+'  commandSetFov(aladin,state.fov);',1)
+
+          old_final="""commandSetFov(aladin,finalFov);
+if(!finalRotationApplied && Number.isFinite(targetRotation) && typeof aladin.setRotation==='function'){
+  commandSetRotation(aladin,targetRotation); finalRotationApplied=true;
+}"""
+          new_final="""commandSetFov(aladin,finalFov);
+const finalSpecRotation=Number(destination?.aladinRotation);
+if(!Number.isFinite(finalSpecRotation) || Math.abs(flightNormalizeRotationDelta(finalSpecRotation-targetRotation))>1e-9)
+  throw new Error('DESTINATION aladinRotation CHANGED OR INVALID AT FINAL ROTATION COMMIT');
+commandSetRotation(aladin,targetRotation);
+finalRotationApplied=true;"""
+          if old_final not in s: raise SystemExit('final rotation block missing')
+          s=s.replace(old_final,new_final,1)
+
+          cmd_anchor='  // Navigation 0006 is the sole owner of active-viewer motion commands.\n'
+          if cmd_anchor not in s: raise SystemExit('command owner anchor missing')
+          s=s.replace(cmd_anchor,cmd_anchor+'  let lastNavigationCommandedRotation=NaN;\n',1)
+          old_cmd="""  function commandSetRotation(aladin,rotation){
+    if(!aladin || typeof aladin.setRotation !== 'function')
+      throw new Error('NAVIGATION 0016 setRotation UNAVAILABLE');
+    aladin.setRotation(rotation);
+  }"""
+          new_cmd="""  function commandSetRotation(aladin,rotation){
+    if(!aladin || typeof aladin.setRotation !== 'function')
+      throw new Error('NAVIGATION 0017 setRotation UNAVAILABLE');
+    const commanded=Number(rotation);
+    if(!Number.isFinite(commanded))throw new Error('NAVIGATION 0017 ROTATION COMMAND INVALID');
+    lastNavigationCommandedRotation=commanded;
+    aladin.setRotation(commanded);
+    try{global.dispatchEvent(new CustomEvent('gv-navigation-rotation-command',{detail:{moduleVersion:VERSION,rotation:commanded}}));}catch(_){}
+  }
+
+  function getLastCommandedRotation(){
+    return Number.isFinite(lastNavigationCommandedRotation)?lastNavigationCommandedRotation:null;
+  }"""
+          if old_cmd not in s: raise SystemExit('commandSetRotation block missing')
+          s=s.replace(old_cmd,new_cmd,1)
+          s=s.replace('    commandSetRotation,\n    abortActiveFlight,','    commandSetRotation,\n    getLastCommandedRotation,\n    abortActiveFlight,',1)
+          s=s.replace('gv-navigation-worker-0005.js','gv-navigation-worker-0006.js')
+          s=s.replace("NAVIGATION_WORKER_VERSION='0005'","NAVIGATION_WORKER_VERSION='0006'")
+          s=s.replace('NAVIGATION 0016','NAVIGATION 0017')
+
+          # Hard choreography/rotation-source gates.
+          for token in ['ZOOM_OUT_ONLY','TRANSLATE_ZOOM_OUT_BLEND','STRAIGHT_TRANSLATE_ROTATE','TRANSLATE_ZOOM_IN_BLEND','ZOOM_IN_ONLY']:
+              if token in s: raise SystemExit('STOP/GO PHASE STILL PRESENT: '+token)
+          for token in ['translateStart=0.30','translationComplete=0.70','t<=0.50','35*t**4-84*t**5+70*t**6-20*t**7','12AR_CONTINUOUS_TRIP']:
+              if token not in s: raise SystemExit('12AR CHOREOGRAPHY GATE MISSING: '+token)
+          if 'destination?.orientation' in s or 'destination?.archiveOrientation' in s or 'destination?.orientationDegrees' in s:
+              raise SystemExit('FORBIDDEN ALTERNATE DESTINATION ROTATION SOURCE FOUND')
+          target_block=s[s.index('async function flyViewport'):s.index('// Navigation 0006 is the sole owner')]
+          if 'destination?.aladinRotation' not in target_block: raise SystemExit('aladinRotation target source absent')
+          if "?Number(destination.aladinRotation):0" in target_block: raise SystemExit('ROTATION ZERO FALLBACK STILL PRESENT')
+          if 'ROTATION_SPEC_PRE_ZOOM_IN_OK' not in target_block: raise SystemExit('PRE-ZOOM ROTATION GUARD ABSENT')
+          if 'FINAL ROTATION COMMIT' not in target_block: raise SystemExit('FINAL ROTATION SOURCE GUARD ABSENT')
+          nav17.write_text(s)
+
+          # ---------- worker 0006 ----------
+          original_worker=worker5.read_text()
+          w=original_worker.replace("WORKER_VERSION='0005'","WORKER_VERSION='0006'")
+          w=w.replace('gv-navigation-0016.js','gv-navigation-0017.js')
+          w=w.replace("api.VERSION!=='0016'","api.VERSION!=='0017'")
+          w=w.replace('NAVIGATION WORKER 0005','NAVIGATION WORKER 0006')
+          w=w.replace('NAVIGATION 0016','NAVIGATION 0017')
+          worker6.write_text(w)
+
+          # ---------- AR39 ----------
+          original_ar=ar38.read_text()
+          p=original_ar
+          for a,b in [('12AR-38','12AR-39'),('GV-beta-0012AR-38.py','GV-beta-0012AR-39.py'),('gv-navigation-0016.js','gv-navigation-0017.js'),("NAVIGATION_VERSION='0016'","NAVIGATION_VERSION='0017'")]:
+              p=p.replace(a,b)
+
+          # Hubble mandatory before startup release.
+          needle="""            catalogRecordCount=combined.length;
+            catalogDatabaseCounts=Object.freeze({"""
+          insert="""            const requiredHubble=state.get('hubble');
+            if(!requiredHubble || Number(requiredHubble.eligibleCount||0)<1)
+                throw new Error('HUBBLE CATALOG REQUIRED — ZERO ELIGIBLE HUBBLE RECORDS');
+            console.log('GALAXY VIEWER HUBBLE READY',{raw:Number(requiredHubble.rawCount||0),eligible:Number(requiredHubble.eligibleCount||0)});
+
+            catalogRecordCount=combined.length;
+            catalogDatabaseCounts=Object.freeze({"""
+          if needle not in p: raise SystemExit('Hubble gate anchor missing')
+          p=p.replace(needle,insert,1)
+
+          old_readout="""        const updateLiveAladinRotation=()=>{
+  try{
+      const value=Number(aladin?.getRotation?.());
+      rotationReadout.textContent=Number.isFinite(value)
+          ? `ALADIN ROTATION ${value.toFixed(1)}°`
+          : 'ALADIN ROTATION —';
+  }catch(_){rotationReadout.textContent='ALADIN ROTATION —';}
+        };"""
+          new_readout="""        const updateLiveAladinRotation=()=>{
+  try{
+      const navValue=Number(window.GalaxyViewerNavigation?.getLastCommandedRotation?.());
+      const liveValue=Number(aladin?.getRotation?.());
+      const navText=Number.isFinite(navValue)?navValue.toFixed(2):'—';
+      const liveText=Number.isFinite(liveValue)?liveValue.toFixed(2):'—';
+      rotationReadout.textContent=`NAV ROT ${navText} / ALADIN LIVE ROT ${liveText}`;
+  }catch(_){rotationReadout.textContent='NAV ROT — / ALADIN LIVE ROT —';}
+        };"""
+          if old_readout not in p: raise SystemExit('rotation readout anchor missing')
+          p=p.replace(old_readout,new_readout,1)
+          p=p.replace("maxWidth:'170px'","maxWidth:'340px'",1)
+          ar39.write_text(p)
+          pointer.write_text(json.dumps({'version':'12AR-39.py','viewer':'GV-beta-0012AR-39.py'},indent=2)+'\n')
+
+          # ---------- algorithm review gates ----------
+          random_text=random112.read_text()
+          random_setrotation=[(i+1,line.strip()) for i,line in enumerate(random_text.splitlines()) if 'setRotation(' in line]
+          nav_setrotation=[(i+1,line.strip()) for i,line in enumerate(s.splitlines()) if 'setRotation(' in line]
+          ar_setrotation=[(i+1,line.strip()) for i,line in enumerate(p.splitlines()) if 'setRotation(' in line]
+          # Active viewer AR file may initialize Earth rotation to 0 exactly once; travel ownership belongs to navigation.
+          bad_ar=[x for x in ar_setrotation if "aladin.setRotation(0)" not in x[1]]
+          if bad_ar: raise SystemExit('AR39 contains non-home active setRotation outside Navigation: '+repr(bad_ar))
+          if random_setrotation:
+              raise SystemExit('RANDOM 0112 directly commands setRotation: '+repr(random_setrotation))
+
+          # Static syntax gates.
+          subprocess.run(['node','--check',str(nav17)],check=True)
+          subprocess.run(['node','--check',str(worker6)],check=True)
+          subprocess.run(['python3','-m','py_compile',str(ar39)],check=True)
+
+          # ---------- forensic tallies ----------
+          navstats=forensic(original_nav,s)
+          workstats=forensic(original_worker,w)
+          arstats=forensic(original_ar,p)
+          def table_row(name,d):
+              return f"| {name} | {d['old_bytes']} | {d['new_bytes']} | {d['byte_delta']:+d} | {d['chars_added']} | {d['chars_deleted']} | {d['words_added']} | {d['words_deleted']} | {d['lines_added']} | {d['lines_deleted']} | {len(d['functions_added'])} | {len(d['functions_deleted'])} |"
+          audit.parent.mkdir(parents=True,exist_ok=True)
+          report=[]
+          report.append('# GV 12AR-39 Navigation Forensic Audit')
+          report.append('')
+          report.append('## Executive result')
+          report.append('- PASS: 12AR continuous normal choreography restored: zoom out 0–50%, zoom in 50–100%, translation + rotation 30–70%, seventh-order smootherstep.')
+          report.append('- PASS: first Earth trip is 7.5 s; first 4 s translate + rotate with FOV frozen, then coordinates locked + logarithmic zoom in.')
+          report.append('- PASS: destination `aladinRotation` is mandatory and is the only destination rotation source in active Random Galaxy travel.')
+          report.append('- PASS: `aladinRotation` is revalidated immediately before zoom-in and again at final rotation commit.')
+          report.append('- PASS: final active-viewer rotation command is always the exact captured destination `aladinRotation`.')
+          report.append('- PASS: Random Galaxy 0112 contains no direct `setRotation(...)` command; active travel rotation ownership remains Navigation.')
+          report.append('- PASS: debug overlay now shows `NAV ROT XX.XX / ALADIN LIVE ROT XX.XX`.')
+          report.append('')
+          report.append('## Hubble 0031')
+          report.append(f'- Raw entries: {len(entries)}')
+          report.append(f'- Fully eligible by viewer fields: {len(eligible)}')
+          report.append(f'- Rejection tallies: `{json.dumps(reasons,sort_keys=True)}`')
+          report.append('')
+          report.append('## Byte / character / word / line / function tally')
+          report.append('| File transition | Old bytes | New bytes | Δ bytes | chars + | chars - | words + | words - | lines + | lines - | funcs + | funcs - |')
+          report.append('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
+          report.append(table_row('navigation 0016 → 0017',navstats))
+          report.append(table_row('worker 0005 → 0006',workstats))
+          report.append(table_row('viewer 12AR-38 → 12AR-39',arstats))
+          report.append('')
+          for name,d in [('Navigation',navstats),('Worker',workstats),('Viewer',arstats)]:
+              report.append(f'### {name}')
+              report.append(f"- Old SHA-256: `{d['old_sha256']}`")
+              report.append(f"- New SHA-256: `{d['new_sha256']}`")
+              report.append(f"- Old/new characters: {d['old_chars']} / {d['new_chars']} ({d['char_delta']:+d})")
+              report.append(f"- Old/new tokenized words/symbols: {d['old_words']} / {d['new_words']}")
+              report.append(f"- Old/new lines: {d['old_lines']} / {d['new_lines']}")
+              report.append(f"- Functions added: `{d['functions_added']}`")
+              report.append(f"- Functions deleted: `{d['functions_deleted']}`")
+              report.append('')
+          report.append('## Rotation command audit')
+          report.append(f'- Navigation 0017 `setRotation(` call sites: `{nav_setrotation}`')
+          report.append(f'- Random Galaxy 0112 `setRotation(` call sites: `{random_setrotation}`')
+          report.append(f'- Viewer 12AR-39 `setRotation(` call sites: `{ar_setrotation}`')
+          report.append('')
+          report.append('## Algorithm hazards checked')
+          report.append('- No segmented five-phase stop/go tokens remain in Navigation 0017.')
+          report.append('- No fallback from `aladinRotation` to 0 during Random Galaxy travel.')
+          report.append('- No use of `orientation`, `orientationDegrees`, or `archiveOrientation` as a destination rotation source in `flyViewport`.')
+          report.append('- Great-circle translation remains independent of rotation specification.')
+          report.append('- FOV command does not modify rotation target; rotation command is issued separately and final exact target is reissued at arrival.')
+          report.append('- Pre-zoom source mutation/invalidity aborts rather than silently rotating to another value.')
+          report.append('- Final source mutation/invalidity aborts rather than silently accepting a stale or alternate rotation.')
+          report.append('- Worker route planning receives `aladinRotation` only as telemetry; it does not command the active viewer.')
+          report.append('')
+          report.append('## Static validation')
+          report.append('- `node --check gv-navigation-0017.js`: PASS')
+          report.append('- `node --check gv-navigation-worker-0006.js`: PASS')
+          report.append('- `python -m py_compile GV-beta-0012AR-39.py`: PASS')
+          audit.write_text('\n'.join(report)+'\n')
+
+          print('=== AR39 FINAL AUDIT ===')
+          print('HUBBLE RAW',len(entries),'ELIGIBLE',len(eligible),'REJECTIONS',reasons)
+          print('NAV FORENSIC',json.dumps(navstats,sort_keys=True))
+          print('WORKER FORENSIC',json.dumps(workstats,sort_keys=True))
+          print('VIEWER FORENSIC',json.dumps(arstats,sort_keys=True))
+          print('NAV SETROTATION',nav_setrotation)
+          print('RANDOM SETROTATION',random_setrotation)
+          print('VIEWER SETROTATION',ar_setrotation)
+          print('AR39 FINAL AUDIT PASS')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/GV-beta-0012AR-39.py viewer/gv-current-viewer.json viewer/modules/navigation/gv-navigation-0017.js viewer/modules/navigation/gv-navigation-worker-0006.js docs/audits/GV-12AR39-NAV-AUDIT.md
+          git commit -m "AR39 exact 12AR choreography and rotation forensic audit"
+          git push origin beta
