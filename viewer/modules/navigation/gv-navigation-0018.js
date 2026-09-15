@@ -516,7 +516,7 @@
   }
 
 
-  const NAVIGATION_WORKER_VERSION='0006';
+  const NAVIGATION_WORKER_VERSION='0007';
   const NAVIGATION_WORKER_TIMEOUT_MS=60000;
   const NAVIGATION_MODULE_URL=
     typeof document!=='undefined' &&
@@ -556,7 +556,7 @@
       );
 
     return new URL(
-      'gv-navigation-worker-0006.js',
+      'gv-navigation-worker-0007.js',
       NAVIGATION_MODULE_URL
     ).href;
   }
