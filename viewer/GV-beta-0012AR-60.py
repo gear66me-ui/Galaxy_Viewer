@@ -46,10 +46,10 @@ display(Javascript(r"""
     const HAMBURGER_EXTENSION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js';
-    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0119.js';
+    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0120.js';
     const NAVIGATION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation/gv-navigation-0018.js';
     const NAVIGATION_VERSION='0018';
-    const RANDOM_GALAXY_VERSION='0119';
+    const RANDOM_GALAXY_VERSION='0120';
     const NAVIGATION_ADMIN_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-navigation-admin-0001.js';
     const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0011.js?v=12AR-FLIGHT-RECORDER';
     const BLACK_BOX_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-black-box-0003.js';
