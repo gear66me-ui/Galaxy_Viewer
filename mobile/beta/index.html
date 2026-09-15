@@ -15,6 +15,20 @@
 <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}</style>
 </head>
 <body>
-<script>window.location.replace('./generic-app.html?source=mobile-entry'+window.location.hash);</script>
+<script>
+(async()=>{
+  try{
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg=>reg.unregister()));
+    }
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.filter(key=>/^galaxy-viewer-/.test(key)).map(key=>caches.delete(key)));
+    }
+  }catch(error){console.warn('GV beta cache reset skipped',error)}
+  window.location.replace('./generic-app.html?source=mobile-entry&v=12AR-64-'+Date.now()+window.location.hash);
+})();
+</script>
 </body>
 </html>

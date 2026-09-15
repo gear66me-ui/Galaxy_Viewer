@@ -111,13 +111,13 @@ installButton.addEventListener('click',async()=>{
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
 
   if(standalone){
-    window.location.replace('../../mobile/beta/?source=pwa&v=8U-beta-launcher-001');
+    window.location.replace('../../mobile/beta/?source=pwa&v=12AR-64-launcher-001');
     return;
   }
 
   if('serviceWorker' in navigator){
     try{
-      const registration=await navigator.serviceWorker.register('./service-worker.js?v=8U-beta-launcher-001',{scope:'./'});
+      const registration=await navigator.serviceWorker.register('./service-worker.js?v=12AR-64-launcher-001',{scope:'./'});
       console.log('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTERED',registration.scope);
     }catch(error){
       console.error('GALAXY VIEWER LAUNCHER SERVICE WORKER REGISTRATION FAILED',error);

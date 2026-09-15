@@ -1,9 +1,9 @@
 {
-  "id": "/Galaxy_Viewer/mobile/beta/",
-  "name": "GALAXY VIEWER BETA 7AI",
-  "short_name": "GALAXY VIEWER",
-  "description": "GALAXY VIEWER BETA 7AI STANDALONE MOBILE APPLICATION",
-  "start_url": "/Galaxy_Viewer/mobile/beta/?source=pwa&v=7AI-global-glow-001",
+  "id": "/Galaxy_Viewer/launch/beta/12AR-64-launcher",
+  "name": "GALAXY VIEWER BETA 12AR-64",
+  "short_name": "GV 12AR-64",
+  "description": "GALAXY VIEWER BETA 12AR-64",
+  "start_url": "/Galaxy_Viewer/mobile/beta/generic-app.html?source=launcher-pwa&v=12AR-64-launcher-001",
   "scope": "/Galaxy_Viewer/",
   "display": "standalone",
   "launch_handler": {

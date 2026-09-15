@@ -1,14 +1,12 @@
-const CACHE_NAME='galaxy-viewer-mobile-6i-public-001';
+const CACHE_NAME='galaxy-viewer-mobile-12ar64-beta-001';
 const CACHE_PREFIX='galaxy-viewer-mobile-';
 const APP_SHELL=[
   './',
   './index.html',
-  './manifest.webmanifest?v=6I-public-mobile-001',
-  '../viewer/GV-beta-0006I.py?v=6I-public-mobile-001',
-  '../viewer/GV-beta-0005R-comet-120.css?v=6I-public-mobile-001',
-  '../viewer/artwork/icon.svg?v=6I-public-mobile-001',
-  '../viewer/artwork/GV-splash-0003.svg?v=6I-public-mobile-001',
-  '../viewer/artwork/Fonts/Space%20Age/space%20age.otf?v=6I-public-mobile-001'
+  './beta/',
+  './beta/index.html',
+  './beta/generic-app.html',
+  '../viewer/gv-current-viewer.json?v=12AR-64'
 ];
 
 self.addEventListener('install',event=>{

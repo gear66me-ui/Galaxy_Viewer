@@ -44,6 +44,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 (async()=>{
 'use strict';
 const POINTER_URL='../../viewer/gv-current-viewer.json';
+const GV_GENERIC_APP_REVISION='12AR-64-active-pointer-001';
 const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
 const ICON_HOLD_MS=3000;
 const POST_SPLASH_HOLD_MS=1000;
@@ -60,6 +61,7 @@ const loadPointer=async()=>{
   const pointer=JSON.parse(await text(POINTER_URL));
   const version=String(pointer.version||'').trim();
   versionEl.textContent=version?'VERSION '+version:'VERSION';
+  try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION;}catch(_){ }
   return pointer;
 };
 function installCatalogImagePolicy(){
