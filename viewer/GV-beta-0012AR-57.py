@@ -1,6 +1,6 @@
 from IPython.display import HTML, Javascript, display
 
-# ECO: https://github.com/gear66me-ui/Galaxy_Viewer/blob/beta/docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md#gv-eco-0012n
+# AR 57 ECO: https://github.com/gear66me-ui/Galaxy_Viewer/blob/beta/docs/GALAXY-VIEWER-CHANGE-CONTROL-LOG.md#gv-eco-0012n
 
 display(HTML("""
 <link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css" />
