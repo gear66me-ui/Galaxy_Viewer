@@ -104,7 +104,10 @@
   }
 
   function fovOf(record){
-    const value=finite(record?.fovDegrees);
+    const value=finite(
+      record?.fovDegrees ??
+      record?.fieldOfViewDegrees
+    );
     return value!==null && value>0 ? value : null;
   }
 
