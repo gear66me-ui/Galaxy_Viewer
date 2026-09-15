@@ -3838,6 +3838,8 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
 .gv-galaxy-history:disabled{opacity:.62;cursor:default;box-shadow:inset 0 0 7px rgba(143,229,255,.18),0 0 6px rgba(41,109,189,.24)}
 #gv-travel-hud{position:absolute;left:50%;top:auto;bottom:64px;z-index:7350;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;width:min(214px,68vw);padding:0;border:0;background:transparent;box-shadow:none;text-align:center;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
 #gv-travel-hud.gv-visible{opacity:1;visibility:visible}
+#gv-travel-provider-icon{position:absolute;left:auto;right:12px;top:50%;transform:translateY(-50%);box-sizing:border-box;display:none;align-items:center;justify-content:center;overflow:hidden;width:36px;height:36px;padding:2px;border:2px solid transparent;border-radius:5px;background:linear-gradient(145deg,rgba(11,49,119,.98),rgba(20,132,219,.98)) padding-box,linear-gradient(145deg,#DDF8FF 0%,#7CCBFF 48%,#296DBD 100%) border-box;box-shadow:inset 0 0 7px rgba(225,248,255,.22),0 0 8px rgba(124,203,255,.42),0 0 14px rgba(41,109,189,.22);pointer-events:none}
+#gv-travel-provider-icon img{display:block;width:100%;height:100%;object-fit:contain;background:transparent;pointer-events:none}
 #gv-travel-primary{box-sizing:border-box;width:calc(100vw - 24px);padding:4px 7px 5px;border:1px solid rgba(124,203,255,.76);border-radius:6px;background:rgba(8,27,58,.72);box-shadow:0 0 8px rgba(88,191,255,.14);text-align:center}
 #gv-travel-course,#gv-travel-heading{font:400 13px/1.05 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.55px;color:#EAF8FF;text-align:center;text-shadow:0 0 4px rgba(88,191,255,.20)}
 #gv-travel-course{font:400 16px/1.08 "${FONT_NAMES.spaceAge}",sans-serif;letter-spacing:.35px;color:#7CCBFF;text-shadow:0 0 7px rgba(88,191,255,.58)}
@@ -4819,6 +4821,37 @@ function setRandomWaitComet(button,active){if(!(button instanceof Element))retur
 
       destinationEl.textContent =
         cleanText(destination && destination.name).toUpperCase();
+
+      let travelProviderIcon =
+        document.getElementById("gv-travel-provider-icon");
+
+      if (!travelProviderIcon) {
+        travelProviderIcon = document.createElement("span");
+        travelProviderIcon.id = "gv-travel-provider-icon";
+        travelProviderIcon.setAttribute("aria-hidden","true");
+
+        const travelProviderImage = document.createElement("img");
+        travelProviderImage.alt = "";
+        travelProviderImage.setAttribute("aria-hidden","true");
+
+        travelProviderIcon.appendChild(travelProviderImage);
+        hud.appendChild(travelProviderIcon);
+      }
+
+      const travelProviderImage =
+        travelProviderIcon.querySelector("img");
+
+      const travelProviderUrl =
+        providerIconUrl(destination);
+
+      if (travelProviderImage && travelProviderUrl) {
+        travelProviderImage.src = travelProviderUrl;
+        travelProviderIcon.style.display = "flex";
+      } else {
+        if (travelProviderImage)
+          travelProviderImage.removeAttribute("src");
+        travelProviderIcon.style.display = "none";
+      }
 
       const initial =
         this.#formatTravelHudDistance(0);
