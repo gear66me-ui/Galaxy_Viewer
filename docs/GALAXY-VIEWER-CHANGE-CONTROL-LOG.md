@@ -60,6 +60,78 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-dd5e1ac0a3ba — ECO-20260914-AR58-NAV0017
+
+**Recorded:** 2026-09-14T21:32:56-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`dd5e1ac0a3ba9ed75a1e81c9b47e7ae906b72ca2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/dd5e1ac0a3ba9ed75a1e81c9b47e7ae906b72ca2)  
+**Parent/baseline:** `e4ac8032f1f8505dfd4ecc3098494a40bfb10af5`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e4ac8032f1f8505dfd4ecc3098494a40bfb10af5...dd5e1ac0a3ba9ed75a1e81c9b47e7ae906b72ca2)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-20260914-AR58-NAV0017`  
+**Requirements:** `REQ-001,REQ-002`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `2`  
+**Actual changed paths:** `2`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/GV-beta-0012AR-58.py, viewer/modules/navigation/gv-navigation-0017.js`
+- Actual: `viewer/GV-beta-0012AR-58.py, viewer/modules/navigation/gv-navigation-0017.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/GV-beta-0012AR-58.py`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `c133d40c12c34879402f7ebdd18efc0e1fa3c8ef3b63bdf26851c5ea6a5a3b1a`
+- Bytes: `0` -> `77168`
+- Lines: `0` -> `1802`
+- Characters: `0` -> `77138`
+- Inserted lines: `1802`
+- Deleted lines: `0`
+- Inserted characters: `77138`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/navigation/gv-navigation-0017.js`
+
+- Git status: `M`
+- SHA-256 before: `f634de20dd25d603372ef74feea6a78eaf59bc530d447a9714f6b16dd1cfa861`
+- SHA-256 after: `39259505222bab209d3e81db5c2c6461501188b188a30bb854ef22123257cdce`
+- Bytes: `32818` -> `32866`
+- Lines: `1074` -> `1077`
+- Characters: `32814` -> `32862`
+- Inserted lines: `4`
+- Deleted lines: `1`
+- Inserted characters: `48`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-fcae0b93b7bf — ECO-AR48-COMPASS-CORRECTION-001
 
 **Recorded:** 2026-09-14T18:53:47-05:00  
