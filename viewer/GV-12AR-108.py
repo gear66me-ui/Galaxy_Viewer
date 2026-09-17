@@ -54,6 +54,23 @@ display(Javascript(r"""
     const AVM_LAB_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0024.js';
     const NAVIGATION_ADMIN_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-navigation-admin-0001.js';
     const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0012.js?v=12AR-FLIGHT-RECORDER';
+    const gvAvmTraceQueue=[];
+    function gvAvmTrace(code,detail={}){
+        const payload=Object.freeze({code:String(code||'VIEWER_AVM'),detail});
+        try{
+            const api=window.GalaxyViewerDiagnostics;
+            if(api&&typeof api.recordAvm==='function'){
+                while(gvAvmTraceQueue.length){
+                    const item=gvAvmTraceQueue.shift();
+                    try{api.recordAvm(item.code,item.detail)}catch(_){}
+                }
+                try{api.recordAvm(payload.code,payload.detail)}catch(_){}
+                return;
+            }
+            gvAvmTraceQueue.push(payload);
+            if(gvAvmTraceQueue.length>200)gvAvmTraceQueue.shift();
+        }catch(_){}
+    }
     const BLACK_BOX_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-black-box-0003.js';
     const DOWNLOAD_SERVICE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-service/gv-download-service-0001.js';
     const DOWNLOAD_ANALYTICS_BASE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/download-analytics/gv-download-analytics-0002.js';
@@ -214,7 +231,7 @@ display(Javascript(r"""
         loadScript(NAVIGATION_URL,`gvNavigation${NAVIGATION_VERSION}`),
         loadScript(NAVIGATION_ADMIN_URL,'gvNavigationAdmin0001'),
         loadScriptGithubThenLocal(BLACK_BOX_URL,'gvBlackBox0003').then(()=>loadScriptGithubThenLocal(RANDOM_GALAXY_URL,`gvRandomGalaxy${RANDOM_GALAXY_VERSION}`)),
-        loadScript(DIAGNOSTICS_URL,'gvDiagnostics0012'),
+        (()=>{gvAvmTrace('VIEWER_DIAG0012_LOAD_START',{url:DIAGNOSTICS_URL});return loadScript(DIAGNOSTICS_URL,'gvDiagnostics0012').then(v=>{gvAvmTrace('VIEWER_DIAG0012_LOAD_OK',{version:window.GalaxyViewerDiagnostics?.VERSION||''});return v}).catch(error=>{gvAvmTrace('VIEWER_DIAG0012_LOAD_FAIL',{message:String(error?.message||error||'')});throw error})})(),
         loadScript(DOWNLOAD_SERVICE_URL,'gvDownloadService0001').then(()=>loadScript(DOWNLOAD_ANALYTICS_BASE_URL,'gvDownloadAnalytics0002')).then(()=>loadScript(DOWNLOAD_ANALYTICS_URL,'gvDownloadAnalytics0003'))
     ]);
 
@@ -1542,9 +1559,21 @@ display(Javascript(r"""
     // AR84: removed temporary black-box rotation hotdog exporter.
 
 
+    gvAvmTrace('VIEWER_AVM0024_LOAD_START',{url:AVM_LAB_URL});
     loadScriptGithubThenLocal(AVM_LAB_URL,'gvAvmOverlayLab0024').then(()=>{
-        window.GalaxyViewerAvmOverlayLab?.install?.({A,aladin,viewerRoot:root,randomGalaxy});
-    }).catch(error=>console.error('GV AVM LAB LOAD FAILURE',error));
+        gvAvmTrace('VIEWER_AVM0024_LOAD_OK',{version:window.GalaxyViewerAvmOverlayLab?.VERSION||''});
+        const lab=window.GalaxyViewerAvmOverlayLab;
+        if(!lab){gvAvmTrace('VIEWER_AVM0024_EXPORT_MISSING',{});return}
+        if(lab.VERSION!=='0024'){gvAvmTrace('VIEWER_AVM0024_VERSION_MISMATCH',{version:String(lab.VERSION||'')});return}
+        try{
+            gvAvmTrace('VIEWER_AVM0024_INSTALL_START',{version:lab.VERSION});
+            lab.install?.({A,aladin,viewerRoot:root,randomGalaxy});
+            gvAvmTrace('VIEWER_AVM0024_INSTALL_OK',{version:lab.VERSION});
+        }catch(error){
+            gvAvmTrace('VIEWER_AVM0024_INSTALL_FAIL',{message:String(error?.message||error||'')});
+            throw error;
+        }
+    }).catch(error=>{gvAvmTrace('VIEWER_AVM0024_LOAD_FAIL',{message:String(error?.message||error||'')});console.error('GV AVM LAB LOAD FAILURE',error)});
 
     document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,startupMetrics}}));
 })().catch(error=>{console.error('GALAXY VIEWER STARTUP FAILURE:',error);document.dispatchEvent(new CustomEvent('gv-viewer-failed',{detail:{message:String(error?.stack||error)}}));});
