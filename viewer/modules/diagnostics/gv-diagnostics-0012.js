@@ -3,7 +3,7 @@
   'use strict';
   const VERSION='0012',POLL_MS=1000,MAX_SNAPSHOTS=3600,MAX_ERRORS=500,MAX_EVENTS=12000;
   const startedAt=performance.now();
-  const errors=[],snapshots=[],localEvents=[];
+  const errors=[],snapshots=[],localEvents=[],avmTrace=[];
   let panel=null,statusEl=null,bodyEl=null,navEl=null,queueEl=null,eventEl=null,timer=0,enabled=true,collectorsInstalled=false,consoleCollectorInstalled=false;
   const nowIso=()=>new Date().toISOString();
   const elapsed=()=>Math.round(performance.now()-startedAt);
@@ -20,6 +20,13 @@
     const entry=Object.freeze({at:nowIso(),elapsedMs:elapsed(),type:String(type||'EVENT'),detail});
     push(localEvents,entry,MAX_EVENTS);
     try{audit()?.emit?.('DIAG_'+type,detail)}catch(_){}
+    return entry;
+  }
+  function recordAvm(code,detail={}){
+    if(!enabled)return null;
+    const entry=Object.freeze({at:nowIso(),elapsedMs:elapsed(),type:'AVM',code:String(code||'AVM'),detail});
+    push(avmTrace,entry,MAX_EVENTS);
+    emit('AVM_TRACE',{code:entry.code,detail});
     return entry;
   }
   function recordError(type,value){
@@ -387,6 +394,7 @@
       errors:[...errors],
       snapshots:[...snapshots],
       events:[...localEvents],
+      avmTrace:[...avmTrace],
       randomExecutionTrace,
       bootAudit:audit()?.exportData?.()||audit()||null,
       nativeAudit:nativeAudit()
@@ -399,5 +407,5 @@
   }
   function open(){ensurePanel().style.display='block';render()}function close(){if(panel)panel.style.display='none'}
   emit('AUTO_START',{version:VERSION});start();
-  window.GalaxyViewerDiagnostics=Object.freeze({VERSION,open,close,start,stop,toggle,download,exportData,getState:()=>Object.freeze({enabled,autoStarted:true,errors:errors.length,snapshots:snapshots.length,events:localEvents.length})});
+  window.GalaxyViewerDiagnostics=Object.freeze({VERSION,open,close,start,stop,toggle,download,exportData,recordAvm,getState:()=>Object.freeze({enabled,autoStarted:true,errors:errors.length,snapshots:snapshots.length,events:localEvents.length,avmTrace:avmTrace.length})});
 })();
