@@ -1,8 +1,8 @@
 {
   "version": "0003-AVM",
   "catalogs": {
-    "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0032-AVM.json",
-    "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM.json"
+    "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0033-ESA-FOV.json",
+    "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json"
   },
   "curation": {
     "master": "viewer/image-databases/master-database/curation/gv-curation-master-0001.json",
