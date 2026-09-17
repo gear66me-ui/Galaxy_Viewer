@@ -1564,7 +1564,7 @@ display(Javascript(r"""
         gvAvmTrace('VIEWER_AVM0024_LOAD_OK',{version:window.GalaxyViewerAvmOverlayLab?.VERSION||''});
         const lab=window.GalaxyViewerAvmOverlayLab;
         if(!lab){gvAvmTrace('VIEWER_AVM0024_EXPORT_MISSING',{});return}
-        if(lab.VERSION!=='0024'){gvAvmTrace('VIEWER_AVM0024_VERSION_MISMATCH',{version:String(lab.VERSION||'')});return}
+        if(lab.VERSION!=='0024')gvAvmTrace('VIEWER_AVM0024_VERSION_MISMATCH',{version:String(lab.VERSION||'')});
         try{
             gvAvmTrace('VIEWER_AVM0024_INSTALL_START',{version:lab.VERSION});
             lab.install?.({A,aladin,viewerRoot:root,randomGalaxy});
