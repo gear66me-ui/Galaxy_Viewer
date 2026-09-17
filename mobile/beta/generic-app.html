@@ -98,7 +98,7 @@ function mountHtml(html){
 async function prepareViewer(){
   const pointer=await loadPointer();
   const viewer=String(pointer.viewer||'').trim();
-  if(!/^GV-beta-[A-Za-z0-9.-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
+  if(!/^GV-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
   const source=await text('../../viewer/'+viewer);
   const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
   const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
