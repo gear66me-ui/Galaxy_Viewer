@@ -60,6 +60,94 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-36dc3cf30d8f — AR104-AVM-LAB0020-ZOOM-GATED-ROLLED-VIEWER
+
+**Recorded:** 2026-09-17T11:22:17-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`36dc3cf30d8fd8282428ae2a68d60035cdec5c45`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/36dc3cf30d8fd8282428ae2a68d60035cdec5c45)  
+**Parent/baseline:** `ccf884742cca2320fc1e12221a9ca2d80bcefe13`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/ccf884742cca2320fc1e12221a9ca2d80bcefe13...36dc3cf30d8fd8282428ae2a68d60035cdec5c45)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `AR104-AVM-LAB0020-ZOOM-GATED-ROLLED-VIEWER`  
+**Requirements:** `REQ-001..REQ-008`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `3`  
+**Actual changed paths:** `3`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/GV-12AR-104.py, viewer/gv-current-viewer.json, viewer/modules/lab/gv-avm-overlay-lab-0020.js`
+- Actual: `viewer/GV-12AR-104.py, viewer/gv-current-viewer.json, viewer/modules/lab/gv-avm-overlay-lab-0020.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/GV-12AR-104.py`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `286e8f503af2efb01c152cc8fe4916f7f83b85440349f7818a7b6918b9235e52`
+- Bytes: `0` -> `68173`
+- Lines: `0` -> `1553`
+- Characters: `0` -> `68158`
+- Inserted lines: `1553`
+- Deleted lines: `0`
+- Inserted characters: `68158`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/gv-current-viewer.json`
+
+- Git status: `M`
+- SHA-256 before: `1b671782ede2276f99fb3466d13b9efcc54622bddc32f03d0e11de5b5c7e8dd0`
+- SHA-256 after: `5d66f8ced4e6a17be920e0e4e76e3432bcd7f6b62ba2acee1ac6266c2f5cca84`
+- Bytes: `82` -> `81`
+- Lines: `4` -> `4`
+- Characters: `82` -> `81`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `20`
+- Deleted characters: `21`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/lab/gv-avm-overlay-lab-0020.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `e9b484161c5f5be2cfe201f216ed75e0f8881f061788c418452fa43a5a6d1afd`
+- Bytes: `0` -> `14786`
+- Lines: `0` -> `70`
+- Characters: `0` -> `14786`
+- Inserted lines: `70`
+- Deleted lines: `0`
+- Inserted characters: `14786`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-c3efec42eca6 — ECO-AVM-HUBBLE-JWST-SANDBOX-0001
 
 **Recorded:** 2026-09-16T13:15:56-05:00  
