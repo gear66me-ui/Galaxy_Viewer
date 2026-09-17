@@ -51,7 +51,7 @@ display(Javascript(r"""
     const NAVIGATION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation/gv-navigation-0018.js';
     const NAVIGATION_VERSION='0018';
     const RANDOM_GALAXY_VERSION='0144';
-    const AVM_LAB_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0017.js';
+    const AVM_LAB_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0018.js';
     const NAVIGATION_ADMIN_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-navigation-admin-0001.js';
     const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0011.js?v=12AR-FLIGHT-RECORDER';
     const BLACK_BOX_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-black-box-0003.js';
@@ -1542,7 +1542,7 @@ display(Javascript(r"""
     // AR84: removed temporary black-box rotation hotdog exporter.
 
 
-    loadScriptGithubThenLocal(AVM_LAB_URL,'gvAvmOverlayLab0017').then(()=>{
+    loadScriptGithubThenLocal(AVM_LAB_URL,'gvAvmOverlayLab0018').then(()=>{
         window.GalaxyViewerAvmOverlayLab?.install?.({A,aladin,viewerRoot:root,randomGalaxy});
     }).catch(error=>console.error('GV AVM LAB LOAD FAILURE',error));
 
