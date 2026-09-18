@@ -60,6 +60,110 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-ea3f74aa3f6a — GV-ECO-0012O
+
+**Recorded:** 2026-09-18T11:06:37-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ea3f74aa3f6afa2a82ccfc89240170a0d76b2a6f`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ea3f74aa3f6afa2a82ccfc89240170a0d76b2a6f)  
+**Parent/baseline:** `71c73effdf8cc7232de8aa740a5094f24d24ab30`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/71c73effdf8cc7232de8aa740a5094f24d24ab30...ea3f74aa3f6afa2a82ccfc89240170a0d76b2a6f)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `GV-ECO-0012O`  
+**Requirements:** `REQ-001, REQ-002, REQ-003, REQ-004, REQ-005`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `4`  
+**Actual changed paths:** `4`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/GV-12AR-124.py, viewer/gv-current-viewer.json, viewer/modules/lab/gv-avm-overlay-lab-0034.js, viewer/modules/random-galaxy/gv-random-galaxy-0152.js`
+- Actual: `viewer/GV-12AR-124.py, viewer/gv-current-viewer.json, viewer/modules/lab/gv-avm-overlay-lab-0034.js, viewer/modules/random-galaxy/gv-random-galaxy-0152.js`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/GV-12AR-124.py`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `853c5d5fabaffffb7b5895898964490a38b5921fb4297df0d161bb2624f1cc31`
+- Bytes: `0` -> `71022`
+- Lines: `0` -> `1608`
+- Characters: `0` -> `71005`
+- Inserted lines: `1608`
+- Deleted lines: `0`
+- Inserted characters: `71005`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/gv-current-viewer.json`
+
+- Git status: `M`
+- SHA-256 before: `f9697510a16cf02b6bebe328161c22d340a8e95673101fb09e67631e5c178fca`
+- SHA-256 after: `77208483fce5090bd9a7fefdc096d8a17432d867e39c1fbb0ab84d8e764ff0f8`
+- Bytes: `58` -> `58`
+- Lines: `4` -> `4`
+- Characters: `58` -> `58`
+- Inserted lines: `2`
+- Deleted lines: `2`
+- Inserted characters: `2`
+- Deleted characters: `2`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/lab/gv-avm-overlay-lab-0034.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `770a044a88e467e8813a84070b70175168c533d83310a62b3a844dfc560d9532`
+- Bytes: `0` -> `20972`
+- Lines: `0` -> `158`
+- Characters: `0` -> `20972`
+- Inserted lines: `158`
+- Deleted lines: `0`
+- Inserted characters: `20972`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+#### `viewer/modules/random-galaxy/gv-random-galaxy-0152.js`
+
+- Git status: `A`
+- SHA-256 before: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
+- SHA-256 after: `63cb59a41a7e02f62e4ac55056bda4ce4aa3f8df4fa39b3ee50ff5be0e75ba2d`
+- Bytes: `0` -> `347408`
+- Lines: `0` -> `8131`
+- Characters: `0` -> `347355`
+- Inserted lines: `8131`
+- Deleted lines: `0`
+- Inserted characters: `347355`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-a1e98eecae58 — AR116-FOV-FREEZE-SLIDER-SHRINK
 
 **Recorded:** 2026-09-17T19:48:00-05:00  
