@@ -47,11 +47,11 @@ display(Javascript(r"""
     const HAMBURGER_EXTENSION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js';
     const COORDINATE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js';
     const TARGET_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js';
-    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0157.js';
-    const NAVIGATION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation/gv-navigation-0018.js';
-    const NAVIGATION_VERSION='0018';
-    const RANDOM_GALAXY_VERSION='0157';
-    const AVM_LAB_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0035.js';
+    const RANDOM_GALAXY_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0162.js';
+    const NAVIGATION_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation/gv-navigation-0019.js';
+    const NAVIGATION_VERSION='0019';
+    const RANDOM_GALAXY_VERSION='0162';
+    const AVM_LAB_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0038.js';
     const NAVIGATION_ADMIN_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-navigation-admin-0001.js';
     const DIAGNOSTICS_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0012.js?v=12AR-FLIGHT-RECORDER';
     const gvAvmTraceQueue=[];
@@ -364,12 +364,6 @@ display(Javascript(r"""
                 ? Number(rawSize)
                 : null;
 
-        const fovDegrees=Number(candidate.fovDegrees);
-        const imageFovDeg=Number(candidate.imageFovDeg??candidate.imageFovDegrees??candidate.image_fov_degrees??candidate.fieldOfViewDegrees??candidate.field_of_view_degrees);
-        const imageFovXDeg=Number(candidate.imageFovXDeg??candidate.imageFovXDegrees??candidate.image_fov_x_degrees);
-        const imageFovYDeg=Number(candidate.imageFovYDeg??candidate.imageFovYDegrees??candidate.image_fov_y_degrees);
-        const imageFovXArcmin=Number(candidate.imageFovXArcmin??candidate.image_fov_x_arcmin);
-        const imageFovYArcmin=Number(candidate.imageFovYArcmin??candidate.image_fov_y_arcmin);
         const aladinRotation=Number(candidate.aladinRotation);
 
         const sourceUrl=String(candidate.sourceUrl||candidate.source_url||'').trim();
@@ -377,7 +371,6 @@ display(Javascript(r"""
 
         if(!name||!Number.isFinite(ra)||ra<0||ra>=360||!Number.isFinite(dec)||dec<-90||dec>90)return null;
         if(!Number.isFinite(distance)||distance<=0||!constellation)return null;
-        if(!Number.isFinite(fovDegrees)||fovDegrees<=0)return null;
         if(!Number.isFinite(aladinRotation))return null;
 
         let hd,source;
@@ -439,13 +432,6 @@ display(Javascript(r"""
             age,
             ageYears,
             physicalSizeLy,
-            fovDegrees,
-            imageFovDeg:Number.isFinite(imageFovDeg)&&imageFovDeg>0?imageFovDeg:null,
-            imageFovDegrees:Number.isFinite(imageFovDeg)&&imageFovDeg>0?imageFovDeg:null,
-            imageFovXDeg:Number.isFinite(imageFovXDeg)&&imageFovXDeg>0?imageFovXDeg:null,
-            imageFovYDeg:Number.isFinite(imageFovYDeg)&&imageFovYDeg>0?imageFovYDeg:null,
-            imageFovXArcmin:Number.isFinite(imageFovXArcmin)&&imageFovXArcmin>0?imageFovXArcmin:null,
-            imageFovYArcmin:Number.isFinite(imageFovYArcmin)&&imageFovYArcmin>0?imageFovYArcmin:null,
             hdUrl:hd.href,
             sourceUrl:source.href,
             aladinRotation,
@@ -1585,21 +1571,21 @@ display(Javascript(r"""
     // AR84: removed temporary black-box rotation hotdog exporter.
 
 
-    gvAvmTrace('VIEWER_AVM0035_LOAD_START',{url:AVM_LAB_URL});
-    loadScriptGithubThenLocal(AVM_LAB_URL,'gvAvmOverlayLab0035').then(()=>{
-        gvAvmTrace('VIEWER_AVM0035_LOAD_OK',{version:window.GalaxyViewerAvmOverlayLab?.VERSION||''});
+    gvAvmTrace('VIEWER_AVM0036_LOAD_START',{url:AVM_LAB_URL});
+    loadScriptGithubThenLocal(AVM_LAB_URL,'gvAvmOverlayLab0036').then(()=>{
+        gvAvmTrace('VIEWER_AVM0036_LOAD_OK',{version:window.GalaxyViewerAvmOverlayLab?.VERSION||''});
         const lab=window.GalaxyViewerAvmOverlayLab;
-        if(!lab){gvAvmTrace('VIEWER_AVM0035_EXPORT_MISSING',{});return}
-        if(lab.VERSION!=='0035')gvAvmTrace('VIEWER_AVM0035_VERSION_MISMATCH',{version:String(lab.VERSION||'')});
+        if(!lab){gvAvmTrace('VIEWER_AVM0036_EXPORT_MISSING',{});return}
+        if(lab.VERSION!=='0036')gvAvmTrace('VIEWER_AVM0036_VERSION_MISMATCH',{version:String(lab.VERSION||'')});
         try{
-            gvAvmTrace('VIEWER_AVM0035_INSTALL_START',{version:lab.VERSION});
+            gvAvmTrace('VIEWER_AVM0036_INSTALL_START',{version:lab.VERSION});
             lab.install?.({A,aladin,viewerRoot:root,randomGalaxy});
-            gvAvmTrace('VIEWER_AVM0035_INSTALL_OK',{version:lab.VERSION});
+            gvAvmTrace('VIEWER_AVM0036_INSTALL_OK',{version:lab.VERSION});
         }catch(error){
-            gvAvmTrace('VIEWER_AVM0035_INSTALL_FAIL',{message:String(error?.message||error||'')});
+            gvAvmTrace('VIEWER_AVM0036_INSTALL_FAIL',{message:String(error?.message||error||'')});
             throw error;
         }
-    }).catch(error=>{gvAvmTrace('VIEWER_AVM0035_LOAD_FAIL',{message:String(error?.message||error||'')});console.error('GV AVM LAB LOAD FAILURE',error)});
+    }).catch(error=>{gvAvmTrace('VIEWER_AVM0036_LOAD_FAIL',{message:String(error?.message||error||'')});console.error('GV AVM LAB LOAD FAILURE',error)});
 
     document.dispatchEvent(new CustomEvent('gv-viewer-ready',{detail:{version:VERSION,displayVersion:DISPLAY_VERSION,catalogCount:catalogRecordCount,eligibleCatalogCount:galaxyCatalog.length,startupMetrics}}));
 })().catch(error=>{console.error('GALAXY VIEWER STARTUP FAILURE:',error);document.dispatchEvent(new CustomEvent('gv-viewer-failed',{detail:{message:String(error?.stack||error)}}));});
