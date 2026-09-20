@@ -21,88 +21,75 @@ jobs:
       - name: Install Pillow
         run: python -m pip install --quiet pillow
 
-      - name: Restore high-resolution source art and crop only
+      - name: Restore original high-resolution art and crop only
         shell: bash
         run: |
           set -euo pipefail
 
+          # Exact original 1254x1254 ESO asset from repository history.
           git show a82a636b8841c7be9d4d1371f88a025b5bf10f09:viewer/artwork/ESO/eso_observatory_night_sky_icon.png > /tmp/eso-source.png
+
+          # Existing original high-resolution NOIRLab asset.
           cp viewer/artwork/runtime/providers/noirlab/noirlab-icon.png /tmp/noirlab-source.png
 
           python - <<'PY'
           from PIL import Image
           from pathlib import Path
-          import hashlib, os
+          import hashlib
 
           jobs = [
-              (Path('/tmp/eso-source.png'), Path('viewer/artwork/ESO/eso_observatory_night_sky_icon.png')),
-              (Path('/tmp/noirlab-source.png'), Path('viewer/artwork/NoirLabs/noirlab-icon.png')),
+              (
+                  Path('/tmp/eso-source.png'),
+                  Path('viewer/artwork/ESO/eso_observatory_night_sky_icon.png'),
+                  (17, 14, 1238, 1235),
+                  (1221, 1221),
+              ),
+              (
+                  Path('/tmp/noirlab-source.png'),
+                  Path('viewer/artwork/NoirLabs/noirlab-icon.png'),
+                  (23, 21, 1230, 1228),
+                  (1207, 1207),
+              ),
           ]
 
-          def lum(rgb):
-              r,g,b = rgb[:3]
-              return (r+g+b)/3.0
-
-          def edge_after_shadow(vals, threshold=248.0, run=3):
-              limit=min(100, len(vals)//4)
-              valley=min(range(4, limit), key=lambda i: vals[i])
-              for i in range(valley+1, limit):
-                  if all(v >= threshold for v in vals[i:i+run]):
-                      if not 10 <= i <= 40:
-                          raise RuntimeError(f'Unexpected tile edge {i}; shadow valley={valley}')
-                      return i
-              raise RuntimeError(f'Could not locate rounded-tile edge after shadow valley {valley}')
-
-          def crop_card(src, dst):
+          def crop_only(src, dst, box, expected):
               im = Image.open(src).convert('RGB')
-              w,h = im.size
-              if w != h:
-                  raise RuntimeError(f'Expected square source, got {w}x{h}: {src}')
+              if im.size != (1254, 1254):
+                  raise RuntimeError(f'Expected 1254x1254 source, got {im.size}: {src}')
 
-              ymid=h//2
-              xmid=w//2
-              xline=[lum(im.getpixel((x,ymid))) for x in range(w)]
-              yline=[lum(im.getpixel((xmid,y))) for y in range(h)]
+              out = im.crop(box)
+              if out.size != expected:
+                  raise RuntimeError(f'Wrong crop size {out.size}; expected {expected}: {dst}')
 
-              left=edge_after_shadow(xline)
-              right=w-edge_after_shadow(list(reversed(xline)))
-              top=edge_after_shadow(yline)
-              bottom=h-edge_after_shadow(list(reversed(yline)))
-
-              width=right-left
-              height=bottom-top
-              side=min(width,height)
-              cx=(left+right)/2
-              cy=(top+bottom)/2
-              l=round(cx-side/2)
-              t=round(cy-side/2)
-              r=l+side
-              b=t+side
-
-              out=im.crop((l,t,r,b))
               dst.parent.mkdir(parents=True, exist_ok=True)
               out.save(dst, format='PNG', optimize=True)
 
-              print(f'{dst}: source={w}x{h} crop=({l},{t},{r},{b}) output={out.width}x{out.height} bytes={dst.stat().st_size} sha256={hashlib.sha256(dst.read_bytes()).hexdigest()}')
+              size = dst.stat().st_size
+              digest = hashlib.sha256(dst.read_bytes()).hexdigest()
+              print(
+                  f'{dst}: source={im.width}x{im.height} '
+                  f'crop={box} output={out.width}x{out.height} '
+                  f'bytes={size} sha256={digest}'
+              )
 
-              if out.width < 1000 or out.height < 1000:
-                  raise RuntimeError(f'Unexpected low-resolution output: {out.size}')
-              if dst.stat().st_size < 250000:
-                  raise RuntimeError(f'Unexpectedly small PNG: {dst.stat().st_size} bytes')
+              if size < 250000:
+                  raise RuntimeError(f'Unexpectedly small PNG: {size} bytes')
 
-          for src,dst in jobs:
-              crop_card(src,dst)
+          for src, dst, box, expected in jobs:
+              crop_only(src, dst, box, expected)
           PY
 
-      - name: Verify exact two image changes
+      - name: Verify exact image-only change
         shell: bash
         run: |
           set -euo pipefail
           echo "=== STATUS ==="
           git status --short
+
           changed="$(git diff --name-only | sort)"
           expected="$(printf '%s\n'             viewer/artwork/ESO/eso_observatory_night_sky_icon.png             viewer/artwork/NoirLabs/noirlab-icon.png | sort)"
           test "$changed" = "$expected"
+
           file viewer/artwork/ESO/eso_observatory_night_sky_icon.png
           file viewer/artwork/NoirLabs/noirlab-icon.png
           ls -lh viewer/artwork/ESO/eso_observatory_night_sky_icon.png viewer/artwork/NoirLabs/noirlab-icon.png
@@ -114,5 +101,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- viewer/artwork/ESO/eso_observatory_night_sky_icon.png viewer/artwork/NoirLabs/noirlab-icon.png
-          git commit -m "Crop high-resolution ESO and NOIRLab provider icons"
+          git commit -m "Crop original high-resolution ESO and NOIRLab icons"
           git push origin HEAD:beta
