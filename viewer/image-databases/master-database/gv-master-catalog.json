@@ -1,8 +1,10 @@
 {
-  "version": "0003-AVM",
+  "version": "0004-ASTROPIX",
   "catalogs": {
-    "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0033-ESA-FOV.json",
-    "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json"
+    "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+    "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+    "eso": "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+    "noirlab": "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json"
   },
   "curation": {
     "master": "viewer/image-databases/master-database/curation/gv-curation-master-0001.json",
