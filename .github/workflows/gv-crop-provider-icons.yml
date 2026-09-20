@@ -43,11 +43,15 @@ jobs:
               r,g,b = rgb[:3]
               return (r+g+b)/3.0
 
-          def first_inside(vals, threshold=248.0, run=3):
-              for i in range(4, min(100, len(vals)//4)):
+          def edge_after_shadow(vals, threshold=248.0, run=3):
+              limit=min(100, len(vals)//4)
+              valley=min(range(4, limit), key=lambda i: vals[i])
+              for i in range(valley+1, limit):
                   if all(v >= threshold for v in vals[i:i+run]):
+                      if not 10 <= i <= 40:
+                          raise RuntimeError(f'Unexpected tile edge {i}; shadow valley={valley}')
                       return i
-              raise RuntimeError('Could not locate rounded-tile edge')
+              raise RuntimeError(f'Could not locate rounded-tile edge after shadow valley {valley}')
 
           def crop_card(src, dst):
               im = Image.open(src).convert('RGB')
@@ -60,10 +64,10 @@ jobs:
               xline=[lum(im.getpixel((x,ymid))) for x in range(w)]
               yline=[lum(im.getpixel((xmid,y))) for y in range(h)]
 
-              left=first_inside(xline)
-              right=w-first_inside(list(reversed(xline)))
-              top=first_inside(yline)
-              bottom=h-first_inside(list(reversed(yline)))
+              left=edge_after_shadow(xline)
+              right=w-edge_after_shadow(list(reversed(xline)))
+              top=edge_after_shadow(yline)
+              bottom=h-edge_after_shadow(list(reversed(yline)))
 
               width=right-left
               height=bottom-top
