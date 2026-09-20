@@ -27,7 +27,7 @@
       await Promise.all(keys.filter(key=>/^galaxy-viewer-/.test(key)).map(key=>caches.delete(key)));
     }
   }catch(error){console.warn('GV beta cache reset skipped',error)}
-  window.location.replace('./generic-app.html?source=mobile-entry&v=12AR-132G-'+Date.now()+window.location.hash);
+  window.location.replace('./generic-app.html?source=mobile-entry&v=12AR-132H-'+Date.now()+window.location.hash);
 })();
 </script>
 </body>
