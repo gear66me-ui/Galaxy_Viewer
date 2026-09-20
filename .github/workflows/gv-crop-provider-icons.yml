@@ -1,0 +1,114 @@
+name: GV crop provider icons
+
+on:
+  push:
+    paths:
+      - '.github/workflows/gv-crop-provider-icons.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  crop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Install Pillow
+        run: python -m pip install --quiet pillow
+
+      - name: Restore high-resolution source art and crop only
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git show a82a636b8841c7be9d4d1371f88a025b5bf10f09:viewer/artwork/ESO/eso_observatory_night_sky_icon.png > /tmp/eso-source.png
+          cp viewer/artwork/runtime/providers/noirlab/noirlab-icon.png /tmp/noirlab-source.png
+
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import hashlib, os
+
+          jobs = [
+              (Path('/tmp/eso-source.png'), Path('viewer/artwork/ESO/eso_observatory_night_sky_icon.png')),
+              (Path('/tmp/noirlab-source.png'), Path('viewer/artwork/NoirLabs/noirlab-icon.png')),
+          ]
+
+          def lum(rgb):
+              r,g,b = rgb[:3]
+              return (r+g+b)/3.0
+
+          def first_inside(vals, threshold=248.0, run=3):
+              for i in range(4, min(100, len(vals)//4)):
+                  if all(v >= threshold for v in vals[i:i+run]):
+                      return i
+              raise RuntimeError('Could not locate rounded-tile edge')
+
+          def crop_card(src, dst):
+              im = Image.open(src).convert('RGB')
+              w,h = im.size
+              if w != h:
+                  raise RuntimeError(f'Expected square source, got {w}x{h}: {src}')
+
+              ymid=h//2
+              xmid=w//2
+              xline=[lum(im.getpixel((x,ymid))) for x in range(w)]
+              yline=[lum(im.getpixel((xmid,y))) for y in range(h)]
+
+              left=first_inside(xline)
+              right=w-first_inside(list(reversed(xline)))
+              top=first_inside(yline)
+              bottom=h-first_inside(list(reversed(yline)))
+
+              width=right-left
+              height=bottom-top
+              side=min(width,height)
+              cx=(left+right)/2
+              cy=(top+bottom)/2
+              l=round(cx-side/2)
+              t=round(cy-side/2)
+              r=l+side
+              b=t+side
+
+              out=im.crop((l,t,r,b))
+              dst.parent.mkdir(parents=True, exist_ok=True)
+              out.save(dst, format='PNG', optimize=True)
+
+              print(f'{dst}: source={w}x{h} crop=({l},{t},{r},{b}) output={out.width}x{out.height} bytes={dst.stat().st_size} sha256={hashlib.sha256(dst.read_bytes()).hexdigest()}')
+
+              if out.width < 1000 or out.height < 1000:
+                  raise RuntimeError(f'Unexpected low-resolution output: {out.size}')
+              if dst.stat().st_size < 250000:
+                  raise RuntimeError(f'Unexpectedly small PNG: {dst.stat().st_size} bytes')
+
+          for src,dst in jobs:
+              crop_card(src,dst)
+          PY
+
+      - name: Verify exact two image changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== STATUS ==="
+          git status --short
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n'             viewer/artwork/ESO/eso_observatory_night_sky_icon.png             viewer/artwork/NoirLabs/noirlab-icon.png | sort)"
+          test "$changed" = "$expected"
+          file viewer/artwork/ESO/eso_observatory_night_sky_icon.png
+          file viewer/artwork/NoirLabs/noirlab-icon.png
+          ls -lh viewer/artwork/ESO/eso_observatory_night_sky_icon.png viewer/artwork/NoirLabs/noirlab-icon.png
+
+      - name: Commit cropped high-resolution icons
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- viewer/artwork/ESO/eso_observatory_night_sky_icon.png viewer/artwork/NoirLabs/noirlab-icon.png
+          git commit -m "Crop high-resolution ESO and NOIRLab provider icons"
+          git push origin HEAD:beta
