@@ -44,7 +44,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 (async()=>{
 'use strict';
 const POINTER_URL='../../viewer/gv-current-viewer.json';
-const GV_GENERIC_APP_REVISION='12AR-64-active-pointer-001';
+const GV_GENERIC_APP_REVISION='12AR-132E-active-pointer-001';
 const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
 const ICON_HOLD_MS=3000;
 const POST_SPLASH_HOLD_MS=1000;
@@ -66,23 +66,63 @@ const loadPointer=async()=>{
 };
 function installCatalogImagePolicy(){
   const nativeFetch=window.fetch.bind(window);
-  window.fetch=async(input,init)=>{
+  const hubbleCatalogPattern=/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i;
+
+  window.fetch=(input,init)=>{
     const raw=typeof input==='string'?input:String(input?.url||'');
-    const response=await nativeFetch(input,init);
-    if(!/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i.test(raw))return response;
-    if(!response.ok)return response;
-    const payload=await response.clone().json();
-    if(Array.isArray(payload?.entries)){
-      payload.entries=payload.entries.map(entry=>{
-        if(!entry||typeof entry!=='object')return entry;
-        const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];
-        const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));
-        if(!screen)return entry;
-        return {...entry,selectedImageUrl:screen,githubImageUrl:''};
-      });
+
+    // ALADIN / HiPS / DSS / all non-catalog traffic:
+    // return the browser's native fetch Promise directly.
+    // No await, cloning, JSON inspection, or response reconstruction.
+    if(!hubbleCatalogPattern.test(raw)){
+      return nativeFetch(input,init);
     }
-    const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');
-    return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers});
+
+    // Only the Hubble catalog JSON is intercepted.
+    return (async()=>{
+      const response=await nativeFetch(input,init);
+      if(!response.ok)return response;
+
+      const payload=await response.clone().json();
+
+      if(Array.isArray(payload?.entries)){
+        payload.entries=payload.entries.map(entry=>{
+          if(!entry||typeof entry!=='object')return entry;
+
+          const candidates=Array.isArray(entry.jpegCandidates)
+            ?entry.jpegCandidates
+              .map(value=>String(value||'').trim())
+              .filter(Boolean)
+            :[];
+
+          const screen=candidates.find(
+            url=>/\/archives\/images\/screen\//i.test(url)
+          );
+
+          if(!screen)return entry;
+
+          return {
+            ...entry,
+            selectedImageUrl:screen,
+            githubImageUrl:''
+          };
+        });
+      }
+
+      const headers=new Headers(response.headers);
+      headers.delete('content-length');
+      headers.delete('content-encoding');
+      headers.set('content-type','application/json; charset=utf-8');
+
+      return new Response(
+        JSON.stringify(payload),
+        {
+          status:response.status,
+          statusText:response.statusText,
+          headers
+        }
+      );
+    })();
   };
 }
 function mountHtml(html){
