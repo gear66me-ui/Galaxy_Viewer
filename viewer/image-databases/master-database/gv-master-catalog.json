@@ -6,7 +6,7 @@
     "eso": "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
     "noirlab": "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
     "spitzer": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0009.json",
-    "chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json"
+    "chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json"
   },
   "curation": {
     "master": "viewer/image-databases/master-database/curation/gv-curation-master-0001.json",
