@@ -3,225 +3,416 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#03142f">
-<title>GALAXY VIEWER — DEVELOPMENT PREVIEW</title>
-<link rel="icon" href="../viewer/artwork/icon.svg?v=gv-portal-005" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-portal-005">
+<meta name="theme-color" content="#000000">
+<title>GALAXY VIEWER — DEVELOPMENT UPDATE</title>
+<link rel="icon" href="../viewer/artwork/icon.svg?v=gv-update-20260921c" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-update-20260921c">
 <style>
 @font-face{
   font-family:"Space Age";
-  src:url("../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf?v=gv-portal-005") format("opentype");
-  font-style:normal;font-weight:400;font-display:block
+  src:url("../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");
+  font-display:swap;
 }
 :root{
-  color-scheme:dark;
-  --ice:#bdf6ff;--cyan:#62dcff;--blue:#238cff;--deep:#020a19;
-  --panel:rgba(3,18,43,.88);--panel2:rgba(7,38,82,.82);
+  --gv-white:#f2fdff;
+  --gv-outline:#063f8f;
+  --gv-electric:#058cff;
+  --gv-blue:#0b3dff;
+  --gv-deep:#020817;
+  --gv-panel:#041327;
+  --gv-muted:#a9cce8;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#010610;color:#eefbff}
+html,body{margin:0;min-height:100%;background:#000;color:var(--gv-white)}
 body{
-  min-height:100vh;overflow-x:hidden;font-family:"Space Age",sans-serif;font-synthesis:none;
-  background:linear-gradient(180deg,#010714 0%,#04162f 38%,#020914 100%);
-}
-.sky{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#010713,#061a39 45%,#020813)}
-.sky::after{
-  content:"";position:absolute;inset:0;
+  position:relative;
+  overflow-x:hidden;
+  font-family:"Space Age",sans-serif;
   background:
-    radial-gradient(circle at 8% 12%,rgba(255,255,255,.85) 0 1px,transparent 1.6px),
-    radial-gradient(circle at 27% 19%,rgba(164,226,255,.70) 0 1px,transparent 1.6px),
-    radial-gradient(circle at 61% 11%,rgba(255,255,255,.75) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 88% 25%,rgba(133,214,255,.65) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 15% 72%,rgba(255,255,255,.62) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 73% 63%,rgba(177,230,255,.58) 0 1px,transparent 1.6px);
-  background-size:160px 160px,210px 210px,260px 260px,310px 310px,370px 370px,430px 430px;
-  opacity:.55
+    radial-gradient(ellipse at 50% 4%,rgba(5,140,255,.11),transparent 34rem),
+    linear-gradient(180deg,#000 0%,#020817 38%,#01040c 100%);
 }
-.galaxy{
-  position:absolute;background-size:cover;background-position:center;border-radius:34%;
-  filter:saturate(.9) brightness(.58) contrast(1.12);
-  opacity:.28;
-  -webkit-mask-image:radial-gradient(ellipse at center,#000 0 38%,rgba(0,0,0,.88) 58%,transparent 82%);
-  mask-image:radial-gradient(ellipse at center,#000 0 38%,rgba(0,0,0,.88) 58%,transparent 82%);
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  z-index:0;
+  top:115px;
+  width:min(48vw,520px);
+  height:72vh;
+  min-height:520px;
+  pointer-events:none;
+  background:url("../viewer/artwork/Splash/Galaxy%20Splash%20Ibis%20NO%20NAME.png") center/cover no-repeat;
+  opacity:.26;
+  filter:saturate(1.05) contrast(1.03);
 }
-.g1{width:58vw;height:37vw;max-width:760px;max-height:470px;left:-14vw;top:7vh;background-image:url("https://cdn.esahubble.org/archives/images/screen/heic1709a.jpg")}
-.g2{width:56vw;height:38vw;max-width:720px;max-height:490px;right:-16vw;top:24vh;background-image:url("https://cdn.esahubble.org/archives/images/screen/opo9402b.jpg")}
-.g3{width:62vw;height:38vw;max-width:820px;max-height:500px;left:18vw;bottom:-13vh;background-image:url("https://www.eso.org/public/archives/images/screen/potw2001a.jpg");opacity:.20}
-.sky-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(1,8,21,.16),rgba(1,8,22,.56) 45%,rgba(1,5,13,.86));backdrop-filter:blur(1px)}
-.shell{width:min(1160px,100%);margin:auto;padding:12px 12px 50px}
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;
-  border:1px solid rgba(137,229,255,.28);border-radius:17px;
-  background:linear-gradient(180deg,rgba(9,38,82,.78),rgba(3,15,37,.82));
-  box-shadow:0 12px 35px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.07);
-  backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)
+body::before{
+  left:-18vw;
+  background-position:58% center;
+  -webkit-mask-image:linear-gradient(to right,rgba(0,0,0,.94),rgba(0,0,0,.62) 52%,transparent 100%);
+  mask-image:linear-gradient(to right,rgba(0,0,0,.94),rgba(0,0,0,.62) 52%,transparent 100%);
 }
-.brand-mini{display:flex;align-items:center;gap:9px}
-.brand-mini img{width:31px;height:31px;filter:drop-shadow(0 0 10px rgba(90,218,255,.65))}
-.brand-mini span{font-size:10px;letter-spacing:.17em;color:#d9f8ff}
-.lang{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(0,7,20,.7);border:1px solid rgba(106,220,255,.25)}
-.lang button{border:0;border-radius:999px;padding:7px 10px;background:transparent;color:#739bb0;font:400 9px/1 "Space Age";letter-spacing:.12em}
-.lang button.active{background:linear-gradient(#20a8ff,#0a5cc5);color:#fff;box-shadow:0 0 15px rgba(64,207,255,.45)}
-.hero{
-  position:relative;overflow:hidden;margin-top:13px;padding:22px 17px;border-radius:26px;
-  border:1px solid rgba(140,231,255,.50);
-  background:linear-gradient(145deg,rgba(4,18,43,.90),rgba(7,39,86,.78) 55%,rgba(3,17,43,.90));
-  box-shadow:0 26px 72px rgba(0,0,0,.50),0 0 34px rgba(58,200,255,.12),inset 0 1px rgba(255,255,255,.10);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+body::after{
+  right:-18vw;
+  transform:scaleX(-1);
+  background-position:58% center;
+  -webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.94),rgba(0,0,0,.62) 52%,transparent 100%);
+  mask-image:linear-gradient(to left,rgba(0,0,0,.94),rgba(0,0,0,.62) 52%,transparent 100%);
 }
-.hero-grid{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
-.hero-logo{display:flex;justify-content:center}
-.round-tile{
-  width:min(34vw,128px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
-  background:linear-gradient(145deg,#0b4b99,#061f4f 62%,#03132f);
-  border:1px solid rgba(175,242,255,.78);
-  box-shadow:inset 0 1px rgba(255,255,255,.18),inset 0 -18px 32px rgba(0,0,0,.25),0 0 30px rgba(67,203,255,.40),0 18px 38px rgba(0,0,0,.42)
+.banner{
+  position:relative;
+  z-index:2;
+  width:100%;
+  aspect-ratio:3/1;
+  min-height:150px;
+  max-height:512px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 10px 42px rgba(0,70,255,.18);
 }
-.round-tile img{width:66%;height:66%;object-fit:contain;filter:drop-shadow(0 0 14px rgba(143,235,255,.75))}
-.hero-copy{text-align:center}
-.eyebrow{color:#71ddff;font-size:8px;letter-spacing:.30em;margin-bottom:10px}
-h1{margin:0;font:400 clamp(34px,10vw,74px)/.92 "Space Age";letter-spacing:.09em;color:#f4fdff;text-shadow:0 0 9px rgba(255,255,255,.45),0 0 24px rgba(74,209,255,.54)}
-h1 small{display:block;margin-top:12px;color:#adebff;font-size:.33em;letter-spacing:.27em}
-.hero p{margin:17px auto 0;max-width:760px;color:#c7e8f3;font:400 10px/1.85 "Space Age";letter-spacing:.045em}
-.hero strong{color:#fff}
-.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:16px}
-.chips span{padding:7px 9px;border-radius:999px;border:1px solid rgba(118,224,255,.34);background:rgba(9,51,98,.55);color:#a8efff;font-size:7px;letter-spacing:.14em}
-.launch{display:grid;grid-template-columns:1fr;gap:10px;margin-top:17px}
-.launch a{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:70px;padding:13px 15px;border-radius:17px;text-decoration:none;
-  border:1px solid rgba(132,232,255,.72);
-  background:linear-gradient(145deg,rgba(23,101,183,.96),rgba(8,47,104,.96) 58%,rgba(4,24,58,.98));
-  box-shadow:inset 0 1px rgba(255,255,255,.18),inset 0 -14px 30px rgba(0,0,0,.22),0 10px 25px rgba(0,0,0,.36),0 0 22px rgba(61,202,255,.16);
-  color:#fff
+.banner iframe{
+  display:block;
+  width:100%;
+  height:100%;
+  border:0;
+  background:#000;
 }
-.launch .k{display:block;color:#8ceaff;font-size:7px;letter-spacing:.16em;margin-bottom:6px}
-.launch .l{font-size:12px;letter-spacing:.08em}
-.launch .a{font-size:22px;color:#c7f7ff;text-shadow:0 0 13px #52d9ff}
-.section{margin-top:24px}
-.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:11px}
-.section-title{font-size:14px;letter-spacing:.15em;color:#e9fcff}
-.section-sub{font-size:7px;letter-spacing:.16em;color:#74cbe6;text-align:right}
-.providers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wrap{
+  position:relative;
+  z-index:1;
+  width:min(100%,760px);
+  margin:0 auto;
+  padding:18px 14px calc(34px + env(safe-area-inset-bottom));
+}
+.update{
+  border:1px solid rgba(11,61,255,.68);
+  border-radius:18px;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(6,24,52,.93),rgba(1,7,20,.97));
+  box-shadow:
+    inset 0 1px 0 rgba(158,228,255,.09),
+    0 0 24px rgba(5,140,255,.12),
+    0 22px 56px rgba(0,0,0,.38);
+}
+.update-head{
+  padding:18px 16px 16px;
+  text-align:center;
+  border-bottom:1px solid rgba(5,140,255,.26);
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(5,140,255,.2),transparent 70%),
+    linear-gradient(180deg,rgba(6,28,66,.98),rgba(3,13,31,.98));
+}
+.update-head .kicker{
+  margin:0 0 8px;
+  color:#8ddcff;
+  font-size:9px;
+  line-height:1.4;
+  letter-spacing:.19em;
+  text-transform:uppercase;
+}
+.update-head h1{
+  margin:0;
+  color:#fff;
+  font-weight:400;
+  font-size:clamp(20px,6.3vw,34px);
+  line-height:1.1;
+  letter-spacing:.075em;
+  text-transform:uppercase;
+  -webkit-text-stroke:1px var(--gv-outline);
+  text-shadow:
+    0 0 4px #fff,
+    0 0 10px #0046ff,
+    0 0 20px #0046ff;
+}
+.copy{
+  padding:18px 16px 4px;
+}
+.copy p{
+  margin:0 0 16px;
+  color:#eaf7ff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  letter-spacing:.005em;
+}
+.copy strong{
+  color:#9be8ff;
+  font-weight:700;
+}
+.provider-list{
+  color:#c9ebff!important;
+}
+.providers{
+  padding:3px 13px 20px;
+}
+.provider-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
 .provider{
-  padding:9px;border-radius:17px;border:1px solid rgba(126,229,255,.65);
-  background:linear-gradient(145deg,rgba(17,75,139,.88),rgba(5,31,72,.95) 58%,rgba(3,18,45,.98));
-  box-shadow:inset 0 1px rgba(255,255,255,.16),inset 0 -12px 24px rgba(0,0,0,.21),0 10px 24px rgba(0,0,0,.34),0 0 20px rgba(54,202,255,.17)
+  aspect-ratio:1/1;
+  min-width:0;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:9px 6px 8px;
+  overflow:hidden;
+  border:1px solid rgba(34,128,255,.72);
+  border-radius:11px;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(68,166,255,.2),transparent 54%),
+    linear-gradient(180deg,#0a2857 0%,#061a3a 47%,#020817 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    inset 0 -13px 24px rgba(0,0,0,.19),
+    0 0 13px rgba(5,140,255,.15);
 }
-.provider .pic{aspect-ratio:1.48;border-radius:12px;overflow:hidden;background:#06132b;border:1px solid rgba(186,243,255,.38);box-shadow:inset 0 0 18px rgba(0,0,0,.3)}
-.provider img{display:block;width:100%;height:100%;object-fit:cover}
-.provider .name{text-align:center;margin-top:9px;color:#f3fdff;font-size:9px;letter-spacing:.11em}
-.announcement{
-  margin-top:26px;padding:18px 16px;border-radius:22px;border:1px solid rgba(123,224,255,.39);
-  background:linear-gradient(180deg,rgba(2,12,31,.94),rgba(5,26,57,.92));
-  box-shadow:0 22px 54px rgba(0,0,0,.44),inset 0 1px rgba(255,255,255,.08);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+.provider img{
+  display:block;
+  max-width:72%;
+  max-height:62%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
 }
-.announcement h2{margin:0 0 13px;color:#a9efff;font:400 16px/1.3 "Space Age";letter-spacing:.12em}
-.announcement p{margin:10px 0;color:#c9e6f0;font:400 9px/1.95 "Space Age";letter-spacing:.045em}
-.announcement strong{color:#fff;text-shadow:0 0 9px rgba(93,216,255,.42)}
-.signature{text-align:right;color:#81d9f5!important}
-.footer{text-align:center;padding:25px 5px 7px;color:#5c90a8;font-size:7px;letter-spacing:.15em}
-[data-lang]{display:none}.lang-en [data-lang="en"],.lang-es [data-lang="es"]{display:block}
-@media(min-width:720px){
-  .shell{padding:20px 20px 62px}
-  .hero{padding:34px 30px}
-  .hero-grid{grid-template-columns:170px minmax(0,1fr);gap:30px}
-  .hero-copy{text-align:left}
-  .chips{justify-content:flex-start}
-  .hero p{margin-left:0}
-  .launch{grid-template-columns:1fr 1fr}
-  .providers{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .announcement{padding:25px 28px}
-  .announcement p{font-size:10px}
+.provider-name{
+  width:100%;
+  color:#f4fbff;
+  font-size:clamp(6.9px,2.05vw,9px);
+  line-height:1.22;
+  text-align:center;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  overflow-wrap:anywhere;
 }
-@media(min-width:1020px){
-  .providers{grid-template-columns:repeat(6,minmax(0,1fr))}
+.provider-name small{
+  display:block;
+  margin-top:2px;
+  color:#88cfff;
+  font-size:.78em;
+  letter-spacing:.06em;
+}
+.continue{
+  border-top:1px solid rgba(5,140,255,.2);
+  padding-top:18px;
+}
+.tech{
+  margin:18px 0 17px;
+  padding:14px 13px;
+  border-left:2px solid #058cff;
+  background:linear-gradient(90deg,rgba(5,140,255,.11),rgba(5,140,255,.025));
+  color:#bfeaff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:13px;
+  line-height:1.58;
+}
+.signature{
+  color:#f2fdff!important;
+  font-family:"Space Age",sans-serif!important;
+  text-align:center;
+  letter-spacing:.09em!important;
+  text-transform:uppercase;
+  text-shadow:0 0 4px #fff,0 0 10px #0046ff,0 0 20px #0046ff;
+}
+.launches{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+.launch{
+  min-height:64px;
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) 18px;
+  align-items:center;
+  gap:10px;
+  padding:11px 13px;
+  border:1px solid rgba(47,140,255,.84);
+  border-radius:12px;
+  text-decoration:none;
+  color:#fff;
+  background:
+    radial-gradient(circle at 16% 0%,rgba(86,183,255,.25),transparent 42%),
+    linear-gradient(180deg,#0b3471 0%,#071f49 54%,#04142e 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    0 0 18px rgba(5,140,255,.13);
+}
+.launch img{
+  width:36px;
+  height:36px;
+  object-fit:contain;
+}
+.launch strong{
+  display:block;
+  color:#fff;
+  font-size:11px;
+  font-weight:400;
+  letter-spacing:.065em;
+  text-transform:uppercase;
+}
+.launch span{
+  display:block;
+  margin-top:4px;
+  color:#8dcfff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:10px;
+  line-height:1.25;
+}
+.launch .arrow{
+  margin:0;
+  color:#9be8ff;
+  font-family:system-ui,sans-serif;
+  font-size:23px;
+}
+.footer{
+  padding:17px 8px 0;
+  color:#5386ae;
+  text-align:center;
+  font-size:7px;
+  line-height:1.6;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+@media(min-width:560px){
+  body::before{left:-8vw}
+  body::after{right:-8vw}
+  .wrap{padding:24px 20px 44px}
+  .copy{padding:23px 23px 6px}
+  .providers{padding:5px 20px 25px}
+  .provider-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+  .launches{grid-template-columns:1fr 1fr}
+}
+@media(min-width:760px){
+  .provider-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
 }
 </style>
 </head>
-<body class="lang-en">
-<div class="sky" aria-hidden="true">
-  <div class="galaxy g1"></div>
-  <div class="galaxy g2"></div>
-  <div class="galaxy g3"></div>
-  <div class="sky-shade"></div>
-</div>
+<body>
 
-<div class="shell">
-  <header class="topbar">
-    <div class="brand-mini"><img src="../viewer/artwork/icon.svg?v=gv-portal-005" alt=""><span>GALAXY VIEWER</span></div>
-    <div class="lang"><button id="en" class="active">EN</button><button id="es">ES</button></div>
-  </header>
+<header class="banner" aria-label="Galaxy Viewer banner">
+  <iframe src="./galaxy-viewer-banner-0002.html?v=20260921c" title="Galaxy Viewer"></iframe>
+</header>
 
-  <section class="hero">
-    <div class="hero-grid">
-      <div class="hero-logo"><div class="round-tile"><img src="../viewer/artwork/icon.svg?v=gv-portal-005" alt="Galaxy Viewer"></div></div>
-      <div class="hero-copy">
-        <div class="eyebrow">EXPLORE · DISCOVER · IMMERSE</div>
-        <h1>GALAXY VIEWER<small>THE UNIVERSE AT YOUR FINGERTIPS</small></h1>
-        <div data-lang="en"><p>Major programming breakthroughs, a rapidly expanding curated image library, and a Google Play release getting very close. <strong>Galaxy Viewer is now in its final bug-fixing and polishing phase.</strong></p></div>
-        <div data-lang="es"><p>Grandes avances de programación, una biblioteca de imágenes curadas que sigue creciendo y un lanzamiento en Google Play cada vez más cerca. <strong>Galaxy Viewer está en su etapa final de corrección de errores y pulido.</strong></p></div>
-        <div class="chips"><span>11 PROVIDERS</span><span>NEW IMAGE BLENDING</span><span>MORE IMAGES COMING</span><span>GOOGLE PLAY SOON</span></div>
-        <div class="launch">
-          <a id="gv-open-app" href="../mobile/beta/?source=portal-app&v=gv-portal-005"><span><span class="k">ANDROID · PREVIEW</span><span class="l">LAUNCH APP VERSION</span></span><span class="a">→</span></a>
-          <a href="../mobile/beta/?source=portal-web&v=gv-portal-005"><span><span class="k">IN YOUR BROWSER</span><span class="l">LAUNCH WEB VERSION</span></span><span class="a">→</span></a>
+<main class="wrap">
+  <section class="update">
+    <div class="update-head">
+      <p class="kicker">Galaxy Viewer · Development Update</p>
+      <h1>New Image Providers Are Coming In</h1>
+    </div>
+
+    <div class="copy">
+      <p>I’m adding imagery from <strong>11 major observatories, space missions, and astronomical archives</strong> to Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</strong></p>
+
+      <p class="provider-list">These providers are becoming part of a much larger curated image collection that Galaxy Viewer can take you to directly while you explore the sky.</p>
+    </div>
+
+    <section class="providers" aria-label="Galaxy Viewer image providers">
+      <div class="provider-grid">
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/jwst/jwst-icon.png?v=20260921c" alt="James Webb STScI">
+          <div class="provider-name">James Webb<small>STScI</small></div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/noirlab/noirlab-icon.png?v=20260921c" alt="NOIRLab">
+          <div class="provider-name">NOIRLab</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/spitzer/spitzer-icon.png?v=20260921c" alt="Spitzer">
+          <div class="provider-name">Spitzer</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/ESO/eso_observatory_night_sky_icon.png?v=20260921c" alt="ESO">
+          <div class="provider-name">ESO</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/chandra/chandra-icon.png?v=20260921c" alt="Chandra">
+          <div class="provider-name">Chandra</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/hubble/hubble-icon.png?v=20260921c" alt="ESA Hubble">
+          <div class="provider-name">ESA / Hubble</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/euclid/euclid-icon.png?v=20260921c" alt="Euclid">
+          <div class="provider-name">Euclid</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/herschel/herschel-icon.png?v=20260921c" alt="Herschel">
+          <div class="provider-name">Herschel</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/galex/galex-icon.png?v=20260921c" alt="GALEX">
+          <div class="provider-name">GALEX</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/nustar/nustar-icon.png?v=20260921c" alt="NuSTAR">
+          <div class="provider-name">NuSTAR</div>
+        </div>
+
+        <div class="provider">
+          <img src="../viewer/artwork/runtime/providers/nrao/nrao-icon.png?v=20260921c" alt="NRAO">
+          <div class="provider-name">NRAO</div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section">
-    <div class="section-head"><div class="section-title">11 IMAGE PROVIDERS</div><div class="section-sub">OFFICIAL GALAXY VIEWER JPEG TILES</div></div>
-    <div class="providers">
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/JWST/JWST.jpg?v=gv-portal-005" alt="JWST"></div><div class="name">JWST</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/NoirLabs/NOIRLab.jpg?v=gv-portal-005" alt="NOIRLab"></div><div class="name">NOIRLab</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/Spitzer/Spitzer.jpg?v=gv-portal-005" alt="Spitzer"></div><div class="name">SPITZER</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/ESO/ESO.jpg?v=gv-portal-005" alt="ESO"></div><div class="name">ESO</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/Chandra/Chandra.jpg?v=gv-portal-005" alt="Chandra"></div><div class="name">CHANDRA</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/Hubble/Hubble.jpg?v=gv-portal-005" alt="Hubble"></div><div class="name">HUBBLE</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/Euclid/Euclid.jpg?v=gv-portal-005" alt="Euclid"></div><div class="name">EUCLID</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/Herschel/Herschel.jpg?v=gv-portal-005" alt="Herschel"></div><div class="name">HERSCHEL</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/GALEX/GALEX.jpg?v=gv-portal-005" alt="GALEX"></div><div class="name">GALEX</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/NuSTAR/NuSTAR.jpg?v=gv-portal-005" alt="NuSTAR"></div><div class="name">NuSTAR</div></article>
-      <article class="provider"><div class="pic"><img src="../viewer/artwork/NRAO/NRAO.jpg?v=gv-portal-005" alt="NRAO"></div><div class="name">NRAO</div></article>
-    </div>
-  </section>
+    <div class="copy continue">
+      <p>I’m now working through the final presentation passes, tuning each image so it feels like part of the sky instead of a rectangular photograph dropped on top of it.</p>
 
-  <section class="announcement">
-    <div data-lang="en">
-      <h2>DEVELOPMENT UPDATE · ALMOST READY FOR LAUNCH</h2>
-      <p>Hi everyone — I wanted to share a quick update on <strong>Galaxy Viewer</strong>. I’ve had major breakthroughs in the programming recently, and the app has taken a huge step forward.</p>
-      <p>I’m now in the final stretch of bug fixing and polishing, and I plan to release the <strong>Google Play Store app in the next couple of weeks</strong>.</p>
-      <p>Galaxy Viewer now brings together imagery from <strong>11 major observatories, missions, and astronomical archives</strong>: JWST, NOIRLab, Spitzer, ESO, Chandra, Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</p>
-      <p>Over the next couple of weeks I’ll be curating and adding <strong>a large number of new images</strong>. I’ve already added some spectacular imagery, and there is much more coming as the catalog grows.</p>
-      <p>One of the biggest improvements is a filtering and blending system I developed so observatory images merge much more naturally into the live sky viewer instead of looking pasted on top. I’m going through the collection <strong>image by image</strong>, tuning filtering, smoothing, framing, and presentation settings. It takes a long time, but the results are worth it.</p>
-      <p>There are still bugs to squash, but Galaxy Viewer is very close. <strong>Enjoy the demo and go explore the universe.</strong> ✨</p>
-      <p class="signature">— Germán</p>
-    </div>
-    <div data-lang="es">
-      <h2>ACTUALIZACIÓN · CASI LISTO PARA EL LANZAMIENTO</h2>
-      <p>Hola a todos — quería compartirles una actualización rápida sobre <strong>Galaxy Viewer</strong>. Recientemente he tenido grandes avances en la programación, y la aplicación ha dado un enorme paso adelante.</p>
-      <p>Ahora estoy en la etapa final de corrección de errores y pulido, y planeo lanzar la <strong>aplicación en Google Play Store durante las próximas semanas</strong>.</p>
-      <p>Galaxy Viewer ahora reúne imágenes de <strong>11 grandes observatorios, misiones y archivos astronómicos</strong>: JWST, NOIRLab, Spitzer, ESO, Chandra, Hubble, Euclid, Herschel, GALEX, NuSTAR y NRAO.</p>
-      <p>Durante las próximas semanas estaré curando y agregando <strong>una gran cantidad de imágenes nuevas</strong>. Ya he agregado imágenes espectaculares y vienen muchas más mientras continúo ampliando el catálogo.</p>
-      <p>Una de las mejoras más importantes es un sistema de filtrado y fusión que desarrollé para que las imágenes de los observatorios se integren de forma mucho más natural con el visor del cielo, en lugar de verse pegadas encima. Estoy revisando la colección <strong>imagen por imagen</strong>, ajustando filtros, suavizado, encuadre y presentación. Toma bastante tiempo, pero los resultados valen la pena.</p>
-      <p>Todavía quedan errores por corregir, pero Galaxy Viewer está muy cerca. <strong>Disfruten la demostración y salgan a explorar el universo.</strong> ✨</p>
+      <div class="tech">That work includes per-image <strong>AVM/WCS registration</strong>, opacity and cross-fade tuning, <strong>vignetting, edge feathering and soft masks</strong>, black-level and tonal matching, local contrast control, framing, field-of-view calibration, and transition smoothing so the observatory imagery blends cleanly into the live Aladin sky background.</div>
+
+      <p>I’m doing that curation <strong>image by image</strong>. It is slower than simply loading a catalog, but it lets Galaxy Viewer preserve the scientific positioning while making the transition between survey imagery and the high-resolution observatory image much more natural.</p>
+
+      <p>At the same time I’m finishing the last navigation, high-definition viewing, provider-link, caching, and stability work. There are still a few bugs to squash, but the app is now in the final stretch and the catalog is growing quickly.</p>
+
+      <p>Thanks for following the project. There are a lot more galaxies and a lot more images coming. In the meantime, <strong>enjoy the demo and go explore the universe.</strong></p>
+
       <p class="signature">— Germán</p>
     </div>
   </section>
-  <div class="footer">GALAXY VIEWER · EXPLORE · DISCOVER · IMMERSE</div>
-</div>
+
+  <div class="launches">
+    <a id="gv-open-app" class="launch" href="../mobile/beta/?source=development-update-app&v=gv-update-20260921c">
+      <img src="../viewer/artwork/icon.svg?v=20260921c" alt="">
+      <div><strong>Launch App Version</strong><span>Open the Galaxy Viewer demo on Android</span></div>
+      <span class="arrow">›</span>
+    </a>
+
+    <a class="launch" href="../mobile/beta/?source=development-update-web&v=gv-update-20260921c">
+      <img src="../viewer/artwork/icon.svg?v=20260921c" alt="">
+      <div><strong>Launch Web Version</strong><span>Explore Galaxy Viewer in your browser</span></div>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <footer class="footer">Galaxy Viewer · Development Preview · Germán Arciniegas</footer>
+</main>
 
 <script>
 (()=>{
-  const body=document.body,en=document.getElementById('en'),es=document.getElementById('es');
-  function setLang(v){const x=v==='es';body.classList.toggle('lang-en',!x);body.classList.toggle('lang-es',x);en.classList.toggle('active',!x);es.classList.toggle('active',x);document.documentElement.lang=x?'es':'en';try{localStorage.setItem('gv-portal-lang',x?'es':'en')}catch(_){}}
-  en.onclick=()=>setLang('en');es.onclick=()=>setLang('es');try{if(localStorage.getItem('gv-portal-lang')==='es')setLang('es')}catch(_){}
-  const app=document.getElementById('gv-open-app');
-  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=portal-app&v=gv-portal-005';
-  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=portal-app&v=gv-portal-005#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
-  app.addEventListener('click',e=>{if(/Android/i.test(navigator.userAgent)){e.preventDefault();window.location.href=intent}});
-  if(document.fonts&&document.fonts.load)document.fonts.load('16px "Space Age"').catch(()=>{});
+  const appButton=document.getElementById('gv-open-app');
+  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260921c';
+  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260921c#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
+  appButton.addEventListener('click',event=>{
+    if(/Android/i.test(navigator.userAgent)){
+      event.preventDefault();
+      window.location.href=intent;
+    }
+  });
 })();
 </script>
 </body>
