@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>GALAXY VIEWER — DEVELOPMENT UPDATE</title>
-<link rel="icon" href="../viewer/artwork/icon.svg?v=gv-update-20260921e" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-update-20260921e">
+<link rel="icon" href="../viewer/artwork/icon.svg?v=gv-update-20260921f" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-update-20260921f">
 <style>
 @font-face{
   font-family:"Space Age";
@@ -83,6 +83,39 @@ body::after{
   width:min(100%,760px);
   margin:0 auto;
   padding:18px 14px calc(34px + env(safe-area-inset-bottom));
+}
+.language-toggle{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin:0 0 13px;
+  padding:5px;
+  border:1px solid rgba(124,203,255,.62);
+  border-radius:10px;
+  background:linear-gradient(180deg,rgba(8,31,70,.96),rgba(3,14,33,.98));
+  box-shadow:inset 0 0 8px rgba(225,248,255,.08),0 0 14px rgba(41,109,189,.18);
+}
+.language-toggle button{
+  min-height:42px;
+  border:1px solid rgba(124,203,255,.35);
+  border-radius:7px;
+  color:#9FDFFF;
+  background:rgba(5,22,50,.72);
+  font-size:9px;
+  line-height:1.25;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.language-toggle button.active{
+  color:#fff;
+  border:2px solid transparent;
+  background:
+    linear-gradient(145deg,rgba(11,49,119,.98),rgba(20,132,219,.98)) padding-box,
+    linear-gradient(145deg,#DDF8FF 0%,#7CCBFF 48%,#296DBD 100%) border-box;
+  box-shadow:
+    inset 0 0 7px rgba(225,248,255,.22),
+    0 0 8px rgba(124,203,255,.42),
+    0 0 14px rgba(41,109,189,.22);
 }
 .update{
   border:1px solid rgba(11,61,255,.68);
@@ -295,118 +328,187 @@ body::after{
 <body>
 
 <header class="banner" aria-label="Galaxy Viewer banner">
-  <iframe src="./galaxy-viewer-banner-0002.html?v=20260921e" title="Galaxy Viewer"></iframe>
+  <iframe src="./galaxy-viewer-banner-0002.html?v=20260921f" title="Galaxy Viewer"></iframe>
 </header>
 
 <main class="wrap">
+  <nav class="language-toggle" aria-label="Language selector">
+    <button id="lang-en" class="active" type="button">PRESS HERE FOR ENGLISH</button>
+    <button id="lang-es" type="button">PRESIONE AQUÍ PARA ESPAÑOL</button>
+  </nav>
+
   <section class="update">
     <div class="update-head">
-      <p class="kicker">Galaxy Viewer · Development Update</p>
-      <h1>New Image Providers Are Coming In</h1>
+      <p id="t-kicker" class="kicker">Galaxy Viewer · Development Update</p>
+      <h1 id="t-title">New Image Providers Are Coming In</h1>
     </div>
 
     <div class="copy">
-      <p>I’m adding imagery from <strong>11 major observatories, space missions, and astronomical archives</strong> to Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</strong></p>
+      <p id="t-intro">I’m adding imagery from <strong>11 major observatories, space missions, and astronomical archives</strong> to Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</strong></p>
 
-      <p class="provider-list">These providers are becoming part of a much larger curated image collection that Galaxy Viewer can take you to directly while you explore the sky.</p>
+      <p id="t-provider-list" class="provider-list">These providers are becoming part of a much larger curated image collection that Galaxy Viewer can take you to directly while you explore the sky.</p>
     </div>
 
     <section class="providers" aria-label="Galaxy Viewer image providers">
       <div class="provider-grid">
         <div class="provider">
-          <img src="../viewer/artwork/JWST/JWST.jpg?v=20260921e" alt="James Webb STScI">
+          <img src="../viewer/artwork/JWST/JWST.jpg?v=20260921f" alt="James Webb STScI">
           <div class="provider-name">James Webb<small>STScI</small></div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/NoirLabs/NOIRLab.jpg?v=20260921e" alt="NOIRLab">
+          <img src="../viewer/artwork/NoirLabs/NOIRLab.jpg?v=20260921f" alt="NOIRLab">
           <div class="provider-name">NOIRLab</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/Spitzer/Spitzer.jpg?v=20260921e" alt="Spitzer">
+          <img src="../viewer/artwork/Spitzer/Spitzer.jpg?v=20260921f" alt="Spitzer">
           <div class="provider-name">Spitzer</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/ESO/ESO.jpg?v=20260921e" alt="ESO">
+          <img src="../viewer/artwork/ESO/ESO.jpg?v=20260921f" alt="ESO">
           <div class="provider-name">ESO</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/Chandra/Chandra.jpg?v=20260921e" alt="Chandra">
+          <img src="../viewer/artwork/Chandra/Chandra.jpg?v=20260921f" alt="Chandra">
           <div class="provider-name">Chandra</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/Hubble/Hubble.jpg?v=20260921e" alt="ESA Hubble">
+          <img src="../viewer/artwork/Hubble/Hubble.jpg?v=20260921f" alt="ESA Hubble">
           <div class="provider-name">ESA / Hubble</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/Euclid/Euclid.jpg?v=20260921e" alt="Euclid">
+          <img src="../viewer/artwork/Euclid/Euclid.jpg?v=20260921f" alt="Euclid">
           <div class="provider-name">Euclid</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/Herschel/Herschel.jpg?v=20260921e" alt="Herschel">
+          <img src="../viewer/artwork/Herschel/Herschel.jpg?v=20260921f" alt="Herschel">
           <div class="provider-name">Herschel</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/GALEX/GALEX.jpg?v=20260921e" alt="GALEX">
+          <img src="../viewer/artwork/GALEX/GALEX.jpg?v=20260921f" alt="GALEX">
           <div class="provider-name">GALEX</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/NuSTAR/NuSTAR.jpg?v=20260921e" alt="NuSTAR">
+          <img src="../viewer/artwork/NuSTAR/NuSTAR.jpg?v=20260921f" alt="NuSTAR">
           <div class="provider-name">NuSTAR</div>
         </div>
 
         <div class="provider">
-          <img src="../viewer/artwork/NRAO/NRAO.jpg?v=20260921e" alt="NRAO">
+          <img src="../viewer/artwork/NRAO/NRAO.jpg?v=20260921f" alt="NRAO">
           <div class="provider-name">NRAO</div>
         </div>
       </div>
     </section>
 
     <div class="copy continue">
-      <p>I’m now working through the final presentation passes, tuning each image so it feels like part of the sky instead of a rectangular photograph dropped on top of it.</p>
+      <p id="t-final-pass">I’m now working through the final presentation passes, tuning each image so it feels like part of the sky instead of a rectangular photograph dropped on top of it.</p>
 
-      <div class="tech">That work includes per-image <strong>AVM/WCS registration</strong>, opacity and cross-fade tuning, <strong>vignetting, edge feathering and soft masks</strong>, black-level and tonal matching, local contrast control, framing, field-of-view calibration, and transition smoothing so the observatory imagery blends cleanly into the live Aladin sky background.</div>
+      <div id="t-tech" class="tech">That work includes per-image <strong>AVM/WCS registration</strong>, opacity and cross-fade tuning, <strong>vignetting, edge feathering and soft masks</strong>, black-level and tonal matching, local contrast control, framing, field-of-view calibration, and transition smoothing so the observatory imagery blends cleanly into the live Aladin sky background.</div>
 
-      <p>I’m doing that curation <strong>image by image</strong>. It is slower than simply loading a catalog, but it lets Galaxy Viewer preserve the scientific positioning while making the transition between survey imagery and the high-resolution observatory image much more natural.</p>
+      <p id="t-curation">I’m doing that curation <strong>image by image</strong>. It is slower than simply loading a catalog, but it lets Galaxy Viewer preserve the scientific positioning while making the transition between survey imagery and the high-resolution observatory image much more natural.</p>
 
-      <p>At the same time I’m finishing the last navigation, high-definition viewing, provider-link, caching, and stability work. There are still a few bugs to squash, but the app is now in the final stretch and the catalog is growing quickly.</p>
+      <p id="t-finishing">At the same time I’m finishing the last navigation, high-definition viewing, provider-link, caching, and stability work. There are still a few bugs to squash, but the app is now in the final stretch and the catalog is growing quickly.</p>
 
-      <p>Thanks for following the project. There are a lot more galaxies and a lot more images coming. In the meantime, <strong>enjoy the demo and go explore the universe.</strong></p>
+      <p id="t-thanks">Thanks for following the project. There are a lot more galaxies and a lot more images coming. In the meantime, <strong>enjoy the demo and go explore the universe.</strong></p>
 
       <p class="signature">— Germán</p>
     </div>
   </section>
 
   <div class="launches">
-    <a id="gv-open-app" class="launch" href="../mobile/beta/?source=development-update-app&v=gv-update-20260921e">
-      <img src="../viewer/artwork/icon.svg?v=20260921e" alt="">
-      <div><strong>Launch App Version</strong><span>Open the Galaxy Viewer demo on Android</span></div>
+    <a id="gv-open-app" class="launch" href="../mobile/beta/?source=development-update-app&v=gv-update-20260921f">
+      <img src="../viewer/artwork/icon.svg?v=20260921f" alt="">
+      <div><strong id="t-app-title">Launch App Version</strong><span id="t-app-sub">Open the Galaxy Viewer demo on Android</span></div>
       <span class="arrow">›</span>
     </a>
 
-    <a class="launch" href="../mobile/beta/?source=development-update-web&v=gv-update-20260921e">
-      <img src="../viewer/artwork/icon.svg?v=20260921e" alt="">
-      <div><strong>Launch Web Version</strong><span>Explore Galaxy Viewer in your browser</span></div>
+    <a class="launch" href="../mobile/beta/?source=development-update-web&v=gv-update-20260921f">
+      <img src="../viewer/artwork/icon.svg?v=20260921f" alt="">
+      <div><strong id="t-web-title">Launch Web Version</strong><span id="t-web-sub">Explore Galaxy Viewer in your browser</span></div>
       <span class="arrow">›</span>
     </a>
   </div>
 
-  <footer class="footer">Galaxy Viewer · Development Preview · Germán Arciniegas</footer>
+  <footer id="t-footer" class="footer">Galaxy Viewer · Development Preview · Germán Arciniegas</footer>
 </main>
 
 <script>
 (()=>{
+  const translations={
+    en:{
+      kicker:'Galaxy Viewer · Development Update',
+      title:'New Image Providers Are Coming In',
+      intro:'I’m adding imagery from <strong>11 major observatories, space missions, and astronomical archives</strong> to Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</strong>',
+      providerList:'These providers are becoming part of a much larger curated image collection that Galaxy Viewer can take you to directly while you explore the sky.',
+      finalPass:'I’m now working through the final presentation passes, tuning each image so it feels like part of the sky instead of a rectangular photograph dropped on top of it.',
+      tech:'That work includes per-image <strong>AVM/WCS registration</strong>, opacity and cross-fade tuning, <strong>vignetting, edge feathering and soft masks</strong>, black-level and tonal matching, local contrast control, framing, field-of-view calibration, and transition smoothing so the observatory imagery blends cleanly into the live Aladin sky background.',
+      curation:'I’m doing that curation <strong>image by image</strong>. It is slower than simply loading a catalog, but it lets Galaxy Viewer preserve the scientific positioning while making the transition between survey imagery and the high-resolution observatory image much more natural.',
+      finishing:'At the same time I’m finishing the last navigation, high-definition viewing, provider-link, caching, and stability work. There are still a few bugs to squash, but the app is now in the final stretch and the catalog is growing quickly.',
+      thanks:'Thanks for following the project. There are a lot more galaxies and a lot more images coming. In the meantime, <strong>enjoy the demo and go explore the universe.</strong>',
+      appTitle:'Launch App Version',
+      appSub:'Open the Galaxy Viewer demo on Android',
+      webTitle:'Launch Web Version',
+      webSub:'Explore Galaxy Viewer in your browser',
+      footer:'Galaxy Viewer · Development Preview · Germán Arciniegas'
+    },
+    es:{
+      kicker:'Galaxy Viewer · Actualización de Desarrollo',
+      title:'Estoy Agregando Nuevos Proveedores de Imágenes',
+      intro:'Estoy agregando imágenes de <strong>11 importantes observatorios, misiones espaciales y archivos astronómicos</strong> a Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR y NRAO.</strong>',
+      providerList:'Estos proveedores están pasando a formar parte de una colección de imágenes curada mucho más grande, a la que Galaxy Viewer puede llevarte directamente mientras exploras el cielo.',
+      finalPass:'Ahora estoy trabajando en los últimos ajustes de presentación, afinando cada imagen para que se sienta como parte del cielo en lugar de una fotografía rectangular colocada encima.',
+      tech:'Ese trabajo incluye <strong>registro AVM/WCS</strong> para cada imagen, ajuste de opacidad y fundido cruzado, <strong>viñeteado, suavizado de bordes y máscaras suaves</strong>, igualación de nivel de negros y tonalidad, control de contraste local, encuadre, calibración del campo de visión y suavizado de las transiciones para que las imágenes de los observatorios se integren limpiamente con el fondo celeste en vivo de Aladin.',
+      curation:'Estoy haciendo esa curaduría <strong>imagen por imagen</strong>. Es más lento que simplemente cargar un catálogo, pero permite que Galaxy Viewer conserve el posicionamiento científico y al mismo tiempo haga mucho más natural la transición entre las imágenes del sondeo del cielo y las imágenes de alta resolución de los observatorios.',
+      finishing:'Al mismo tiempo estoy terminando los últimos trabajos de navegación, visualización en alta definición, enlaces a los proveedores, almacenamiento en caché y estabilidad. Todavía quedan algunos errores por corregir, pero la aplicación ya está en la etapa final y el catálogo sigue creciendo rápidamente.',
+      thanks:'Gracias por seguir el proyecto. Vienen muchas más galaxias y muchas más imágenes. Mientras tanto, <strong>disfruta la demostración y sal a explorar el universo.</strong>',
+      appTitle:'Abrir Versión de la Aplicación',
+      appSub:'Abrir la demostración de Galaxy Viewer en Android',
+      webTitle:'Abrir Versión Web',
+      webSub:'Explorar Galaxy Viewer en tu navegador',
+      footer:'Galaxy Viewer · Vista Previa de Desarrollo · Germán Arciniegas'
+    }
+  };
+  const ids={
+    kicker:'t-kicker',title:'t-title',intro:'t-intro',providerList:'t-provider-list',
+    finalPass:'t-final-pass',tech:'t-tech',curation:'t-curation',finishing:'t-finishing',
+    thanks:'t-thanks',appTitle:'t-app-title',appSub:'t-app-sub',webTitle:'t-web-title',
+    webSub:'t-web-sub',footer:'t-footer'
+  };
+  const enButton=document.getElementById('lang-en');
+  const esButton=document.getElementById('lang-es');
+
+  function setLanguage(lang){
+    const table=translations[lang]||translations.en;
+    for(const [key,id] of Object.entries(ids)){
+      const node=document.getElementById(id);
+      if(node)node.innerHTML=table[key];
+    }
+    const spanish=lang==='es';
+    document.documentElement.lang=spanish?'es':'en';
+    enButton.classList.toggle('active',!spanish);
+    esButton.classList.toggle('active',spanish);
+    enButton.setAttribute('aria-pressed',String(!spanish));
+    esButton.setAttribute('aria-pressed',String(spanish));
+    document.title=spanish?'GALAXY VIEWER — ACTUALIZACIÓN DE DESARROLLO':'GALAXY VIEWER — DEVELOPMENT UPDATE';
+    try{localStorage.setItem('gv-update-language',lang)}catch(_){}
+  }
+  enButton.addEventListener('click',()=>setLanguage('en'));
+  esButton.addEventListener('click',()=>setLanguage('es'));
+  let saved='en';
+  try{saved=localStorage.getItem('gv-update-language')||'en'}catch(_){}
+  setLanguage(saved==='es'?'es':'en');
+
   const appButton=document.getElementById('gv-open-app');
-  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260921e';
-  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260921e#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
+  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260921f';
+  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260921f#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
   appButton.addEventListener('click',event=>{
     if(/Android/i.test(navigator.userAgent)){
       event.preventDefault();
