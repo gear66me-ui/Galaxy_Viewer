@@ -1,0 +1,62 @@
+name: One-shot Hubble count repair
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/one-shot-hubble-count-repair.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Verify and repair exactly two count fields
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          s = p.read_text(encoding="utf-8")
+          d = json.loads(s)
+
+          actual = len(d["entries"])
+          assert actual == 1104, f"Unexpected Hubble entries length: {actual}"
+          assert d["categoryEntryCount"] == 1229, d["categoryEntryCount"]
+          assert d["metadataRecordCount"] == 1229, d["metadataRecordCount"]
+          assert s.count('"categoryEntryCount": 1229') == 1
+          assert s.count('"metadataRecordCount": 1229') == 1
+
+          s = s.replace('"categoryEntryCount": 1229', '"categoryEntryCount": 1104', 1)
+          s = s.replace('"metadataRecordCount": 1229', '"metadataRecordCount": 1104', 1)
+          p.write_text(s, encoding="utf-8")
+
+          d2 = json.loads(p.read_text(encoding="utf-8"))
+          assert len(d2["entries"]) == 1104
+          assert d2["categoryEntryCount"] == 1104
+          assert d2["metadataRecordCount"] == 1104
+          print("PASS: Hubble 1104 / 1104")
+          PY
+
+          git diff --check
+          git diff --numstat
+          git diff -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+
+      - name: Commit repair
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Fix Hubble curated catalog record counts"
+          git push origin HEAD:beta
