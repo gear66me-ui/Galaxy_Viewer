@@ -6,8 +6,8 @@
   "sourceCopyrightUrl": "https://www.spitzer.caltech.edu/page/image-use-policy",
   "license": "Spitzer/JPL image-use policy",
   "licenseUrl": "https://www.spitzer.caltech.edu/page/image-use-policy",
-  "categoryEntryCount": 70,
-  "metadataRecordCount": 70,
+  "categoryEntryCount": 69,
+  "metadataRecordCount": 69,
   "downloadedImageCount": 0,
   "unavailableImageCount": 0,
   "totalImageBytes": null,
@@ -97,9 +97,9 @@
         "heightDegrees": 0.5656716666666667,
         "effectiveDegrees": 0.8485075
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.8485075,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2009-03b2",
@@ -184,9 +184,9 @@
         "heightDegrees": 0.5656716666666667,
         "effectiveDegrees": 0.8485075
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.8485075,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2005-20a3",
@@ -272,10 +272,10 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 3.9,
         "heightDegrees": 1.7,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
       "orientationDegrees": 310.2,
-      "fovDegrees": 2.0,
+      "fovDegrees": 2,
       "aladinRotation": 54.89999999999998
     },
     {
@@ -362,10 +362,10 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 3.9,
         "heightDegrees": 1.7,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
       "orientationDegrees": 310.2,
-      "fovDegrees": 2.0,
+      "fovDegrees": 2,
       "aladinRotation": 58.89999999999998
     },
     {
@@ -452,10 +452,10 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 3.9,
         "heightDegrees": 1.7,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
       "orientationDegrees": 310.2,
-      "fovDegrees": 2.0,
+      "fovDegrees": 2,
       "aladinRotation": 48.89999999999998
     },
     {
@@ -541,9 +541,9 @@
         "heightDegrees": 0.32438333333333336,
         "effectiveDegrees": 0.29688991651835256
       },
-      "orientationDegrees": 163.0,
+      "orientationDegrees": 163,
       "fovDegrees": 0.29688991651835256,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2019-11a",
@@ -628,9 +628,9 @@
         "heightDegrees": 0.32438333333333336,
         "effectiveDegrees": 0.2493078128380174
       },
-      "orientationDegrees": 163.0,
+      "orientationDegrees": 163,
       "fovDegrees": 0.2493078128380174,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2019-11b",
@@ -715,9 +715,9 @@
         "heightDegrees": 0.32438333333333336,
         "effectiveDegrees": 0.27206061041770097
       },
-      "orientationDegrees": 163.0,
+      "orientationDegrees": 163,
       "fovDegrees": 0.27206061041770097,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2019-15a",
@@ -802,9 +802,9 @@
         "heightDegrees": 0.45413833333333337,
         "effectiveDegrees": 0.6812075000000001
       },
-      "orientationDegrees": 157.0,
+      "orientationDegrees": 157,
       "fovDegrees": 0.6812075000000001,
-      "aladinRotation": 157.0
+      "aladinRotation": 157
     },
     {
       "archiveId": "ssc2019-15b",
@@ -889,9 +889,9 @@
         "heightDegrees": 0.45413833333333337,
         "effectiveDegrees": 0.6812075000000001
       },
-      "orientationDegrees": 157.0,
+      "orientationDegrees": 157,
       "fovDegrees": 0.6812075000000001,
-      "aladinRotation": 157.0
+      "aladinRotation": 157
     },
     {
       "archiveId": "ssc2019-15c",
@@ -976,9 +976,9 @@
         "heightDegrees": 0.45413833333333337,
         "effectiveDegrees": 0.6812075000000001
       },
-      "orientationDegrees": 157.0,
+      "orientationDegrees": 157,
       "fovDegrees": 0.6812075000000001,
-      "aladinRotation": 157.0
+      "aladinRotation": 157
     },
     {
       "archiveId": "ssc2019-15d",
@@ -1063,9 +1063,9 @@
         "heightDegrees": 0.45413833333333337,
         "effectiveDegrees": 0.6812075000000001
       },
-      "orientationDegrees": 157.0,
+      "orientationDegrees": 157,
       "fovDegrees": 0.6812075000000001,
-      "aladinRotation": 157.0
+      "aladinRotation": 157
     },
     {
       "archiveId": "sig05-019b",
@@ -1099,7 +1099,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 400.0,
+        "distanceMly": 400,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "400.000 million light-years",
         "distanceEstimated": false,
@@ -1153,7 +1153,7 @@
         "heightDegrees": 0.06983333333333334,
         "effectiveDegrees": 0.09002736957844548
       },
-      "orientationDegrees": 218.0,
+      "orientationDegrees": 218,
       "fovDegrees": 0.09002736957844548,
       "aladinRotation": 320.6
     },
@@ -1450,7 +1450,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "45.000 million light-years",
         "distanceEstimated": false,
@@ -1540,7 +1540,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "45.000 million light-years",
         "distanceEstimated": false,
@@ -1647,7 +1647,7 @@
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 200 KYR",
-        "redshift": 1.4e-05,
+        "redshift": 0.000014,
         "redshiftDisplay": "EST. z 0.00001",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_0011",
@@ -1682,10 +1682,10 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 3.71,
         "heightDegrees": 3.8573333333333335,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
       "orientationDegrees": 181.8,
-      "fovDegrees": 2.0,
+      "fovDegrees": 2,
       "aladinRotation": 181.79999999999995
     },
     {
@@ -1737,7 +1737,7 @@
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 200 KYR",
-        "redshift": 1.4e-05,
+        "redshift": 0.000014,
         "redshiftDisplay": "EST. z 0.00001",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_0011",
@@ -1772,10 +1772,10 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 3.71,
         "heightDegrees": 3.8573333333333335,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
       "orientationDegrees": 181.8,
-      "fovDegrees": 2.0,
+      "fovDegrees": 2,
       "aladinRotation": 181.79999999999995
     },
     {
@@ -1810,7 +1810,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 110.0,
+        "distanceMly": 110,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "110.000 million light-years",
         "distanceEstimated": false,
@@ -1900,7 +1900,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 110.0,
+        "distanceMly": 110,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "110.000 million light-years",
         "distanceEstimated": false,
@@ -2007,7 +2007,7 @@
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 163 KYR",
-        "redshift": 1e-05,
+        "redshift": 0.00001,
         "redshiftDisplay": "EST. z 0.00001",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_0011",
@@ -2042,11 +2042,11 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 7.3,
         "heightDegrees": 7.3,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
-      "orientationDegrees": 27.0,
-      "fovDegrees": 2.0,
-      "aladinRotation": 27.0
+      "orientationDegrees": 27,
+      "fovDegrees": 2,
+      "aladinRotation": 27
     },
     {
       "archiveId": "ssc2006-17b1",
@@ -2097,7 +2097,7 @@
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 163 KYR",
-        "redshift": 1e-05,
+        "redshift": 0.00001,
         "redshiftDisplay": "EST. z 0.00001",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_0011",
@@ -2132,11 +2132,11 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 7.3,
         "heightDegrees": 7.3,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
-      "orientationDegrees": 27.0,
-      "fovDegrees": 2.0,
-      "aladinRotation": 27.0
+      "orientationDegrees": 27,
+      "fovDegrees": 2,
+      "aladinRotation": 27
     },
     {
       "archiveId": "ssc2009-15a2",
@@ -2308,7 +2308,7 @@
         "heightDegrees": 0.10957833333333333,
         "effectiveDegrees": 0.1643675
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.1643675,
       "aladinRotation": 315.29999999999995
     },
@@ -2395,9 +2395,9 @@
         "heightDegrees": 0.10957833333333333,
         "effectiveDegrees": 0.1643675
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.1643675,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2005-19a2",
@@ -2431,7 +2431,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 12800.0,
+        "distanceMly": 12800,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "12.8 billion light-years",
         "distanceEstimated": false,
@@ -2453,7 +2453,7 @@
         "redshiftEstimated": false,
         "redshiftMethod": "official_spitzer_object_metadata",
         "sizeCosmology": {
-          "H0KmPerSecPerMpc": 70.0,
+          "H0KmPerSecPerMpc": 70,
           "omegaM": 0.3,
           "omegaLambda": 0.7,
           "distanceType": "angular-diameter distance"
@@ -2577,9 +2577,9 @@
         "heightDegrees": 0.23211666666666667,
         "effectiveDegrees": 0.17604302836401012
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.17604302836401012,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2013-07a1",
@@ -2666,7 +2666,7 @@
       },
       "orientationDegrees": 52.6,
       "fovDegrees": 0.5711731234242726,
-      "aladinRotation": 38.0
+      "aladinRotation": 38
     },
     {
       "archiveId": "ssc2013-07a2",
@@ -2874,7 +2874,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 352.0,
+        "distanceMly": 352,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "352 million light-years",
         "distanceEstimated": false,
@@ -2928,9 +2928,9 @@
         "heightDegrees": 0.04833333333333333,
         "effectiveDegrees": 0.06314665470157545
       },
-      "orientationDegrees": 345.0,
+      "orientationDegrees": 345,
       "fovDegrees": 0.06314665470157545,
-      "aladinRotation": 12.0
+      "aladinRotation": 12
     },
     {
       "archiveId": "ssc2019-03a",
@@ -2964,7 +2964,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 272.0,
+        "distanceMly": 272,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "272 million light-years",
         "distanceEstimated": false,
@@ -3054,7 +3054,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 450.0,
+        "distanceMly": 450,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "450 million light-years",
         "distanceEstimated": false,
@@ -3231,7 +3231,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "3.000 million light-years",
         "distanceEstimated": false,
@@ -3321,7 +3321,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 450.0,
+        "distanceMly": 450,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "450 million light-years",
         "distanceEstimated": false,
@@ -3375,9 +3375,9 @@
         "heightDegrees": 0.013333333333333334,
         "effectiveDegrees": 0.02738612787525831
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.02738612787525831,
-      "aladinRotation": 9.0
+      "aladinRotation": 9
     },
     {
       "archiveId": "ssc2004-09a1",
@@ -3411,7 +3411,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 11.0,
+        "distanceMly": 11,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "11 million light-years",
         "distanceEstimated": false,
@@ -3501,7 +3501,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "3.000 million light-years",
         "distanceEstimated": false,
@@ -3591,7 +3591,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "3.000 million light-years",
         "distanceEstimated": false,
@@ -3768,7 +3768,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 400.0,
+        "distanceMly": 400,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "400 million light-years",
         "distanceEstimated": false,
@@ -3858,7 +3858,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 465.0,
+        "distanceMly": 465,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "465.000 million light-years",
         "distanceEstimated": false,
@@ -3914,7 +3914,7 @@
       },
       "orientationDegrees": 128.1,
       "fovDegrees": 0.07298929716061116,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2006-08a1",
@@ -3948,7 +3948,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "300.000 million light-years",
         "distanceEstimated": false,
@@ -4004,102 +4004,7 @@
       },
       "orientationDegrees": 88.3,
       "fovDegrees": 0.10621264049066852,
-      "aladinRotation": 0.0
-    },
-    {
-      "archiveId": "ssc2008-12a1",
-      "name": "Baby Boom Galaxy",
-      "title": "Super-Starburst Galaxy: J100054_023436",
-      "ra": 150.11625,
-      "dec": 2.200972222222222,
-      "raText": "10:00:27.90",
-      "decText": "+02:12:03.5",
-      "distance": "12.3 billion light-years",
-      "constellation": "Sextans",
-      "fieldOfView": "0.2 x 0.2 arcminutes",
-      "orientation": "North is up",
-      "imageType": "Observation",
-      "releaseDate": "2008-07-10",
-      "pixelSize": null,
-      "credit": "NASA/JPL-Caltech/Subaru/STScI",
-      "sourceUrl": "https://www.spitzer.caltech.edu/image/ssc2008-12a1",
-      "esaPublicationJpeg": null,
-      "jpegCandidates": [
-        "https://astropix.org/archive/spitzer/ssc2008-12a1/spitzer_ssc2008-12a1_320.jpg"
-      ],
-      "license": "Spitzer/JPL image-use policy",
-      "licenseUrl": "https://www.spitzer.caltech.edu/page/image-use-policy",
-      "imageStatus": "curator_keep_galaxy_target_resolved_0008",
-      "selectedImageUrl": "https://astropix.org/archive/spitzer/ssc2008-12a1/spitzer_ssc2008-12a1_320.jpg",
-      "assetName": null,
-      "bytes": null,
-      "sha256": null,
-      "downloadErrors": [],
-      "githubImageUrl": null,
-      "releaseTag": null,
-      "science": {
-        "distanceMly": 12300.0,
-        "distanceMethod": "official_spitzer_or_nasa_object_distance",
-        "distanceDisplay": "12.3 billion light-years",
-        "distanceEstimated": false,
-        "sizeKly": [
-          258.5159854905848,
-          258.5159854905848
-        ],
-        "sizeMethod": "flat_LCDM_angular_diameter_distance_from_published_redshift_x_sourced_image_FOV",
-        "sizeDisplay": "EST. 259 x 259 KLY",
-        "sizeEstimated": true,
-        "ageGyr": 12.3,
-        "ageMethod": "lookback_est_from_published_light_travel_distance",
-        "ageMinGyr": null,
-        "ageMaxGyr": null,
-        "ageEstimated": true,
-        "ageDisplay": "EST. 12.3 GYR",
-        "redshift": 4.5,
-        "redshiftDisplay": "z 4.5",
-        "redshiftEstimated": false,
-        "redshiftMethod": "official_spitzer_object_metadata",
-        "sizeCosmology": {
-          "H0KmPerSecPerMpc": 70.0,
-          "omegaM": 0.3,
-          "omegaLambda": 0.7,
-          "distanceType": "angular-diameter distance"
-        },
-        "spitzerTargetReference": null
-      },
-      "constellationMethod": "Spitzer official image ssc2008-12a1",
-      "designation": "J100054+023436",
-      "designationMethod": "resolved_physical_target_0008",
-      "designationSourceFields": [
-        "curationGroup",
-        "official Spitzer gallery",
-        "S4G/CS4G and/or Hubble 0018 cross-check"
-      ],
-      "displayName": "Baby Boom Galaxy",
-      "astroPixSourceUrl": "https://www.astropix.org/image/spitzer/ssc2008-12a1",
-      "curationDecision": "KEEP",
-      "curationSource": "spitzer-curator-v14-static-545-2026-08-24T03-35-11-464Z.json",
-      "curationGroup": "SSC2008-12",
-      "curationAliases": null,
-      "officialGallery": true,
-      "age": "EST. 12.3 GYR",
-      "size": "EST. 259 x 259 KLY",
-      "targetId": "J100054+023436",
-      "targetType": "galaxy",
-      "coordinateMethod": "Spitzer official image ssc2008-12a1",
-      "fieldOfViewMethod": "Spitzer official image ssc2008-12a1",
-      "orientationMethod": "Spitzer official image ssc2008-12a1",
-      "creditMethod": "official_spitzer_image_page_or_embedded_metadata",
-      "creditExact": true,
-      "navigationStatus": "complete",
-      "fieldOfViewDegrees": {
-        "widthDegrees": 0.0033333333333333335,
-        "heightDegrees": 0.0033333333333333335,
-        "effectiveDegrees": 0.005
-      },
-      "orientationDegrees": 0.0,
-      "fovDegrees": 0.005,
-      "aladinRotation": 0.0
+      "aladinRotation": 0
     },
     {
       "archiveId": "ssc2008-12b",
@@ -4133,7 +4038,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 450.0,
+        "distanceMly": 450,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "450.000 million light-years",
         "distanceEstimated": false,
@@ -4274,7 +4179,7 @@
         "heightDegrees": 0.5656716666666667,
         "effectiveDegrees": 0.45881994115568253
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.45881994115568253,
       "aladinRotation": 38.30000000000001
     },
@@ -4361,9 +4266,9 @@
         "heightDegrees": 0.18598333333333333,
         "effectiveDegrees": 0.1137548530101124
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.1137548530101124,
-      "aladinRotation": 308.0
+      "aladinRotation": 308
     },
     {
       "archiveId": "ssc2023-04",
@@ -4448,7 +4353,7 @@
         "heightDegrees": 0.15926666666666664,
         "effectiveDegrees": 0.12141343694270418
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.12141343694270418,
       "aladinRotation": 232.70000000000005
     },
@@ -4535,7 +4440,7 @@
         "heightDegrees": 0.221745,
         "effectiveDegrees": 0.14458602298816092
       },
-      "orientationDegrees": 173.0,
+      "orientationDegrees": 173,
       "fovDegrees": 0.14458602298816092,
       "aladinRotation": 61.60000000000002
     },
@@ -4622,7 +4527,7 @@
         "heightDegrees": 0.3621166666666667,
         "effectiveDegrees": 0.33321089486214334
       },
-      "orientationDegrees": 0.0,
+      "orientationDegrees": 0,
       "fovDegrees": 0.33321089486214334,
       "aladinRotation": 349.9
     },
@@ -4883,7 +4788,7 @@
         "heightDegrees": 0.17821166666666668,
         "effectiveDegrees": 0.1684041971082113
       },
-      "orientationDegrees": 148.0,
+      "orientationDegrees": 148,
       "fovDegrees": 0.1684041971082113,
       "aladinRotation": 308.29999999999995
     },
@@ -4970,9 +4875,9 @@
         "heightDegrees": 0.13057166666666667,
         "effectiveDegrees": 0.09766598502153968
       },
-      "orientationDegrees": 143.0,
+      "orientationDegrees": 143,
       "fovDegrees": 0.09766598502153968,
-      "aladinRotation": 143.0
+      "aladinRotation": 143
     },
     {
       "archiveId": "ssc2023-02",
@@ -5057,7 +4962,7 @@
         "heightDegrees": 0.21335,
         "effectiveDegrees": 0.4691105982503356
       },
-      "orientationDegrees": 135.0,
+      "orientationDegrees": 135,
       "fovDegrees": 0.4691105982503356,
       "aladinRotation": 152.79999999999995
     },
@@ -5267,7 +5172,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 18.0,
+        "distanceMly": 18,
         "distanceMethod": "official_spitzer_or_nasa_object_distance",
         "distanceDisplay": "18 million light-years",
         "distanceEstimated": false,
@@ -5705,7 +5610,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 500.0,
+        "distanceMly": 500,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "500.000 million light-years",
         "distanceEstimated": false,
@@ -5934,10 +5839,10 @@
       "fieldOfViewDegrees": {
         "widthDegrees": 3.9,
         "heightDegrees": 1.7,
-        "effectiveDegrees": 2.0
+        "effectiveDegrees": 2
       },
       "orientationDegrees": 310.2,
-      "fovDegrees": 2.0,
+      "fovDegrees": 2,
       "aladinRotation": 54.30000000000001
     },
     {
@@ -6059,7 +5964,7 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "published_distance_via_hubble_0018_crosscheck",
         "distanceDisplay": "3.000 million light-years",
         "distanceEstimated": false,
@@ -6200,7 +6105,7 @@
         "heightDegrees": 0.45413833333333337,
         "effectiveDegrees": 0.41179550863378656
       },
-      "orientationDegrees": 157.0,
+      "orientationDegrees": 157,
       "fovDegrees": 0.41179550863378656,
       "aladinRotation": 265.29999999999995
     }
