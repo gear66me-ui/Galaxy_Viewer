@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>GALAXY VIEWER — DEVELOPMENT UPDATE</title>
-<link rel="icon" href="../viewer/artwork/icon.svg?v=gv-update-20260922b" type="image/svg+xml">
-<link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-update-20260922b">
+<link rel="icon" href="../viewer/artwork/icon.svg?v=gv-update-20260922c" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-update-20260922c">
 <style>
 @font-face{
   font-family:"Space Age";
@@ -95,6 +95,14 @@ body::after{
   background:linear-gradient(180deg,rgba(8,31,70,.96),rgba(3,14,33,.98));
   box-shadow:inset 0 0 8px rgba(225,248,255,.08),0 0 14px rgba(41,109,189,.18);
 }
+.language-toggle .flag{
+  width:24px;
+  height:16px;
+  margin-right:7px;
+  vertical-align:-3px;
+  border-radius:2px;
+  box-shadow:0 0 5px rgba(124,203,255,.35);
+}
 .language-toggle button{
   min-height:42px;
   border:1px solid rgba(124,203,255,.35);
@@ -180,13 +188,18 @@ body::after{
   padding:3px 13px 20px;
 }
 .provider-grid{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:9px;
 }
+.provider-last-row{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  width:calc((100% - 18px)/3 * 2 + 9px);
+  margin:9px auto 0;
+}
 .provider{
-  flex:0 0 calc((100% - 18px)/3);
   aspect-ratio:1/1;
   min-width:0;
   position:relative;
@@ -321,24 +334,25 @@ body::after{
   .copy{padding:23px 23px 6px}
   .providers{padding:5px 20px 25px}
   .provider-grid{gap:11px}
-  .provider{flex-basis:calc((100% - 33px)/4)}
+  .provider-last-row{gap:11px;width:calc((100% - 22px)/3 * 2 + 11px)}
   .launches{grid-template-columns:1fr 1fr}
 }
 @media(min-width:760px){
-  .provider{flex-basis:calc((100% - 55px)/6)}
+  .provider-grid{gap:12px}
+  .provider-last-row{gap:12px;width:calc((100% - 24px)/3 * 2 + 12px)}
 }
 </style>
 </head>
 <body>
 
 <header class="banner" aria-label="Galaxy Viewer banner">
-  <iframe src="./galaxy-viewer-banner-0002.html?v=20260922b" title="Galaxy Viewer"></iframe>
+  <iframe src="./galaxy-viewer-banner-0002.html?v=20260922c" title="Galaxy Viewer"></iframe>
 </header>
 
 <main class="wrap">
   <nav class="language-toggle" aria-label="Language selector">
-    <button id="lang-en" class="active" type="button">🇺🇸 PRESS HERE FOR ENGLISH</button>
-    <button id="lang-es" type="button">🇪🇸 PRESIONE AQUÍ PARA ESPAÑOL</button>
+    <button id="lang-en" class="active" type="button"><svg class="flag" viewBox="0 0 38 20" aria-hidden="true"><rect width="38" height="20" fill="#fff"/><g fill="#B22234"><rect y="0" width="38" height="1.54"/><rect y="3.08" width="38" height="1.54"/><rect y="6.16" width="38" height="1.54"/><rect y="9.24" width="38" height="1.54"/><rect y="12.32" width="38" height="1.54"/><rect y="15.40" width="38" height="1.54"/><rect y="18.46" width="38" height="1.54"/></g><rect width="15.2" height="10.78" fill="#3C3B6E"/><g fill="#fff"><circle cx="2" cy="2" r=".55"/><circle cx="5" cy="2" r=".55"/><circle cx="8" cy="2" r=".55"/><circle cx="11" cy="2" r=".55"/><circle cx="14" cy="2" r=".55"/><circle cx="3.5" cy="4" r=".55"/><circle cx="6.5" cy="4" r=".55"/><circle cx="9.5" cy="4" r=".55"/><circle cx="12.5" cy="4" r=".55"/><circle cx="2" cy="6" r=".55"/><circle cx="5" cy="6" r=".55"/><circle cx="8" cy="6" r=".55"/><circle cx="11" cy="6" r=".55"/><circle cx="14" cy="6" r=".55"/><circle cx="3.5" cy="8" r=".55"/><circle cx="6.5" cy="8" r=".55"/><circle cx="9.5" cy="8" r=".55"/><circle cx="12.5" cy="8" r=".55"/></g></svg>PRESS HERE FOR ENGLISH</button>
+    <button id="lang-es" type="button"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/></svg>PRESIONE AQUÍ PARA ESPAÑOL</button>
   </nav>
 
   <section class="update">
@@ -356,57 +370,60 @@ body::after{
     <section class="providers" aria-label="Galaxy Viewer image providers">
       <div class="provider-grid">
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/JWST/JWST.jpg?v=20260922b" alt="James Webb STScI">
+          <img decoding="async" src="../viewer/artwork/JWST/JWST.jpg?v=20260922c" alt="James Webb STScI">
           <div class="provider-name">James Webb<small>STScI</small></div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/NoirLabs/NOIRLab.jpg?v=20260922b" alt="NOIRLab">
+          <img decoding="async" src="../viewer/artwork/NoirLabs/NOIRLab.jpg?v=20260922c" alt="NOIRLab">
           <div class="provider-name">NOIRLab</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/Spitzer/Spitzer.jpg?v=20260922b" alt="Spitzer">
+          <img decoding="async" src="../viewer/artwork/Spitzer/Spitzer.jpg?v=20260922c" alt="Spitzer">
           <div class="provider-name">Spitzer</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/ESO/ESO.jpg?v=20260922b" alt="ESO">
+          <img decoding="async" src="../viewer/artwork/ESO/ESO.jpg?v=20260922c" alt="ESO">
           <div class="provider-name">ESO</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/Chandra/Chandra.jpg?v=20260922b" alt="Chandra">
+          <img decoding="async" src="../viewer/artwork/Chandra/Chandra.jpg?v=20260922c" alt="Chandra">
           <div class="provider-name">Chandra</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/Hubble/Hubble.jpg?v=20260922b" alt="ESA Hubble">
+          <img decoding="async" src="../viewer/artwork/Hubble/Hubble.jpg?v=20260922c" alt="ESA Hubble">
           <div class="provider-name">ESA / Hubble</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/Euclid/Euclid.jpg?v=20260922b" alt="Euclid">
+          <img decoding="async" src="../viewer/artwork/Euclid/Euclid.jpg?v=20260922c" alt="Euclid">
           <div class="provider-name">Euclid</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/Herschel/Herschel.jpg?v=20260922b" alt="Herschel">
+          <img decoding="async" src="../viewer/artwork/Herschel/Herschel.jpg?v=20260922c" alt="Herschel">
           <div class="provider-name">Herschel</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/GALEX/GALEX.jpg?v=20260922b" alt="GALEX">
+          <img decoding="async" src="../viewer/artwork/GALEX/GALEX.jpg?v=20260922c" alt="GALEX">
           <div class="provider-name">GALEX</div>
         </div>
 
+      </div>
+
+      <div class="provider-last-row">
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/NuSTAR/NuSTAR.jpg?v=20260922b" alt="NuSTAR">
+          <img decoding="async" src="../viewer/artwork/NuSTAR/NuSTAR.jpg?v=20260922c" alt="NuSTAR">
           <div class="provider-name">NuSTAR</div>
         </div>
 
         <div class="provider">
-          <img decoding="async" src="../viewer/artwork/NRAO/NRAO.jpg?v=20260922b" alt="NRAO">
+          <img decoding="async" src="../viewer/artwork/NRAO/NRAO.jpg?v=20260922c" alt="NRAO">
           <div class="provider-name">NRAO</div>
         </div>
       </div>
@@ -428,14 +445,14 @@ body::after{
   </section>
 
   <div class="launches">
-    <a id="gv-open-app" class="launch" href="../mobile/beta/?source=development-update-app&v=gv-update-20260922b">
-      <img src="../viewer/artwork/icon.svg?v=20260922b" alt="">
+    <a id="gv-open-app" class="launch" href="../mobile/beta/?source=development-update-app&v=gv-update-20260922c">
+      <img src="../viewer/artwork/icon.svg?v=20260922c" alt="">
       <div><strong id="t-app-title">Launch App Version</strong><span id="t-app-sub">Open the Galaxy Viewer demo on Android</span></div>
       <span class="arrow">›</span>
     </a>
 
-    <a class="launch" href="../mobile/beta/?source=development-update-web&v=gv-update-20260922b">
-      <img src="../viewer/artwork/icon.svg?v=20260922b" alt="">
+    <a class="launch" href="../mobile/beta/?source=development-update-web&v=gv-update-20260922c">
+      <img src="../viewer/artwork/icon.svg?v=20260922c" alt="">
       <div><strong id="t-web-title">Launch Web Version</strong><span id="t-web-sub">Explore Galaxy Viewer in your browser</span></div>
       <span class="arrow">›</span>
     </a>
@@ -511,8 +528,8 @@ body::after{
   setLanguage(saved==='es'?'es':'en');
 
   const appButton=document.getElementById('gv-open-app');
-  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260922b';
-  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260922b#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
+  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260922c';
+  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260922c#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
   appButton.addEventListener('click',event=>{
     if(/Android/i.test(navigator.userAgent)){
       event.preventDefault();
