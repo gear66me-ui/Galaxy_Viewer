@@ -1,3 +1,4 @@
+# trigger: second push so GitHub executes the registered BI workflow body
 name: TEMP BI WCS authority repair
 
 on:
@@ -41,7 +42,6 @@ jobs:
           bd_text = bd.read_text(encoding='utf-8')
           rg_text = rg227.read_text(encoding='utf-8')
 
-          # Create BI viewer as a full literal file from BD, not a wrapper.
           bi_text = bd_text
           replacements = [
               ("const VERSION='12AR-132BD';", "const VERSION='12AR-132BI';", 'viewer VERSION'),
@@ -57,7 +57,6 @@ jobs:
               bi_text = bi_text.replace(old, new, 1)
           bi.write_text(bi_text, encoding='utf-8', newline='\n')
 
-          # Create Random 0228 as full literal file from 0227, not a wrapper.
           old_block = """            const centerAuthority=gv0223ImageCenterFromWcs(wcs,actualWidth,actualHeight);
             const cameraRa=ra;
             const cameraDec=dec;"""
@@ -90,24 +89,15 @@ AUTHORIZED CHANGE:
           rg_new = header + rg_new
           rg228.write_text(rg_new, encoding='utf-8', newline='\n')
 
-          ptr.write_text(json.dumps({
-              'version': '12AR-132BI',
-              'viewer': 'GV-12AR-132BI.py'
-          }, indent=2) + '\n', encoding='utf-8', newline='\n')
-
-          # Remove this disposable workflow after it performs the repair.
+          ptr.write_text(json.dumps({'version':'12AR-132BI','viewer':'GV-12AR-132BI.py'}, indent=2) + '\n', encoding='utf-8', newline='\n')
           wpath.unlink(missing_ok=True)
-
           print('BI_REPAIR_FILES_WRITTEN=YES')
           PY
 
           echo '=== STAGED FILE GATE BEFORE ADD ==='
           git status --short
 
-          git add viewer/GV-12AR-132BI.py \
-                  viewer/modules/random-galaxy/gv-random-galaxy-0228.js \
-                  viewer/gv-current-viewer.json \
-                  .github/workflows/temp-direct-10h.yml
+          git add viewer/GV-12AR-132BI.py viewer/modules/random-galaxy/gv-random-galaxy-0228.js viewer/gv-current-viewer.json .github/workflows/temp-direct-10h.yml
 
           echo '=== EXACT CACHED FILES ==='
           git diff --cached --name-only | sort
