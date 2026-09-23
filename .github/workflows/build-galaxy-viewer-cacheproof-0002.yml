@@ -1,0 +1,94 @@
+name: Build Galaxy Viewer Cache-Proof APK 0002
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-cacheproof-0002.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Prepare cache-proof shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=android/galaxy-viewer-10e
+          A="$P/app/src/main/assets"
+          cp viewer/bootstrap/gv-generic-bootstrap-cacheproof-0001.js "$A/bootstrap-cacheproof-0001.js"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/galaxy-viewer-10e/app/build.gradle')
+          s=p.read_text()
+          s=s.replace("versionCode 1010","versionCode 1011")
+          s=s.replace("versionName '10E-generic-permanent-1'","versionName 'cacheproof-0001'")
+          p.write_text(s)
+          p=Path('android/galaxy-viewer-10e/app/src/main/AndroidManifest.xml')
+          p.write_text(p.read_text().replace('android:label="Galaxy Viewer 10E"','android:label="Galaxy Viewer"'))
+          p=Path('android/galaxy-viewer-10e/app/src/main/assets/index.html')
+          s=p.read_text()
+          old_remote="const remote='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/bootstrap/gv-generic-bootstrap-current.js?t='+Date.now();"
+          new_remote="const remote='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/bootstrap/gv-generic-bootstrap-cacheproof-0001.js?gvnocache='+Date.now();"
+          if old_remote not in s: raise SystemExit('remote bootstrap baseline missing')
+          s=s.replace(old_remote,new_remote)
+          old_fallback="}catch(_){const r=await fetch('bootstrap-fallback.js',{cache:'no-store'});if(!r.ok)throw new Error('Generic bootstrap unavailable');run(await r.text())}"
+          new_fallback="}catch(error){throw new Error('Live cache-proof bootstrap unavailable: '+String(error?.message||error))}"
+          if old_fallback not in s: raise SystemExit('fallback baseline missing')
+          p.write_text(s.replace(old_fallback,new_fallback))
+          PY
+          node --check viewer/bootstrap/gv-generic-bootstrap-cacheproof-0001.js
+          grep -Fq "gv-current-viewer.json?gvnocache=" viewer/bootstrap/gv-generic-bootstrap-cacheproof-0001.js
+          grep -Fq "cache:'no-store'" viewer/bootstrap/gv-generic-bootstrap-cacheproof-0001.js
+          grep -Fq "gv-generic-bootstrap-cacheproof-0001.js?gvnocache=" "$A/index.html"
+      - name: Build APK
+        run: gradle --no-daemon -p android/galaxy-viewer-10e :app:assembleDebug
+      - name: Validate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/galaxy-viewer-10e/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-CACHEPROOF-0001.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -Fq "package: name='com.gear66me.galaxyviewer10e.generic'" apk-badging.txt
+          grep -Fq "versionName='cacheproof-0001'" apk-badging.txt
+          unzip -p "$APK" assets/index.html > apk-index.html
+          unzip -p "$APK" assets/bootstrap-cacheproof-0001.js > apk-bootstrap.js
+          grep -Fq 'gv-generic-bootstrap-cacheproof-0001.js?gvnocache=' apk-index.html
+          grep -Fq 'gv-current-viewer.json?gvnocache=' apk-bootstrap.js
+          grep -Fq "cache:'no-store'" apk-bootstrap.js
+          if grep -Fq 'Invalid bundled Viewer manifest' apk-bootstrap.js; then exit 21; fi
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          cp "$APK" "$OUT"
+          sha256sum "$OUT" | tee "$OUT.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-CACHEPROOF-0001
+          path: |
+            Galaxy-Viewer-CACHEPROOF-0001.apk
+            Galaxy-Viewer-CACHEPROOF-0001.apk.sha256
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-cacheproof-0001
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" Galaxy-Viewer-CACHEPROOF-0001.apk Galaxy-Viewer-CACHEPROOF-0001.apk.sha256 --target "$(git rev-parse HEAD)" --title 'Galaxy Viewer Cache-Proof 0001' --notes 'Every launch fetches the live beta pointer and Viewer with no-store and a unique cache-busting query. No stale bundled Viewer fallback.'
