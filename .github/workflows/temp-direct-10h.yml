@@ -1,4 +1,4 @@
-# trigger: prepare BI dependency-tree repair
+# trigger: execute BI dependency-tree repair now
 name: TEMP BI dependency tree repair
 
 on:
@@ -37,7 +37,6 @@ jobs:
               if not path.exists():
                   raise SystemExit(f'FAIL missing required file: {path}')
 
-          # --- BI viewer dependency tree ---
           bi_text=bi.read_text(encoding='utf-8')
           replacements=[
               ("const VERSION='12AR-132BD';", "const VERSION='12AR-132BI';", 'viewer VERSION BD->BI'),
@@ -56,7 +55,6 @@ jobs:
                   raise SystemExit(f'FAIL {label}: old count {count}, new present={new in bi_text}')
           bi.write_text(bi_text, encoding='utf-8', newline='\n')
 
-          # --- Random 0228 creation/repair from 0227 baseline ---
           rg_text=rg227.read_text(encoding='utf-8')
           old_block="""            const centerAuthority=gv0223ImageCenterFromWcs(wcs,actualWidth,actualHeight);
             const cameraRa=ra;
@@ -88,10 +86,8 @@ AUTHORIZED CHANGE:
 """
           rg228.write_text(header+rg_new, encoding='utf-8', newline='\n')
 
-          # --- active pointer ---
           ptr.write_text(json.dumps({'version':'12AR-132BI','viewer':'GV-12AR-132BI.py'}, indent=2)+'\n', encoding='utf-8', newline='\n')
 
-          # --- exact dependency checks ---
           bi_final=bi.read_text(encoding='utf-8')
           rg_final=rg228.read_text(encoding='utf-8')
           ptr_final=ptr.read_text(encoding='utf-8')
