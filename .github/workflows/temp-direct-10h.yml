@@ -1,3 +1,4 @@
+# trigger: execute simplified BI Random 0228 repair
 name: TEMP BI Random 0228 repair
 
 on:
@@ -85,7 +86,6 @@ AUTHORIZED CHANGE:
 
           ptr.write_text(json.dumps({'version':'12AR-132BI','viewer':'GV-12AR-132BI.py'}, indent=2)+'\n', encoding='utf-8', newline='\n')
 
-          # Local invariants before git commit.
           patched=rg228.read_text(encoding='utf-8')
           if "const cameraRa=ra;" in patched:
               raise SystemExit('FAIL: 0228 still has bad precomputed cameraRa block')
