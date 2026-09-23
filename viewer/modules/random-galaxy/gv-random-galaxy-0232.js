@@ -10674,21 +10674,20 @@ async function requestRandomNavigation(){
     throw new Error('RANDOM 0070 PREPARED HD HANDOFF IDENTITY MISMATCH');
   }
 
-  /*
-   * 0232 — navigation authority is catalog RA/Dec/FOV only.
-   * JPEG AVM/WCS remains image-registration metadata and must not gate or
-   * rewrite the Aladin camera. Validate only the owned navigation destination.
-   */
   if(
+    !['RUNTIME_IMAGE_AVM','CATALOG_IMAGE_WCS_FALLBACK','PRECOMPUTED_IMAGE_AVM','PRECOMPUTED_CATALOG_FALLBACK']
+      .includes(handedOffDestination.avmAuthority)||
     !Number.isFinite(Number(handedOffDestination.ra))||
-    Number(handedOffDestination.ra)<0||Number(handedOffDestination.ra)>=360||
+    handedOffDestination.ra<0||handedOffDestination.ra>=360||
     !Number.isFinite(Number(handedOffDestination.dec))||
-    Number(handedOffDestination.dec)<-90||Number(handedOffDestination.dec)>90||
-    !Number.isFinite(Number(handedOffDestination.fovDegrees))||
-    Number(handedOffDestination.fovDegrees)<=0
+    handedOffDestination.dec<-90||handedOffDestination.dec>90||
+    !Number.isFinite(Number(handedOffDestination.avmHorizontalFovDegrees))||
+    Number(handedOffDestination.avmHorizontalFovDegrees)<=0||
+    Number(handedOffDestination.fovDegrees)!==Number(handedOffDestination.avmHorizontalFovDegrees)||
+    Number(handedOffDestination.aladinRotation)!==Number(handedOffDestination.avmCameraRotation)
   ){
     randomNavigationWindow.rollbackPending?.();
-    throw new Error('0232 RANDOM CATALOG NAVIGATION DESTINATION INVALID');
+    throw new Error('AR129-B RANDOM AVM CAMERA AUTHORITY REQUIRED');
   }
 
   destination=handedOffDestination;
