@@ -1,5 +1,5 @@
 /*
-AVM 0050 — CANVAS-SAFE FILTER SOURCE PREFERENCE
+AVM 0052 — CANVAS-SAFE FILTER SOURCE PREFERENCE
 BASELINE: AVM 0049
 - Keeps vignette filtering mandatory; raw/unfiltered substitution remains forbidden.
 - Prefers githubImageUrl as the filter raster when available, while provider AVM/WCS stays authoritative.
