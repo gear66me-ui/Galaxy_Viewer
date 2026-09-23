@@ -1,3 +1,4 @@
+# trigger: second push so GitHub registers the workflow before matching paths
 name: GV one-shot Random 0227 WCS repair
 
 on:
