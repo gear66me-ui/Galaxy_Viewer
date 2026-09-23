@@ -1,5 +1,4 @@
-# trigger: execute BI dependency-tree repair now
-name: TEMP BI dependency tree repair
+name: TEMP forward-only 132BJ Random 0229
 
 on:
   push:
@@ -20,7 +19,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Repair BI dependency tree and Random 0228 block
+      - name: Create 132BJ and Random 0229 forward-only
         shell: bash
         run: |
           set -euo pipefail
@@ -28,97 +27,108 @@ jobs:
           from pathlib import Path
           import json
 
-          bi=Path('viewer/GV-12AR-132BI.py')
-          rg227=Path('viewer/modules/random-galaxy/gv-random-galaxy-0227.js')
-          rg228=Path('viewer/modules/random-galaxy/gv-random-galaxy-0228.js')
+          src_viewer=Path('viewer/GV-12AR-132BI.py')
+          if not src_viewer.exists():
+              src_viewer=Path('viewer/GV-12AR-132BD.py')
+          rg_src=Path('viewer/modules/random-galaxy/gv-random-galaxy-0227.js')
+          bj=Path('viewer/GV-12AR-132BJ.py')
+          rg229=Path('viewer/modules/random-galaxy/gv-random-galaxy-0229.js')
           ptr=Path('viewer/gv-current-viewer.json')
 
-          for path in [bi, rg227, ptr]:
+          for path in [src_viewer, rg_src, ptr]:
               if not path.exists():
                   raise SystemExit(f'FAIL missing required file: {path}')
 
-          bi_text=bi.read_text(encoding='utf-8')
-          replacements=[
-              ("const VERSION='12AR-132BD';", "const VERSION='12AR-132BI';", 'viewer VERSION BD->BI'),
-              ("const DISPLAY_VERSION='12AR-132BD';", "const DISPLAY_VERSION='12AR-132BI';", 'viewer DISPLAY_VERSION BD->BI'),
-              ("gv-random-galaxy-0227.js", "gv-random-galaxy-0228.js", 'viewer random module URL 0227->0228'),
-              ("RANDOM_GALAXY_VERSION='0227'", "RANDOM_GALAXY_VERSION='0228'", 'viewer random version 0227->0228')
+          viewer_text=src_viewer.read_text(encoding='utf-8')
+          viewer_replacements=[
+              ("const VERSION='12AR-132BD';", "const VERSION='12AR-132BJ';", 'viewer VERSION BD->BJ'),
+              ("const VERSION='12AR-132BI';", "const VERSION='12AR-132BJ';", 'viewer VERSION BI->BJ'),
+              ("const DISPLAY_VERSION='12AR-132BD';", "const DISPLAY_VERSION='12AR-132BJ';", 'viewer DISPLAY_VERSION BD->BJ'),
+              ("const DISPLAY_VERSION='12AR-132BI';", "const DISPLAY_VERSION='12AR-132BJ';", 'viewer DISPLAY_VERSION BI->BJ'),
+              ("gv-random-galaxy-0227.js", "gv-random-galaxy-0229.js", 'viewer random URL 0227->0229'),
+              ("gv-random-galaxy-0228.js", "gv-random-galaxy-0229.js", 'viewer random URL 0228->0229'),
+              ("RANDOM_GALAXY_VERSION='0227'", "RANDOM_GALAXY_VERSION='0229'", 'viewer random version 0227->0229'),
+              ("RANDOM_GALAXY_VERSION='0228'", "RANDOM_GALAXY_VERSION='0229'", 'viewer random version 0228->0229'),
           ]
-          for old,new,label in replacements:
-              count=bi_text.count(old)
+          for old,new,label in viewer_replacements:
+              count=viewer_text.count(old)
               print(f'CHECK {label}: {count}')
+              if count>1:
+                  raise SystemExit(f'FAIL {label}: count {count} > 1')
               if count==1:
-                  bi_text=bi_text.replace(old,new,1)
-              elif count==0 and new in bi_text:
-                  print(f'ALREADY OK {label}')
-              else:
-                  raise SystemExit(f'FAIL {label}: old count {count}, new present={new in bi_text}')
-          bi.write_text(bi_text, encoding='utf-8', newline='\n')
+                  viewer_text=viewer_text.replace(old,new,1)
 
-          rg_text=rg227.read_text(encoding='utf-8')
+          required_viewer=[
+              "const VERSION='12AR-132BJ';",
+              "const DISPLAY_VERSION='12AR-132BJ';",
+              "gv-random-galaxy-0229.js",
+              "RANDOM_GALAXY_VERSION='0229'",
+              "gv-navigation-0022.js",
+              "gv-avm-overlay-lab-0053.js",
+          ]
+          for marker in required_viewer:
+              c=viewer_text.count(marker)
+              print(f'REQUIRED_VIEWER {marker}: {c}')
+              if c < 1:
+                  raise SystemExit(f'FAIL missing viewer marker: {marker}')
+          bj.write_text(viewer_text, encoding='utf-8', newline='\n')
+
+          rg_text=rg_src.read_text(encoding='utf-8')
           old_block="""            const centerAuthority=gv0223ImageCenterFromWcs(wcs,actualWidth,actualHeight);
             const cameraRa=ra;
             const cameraDec=dec;"""
           new_block="""            const centerAuthority=gv0223ImageCenterFromWcs(wcs,actualWidth,actualHeight);
-            const centerRa=Number(centerAuthority?.ra);
-            const centerDec=Number(centerAuthority?.dec);
+            const centerRa=Number(centerAuthority&&centerAuthority.ra);
+            const centerDec=Number(centerAuthority&&centerAuthority.dec);
             const cameraRa=Number.isFinite(centerRa)?centerRa:ra;
             const cameraDec=Number.isFinite(centerDec)?centerDec:dec;"""
-          count=rg_text.count(old_block)
-          print(f'CHECK 0227 precomputed bad block count: {count}')
-          if count!=1:
-              raise SystemExit(f'FAIL random camera block count expected 1 got {count}')
+          c=rg_text.count(old_block)
+          print(f'CHECK Random source bad camera block: {c}')
+          if c != 1:
+              raise SystemExit(f'FAIL random camera block count expected 1 got {c}')
           rg_new=rg_text.replace(old_block,new_block,1)
-          vcount=rg_new.count("const VERSION='0227';")
-          print(f'CHECK 0227 version count: {vcount}')
-          if vcount!=1:
-              raise SystemExit(f'FAIL random version count expected 1 got {vcount}')
-          rg_new=rg_new.replace("const VERSION='0227';", "const VERSION='0228';", 1)
-
+          vc=rg_new.count("const VERSION='0227';")
+          print(f'CHECK Random 0227 version marker: {vc}')
+          if vc != 1:
+              raise SystemExit(f'FAIL random source version count expected 1 got {vc}')
+          rg_new=rg_new.replace("const VERSION='0227';", "const VERSION='0229';", 1)
           header="""/*
-RANDOM GALAXY 0228 — WCS IMAGE-CENTER CAMERA AUTHORITY REPAIR
-BASELINE: RANDOM GALAXY 0227
+RANDOM GALAXY 0229 — FORWARD-ONLY WCS IMAGE-CENTER CAMERA AUTHORITY REPAIR
+BASELINE SOURCE: RANDOM GALAXY 0227
 AUTHORIZED CHANGE:
 - Use derived WCS geometric image center for precomputed AVM camera RA/Dec when available.
 - Keep CRVAL/CRPIX/WCS metadata intact.
 - No HD download, queue, catalog, navigation, AVM, vignette, or UI changes.
 */
 """
-          rg228.write_text(header+rg_new, encoding='utf-8', newline='\n')
+          rg229.write_text(header+rg_new, encoding='utf-8', newline='\n')
 
-          ptr.write_text(json.dumps({'version':'12AR-132BI','viewer':'GV-12AR-132BI.py'}, indent=2)+'\n', encoding='utf-8', newline='\n')
+          ptr.write_text(json.dumps({'version':'12AR-132BJ','viewer':'GV-12AR-132BJ.py'}, indent=2)+'\n', encoding='utf-8', newline='\n')
 
-          bi_final=bi.read_text(encoding='utf-8')
-          rg_final=rg228.read_text(encoding='utf-8')
-          ptr_final=ptr.read_text(encoding='utf-8')
-          required=[
-              (bi_final, "const VERSION='12AR-132BI';", 'BI VERSION'),
-              (bi_final, "const DISPLAY_VERSION='12AR-132BI';", 'BI DISPLAY_VERSION'),
-              (bi_final, "gv-random-galaxy-0228.js", 'BI random URL'),
-              (bi_final, "RANDOM_GALAXY_VERSION='0228'", 'BI random version'),
-              (rg_final, "const VERSION='0228';", 'Random 0228 VERSION'),
-              (rg_final, "const centerRa=Number(centerAuthority?.ra);", 'Random 0228 centerRa'),
-              (rg_final, "const centerDec=Number(centerAuthority?.dec);", 'Random 0228 centerDec'),
-              (rg_final, "const cameraRa=Number.isFinite(centerRa)?centerRa:ra;", 'Random 0228 cameraRa center'),
-              (rg_final, "const cameraDec=Number.isFinite(centerDec)?centerDec:dec;", 'Random 0228 cameraDec center'),
-              (ptr_final, 'GV-12AR-132BI.py', 'Pointer BI file'),
-              (ptr_final, '12AR-132BI', 'Pointer BI version')
+          rg_final=rg229.read_text(encoding='utf-8')
+          required_random=[
+              "const VERSION='0229';",
+              "const centerRa=Number(centerAuthority&&centerAuthority.ra);",
+              "const centerDec=Number(centerAuthority&&centerAuthority.dec);",
+              "const cameraRa=Number.isFinite(centerRa)?centerRa:ra;",
+              "const cameraDec=Number.isFinite(centerDec)?centerDec:dec;",
           ]
-          for text, marker, label in required:
-              c=text.count(marker)
-              print(f'REQUIRED {label}: {c}')
+          for marker in required_random:
+              c=rg_final.count(marker)
+              print(f'REQUIRED_RANDOM {marker}: {c}')
               if c < 1:
-                  raise SystemExit(f'FAIL missing marker {label}: {marker}')
-          print('BI_DEPENDENCY_TREE_REPAIR_WRITTEN=YES')
+                  raise SystemExit(f'FAIL missing random marker: {marker}')
+
+          print('FORWARD_ONLY_132BJ_0229_WRITTEN=YES')
           PY
 
           git diff --check
           echo '=== CHANGED FILES ==='
           git status --short
-          git add viewer/GV-12AR-132BI.py viewer/modules/random-galaxy/gv-random-galaxy-0228.js viewer/gv-current-viewer.json
+          git add viewer/GV-12AR-132BJ.py viewer/modules/random-galaxy/gv-random-galaxy-0229.js viewer/gv-current-viewer.json
           echo '=== CACHED FILES ==='
           git diff --cached --name-only | sort
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Repair 132BI dependency tree to Random 0228'
+          git commit -m 'Advance to 132BJ with Random 0229 WCS camera authority repair'
           git push origin HEAD:beta
