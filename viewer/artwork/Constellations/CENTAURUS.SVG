@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#03122e"/>
+      <stop offset=".48" stop-color="#052566"/>
+      <stop offset="1" stop-color="#0083df"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".12" stop-color="#aefbff"/>
+      <stop offset=".27" stop-color="#20cfff"/>
+      <stop offset=".50" stop-color="#0048b8"/>
+      <stop offset=".73" stop-color="#027dff"/>
+      <stop offset="1" stop-color="#eaffff"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".33"/>
+      <stop offset=".36" stop-color="#b9f9ff" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#041a49" stop-opacity=".20"/>
+    </linearGradient>
+    <filter id="g" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="3.0" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sg" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+    <style>
+      .ln{stroke:#f3fdff;stroke-width:4.0;stroke-linecap:round;stroke-linejoin:round;filter:url(#g)}
+      .s{fill:#fff;stroke:#d7f8ff;stroke-width:1;filter:url(#g)}
+      .f{stroke:#fff;stroke-width:1.5;stroke-linecap:round;opacity:.92;filter:url(#g)}
+    </style>
+  </defs>
+  <rect x="4" y="4" width="248" height="248" rx="38" fill="url(#rim)" filter="url(#sg)"/>
+  <rect x="15" y="15" width="226" height="226" rx="31" fill="#001234" stroke="#84efff" stroke-width="2.2" opacity=".98"/>
+  <rect x="21" y="21" width="214" height="214" rx="27" fill="url(#bg)" stroke="#25c9ff" stroke-width="2.8"/>
+  <rect x="31" y="31" width="194" height="194" rx="21" fill="none" stroke="#d6ffff" stroke-width="1.8" opacity=".70"/>
+  <path d="M32 37 C57 15 105 20 136 29 C83 33 53 48 31 83 Z" fill="url(#glass)"/>
+  <path d="M204 219 C225 201 230 168 225 135 C217 176 198 202 166 225 Z" fill="#77eaff" opacity=".13"/>
+  <g class="ln">
+<line x1="42" y1="142" x2="74" y2="116"/>
+    <line x1="74" y1="116" x2="102" y2="92"/>
+    <line x1="102" y1="92" x2="134" y2="82"/>
+    <line x1="134" y1="82" x2="166" y2="96"/>
+    <line x1="166" y1="96" x2="196" y2="122"/>
+    <line x1="196" y1="122" x2="170" y2="146"/>
+    <line x1="170" y1="146" x2="132" y2="152"/>
+    <line x1="102" y1="92" x2="112" y2="122"/>
+    <line x1="112" y1="122" x2="88" y2="154"/>
+    <line x1="134" y1="82" x2="154" y2="54"/>
+  </g>
+  <g>
+<circle class="s" cx="42" cy="142" r="6.2"/>
+    <path class="f" d="M30.0,142.0H54.0M42.0,130.0V154.0"/>
+    <circle class="s" cx="74" cy="116" r="4.7"/>
+    <circle class="s" cx="102" cy="92" r="4.7"/>
+    <circle class="s" cx="134" cy="82" r="4.7"/>
+    <circle class="s" cx="166" cy="96" r="4.7"/>
+    <circle class="s" cx="196" cy="122" r="6.2"/>
+    <path class="f" d="M184.0,122.0H208.0M196.0,110.0V134.0"/>
+    <circle class="s" cx="170" cy="146" r="4.7"/>
+    <circle class="s" cx="132" cy="152" r="4.7"/>
+    <circle class="s" cx="112" cy="122" r="4.7"/>
+    <circle class="s" cx="88" cy="154" r="4.7"/>
+    <circle class="s" cx="154" cy="54" r="4.7"/>
+  </g>
+</svg>
