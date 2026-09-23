@@ -1,1 +1,122 @@
-# Disposable 10H trigger only; deleted by the verified 10H release.
+name: TEMP BI WCS authority repair
+
+on:
+  push:
+    branches: [beta]
+    paths: ['.github/workflows/temp-direct-10h.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  repair-bi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Create BI viewer and Random 0228 WCS center repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          bd = Path('viewer/GV-12AR-132BD.py')
+          bi = Path('viewer/GV-12AR-132BI.py')
+          rg227 = Path('viewer/modules/random-galaxy/gv-random-galaxy-0227.js')
+          rg228 = Path('viewer/modules/random-galaxy/gv-random-galaxy-0228.js')
+          ptr = Path('viewer/gv-current-viewer.json')
+          wpath = Path('.github/workflows/temp-direct-10h.yml')
+
+          for path in [bd, rg227, ptr]:
+              if not path.exists():
+                  raise SystemExit(f'FAIL missing required baseline: {path}')
+
+          bd_text = bd.read_text(encoding='utf-8')
+          rg_text = rg227.read_text(encoding='utf-8')
+
+          # Create BI viewer as a full literal file from BD, not a wrapper.
+          bi_text = bd_text
+          replacements = [
+              ("const VERSION='12AR-132BD';", "const VERSION='12AR-132BI';", 'viewer VERSION'),
+              ("const DISPLAY_VERSION='12AR-132BD';", "const DISPLAY_VERSION='12AR-132BI';", 'viewer DISPLAY_VERSION'),
+              ("gv-random-galaxy-0227.js", "gv-random-galaxy-0228.js", 'viewer random module URL'),
+              ("RANDOM_GALAXY_VERSION='0227'", "RANDOM_GALAXY_VERSION='0228'", 'viewer random version')
+          ]
+          for old, new, label in replacements:
+              count = bi_text.count(old)
+              print(f'BI_REPLACE_COUNT {label} = {count}')
+              if count != 1:
+                  raise SystemExit(f'FAIL {label}: expected 1, got {count}')
+              bi_text = bi_text.replace(old, new, 1)
+          bi.write_text(bi_text, encoding='utf-8', newline='\n')
+
+          # Create Random 0228 as full literal file from 0227, not a wrapper.
+          old_block = """            const centerAuthority=gv0223ImageCenterFromWcs(wcs,actualWidth,actualHeight);
+            const cameraRa=ra;
+            const cameraDec=dec;"""
+          new_block = """            const centerAuthority=gv0223ImageCenterFromWcs(wcs,actualWidth,actualHeight);
+            const centerRa=Number(centerAuthority?.ra);
+            const centerDec=Number(centerAuthority?.dec);
+            const cameraRa=Number.isFinite(centerRa)?centerRa:ra;
+            const cameraDec=Number.isFinite(centerDec)?centerDec:dec;"""
+          count = rg_text.count(old_block)
+          print(f'RANDOM_0227_BAD_CAMERA_BLOCK_COUNT={count}')
+          if count != 1:
+              raise SystemExit(f'FAIL random camera block count expected 1 got {count}')
+
+          rg_new = rg_text.replace(old_block, new_block, 1)
+          vcount = rg_new.count("const VERSION='0227';")
+          print(f'RANDOM_VERSION_0227_COUNT={vcount}')
+          if vcount != 1:
+              raise SystemExit(f'FAIL random version count expected 1 got {vcount}')
+          rg_new = rg_new.replace("const VERSION='0227';", "const VERSION='0228';", 1)
+
+          header = """/*
+RANDOM GALAXY 0228 — WCS IMAGE-CENTER CAMERA AUTHORITY REPAIR
+BASELINE: RANDOM GALAXY 0227
+AUTHORIZED CHANGE:
+- Use derived WCS geometric image center for precomputed AVM camera RA/Dec when available.
+- Keep CRVAL/CRPIX/WCS metadata intact.
+- No HD download, queue, catalog, navigation, AVM, vignette, or UI changes.
+*/
+"""
+          rg_new = header + rg_new
+          rg228.write_text(rg_new, encoding='utf-8', newline='\n')
+
+          ptr.write_text(json.dumps({
+              'version': '12AR-132BI',
+              'viewer': 'GV-12AR-132BI.py'
+          }, indent=2) + '\n', encoding='utf-8', newline='\n')
+
+          # Remove this disposable workflow after it performs the repair.
+          wpath.unlink(missing_ok=True)
+
+          print('BI_REPAIR_FILES_WRITTEN=YES')
+          PY
+
+          echo '=== STAGED FILE GATE BEFORE ADD ==='
+          git status --short
+
+          git add viewer/GV-12AR-132BI.py \
+                  viewer/modules/random-galaxy/gv-random-galaxy-0228.js \
+                  viewer/gv-current-viewer.json \
+                  .github/workflows/temp-direct-10h.yml
+
+          echo '=== EXACT CACHED FILES ==='
+          git diff --cached --name-only | sort
+          test "$(git diff --cached --name-only | sort | tr '\n' ' ')" = ".github/workflows/temp-direct-10h.yml viewer/GV-12AR-132BI.py viewer/gv-current-viewer.json viewer/modules/random-galaxy/gv-random-galaxy-0228.js "
+
+          echo '=== FORBIDDEN RUNTIME TOUCH CHECK ==='
+          test -z "$(git diff --cached --name-only | grep -E 'gv-navigation|gv-avm-overlay-lab|catalog|GV-12AR-132BD.py|gv-random-galaxy-0227.js' || true)"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Promote 132BI with Random 0228 WCS camera authority repair'
+          git push origin HEAD:beta
