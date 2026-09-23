@@ -1,9 +1,0 @@
-{
-  "status": "failure",
-  "run_id": "32197950460",
-  "run_attempt": "2",
-  "artifact": "Galaxy-Viewer-Generic",
-  "apk": "Galaxy-Viewer-Generic.apk",
-  "sha256": "",
-  "source_commit": "62fd72130ad7c5a91e55dff9f91e08c49f7e7e1f"
-}
