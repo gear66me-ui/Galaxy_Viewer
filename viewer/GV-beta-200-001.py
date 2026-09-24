@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0048';
+const GV200001_BUILD='0049';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -782,6 +782,22 @@ async function fetchVignetteBitmap(url){
     }
     throw new Error('VIGNETTE SOURCE FAILED: '+last);
 }
+async function makeDiagnosticHdBlob(url){
+    const bitmap=await fetchVignetteBitmap(url);
+    try{
+        const w=bitmap.width,h=bitmap.height;
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');if(!ctx)throw new Error('DIAGNOSTIC 2D CONTEXT UNAVAILABLE');
+        ctx.drawImage(bitmap,0,0,w,h);
+        const line=Math.max(2,Math.round(Math.min(w,h)/500));
+        ctx.save();ctx.strokeStyle='rgba(255,255,255,.98)';ctx.lineWidth=line;
+        ctx.strokeRect(line/2,line/2,w-line,h-line);
+        ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+        const arm=Math.max(12,Math.round(Math.min(w,h)*.04));
+        ctx.lineWidth=line*2;ctx.beginPath();ctx.moveTo(w/2-arm,h/2);ctx.lineTo(w/2+arm,h/2);ctx.moveTo(w/2,h/2-arm);ctx.lineTo(w/2,h/2+arm);ctx.stroke();ctx.restore();
+        return await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('DIAGNOSTIC JPEG ENCODE FAILED')),'image/jpeg',.96));
+    }finally{try{bitmap.close?.()}catch(_){}}
+}
 async function makeVignetteBlob(url){
     const bitmap=await fetchVignetteBitmap(url);
     try{
@@ -802,18 +818,25 @@ async function makeVignetteBlob(url){
         return {blob,sourceWidth:bitmap.width,sourceHeight:bitmap.height,outputWidth:w,outputHeight:h};
     }finally{try{bitmap.close?.()}catch(_){}}
 }
-function loadDirectHdOnArrival(destination){
+async function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=null;
-    const layer=A.image(url,{
+    let diagnosticUrl='';
+    try{
+        const blob=await makeDiagnosticHdBlob(url);
+        if(directHdDestination!==destination)return false;
+        diagnosticUrl=URL.createObjectURL(blob);
+    }catch(error){console.error('GV DIAGNOSTIC HD PREP FAILED',error)}
+    const layer=A.image(diagnosticUrl||url,{
         name:DIRECT_HD_LAYER,
         opacity:directHdOpacity(),
         successCallback:()=>{
             if(directHdDestination!==destination)return;
             directHdOverlay=layer;
             applyDirectHdOpacity();
+            if(diagnosticUrl)setTimeout(()=>URL.revokeObjectURL(diagnosticUrl),30000);
         },
         errorCallback:error=>console.error('GV DIRECT HD LOAD FAILED',error)
     });
