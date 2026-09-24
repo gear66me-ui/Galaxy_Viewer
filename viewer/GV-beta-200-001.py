@@ -360,7 +360,7 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-hosts.navigation.innerHTML='';
+hosts.navigation.innerHTML='<button id="gv-random-button" type="button">RANDOM GALAXY</button>';
 
 
 // ============================================================================
@@ -368,8 +368,9 @@ hosts.navigation.innerHTML='';
 // ECO: GV200-001
 // ============================================================================
 const backButton=null;
-const randomButton=null;
+const randomButton=document.getElementById('gv-random-button');
 const forwardButton=null;
+if(!randomButton)throw new Error('RANDOM GALAXY BUTTON MISSING');
 
 
 // ============================================================================
@@ -423,7 +424,7 @@ function showDestination(destination){
 // SECTION 037 — RANDOM GALAXY ACTION
 // ECO: GV200-001
 // ============================================================================
-if(false)randomButton.addEventListener('click',()=>{
+randomButton.addEventListener('click',()=>{
     if(routeIndex>=activeRoute.length)return;
     const destination=activeRoute[routeIndex++];
     if(historyIndex<history.length-1)history.splice(historyIndex+1);
