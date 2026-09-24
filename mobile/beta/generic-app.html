@@ -24,7 +24,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-loading-comet i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
 #gv-loading-comet i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
 @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:"Space Age",sans-serif;text-align:center;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;white-space:nowrap}\n#gv-generic-version{min-height:20px;font-size:16px;line-height:20px;letter-spacing:1.2px}\n#gv-generic-build{min-height:16px;margin-top:-14px;font-size:11px;line-height:16px;letter-spacing:1px}
+#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:"Space Age",sans-serif;text-align:center;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;white-space:nowrap}
+#gv-generic-version{min-height:20px;font-size:16px;line-height:20px;letter-spacing:1.2px}
+#gv-generic-build{min-height:16px;margin-top:-14px;font-size:11px;line-height:16px;letter-spacing:1px}
 #gv-generic-splash{position:fixed;inset:0;z-index:2147483646;width:100%;height:100%;border:0;background:#000;visibility:hidden}
 #gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
 @media (prefers-reduced-motion:reduce){#gv-loading-comet{animation-duration:5.6s}}
@@ -36,7 +38,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
     <img src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER">
     <span id="gv-loading-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
   </div>
-  <div id="gv-generic-version">VERSION</div>\n  <div id="gv-generic-build">BUILD</div>
+  <div id="gv-generic-version">VERSION</div>
+  <div id="gv-generic-build">BUILD</div>
 </div>
 <iframe id="gv-generic-splash" title="GALAXY VIEWER SPLASH"></iframe>
 <div id="gv-generic-error" role="alert"></div>
@@ -50,17 +53,22 @@ const ICON_HOLD_MS=3000;
 const POST_SPLASH_HOLD_MS=1000;
 const VIEWER_TIMEOUT_MS=30000;
 const cover=document.getElementById('gv-generic-cover');
-const versionEl=document.getElementById('gv-generic-version');\nconst buildEl=document.getElementById('gv-generic-build');
+const versionEl=document.getElementById('gv-generic-version');
+const buildEl=document.getElementById('gv-generic-build');
 const splash=document.getElementById('gv-generic-splash');
 const errorBox=document.getElementById('gv-generic-error');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const coverPainted=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
+const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD
+
+'+String(error?.stack||error)};
 const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
 const loadPointer=async()=>{
-  const pointer=JSON.parse(await text(POINTER_URL));
+  const pointer=JSON.parse(await text(POINTER_URL+'?build='+Date.now()));
   const version=String(pointer.version||'').trim();
-  versionEl.textContent=version?'VERSION '+version:'VERSION';\n  const build=String(pointer.build||'').trim();\n  buildEl.textContent=build?'BUILD '+build:'BUILD';
+  versionEl.textContent=version?'VERSION '+version:'VERSION';
+  const build=String(pointer.build||'').trim();
+  buildEl.textContent=build?'BUILD '+build:'BUILD';
   try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION;}catch(_){ }
   return pointer;
 };
@@ -221,7 +229,8 @@ try{
   await runSplash(preloadedSplash);
   const loadingIcon=cover.querySelector('#gv-loading-mark>img');
   if(loadingIcon)loadingIcon.style.display='none';
-  versionEl.style.display='none';\n  buildEl.style.display='none';
+  versionEl.style.display='none';
+  buildEl.style.display='none';
   cover.style.display='flex';
   const postSplashHold=sleep(POST_SPLASH_HOLD_MS);
   const viewerReadyPromise=initializeViewer(preparedViewer);
