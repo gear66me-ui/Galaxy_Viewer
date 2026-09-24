@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0037';
+const GV200001_BUILD='0038';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,8 +656,8 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0037_RAW';
-const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0037_EFFECT';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0038_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0038_EFFECT';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -675,22 +675,24 @@ function gvControlPanel(id,title,side){
         fontFamily:'"GV Space Age","Space Age",Arial,sans-serif',color:'#9eefff',
         filter:'drop-shadow(0 0 10px rgba(76,205,255,.82))'
     });
-    panel.innerHTML='<div class="gv-lab-title">'+title+'</div><div class="gv-lab-rail"></div><div class="gv-lab-thumb"></div>';
+    panel.innerHTML='<div class="gv-lab-title">'+title+'</div><div class="gv-lab-rail"></div><div class="gv-lab-thumb"></div><div class="gv-lab-hit"></div>';
     const titleNode=panel.querySelector('.gv-lab-title');
     const rail=panel.querySelector('.gv-lab-rail');
     const thumb=panel.querySelector('.gv-lab-thumb');
+    const hit=panel.querySelector('.gv-lab-hit');
     Object.assign(titleNode.style,{position:'absolute',left:side==='left'?'11px':'39px',top:'50%',transform:'translate(-50%,-50%)',height:'108px',display:'flex',alignItems:'center',justifyContent:'center',writingMode:'vertical-rl',textOrientation:'mixed',font:'400 6px/1 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'1.5px',color:'#6feaff',textShadow:'0 0 4px rgba(190,250,255,.96),0 0 10px rgba(35,190,255,.9)',userSelect:'none',pointerEvents:'none',whiteSpace:'nowrap'});
     Object.assign(rail.style,{position:'absolute',left:side==='left'?'27px':'20px',top:'14px',width:'10px',height:'131px',borderRadius:'999px',background:'linear-gradient(180deg,rgba(18,187,255,.95),rgba(4,18,58,.82))',boxShadow:'0 0 8px rgba(100,226,255,.88),0 0 18px rgba(18,157,255,.72)',pointerEvents:'none'});
     Object.assign(thumb.style,{position:'absolute',left:side==='left'?'32px':'25px',top:'145px',width:'18px',height:'18px',borderRadius:'50%',transform:'translate(-50%,-50%)',background:'#72e8ff',border:'2px solid rgba(224,255,255,.98)',boxShadow:'0 0 12px rgba(185,250,255,.98),0 0 28px rgba(20,176,255,.82)',pointerEvents:'none'});
+    Object.assign(hit.style,{position:'absolute',inset:'0',zIndex:'3',pointerEvents:'auto',touchAction:'none',background:'transparent'});
     document.getElementById('aladin-cosmic-command-test').appendChild(panel);
-    return {panel,rail,thumb};
+    return {panel,rail,thumb,hit};
 }
 
 const crossFadeControl=gvControlPanel('gv-cross-fade','CROSS FADE','left');
 const crossFadeInput=document.createElement('input');
 crossFadeInput.type='range';crossFadeInput.min='0';crossFadeInput.max='100';crossFadeInput.step='1';crossFadeInput.value='0';
 crossFadeInput.setAttribute('aria-label','CROSS FADE');
-Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',width:'39px',height:'131px',opacity:'.001',appearance:'none',WebkitAppearance:'none',pointerEvents:'auto',touchAction:'none'});
+Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',width:'39px',height:'131px',opacity:'.001',appearance:'none',WebkitAppearance:'none',pointerEvents:'none',touchAction:'none'});
 crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.imageUrl??destination?.selectedImageUrl??destination?.hdUrl??'').trim()}
@@ -707,6 +709,12 @@ function applyDirectHdOpacity(){
     updateCrossFadeThumb();
     return value;
 }
+function setCrossFadeFromY(clientY){
+    const r=crossFadeControl.rail.getBoundingClientRect();if(!r.height)return;
+    crossFadeInput.value=String(Math.max(0,Math.min(100,Math.round(((r.bottom-clientY)/r.height)*100))));
+    applyDirectHdOpacity();
+}
+for(const ev of ['pointerdown','pointermove'])crossFadeControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setCrossFadeFromY(e.clientY)},{passive:false});
 crossFadeInput.addEventListener('input',applyDirectHdOpacity);
 updateCrossFadeThumb();
 
@@ -739,8 +747,8 @@ function releaseZoom(){
     if(zoomFrame){cancelAnimationFrame(zoomFrame);zoomFrame=0}
     zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+zoomControl.rail.offsetHeight/2}px`;
 }
-for(const ev of ['pointerdown','pointermove'])zoomControl.panel.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
-for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.panel.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
+for(const ev of ['pointerdown','pointermove'])zoomControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
+for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.hit.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
 
 async function fetchVignetteBitmap(url){
     if(typeof createImageBitmap!=='function')throw new Error('createImageBitmap unavailable');
@@ -783,7 +791,7 @@ async function installVignetteEffect(destination,url,wcs){
     if(directHdEffectUrl)URL.revokeObjectURL(directHdEffectUrl);
     directHdEffectUrl=URL.createObjectURL(blob);
     const effect=A.image(directHdEffectUrl,{
-        name:DIRECT_HD_EFFECT_LAYER,imgFormat:'png',wcs,opacity:directHdOpacity(),
+        name:DIRECT_HD_EFFECT_LAYER,imgFormat:'png',wcs:wcs??undefined,opacity:directHdOpacity(),
         successCallback:()=>{
             if(directHdDestination!==destination)return;
             try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
@@ -806,8 +814,8 @@ function loadDirectHdOnArrival(destination){
         successCallback:(ra,dec,fov,image)=>{
             if(directHdDestination!==destination)return;
             directHdOverlay=layer;applyDirectHdOpacity();
-            const wcs=image?.options?.wcs;
-            if(wcs)installVignetteEffect(destination,url,wcs).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
+            const wcs=image?.options?.wcs??layer?.options?.wcs??null;
+            installVignetteEffect(destination,url,wcs).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
         },
         errorCallback:error=>{if(directHdDestination===destination)directHdOverlay=null;console.error('GV DIRECT HD ARRIVAL LOAD FAILED',error)}
     });
