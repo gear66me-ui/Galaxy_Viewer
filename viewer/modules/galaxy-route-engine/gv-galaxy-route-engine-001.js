@@ -7,7 +7,7 @@
 const VERSION='0001';
 const MASTER='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
 const ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/';
-const C=Object.freeze({CANDIDATE_POOL_SIZE:130,ROUTE_LENGTH:100,RESERVE_SIZE:30,TRANSLATION_TARGET_DEG:95,TRANSLATION_MIN_DEG:65,TRANSLATION_MAX_DEG:125,MAX_FOV_OCTAVES:5,ROUTE_RESTARTS:128,MAX_SAMPLE_ATTEMPTS:100,URL_RETRY_LIMIT:3,URL_RETRY_DELAY_MS:350,QUARANTINE_RECHECK_MS:300000,REPLENISH_AT:10});
+const C=Object.freeze({CANDIDATE_POOL_SIZE:130,ROUTE_LENGTH:100,RESERVE_SIZE:30,TRANSLATION_TARGET_DEG:95,TRANSLATION_MIN_DEG:65,TRANSLATION_MAX_DEG:125,MAX_FOV_OCTAVES:5,ROUTE_RESTARTS:128,MAX_SAMPLE_ATTEMPTS:100,URL_RETRY_LIMIT:3,URL_RETRY_DELAY_MS:350,QUARANTINE_RECHECK_MS:300000,REPLENISH_AT:10,VALIDATION_WORKERS:12});
 const log=(m,x)=>{console.info('[GV011]',m,x??'');const e=document.getElementById('gv011log');if(e)e.textContent+=m+(x===undefined?'':' '+JSON.stringify(x))+'\n'};
 const finite=v=>{const n=Number(v);return Number.isFinite(n)?n:null},clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 function key(r){const p=clean(r?.provider??r?.source??r?.catalogKey).toLowerCase(),d=clean(r?.archiveId??r?.id??r?.key).toLowerCase(),ra=finite(r?.ra),dc=finite(r?.dec);if(d)return p?`${p}|${d}`:`${d}|${ra??''}|${dc??''}`;const n=clean(r?.name??r?.title).toLowerCase();return n&&ra!==null&&dc!==null?`${p}|${n}|${ra}|${dc}`:''}
@@ -34,18 +34,35 @@ async function urlAlive(r){
  return {ok:false,reason:last||'AVM_URL_DEAD',url,attempt:C.URL_RETRY_LIMIT}
 }
 
+
+async function validatedPlan(records,runtime){
+ const candidates=shuffle(eligible(records).map(x=>x.record)).filter(r=>!runtime.quarantine.has(key(r)));
+ const healthy=[];let cursor=0;
+ async function worker(){
+  while(healthy.length<C.CANDIDATE_POOL_SIZE&&cursor<candidates.length){
+   const r=candidates[cursor++],probe=await runtime.validateAvm(r);
+   if(probe.ok)healthy.push(r);
+  }
+ }
+ while(healthy.length<C.CANDIDATE_POOL_SIZE&&cursor<candidates.length){
+  await Promise.all(Array.from({length:C.VALIDATION_WORKERS},()=>worker()));
+ }
+ if(healthy.length<C.CANDIDATE_POOL_SIZE)throw Error(`VALIDATED CATALOG TOO SMALL ${healthy.length}`);
+ return plan(healthy.slice(0,C.CANDIDATE_POOL_SIZE));
+}
+
 const Runtime={
  VERSION,CONSTANTS:C,phase:'IDLE',catalog:null,active:null,exclusion:new Set(),quarantine:new Map(),routeCursor:0,reserveCursor:0,generation:0,nextGeneration:null,recheckTimer:null,
  async initialize(){
   this.phase='CATALOG';this.catalog=await catalogs();
-  this.phase='MONTE_CARLO';this.active=plan(this.catalog.records);this.generation=1;this.routeCursor=0;this.reserveCursor=0;this.nextGeneration=null;
+  this.phase='MONTE_CARLO';this.active=await validatedPlan(this.catalog.records,this);this.generation=1;this.routeCursor=0;this.reserveCursor=0;this.nextGeneration=null;
   this.exclusion.clear();for(const r of this.active.sample){const k=key(r);if(k)this.exclusion.add(k)}
   this.phase='READY';this.startQuarantineRecheck();return this.snapshot();
  },
  quarantineRecord(r,probe){const k=key(r);if(!k)return;const prior=this.quarantine.get(k);this.quarantine.set(k,{record:r,reason:probe?.reason||'AVM_URL_DEAD',failureCount:(prior?.failureCount||0)+1,lastChecked:Date.now(),nextCheck:Date.now()+C.QUARANTINE_RECHECK_MS})},
  async validateAvm(r){const probe=await urlAlive(r);if(!probe.ok)this.quarantineRecord(r,probe);return probe},
  async takeReserve(previous){
-  while(this.reserveCursor<this.active.reserve.length){const r=this.active.reserve[this.reserveCursor++],k=key(r);if(this.quarantine.has(k))continue;if(previous&&!compat(norm(previous),norm(r)).compatible)continue;const probe=await this.validateAvm(r);if(probe.ok)return r}
+  while(this.reserveCursor<this.active.reserve.length){const r=this.active.reserve[this.reserveCursor++],k=key(r);if(this.quarantine.has(k))continue;if(previous&&!compat(norm(previous),norm(r)).compatible)continue;return r}
   return null
  },
  async nextDestination(){
@@ -53,20 +70,19 @@ const Runtime={
   let previous=null;
   if(this.routeCursor>0)previous=this.active.route[this.routeCursor-1];
   while(this.routeCursor<this.active.route.length){
-   const r=this.active.route[this.routeCursor++],k=key(r);if(this.quarantine.has(k))continue;
-   const probe=await this.validateAvm(r);if(probe.ok){this.maybePrepareNext();return r}
-   const replacement=await this.takeReserve(previous);if(replacement){this.maybePrepareNext();return replacement}
+   const r=this.active.route[this.routeCursor++],k=key(r);if(this.quarantine.has(k)){const replacement=await this.takeReserve(previous);if(replacement){this.maybePrepareNext();return replacement}continue}
+   this.maybePrepareNext();return r
   }
   await this.promoteNext();
   return this.nextDestination()
  },
  maybePrepareNext(){
   const remaining=this.active.route.length-this.routeCursor;
-  if(remaining<=C.REPLENISH_AT&&!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=Promise.resolve().then(()=>plan(eligibleRecords)).catch(error=>{this.nextGeneration=null;throw error})}
+  if(remaining<=C.REPLENISH_AT&&!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=validatedPlan(eligibleRecords,this).catch(error=>{this.nextGeneration=null;throw error})}
  },
  async promoteNext(){
   if(!this.nextGeneration)this.maybePrepareNext();
-  if(!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=Promise.resolve().then(()=>plan(eligibleRecords))}
+  if(!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=validatedPlan(eligibleRecords,this)}
   this.phase='MONTE_CARLO';this.active=await this.nextGeneration;this.nextGeneration=null;this.generation++;this.routeCursor=0;this.reserveCursor=0;
   this.exclusion.clear();for(const r of this.active.sample){const k=key(r);if(k)this.exclusion.add(k)}
   this.phase='READY'
