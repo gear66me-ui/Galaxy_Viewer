@@ -28,12 +28,6 @@ function providerCode(record){
   return raw.slice(0,3)||'---';
 }
 
-function compactName(record){
-  const name=clean(record?.name??record?.title??record?.displayName??record?.archiveId);
-  if(!name)return '—';
-  return name.length<=22?name:`${name.slice(0,21)}…`;
-}
-
 function resourceState(record){
   const state=clean(record?.resourceState??record?.downloadState??record?.assetState??record?.state).toUpperCase();
   if(state==='READY')return 'ready';
@@ -68,15 +62,12 @@ function installStyle(){
   const style=document.createElement('style');
   style.id='gv-heads-up-display-0001-style';
   style.textContent=`
-.gv-heads-up-display{position:absolute;right:82px;top:270px;z-index:7210;width:min(210px,calc(100vw - 102px));pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
-.gv-hud-row{display:grid;grid-template-columns:minmax(0,1fr) 30px 14px;align-items:center;gap:4px;min-height:18px;padding:1px 5px;border-bottom:1px solid rgba(88,191,255,.18);background:rgba(4,16,35,.58);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:8px;line-height:1.15;letter-spacing:.35px}
-.gv-hud-row:first-child{border-radius:5px 5px 0 0}
-.gv-hud-row:last-child{border-radius:0 0 5px 5px;border-bottom:0}
+.gv-heads-up-display{position:absolute;right:8px;top:108px;z-index:7210;width:48px;pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
+.gv-hud-row{display:grid;grid-template-columns:28px 12px;align-items:center;justify-content:end;gap:3px;min-height:18px;padding:1px 2px;background:rgba(4,16,35,.42);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:7px;line-height:1;letter-spacing:.2px}
 .gv-hud-row[data-state="current"]{background:rgba(8,35,45,.72)}
 .gv-hud-led{display:block;width:12px;height:12px;overflow:visible}
 .gv-hud-provider{color:#7CCBFF;font-weight:700}
 .gv-hud-row[data-state="current"] .gv-hud-provider{color:#78FFAB}
-.gv-hud-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gv-hud-empty{opacity:.42}
 `;
   document.head.appendChild(style);
@@ -109,10 +100,7 @@ function mount(root,options={}){
       row.dataset.state=position;
       row.dataset.resourceState=state;
       row.dataset.row=String(i);
-      row.innerHTML=`<span class="gv-hud-name"></span>`+
-        `<span class="gv-hud-provider">${record?providerCode(record):'---'}</span>`+
-        ledSvg(state);
-      row.querySelector('.gv-hud-name').textContent=record?compactName(record):'—';
+      row.innerHTML=`<span class="gv-hud-provider">${record?providerCode(record):'---'}</span>`+ledSvg(state);
       hud.appendChild(row);
     }
     return records;
@@ -130,7 +118,6 @@ global.GalaxyViewerHeadsUpDisplay=Object.freeze({
   VERSION,
   mount,
   providerCode,
-  compactName,
   resourceState,
   routeWindow
 });
