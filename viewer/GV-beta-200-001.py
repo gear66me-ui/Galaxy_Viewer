@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0032';
+const GV200001_BUILD='0033';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -251,31 +251,18 @@ const RETICLE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/ru
 
 function createCenterReticle(root){
     const COSMIC_BLUE='#58BFFF';
+    const COSMIC_BLUE_SOFT='rgba(88,191,255,.64)';
     const NORTH_RED='#FF3B3B';
     const SIZE=270;
     const CENTER=SIZE/2;
-    const NORTH_POINTER_RADIUS=131;
-    const NORTH_LABEL_RADIUS=152;
+    const RING_RADIUS=125;
+    const NORTH_POINTER_RADIUS=RING_RADIUS+6;
+    const NORTH_LABEL_RADIUS=RING_RADIUS+27;
 
     const reticle=document.createElement('div');
     reticle.id='gv-center-reticle';
     reticle.setAttribute('aria-hidden','true');
 
-    // Restore the original simplified icy-blue center reticle presentation.
-    const centerTarget=document.createElement('img');
-    centerTarget.id='gv-center-target';
-    centerTarget.src=RETICLE_URL;
-    centerTarget.alt='';
-    centerTarget.width=32;
-    centerTarget.height=32;
-    Object.assign(centerTarget.style,{
-        position:'absolute',left:'50%',top:'50%',
-        transform:'translate(-50%,-50%)'
-    });
-    reticle.appendChild(centerTarget);
-
-    // Keep only the live North compass authority around the simplified reticle.
-    // No direction ring, cardinal crosshair, or graduated tick grid.
     const northRotor=document.createElement('div');
     northRotor.id='gv-north-rotor';
     Object.assign(northRotor.style,{
@@ -285,19 +272,68 @@ function createCenterReticle(root){
     });
     reticle.appendChild(northRotor);
 
+    const northGrid=document.createElement('div');
+    northGrid.id='gv-north-grid';
+    Object.assign(northGrid.style,{position:'absolute',left:'0',top:'0',width:`${SIZE}px`,height:`${SIZE}px`,pointerEvents:'none'});
+    northRotor.appendChild(northGrid);
+
+    const ring=document.createElement('div');
+    ring.id='gv-direction-ring';
+    Object.assign(ring.style,{
+        position:'absolute',left:'50%',top:'50%',width:`${RING_RADIUS*2}px`,height:`${RING_RADIUS*2}px`,
+        transform:'translate(-50%,-50%)',border:`0.7px solid ${COSMIC_BLUE_SOFT}`,borderRadius:'50%',
+        boxShadow:'0 0 4px rgba(88,191,255,.20), inset 0 0 3px rgba(88,191,255,.08)',boxSizing:'border-box'
+    });
+    northGrid.appendChild(ring);
+
+    const crosshair=document.createElement('div');
+    crosshair.id='gv-cardinal-crosshair';
+    Object.assign(crosshair.style,{position:'absolute',inset:'0',pointerEvents:'none'});
+    for(const angle of [0,90,180,270]){
+        const line=document.createElement('div');
+        Object.assign(line.style,{
+            position:'absolute',left:`${CENTER}px`,top:`${CENTER}px`,width:'0.5px',height:'27px',
+            background:NORTH_RED,boxShadow:'0 0 1px rgba(255,59,59,.22)',
+            transform:`translate(-50%,-100%) rotate(${angle}deg) translateY(-57.5px)`,transformOrigin:'50% 100%'
+        });
+        crosshair.appendChild(line);
+    }
+    northGrid.appendChild(crosshair);
+
+    const centerTarget=document.createElement('img');
+    centerTarget.id='gv-center-target';
+    centerTarget.src=RETICLE_URL;
+    centerTarget.alt='';
+    centerTarget.width=32;
+    centerTarget.height=32;
+    Object.assign(centerTarget.style,{position:'absolute',left:'50%',top:'50%',transform:'translate(-50%,-50%)'});
+    reticle.appendChild(centerTarget);
+
+    for(let angle=0;angle<360;angle+=30){
+        const major=angle%90===0;
+        const length=major?13:7;
+        const radians=angle*Math.PI/180;
+        const radius=RING_RADIUS-length/2;
+        const tick=document.createElement('div');
+        tick.className=major?'gv-reticle-tick gv-reticle-tick-major':'gv-reticle-tick gv-reticle-tick-minor';
+        Object.assign(tick.style,{
+            position:'absolute',left:`${CENTER+Math.sin(radians)*radius}px`,top:`${CENTER-Math.cos(radians)*radius}px`,
+            width:major?'1.35px':'0.55px',height:major?'16px':`${length}px`,
+            transform:`translate(-50%,-50%) rotate(${angle}deg)`,transformOrigin:'50% 50%',
+            background:major?NORTH_RED:COSMIC_BLUE,
+            boxShadow:major?'0 0 3px rgba(255,59,59,.70),0 0 6px rgba(255,59,59,.24)':'0 0 2px rgba(88,191,255,.30)',
+            borderRadius:major?'0':'1px'
+        });
+        northGrid.appendChild(tick);
+    }
+
     const northPointer=document.createElement('div');
     northPointer.id='gv-north-pointer';
     Object.assign(northPointer.style,{
-        position:'absolute',
-        left:`${CENTER}px`,
-        top:`${CENTER-NORTH_POINTER_RADIUS}px`,
-        width:'10px',
-        height:'12px',
-        background:NORTH_RED,
-        clipPath:'polygon(50% 0,100% 100%,0 100%)',
+        position:'absolute',left:`${CENTER}px`,top:`${CENTER-NORTH_POINTER_RADIUS}px`,width:'10px',height:'12px',
+        background:NORTH_RED,clipPath:'polygon(50% 0,100% 100%,0 100%)',
         transform:'translate(-50%,-50%) rotate(0deg)',
-        filter:'drop-shadow(0 0 3px rgba(255,59,59,.95)) drop-shadow(0 0 7px rgba(255,59,59,.48))',
-        display:'block'
+        filter:'drop-shadow(0 0 3px rgba(255,59,59,.95)) drop-shadow(0 0 7px rgba(255,59,59,.48))',display:'block'
     });
     northRotor.appendChild(northPointer);
 
@@ -305,30 +341,14 @@ function createCenterReticle(root){
     northLabel.id='gv-north-label';
     northLabel.textContent='N';
     Object.assign(northLabel.style,{
-        position:'absolute',
-        display:'block',
-        left:`${CENTER}px`,
-        top:`${CENTER-NORTH_LABEL_RADIUS}px`,
-        transform:'translate(-50%,-50%) rotate(0deg)',
-        color:NORTH_RED,
-        font:'700 15px/1 Arial,sans-serif',
-        letterSpacing:'0px',
-        textShadow:'0 0 3px rgba(221,248,255,.92),0 0 7px rgba(88,191,255,.72)',
-        whiteSpace:'nowrap',
-        textAlign:'center'
+        position:'absolute',display:'block',left:`${CENTER}px`,top:`${CENTER-NORTH_LABEL_RADIUS}px`,
+        transform:'translate(-50%,-50%) rotate(0deg)',color:NORTH_RED,font:'700 15px/1 Arial,sans-serif',
+        letterSpacing:'0px',textShadow:'0 0 3px rgba(221,248,255,.92),0 0 7px rgba(88,191,255,.72)',
+        whiteSpace:'nowrap',textAlign:'center'
     });
     northRotor.appendChild(northLabel);
 
-    reticle.gvDirectional={
-        center:CENTER,
-        northRotor,
-        northPointerRadius:NORTH_POINTER_RADIUS,
-        northLabelRadius:NORTH_LABEL_RADIUS,
-        northPointer,
-        northLabel,
-        lastNorthBearing:null
-    };
-
+    reticle.gvDirectional={center:CENTER,northRotor,northGrid,ring,northPointerRadius:NORTH_POINTER_RADIUS,northLabelRadius:NORTH_LABEL_RADIUS,northPointer,northLabel,lastNorthBearing:null};
     root.appendChild(reticle);
     return reticle;
 }
