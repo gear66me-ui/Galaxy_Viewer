@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0049';
+const GV200001_BUILD='0050';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,7 +656,8 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0046';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0050';
+const DIRECT_HD_DIAGNOSTIC_LAYER='GV_DIRECT_HD_0050_DIAGNOSTIC';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -782,20 +783,28 @@ async function fetchVignetteBitmap(url){
     }
     throw new Error('VIGNETTE SOURCE FAILED: '+last);
 }
-async function makeDiagnosticHdBlob(url){
+async function installDiagnosticHdOverlay(destination,image,layer,url){
+    const sourceWcs=image?.wcs??image?.options?.wcs??image?.image?.wcs??layer?.wcs??layer?.options?.wcs??layer?.image?.wcs;
+    if(!sourceWcs||typeof sourceWcs!=='object')throw new Error('DIAGNOSTIC WCS UNAVAILABLE');
+    const wcs={};for(const [key,value] of Object.entries(sourceWcs))if(value!==undefined&&value!==null)wcs[key]=value;
     const bitmap=await fetchVignetteBitmap(url);
     try{
+        if(directHdDestination!==destination)return;
         const w=bitmap.width,h=bitmap.height;
         const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
         const ctx=canvas.getContext('2d');if(!ctx)throw new Error('DIAGNOSTIC 2D CONTEXT UNAVAILABLE');
-        ctx.drawImage(bitmap,0,0,w,h);
-        const line=Math.max(2,Math.round(Math.min(w,h)/500));
-        ctx.save();ctx.strokeStyle='rgba(255,255,255,.98)';ctx.lineWidth=line;
+        const line=Math.max(2,Math.round(Math.min(w,h)/350));
+        ctx.strokeStyle='white';ctx.lineWidth=line;
         ctx.strokeRect(line/2,line/2,w-line,h-line);
         ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
-        const arm=Math.max(12,Math.round(Math.min(w,h)*.04));
-        ctx.lineWidth=line*2;ctx.beginPath();ctx.moveTo(w/2-arm,h/2);ctx.lineTo(w/2+arm,h/2);ctx.moveTo(w/2,h/2-arm);ctx.lineTo(w/2,h/2+arm);ctx.stroke();ctx.restore();
-        return await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('DIAGNOSTIC JPEG ENCODE FAILED')),'image/jpeg',.96));
+        const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('DIAGNOSTIC PNG ENCODE FAILED')),'image/png'));
+        if(directHdDestination!==destination)return;
+        const diagnosticUrl=URL.createObjectURL(blob);
+        const diagnostic=A.image(diagnosticUrl,{name:DIRECT_HD_DIAGNOSTIC_LAYER,imgFormat:'png',wcs,opacity:1,
+            successCallback:()=>setTimeout(()=>URL.revokeObjectURL(diagnosticUrl),30000),
+            errorCallback:error=>console.error('GV DIAGNOSTIC OVERLAY LOAD FAILED',error)
+        });
+        aladin.setOverlayImageLayer(diagnostic,DIRECT_HD_DIAGNOSTIC_LAYER);
     }finally{try{bitmap.close?.()}catch(_){}}
 }
 async function makeVignetteBlob(url){
@@ -818,25 +827,20 @@ async function makeVignetteBlob(url){
         return {blob,sourceWidth:bitmap.width,sourceHeight:bitmap.height,outputWidth:w,outputHeight:h};
     }finally{try{bitmap.close?.()}catch(_){}}
 }
-async function loadDirectHdOnArrival(destination){
+function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    try{aladin.removeImageLayer?.(DIRECT_HD_DIAGNOSTIC_LAYER)}catch(_){}
     directHdOverlay=null;
-    let diagnosticUrl='';
-    try{
-        const blob=await makeDiagnosticHdBlob(url);
-        if(directHdDestination!==destination)return false;
-        diagnosticUrl=URL.createObjectURL(blob);
-    }catch(error){console.error('GV DIAGNOSTIC HD PREP FAILED',error)}
-    const layer=A.image(diagnosticUrl||url,{
+    const layer=A.image(url,{
         name:DIRECT_HD_LAYER,
         opacity:directHdOpacity(),
-        successCallback:()=>{
+        successCallback:(ra,dec,fov,image)=>{
             if(directHdDestination!==destination)return;
             directHdOverlay=layer;
             applyDirectHdOpacity();
-            if(diagnosticUrl)setTimeout(()=>URL.revokeObjectURL(diagnosticUrl),30000);
+            installDiagnosticHdOverlay(destination,image,layer,url).catch(error=>console.error('GV DIAGNOSTIC OVERLAY PREP FAILED',error));
         },
         errorCallback:error=>console.error('GV DIRECT HD LOAD FAILED',error)
     });
