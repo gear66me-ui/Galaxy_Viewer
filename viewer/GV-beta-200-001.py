@@ -25,6 +25,7 @@ COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coo
 TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
 DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
 GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js"
+GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js"
 AVM_OVERLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js"
 
 # ============================================================================
@@ -81,7 +82,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0002';
+const GV200001_BUILD='0003';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -94,6 +95,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js',
+    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js'
 });
 
@@ -142,7 +144,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'diagnosticsUrl','galaxyRouteEngineUrl','avmOverlayUrl'
+    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','avmOverlayUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -229,6 +231,7 @@ await Promise.all([
     loadScript(fresh(config.targetUrl)),
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
+    loadScript(fresh(config.galaxyNavigatorUrl)),
     loadScript(fresh(config.avmOverlayUrl))
 ]);
 
@@ -242,6 +245,7 @@ if(window.GalaxyCoordinateOverlay?.VERSION!=='0006')throw new Error('COORDINATE 
 if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 0004 EXPORT MISSING');
 if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS 0019 EXPORT MISSING');
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
+if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 for(let i=0;i<100&&!window.GalaxyViewerAvmOverlayLab;i++)await new Promise(resolve=>setTimeout(resolve,50));
 if(!window.GalaxyViewerAvmOverlayLab?.install)throw new Error('AVM OVERLAY 0055 EXPORT MISSING');
 
@@ -367,20 +371,17 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-hosts.navigation.innerHTML=
-    '<button id="gv-back-button" type="button">BACK</button>'+
-    '<button id="gv-random-button" type="button">RANDOM GALAXY</button>'+
-    '<button id="gv-forward-button" type="button">FORWARD</button>';
+const galaxyNavigator=window.GalaxyNavigator.mount(hosts.navigation);
 
 
 // ============================================================================
 // SECTION 032 — NAVIGATION CONTROL REFERENCES
 // ECO: GV200-001
 // ============================================================================
-const backButton=document.getElementById('gv-back-button');
-const randomButton=document.getElementById('gv-random-button');
-const forwardButton=document.getElementById('gv-forward-button');
-if(!backButton||!randomButton||!forwardButton)throw new Error('NAVIGATION CONTROL MISSING');
+const backButton=galaxyNavigator.back;
+const randomButton=galaxyNavigator.random;
+const forwardButton=galaxyNavigator.forward;
+if(!backButton||!randomButton||!forwardButton)throw new Error('GALAXY NAVIGATOR CONTROL MISSING');
 
 
 // ============================================================================
