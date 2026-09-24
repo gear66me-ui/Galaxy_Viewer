@@ -27,6 +27,7 @@ DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/di
 GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0027"
 GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0027"
 AVM_OVERLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js"
+HEADS_UP_DISPLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
@@ -83,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0027';
+const GV200001_BUILD='0028';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -97,7 +98,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0027',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0027',
-    avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js'
+    avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js',
+    headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js'
 });
 
 
@@ -145,7 +147,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','avmOverlayUrl'
+    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','avmOverlayUrl','headsUpDisplayUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -447,7 +449,8 @@ await Promise.all([
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
     loadScript(fresh(config.galaxyNavigatorUrl)),
-    loadScript(fresh(config.avmOverlayUrl))
+    loadScript(fresh(config.avmOverlayUrl)),
+    loadScript(fresh(config.headsUpDisplayUrl))
 ]);
 
 
@@ -461,6 +464,7 @@ if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 000
 if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS 0019 EXPORT MISSING');
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
+if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 for(let i=0;i<100&&!window.GalaxyViewerAvmOverlayLab;i++)await new Promise(resolve=>setTimeout(resolve,50));
 
 if(!window.GalaxyViewerAvmOverlayLab?.install)throw new Error('AVM OVERLAY 0055 EXPORT MISSING');
@@ -628,6 +632,10 @@ const randomGalaxyBridge=Object.freeze({
     getState(){return {activeDestination,currentDestination:activeDestination}}
 });
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
+const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
+    routeEngine:navigationRuntime,
+    randomGalaxy:randomGalaxyBridge
+});
 const avmOverlay=window.GalaxyViewerAvmOverlayLab.install({
     A,
     aladin,
@@ -672,6 +680,7 @@ function showDestination(destination){
     aladin.setFov(v.fov);
     coordinate.update(v.ra,v.dec);
     window.GalaxyViewerAvmOverlayLab?.loadForBestDestination?.('gv200-001-navigation-arrival');
+    headsUpDisplay.render();
     return v.destination;
 }
 
@@ -745,6 +754,7 @@ window.GalaxyViewerCore=Object.freeze({
     coordinate,
     target,
     diagnostics,
+    headsUpDisplay,
     navigationRuntime,
     get routeIndex(){return routeIndex},
     get historyIndex(){return historyIndex},
