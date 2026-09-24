@@ -25,6 +25,7 @@ COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coo
 TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
 DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
 NAVIGATION_RUNTIME_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation-runtime/gv-navigation-runtime-0001.js"
+AVM_OVERLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
@@ -90,7 +91,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
-    navigationRuntimeUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation-runtime/gv-navigation-runtime-0001.js'
+    navigationRuntimeUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation-runtime/gv-navigation-runtime-0001.js',
+    avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js'
 });
 
 
@@ -138,7 +140,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'diagnosticsUrl','navigationRuntimeUrl'
+    'diagnosticsUrl','navigationRuntimeUrl','avmOverlayUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -224,7 +226,8 @@ await Promise.all([
     loadScript(config.coordinateUrl),
     loadScript(config.targetUrl),
     loadScript(config.diagnosticsUrl),
-    loadScript(config.navigationRuntimeUrl)
+    loadScript(config.navigationRuntimeUrl),
+    loadScript(config.avmOverlayUrl)
 ]);
 
 
@@ -237,6 +240,8 @@ if(window.GalaxyCoordinateOverlay?.VERSION!=='0006')throw new Error('COORDINATE 
 if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 0004 EXPORT MISSING');
 if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS 0019 EXPORT MISSING');
 if(window.GalaxyNavigationRuntime?.VERSION!=='0001')throw new Error('NAVIGATION RUNTIME 0001 EXPORT MISSING');
+for(let i=0;i<100&&!window.GalaxyViewerAvmOverlayLab;i++)await new Promise(resolve=>setTimeout(resolve,50));
+if(!window.GalaxyViewerAvmOverlayLab?.install)throw new Error('AVM OVERLAY 0055 EXPORT MISSING');
 
 
 // ============================================================================
@@ -383,6 +388,19 @@ if(!backButton||!randomButton||!forwardButton)throw new Error('NAVIGATION CONTRO
 const history=[];
 let historyIndex=-1;
 let routeIndex=0;
+let activeDestination=null;
+const randomGalaxyBridge=Object.freeze({
+    get activeDestination(){return activeDestination},
+    get currentDestination(){return activeDestination},
+    getState(){return {activeDestination,currentDestination:activeDestination}}
+});
+window.GalaxyRandomGalaxy=randomGalaxyBridge;
+const avmOverlay=window.GalaxyViewerAvmOverlayLab.install({
+    A,
+    aladin,
+    viewerRoot:document.getElementById('aladin-cosmic-command-test'),
+    randomGalaxy:randomGalaxyBridge
+});
 
 
 // ============================================================================
@@ -416,9 +434,11 @@ function validateDestination(destination){
 // ============================================================================
 function showDestination(destination){
     const v=validateDestination(destination);
+    activeDestination=v.destination;
     aladin.gotoRaDec(v.ra,v.dec);
     aladin.setFov(v.fov);
     coordinate.update(v.ra,v.dec);
+    window.GalaxyViewerAvmOverlayLab?.loadForBestDestination?.('gv200-001-navigation-arrival');
     return v.destination;
 }
 
