@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0040';
+const GV200001_BUILD='0041';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,8 +656,8 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0040_RAW';
-const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0040_EFFECT';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0041_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0041_EFFECT';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -718,7 +718,22 @@ function setCrossFadeFromY(clientY){
     crossFadeInput.value=String(Math.max(0,Math.min(100,Math.round(((r.bottom-clientY)/r.height)*100))));
     applyDirectHdOpacity();
 }
-for(const ev of ['pointerdown','pointermove'])crossFadeControl.hit.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();setCrossFadeFromY(e.clientY)},{passive:false});
+let crossFadePointer=null;
+crossFadeControl.hit.addEventListener('pointerdown',e=>{
+    e.preventDefault();e.stopPropagation();crossFadePointer=e.pointerId;
+    try{crossFadeControl.hit.setPointerCapture?.(e.pointerId)}catch(_){}
+    setCrossFadeFromY(e.clientY);
+},{passive:false});
+crossFadeControl.hit.addEventListener('pointermove',e=>{
+    if(crossFadePointer!==e.pointerId)return;
+    e.preventDefault();e.stopPropagation();setCrossFadeFromY(e.clientY);
+},{passive:false});
+for(const ev of ['pointerup','pointercancel'])crossFadeControl.hit.addEventListener(ev,e=>{
+    if(crossFadePointer!==e.pointerId)return;
+    e.stopPropagation();
+    try{crossFadeControl.hit.releasePointerCapture?.(e.pointerId)}catch(_){}
+    crossFadePointer=null;
+},{passive:true});
 crossFadeInput.addEventListener('input',applyDirectHdOpacity);
 updateCrossFadeThumb();
 
@@ -772,8 +787,7 @@ async function fetchVignetteBitmap(url){
 async function makeVignetteBlob(url){
     const bitmap=await fetchVignetteBitmap(url);
     try{
-        const scale=Math.min(1,MAX_BLEND_DIMENSION/Math.max(bitmap.width,bitmap.height));
-        const w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
+        const w=bitmap.width,h=bitmap.height;
         const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
         const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
         ctx.drawImage(bitmap,0,0,w,h);
@@ -827,7 +841,7 @@ function reassertDestinationRotation(destination){
 async function installVignetteEffect(destination,url,baseWcs){
     const blend=await makeVignetteBlob(url);
     if(directHdDestination!==destination)return;
-    const wcs=scaleDirectHdWcs(baseWcs,blend);
+    const wcs=cloneDirectHdWcs(baseWcs);
     if(!wcs)throw new Error('VIGNETTE WCS UNAVAILABLE');
     if(directHdEffectUrl)URL.revokeObjectURL(directHdEffectUrl);
     directHdEffectUrl=URL.createObjectURL(blend.blob);
