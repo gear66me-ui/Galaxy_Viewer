@@ -62,8 +62,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-hamburger-host{position:absolute;inset:0;z-index:7200;pointer-events:none}
 #gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
-#gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;transform:translateX(-50%);pointer-events:auto}
-#gv-navigation-host button{height:36px;padding:0 10px;border:1px solid #7CCBFF;border-radius:6px;background:#0B3177;color:#DDF8FF;font:11px sans-serif}
+#gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 </style>
 </div>
 """))
@@ -82,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0008';
+const GV200001_BUILD='0009';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -450,7 +449,7 @@ function showDestination(destination){
 // ECO: GV200-001
 // ============================================================================
 async function navigateRandom(){
-    randomButton.disabled=true;
+    galaxyNavigator.setBusy(true);
     try{
         const destination=await navigationRuntime.nextDestination();
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
@@ -459,6 +458,7 @@ async function navigateRandom(){
         routeIndex++;
         showDestination(destination);
     }finally{
+        galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
     }
 }
