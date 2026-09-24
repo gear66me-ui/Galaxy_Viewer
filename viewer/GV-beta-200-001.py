@@ -155,9 +155,9 @@ for(const key of [
 // SECTION 013 — ALADIN JAVASCRIPT LOAD
 // ECO: GV200-001
 // ============================================================================
-const aladinModule=await import(config.aladinJsUrl);
-const A=aladinModule.default;
-if(!A?.init)throw new Error('ALADIN MIRROR DEFAULT EXPORT MISSING: A.init');
+await loadScript(config.aladinJsUrl);
+const A=globalThis.A;
+if(!A?.init)throw new Error('ALADIN CDS GLOBAL MISSING: A.init');
 await A.init;
 
 
