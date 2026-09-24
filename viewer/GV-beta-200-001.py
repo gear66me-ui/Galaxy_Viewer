@@ -81,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0013';
+const GV200001_BUILD='0014';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -194,6 +194,7 @@ const aladin=A.aladin('#aladin-cosmic-command-test',{
 // ECO: GV200-001
 // ============================================================================
 
+
 const HOME=Object.freeze({
     name:'EARTH — MILKY WAY',
     ra:266.41683,
@@ -201,6 +202,35 @@ const HOME=Object.freeze({
     fov:360,
     rotation:0
 });
+
+// Top observable-universe callout. Geometry is copied from Random Galaxy 0166.
+function installUniverseContext(){
+    if(document.getElementById('gv-universe-context'))return;
+    const style=document.createElement('style');
+    style.id='gv200001-universe-context-style';
+    style.textContent=`
+#gv-universe-context{position:absolute;left:50%;top:auto;bottom:calc(50% + min(25vw,50dvh) + 8px);z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(310px,76vw);pointer-events:none;transition:opacity .2s ease;font-family:"GV Space Age",sans-serif}
+#gv-universe-context .gv-universe-label{padding:5px 8px 6px;border:1px solid rgba(124,203,255,.78);border-radius:6px;background:rgba(8,27,58,.68);box-shadow:0 0 9px rgba(88,191,255,.18);color:#DDF8FF;text-align:center;text-transform:uppercase;text-shadow:0 0 6px rgba(88,191,255,.42);font:400 9px/1.25 "GV Space Age",sans-serif;letter-spacing:.65px}
+#gv-universe-context .gv-universe-count{display:block;margin-top:2px;color:#7CCBFF;font-size:10px;letter-spacing:.8px}
+#gv-universe-context .gv-universe-size{display:block;margin-top:2px;color:#7CCBFF;font-size:9px;letter-spacing:.8px}
+#gv-universe-context .gv-universe-leader{position:relative;width:1px;height:18px;background:rgba(124,203,255,.86);box-shadow:0 0 7px rgba(88,191,255,.48)}
+#gv-universe-context .gv-universe-leader::after{content:"";position:absolute;left:50%;bottom:-1px;width:0;height:0;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #7CCBFF;filter:drop-shadow(0 0 4px rgba(88,191,255,.68))}
+`;
+    document.head.appendChild(style);
+    const universe=document.createElement('div');
+    universe.id='gv-universe-context';
+    universe.setAttribute('aria-live','polite');
+    universe.innerHTML=
+      '<div class="gv-universe-label">'+
+        'THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE'+
+        '<span class="gv-universe-count">OVER 2 TRILLION GALAXIES</span>'+
+        '<span class="gv-universe-size">93 BILLION LIGHT-YEARS ACROSS</span>'+
+      '</div>'+
+      '<div class="gv-universe-leader" aria-hidden="true"></div>';
+    document.getElementById('aladin-cosmic-command-test').appendChild(universe);
+}
+installUniverseContext();
+
 
 
 
