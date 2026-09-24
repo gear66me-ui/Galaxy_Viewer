@@ -7,7 +7,7 @@
 const VERSION='0001';
 const MASTER='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
 const ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/';
-const C=Object.freeze({CANDIDATE_POOL_SIZE:130,ROUTE_LENGTH:100,RESERVE_SIZE:30,TRANSLATION_TARGET_DEG:95,TRANSLATION_MIN_DEG:65,TRANSLATION_MAX_DEG:125,MAX_FOV_OCTAVES:5,ROUTE_RESTARTS:128,MAX_SAMPLE_ATTEMPTS:100});
+const C=Object.freeze({CANDIDATE_POOL_SIZE:130,ROUTE_LENGTH:100,RESERVE_SIZE:30,TRANSLATION_TARGET_DEG:95,TRANSLATION_MIN_DEG:65,TRANSLATION_MAX_DEG:125,MAX_FOV_OCTAVES:5,ROUTE_RESTARTS:128,MAX_SAMPLE_ATTEMPTS:100,URL_RETRY_LIMIT:3,URL_RETRY_DELAY_MS:350,QUARANTINE_RECHECK_MS:300000,REPLENISH_AT:10});
 const log=(m,x)=>{console.info('[GV011]',m,x??'');const e=document.getElementById('gv011log');if(e)e.textContent+=m+(x===undefined?'':' '+JSON.stringify(x))+'\n'};
 const finite=v=>{const n=Number(v);return Number.isFinite(n)?n:null},clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 function key(r){const p=clean(r?.provider??r?.source??r?.catalogKey).toLowerCase(),d=clean(r?.archiveId??r?.id??r?.key).toLowerCase(),ra=finite(r?.ra),dc=finite(r?.dec);if(d)return p?`${p}|${d}`:`${d}|${ra??''}|${dc??''}`;const n=clean(r?.name??r?.title).toLowerCase();return n&&ra!==null&&dc!==null?`${p}|${n}|${ra}|${dc}`:''}
@@ -26,15 +26,56 @@ function normalizeRaw(r,i,catalogKey,meta){return Object.freeze({provider:clean(
 async function json(url){const r=await fetch(url,{cache:'no-cache'});if(!r.ok)throw Error(`HTTP ${r.status} ${url}`);return r.json()}
 async function catalogs(){const m=await json(MASTER);if(!m?.catalogs)throw Error('MASTER POINTER MAP MISSING');const records=[],counts={};for(const [k,p] of Object.entries(m.catalogs)){const x=await json(new URL(String(p),ROOT).href);if(!Array.isArray(x?.entries))throw Error(`${k} ENTRIES MISSING`);const meta={provider:x.provider,source:x.source};records.push(...x.entries.map((r,i)=>normalizeRaw(r,i,k,meta)));counts[k]=x.entries.length}return {version:m.version,records,counts}}
 
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function avmUrl(r){return clean(r?.imageUrl??imageUrl(r))}
+async function urlAlive(r){
+ const url=avmUrl(r);if(!/^https?:\/\//i.test(url))return {ok:false,reason:'AVM_URL_MISSING',url};
+ let last='';for(let attempt=1;attempt<=C.URL_RETRY_LIMIT;attempt++){try{const q=url+(url.includes('?')?'&':'?')+'gv_avm_probe='+Date.now();const response=await fetch(q,{method:'GET',headers:{Range:'bytes=0-0'},cache:'no-store'});if(response.ok||response.status===206)return {ok:true,url,attempt,status:response.status};last='HTTP_'+response.status}catch(error){last=clean(error?.message)||'FETCH_FAILED'}if(attempt<C.URL_RETRY_LIMIT)await wait(C.URL_RETRY_DELAY_MS)}
+ return {ok:false,reason:last||'AVM_URL_DEAD',url,attempt:C.URL_RETRY_LIMIT}
+}
+
 const Runtime={
- VERSION,CONSTANTS:C,phase:'IDLE',catalog:null,active:null,exclusion:new Set(),
+ VERSION,CONSTANTS:C,phase:'IDLE',catalog:null,active:null,exclusion:new Set(),quarantine:new Map(),routeCursor:0,reserveCursor:0,generation:0,nextGeneration:null,recheckTimer:null,
  async initialize(){
   this.phase='CATALOG';this.catalog=await catalogs();
-  this.phase='MONTE_CARLO';this.active=plan(this.catalog.records);
+  this.phase='MONTE_CARLO';this.active=plan(this.catalog.records);this.generation=1;this.routeCursor=0;this.reserveCursor=0;this.nextGeneration=null;
   this.exclusion.clear();for(const r of this.active.sample){const k=key(r);if(k)this.exclusion.add(k)}
-  this.phase='READY';return this.snapshot();
+  this.phase='READY';this.startQuarantineRecheck();return this.snapshot();
  },
- snapshot(){return Object.freeze({runtime:VERSION,phase:this.phase,catalog:this.catalog?.records.length??0,active:this.active?.route.length??0,reserve:this.active?.reserve.length??0,excluded:this.exclusion.size,solveTimeMs:this.active?.solveTimeMs??null,sampleAttempt:this.active?.sampleAttempt??null,solverAttempt:this.active?.solverAttempt??null})}
+ quarantineRecord(r,probe){const k=key(r);if(!k)return;const prior=this.quarantine.get(k);this.quarantine.set(k,{record:r,reason:probe?.reason||'AVM_URL_DEAD',failureCount:(prior?.failureCount||0)+1,lastChecked:Date.now(),nextCheck:Date.now()+C.QUARANTINE_RECHECK_MS})},
+ async validateAvm(r){const probe=await urlAlive(r);if(!probe.ok)this.quarantineRecord(r,probe);return probe},
+ async takeReserve(previous){
+  while(this.reserveCursor<this.active.reserve.length){const r=this.active.reserve[this.reserveCursor++],k=key(r);if(this.quarantine.has(k))continue;if(previous&&!compat(norm(previous),norm(r)).compatible)continue;const probe=await this.validateAvm(r);if(probe.ok)return r}
+  return null
+ },
+ async nextDestination(){
+  if(!this.active)throw Error('ROUTE ENGINE NOT INITIALIZED');
+  let previous=null;
+  if(this.routeCursor>0)previous=this.active.route[this.routeCursor-1];
+  while(this.routeCursor<this.active.route.length){
+   const r=this.active.route[this.routeCursor++],k=key(r);if(this.quarantine.has(k))continue;
+   const probe=await this.validateAvm(r);if(probe.ok){this.maybePrepareNext();return r}
+   const replacement=await this.takeReserve(previous);if(replacement){this.maybePrepareNext();return replacement}
+  }
+  await this.promoteNext();
+  return this.nextDestination()
+ },
+ maybePrepareNext(){
+  const remaining=this.active.route.length-this.routeCursor;
+  if(remaining<=C.REPLENISH_AT&&!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=Promise.resolve().then(()=>plan(eligibleRecords)).catch(error=>{this.nextGeneration=null;throw error})}
+ },
+ async promoteNext(){
+  if(!this.nextGeneration)this.maybePrepareNext();
+  if(!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=Promise.resolve().then(()=>plan(eligibleRecords))}
+  this.phase='MONTE_CARLO';this.active=await this.nextGeneration;this.nextGeneration=null;this.generation++;this.routeCursor=0;this.reserveCursor=0;
+  this.exclusion.clear();for(const r of this.active.sample){const k=key(r);if(k)this.exclusion.add(k)}
+  this.phase='READY'
+ },
+ async recheckQuarantine(){
+  const now=Date.now();for(const [k,q] of [...this.quarantine]){if(q.nextCheck>now)continue;const probe=await urlAlive(q.record);if(probe.ok)this.quarantine.delete(k);else this.quarantine.set(k,{...q,reason:probe.reason,failureCount:q.failureCount+1,lastChecked:now,nextCheck:now+C.QUARANTINE_RECHECK_MS})}
+ },
+ startQuarantineRecheck(){if(this.recheckTimer)return;this.recheckTimer=setInterval(()=>this.recheckQuarantine().catch(error=>log('QUARANTINE RECHECK FAILED',clean(error?.message))),C.QUARANTINE_RECHECK_MS)},
+ snapshot(){return Object.freeze({runtime:VERSION,phase:this.phase,catalog:this.catalog?.records.length??0,active:this.active?.route.length??0,activeRemaining:Math.max(0,(this.active?.route.length??0)-this.routeCursor),reserve:this.active?.reserve.length??0,reserveRemaining:Math.max(0,(this.active?.reserve.length??0)-this.reserveCursor),generation:this.generation,quarantined:this.quarantine.size,excluded:this.exclusion.size,nextGenerationPending:Boolean(this.nextGeneration),solveTimeMs:this.active?.solveTimeMs??null,sampleAttempt:this.active?.sampleAttempt??null,solverAttempt:this.active?.solverAttempt??null})}
 };
 global.GalaxyRouteEngine=Runtime;
 })(typeof window!=='undefined'?window:globalThis);
