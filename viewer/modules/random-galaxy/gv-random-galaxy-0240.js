@@ -7049,78 +7049,63 @@ animation-delay:var(--gv-bts-phase-delay)!important;
     }
 
     #normalizeProviderCandidate(candidate) {
-      if (!candidate || typeof candidate !== 'object') throw new Error('Galaxy provider returned no destination.');
-      const name = cleanText(candidate.name || candidate.objectName);
-      // 0231 AUTHORITY CONTRACT:
-      // Catalog RA/Dec are destination coordinates.
-      // AVM/WCS values are image-registration metadata only.
-      // Random Galaxy owns no Aladin camera authority.
-      const ra = finiteNumber(candidate.ra);
-      const dec = finiteNumber(candidate.dec);
-      const avmRa = finiteNumber(candidate.avmRa);
-      const avmDec = finiteNumber(candidate.avmDec);
-      const fovDegrees = finiteNumber(candidate.avmHorizontalFovDegrees);
-      const avmHorizontalFovDegrees = finiteNumber(candidate.avmHorizontalFovDegrees);
-      const avmVerticalFovDegrees = finiteNumber(candidate.avmVerticalFovDegrees);
-      const aladinRotation = finiteNumber(candidate.avmCameraRotation);
-      const avmRotation = finiteNumber(candidate.avmRotation);
-      const avmCallbackFov = finiteNumber(candidate.avmCallbackFov);
-      const avmAuthority = cleanText(candidate.avmAuthority);
-      const avmAuthorityUrl = cleanText(candidate.avmAuthorityUrl);
-      const avmAuthorityWcs =
-        candidate.avmAuthorityWcs &&
-        typeof candidate.avmAuthorityWcs==='object'
-          ? Object.freeze({...candidate.avmAuthorityWcs})
-          : null;
-      const distance = finiteNumber(candidate.distance ?? candidate.distanceMly ?? candidate.distance_mly);
-      const constellation = cleanText(candidate.constellation);
-      const age = cleanText(candidate.age ?? candidate.ageEstimate ?? candidate.age_estimate ?? '');
-      const ageYears = finiteNumber(candidate.ageYears ?? candidate.age_years);
-      const physicalSizeLy = candidate.physicalSizeLy ?? candidate.physical_size_ly ?? null;
-      const designation = cleanText(candidate.designation);
-      const commonName = cleanText(candidate.commonName ?? candidate.common_name ?? candidate.displayName ?? name);
-      const preparedHdUrl = cleanText(candidate.preparedHdUrl ?? candidate.prepared_hd_url);
-      const preparedSource = cleanText(candidate.preparedSource ?? candidate.prepared_source);
-      const preparedHdImage = candidate.preparedHdImage instanceof HTMLImageElement ? candidate.preparedHdImage : null;
-      const hdUrl = validHttpsUrl(candidate.hdUrl || candidate.hd_url);
-      const sourceUrl = validHttpsUrl(candidate.sourceUrl || candidate.source_url);
-      const githubImageUrl = validHttpsUrl(candidate.githubImageUrl || candidate.github_image_url);
-      const imageType = cleanText(candidate.imageType || candidate.image_type);
-      const category = cleanText(candidate.category);
-      const provider = cleanText(candidate.provider);
-      const telescope = cleanText(candidate.telescope || candidate.facility);
-      const credit = cleanText(candidate.credit);
-      if (!name) throw new Error('Galaxy destination is missing its galaxy name.');
-      if (ra == null || ra < 0 || ra >= 360) throw new Error('Galaxy destination has no valid catalog navigation RA.');
-      if (dec == null || dec < -90 || dec > 90) throw new Error('Galaxy destination has no valid catalog navigation Dec.');
-      if (avmRa == null || avmRa < 0 || avmRa >= 360) throw new Error('Galaxy destination has no valid runtime AVM RA.');
-      if (avmDec == null || avmDec < -90 || avmDec > 90) throw new Error('Galaxy destination has no valid runtime AVM Dec.');
-      if (distance == null || distance <= 0) throw new Error('Galaxy destination has no usable distance.');
-      if (!constellation) throw new Error('Galaxy destination has no constellation.');
-      if (fovDegrees == null || fovDegrees <= 0) throw new Error('Galaxy destination has no usable runtime AVM horizontal FoV.');
-      if (avmVerticalFovDegrees == null || avmVerticalFovDegrees <= 0) throw new Error('Galaxy destination has no usable runtime AVM vertical FoV.');
-      if (aladinRotation == null || avmRotation == null) throw new Error('Galaxy destination has no usable runtime AVM rotation.');
-      if (!avmAuthorityWcs || !Number.isFinite(Number(avmAuthorityWcs.CRVAL1)) || !Number.isFinite(Number(avmAuthorityWcs.CRVAL2)) || !Number.isFinite(Number(avmAuthorityWcs.CRPIX1)) || !Number.isFinite(Number(avmAuthorityWcs.CRPIX2))) throw new Error('Galaxy destination has no complete runtime AVM WCS.');
-      if (!['RUNTIME_IMAGE_AVM','CATALOG_IMAGE_WCS_FALLBACK','PRECOMPUTED_IMAGE_AVM','PRECOMPUTED_CATALOG_FALLBACK'].includes(avmAuthority))
-        throw new Error('Galaxy destination lost usable AVM authority.');
-      if (!hdUrl) throw new Error('Galaxy destination has no valid HTTPS HD asset.');
-      if (!sourceUrl) throw new Error('Galaxy destination has no valid HTTPS source page.');
-      if (imageType && rejectNonObservationLabel(imageType)) throw new Error('Rejected non-observation galaxy entry.');
-      if (category && !/galax/i.test(category)) throw new Error('Rejected non-galaxy entry.');
+      if (!candidate || typeof candidate !== 'object')
+        throw new Error('Galaxy provider returned no destination.');
+
+      const name=cleanText(candidate.name||candidate.objectName);
+      const ra=finiteNumber(candidate.ra);
+      const dec=finiteNumber(candidate.dec);
+      const fovDegrees=finiteNumber(
+        candidate.fovDegrees ??
+        candidate.fov ??
+        candidate.aladinFov ??
+        candidate.aladin_fov
+      );
+      const distance=finiteNumber(
+        candidate.distance ??
+        candidate.distanceMly ??
+        candidate.distance_mly
+      );
+      const constellation=cleanText(candidate.constellation);
+      const age=cleanText(candidate.age ?? candidate.ageEstimate ?? candidate.age_estimate ?? '');
+      const ageYears=finiteNumber(candidate.ageYears ?? candidate.age_years);
+      const physicalSizeLy=candidate.physicalSizeLy ?? candidate.physical_size_ly ?? null;
+      const designation=cleanText(candidate.designation);
+      const commonName=cleanText(candidate.commonName ?? candidate.common_name ?? candidate.displayName ?? name);
+      const preparedHdUrl=cleanText(candidate.preparedHdUrl ?? candidate.prepared_hd_url);
+      const preparedSource=cleanText(candidate.preparedSource ?? candidate.prepared_source);
+      const preparedHdImage=candidate.preparedHdImage instanceof HTMLImageElement ? candidate.preparedHdImage : null;
+      const hdUrl=validHttpsUrl(candidate.hdUrl||candidate.hd_url);
+      const sourceUrl=validHttpsUrl(candidate.sourceUrl||candidate.source_url);
+      const githubImageUrl=validHttpsUrl(candidate.githubImageUrl||candidate.github_image_url);
+      const imageType=cleanText(candidate.imageType||candidate.image_type);
+      const category=cleanText(candidate.category);
+      const provider=cleanText(candidate.provider);
+      const telescope=cleanText(candidate.telescope||candidate.facility);
+      const credit=cleanText(candidate.credit);
+
+      if(!name)throw new Error('Galaxy destination is missing its galaxy name.');
+      if(ra==null||ra<0||ra>=360)throw new Error('Galaxy destination has no valid catalog RA.');
+      if(dec==null||dec<-90||dec>90)throw new Error('Galaxy destination has no valid catalog Dec.');
+      if(fovDegrees==null||fovDegrees<=0)throw new Error('Galaxy destination has no valid catalog FoV.');
+      if(!hdUrl)throw new Error('Galaxy destination has no valid HTTPS HD asset.');
+      if(!sourceUrl)throw new Error('Galaxy destination has no valid HTTPS source page.');
+      if(imageType&&rejectNonObservationLabel(imageType))throw new Error('Rejected non-observation galaxy entry.');
+      if(category&&!/galax/i.test(category))throw new Error('Rejected non-galaxy entry.');
+
       return Object.freeze({
-        source: cleanText(candidate.source || 'GALAXY PROVIDER'),
-        name, ra, dec, distance, constellation, age, ageYears, physicalSizeLy, designation, commonName, preparedHdUrl, preparedSource, preparedHdImage,
-        fovDegrees, aladinRotation, avmRotation, avmCallbackFov, avmAuthority, avmAuthorityUrl, avmAuthorityWcs,
-        avmRa, avmDec, avmHorizontalFovDegrees, avmVerticalFovDegrees, avmCameraRotation:aladinRotation,
-        hdUrl: hdUrl.href,
-        sourceUrl: sourceUrl.href,
-        githubImageUrl: githubImageUrl ? githubImageUrl.href : '',
+        ...candidate,
+        source:cleanText(candidate.source||'GALAXY PROVIDER'),
+        name,ra,dec,fovDegrees,distance,constellation,age,ageYears,physicalSizeLy,
+        designation,commonName,preparedHdUrl,preparedSource,preparedHdImage,
+        hdUrl:hdUrl.href,
+        sourceUrl:sourceUrl.href,
+        githubImageUrl:githubImageUrl?githubImageUrl.href:'',
         credit,
-        imageType: imageType || 'Observation',
-        category: category || 'Galaxies',
-        provider,
-        telescope,
-        archiveId: cleanText(candidate.archiveId || candidate.id)
+        imageType:imageType||'Observation',
+        category:category||'Galaxies',
+        provider,telescope,
+        archiveId:cleanText(candidate.archiveId||candidate.id)
       });
     }
 
