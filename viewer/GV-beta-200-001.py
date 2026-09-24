@@ -24,8 +24,8 @@ HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamb
 COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
 DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
-GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0020"
-GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0020"
+GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0021"
+GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0021"
 AVM_OVERLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js"
 
 # ============================================================================
@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0020';
+const GV200001_BUILD='0021';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -95,8 +95,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
-    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0020',
-    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0020',
+    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0021',
+    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0021',
     avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js'
 });
 
@@ -438,13 +438,6 @@ function createCenterReticle(root){
     return reticle;
 }
 
-function createBottomControls(root){
-    const version=document.createElement('div');
-    version.id='gv-version-label';
-    version.textContent=DISPLAY_VERSION;
-    version.setAttribute('aria-label',`GALAXY VIEWER ${DISPLAY_VERSION}`);
-    root.appendChild(version);
-
 function readCelestialNorthBearing(aladin,root){
     try{
         // AR62: Aladin live viewport rotation is authoritative.
@@ -459,8 +452,6 @@ function readCelestialNorthBearing(aladin,root){
     }
     return 0;
 }
-
-const galaxyCatalogPromise=loadCombinedGalaxyCatalog();
 
 const compassRoot=document.getElementById('aladin-cosmic-command-test');
 if(!compassRoot)throw new Error('GALAXY VIEWER ROOT MISSING');
@@ -503,6 +494,8 @@ updateDirectionalReticle();
 window.addEventListener(
     'beforeunload',
     ()=>clearInterval(directionalReticleTimer),
+    {once:true}
+);
 
 // ============================================================================
 // SECTION 016 — INITIAL CAMERA STATE
