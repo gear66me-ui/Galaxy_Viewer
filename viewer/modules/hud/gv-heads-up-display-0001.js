@@ -54,7 +54,7 @@ function installStyle(){
   const style=document.createElement('style');
   style.id='gv-heads-up-display-0001-style';
   style.textContent=`
-.gv-heads-up-display{position:absolute;left:342px;top:54px;z-index:7210;width:min(210px,calc(100vw - 352px));pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
+.gv-heads-up-display{position:absolute;right:82px;top:270px;z-index:7210;width:min(210px,calc(100vw - 102px));pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
 .gv-hud-row{display:grid;grid-template-columns:14px 30px minmax(0,1fr);align-items:center;gap:4px;min-height:18px;padding:1px 5px;border-bottom:1px solid rgba(88,191,255,.18);background:rgba(4,16,35,.58);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:8px;line-height:1.15;letter-spacing:.35px}
 .gv-hud-row:first-child{border-radius:5px 5px 0 0}
 .gv-hud-row:last-child{border-radius:0 0 5px 5px;border-bottom:0}
