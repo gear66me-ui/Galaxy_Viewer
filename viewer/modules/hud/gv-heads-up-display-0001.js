@@ -34,11 +34,25 @@ function compactName(record){
   return name.length<=22?name:`${name.slice(0,21)}…`;
 }
 
+function resourceState(record){
+  const state=clean(record?.resourceState??record?.downloadState??record?.assetState??record?.state).toUpperCase();
+  if(state==='READY')return 'ready';
+  if(state==='FAILED'||state==='ERROR')return 'failed';
+  if(state==='RETRY'||state.includes('RETRY')||state==='STALE')return 'stale';
+  if(state==='DOWNLOADING'||state==='DECODING'||state==='PREPARING'||state==='LOADING')return 'working';
+  return 'queued';
+}
+
 function ledSvg(state){
-  const on=state==='current';
-  const fill=on?'#78FFAB':'#58BFFF';
-  const opacity=on?'1':'.72';
-  return `<svg class="gv-hud-led" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="3.25" fill="${fill}" opacity="${opacity}"/><circle cx="6" cy="6" r="5" fill="none" stroke="${fill}" stroke-opacity=".34"/></svg>`;
+  const palette={
+    ready:'#78FFAB',
+    working:'#FFD45C',
+    queued:'#F4FBFF',
+    failed:'#FF5757',
+    stale:'#58BFFF'
+  };
+  const fill=palette[state]??palette.queued;
+  return `<svg class="gv-hud-led" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="3.25" fill="${fill}"/><circle cx="6" cy="6" r="5" fill="none" stroke="${fill}" stroke-opacity=".34"/></svg>`;
 }
 
 function routeWindow(routeEngine,randomGalaxy){
@@ -55,7 +69,7 @@ function installStyle(){
   style.id='gv-heads-up-display-0001-style';
   style.textContent=`
 .gv-heads-up-display{position:absolute;right:82px;top:270px;z-index:7210;width:min(210px,calc(100vw - 102px));pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
-.gv-hud-row{display:grid;grid-template-columns:14px 30px minmax(0,1fr);align-items:center;gap:4px;min-height:18px;padding:1px 5px;border-bottom:1px solid rgba(88,191,255,.18);background:rgba(4,16,35,.58);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:8px;line-height:1.15;letter-spacing:.35px}
+.gv-hud-row{display:grid;grid-template-columns:minmax(0,1fr) 30px 14px;align-items:center;gap:4px;min-height:18px;padding:1px 5px;border-bottom:1px solid rgba(88,191,255,.18);background:rgba(4,16,35,.58);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:8px;line-height:1.15;letter-spacing:.35px}
 .gv-hud-row:first-child{border-radius:5px 5px 0 0}
 .gv-hud-row:last-child{border-radius:0 0 5px 5px;border-bottom:0}
 .gv-hud-row[data-state="current"]{background:rgba(8,35,45,.72)}
@@ -88,14 +102,16 @@ function mount(root,options={}){
     hud.replaceChildren();
     for(let i=0;i<ROWS;i++){
       const record=records[i]??null;
-      const state=i===0?'current':'upcoming';
+      const position=i===0?'current':'upcoming';
+      const state=resourceState(record);
       const row=document.createElement('div');
       row.className='gv-hud-row'+(record?'':' gv-hud-empty');
-      row.dataset.state=state;
+      row.dataset.state=position;
+      row.dataset.resourceState=state;
       row.dataset.row=String(i);
-      row.innerHTML=ledSvg(state)+
+      row.innerHTML=`<span class="gv-hud-name"></span>`+
         `<span class="gv-hud-provider">${record?providerCode(record):'---'}</span>`+
-        `<span class="gv-hud-name"></span>`;
+        ledSvg(state);
       row.querySelector('.gv-hud-name').textContent=record?compactName(record):'—';
       hud.appendChild(row);
     }
@@ -115,6 +131,7 @@ global.GalaxyViewerHeadsUpDisplay=Object.freeze({
   mount,
   providerCode,
   compactName,
+  resourceState,
   routeWindow
 });
 })(typeof window!=='undefined'?window:globalThis);
