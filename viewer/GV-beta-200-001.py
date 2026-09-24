@@ -11,9 +11,9 @@ VIEWER_VERSION = "GV-beta-200-001"
 # SECTION 002 — ALADIN MIRROR POINTERS
 # ECO: GV200-001
 # ============================================================================
-ALADIN_VERSION = "3.8.2"
+ALADIN_VERSION = "3.8.1"
 ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js"
+ALADIN_JS_URL = "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.1/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
@@ -83,13 +83,13 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0053';
+const GV200001_BUILD='0054';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
-    aladinVersion:'3.8.2',
+    aladinVersion:'3.8.1',
     aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js',
+    aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.1/aladin.js',
     hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
     hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js',
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
@@ -656,7 +656,7 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0053';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0054';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -799,7 +799,7 @@ function jpegApp1Segments(bytes){
     return segments;
 }
 async function makePreAladinDiagnosticJpeg(url){
-    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0053'];let last='';
+    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0054'];let last='';
     for(const source of attempts){
         try{
             const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
