@@ -360,17 +360,20 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-hosts.navigation.innerHTML='<button id="gv-random-button" type="button">RANDOM GALAXY</button>';
+hosts.navigation.innerHTML=
+    '<button id="gv-back-button" type="button">BACK</button>'+
+    '<button id="gv-random-button" type="button">RANDOM GALAXY</button>'+
+    '<button id="gv-forward-button" type="button">FORWARD</button>';
 
 
 // ============================================================================
 // SECTION 032 — NAVIGATION CONTROL REFERENCES
 // ECO: GV200-001
 // ============================================================================
-const backButton=null;
+const backButton=document.getElementById('gv-back-button');
 const randomButton=document.getElementById('gv-random-button');
-const forwardButton=null;
-if(!randomButton)throw new Error('RANDOM GALAXY BUTTON MISSING');
+const forwardButton=document.getElementById('gv-forward-button');
+if(!backButton||!randomButton||!forwardButton)throw new Error('NAVIGATION CONTROL MISSING');
 
 
 // ============================================================================
@@ -438,7 +441,7 @@ randomButton.addEventListener('click',()=>{
 // SECTION 038 — BACK ACTION
 // ECO: GV200-001
 // ============================================================================
-if(false)backButton.addEventListener('click',()=>{
+backButton.addEventListener('click',()=>{
     if(historyIndex<=0)return;
     historyIndex-=1;
     showDestination(history[historyIndex]);
@@ -449,7 +452,7 @@ if(false)backButton.addEventListener('click',()=>{
 // SECTION 039 — FORWARD ACTION
 // ECO: GV200-001
 // ============================================================================
-if(false)forwardButton.addEventListener('click',()=>{
+forwardButton.addEventListener('click',()=>{
     if(historyIndex>=history.length-1)return;
     historyIndex+=1;
     showDestination(history[historyIndex]);
