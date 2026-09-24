@@ -59,9 +59,7 @@ const splash=document.getElementById('gv-generic-splash');
 const errorBox=document.getElementById('gv-generic-error');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const coverPainted=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD
-
-'+String(error?.stack||error)};
+const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\\n\\n'+String(error?.stack||error)};
 const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
 const loadPointer=async()=>{
   const pointer=JSON.parse(await text(POINTER_URL+'?build='+Date.now()));
