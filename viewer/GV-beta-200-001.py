@@ -81,6 +81,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
+const GV200001_BUILD='0001';
+const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
     aladinVersion:'3.8.2',
@@ -220,14 +222,14 @@ window.aladin_cosmic_command_test=aladin;
 // SECTION 018 — GALAXY VIEWER MODULE LOAD
 // ECO: GV200-001
 // ============================================================================
-await loadScript(config.hamburgerBaseUrl);
-await loadScript(config.hamburgerUrl);
+await loadScript(fresh(config.hamburgerBaseUrl));
+await loadScript(fresh(config.hamburgerUrl));
 await Promise.all([
-    loadScript(config.coordinateUrl),
-    loadScript(config.targetUrl),
-    loadScript(config.diagnosticsUrl),
-    loadScript(config.navigationRuntimeUrl),
-    loadScript(config.avmOverlayUrl)
+    loadScript(fresh(config.coordinateUrl)),
+    loadScript(fresh(config.targetUrl)),
+    loadScript(fresh(config.diagnosticsUrl)),
+    loadScript(fresh(config.navigationRuntimeUrl)),
+    loadScript(fresh(config.avmOverlayUrl))
 ]);
 
 
