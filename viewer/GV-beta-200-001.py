@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0054';
+const GV200001_BUILD='0055';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,7 +656,7 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0054';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0055';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -799,7 +799,7 @@ function jpegApp1Segments(bytes){
     return segments;
 }
 async function makePreAladinDiagnosticJpeg(url){
-    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0054'];let last='';
+    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0055'];let last='';
     for(const source of attempts){
         try{
             const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
