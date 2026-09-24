@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0039';
+const GV200001_BUILD='0040';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,8 +656,8 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0039_RAW';
-const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0039_EFFECT';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0040_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0040_EFFECT';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -703,9 +703,13 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=directHdOpacity();
-    try{directHdOverlay?.setOpacity?.(value)}catch(_){}
-    try{directHdOverlay?.setAlpha?.(value)}catch(_){}
-    try{if(directHdOverlay?.options)directHdOverlay.options.opacity=value}catch(_){}
+    const targets=[directHdOverlay,aladin.getOverlayImageLayer?.(DIRECT_HD_EFFECT_LAYER),aladin.getOverlayImageLayer?.(DIRECT_HD_LAYER)];
+    for(const target of new Set(targets.filter(Boolean))){
+        try{target.setOpacity?.(value)}catch(_){}
+        try{target.setAlpha?.(value)}catch(_){}
+        try{target.setOptions?.({opacity:value})}catch(_){}
+        try{if(target.options)target.options.opacity=value}catch(_){}
+    }
     updateCrossFadeThumb();
     return value;
 }
@@ -714,7 +718,7 @@ function setCrossFadeFromY(clientY){
     crossFadeInput.value=String(Math.max(0,Math.min(100,Math.round(((r.bottom-clientY)/r.height)*100))));
     applyDirectHdOpacity();
 }
-for(const ev of ['pointerdown','pointermove'])crossFadeControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setCrossFadeFromY(e.clientY)},{passive:false});
+for(const ev of ['pointerdown','pointermove'])crossFadeControl.hit.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();setCrossFadeFromY(e.clientY)},{passive:false});
 crossFadeInput.addEventListener('input',applyDirectHdOpacity);
 updateCrossFadeThumb();
 
@@ -813,7 +817,12 @@ function scaleDirectHdWcs(baseWcs,blend){
         if(Number.isFinite(Number(wcs.CDELT1)))wcs.CDELT1=Number(wcs.CDELT1)*sx;
         if(Number.isFinite(Number(wcs.CDELT2)))wcs.CDELT2=Number(wcs.CDELT2)*sy;
     }
+    wcs.NAXIS1=ow;wcs.NAXIS2=oh;wcs.NAXIS=Number(wcs.NAXIS)||2;
     return wcs;
+}
+function reassertDestinationRotation(destination){
+    const rotation=Number(destination?.aladinRotation);
+    if(Number.isFinite(rotation)&&typeof aladin.setRotation==='function')aladin.setRotation(rotation);
 }
 async function installVignetteEffect(destination,url,baseWcs){
     const blend=await makeVignetteBlob(url);
@@ -827,7 +836,7 @@ async function installVignetteEffect(destination,url,baseWcs){
         successCallback:()=>{
             if(directHdDestination!==destination)return;
             try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-            directHdOverlay=effect;applyDirectHdOpacity();
+            directHdOverlay=effect;applyDirectHdOpacity();reassertDestinationRotation(destination);
         },
         errorCallback:error=>console.error('GV VIGNETTE EFFECT LOAD FAILED',error)
     });
@@ -845,7 +854,7 @@ function loadDirectHdOnArrival(destination){
         name:DIRECT_HD_LAYER,opacity:directHdOpacity(),
         successCallback:(ra,dec,fov,image)=>{
             if(directHdDestination!==destination)return;
-            directHdOverlay=layer;applyDirectHdOpacity();
+            directHdOverlay=layer;applyDirectHdOpacity();reassertDestinationRotation(destination);
             const wcs=directHdWcs(image,layer);
             if(wcs)installVignetteEffect(destination,url,wcs).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
             else console.error('GV VIGNETTE PREP FAILED',new Error('RAW AVM WCS UNAVAILABLE'));
