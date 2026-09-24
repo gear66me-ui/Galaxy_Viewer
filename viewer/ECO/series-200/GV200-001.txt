@@ -1,0 +1,29 @@
+GALAXY VIEWER ENGINEERING CHANGE ORDER
+ECO: GV200-001
+SERIES: 200
+DATE: 2026-09-23
+RELEASE: GV-beta-200-001.py
+
+PURPOSE
+Clean restart of Series 200 using permanent numbered source sections and section-scoped change control.
+
+PARENT
+None. Series 200 clean baseline.
+
+AUTHORIZED SECTIONS
+001-040 — all new baseline sections.
+
+TRIAL SCOPE
+Mirrored Aladin 3.8.2; Hamburger 0005+0007; Coordinate Overlay 0006; Target/SIMBAD 0004; Diagnostics 0019; Navigation Runtime 0001; Runtime 130 -> active 100 + reserve 30; simple Random/Back/Forward; direct RA/Dec/FoV handoff to Aladin.
+
+EXCLUDED FROM THIS TRIAL
+AVM; HD viewport; image qualification/decode; prefetch/hot queue; standby generation; travel choreography; cross-fade; download service; analytics.
+
+CHANGE CONTROL RULE
+A released viewer filename is immutable. Future changes create GV-beta-200-002.py or later. Each ECO identifies the only authorized sections. Unlisted sections must remain byte-for-byte identical to the parent revision.
+
+KNOWN EXTERNAL MODULE NOTE
+Navigation Runtime 0001 remains an external dependency and contains a stale console logger label [GV011]. This ECO does not authorize changing that module. Any Runtime correction requires a new immutable runtime module revision.
+
+GITHUB RELEASE COMMIT
+d671ff35cd293ce1c8b2d61f2e84b45186a34381
