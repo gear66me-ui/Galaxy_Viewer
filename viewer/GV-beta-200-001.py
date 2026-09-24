@@ -81,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0009';
+const GV200001_BUILD='0010';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -370,7 +370,11 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-const galaxyNavigator=window.GalaxyNavigator.mount(hosts.navigation);
+const galaxyNavigator=window.GalaxyNavigator.mount(hosts.navigation,{
+    onBack:()=>navigateBack(),
+    onRandom:()=>navigateRandom(),
+    onForward:()=>navigateForward()
+});
 
 
 // ============================================================================
@@ -462,7 +466,6 @@ async function navigateRandom(){
         updateNavigationAvailability();
     }
 }
-randomButton.addEventListener('click',navigateRandom);
 
 
 // ============================================================================
@@ -475,7 +478,6 @@ function navigateBack(){
     showDestination(history[historyIndex]);
     updateNavigationAvailability();
 }
-backButton.addEventListener('click',navigateBack);
 
 
 // ============================================================================
@@ -488,7 +490,6 @@ function navigateForward(){
     showDestination(history[historyIndex]);
     updateNavigationAvailability();
 }
-forwardButton.addEventListener('click',navigateForward);
 
 function updateNavigationAvailability(){
     galaxyNavigator.setEnabled({
