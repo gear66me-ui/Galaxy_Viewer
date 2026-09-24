@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0052';
+const GV200001_BUILD='0053';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,9 +656,7 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0052';
-const directHdDiagnostic=A.graphicOverlay({name:'GV HD PIXEL FRAME',color:'#ffffff',lineWidth:2});
-aladin.addOverlay(directHdDiagnostic);
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0053';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -784,34 +782,55 @@ async function fetchVignetteBitmap(url){
     }
     throw new Error('VIGNETTE SOURCE FAILED: '+last);
 }
-function diagnosticPixelToSky(wcs,x,y){
-    const crval1=Number(wcs.CRVAL1),crval2=Number(wcs.CRVAL2),crpix1=Number(wcs.CRPIX1),crpix2=Number(wcs.CRPIX2);
-    const cd11=Number(wcs.CD1_1??(Number(wcs.PC1_1||1)*Number(wcs.CDELT1)));
-    const cd12=Number(wcs.CD1_2??(Number(wcs.PC1_2||0)*Number(wcs.CDELT1)));
-    const cd21=Number(wcs.CD2_1??(Number(wcs.PC2_1||0)*Number(wcs.CDELT2)));
-    const cd22=Number(wcs.CD2_2??(Number(wcs.PC2_2||1)*Number(wcs.CDELT2)));
-    if(![crval1,crval2,crpix1,crpix2,cd11,cd12,cd21,cd22].every(Number.isFinite))throw new Error('DIAGNOSTIC WCS MATRIX INVALID');
-    const dx=(x+1)-crpix1,dy=(y+1)-crpix2;
-    const xi=(cd11*dx+cd12*dy)*Math.PI/180,eta=(cd21*dx+cd22*dy)*Math.PI/180;
-    const ra0=crval1*Math.PI/180,dec0=crval2*Math.PI/180;
-    const denom=Math.cos(dec0)-eta*Math.sin(dec0);
-    const ra=ra0+Math.atan2(xi,denom);
-    const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));
-    return [((ra*180/Math.PI)%360+360)%360,dec*180/Math.PI];
+function jpegApp1Segments(bytes){
+    if(bytes[0]!==0xff||bytes[1]!==0xd8)throw new Error('DIAGNOSTIC SOURCE IS NOT JPEG');
+    const segments=[];let p=2;
+    while(p+3<bytes.length){
+        if(bytes[p]!==0xff){p++;continue}
+        while(p<bytes.length&&bytes[p]===0xff)p++;
+        const marker=bytes[p++];if(marker===0xda||marker===0xd9)break;
+        if(marker===0x01||(marker>=0xd0&&marker<=0xd7))continue;
+        if(p+1>=bytes.length)break;
+        const n=(bytes[p]<<8)|bytes[p+1];if(n<2||p+n>bytes.length)break;
+        const start=p-2,end=p+n;
+        if(marker===0xe1)segments.push(bytes.slice(start,end));
+        p=end;
+    }
+    return segments;
 }
-function installDiagnosticHdFrame(destination,image){
-    if(directHdDestination!==destination)return;
-    const wcs=image?.options?.wcs;
-    if(!wcs||typeof wcs!=='object')throw new Error('DIAGNOSTIC AVM WCS UNAVAILABLE');
-    const w=Number(wcs.NAXIS1),h=Number(wcs.NAXIS2);
-    if(!(w>1&&h>1))throw new Error('DIAGNOSTIC IMAGE DIMENSIONS INVALID');
-    const p=(x,y)=>diagnosticPixelToSky(wcs,x,y);
-    directHdDiagnostic.removeAll();
-    directHdDiagnostic.addFootprints([
-        A.polyline([p(0,0),p(w-1,0),p(w-1,h-1),p(0,h-1),p(0,0)],{color:'#ffffff',lineWidth:2}),
-        A.polyline([p(w/2,0),p(w/2,h-1)],{color:'#ffffff',lineWidth:2}),
-        A.polyline([p(0,h/2),p(w-1,h/2)],{color:'#ffffff',lineWidth:2})
-    ]);
+async function makePreAladinDiagnosticJpeg(url){
+    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0053'];let last='';
+    for(const source of attempts){
+        try{
+            const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
+            if(!response.ok)throw new Error('HTTP '+response.status);
+            const sourceBlob=await response.blob();if(!sourceBlob.size)throw new Error('EMPTY IMAGE BLOB');
+            const sourceBytes=new Uint8Array(await sourceBlob.arrayBuffer());
+            const app1=jpegApp1Segments(sourceBytes);
+            if(!app1.length)throw new Error('AVM/XMP APP1 METADATA MISSING');
+            const bitmap=await createImageBitmap(sourceBlob);
+            try{
+                const w=bitmap.width,h=bitmap.height;
+                const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+                const ctx=canvas.getContext('2d');if(!ctx)throw new Error('DIAGNOSTIC 2D CONTEXT UNAVAILABLE');
+                ctx.drawImage(bitmap,0,0,w,h);
+                const line=Math.max(3,Math.round(Math.min(w,h)/250));
+                ctx.strokeStyle='white';ctx.lineWidth=line;
+                ctx.strokeRect(line/2,line/2,w-line,h-line);
+                ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+                const markedBlob=await new Promise((resolve,reject)=>canvas.toBlob(v=>v?resolve(v):reject(new Error('DIAGNOSTIC JPEG ENCODE FAILED')),'image/jpeg',.96));
+                const marked=new Uint8Array(await markedBlob.arrayBuffer());
+                if(marked[0]!==0xff||marked[1]!==0xd8)throw new Error('DIAGNOSTIC ENCODE IS NOT JPEG');
+                const metadataBytes=app1.reduce((n,x)=>n+x.length,0);
+                const merged=new Uint8Array(marked.length+metadataBytes);
+                merged.set(marked.slice(0,2),0);let q=2;
+                for(const segment of app1){merged.set(segment,q);q+=segment.length}
+                merged.set(marked.slice(2),q);
+                return new Blob([merged],{type:'image/jpeg'});
+            }finally{try{bitmap.close?.()}catch(_){}}
+        }catch(error){last=String(error?.message||error||'')}
+    }
+    throw new Error('PRE-ALADIN DIAGNOSTIC JPEG FAILED: '+last);
 }
 async function makeVignetteBlob(url){
     const bitmap=await fetchVignetteBitmap(url);
@@ -833,20 +852,25 @@ async function makeVignetteBlob(url){
         return {blob,sourceWidth:bitmap.width,sourceHeight:bitmap.height,outputWidth:w,outputHeight:h};
     }finally{try{bitmap.close?.()}catch(_){}}
 }
-function loadDirectHdOnArrival(destination){
+async function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
-    directHdDiagnostic.removeAll();
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=null;
-    const layer=A.image(url,{
+    let markedUrl='';
+    try{
+        const blob=await makePreAladinDiagnosticJpeg(url);
+        if(directHdDestination!==destination)return false;
+        markedUrl=URL.createObjectURL(blob);
+    }catch(error){console.error('GV PRE-ALADIN DIAGNOSTIC PREP FAILED',error);return false}
+    const layer=A.image(markedUrl,{
         name:DIRECT_HD_LAYER,
         opacity:directHdOpacity(),
-        successCallback:(ra,dec,fov,image)=>{
+        successCallback:()=>{
             if(directHdDestination!==destination)return;
             directHdOverlay=layer;
             applyDirectHdOpacity();
-            try{installDiagnosticHdFrame(destination,image)}catch(error){console.error('GV DIAGNOSTIC FRAME FAILED',error)}
+            setTimeout(()=>URL.revokeObjectURL(markedUrl),30000);
         },
         errorCallback:error=>console.error('GV DIRECT HD LOAD FAILED',error)
     });
