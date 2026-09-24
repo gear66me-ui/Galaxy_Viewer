@@ -74,9 +74,15 @@ This module owns only Random Galaxy / HD banner presentation artwork.
         throw new Error('GalaxyRandomGalaxy is already mounted on this host.');
 
       this.host=options.host;
+      this.aladin=options.aladin||null;
+      this.catalog=Array.isArray(options.catalog)?options.catalog:[];
+      this.randomButton=options.randomButton instanceof Element?options.randomButton:null;
+      this.index=-1;
       this.destroyed=false;
       this.root=this.#build();
       this.host.appendChild(this.root);
+      this._randomClick=()=>this.next().catch(error=>console.error('RANDOM GALAXY 0240',error));
+      this.randomButton?.addEventListener('click',this._randomClick);
       instances.set(this.host,this);
     }
 
@@ -158,6 +164,36 @@ This module owns only Random Galaxy / HD banner presentation artwork.
       return root;
     }
 
+    async next(){
+      if(!this.aladin)throw new Error('Random Galaxy 0240 requires Aladin for sky movement.');
+      if(!this.catalog.length)throw new Error('Random Galaxy 0240 catalog is empty.');
+
+      this.index=(this.index+1)%this.catalog.length;
+      const destination=this.catalog[this.index];
+      const ra=Number(destination?.ra);
+      const dec=Number(destination?.dec);
+      const fov=Number(destination?.fovDegrees ?? destination?.fov);
+
+      if(!Number.isFinite(ra)||!Number.isFinite(dec))
+        throw new Error('Random Galaxy 0240 destination has invalid RA/Dec.');
+      if(!Number.isFinite(fov)||fov<=0)
+        throw new Error('Random Galaxy 0240 destination has invalid FoV.');
+
+      this.aladin.gotoRaDec(ra,dec);
+      this.aladin.setFov(fov);
+
+      this.setBanner({
+        ...destination,
+        imageUrl:destination?.hdUrl||destination?.githubImageUrl||'',
+        info:[
+          clean(destination?.commonName||destination?.designation||''),
+          clean(destination?.provider||destination?.telescope||''),
+          clean(destination?.constellation||'')
+        ].filter(Boolean).join(' · ')
+      });
+      return destination;
+    }
+
     setBanner(data={}){
       const name=clean(data.name||data.commonName||data.designation||'GALAXY');
       const info=clean(data.info||'');
@@ -199,6 +235,7 @@ This module owns only Random Galaxy / HD banner presentation artwork.
     destroy(){
       if(this.destroyed)return;
       this.destroyed=true;
+      this.randomButton?.removeEventListener('click',this._randomClick);
       this.root.remove();
       instances.delete(this.host);
     }
