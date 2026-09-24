@@ -65,7 +65,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
 #gv-center-reticle img{display:block;width:32px;height:32px}
-#gv-diagnostic-grid{position:absolute;inset:0;z-index:7299;pointer-events:none;box-sizing:border-box;border:1px solid rgba(255,255,255,.95);background-image:linear-gradient(to right,transparent calc(50% - .5px),rgba(255,255,255,.92) calc(50% - .5px),rgba(255,255,255,.92) calc(50% + .5px),transparent calc(50% + .5px)),linear-gradient(to bottom,transparent calc(50% - .5px),rgba(255,255,255,.92) calc(50% - .5px),rgba(255,255,255,.92) calc(50% + .5px),transparent calc(50% + .5px)),repeating-linear-gradient(to right,transparent 0,transparent calc(10% - .5px),rgba(255,255,255,.55) calc(10% - .5px),rgba(255,255,255,.55) calc(10% + .5px),transparent calc(10% + .5px),transparent 10%),repeating-linear-gradient(to bottom,transparent 0,transparent calc(10% - .5px),rgba(255,255,255,.55) calc(10% - .5px),rgba(255,255,255,.55) calc(10% + .5px),transparent calc(10% + .5px),transparent 10%);background-size:100% 100%,100% 100%,100% 12px,12px 100%;background-position:center,center,center center,center center;background-repeat:no-repeat}
 </style>
 </div>
 """))
@@ -84,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0047';
+const GV200001_BUILD='0048';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -650,10 +649,6 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
 });
-const diagnosticGrid=document.createElement('div');
-diagnosticGrid.id='gv-diagnostic-grid';
-diagnosticGrid.setAttribute('aria-hidden','true');
-document.getElementById('aladin-cosmic-command-test').appendChild(diagnosticGrid);
 
 // ============================================================================
 // SECTION 033A — DIRECT ARRIVAL HD OVERLAY / VIGNETTE LAB
