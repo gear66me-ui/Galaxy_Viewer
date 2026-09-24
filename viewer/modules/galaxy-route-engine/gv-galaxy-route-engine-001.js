@@ -55,7 +55,7 @@ const Runtime={
  VERSION,CONSTANTS:C,phase:'IDLE',catalog:null,active:null,exclusion:new Set(),quarantine:new Map(),routeCursor:0,reserveCursor:0,generation:0,nextGeneration:null,recheckTimer:null,
  async initialize(){
   this.phase='CATALOG';this.catalog=await catalogs();
-  this.phase='MONTE_CARLO';this.active=await validatedPlan(this.catalog.records,this);this.generation=1;this.routeCursor=0;this.reserveCursor=0;this.nextGeneration=null;
+  this.phase='MONTE_CARLO';this.active=plan(this.catalog.records);this.generation=1;this.routeCursor=0;this.reserveCursor=0;this.nextGeneration=null;
   this.exclusion.clear();for(const r of this.active.sample){const k=key(r);if(k)this.exclusion.add(k)}
   this.phase='READY';this.startQuarantineRecheck();return this.snapshot();
  },
