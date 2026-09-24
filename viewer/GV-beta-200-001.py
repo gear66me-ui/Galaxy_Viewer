@@ -171,7 +171,7 @@ const aladin=A.aladin('#aladin-cosmic-command-test',{
     showSelectionModeControl:false,
     showColorPickerControl:false,
     showShareControl:false,
-    showSimbadPointerControl:true,
+    showSimbadPointerControl:false,
     showProjectionControl:false,
     showStatusBar:false,
     showFrame:false,
