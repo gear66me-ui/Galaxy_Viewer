@@ -27,3 +27,16 @@ Navigation Runtime 0001 remains an external dependency and contains a stale cons
 
 GITHUB RELEASE COMMIT
 d671ff35cd293ce1c8b2d61f2e84b45186a34381
+
+
+IN-SITU CORRECTION 1 — 2026-09-23
+AUTHORIZATION: user explicitly authorized modifying GV-beta-200-001.py in situ.
+SYMPTOM: blank application; no Aladin viewer, hamburger, or modules visible.
+ROOT-CAUSE TARGET: boot configuration depended on a separate Python display(Javascript(...)) execution before the main launcher-extracted JavaScript.
+AUTHORIZED/ACTUAL SECTIONS: 008 and 010.
+SECTION 008: embeds one literal window.GV_BOOT_CONFIG assignment inside the single main JavaScript execution path.
+SECTION 010: removes the separate Python BOOT_CONFIG/display(Javascript(...)) execution and records launcher-safe configuration ownership.
+SECTIONS 001-007, 009, 011-040: intended unchanged.
+STRUCTURAL RESULT: display(Javascript(...)) count reduced from 2 to 1; GV_BOOT_CONFIG assignment count remains exactly 1.
+VIEWER COMMIT: 459094ceb3af34bacc8af51706b4001f983881a7
+VIEWER BLOB: 5774260b3f2bb6e0b0c5ee6c30b337f8463e0fd5
