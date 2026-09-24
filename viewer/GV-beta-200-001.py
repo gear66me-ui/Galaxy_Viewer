@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0035';
+const GV200001_BUILD='0037';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -651,60 +651,165 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 });
 
 // ============================================================================
-// SECTION 033A — DIRECT ARRIVAL HD OVERLAY / OPACITY TEST
-// ECO: GV200-001 BUILD 0034
-// No AVM module. Navigation remains sole camera authority.
+// SECTION 033A — DIRECT ARRIVAL HD OVERLAY / VIGNETTE LAB
+// ECO: GV200-001 BUILD 0037
+// Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
+// Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0034';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0037_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0037_EFFECT';
+const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
+const MAX_BLEND_DIMENSION=2048;
+const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
+let directHdEffectUrl='';
 
-const opacityPanel=document.createElement('div');
-opacityPanel.id='gv-direct-hd-opacity';
-Object.assign(opacityPanel.style,{
-    position:'absolute',right:'10px',bottom:'76px',zIndex:'7295',
-    width:'132px',padding:'7px 9px',borderRadius:'8px',
-    background:'rgba(4,16,35,.72)',border:'1px solid rgba(88,191,255,.70)',
-    boxShadow:'0 0 8px rgba(88,191,255,.24)',pointerEvents:'auto',
-    font:'700 8px/1 "GV Space Age",Arial,sans-serif',color:'#DDF8FF'
-});
-opacityPanel.innerHTML='<div style="margin-bottom:6px;text-align:center">HD OPACITY</div><input id="gv-direct-hd-opacity-slider" type="range" min="0" max="100" value="100" step="1" style="width:100%;margin:0">';
-document.getElementById('aladin-cosmic-command-test').appendChild(opacityPanel);
-const opacitySlider=opacityPanel.querySelector('#gv-direct-hd-opacity-slider');
-
-function directHdUrl(destination){
-    return String(destination?.imageUrl??destination?.selectedImageUrl??destination?.hdUrl??'').trim();
+function gvControlPanel(id,title,side){
+    const panel=document.createElement('div');
+    panel.id=id;
+    Object.assign(panel.style,{
+        position:'absolute',[side]:'-4px',top:'calc(50% - 79px)',zIndex:'7312',
+        width:'57px',height:'158px',borderRadius:'18px',
+        background:'rgba(0,22,54,.12)',pointerEvents:'auto',touchAction:'none',
+        fontFamily:'"GV Space Age","Space Age",Arial,sans-serif',color:'#9eefff',
+        filter:'drop-shadow(0 0 10px rgba(76,205,255,.82))'
+    });
+    panel.innerHTML='<div class="gv-lab-title">'+title+'</div><div class="gv-lab-rail"></div><div class="gv-lab-thumb"></div>';
+    const titleNode=panel.querySelector('.gv-lab-title');
+    const rail=panel.querySelector('.gv-lab-rail');
+    const thumb=panel.querySelector('.gv-lab-thumb');
+    Object.assign(titleNode.style,{position:'absolute',left:side==='left'?'11px':'39px',top:'50%',transform:'translate(-50%,-50%)',height:'108px',display:'flex',alignItems:'center',justifyContent:'center',writingMode:'vertical-rl',textOrientation:'mixed',font:'400 6px/1 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'1.5px',color:'#6feaff',textShadow:'0 0 4px rgba(190,250,255,.96),0 0 10px rgba(35,190,255,.9)',userSelect:'none',pointerEvents:'none',whiteSpace:'nowrap'});
+    Object.assign(rail.style,{position:'absolute',left:side==='left'?'27px':'20px',top:'14px',width:'10px',height:'131px',borderRadius:'999px',background:'linear-gradient(180deg,rgba(18,187,255,.95),rgba(4,18,58,.82))',boxShadow:'0 0 8px rgba(100,226,255,.88),0 0 18px rgba(18,157,255,.72)',pointerEvents:'none'});
+    Object.assign(thumb.style,{position:'absolute',left:side==='left'?'32px':'25px',top:'145px',width:'18px',height:'18px',borderRadius:'50%',transform:'translate(-50%,-50%)',background:'#72e8ff',border:'2px solid rgba(224,255,255,.98)',boxShadow:'0 0 12px rgba(185,250,255,.98),0 0 28px rgba(20,176,255,.82)',pointerEvents:'none'});
+    document.getElementById('aladin-cosmic-command-test').appendChild(panel);
+    return {panel,rail,thumb};
 }
-function directHdOpacity(){
-    return Math.max(0,Math.min(1,Number(opacitySlider?.value??100)/100));
+
+const crossFadeControl=gvControlPanel('gv-cross-fade','CROSS FADE','left');
+const crossFadeInput=document.createElement('input');
+crossFadeInput.type='range';crossFadeInput.min='0';crossFadeInput.max='100';crossFadeInput.step='1';crossFadeInput.value='0';
+crossFadeInput.setAttribute('aria-label','CROSS FADE');
+Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',width:'39px',height:'131px',opacity:'.001',appearance:'none',WebkitAppearance:'none',pointerEvents:'auto',touchAction:'none'});
+crossFadeControl.panel.appendChild(crossFadeInput);
+
+function directHdUrl(destination){return String(destination?.imageUrl??destination?.selectedImageUrl??destination?.hdUrl??'').trim()}
+function directHdOpacity(){return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
+function updateCrossFadeThumb(){
+    const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
+    crossFadeControl.thumb.style.top=`${crossFadeControl.rail.offsetTop+((100-v)/100)*crossFadeControl.rail.offsetHeight}px`;
 }
 function applyDirectHdOpacity(){
     const value=directHdOpacity();
     try{directHdOverlay?.setOpacity?.(value)}catch(_){}
     try{directHdOverlay?.setAlpha?.(value)}catch(_){}
     try{if(directHdOverlay?.options)directHdOverlay.options.opacity=value}catch(_){}
+    updateCrossFadeThumb();
     return value;
 }
-opacitySlider.addEventListener('input',applyDirectHdOpacity);
+crossFadeInput.addEventListener('input',applyDirectHdOpacity);
+updateCrossFadeThumb();
 
-function loadDirectHdOnArrival(destination){
-    const url=directHdUrl(destination);
-    if(!url)return false;
-    directHdDestination=destination;
-    try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    directHdOverlay=null;
-    const layer=A.image(url,{
-        name:DIRECT_HD_LAYER,
-        opacity:directHdOpacity(),
+const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
+zoomControl.thumb.style.top='79px';
+let zoomCommand=0;
+let zoomFrame=0;
+function zoomStep(){
+    zoomFrame=0;
+    if(!zoomCommand)return;
+    try{
+        const raw=aladin.getFov?.();
+        const current=Number(Array.isArray(raw)?raw[0]:raw);
+        if(Number.isFinite(current)&&current>0){
+            const next=Math.max(0.0001,Math.min(180,current*Math.exp(-zoomCommand*0.018)));
+            aladin.setFov(next);
+        }
+    }catch(_){}
+    zoomFrame=requestAnimationFrame(zoomStep);
+}
+function setZoomCommandFromY(clientY){
+    const r=zoomControl.rail.getBoundingClientRect();
+    if(!r.height)return;
+    zoomCommand=Math.max(-1,Math.min(1,((clientY-(r.top+r.height/2))/(r.height/2))));
+    zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
+    if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
+}
+function releaseZoom(){
+    zoomCommand=0;
+    if(zoomFrame){cancelAnimationFrame(zoomFrame);zoomFrame=0}
+    zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+zoomControl.rail.offsetHeight/2}px`;
+}
+for(const ev of ['pointerdown','pointermove'])zoomControl.panel.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
+for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.panel.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
+
+async function fetchVignetteBitmap(url){
+    if(typeof createImageBitmap!=='function')throw new Error('createImageBitmap unavailable');
+    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0037'];
+    let last='';
+    for(const source of attempts){
+        try{
+            const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
+            if(!response.ok)throw new Error('HTTP '+response.status);
+            const blob=await response.blob();
+            if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
+            return await createImageBitmap(blob);
+        }catch(error){last=String(error?.message||error||'')}
+    }
+    throw new Error('VIGNETTE SOURCE FAILED: '+last);
+}
+async function makeVignetteBlob(url){
+    const bitmap=await fetchVignetteBitmap(url);
+    try{
+        const scale=Math.min(1,MAX_BLEND_DIMENSION/Math.max(bitmap.width,bitmap.height));
+        const w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
+        ctx.drawImage(bitmap,0,0,w,h);
+        const p=VIGNETTE,cx=w/2,cy=h/2,rx=w*.5*p.diameter,ry=h*.5*p.diameter;
+        const core=Math.max(0,Math.min(.98,p.core));
+        const mid1=core+(1-core)*p.mid1,mid2=core+(1-core)*p.mid2,mid3=core+(1-core)*p.mid3;
+        ctx.save();ctx.globalCompositeOperation='destination-in';ctx.translate(cx,cy);ctx.scale(rx,ry);
+        const mask=ctx.createRadialGradient(0,0,0,0,0,1);
+        mask.addColorStop(0,'rgba(0,0,0,1)');mask.addColorStop(core,'rgba(0,0,0,1)');
+        mask.addColorStop(mid1,`rgba(0,0,0,${p.alpha1})`);mask.addColorStop(mid2,`rgba(0,0,0,${p.alpha2})`);
+        mask.addColorStop(mid3,`rgba(0,0,0,${p.alpha3})`);mask.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=mask;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore();
+        return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
+    }finally{try{bitmap.close?.()}catch(_){}}
+}
+async function installVignetteEffect(destination,url,wcs){
+    const blob=await makeVignetteBlob(url);
+    if(directHdDestination!==destination)return;
+    if(directHdEffectUrl)URL.revokeObjectURL(directHdEffectUrl);
+    directHdEffectUrl=URL.createObjectURL(blob);
+    const effect=A.image(directHdEffectUrl,{
+        name:DIRECT_HD_EFFECT_LAYER,imgFormat:'png',wcs,opacity:directHdOpacity(),
         successCallback:()=>{
             if(directHdDestination!==destination)return;
-            directHdOverlay=layer;
-            applyDirectHdOpacity();
+            try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+            directHdOverlay=effect;applyDirectHdOpacity();
         },
-        errorCallback:error=>{
-            if(directHdDestination===destination)directHdOverlay=null;
-            console.error('GV DIRECT HD ARRIVAL LOAD FAILED',error);
-        }
+        errorCallback:error=>console.error('GV VIGNETTE EFFECT LOAD FAILED',error)
+    });
+    aladin.setOverlayImageLayer(effect,DIRECT_HD_EFFECT_LAYER);
+}
+
+function loadDirectHdOnArrival(destination){
+    const url=directHdUrl(destination);if(!url)return false;
+    directHdDestination=destination;
+    try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    try{aladin.removeOverlayImageLayer?.(DIRECT_HD_EFFECT_LAYER)}catch(_){}
+    if(directHdEffectUrl){URL.revokeObjectURL(directHdEffectUrl);directHdEffectUrl=''}
+    directHdOverlay=null;
+    const layer=A.image(url,{
+        name:DIRECT_HD_LAYER,opacity:directHdOpacity(),
+        successCallback:(ra,dec,fov,image)=>{
+            if(directHdDestination!==destination)return;
+            directHdOverlay=layer;applyDirectHdOpacity();
+            const wcs=image?.options?.wcs;
+            if(wcs)installVignetteEffect(destination,url,wcs).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
+        },
+        errorCallback:error=>{if(directHdDestination===destination)directHdOverlay=null;console.error('GV DIRECT HD ARRIVAL LOAD FAILED',error)}
     });
     directHdOverlay=layer;
     aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
