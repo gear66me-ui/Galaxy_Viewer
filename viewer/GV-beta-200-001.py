@@ -359,20 +359,16 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-hosts.navigation.innerHTML=
-    '<button id="gv-back-button" type="button">BACK</button>'+
-    '<button id="gv-random-button" type="button">RANDOM GALAXY</button>'+
-    '<button id="gv-forward-button" type="button">FORWARD</button>';
+hosts.navigation.innerHTML='';
 
 
 // ============================================================================
 // SECTION 032 — NAVIGATION CONTROL REFERENCES
 // ECO: GV200-001
 // ============================================================================
-const backButton=document.getElementById('gv-back-button');
-const randomButton=document.getElementById('gv-random-button');
-const forwardButton=document.getElementById('gv-forward-button');
-if(!backButton||!randomButton||!forwardButton)throw new Error('NAVIGATION CONTROL CREATION FAILED');
+const backButton=null;
+const randomButton=null;
+const forwardButton=null;
 
 
 // ============================================================================
@@ -426,7 +422,7 @@ function showDestination(destination){
 // SECTION 037 — RANDOM GALAXY ACTION
 // ECO: GV200-001
 // ============================================================================
-randomButton.addEventListener('click',()=>{
+if(false)randomButton.addEventListener('click',()=>{
     if(routeIndex>=activeRoute.length)return;
     const destination=activeRoute[routeIndex++];
     if(historyIndex<history.length-1)history.splice(historyIndex+1);
@@ -440,7 +436,7 @@ randomButton.addEventListener('click',()=>{
 // SECTION 038 — BACK ACTION
 // ECO: GV200-001
 // ============================================================================
-backButton.addEventListener('click',()=>{
+if(false)backButton.addEventListener('click',()=>{
     if(historyIndex<=0)return;
     historyIndex-=1;
     showDestination(history[historyIndex]);
@@ -451,7 +447,7 @@ backButton.addEventListener('click',()=>{
 // SECTION 039 — FORWARD ACTION
 // ECO: GV200-001
 // ============================================================================
-forwardButton.addEventListener('click',()=>{
+if(false)forwardButton.addEventListener('click',()=>{
     if(historyIndex>=history.length-1)return;
     historyIndex+=1;
     showDestination(history[historyIndex]);
