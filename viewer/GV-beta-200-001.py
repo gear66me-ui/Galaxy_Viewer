@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0042';
+const GV200001_BUILD='0043';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,8 +656,8 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0042_RAW';
-const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0042_EFFECT';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0043_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0043_EFFECT';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -834,12 +834,14 @@ function scaleDirectHdWcs(baseWcs,blend){
     wcs.NAXIS1=ow;wcs.NAXIS2=oh;wcs.NAXIS=Number(wcs.NAXIS)||2;
     return wcs;
 }
-function reassertDestinationRotation(destination){
-    const rotation=Number(destination?.aladinRotation);
-    if(Number.isFinite(rotation)&&typeof aladin.setRotation==='function')aladin.setRotation(rotation);
+function enforceDestinationCamera(destination){
+    const v=validateDestination(destination);
+    aladin.gotoRaDec(v.ra,v.dec);
+    aladin.setFov(v.fov);
+    aladin.setRotation(v.rotation);
 }
-async function installVignetteEffect(destination,url,baseWcs){
-    const blend=await makeVignetteBlob(url);
+async function installVignetteEffect(destination,url,baseWcs,preparedBlend){
+    const blend=await preparedBlend;
     if(directHdDestination!==destination)return;
     const wcs=cloneDirectHdWcs(baseWcs);
     if(!wcs)throw new Error('VIGNETTE WCS UNAVAILABLE');
@@ -850,7 +852,7 @@ async function installVignetteEffect(destination,url,baseWcs){
         successCallback:()=>{
             if(directHdDestination!==destination)return;
             try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-            directHdOverlay=effect;applyDirectHdOpacity();reassertDestinationRotation(destination);
+            directHdOverlay=effect;applyDirectHdOpacity();enforceDestinationCamera(destination);
         },
         errorCallback:error=>console.error('GV VIGNETTE EFFECT LOAD FAILED',error)
     });
@@ -864,13 +866,14 @@ function loadDirectHdOnArrival(destination){
     try{aladin.removeImageLayer?.(DIRECT_HD_EFFECT_LAYER)}catch(_){}
     if(directHdEffectUrl){URL.revokeObjectURL(directHdEffectUrl);directHdEffectUrl=''}
     directHdOverlay=null;
+    const preparedVignette=makeVignetteBlob(url);
     const layer=A.image(url,{
         name:DIRECT_HD_LAYER,opacity:directHdOpacity(),
         successCallback:(ra,dec,fov,image)=>{
             if(directHdDestination!==destination)return;
-            directHdOverlay=layer;applyDirectHdOpacity();reassertDestinationRotation(destination);
+            directHdOverlay=layer;applyDirectHdOpacity();enforceDestinationCamera(destination);
             const wcs=directHdWcs(image,layer);
-            if(wcs)installVignetteEffect(destination,url,wcs).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
+            if(wcs)installVignetteEffect(destination,url,wcs,preparedVignette).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
             else console.error('GV VIGNETTE PREP FAILED',new Error('RAW AVM WCS UNAVAILABLE'));
         },
         errorCallback:error=>{if(directHdDestination===destination)directHdOverlay=null;console.error('GV DIRECT HD ARRIVAL LOAD FAILED',error)}
