@@ -157,16 +157,16 @@ for(const key of [
 // SECTION 013 — ALADIN JAVASCRIPT LOAD
 // ECO: GV200-001
 // ============================================================================
-await loadScript(config.aladinJsUrl);
-if(!window.A?.init)throw new Error('ALADIN MIRROR EXPORT MISSING: window.A.init');
-await window.A.init;
+const A=await import(config.aladinJsUrl);
+if(!A?.init)throw new Error('ALADIN MIRROR MODULE EXPORT MISSING: A.init');
+await A.init;
 
 
 // ============================================================================
 // SECTION 014 — ALADIN VIEWER INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const aladin=window.A.aladin('#aladin-cosmic-command-test',{
+const aladin=A.aladin('#aladin-cosmic-command-test',{
     survey:'P/DSS2/color',
     fov:360,
     showReticle:false,
