@@ -70,19 +70,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 # SECTION 010 — BOOT CONFIGURATION
 # ECO: GV200-001
 # ============================================================================
-BOOT_CONFIG = {
-    "viewerVersion": VIEWER_VERSION,
-    "aladinVersion": ALADIN_VERSION,
-    "aladinCssUrl": ALADIN_CSS_URL,
-    "aladinJsUrl": ALADIN_JS_URL,
-    "hamburgerBaseUrl": HAMBURGER_BASE_URL,
-    "hamburgerUrl": HAMBURGER_URL,
-    "coordinateUrl": COORDINATE_URL,
-    "targetUrl": TARGET_URL,
-    "diagnosticsUrl": DIAGNOSTICS_URL,
-    "navigationRuntimeUrl": NAVIGATION_RUNTIME_URL,
-}
-display(Javascript("window.GV_BOOT_CONFIG=Object.freeze(" + json.dumps(BOOT_CONFIG) + ");"))
+# Launcher-safe configuration: injected into the single extracted JS block.
 
 # ============================================================================
 # SECTION 008 — JAVASCRIPT APPLICATION ENTRY
@@ -92,6 +80,18 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
+window.GV_BOOT_CONFIG=Object.freeze({
+    viewerVersion:'GV-beta-200-001',
+    aladinVersion:'3.8.2',
+    aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
+    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/dist/aladin.js',
+    hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
+    hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js',
+    coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
+    targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
+    diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
+    navigationRuntimeUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/navigation-runtime/gv-navigation-runtime-0001.js'
+});
 
 
 // ============================================================================
