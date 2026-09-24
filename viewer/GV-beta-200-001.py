@@ -82,7 +82,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0007';
+const GV200001_BUILD='0008';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -371,14 +371,16 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-hosts.navigation.replaceChildren();
+const galaxyNavigator=window.GalaxyNavigator.mount(hosts.navigation);
 
 
 // ============================================================================
 // SECTION 032 — NAVIGATION CONTROL REFERENCES
 // ECO: GV200-001
 // ============================================================================
-// Galaxy Navigator controls intentionally not mounted during UI rebuild.
+const backButton=galaxyNavigator.back;
+const randomButton=galaxyNavigator.random;
+const forwardButton=galaxyNavigator.forward;
 
 
 // ============================================================================
@@ -447,21 +449,55 @@ function showDestination(destination){
 // SECTION 037 — RANDOM GALAXY ACTION
 // ECO: GV200-001
 // ============================================================================
-// Control action intentionally dormant until the new Galaxy Navigator tile is mounted.
+async function navigateRandom(){
+    randomButton.disabled=true;
+    try{
+        const destination=await navigationRuntime.nextDestination();
+        if(historyIndex<history.length-1)history.splice(historyIndex+1);
+        history.push(destination);
+        historyIndex=history.length-1;
+        routeIndex++;
+        showDestination(destination);
+    }finally{
+        updateNavigationAvailability();
+    }
+}
+randomButton.addEventListener('click',navigateRandom);
 
 
 // ============================================================================
 // SECTION 038 — BACK ACTION
 // ECO: GV200-001
 // ============================================================================
-// Control action intentionally dormant until the new Galaxy Navigator tile is mounted.
+function navigateBack(){
+    if(historyIndex<=0)return;
+    historyIndex--;
+    showDestination(history[historyIndex]);
+    updateNavigationAvailability();
+}
+backButton.addEventListener('click',navigateBack);
 
 
 // ============================================================================
 // SECTION 039 — FORWARD ACTION
 // ECO: GV200-001
 // ============================================================================
-// Control action intentionally dormant until the new Galaxy Navigator tile is mounted.
+function navigateForward(){
+    if(historyIndex>=history.length-1)return;
+    historyIndex++;
+    showDestination(history[historyIndex]);
+    updateNavigationAvailability();
+}
+forwardButton.addEventListener('click',navigateForward);
+
+function updateNavigationAvailability(){
+    galaxyNavigator.setEnabled({
+        back:historyIndex>0,
+        random:true,
+        forward:historyIndex>=0&&historyIndex<history.length-1
+    });
+}
+updateNavigationAvailability();
 
 
 // ============================================================================
