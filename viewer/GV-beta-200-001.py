@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0041';
+const GV200001_BUILD='0042';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,8 +656,8 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0041_RAW';
-const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0041_EFFECT';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0042_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0042_EFFECT';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -849,7 +849,7 @@ async function installVignetteEffect(destination,url,baseWcs){
         name:DIRECT_HD_EFFECT_LAYER,imgFormat:'png',wcs,opacity:directHdOpacity(),
         successCallback:()=>{
             if(directHdDestination!==destination)return;
-            try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+            try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
             directHdOverlay=effect;applyDirectHdOpacity();reassertDestinationRotation(destination);
         },
         errorCallback:error=>console.error('GV VIGNETTE EFFECT LOAD FAILED',error)
@@ -860,8 +860,8 @@ async function installVignetteEffect(destination,url,baseWcs){
 function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
-    try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    try{aladin.removeOverlayImageLayer?.(DIRECT_HD_EFFECT_LAYER)}catch(_){}
+    try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    try{aladin.removeImageLayer?.(DIRECT_HD_EFFECT_LAYER)}catch(_){}
     if(directHdEffectUrl){URL.revokeObjectURL(directHdEffectUrl);directHdEffectUrl=''}
     directHdOverlay=null;
     const layer=A.image(url,{
