@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0043';
+const GV200001_BUILD='0044';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,14 +656,15 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0043_RAW';
-const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0043_EFFECT';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0044_RAW';
+const DIRECT_HD_EFFECT_LAYER='GV_DIRECT_HD_0044_EFFECT';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
 let directHdEffectUrl='';
+let directHdScreenImage=null;
 
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
@@ -710,6 +711,7 @@ function applyDirectHdOpacity(){
         try{target.setOptions?.({opacity:value})}catch(_){}
         try{if(target.options)target.options.opacity=value}catch(_){}
     }
+    if(directHdScreenImage)directHdScreenImage.style.opacity=String(value);
     updateCrossFadeThumb();
     return value;
 }
@@ -866,20 +868,26 @@ function loadDirectHdOnArrival(destination){
     try{aladin.removeImageLayer?.(DIRECT_HD_EFFECT_LAYER)}catch(_){}
     if(directHdEffectUrl){URL.revokeObjectURL(directHdEffectUrl);directHdEffectUrl=''}
     directHdOverlay=null;
-    const preparedVignette=makeVignetteBlob(url);
-    const layer=A.image(url,{
-        name:DIRECT_HD_LAYER,opacity:directHdOpacity(),
-        successCallback:(ra,dec,fov,image)=>{
-            if(directHdDestination!==destination)return;
-            directHdOverlay=layer;applyDirectHdOpacity();enforceDestinationCamera(destination);
-            const wcs=directHdWcs(image,layer);
-            if(wcs)installVignetteEffect(destination,url,wcs,preparedVignette).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
-            else console.error('GV VIGNETTE PREP FAILED',new Error('RAW AVM WCS UNAVAILABLE'));
-        },
-        errorCallback:error=>{if(directHdDestination===destination)directHdOverlay=null;console.error('GV DIRECT HD ARRIVAL LOAD FAILED',error)}
+    directHdScreenImage?.remove();
+    const image=document.createElement('img');
+    directHdScreenImage=image;
+    image.alt='';
+    Object.assign(image.style,{
+        position:'absolute',inset:'0',width:'100%',height:'100%',
+        objectFit:'contain',objectPosition:'50% 50%',zIndex:'2',
+        pointerEvents:'none',opacity:String(directHdOpacity())
     });
-    directHdOverlay=layer;
-    aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+    image.onload=()=>{if(directHdDestination===destination)enforceDestinationCamera(destination)};
+    image.onerror=error=>console.error('GV DIRECT HD SCREEN IMAGE LOAD FAILED',error);
+    document.getElementById('aladin-cosmic-command-test').appendChild(image);
+    image.src=url;
+    makeVignetteBlob(url).then(blend=>{
+        if(directHdDestination!==destination||directHdScreenImage!==image)return;
+        if(directHdEffectUrl)URL.revokeObjectURL(directHdEffectUrl);
+        directHdEffectUrl=URL.createObjectURL(blend.blob);
+        image.src=directHdEffectUrl;
+        applyDirectHdOpacity();
+    }).catch(error=>console.error('GV VIGNETTE PREP FAILED',error));
     applyDirectHdOpacity();
     return true;
 }
