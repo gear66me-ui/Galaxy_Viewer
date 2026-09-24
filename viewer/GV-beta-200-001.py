@@ -26,7 +26,6 @@ TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-
 DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
 GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0027"
 GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0027"
-AVM_OVERLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js"
 HEADS_UP_DISPLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js"
 
 # ============================================================================
@@ -84,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0033';
+const GV200001_BUILD='0034';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -98,7 +97,6 @@ window.GV_BOOT_CONFIG=Object.freeze({
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0027',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0027',
-    avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js'
 });
 
@@ -147,7 +145,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','avmOverlayUrl','headsUpDisplayUrl'
+    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -469,7 +467,6 @@ await Promise.all([
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
     loadScript(fresh(config.galaxyNavigatorUrl)),
-    loadScript(fresh(config.avmOverlayUrl)),
     loadScript(fresh(config.headsUpDisplayUrl))
 ]);
 
@@ -485,10 +482,6 @@ if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
-for(let i=0;i<100&&!window.GalaxyViewerAvmOverlayLab;i++)await new Promise(resolve=>setTimeout(resolve,50));
-
-if(!window.GalaxyViewerAvmOverlayLab?.install)throw new Error('AVM OVERLAY 0055 EXPORT MISSING');
-
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -656,12 +649,68 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
 });
-const avmOverlay=window.GalaxyViewerAvmOverlayLab.install({
-    A,
-    aladin,
-    viewerRoot:document.getElementById('aladin-cosmic-command-test'),
-    randomGalaxy:randomGalaxyBridge
+
+// ============================================================================
+// SECTION 033A — DIRECT ARRIVAL HD OVERLAY / OPACITY TEST
+// ECO: GV200-001 BUILD 0034
+// No AVM module. Navigation remains sole camera authority.
+// ============================================================================
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0034';
+let directHdOverlay=null;
+let directHdDestination=null;
+
+const opacityPanel=document.createElement('div');
+opacityPanel.id='gv-direct-hd-opacity';
+Object.assign(opacityPanel.style,{
+    position:'absolute',right:'10px',bottom:'76px',zIndex:'7295',
+    width:'132px',padding:'7px 9px',borderRadius:'8px',
+    background:'rgba(4,16,35,.72)',border:'1px solid rgba(88,191,255,.70)',
+    boxShadow:'0 0 8px rgba(88,191,255,.24)',pointerEvents:'auto',
+    font:'700 8px/1 "GV Space Age",Arial,sans-serif',color:'#DDF8FF'
 });
+opacityPanel.innerHTML='<div style="margin-bottom:6px;text-align:center">HD OPACITY</div><input id="gv-direct-hd-opacity-slider" type="range" min="0" max="100" value="100" step="1" style="width:100%;margin:0">';
+document.getElementById('aladin-cosmic-command-test').appendChild(opacityPanel);
+const opacitySlider=opacityPanel.querySelector('#gv-direct-hd-opacity-slider');
+
+function directHdUrl(destination){
+    return String(destination?.imageUrl??destination?.selectedImageUrl??destination?.hdUrl??'').trim();
+}
+function directHdOpacity(){
+    return Math.max(0,Math.min(1,Number(opacitySlider?.value??100)/100));
+}
+function applyDirectHdOpacity(){
+    const value=directHdOpacity();
+    try{directHdOverlay?.setOpacity?.(value)}catch(_){}
+    try{directHdOverlay?.setAlpha?.(value)}catch(_){}
+    try{if(directHdOverlay?.options)directHdOverlay.options.opacity=value}catch(_){}
+    return value;
+}
+opacitySlider.addEventListener('input',applyDirectHdOpacity);
+
+function loadDirectHdOnArrival(destination){
+    const url=directHdUrl(destination);
+    if(!url)return false;
+    directHdDestination=destination;
+    try{aladin.removeOverlayImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    directHdOverlay=null;
+    const layer=A.image(url,{
+        name:DIRECT_HD_LAYER,
+        opacity:directHdOpacity(),
+        successCallback:()=>{
+            if(directHdDestination!==destination)return;
+            directHdOverlay=layer;
+            applyDirectHdOpacity();
+        },
+        errorCallback:error=>{
+            if(directHdDestination===destination)directHdOverlay=null;
+            console.error('GV DIRECT HD ARRIVAL LOAD FAILED',error);
+        }
+    });
+    directHdOverlay=layer;
+    aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+    applyDirectHdOpacity();
+    return true;
+}
 
 
 // ============================================================================
@@ -699,7 +748,7 @@ function showDestination(destination){
     aladin.gotoRaDec(v.ra,v.dec);
     aladin.setFov(v.fov);
     coordinate.update(v.ra,v.dec);
-    window.GalaxyViewerAvmOverlayLab?.loadForBestDestination?.('gv200-001-navigation-arrival');
+    loadDirectHdOnArrival(v.destination);
     headsUpDisplay.render();
     return v.destination;
 }
