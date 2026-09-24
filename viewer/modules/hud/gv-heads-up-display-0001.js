@@ -1,5 +1,5 @@
 /* Galaxy Viewer Heads-Up Display 0001
- * Read-only five-row route HUD: current destination + next four.
+ * Five-row route HUD: current destination + next four; probes raster readiness for LED status.
  * Reads Route Engine / Random Galaxy state only.
  * Does NOT own navigation, queueing, camera, Aladin, AVM, or route mutation.
  */
@@ -28,7 +28,13 @@ function providerCode(record){
   return raw.slice(0,3)||'---';
 }
 
-function resourceState(record){
+function readinessKey(record){
+  return clean(record?.imageUrl??record?.selectedImageUrl??record?.hdUrl??record?.url);
+}
+
+function resourceState(record,readiness){
+  const key=readinessKey(record);
+  if(key&&readiness?.has(key))return readiness.get(key);
   const state=clean(record?.resourceState??record?.downloadState??record?.assetState??record?.state).toUpperCase();
   if(state==='READY')return 'ready';
   if(state==='FAILED'||state==='ERROR')return 'failed';
@@ -53,7 +59,9 @@ function routeWindow(routeEngine,randomGalaxy){
   const route=Array.isArray(routeEngine?.active?.route)?routeEngine.active.route:[];
   const cursor=Number.isInteger(routeEngine?.routeCursor)?routeEngine.routeCursor:0;
   const current=randomGalaxy?.activeDestination??randomGalaxy?.currentDestination??randomGalaxy?.getState?.()?.activeDestination??null;
-  const upcoming=route.slice(Math.max(0,cursor),Math.max(0,cursor)+4);
+  const start=Math.max(0,cursor);
+  if(!current)return route.slice(start,start+ROWS);
+  const upcoming=route.slice(start,start+ROWS-1);
   return [current,...upcoming].slice(0,ROWS);
 }
 
@@ -62,7 +70,7 @@ function installStyle(){
   const style=document.createElement('style');
   style.id='gv-heads-up-display-0001-style';
   style.textContent=`
-.gv-heads-up-display{position:absolute;right:8px;top:108px;z-index:7210;width:48px;pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
+.gv-heads-up-display{position:absolute;right:8px;top:128px;z-index:7210;width:48px;border-radius:6px;overflow:hidden;pointer-events:none;user-select:none;-webkit-user-select:none;font-family:"GV Space Age",Arial,sans-serif}
 .gv-hud-row{display:grid;grid-template-columns:28px 12px;align-items:center;justify-content:end;gap:3px;min-height:18px;padding:1px 2px;background:rgba(4,16,35,.42);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:7px;line-height:1;letter-spacing:.2px}
 .gv-hud-row[data-state="current"]{background:rgba(8,35,45,.72)}
 .gv-hud-led{display:block;width:12px;height:12px;overflow:visible}
@@ -83,6 +91,38 @@ function mount(root,options={}){
   const existing=root.querySelector?.('.gv-heads-up-display');
   if(existing)existing.remove();
 
+  const readiness=new Map();
+  const probes=new Map();
+
+  const probeReadiness=record=>{
+    const key=readinessKey(record);
+    if(!key||readiness.has(key)||probes.has(key))return;
+    readiness.set(key,'working');
+    const task=(async()=>{
+      if(typeof routeEngine.validateAvm==='function'){
+        const probe=await routeEngine.validateAvm(record);
+        if(!probe?.ok)throw new Error(probe?.reason||'HUD URL VALIDATION FAILED');
+      }
+      await new Promise((resolve,reject)=>{
+        const image=new Image();
+        image.decoding='async';
+        image.onload=async()=>{
+          try{
+            if(typeof image.decode==='function')await image.decode();
+            resolve();
+          }catch(error){reject(error)}
+        };
+        image.onerror=()=>reject(new Error('HUD IMAGE LOAD FAILED'));
+        image.src=key;
+      });
+      readiness.set(key,'ready');
+    })().catch(()=>readiness.set(key,'failed')).finally(()=>{
+      probes.delete(key);
+      if(hud?.isConnected)render();
+    });
+    probes.set(key,task);
+  };
+
   const hud=document.createElement('div');
   hud.className='gv-heads-up-display';
   hud.setAttribute('aria-label','Galaxy route heads-up display');
@@ -94,7 +134,7 @@ function mount(root,options={}){
     for(let i=0;i<ROWS;i++){
       const record=records[i]??null;
       const position=i===0?'current':'upcoming';
-      const state=resourceState(record);
+      const state=resourceState(record,readiness);
       const row=document.createElement('div');
       row.className='gv-hud-row'+(record?'':' gv-hud-empty');
       row.dataset.state=position;
@@ -102,6 +142,7 @@ function mount(root,options={}){
       row.dataset.row=String(i);
       row.innerHTML=`<span class="gv-hud-provider">${record?providerCode(record):'---'}</span>`+ledSvg(state);
       hud.appendChild(row);
+      if(record)probeReadiness(record);
     }
     return records;
   }
@@ -110,7 +151,7 @@ function mount(root,options={}){
   return Object.freeze({
     root:hud,
     render,
-    destroy(){hud.remove()}
+    destroy(){hud.remove();readiness.clear();probes.clear()}
   });
 }
 
@@ -118,6 +159,7 @@ global.GalaxyViewerHeadsUpDisplay=Object.freeze({
   VERSION,
   mount,
   providerCode,
+  readinessKey,
   resourceState,
   routeWindow
 });
