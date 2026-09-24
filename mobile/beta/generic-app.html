@@ -218,12 +218,18 @@ async function runSplash(preloadedHtml){
 try{
   await coverPainted();
   const minimumHold=sleep(ICON_HOLD_MS);
+  const splashReadyPromise=preloadSplash();
   const preparedViewerPromise=prepareViewer();
-  const [,preparedViewer]=await Promise.all([minimumHold,preparedViewerPromise]);
+  const [preloadedSplash,preparedViewer]=await Promise.all([
+    Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html),
+    preparedViewerPromise
+  ]);
+  await runSplash(preloadedSplash);
   const loadingIcon=cover.querySelector('#gv-loading-mark>img');
   if(loadingIcon)loadingIcon.style.display='none';
   versionEl.style.display='none';
   buildEl.style.display='none';
+  cover.style.display='flex';
   const viewerReadyPromise=initializeViewer(preparedViewer);
   await viewerReadyPromise;
   if(splash.isConnected)splash.remove();
