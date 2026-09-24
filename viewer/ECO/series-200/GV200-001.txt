@@ -69,3 +69,12 @@ PROVEN REFERENCE: viewer/archive/GV-beta-0004B.py uses const A=await import(modu
 CHANGES: Section 013 imports the module dynamically and awaits A.init. Section 014 constructs the viewer with A.aladin. No window.A dependency remains.
 VIEWER COMMIT: 08bd2d13c055c7b661405b0e4c2414f3de95d0a8
 VIEWER BLOB: f1a3d449a44cf8b50ede4fa0ae979ae114049e6c
+
+
+IN-SITU CORRECTION 5 — ALADIN DEFAULT EXPORT BINDING
+AUTHORIZATION: user GO continuation.
+RUNTIME EVIDENCE FROM COLAB: module namespace exports only "default"; default is object and contains init + aladin.
+ROOT CAUSE: 200-001 bound the module namespace itself to A instead of its default export.
+CHANGE: const aladinModule=await import(...); const A=aladinModule.default; validate A.init; await A.init; existing A.aladin(...) retained.
+VIEWER COMMIT: 40e68f19101292c0349bbb01403a1ceb7b5ffb19
+VIEWER BLOB: 5eb6e77e9d83ead73f0a2aa734033a2efc74d91d
