@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0055';
+const GV200001_BUILD='0056';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,12 +656,41 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0055';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0056';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
+const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
+const gvDiagnosticStrip=document.createElement('div');
+Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'68px',zIndex:'7313',padding:'4px 6px',borderRadius:'6px',background:'rgba(0,0,0,.72)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none'});
+document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
+function gvCatalogJsonUrl(destination){
+    const key=String(destination?.catalogKey||'').trim().toLowerCase();
+    const paths={
+      hubble:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',
+      jwst:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',
+      eso:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',
+      chandra:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',
+      spitzer:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',
+      noirlab:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'
+    };
+    return paths[key]?new URL(paths[key],GV_MASTER_CATALOG_URL).href:'UNKNOWN';
+}
+function gvPublishDiagnostic(destination){
+    const image=directHdUrl(destination);
+    const json=gvCatalogJsonUrl(destination);
+    const row=Number.isInteger(destination?.catalogIndex)?destination.catalogIndex:'?';
+    const commanded=Number(destination?.aladinRotation);
+    let live=NaN;try{live=Number(aladin.getRotation?.())}catch(_){}
+    const ra=Number(destination?.ra),dec=Number(destination?.dec);
+    gvDiagnosticStrip.textContent=
+      'IMG: '+image+'\nJSON: '+json+'  ROW: '+row+
+      '\nICRS DEST: '+(Number.isFinite(ra)?ra.toFixed(8):'?')+'  '+(Number.isFinite(dec)?dec.toFixed(8):'?')+
+      '\nROT CMD: '+(Number.isFinite(commanded)?commanded.toFixed(6):'?')+'°  ROT LIVE: '+(Number.isFinite(live)?live.toFixed(6):'?')+'°';
+    gvDiagnosticStrip.style.whiteSpace='pre-wrap';
+}
 
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
@@ -799,7 +828,7 @@ function jpegApp1Segments(bytes){
     return segments;
 }
 async function makePreAladinDiagnosticJpeg(url){
-    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0055'];let last='';
+    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0056'];let last='';
     for(const source of attempts){
         try{
             const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
@@ -918,6 +947,7 @@ function showDestination(destination){
     aladin.setFov(v.fov);
     aladin.setRotation(v.rotation);
     coordinate.update(v.ra,v.dec);
+    gvPublishDiagnostic(v.destination);
     loadDirectHdOnArrival(v.destination);
     headsUpDisplay.render();
     return v.destination;
