@@ -49,7 +49,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 const POINTER_URL='../../viewer/gv-current-viewer.json';
 const GV_GENERIC_APP_REVISION='12AR-132H-active-pointer-001';
 const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
-const ICON_HOLD_MS=3000;
+const ICON_HOLD_MS=750;
 const POST_SPLASH_HOLD_MS=1000;
 const VIEWER_TIMEOUT_MS=30000;
 const cover=document.getElementById('gv-generic-cover');
@@ -218,21 +218,14 @@ async function runSplash(preloadedHtml){
 try{
   await coverPainted();
   const minimumHold=sleep(ICON_HOLD_MS);
-  const splashReadyPromise=preloadSplash();
   const preparedViewerPromise=prepareViewer();
-  const [preloadedSplash,preparedViewer]=await Promise.all([
-    Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html),
-    preparedViewerPromise
-  ]);
-  await runSplash(preloadedSplash);
+  const [,preparedViewer]=await Promise.all([minimumHold,preparedViewerPromise]);
   const loadingIcon=cover.querySelector('#gv-loading-mark>img');
   if(loadingIcon)loadingIcon.style.display='none';
   versionEl.style.display='none';
   buildEl.style.display='none';
-  cover.style.display='flex';
-  const postSplashHold=sleep(POST_SPLASH_HOLD_MS);
   const viewerReadyPromise=initializeViewer(preparedViewer);
-  await Promise.all([viewerReadyPromise,postSplashHold]);
+  await viewerReadyPromise;
   if(splash.isConnected)splash.remove();
   if(cover.isConnected)cover.remove();
 }catch(error){console.error(error);fail(error)}
