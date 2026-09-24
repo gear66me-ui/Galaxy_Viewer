@@ -78,11 +78,11 @@ const Runtime={
  },
  maybePrepareNext(){
   const remaining=this.active.route.length-this.routeCursor;
-  if(remaining<=C.REPLENISH_AT&&!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=validatedPlan(eligibleRecords,this).catch(error=>{this.nextGeneration=null;throw error})}
+  if(remaining<=C.REPLENISH_AT&&!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=Promise.resolve(plan(eligibleRecords))}
  },
  async promoteNext(){
   if(!this.nextGeneration)this.maybePrepareNext();
-  if(!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=validatedPlan(eligibleRecords,this)}
+  if(!this.nextGeneration){const eligibleRecords=this.catalog.records.filter(r=>!this.quarantine.has(key(r)));this.nextGeneration=Promise.resolve(plan(eligibleRecords))}
   this.phase='MONTE_CARLO';this.active=await this.nextGeneration;this.nextGeneration=null;this.generation++;this.routeCursor=0;this.reserveCursor=0;
   this.exclusion.clear();for(const r of this.active.sample){const k=key(r);if(k)this.exclusion.add(k)}
   this.phase='READY'
