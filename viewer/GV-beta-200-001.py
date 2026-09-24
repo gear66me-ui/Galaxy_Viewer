@@ -81,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0010';
+const GV200001_BUILD='0011';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -193,6 +193,7 @@ const aladin=A.aladin('#aladin-cosmic-command-test',{
 // SECTION 015 — HOME DEFINITION
 // ECO: GV200-001
 // ============================================================================
+
 const HOME=Object.freeze({
     name:'EARTH — MILKY WAY',
     ra:266.41683,
@@ -200,6 +201,36 @@ const HOME=Object.freeze({
     fov:360,
     rotation:0
 });
+
+function installHomePresentation(){
+    if(document.getElementById('gv-universe-context')||document.getElementById('gv-we-are-here'))return;
+    const style=document.createElement('style');
+    style.id='gv200001-home-presentation-style';
+    style.textContent=`
+#gv-universe-context{position:absolute;left:50%;top:34%;z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(540px,76vw);pointer-events:none;font-family:"GV Space Age",sans-serif}
+#gv-universe-context .gv-universe-label{padding:9px 14px 10px;border:1px solid transparent;border-radius:8px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24);color:#DDF8FF;text-align:center;text-transform:uppercase;text-shadow:0 0 6px rgba(88,191,255,.42);font:400 12px/1.3 "GV Space Age",sans-serif;letter-spacing:.8px}
+#gv-universe-context .gv-universe-count{display:block;margin-top:3px;color:#7CCBFF;font-size:13px;letter-spacing:1px}
+#gv-universe-context .gv-universe-leader{position:relative;width:1px;height:28px;background:rgba(124,203,255,.86);box-shadow:0 0 7px rgba(88,191,255,.48)}
+#gv-universe-context .gv-universe-leader::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #7CCBFF}
+#gv-we-are-here{position:absolute;inset:0;z-index:7090;pointer-events:none;font-family:"GV Space Age",sans-serif}
+#gv-we-are-here .gv-home-leader{position:absolute;left:50%;top:54%;height:19%;width:1px;transform:translateX(-50%);background:rgba(124,203,255,.88);box-shadow:0 0 8px rgba(88,191,255,.58)}
+#gv-we-are-here .gv-home-leader::before{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #7CCBFF}
+#gv-we-are-here .gv-home-label{position:absolute;left:50%;top:73%;transform:translateX(-50%);width:min(500px,74vw);padding:10px 14px 11px;border:1px solid transparent;border-radius:8px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;color:#EAF8FF;text-align:center;text-transform:uppercase;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24)}
+#gv-we-are-here .gv-home-origin{display:flex;align-items:center;justify-content:center;gap:10px;color:#7CCBFF;font:400 19px/1.2 "GV Space Age",sans-serif;letter-spacing:1.5px}
+#gv-we-are-here .gv-earth-icon{font:27px/1 system-ui,sans-serif;filter:drop-shadow(0 0 5px rgba(87,255,147,.65))}
+#gv-we-are-here .gv-home-sub{margin-top:7px;color:#CDEEFF;font:400 12px/1.3 "GV Space Age",sans-serif;letter-spacing:1.2px}
+#gv-we-are-here .gv-home-hint{margin-top:7px;color:#A6DFFF;font:400 11px/1.3 "GV Space Age",sans-serif;letter-spacing:1px}
+.gv-home-hidden{opacity:0!important;visibility:hidden!important}
+`;
+    document.head.appendChild(style);
+    const universe=document.createElement('div');universe.id='gv-universe-context';
+    universe.innerHTML='<div class="gv-universe-label">THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE<span class="gv-universe-count">EST. ~2 TRILLION GALAXIES</span></div><div class="gv-universe-leader" aria-hidden="true"></div>';
+    const home=document.createElement('div');home.id='gv-we-are-here';
+    home.innerHTML='<div class="gv-home-leader" aria-hidden="true"></div><div class="gv-home-label"><div class="gv-home-origin"><span class="gv-earth-icon" aria-hidden="true">🌎</span><strong>WE ARE HERE</strong></div><div class="gv-home-sub">EARTH — MILKY WAY</div><div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div></div>';
+    document.getElementById('aladin-cosmic-command-test').append(universe,home);
+}
+installHomePresentation();
+
 
 
 // ============================================================================
@@ -246,7 +277,21 @@ if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 for(let i=0;i<100&&!window.GalaxyViewerAvmOverlayLab;i++)await new Promise(resolve=>setTimeout(resolve,50));
+
 if(!window.GalaxyViewerAvmOverlayLab?.install)throw new Error('AVM OVERLAY 0055 EXPORT MISSING');
+
+// Navigator is presentation: mount immediately. Route preparation must never block its appearance.
+const earlyNavigationHost=document.getElementById('gv-navigation-host');
+if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
+const galaxyNavigator=window.GalaxyNavigator.mount(earlyNavigationHost,{
+    onBack:()=>navigateBack(),
+    onRandom:()=>navigateRandom(),
+    onForward:()=>navigateForward()
+});
+// References acquired at immediate Navigator mount.
+galaxyNavigator.setEnabled({back:false,random:false,forward:false});
+galaxyNavigator.setBusy(true);
+
 
 
 // ============================================================================
@@ -353,6 +398,8 @@ if(runtimeState.phase!=='READY')throw new Error(`NAVIGATION NOT READY: ${runtime
 if(runtimeState.active!==100)throw new Error(`NAVIGATION ACTIVE INVALID: ${runtimeState.active}`);
 if(runtimeState.reserve!==30)throw new Error(`NAVIGATION RESERVE INVALID: ${runtimeState.reserve}`);
 if(runtimeState.excluded!==130)throw new Error(`NAVIGATION EXCLUSION INVALID: ${runtimeState.excluded}`);
+galaxyNavigator.setBusy(false);
+galaxyNavigator.setEnabled({back:false,random:true,forward:false});
 
 
 // ============================================================================
@@ -370,11 +417,7 @@ window.GalaxyViewerRuntime=Object.freeze({
 // SECTION 031 — NAVIGATION CONTROL MARKUP
 // ECO: GV200-001
 // ============================================================================
-const galaxyNavigator=window.GalaxyNavigator.mount(hosts.navigation,{
-    onBack:()=>navigateBack(),
-    onRandom:()=>navigateRandom(),
-    onForward:()=>navigateForward()
-});
+// Mounted immediately after module validation so Route Engine preparation cannot delay UI.
 
 
 // ============================================================================
@@ -440,6 +483,8 @@ function validateDestination(destination){
 function showDestination(destination){
     const v=validateDestination(destination);
     activeDestination=v.destination;
+    document.getElementById('gv-universe-context')?.classList.add('gv-home-hidden');
+    document.getElementById('gv-we-are-here')?.classList.add('gv-home-hidden');
     aladin.gotoRaDec(v.ra,v.dec);
     aladin.setFov(v.fov);
     coordinate.update(v.ra,v.dec);
