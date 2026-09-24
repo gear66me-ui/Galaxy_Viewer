@@ -49,3 +49,13 @@ CHANGES: add visible HTML boot diagnostic host; report JavaScript entry; attach 
 FUNCTIONAL SCOPE: diagnostics only; no Navigation, Random Galaxy, AVM, camera, route, catalog, or module-version behavior intentionally changed.
 VIEWER COMMIT: 848f9835e8086b219b90c071a359cfd5806a3f00
 VIEWER BLOB: c306e5798c17c78f016b788db195ec5cd6b6d01a
+
+
+IN-SITU CORRECTION 3 — PYTHON DELIMITER REPAIR
+AUTHORIZATION: continuation of user-authorized visible boot diagnostic correction.
+OBSERVED FAILURE: SyntaxError: unterminated string literal at line 498.
+ROOT CAUSE: diagnostic edit emitted four double-quote characters at the closing display(Javascript(r triple-quoted string) delimiter instead of three.
+CHANGE: removed exactly one extra double-quote character at the final Javascript display delimiter.
+CHARACTER DELTA: -1.
+VIEWER COMMIT: a63cca21b65a8135b253b4a45ffecc09118992ac
+VIEWER BLOB: cee7653fab6a4925050fb82c79b2d2bb67f070e8
