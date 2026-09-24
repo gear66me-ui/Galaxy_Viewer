@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0051';
+const GV200001_BUILD='0052';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -656,7 +656,9 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0051';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0052';
+const directHdDiagnostic=A.graphicOverlay({name:'GV HD PIXEL FRAME',color:'#ffffff',lineWidth:2});
+aladin.addOverlay(directHdDiagnostic);
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -782,37 +784,34 @@ async function fetchVignetteBitmap(url){
     }
     throw new Error('VIGNETTE SOURCE FAILED: '+last);
 }
-async function installMarkedHdImage(destination,image,url){
-    const sourceWcs=image?.options?.wcs;
-    if(!sourceWcs||typeof sourceWcs!=='object')throw new Error('MARKED HD WCS UNAVAILABLE');
-    const wcs={};for(const [key,value] of Object.entries(sourceWcs))if(value!==undefined&&value!==null)wcs[key]=value;
-    const bitmap=await fetchVignetteBitmap(url);
-    try{
-        if(directHdDestination!==destination)return;
-        const w=bitmap.width,h=bitmap.height;
-        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-        const ctx=canvas.getContext('2d');if(!ctx)throw new Error('MARKED HD 2D CONTEXT UNAVAILABLE');
-        ctx.drawImage(bitmap,0,0,w,h);
-        const line=Math.max(3,Math.round(Math.min(w,h)/250));
-        ctx.strokeStyle='white';ctx.lineWidth=line;
-        ctx.strokeRect(line/2,line/2,w-line,h-line);
-        ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
-        const arm=Math.max(12,Math.round(Math.min(w,h)*.035));
-        ctx.lineWidth=line*2;ctx.beginPath();ctx.moveTo(w/2-arm,h/2);ctx.lineTo(w/2+arm,h/2);ctx.moveTo(w/2,h/2-arm);ctx.lineTo(w/2,h/2+arm);ctx.stroke();
-        const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('MARKED HD PNG ENCODE FAILED')),'image/png'));
-        if(directHdDestination!==destination)return;
-        const markedUrl=URL.createObjectURL(blob);
-        const marked=A.image(markedUrl,{name:DIRECT_HD_LAYER,imgFormat:'png',wcs,opacity:directHdOpacity(),
-            successCallback:()=>{
-                if(directHdDestination!==destination)return;
-                directHdOverlay=marked;applyDirectHdOpacity();
-                setTimeout(()=>URL.revokeObjectURL(markedUrl),30000);
-            },
-            errorCallback:error=>console.error('GV MARKED HD LOAD FAILED',error)
-        });
-        directHdOverlay=marked;
-        aladin.setOverlayImageLayer(marked,DIRECT_HD_LAYER);
-    }finally{try{bitmap.close?.()}catch(_){}}
+function diagnosticPixelToSky(wcs,x,y){
+    const crval1=Number(wcs.CRVAL1),crval2=Number(wcs.CRVAL2),crpix1=Number(wcs.CRPIX1),crpix2=Number(wcs.CRPIX2);
+    const cd11=Number(wcs.CD1_1??(Number(wcs.PC1_1||1)*Number(wcs.CDELT1)));
+    const cd12=Number(wcs.CD1_2??(Number(wcs.PC1_2||0)*Number(wcs.CDELT1)));
+    const cd21=Number(wcs.CD2_1??(Number(wcs.PC2_1||0)*Number(wcs.CDELT2)));
+    const cd22=Number(wcs.CD2_2??(Number(wcs.PC2_2||1)*Number(wcs.CDELT2)));
+    if(![crval1,crval2,crpix1,crpix2,cd11,cd12,cd21,cd22].every(Number.isFinite))throw new Error('DIAGNOSTIC WCS MATRIX INVALID');
+    const dx=(x+1)-crpix1,dy=(y+1)-crpix2;
+    const xi=(cd11*dx+cd12*dy)*Math.PI/180,eta=(cd21*dx+cd22*dy)*Math.PI/180;
+    const ra0=crval1*Math.PI/180,dec0=crval2*Math.PI/180;
+    const denom=Math.cos(dec0)-eta*Math.sin(dec0);
+    const ra=ra0+Math.atan2(xi,denom);
+    const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));
+    return [((ra*180/Math.PI)%360+360)%360,dec*180/Math.PI];
+}
+function installDiagnosticHdFrame(destination,image){
+    if(directHdDestination!==destination)return;
+    const wcs=image?.options?.wcs;
+    if(!wcs||typeof wcs!=='object')throw new Error('DIAGNOSTIC AVM WCS UNAVAILABLE');
+    const w=Number(wcs.NAXIS1),h=Number(wcs.NAXIS2);
+    if(!(w>1&&h>1))throw new Error('DIAGNOSTIC IMAGE DIMENSIONS INVALID');
+    const p=(x,y)=>diagnosticPixelToSky(wcs,x,y);
+    directHdDiagnostic.removeAll();
+    directHdDiagnostic.addFootprints([
+        A.polyline([p(0,0),p(w-1,0),p(w-1,h-1),p(0,h-1),p(0,0)],{color:'#ffffff',lineWidth:2}),
+        A.polyline([p(w/2,0),p(w/2,h-1)],{color:'#ffffff',lineWidth:2}),
+        A.polyline([p(0,h/2),p(w-1,h/2)],{color:'#ffffff',lineWidth:2})
+    ]);
 }
 async function makeVignetteBlob(url){
     const bitmap=await fetchVignetteBitmap(url);
@@ -837,6 +836,7 @@ async function makeVignetteBlob(url){
 function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
+    directHdDiagnostic.removeAll();
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=null;
     const layer=A.image(url,{
@@ -846,7 +846,7 @@ function loadDirectHdOnArrival(destination){
             if(directHdDestination!==destination)return;
             directHdOverlay=layer;
             applyDirectHdOpacity();
-            installMarkedHdImage(destination,image,url).catch(error=>console.error('GV MARKED HD PREP FAILED',error));
+            try{installDiagnosticHdFrame(destination,image)}catch(error){console.error('GV DIAGNOSTIC FRAME FAILED',error)}
         },
         errorCallback:error=>console.error('GV DIRECT HD LOAD FAILED',error)
     });
