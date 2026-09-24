@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0034';
+const GV200001_BUILD='0035';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -731,10 +731,12 @@ function validateDestination(destination){
     const ra=Number(destination.ra);
     const dec=Number(destination.dec);
     const fov=Number(destination.fovDegrees);
+    const rotation=destination.aladinRotation;
     if(!Number.isFinite(ra))throw new Error('DESTINATION RA INVALID');
     if(!Number.isFinite(dec))throw new Error('DESTINATION DEC INVALID');
     if(!Number.isFinite(fov)||fov<=0)throw new Error('DESTINATION FOV INVALID');
-    return Object.freeze({destination,ra,dec,fov});
+    if(!Number.isFinite(rotation))throw new Error('DESTINATION ROTATION INVALID');
+    return Object.freeze({destination,ra,dec,fov,rotation});
 }
 
 
@@ -747,6 +749,7 @@ function showDestination(destination){
     activeDestination=v.destination;
     aladin.gotoRaDec(v.ra,v.dec);
     aladin.setFov(v.fov);
+    aladin.setRotation(v.rotation);
     coordinate.update(v.ra,v.dec);
     loadDirectHdOnArrival(v.destination);
     headsUpDisplay.render();
