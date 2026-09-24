@@ -24,8 +24,8 @@ HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamb
 COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
 DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
-GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0021"
-GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0021"
+GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0022"
+GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0022"
 AVM_OVERLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js"
 
 # ============================================================================
@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0021';
+const GV200001_BUILD='0022';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -95,8 +95,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
-    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0021',
-    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0021',
+    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0022',
+    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0022',
     avmOverlayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/lab/gv-avm-overlay-lab-0055.js'
 });
 
@@ -240,6 +240,44 @@ async function installUniverseContext(){
     document.getElementById('aladin-cosmic-command-test').appendChild(universe);
 }
 gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('GV SPACE AGE FONT LOAD FAILURE',error));
+
+// ============================================================================
+// SECTION 042 — HOME EARTH POINTER / WE ARE HERE
+// ECO: GV200-001
+// ============================================================================
+function installHomeEarthPointer(){
+    if(document.getElementById('gv-we-are-here'))return;
+    const style=document.createElement('style');
+    style.id='gv200001-home-earth-style';
+    style.textContent=`
+#gv-we-are-here{position:absolute;inset:0;z-index:7090;pointer-events:none;transition:opacity .2s ease;font-family:"GV Space Age",sans-serif}
+#gv-we-are-here .gv-home-leader{position:absolute;left:50%;top:calc(50% + 16px);bottom:34%;width:1px;min-height:36px;transform:translateX(-50%);background:rgba(124,203,255,.88);box-shadow:0 0 8px rgba(88,191,255,.58)}
+#gv-we-are-here .gv-home-leader::before{content:"";position:absolute;left:50%;top:-8px;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid #7CCBFF;filter:drop-shadow(0 0 4px rgba(88,191,255,.75))}
+#gv-we-are-here .gv-home-label{position:absolute;left:50%;top:66%;transform:translateX(-50%);width:min(260px,78vw);padding:6px 9px 7px;border:1px solid rgba(124,203,255,.88);border-radius:6px;background:rgba(8,27,58,.74);color:#EAF8FF;text-align:center;text-transform:uppercase;text-shadow:0 0 8px rgba(88,191,255,.58);box-shadow:0 0 10px rgba(88,191,255,.24)}
+#gv-we-are-here .gv-home-origin{display:flex;align-items:center;justify-content:center;gap:8px;color:#7CCBFF;font:400 15px/1.2 "GV Space Age",sans-serif;letter-spacing:1.25px}
+#gv-we-are-here .gv-earth-icon{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;font:22px/1 system-ui,sans-serif;filter:drop-shadow(0 0 2px rgba(87,255,147,.34))}
+#gv-we-are-here .gv-earth-icon::before{content:"";position:absolute;left:50%;top:50%;width:31px;height:31px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(87,255,147,.27) 0%,rgba(77,255,143,.13) 46%,rgba(77,255,143,0) 76%);filter:blur(3px);z-index:-1}
+#gv-we-are-here .gv-home-sub{margin-top:4px;color:#CDEEFF;font:400 10px/1.3 "GV Space Age",sans-serif;letter-spacing:1px}
+#gv-we-are-here .gv-home-hint{margin-top:5px;color:#A6DFFF;font:400 9px/1.3 "GV Space Age",sans-serif;letter-spacing:.8px}
+#gv-we-are-here.gv-hidden{opacity:0;visibility:hidden}
+`;
+    document.head.appendChild(style);
+    const home=document.createElement('div');
+    home.id='gv-we-are-here';
+    home.setAttribute('aria-live','polite');
+    home.innerHTML=
+      '<div class="gv-home-leader" aria-hidden="true"></div>'+
+      '<div class="gv-home-label">'+
+        '<div class="gv-home-origin">'+
+          '<span class="gv-earth-icon" aria-hidden="true">🌎</span>'+
+          '<strong>WE ARE HERE</strong>'+
+        '</div>'+
+        '<div class="gv-home-sub">EARTH — MILKY WAY</div>'+
+        '<div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div>'+
+      '</div>';
+    document.getElementById('aladin-cosmic-command-test').appendChild(home);
+}
+gvSpaceAgeReady.then(()=>installHomeEarthPointer()).catch(error=>console.error('GV HOME EARTH POINTER FAILURE',error));
 
 
 
@@ -489,7 +527,7 @@ const updateDirectionalReticle=()=>{
 
 };
 
-const directionalReticleTimer=setInterval(updateDirectionalReticle,100);
+const directionalReticleTimer=setInterval(updateDirectionalReticle,40);
 updateDirectionalReticle();
 window.addEventListener(
     'beforeunload',
@@ -761,6 +799,7 @@ function showDestination(destination){
 // ============================================================================
 async function navigateRandom(){
     document.getElementById('gv-universe-context')?.remove();
+    document.getElementById('gv-we-are-here')?.remove();
     document.getElementById('gv-center-reticle')?.remove();
     galaxyNavigator.setBusy(true);
     try{
