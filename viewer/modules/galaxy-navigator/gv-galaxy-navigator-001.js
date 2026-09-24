@@ -7,9 +7,34 @@
 'use strict';
 const VERSION='001';
 
-const GalaxyNavigator=Object.freeze({
-    VERSION
-});
+function mount(host,handlers={}){
+    if(!(host instanceof Element))throw new Error('GALAXY NAVIGATOR HOST REQUIRED');
+    host.innerHTML=
+        '<button data-gv-nav="back" type="button">BACK</button>'+
+        '<button data-gv-nav="random" type="button">RANDOM GALAXY</button>'+
+        '<button data-gv-nav="forward" type="button">FORWARD</button>';
 
-global.GalaxyNavigator=GalaxyNavigator;
+    const back=host.querySelector('[data-gv-nav="back"]');
+    const random=host.querySelector('[data-gv-nav="random"]');
+    const forward=host.querySelector('[data-gv-nav="forward"]');
+
+    back.addEventListener('click',()=>handlers.onBack?.());
+    random.addEventListener('click',()=>handlers.onRandom?.());
+    forward.addEventListener('click',()=>handlers.onForward?.());
+
+    return Object.freeze({
+        VERSION,
+        host,
+        back,
+        random,
+        forward,
+        setEnabled({back:backEnabled=true,random:randomEnabled=true,forward:forwardEnabled=true}={}){
+            back.disabled=!backEnabled;
+            random.disabled=!randomEnabled;
+            forward.disabled=!forwardEnabled;
+        }
+    });
+}
+
+global.GalaxyNavigator=Object.freeze({VERSION,mount});
 })(typeof window!=='undefined'?window:globalThis);
