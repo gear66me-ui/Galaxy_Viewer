@@ -81,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0011';
+const GV200001_BUILD='0012';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -207,15 +207,15 @@ function installHomePresentation(){
     const style=document.createElement('style');
     style.id='gv200001-home-presentation-style';
     style.textContent=`
-#gv-universe-context{position:absolute;left:50%;top:34%;z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(540px,76vw);pointer-events:none;font-family:"GV Space Age",sans-serif}
+#gv-universe-context{position:absolute;left:50%;top:auto;bottom:calc(50% + min(25vw,50dvh) + 8px);z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(310px,76vw);pointer-events:none;font-family:"GV Space Age",sans-serif}
 #gv-universe-context .gv-universe-label{padding:9px 14px 10px;border:1px solid transparent;border-radius:8px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24);color:#DDF8FF;text-align:center;text-transform:uppercase;text-shadow:0 0 6px rgba(88,191,255,.42);font:400 12px/1.3 "GV Space Age",sans-serif;letter-spacing:.8px}
 #gv-universe-context .gv-universe-count{display:block;margin-top:3px;color:#7CCBFF;font-size:13px;letter-spacing:1px}
-#gv-universe-context .gv-universe-leader{position:relative;width:1px;height:28px;background:rgba(124,203,255,.86);box-shadow:0 0 7px rgba(88,191,255,.48)}
+#gv-universe-context .gv-universe-leader{position:relative;width:1px;height:18px;background:rgba(124,203,255,.86);box-shadow:0 0 7px rgba(88,191,255,.48)}
 #gv-universe-context .gv-universe-leader::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #7CCBFF}
 #gv-we-are-here{position:absolute;inset:0;z-index:7090;pointer-events:none;font-family:"GV Space Age",sans-serif}
-#gv-we-are-here .gv-home-leader{position:absolute;left:50%;top:54%;height:19%;width:1px;transform:translateX(-50%);background:rgba(124,203,255,.88);box-shadow:0 0 8px rgba(88,191,255,.58)}
+#gv-we-are-here .gv-home-leader{position:absolute;left:50%;top:calc(50% + 16px);bottom:34%;width:1px;min-height:36px;transform:translateX(-50%);background:rgba(124,203,255,.88);box-shadow:0 0 8px rgba(88,191,255,.58)}
 #gv-we-are-here .gv-home-leader::before{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #7CCBFF}
-#gv-we-are-here .gv-home-label{position:absolute;left:50%;top:73%;transform:translateX(-50%);width:min(500px,74vw);padding:10px 14px 11px;border:1px solid transparent;border-radius:8px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;color:#EAF8FF;text-align:center;text-transform:uppercase;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24)}
+#gv-we-are-here .gv-home-label{position:absolute;left:50%;top:66%;transform:translateX(-50%);width:min(260px,78vw);padding:6px 9px 7px;border:1px solid transparent;border-radius:8px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;color:#EAF8FF;text-align:center;text-transform:uppercase;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24)}
 #gv-we-are-here .gv-home-origin{display:flex;align-items:center;justify-content:center;gap:10px;color:#7CCBFF;font:400 19px/1.2 "GV Space Age",sans-serif;letter-spacing:1.5px}
 #gv-we-are-here .gv-earth-icon{font:27px/1 system-ui,sans-serif;filter:drop-shadow(0 0 5px rgba(87,255,147,.65))}
 #gv-we-are-here .gv-home-sub{margin-top:7px;color:#CDEEFF;font:400 12px/1.3 "GV Space Age",sans-serif;letter-spacing:1.2px}
@@ -227,7 +227,21 @@ function installHomePresentation(){
     universe.innerHTML='<div class="gv-universe-label">THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE<span class="gv-universe-count">EST. ~2 TRILLION GALAXIES</span></div><div class="gv-universe-leader" aria-hidden="true"></div>';
     const home=document.createElement('div');home.id='gv-we-are-here';
     home.innerHTML='<div class="gv-home-leader" aria-hidden="true"></div><div class="gv-home-label"><div class="gv-home-origin"><span class="gv-earth-icon" aria-hidden="true">🌎</span><strong>WE ARE HERE</strong></div><div class="gv-home-sub">EARTH — MILKY WAY</div><div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div></div>';
-    document.getElementById('aladin-cosmic-command-test').append(universe,home);
+    
+    const compass=document.createElement('div');compass.id='gv-center-reticle';compass.setAttribute('aria-hidden','true');
+    compass.innerHTML='<div class="gv-center-ring"></div><div class="gv-center-cross gv-center-cross-h"></div><div class="gv-center-cross gv-center-cross-v"></div><img src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg" alt="" draggable="false"><span class="gv-center-north">N</span><span class="gv-center-north-arrow">↑</span>';
+    const compassStyle=document.createElement('style');compassStyle.id='gv200001-center-compass-style';compassStyle.textContent=`
+#gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7096;width:240px;height:240px;transform:translate(-50%,-50%);border:1px solid rgba(88,191,255,.70);border-radius:50%;box-shadow:0 0 8px rgba(88,191,255,.18);pointer-events:none}
+#gv-center-reticle .gv-center-ring{position:absolute;left:50%;top:50%;width:42px;height:42px;transform:translate(-50%,-50%);border:2px solid #296DBD;border-radius:50%;box-shadow:0 0 5px rgba(88,191,255,.55)}
+#gv-center-reticle img{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%);object-fit:contain}
+#gv-center-reticle .gv-center-cross{position:absolute;left:50%;top:50%;background:rgba(255,64,64,.82);box-shadow:0 0 4px rgba(255,64,64,.55)}
+#gv-center-reticle .gv-center-cross-h{width:100%;height:1px;transform:translate(-50%,-50%)}
+#gv-center-reticle .gv-center-cross-v{width:1px;height:100%;transform:translate(-50%,-50%)}
+#gv-center-reticle .gv-center-north{position:absolute;left:50%;top:-59px;transform:translateX(-50%);color:#FF4545;font:700 20px/1 sans-serif;text-shadow:0 0 5px #FF4545}
+#gv-center-reticle .gv-center-north-arrow{position:absolute;left:50%;top:-34px;transform:translateX(-50%);color:#FF4545;font:700 35px/1 sans-serif;text-shadow:0 0 5px #FF4545}
+.gv-home-hidden#gv-center-reticle{opacity:0;visibility:hidden}
+`;document.head.appendChild(compassStyle);
+    document.getElementById('aladin-cosmic-command-test').append(universe,home,compass);
 }
 installHomePresentation();
 
@@ -485,6 +499,7 @@ function showDestination(destination){
     activeDestination=v.destination;
     document.getElementById('gv-universe-context')?.classList.add('gv-home-hidden');
     document.getElementById('gv-we-are-here')?.classList.add('gv-home-hidden');
+    document.getElementById('gv-center-reticle')?.classList.add('gv-home-hidden');
     aladin.gotoRaDec(v.ra,v.dec);
     aladin.setFov(v.fov);
     coordinate.update(v.ra,v.dec);
