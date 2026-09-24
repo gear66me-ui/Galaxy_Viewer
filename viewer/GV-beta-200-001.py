@@ -160,6 +160,7 @@ await A.init;
 // ============================================================================
 const aladin=A.aladin('#aladin-cosmic-command-test',{
     survey:'P/DSS2/color',
+    projection:'MOL',
     fov:360,
     showReticle:false,
     showZoomControl:false,
