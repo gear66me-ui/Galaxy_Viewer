@@ -40,3 +40,12 @@ SECTIONS 001-007, 009, 011-040: intended unchanged.
 STRUCTURAL RESULT: display(Javascript(...)) count reduced from 2 to 1; GV_BOOT_CONFIG assignment count remains exactly 1.
 VIEWER COMMIT: 459094ceb3af34bacc8af51706b4001f983881a7
 VIEWER BLOB: 5774260b3f2bb6e0b0c5ee6c30b337f8463e0fd5
+
+
+IN-SITU CORRECTION 2 — VISIBLE BOOT DIAGNOSTICS
+AUTHORIZATION: user GO.
+PURPOSE: expose first silent boot failure in Colab.
+CHANGES: add visible HTML boot diagnostic host; report JavaScript entry; attach catch handler to existing async boot IIFE and render exact exception/stack.
+FUNCTIONAL SCOPE: diagnostics only; no Navigation, Random Galaxy, AVM, camera, route, catalog, or module-version behavior intentionally changed.
+VIEWER COMMIT: 848f9835e8086b219b90c071a359cfd5806a3f00
+VIEWER BLOB: c306e5798c17c78f016b788db195ec5cd6b6d01a
