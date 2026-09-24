@@ -9377,7 +9377,7 @@ function reconcileFutureQueue(){
     }
   }
 
-  pumpPreparationPhases();
+  // 0240 STRIP: no HD/AVM/WCS/background preparation in the Random path.
 }
 async function consumeNext(excludeName=''){
   reconcileFutureQueue();
@@ -9405,6 +9405,8 @@ async function consumeNext(excludeName=''){
     randomNavigationWindow.rollbackPending();
     throw new Error('RANDOM GALAXY CLAIMED BUNDLE IDENTITY MISMATCH');
   }
+  randomNavigationWindow.commitPending(destination);
+  await advanceNavigationPlannerAfterArrival(destination);
   setTimeout(reconcileFutureQueue,0);
   return destination;
 }
