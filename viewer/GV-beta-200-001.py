@@ -42,6 +42,7 @@ display(HTML("""
 <div id="gv-coordinate-host"></div>
 <div id="gv-target-host"></div>
 <div id="gv-navigation-host"></div>
+<div id="gv-boot-diagnostic" style="position:absolute;left:8px;top:58px;z-index:99999;max-width:calc(100% - 16px);padding:8px;background:#160000;color:#ffb3b3;border:1px solid #ff5555;font:12px/1.35 monospace;white-space:pre-wrap;pointer-events:none">GV200-001 — HTML ROOT READY</div>
 
 <!-- =======================================================================
      SECTION 006 — VIEWER BASE CSS
@@ -77,6 +78,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 # ECO: GV200-001
 # ============================================================================
 display(Javascript(r"""
+const gvBootDiagnostic=document.getElementById('gv-boot-diagnostic');
+function gvBootReport(message,isError=false){
+    if(!gvBootDiagnostic)return;
+    gvBootDiagnostic.style.background=isError?'#300000':'#001b08';
+    gvBootDiagnostic.style.color=isError?'#ffb3b3':'#aaffbb';
+    gvBootDiagnostic.textContent=message;
+}
+gvBootReport('GV200-001 — JAVASCRIPT ENTRY READY');
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
@@ -481,5 +490,9 @@ console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
 });
-})();
-"""))
+})().catch(error=>{
+    const detail=error?.stack||error?.message||String(error);
+    gvBootReport('GV200-001 BOOT FAILURE\n'+detail,true);
+    console.error('GV200-001 BOOT FAILURE',error);
+});
+""""))
