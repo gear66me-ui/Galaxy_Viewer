@@ -99,10 +99,6 @@ function mount(root,options={}){
     if(!key||readiness.has(key)||probes.has(key))return;
     readiness.set(key,'working');
     const task=(async()=>{
-      if(typeof routeEngine.validateAvm==='function'){
-        const probe=await routeEngine.validateAvm(record);
-        if(!probe?.ok)throw new Error(probe?.reason||'HUD URL VALIDATION FAILED');
-      }
       await new Promise((resolve,reject)=>{
         const image=new Image();
         image.decoding='async';
