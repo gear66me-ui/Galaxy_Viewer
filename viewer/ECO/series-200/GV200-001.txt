@@ -59,3 +59,13 @@ CHANGE: removed exactly one extra double-quote character at the final Javascript
 CHARACTER DELTA: -1.
 VIEWER COMMIT: a63cca21b65a8135b253b4a45ffecc09118992ac
 VIEWER BLOB: cee7653fab6a4925050fb82c79b2d2bb67f070e8
+
+
+IN-SITU CORRECTION 4 — ALADIN ES-MODULE CONTRACT
+AUTHORIZATION: user GO.
+OBSERVED FAILURE: ALADIN MIRROR EXPORT MISSING: window.A.init.
+ROOT CAUSE: mirrored aladin-source-clone/dist/aladin.js is consumed by the proven Galaxy Viewer as an ES module; 200-001 incorrectly loaded it as a classic script and expected window.A.
+PROVEN REFERENCE: viewer/archive/GV-beta-0004B.py uses const A=await import(moduleUrl); await A.init; A.aladin(...).
+CHANGES: Section 013 imports the module dynamically and awaits A.init. Section 014 constructs the viewer with A.aladin. No window.A dependency remains.
+VIEWER COMMIT: 08bd2d13c055c7b661405b0e4c2414f3de95d0a8
+VIEWER BLOB: f1a3d449a44cf8b50ede4fa0ae979ae114049e6c
