@@ -41,6 +41,7 @@ display(HTML("""
      ECO: GV200-001
      ======================================================================= -->
 <div id="gv-hamburger-host"></div>
+<div id="gv-coordinate-host"></div>
 <div id="gv-target-host"></div>
 <div id="gv-navigation-host"></div>
 
@@ -59,6 +60,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
      ======================================================================= -->
 <style>
 #gv-hamburger-host{position:absolute;inset:0;z-index:7200;pointer-events:none}
+#gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
 #gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
@@ -81,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0018';
+const GV200001_BUILD='0019';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -91,6 +93,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
     hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js',
+    coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0027',
@@ -142,7 +145,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 // ============================================================================
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
-    'hamburgerBaseUrl','hamburgerUrl','targetUrl',
+    'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
     'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
@@ -458,6 +461,7 @@ window.aladin_cosmic_command_test=aladin;
 await loadScript(fresh(config.hamburgerBaseUrl));
 await loadScript(fresh(config.hamburgerUrl));
 await Promise.all([
+    loadScript(fresh(config.coordinateUrl)),
     loadScript(fresh(config.targetUrl)),
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
@@ -471,6 +475,7 @@ await Promise.all([
 // ECO: GV200-001
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0007')throw new Error('HAMBURGER 0007 EXPORT MISSING');
+if(window.GalaxyCoordinateOverlay?.VERSION!=='0006')throw new Error('COORDINATE 0006 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 0004 EXPORT MISSING');
 if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS 0019 EXPORT MISSING');
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
@@ -508,6 +513,7 @@ if(!aladin)throw new Error('ALADIN VIEWER INITIALIZATION FAILED');
 // ============================================================================
 const hosts=Object.freeze({
     hamburger:document.getElementById('gv-hamburger-host'),
+    coordinate:document.getElementById('gv-coordinate-host'),
     target:document.getElementById('gv-target-host'),
     navigation:document.getElementById('gv-navigation-host')
 });
@@ -544,6 +550,24 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
+
+
+// ============================================================================
+// SECTION 024 — COORDINATE OVERLAY 0006 INITIALIZATION
+// ECO: GV200-001
+// ============================================================================
+const coordinate=window.GalaxyCoordinateOverlay.mount(hosts.coordinate,{});
+await coordinate.ready;
+coordinate.setFrame('ICRSd');
+coordinate.update(HOME.ra,HOME.dec);
+function gvSyncCoordinateFromAladin(){
+    try{
+        const center=aladin.getRaDec?.();
+        if(Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
+    }catch(_){}
+    requestAnimationFrame(gvSyncCoordinateFromAladin);
+}
+requestAnimationFrame(gvSyncCoordinateFromAladin);
 
 
 // ============================================================================
@@ -785,6 +809,19 @@ updateCrossFadeThumb();
 
 const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
+const gvFovReadout=document.createElement('div');
+gvFovReadout.textContent='FOV 360.000°';
+Object.assign(gvFovReadout.style,{position:'absolute',left:'50%',top:'-25px',transform:'translateX(-50%)',minWidth:'74px',padding:'3px 6px',border:'1px solid rgba(124,203,255,.82)',borderRadius:'5px',background:'linear-gradient(145deg,rgba(8,27,58,.92),rgba(18,63,134,.92))',boxShadow:'0 0 8px rgba(88,191,255,.42)',font:'400 9px/1.2 "GV Space Age",sans-serif',letterSpacing:'.25px',color:'#bdeaff',textAlign:'center',whiteSpace:'nowrap',pointerEvents:'none'});
+zoomControl.root.appendChild(gvFovReadout);
+function gvSyncFovReadout(){
+    try{
+        const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
+        if(Number.isFinite(fov)&&fov>=0)gvFovReadout.textContent=`FOV ${fov.toFixed(3)}°`;
+    }catch(_){}
+    requestAnimationFrame(gvSyncFovReadout);
+}
+requestAnimationFrame(gvSyncFovReadout);
+
 let zoomCommand=0;
 let zoomFrame=0;
 let gvAutoZoom=null;
@@ -1062,6 +1099,7 @@ window.GalaxyViewerCore=Object.freeze({
     aladin,
     home:HOME,
     hamburger,
+    coordinate,
     target,
     diagnostics,
     headsUpDisplay,
