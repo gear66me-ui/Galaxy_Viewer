@@ -1,5 +1,5 @@
-name: TEMP GV200 Generic Launcher Raw Pointer 0067
-# trigger: launcher-raw-003
+name: TEMP GV200 Aladin URL Image 0067
+# trigger: aladin-url-001
 
 on:
   push:
@@ -17,11 +17,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: beta
-      - name: Patch generic app pointer fallback
+      - name: Patch viewer to Aladin URL image and matched diagnostic table
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('mobile/beta/generic-app.html')
+          import json,re
+          p=Path('viewer/GV-beta-200-001.py')
           s=p.read_text(encoding='utf-8')
           before=s
           def one(old,new,label):
@@ -30,31 +31,145 @@ jobs:
               if n!=1:
                   raise SystemExit(f'{label}: expected 1 found {n}')
               s=s.replace(old,new)
-          one("const POINTER_URL='../../viewer/gv-current-viewer.json';", "const POINTER_URL='../../viewer/gv-current-viewer.json';\nconst RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';", 'raw base insert')
-          old="""const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
-const loadPointer=async()=>{
-  const pointer=JSON.parse(await text(POINTER_URL));"""
-          new="""const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
-const textAny=async urls=>{let last=null;for(const url of urls){try{return await text(url)}catch(error){last=error;console.warn('GV GENERIC FETCH FALLBACK',url,error)}}throw last||new Error('GV GENERIC FETCH FAILED')};
-const loadPointer=async()=>{
-  const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json',POINTER_URL]));"""
-          one(old,new,'pointer fallback')
-          one("const source=await text('../../viewer/'+viewer);", "const source=await textAny([RAW_VIEWER_BASE+viewer,'../../viewer/'+viewer]);", 'viewer fallback')
-          one("const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-ACTIVE-POINTER-002';", "const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-ACTIVE-POINTER-003';", 'launcher revision')
+          one("const GV200001_BUILD='0066';","const GV200001_BUILD='0067';",'build')
+
+          # Replace synthetic WCS builder with catalog-dimension/CD-matrix WCS.
+          start=s.index('function gvSyntheticWcsFromRuntimeRecord(record,width,height){')
+          end=s.index('const gvDiagnosticStrip=document.createElement',start)
+          new_wcs="""function gvPair(value){return Array.isArray(value)?value:[]}
+function gvFiniteOr(value,fallback){const n=Number(value);return Number.isFinite(n)?n:fallback}
+function gvSyntheticWcsFromRuntimeRecord(record){
+    const ra=Number(record?.ra),dec=Number(record?.dec);
+    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
+    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg??0);
+    const dim=gvPair(record?.referenceDimension),pix=gvPair(record?.referencePixel),scale=gvPair(record?.scale);
+    const width=Math.max(2,Math.round(gvFiniteOr(record?.naxisX,gvFiniteOr(record?.width,gvFiniteOr(dim[0],2048)))));
+    const height=Math.max(2,Math.round(gvFiniteOr(record?.naxisY,gvFiniteOr(record?.height,gvFiniteOr(dim[1],width)))));
+    const crpix1=gvFiniteOr(record?.crpix1,gvFiniteOr(pix[0],(width+1)/2));
+    const crpix2=gvFiniteOr(record?.crpix2,gvFiniteOr(pix[1],(height+1)/2));
+    const sx=Math.abs(gvFiniteOr(scale[0],fovX/width));
+    const sy=Math.abs(gvFiniteOr(scale[1],fovY/height));
+    const cdelt1=-sx,cdelt2=sy;
+    if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
+    if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
+    const theta=rotation*Math.PI/180,c=Math.cos(theta),sn=Math.sin(theta);
+    return Object.freeze({
+        NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',
+        CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,NAXIS1:width,NAXIS2:height,
+        CDELT1:cdelt1,CDELT2:cdelt2,CROTA2:rotation,ROTATION:rotation,
+        CD1_1:cdelt1*c,CD1_2:-cdelt2*sn,CD2_1:cdelt1*sn,CD2_2:cdelt2*c
+    });
+}
+function gvAladinImageUrl(url){return CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv-aladin-url-0067'}
+"""
+          s=s[:start]+new_wcs+s[end:]
+
+          # Replace diagnostic block with one matched table.
+          start=s.index("const gvDiagnosticStrip=document.createElement('div');")
+          end=s.index('function gvControlPanel(id,title,side){',start)
+          new_diag="""const gvDiagnosticStrip=document.createElement('div');
+Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'6px',right:'6px',bottom:'86px',zIndex:'7313',padding:'8px 8px',borderRadius:'8px',background:'rgba(0,0,0,.82)',color:'#dff8ff',font:'12px/1.30 monospace',pointerEvents:'none',display:'grid',gridTemplateColumns:'74px 1fr 1fr',columnGap:'8px',rowGap:'3px',boxShadow:'0 0 14px rgba(88,191,255,.18)'});
+document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
+let gvCurrentCatalogRecord=null,gvCurrentCatalogWcs=null,gvCurrentStatus='waiting';
+function gvFmt(v,d=6){const n=Number(v);return Number.isFinite(n)?n.toFixed(d):'?'}
+function gvText(v){return (v===undefined||v===null||v==='')?'?':String(v)}
+function gvDiagCell(text,color,weight='500'){const cell=document.createElement('div');cell.textContent=text;Object.assign(cell.style,{color:color||'#fff',fontWeight:weight,whiteSpace:'normal',overflow:'visible',overflowWrap:'anywhere',minWidth:'0'});return cell}
+function gvDiagRow(field,catalog,live,color){gvDiagnosticStrip.append(gvDiagCell(field,'#7CCBFF','700'),gvDiagCell(catalog,color||'#fff','600'),gvDiagCell(live,color||'#fff','600'))}
+function gvReadAladinRaDec(){let v=null;try{v=aladin.getRaDec?.()}catch(_){}if(Array.isArray(v))return [v[0],v[1]];if(v&&typeof v==='object')return [v.ra??v.RA??v.lon??v.lng??v[0],v.dec??v.DE??v.lat??v[1]];for(const c of [aladin.view?.center,aladin.view?.viewCenter,aladin.view?.cooCenter,aladin.view?.radec]){if(Array.isArray(c))return [c[0],c[1]];if(c&&typeof c==='object')return [c.ra??c.RA??c.lon??c.lng??c.x,c.dec??c.DE??c.lat??c.y]}return []}
+function gvReadAladinFov(){let v=null;try{v=aladin.getFov?.()}catch(_){}if(Array.isArray(v))return v;if(Number.isFinite(Number(v)))return [v,v];try{const f=aladin.view?.fov;if(Array.isArray(f))return f;if(Number.isFinite(Number(f)))return [f,f]}catch(_){}return []}
+function gvPublishUnifiedDiagnostic(status){
+    gvCurrentStatus=status||gvCurrentStatus||'waiting';
+    const r=gvCurrentCatalogRecord||{},w=gvCurrentCatalogWcs||{};
+    const liveRaDec=gvReadAladinRaDec(),liveFov=gvReadAladinFov();
+    let liveRot='?',proj='?',frame='?';
+    try{liveRot=aladin.getRotation?.()??aladin.view?.rotation??'?'}catch(_){}
+    try{proj=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}
+    try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}
+    gvDiagnosticStrip.replaceChildren();
+    gvDiagnosticStrip.append(gvDiagCell('FIELD','#ffffff','800'),gvDiagCell('JSON / AVM CATALOG','#ffffff','800'),gvDiagCell('ALADIN LIVE','#ffffff','800'));
+    gvDiagRow('Galaxy',gvText(r.name||r.archiveId),'status: '+gvCurrentStatus,'#7CCBFF');
+    gvDiagRow('RA',gvFmt(r.ra,7),gvFmt(liveRaDec[0],7),'#ff9b9b');
+    gvDiagRow('Dec',gvFmt(r.dec,7),gvFmt(liveRaDec[1],7),'#ff9b9b');
+    gvDiagRow('Rotation',gvFmt(r.aladinRotation??r.spatialRotationDeg,3)+'°',gvFmt(liveRot,3)+'°','#62ff72');
+    gvDiagRow('FoV X',gvFmt(r.fovXDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[0],7)+'°','#5ca9ff');
+    gvDiagRow('FoV Y',gvFmt(r.fovYDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[1]??liveFov[0],7)+'°','#5ca9ff');
+    gvDiagRow('Projection',gvText(r.projection||w.CTYPE1||'TAN'),gvText(proj),'#ffe45c');
+    gvDiagRow('Frame',gvText(r.coordinateFrame||'ICRS'),gvText(frame),'#ffffff');
+}
+function gvPublishCatalogWcs(destination,record,wcs,status){gvCurrentCatalogRecord=record;gvCurrentCatalogWcs=wcs;gvPublishUnifiedDiagnostic(status||'catalog loaded')}
+function gvPublishDiagnostic(destination){gvCurrentCatalogRecord={name:destination?.name||destination?.archiveId||destination?.id||'?'};gvCurrentCatalogWcs=null;gvPublishUnifiedDiagnostic('loading catalog')}
+gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic(),250);
+
+"""
+          s=s[:start]+new_diag+s[end:]
+
+          # Replace loadDirectHdOnArrival with Aladin URL path (not blob/canvas object URL).
+          start=s.index('async function loadDirectHdOnArrival(destination){')
+          end=s.index('\n\n\n// ============================================================================\n// SECTION 034',start)
+          new_load="""async function loadDirectHdOnArrival(destination){
+    const url=directHdUrl(destination);if(!url)return false;
+    directHdDestination=destination;
+    try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    directHdOverlay=null;
+    try{
+        const record=await gvRuntimeAvmRecord(destination);
+        if(directHdDestination!==destination)return false;
+        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record);
+        const ra=Number(record.ra),dec=Number(record.dec);
+        const fovX=Number(record.fovXDegrees??record.fovDegrees);
+        const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+        gvPublishCatalogWcs(destination,record,displayWcs,'catalog loaded');
+        aladin.setProjection('TAN');
+        aladin.gotoRaDec(ra,dec);
+        aladin.setFoV(fovX);
+        aladin.setRotation(rotation);
+        coordinate.update(ra,dec);
+        const imageUrl=gvAladinImageUrl(url);
+        const layer=A.image(imageUrl,{
+            name:DIRECT_HD_LAYER,
+            imgFormat:'jpeg',
+            wcs:displayWcs,
+            opacity:directHdOpacity(),
+            successCallback:()=>{
+                if(directHdDestination!==destination)return;
+                directHdOverlay=layer;
+                applyDirectHdOpacity();
+                gvPublishCatalogWcs(destination,record,displayWcs,'image loaded');
+            },
+            errorCallback:error=>{console.error('GV DIRECT HD URL-WCS LAYER LOAD FAILED',error);gvPublishCatalogWcs(destination,record,displayWcs,'image failed')}
+        });
+        directHdOverlay=layer;
+        aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+        gvPublishCatalogWcs(destination,record,displayWcs,'image loading');
+        return true;
+    }catch(error){
+        console.error('GV DIRECT HD URL-WCS PREP FAILED',error);
+        gvCurrentStatus='catalog/image failed';gvPublishUnifiedDiagnostic(gvCurrentStatus);
+        return false;
+    }
+}
+"""
+          s=s[:start]+new_load+s[end:]
+
+          ptr=Path('viewer/gv-current-viewer.json')
+          j=json.loads(ptr.read_text(encoding='utf-8'));j['build']='0067';ptr.write_text(json.dumps(j,indent=2,separators=(',',': '))+'\n',encoding='utf-8')
           p.write_text(s,encoding='utf-8')
-          required=['RAW_VIEWER_BASE','textAny([RAW_VIEWER_BASE+\'gv-current-viewer.json\',POINTER_URL])','textAny([RAW_VIEWER_BASE+viewer,\'../../viewer/\'+viewer])','GV-GENERIC-APP-ACTIVE-POINTER-003']
+
+          required=["const GV200001_BUILD='0067';","gvAladinImageUrl(url)","A.image(imageUrl", "FIELD","JSON / AVM CATALOG","ALADIN LIVE","CD1_1", "imgFormat:'jpeg'"]
           for marker in required:
-              if marker not in s:
-                  raise SystemExit('required marker missing: '+marker)
-          print('PATCH_OK')
-          print('chars_before',len(before))
-          print('chars_after',len(s))
-          print('delta',len(s)-len(before))
+              if marker not in s: raise SystemExit('required marker missing: '+marker)
+          forbidden=['URL.createObjectURL','imageObjectUrl','gvPublishDecodedAvm','makePreAladinDiagnosticJpeg','jpegApp1Segments',"imgFormat:'png'"]
+          for marker in forbidden:
+              if marker in s: raise SystemExit('forbidden marker remains: '+marker)
+          print('PATCH_OK viewer 0067')
+          print('lines',len(s.splitlines()))
+          print('chars_before',len(before),'chars_after',len(s),'delta',len(s)-len(before))
           PY
-      - name: Commit launcher patch
+      - name: Commit viewer patch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add mobile/beta/generic-app.html
-          git commit -m 'GV generic launcher: raw beta pointer fallback (0067)'
+          git add viewer/GV-beta-200-001.py viewer/gv-current-viewer.json
+          git commit -m 'GV200-001: use Aladin URL image with JSON WCS table diagnostics (build 0067)'
           git push origin beta
