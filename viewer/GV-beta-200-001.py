@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0060';
+const GV200001_BUILD='0061';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -662,11 +662,7 @@ const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
-const directHdBitmap=document.createElement('img');
-directHdBitmap.id='gv-direct-hd-bitmap';
-directHdBitmap.alt='';
-Object.assign(directHdBitmap.style,{position:'absolute',left:'50%',top:'50%',transform:'translate(-50%,-50%)',maxWidth:'80%',maxHeight:'80%',width:'auto',height:'auto',objectFit:'contain',zIndex:'7000',pointerEvents:'none',display:'none'});
-document.getElementById('aladin-cosmic-command-test').appendChild(directHdBitmap);
+const DIRECT_HD_AVM_DECODER='GV_DIRECT_HD_AVM_DECODER_0061';
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
 const gvDiagnosticStrip=document.createElement('div');
 Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'96px',zIndex:'7313',padding:'6px 8px',borderRadius:'6px',background:'rgba(0,0,0,.78)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
@@ -719,7 +715,11 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=directHdOpacity();
-    directHdBitmap.style.opacity=String(value);
+    const target=directHdOverlay||aladin.getOverlayImageLayer?.(DIRECT_HD_LAYER);
+    try{target?.setOpacity?.(value)}catch(_){}
+    try{target?.setAlpha?.(value)}catch(_){}
+    try{target?.setOptions?.({opacity:value})}catch(_){}
+    if(target?.options)try{target.options.opacity=value}catch(_){}
     updateCrossFadeThumb();
     return value;
 }
@@ -868,29 +868,35 @@ async function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    try{aladin.removeImageLayer?.(DIRECT_HD_AVM_DECODER)}catch(_){}
     directHdOverlay=null;
-    directHdBitmap.style.display='none';
-    directHdBitmap.removeAttribute('src');
-    let markedUrl='';
+    let markedUrl='',blob=null;
     try{
-        const blob=await makePreAladinDiagnosticJpeg(url);
+        blob=await makePreAladinDiagnosticJpeg(url);
         if(directHdDestination!==destination)return false;
         markedUrl=URL.createObjectURL(blob);
     }catch(error){console.error('GV PRE-ALADIN DIAGNOSTIC PREP FAILED',error);return false}
-    directHdBitmap.onload=()=>{if(directHdDestination!==destination)return;directHdBitmap.style.display='block';applyDirectHdOpacity()};
-    directHdBitmap.onerror=error=>console.error('GV DIRECT HD BITMAP LOAD FAILED',error);
-    directHdBitmap.src=markedUrl;
+    const probe=await createImageBitmap(blob);
+    const width=probe.width,height=probe.height;try{probe.close?.()}catch(_){}
+    const ra=Number(destination.ra),dec=Number(destination.dec),fov=Number(destination.fovDegrees);
+    if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fov)||fov<=0)throw new Error('GV DIRECT HD SYNTHETIC WCS INPUT INVALID');
+    const span=fov/0.80;
+    const scale=span/Math.max(width,height);
+    const displayWcs={NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,CDELT1:-scale,CDELT2:scale,NAXIS1:width,NAXIS2:height};
+    const decoder=A.image(markedUrl,{
+        name:DIRECT_HD_AVM_DECODER,
+        opacity:0,
+        successCallback:()=>{if(directHdDestination!==destination)return;gvPublishDecodedAvm(destination,decoder);try{aladin.removeImageLayer?.(DIRECT_HD_AVM_DECODER)}catch(_){}},
+        errorCallback:error=>console.error('GV AVM DECODE LOAD FAILED',error)
+    });
+    aladin.setOverlayImageLayer(decoder,DIRECT_HD_AVM_DECODER);
     const layer=A.image(markedUrl,{
         name:DIRECT_HD_LAYER,
-        opacity:0,
-        successCallback:()=>{
-            if(directHdDestination!==destination)return;
-            gvPublishDecodedAvm(destination,layer);
-            try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-            directHdOverlay=null;
-            setTimeout(()=>URL.revokeObjectURL(markedUrl),30000);
-        },
-        errorCallback:error=>console.error('GV AVM DECODE LOAD FAILED',error)
+        imgFormat:'jpeg',
+        wcs:displayWcs,
+        opacity:directHdOpacity(),
+        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();setTimeout(()=>URL.revokeObjectURL(markedUrl),30000)},
+        errorCallback:error=>console.error('GV DIRECT HD ALADIN LAYER LOAD FAILED',error)
     });
     directHdOverlay=layer;
     aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
