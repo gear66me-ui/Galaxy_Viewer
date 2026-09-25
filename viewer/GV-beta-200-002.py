@@ -83,8 +83,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-002';
-const GV200001_BUILD='0005';
-const GV_RUNTIME='0073';
+const GV200001_BUILD='0006';
+const GV_RUNTIME='0074';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-002',
@@ -496,7 +496,7 @@ galaxyNavigator.setBusy(true);
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
 gvVersionReadout.textContent=`${VERSION.replace(/^GV-beta-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
-Object.assign(gvVersionReadout.style,{display:'block',width:'100%',font:'9px/1.2 monospace',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0 0 3px',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
+Object.assign(gvVersionReadout.style,{position:'absolute',left:'0',top:'-15px',display:'block',width:'100%',font:'400 8px/1 "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
 earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
 
 
@@ -560,6 +560,15 @@ const coordinate=window.GalaxyCoordinateOverlay.mount(hosts.coordinate,{});
 await coordinate.ready;
 coordinate.setFrame('ICRSd');
 coordinate.update(HOME.ra,HOME.dec);
+let gvCoordinateSyncFrame=0;
+function gvSyncCoordinateFromAladin(){
+    try{
+        const center=aladin.getRaDec?.();
+        if(Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
+    }catch(_){}
+    gvCoordinateSyncFrame=requestAnimationFrame(gvSyncCoordinateFromAladin);
+}
+gvCoordinateSyncFrame=requestAnimationFrame(gvSyncCoordinateFromAladin);
 
 
 // ============================================================================
@@ -842,8 +851,23 @@ async function gvLoadGate2MImage(url){
             const blob=await response.blob();
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
             const bitmap=await createImageBitmap(blob);
-            try{return {blob,width:bitmap.width,height:bitmap.height}}
-            finally{try{bitmap.close?.()}catch(_){}}
+            try{
+                const w=bitmap.width,h=bitmap.height;
+                const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+                const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
+                ctx.drawImage(bitmap,0,0,w,h);
+                const p=VIGNETTE,cx=w/2,cy=h/2,rx=w*.5*p.diameter,ry=h*.5*p.diameter;
+                const core=Math.max(0,Math.min(.98,p.core));
+                const mid1=core+(1-core)*p.mid1,mid2=core+(1-core)*p.mid2,mid3=core+(1-core)*p.mid3;
+                ctx.save();ctx.globalCompositeOperation='destination-in';ctx.translate(cx,cy);ctx.scale(rx,ry);
+                const mask=ctx.createRadialGradient(0,0,0,0,0,1);
+                mask.addColorStop(0,'rgba(0,0,0,1)');mask.addColorStop(core,'rgba(0,0,0,1)');
+                mask.addColorStop(mid1,`rgba(0,0,0,${p.alpha1})`);mask.addColorStop(mid2,`rgba(0,0,0,${p.alpha2})`);
+                mask.addColorStop(mid3,`rgba(0,0,0,${p.alpha3})`);mask.addColorStop(1,'rgba(0,0,0,0)');
+                ctx.fillStyle=mask;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore();
+                const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
+                return {blob:vignetteBlob,width:w,height:h};
+            }finally{try{bitmap.close?.()}catch(_){}}
         }catch(error){last=String(error?.message||error||'')}
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
@@ -874,7 +898,7 @@ async function loadDirectHdOnArrival(destination){
         coordinate.update(ra,dec);
         const layer=A.image(imageObjectUrl,{
             name:DIRECT_HD_LAYER,
-            imgFormat:'jpeg',
+            imgFormat:'png',
             wcs:displayWcs,
             opacity:directHdOpacity(),
             successCallback:()=>{
