@@ -888,6 +888,11 @@ async function loadDirectHdOnArrival(destination){
     });
     directHdOverlay=layer;
     aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+    aladin.setRotation(0);
+    const w=layer.sourceWidth||1;
+    const h=layer.sourceHeight||1;
+    const aspect=Math.max(w,h)/Math.min(w,h);
+    aladin.setFoV(aspect*1.20);
     return true;
 }
 
@@ -927,8 +932,8 @@ function showDestination(destination){
     const v=validateDestination(destination);
     activeDestination=v.destination;
     aladin.gotoRaDec(v.ra,v.dec);
-    aladin.setFov(v.fov);
-    aladin.setRotation(v.rotation);
+    aladin.setRotation(0);
+    loadDirectHdOnArrival(v.destination);
     coordinate.update(v.ra,v.dec);
     gvPublishDiagnostic(v.destination);
     loadDirectHdOnArrival(v.destination);
