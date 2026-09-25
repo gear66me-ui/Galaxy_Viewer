@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0065';
+const GV200001_BUILD='0066';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -707,16 +707,20 @@ function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     });
 }
 const gvDiagnosticStrip=document.createElement('div');
-Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'96px',zIndex:'7313',padding:'6px 8px',borderRadius:'6px',background:'rgba(0,0,0,.78)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
+Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'92px',zIndex:'7313',padding:'8px 10px',borderRadius:'8px',background:'rgba(0,0,0,.80)',color:'#dff8ff',font:'10px/1.35 monospace',overflowWrap:'normal',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',boxShadow:'0 0 14px rgba(88,191,255,.18)'});
 const gvAvmDiagnostic=document.createElement('div'),gvLiveDiagnostic=document.createElement('div');
 gvAvmDiagnostic.style.whiteSpace=gvLiveDiagnostic.style.whiteSpace='pre-wrap';gvDiagnosticStrip.append(gvAvmDiagnostic,gvLiveDiagnostic);document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
 function gvCatalogJsonUrl(destination){const key=String(destination?.catalogKey||'').trim().toLowerCase();const paths={hubble:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',jwst:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',eso:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',chandra:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',spitzer:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',noirlab:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'};return paths[key]?new URL(paths[key],GV_MASTER_CATALOG_URL).href:'UNKNOWN'}
 function gvWcsValue(wcs,...keys){for(const key of keys){const v=wcs?.[key]??wcs?.[key.toLowerCase()];if(v!==undefined&&v!==null)return v}return '?'}
-function gvColorLine(label,value,color){const row=document.createElement('div');const key=document.createElement('span'),val=document.createElement('span');key.textContent=label;val.textContent=value;key.style.color=val.style.color=color;row.append(key,val);return row}
+function gvColorLine(label,value,color){const row=document.createElement('div');const key=document.createElement('span'),val=document.createElement('span');Object.assign(row.style,{display:'grid',gridTemplateColumns:'92px 1fr',gap:'8px',alignItems:'baseline'});key.textContent=label;val.textContent=value;key.style.color=color;val.style.color='#ffffff';key.style.opacity='.92';val.style.fontWeight='600';row.append(key,val);return row}
+function gvPanelTitle(text){const row=document.createElement('div');row.textContent=text;Object.assign(row.style,{color:'#7CCBFF',fontWeight:'700',letterSpacing:'.5px',marginBottom:'3px',textTransform:'uppercase'});return row}
 function gvSetDiagnostic(el,rows){el.replaceChildren(...rows)}
-function gvPublishCatalogWcs(destination,record,wcs){gvSetDiagnostic(gvAvmDiagnostic,[gvColorLine('JSON RUNTIME WCS (AUTHORITATIVE)','','#fff'),gvColorLine('IMAGE: ',directHdUrl(destination),'#39e7ff'),gvColorLine('AUTHORITY: ',String(record?.authority||'RUNTIME_JSON'),'#ffe45c'),gvColorLine('CRVAL RA/DEC: ',String(record?.ra)+'  '+String(record?.dec),'#ff5b5b'),gvColorLine('FOV X/Y: ',String(record?.fovXDegrees)+'  '+String(record?.fovYDegrees),'#5ca9ff'),gvColorLine('CRPIX X/Y: ',gvWcsValue(wcs,'CRPIX1')+'  '+gvWcsValue(wcs,'CRPIX2'),'#fff'),gvColorLine('NAXIS X/Y: ',gvWcsValue(wcs,'NAXIS1')+'  '+gvWcsValue(wcs,'NAXIS2'),'#fff'),gvColorLine('CDELT X/Y: ',gvWcsValue(wcs,'CDELT1')+'  '+gvWcsValue(wcs,'CDELT2'),'#fff'),gvColorLine('CATALOG ROTATION: ',String(record?.aladinRotation??record?.spatialRotationDeg),'#62ff72')])}
-function gvPublishDiagnostic(destination){gvAvmDiagnostic.textContent='JSON RUNTIME WCS — WAITING FOR CATALOG\nIMAGE: '+directHdUrl(destination)}
-function gvPublishLiveAladin(){let r=[],f=[],rot='?',p='?',frame='?',survey='?';try{r=aladin.getRaDec?.()||[]}catch(_){}try{f=aladin.getFov?.()||[]}catch(_){}try{rot=aladin.getRotation?.()??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}try{const x=aladin.getBaseImageLayer?.();survey=x?.name??x?.id??x?.url??'?'}catch(_){}const q=v=>Number.isFinite(Number(v))?Number(v).toFixed(8):'?';gvSetDiagnostic(gvLiveDiagnostic,[gvColorLine('ALADIN LIVE (100 ms)','','#fff'),gvColorLine('RA/DEC: ',q(r[0])+'  '+q(r[1]),'#ff5b5b'),gvColorLine('FOV X/Y: ',q(f[0])+'  '+q(f[1]),'#5ca9ff'),gvColorLine('ROTATION: ',q(rot)+'°','#62ff72'),gvColorLine('PROJECTION: ',String(p),'#ffe45c'),gvColorLine('SURVEY / FRAME: ',String(survey)+' / '+String(frame),'#fff')])}
+function gvFmt(v,d=6){const n=Number(v);return Number.isFinite(n)?n.toFixed(d):'?'}
+function gvPublishCatalogWcs(destination,record,wcs){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(record?.name||destination?.name||record?.archiveId||'?'),'#7CCBFF'),gvColorLine('RA',gvFmt(record?.ra,8),'#ff8b8b'),gvColorLine('Dec',gvFmt(record?.dec,8),'#ff8b8b'),gvColorLine('Rotation',gvFmt(record?.aladinRotation??record?.spatialRotationDeg,4)+'°','#62ff72'),gvColorLine('FoV X',gvFmt(record?.fovXDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('FoV Y',gvFmt(record?.fovYDegrees??record?.fovDegrees,8)+'°','#5ca9ff')])}
+function gvPublishDiagnostic(destination){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(destination?.name||destination?.archiveId||destination?.id||'?'),'#7CCBFF'),gvColorLine('Status','loading catalog record','#ffe45c')])}
+function gvReadAladinRaDec(){let v=null;try{v=aladin.getRaDec?.()}catch(_){}if(Array.isArray(v))return [v[0],v[1]];if(v&&typeof v==='object')return [v.ra??v.RA??v.lon??v.lng??v[0],v.dec??v.DE??v.lat??v[1]];for(const c of [aladin.view?.center,aladin.view?.viewCenter,aladin.view?.cooCenter,aladin.view?.radec]){if(Array.isArray(c))return [c[0],c[1]];if(c&&typeof c==='object')return [c.ra??c.RA??c.lon??c.lng??c.x,c.dec??c.DE??c.lat??c.y]}return []}
+function gvReadAladinFov(){let v=null;try{v=aladin.getFov?.()}catch(_){}if(Array.isArray(v))return v;if(Number.isFinite(Number(v)))return [v,v];try{const f=aladin.view?.fov;if(Array.isArray(f))return f;if(Number.isFinite(Number(f)))return [f,f]}catch(_){}return []}
+function gvPublishLiveAladin(){let r=gvReadAladinRaDec(),f=gvReadAladinFov(),rot='?',p='?',frame='?';try{rot=aladin.getRotation?.()??aladin.view?.rotation??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}gvSetDiagnostic(gvLiveDiagnostic,[gvPanelTitle('ALADIN LIVE'),gvColorLine('RA',gvFmt(r[0],8),'#ff8b8b'),gvColorLine('Dec',gvFmt(r[1],8),'#ff8b8b'),gvColorLine('Rotation',gvFmt(rot,4)+'°','#62ff72'),gvColorLine('FoV X',gvFmt(f[0],8)+'°','#5ca9ff'),gvColorLine('FoV Y',gvFmt(f[1]??f[0],8)+'°','#5ca9ff'),gvColorLine('Projection',String(p),'#ffe45c'),gvColorLine('Frame',String(frame),'#ffffff')])}
 gvPublishLiveAladin();setInterval(gvPublishLiveAladin,100);
 
 function gvControlPanel(id,title,side){
@@ -851,7 +855,7 @@ async function makeVignetteBlob(url){
         mask.addColorStop(mid1,`rgba(0,0,0,${p.alpha1})`);mask.addColorStop(mid2,`rgba(0,0,0,${p.alpha2})`);
         mask.addColorStop(mid3,`rgba(0,0,0,${p.alpha3})`);mask.addColorStop(1,'rgba(0,0,0,0)');
         ctx.fillStyle=mask;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore();
-        const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
+        const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('DISPLAY JPEG ENCODE FAILED')),'image/jpeg',.96));
         return {blob,sourceWidth:bitmap.width,sourceHeight:bitmap.height,outputWidth:w,outputHeight:h};
     }finally{try{bitmap.close?.()}catch(_){}}
 }
@@ -862,13 +866,16 @@ async function loadDirectHdOnArrival(destination){
     directHdOverlay=null;
     let imageObjectUrl='';
     try{
-        const [record,raster]=await Promise.all([gvRuntimeAvmRecord(destination),makeVignetteBlob(url)]);
-        if(directHdDestination!==destination)return false;
-        imageObjectUrl=URL.createObjectURL(raster.blob);
-        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.outputWidth,raster.outputHeight);
+        const record=await gvRuntimeAvmRecord(destination);
         const ra=Number(record.ra),dec=Number(record.dec);
         const fovX=Number(record.fovXDegrees??record.fovDegrees);
         const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+        const previewWcs={CRVAL1:ra,CRVAL2:dec,NAXIS1:'?',NAXIS2:'?',CRPIX1:'?',CRPIX2:'?',CDELT1:'?',CDELT2:'?'};
+        gvPublishCatalogWcs(destination,record,previewWcs);
+        const raster=await makeVignetteBlob(url);
+        if(directHdDestination!==destination)return false;
+        imageObjectUrl=URL.createObjectURL(raster.blob);
+        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.outputWidth,raster.outputHeight);
         aladin.setProjection('TAN');
         aladin.gotoRaDec(ra,dec);
         aladin.setFoV(fovX);
@@ -876,7 +883,7 @@ async function loadDirectHdOnArrival(destination){
         coordinate.update(ra,dec);
         const layer=A.image(imageObjectUrl,{
             name:DIRECT_HD_LAYER,
-            imgFormat:'png',
+            imgFormat:'jpeg',
             wcs:displayWcs,
             opacity:directHdOpacity(),
             successCallback:()=>{
@@ -935,7 +942,7 @@ function showDestination(destination){
     activeDestination=v.destination;
     aladin.setProjection('TAN');
     aladin.gotoRaDec(v.ra,v.dec);
-    aladin.setFoV(v.fov/0.80);
+    aladin.setFoV(v.fov);
     aladin.setRotation(v.rotation);
     coordinate.update(v.ra,v.dec);
     gvPublishDiagnostic(v.destination);
