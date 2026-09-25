@@ -60,7 +60,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
      ======================================================================= -->
 <style>
 #gv-hamburger-host{position:absolute;inset:0;z-index:7200;pointer-events:none}
-#gv-coordinate-host{position:absolute;left:50%;bottom:54px;z-index:7315;width:290px;height:36px;transform:translateX(-50%);pointer-events:auto}
+#gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
 #gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0057';
+const GV200001_BUILD='0060';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -662,6 +662,11 @@ const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
+const directHdBitmap=document.createElement('img');
+directHdBitmap.id='gv-direct-hd-bitmap';
+directHdBitmap.alt='';
+Object.assign(directHdBitmap.style,{position:'absolute',left:'50%',top:'50%',transform:'translate(-50%,-50%)',maxWidth:'80%',maxHeight:'80%',width:'auto',height:'auto',objectFit:'contain',zIndex:'7000',pointerEvents:'none',display:'none'});
+document.getElementById('aladin-cosmic-command-test').appendChild(directHdBitmap);
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
 const gvDiagnosticStrip=document.createElement('div');
 Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'96px',zIndex:'7313',padding:'6px 8px',borderRadius:'6px',background:'rgba(0,0,0,.78)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
@@ -669,9 +674,11 @@ const gvAvmDiagnostic=document.createElement('div'),gvLiveDiagnostic=document.cr
 gvAvmDiagnostic.style.whiteSpace=gvLiveDiagnostic.style.whiteSpace='pre-wrap';gvDiagnosticStrip.append(gvAvmDiagnostic,gvLiveDiagnostic);document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
 function gvCatalogJsonUrl(destination){const key=String(destination?.catalogKey||'').trim().toLowerCase();const paths={hubble:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',jwst:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',eso:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',chandra:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',spitzer:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',noirlab:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'};return paths[key]?new URL(paths[key],GV_MASTER_CATALOG_URL).href:'UNKNOWN'}
 function gvWcsValue(wcs,...keys){for(const key of keys){const v=wcs?.[key]??wcs?.[key.toLowerCase()];if(v!==undefined&&v!==null)return v}return '?'}
-function gvPublishDecodedAvm(destination,layer){const wcs=layer?.options?.wcs||layer?.wcs||{};gvAvmDiagnostic.textContent='DECODED AVM / WCS (FIXED)\nIMAGE: '+directHdUrl(destination)+'\nCRVAL RA/DEC: '+gvWcsValue(wcs,'CRVAL1')+'  '+gvWcsValue(wcs,'CRVAL2')+'\nCRPIX X/Y: '+gvWcsValue(wcs,'CRPIX1')+'  '+gvWcsValue(wcs,'CRPIX2')+'\nNAXIS X/Y: '+gvWcsValue(wcs,'NAXIS1')+'  '+gvWcsValue(wcs,'NAXIS2')+'\nCDELT X/Y: '+gvWcsValue(wcs,'CDELT1')+'  '+gvWcsValue(wcs,'CDELT2')+'\nAVM ROTATION: '+gvWcsValue(wcs,'CROTA2','CROTA1','ROTATION')}
+function gvColorLine(label,value,color){const row=document.createElement('div');const key=document.createElement('span'),val=document.createElement('span');key.textContent=label;val.textContent=value;key.style.color=val.style.color=color;row.append(key,val);return row}
+function gvSetDiagnostic(el,rows){el.replaceChildren(...rows)}
+function gvPublishDecodedAvm(destination,layer){const wcs=layer?.options?.wcs||layer?.wcs||{};gvSetDiagnostic(gvAvmDiagnostic,[gvColorLine('DECODED AVM / WCS (FIXED)','','#fff'),gvColorLine('IMAGE: ',directHdUrl(destination),'#39e7ff'),gvColorLine('CRVAL RA/DEC: ',gvWcsValue(wcs,'CRVAL1')+'  '+gvWcsValue(wcs,'CRVAL2'),'#ff5b5b'),gvColorLine('CRPIX X/Y: ',gvWcsValue(wcs,'CRPIX1')+'  '+gvWcsValue(wcs,'CRPIX2'),'#fff'),gvColorLine('NAXIS X/Y: ',gvWcsValue(wcs,'NAXIS1')+'  '+gvWcsValue(wcs,'NAXIS2'),'#fff'),gvColorLine('CDELT X/Y: ',gvWcsValue(wcs,'CDELT1')+'  '+gvWcsValue(wcs,'CDELT2'),'#fff'),gvColorLine('AVM ROTATION: ',String(gvWcsValue(wcs,'CROTA2','CROTA1','ROTATION')),'#62ff72')])}
 function gvPublishDiagnostic(destination){gvAvmDiagnostic.textContent='AVM / WCS — WAITING FOR DECODE\nIMAGE: '+directHdUrl(destination)}
-function gvPublishLiveAladin(){let r=[],f=[],rot='?',p='?',frame='?',survey='?';try{r=aladin.getRaDec?.()||[]}catch(_){}try{f=aladin.getFov?.()||[]}catch(_){}try{rot=aladin.getRotation?.()??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}try{const x=aladin.getBaseImageLayer?.();survey=x?.name??x?.id??x?.url??'?'}catch(_){}const q=v=>Number.isFinite(Number(v))?Number(v).toFixed(8):'?';gvLiveDiagnostic.textContent='ALADIN LIVE (100 ms)\nRA/DEC: '+q(r[0])+'  '+q(r[1])+'\nFOV X/Y: '+q(f[0])+'  '+q(f[1])+'\nROTATION: '+q(rot)+'°\nPROJECTION: '+String(p)+'\nSURVEY / FRAME: '+String(survey)+' / '+String(frame)}
+function gvPublishLiveAladin(){let r=[],f=[],rot='?',p='?',frame='?',survey='?';try{r=aladin.getRaDec?.()||[]}catch(_){}try{f=aladin.getFov?.()||[]}catch(_){}try{rot=aladin.getRotation?.()??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}try{const x=aladin.getBaseImageLayer?.();survey=x?.name??x?.id??x?.url??'?'}catch(_){}const q=v=>Number.isFinite(Number(v))?Number(v).toFixed(8):'?';gvSetDiagnostic(gvLiveDiagnostic,[gvColorLine('ALADIN LIVE (100 ms)','','#fff'),gvColorLine('RA/DEC: ',q(r[0])+'  '+q(r[1]),'#ff5b5b'),gvColorLine('FOV X/Y: ',q(f[0])+'  '+q(f[1]),'#5ca9ff'),gvColorLine('ROTATION: ',q(rot)+'°','#62ff72'),gvColorLine('PROJECTION: ',String(p),'#ffe45c'),gvColorLine('SURVEY / FRAME: ',String(survey)+' / '+String(frame),'#fff')])}
 gvPublishLiveAladin();setInterval(gvPublishLiveAladin,100);
 
 function gvControlPanel(id,title,side){
@@ -712,13 +719,7 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=directHdOpacity();
-    const targets=[directHdOverlay,aladin.getOverlayImageLayer?.(DIRECT_HD_LAYER)];
-    for(const target of new Set(targets.filter(Boolean))){
-        try{target.setOpacity?.(value)}catch(_){}
-        try{target.setAlpha?.(value)}catch(_){}
-        try{target.setOptions?.({opacity:value})}catch(_){}
-        try{if(target.options)target.options.opacity=value}catch(_){}
-    }
+    directHdBitmap.style.opacity=String(value);
     updateCrossFadeThumb();
     return value;
 }
@@ -868,31 +869,31 @@ async function loadDirectHdOnArrival(destination){
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=null;
+    directHdBitmap.style.display='none';
+    directHdBitmap.removeAttribute('src');
     let markedUrl='';
     try{
         const blob=await makePreAladinDiagnosticJpeg(url);
         if(directHdDestination!==destination)return false;
         markedUrl=URL.createObjectURL(blob);
     }catch(error){console.error('GV PRE-ALADIN DIAGNOSTIC PREP FAILED',error);return false}
+    directHdBitmap.onload=()=>{if(directHdDestination!==destination)return;directHdBitmap.style.display='block';applyDirectHdOpacity()};
+    directHdBitmap.onerror=error=>console.error('GV DIRECT HD BITMAP LOAD FAILED',error);
+    directHdBitmap.src=markedUrl;
     const layer=A.image(markedUrl,{
         name:DIRECT_HD_LAYER,
-        opacity:directHdOpacity(),
+        opacity:0,
         successCallback:()=>{
             if(directHdDestination!==destination)return;
-            directHdOverlay=layer;
-            applyDirectHdOpacity();
             gvPublishDecodedAvm(destination,layer);
+            try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+            directHdOverlay=null;
             setTimeout(()=>URL.revokeObjectURL(markedUrl),30000);
         },
-        errorCallback:error=>console.error('GV DIRECT HD LOAD FAILED',error)
+        errorCallback:error=>console.error('GV AVM DECODE LOAD FAILED',error)
     });
     directHdOverlay=layer;
     aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
-    aladin.setRotation(0);
-    const w=layer.sourceWidth||1;
-    const h=layer.sourceHeight||1;
-    const aspect=Math.max(w,h)/Math.min(w,h);
-    aladin.setFoV(aspect*1.20);
     return true;
 }
 
