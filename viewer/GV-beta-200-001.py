@@ -11,9 +11,9 @@ VIEWER_VERSION = "GV-beta-200-001"
 # SECTION 002 — ALADIN MIRROR POINTERS
 # ECO: GV200-001
 # ============================================================================
-ALADIN_VERSION = "3.8.1"
+ALADIN_VERSION = "3.8.2"
 ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.1/aladin.js"
+ALADIN_JS_URL = "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
@@ -60,7 +60,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
      ======================================================================= -->
 <style>
 #gv-hamburger-host{position:absolute;inset:0;z-index:7200;pointer-events:none}
-#gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
+#gv-coordinate-host{position:absolute;left:50%;bottom:54px;z-index:7315;width:290px;height:36px;transform:translateX(-50%);pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
 #gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
@@ -83,13 +83,13 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0056';
+const GV200001_BUILD='0057';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
-    aladinVersion:'3.8.1',
+    aladinVersion:'3.8.2',
     aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.1/aladin.js',
+    aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
     hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js',
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
@@ -664,33 +664,15 @@ let directHdOverlay=null;
 let directHdDestination=null;
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
 const gvDiagnosticStrip=document.createElement('div');
-Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'68px',zIndex:'7313',padding:'4px 6px',borderRadius:'6px',background:'rgba(0,0,0,.72)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none'});
-document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
-function gvCatalogJsonUrl(destination){
-    const key=String(destination?.catalogKey||'').trim().toLowerCase();
-    const paths={
-      hubble:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',
-      jwst:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',
-      eso:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',
-      chandra:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',
-      spitzer:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',
-      noirlab:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'
-    };
-    return paths[key]?new URL(paths[key],GV_MASTER_CATALOG_URL).href:'UNKNOWN';
-}
-function gvPublishDiagnostic(destination){
-    const image=directHdUrl(destination);
-    const json=gvCatalogJsonUrl(destination);
-    const row=Number.isInteger(destination?.catalogIndex)?destination.catalogIndex:'?';
-    const commanded=Number(destination?.aladinRotation);
-    let live=NaN;try{live=Number(aladin.getRotation?.())}catch(_){}
-    const ra=Number(destination?.ra),dec=Number(destination?.dec);
-    gvDiagnosticStrip.textContent=
-      'IMG: '+image+'\nJSON: '+json+'  ROW: '+row+
-      '\nICRS DEST: '+(Number.isFinite(ra)?ra.toFixed(8):'?')+'  '+(Number.isFinite(dec)?dec.toFixed(8):'?')+
-      '\nROT CMD: '+(Number.isFinite(commanded)?commanded.toFixed(6):'?')+'°  ROT LIVE: '+(Number.isFinite(live)?live.toFixed(6):'?')+'°';
-    gvDiagnosticStrip.style.whiteSpace='pre-wrap';
-}
+Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'96px',zIndex:'7313',padding:'6px 8px',borderRadius:'6px',background:'rgba(0,0,0,.78)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
+const gvAvmDiagnostic=document.createElement('div'),gvLiveDiagnostic=document.createElement('div');
+gvAvmDiagnostic.style.whiteSpace=gvLiveDiagnostic.style.whiteSpace='pre-wrap';gvDiagnosticStrip.append(gvAvmDiagnostic,gvLiveDiagnostic);document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
+function gvCatalogJsonUrl(destination){const key=String(destination?.catalogKey||'').trim().toLowerCase();const paths={hubble:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',jwst:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',eso:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',chandra:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',spitzer:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',noirlab:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'};return paths[key]?new URL(paths[key],GV_MASTER_CATALOG_URL).href:'UNKNOWN'}
+function gvWcsValue(wcs,...keys){for(const key of keys){const v=wcs?.[key]??wcs?.[key.toLowerCase()];if(v!==undefined&&v!==null)return v}return '?'}
+function gvPublishDecodedAvm(destination,layer){const wcs=layer?.options?.wcs||layer?.wcs||{};gvAvmDiagnostic.textContent='DECODED AVM / WCS (FIXED)\nIMAGE: '+directHdUrl(destination)+'\nCRVAL RA/DEC: '+gvWcsValue(wcs,'CRVAL1')+'  '+gvWcsValue(wcs,'CRVAL2')+'\nCRPIX X/Y: '+gvWcsValue(wcs,'CRPIX1')+'  '+gvWcsValue(wcs,'CRPIX2')+'\nNAXIS X/Y: '+gvWcsValue(wcs,'NAXIS1')+'  '+gvWcsValue(wcs,'NAXIS2')+'\nCDELT X/Y: '+gvWcsValue(wcs,'CDELT1')+'  '+gvWcsValue(wcs,'CDELT2')+'\nAVM ROTATION: '+gvWcsValue(wcs,'CROTA2','CROTA1','ROTATION')}
+function gvPublishDiagnostic(destination){gvAvmDiagnostic.textContent='AVM / WCS — WAITING FOR DECODE\nIMAGE: '+directHdUrl(destination)}
+function gvPublishLiveAladin(){let r=[],f=[],rot='?',p='?',frame='?',survey='?';try{r=aladin.getRaDec?.()||[]}catch(_){}try{f=aladin.getFov?.()||[]}catch(_){}try{rot=aladin.getRotation?.()??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}try{const x=aladin.getBaseImageLayer?.();survey=x?.name??x?.id??x?.url??'?'}catch(_){}const q=v=>Number.isFinite(Number(v))?Number(v).toFixed(8):'?';gvLiveDiagnostic.textContent='ALADIN LIVE (100 ms)\nRA/DEC: '+q(r[0])+'  '+q(r[1])+'\nFOV X/Y: '+q(f[0])+'  '+q(f[1])+'\nROTATION: '+q(rot)+'°\nPROJECTION: '+String(p)+'\nSURVEY / FRAME: '+String(survey)+' / '+String(frame)}
+gvPublishLiveAladin();setInterval(gvPublishLiveAladin,100);
 
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
@@ -899,6 +881,7 @@ async function loadDirectHdOnArrival(destination){
             if(directHdDestination!==destination)return;
             directHdOverlay=layer;
             applyDirectHdOpacity();
+            gvPublishDecodedAvm(destination,layer);
             setTimeout(()=>URL.revokeObjectURL(markedUrl),30000);
         },
         errorCallback:error=>console.error('GV DIRECT HD LOAD FAILED',error)
