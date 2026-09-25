@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0063';
+const GV200001_BUILD='0064';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -217,8 +217,7 @@ async function installUniverseContext(){
     if(document.getElementById('gv-universe-context'))return;
     await gvSpaceAgeReady;
     const style=document.createElement('style');
-    style.id='gv200001-universe-context-style';
-    style.textContent=`
+    style.id='gv200001-universe-context-style';    style.textContent=`
 #gv-universe-context{position:absolute;left:50%;top:auto;bottom:calc(50% + min(25vw,50dvh) + 67px);z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(240px,66vw);pointer-events:none;transition:opacity .2s ease;font-family:"GV Space Age",sans-serif}
 #gv-universe-context .gv-universe-label{padding:8px 10px 9px;border:1px solid rgba(124,203,255,.78);border-radius:6px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24);color:#DDF8FF;text-align:center;text-transform:uppercase;text-shadow:0 0 6px rgba(88,191,255,.42);font:400 9px/1.35 "GV Space Age",sans-serif;letter-spacing:.65px}
 #gv-universe-context .gv-universe-count{display:block;margin-top:2px;color:#7CCBFF;font-size:10px;letter-spacing:.8px}
@@ -433,7 +432,6 @@ function installHomeEarthPointer(){
     document.getElementById('aladin-cosmic-command-test').appendChild(home);
 }
 gvSpaceAgeReady.then(()=>installHomeEarthPointer()).catch(error=>console.error('GV HOME EARTH POINTER FAILURE',error));
-
 
 
 
@@ -662,8 +660,52 @@ const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
-const DIRECT_HD_AVM_DECODER='GV_DIRECT_HD_AVM_DECODER_0061';
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json';
+let gvAvmRuntimePromise=null;
+async function gvLoadAvmRuntimeCatalog(){
+    if(!gvAvmRuntimePromise){
+        gvAvmRuntimePromise=fetch(fresh(GV_AVM_RUNTIME_CATALOG_URL),{cache:'force-cache'})
+            .then(response=>{if(!response.ok)throw new Error('GV AVM RUNTIME CATALOG HTTP '+response.status);return response.json()})
+            .then(payload=>{
+                const records=Array.isArray(payload)?payload:payload?.records;
+                if(!Array.isArray(records)||records.length!==1871)throw new Error('GV AVM RUNTIME CATALOG INVALID');
+                const byUrl=new Map(),byId=new Map();
+                for(const record of records){
+                    const url=String(record?.imageUrl||'').trim().toLowerCase();
+                    const id=String(record?.archiveId||'').trim().toLowerCase();
+                    if(url)byUrl.set(url,record);
+                    if(id)byId.set(id,record);
+                }
+                return Object.freeze({records,byUrl,byId});
+            });
+    }
+    return gvAvmRuntimePromise;
+}
+async function gvRuntimeAvmRecord(destination){
+    const catalog=await gvLoadAvmRuntimeCatalog();
+    const url=directHdUrl(destination).toLowerCase();
+    const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
+    const record=catalog.byUrl.get(url)||catalog.byId.get(id);
+    if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(id||url));
+    return record;
+}
+function gvSyntheticWcsFromRuntimeRecord(record,width,height){
+    const ra=Number(record?.ra),dec=Number(record?.dec);
+    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
+    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
+    if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
+    if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
+    if(!Number.isFinite(rotation))throw new Error('GV JSON WCS ROTATION INVALID');
+    if(!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0)throw new Error('GV JSON WCS DIMENSION INVALID');
+    return Object.freeze({
+        NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',
+        CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,
+        CDELT1:-(fovX/width),CDELT2:(fovY/height),CROTA2:rotation,ROTATION:rotation,
+        NAXIS1:width,NAXIS2:height
+    });
+}
 const gvDiagnosticStrip=document.createElement('div');
 Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'96px',zIndex:'7313',padding:'6px 8px',borderRadius:'6px',background:'rgba(0,0,0,.78)',color:'#9eefff',font:'9px/1.25 monospace',overflowWrap:'anywhere',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
 const gvAvmDiagnostic=document.createElement('div'),gvLiveDiagnostic=document.createElement('div');
@@ -672,8 +714,8 @@ function gvCatalogJsonUrl(destination){const key=String(destination?.catalogKey|
 function gvWcsValue(wcs,...keys){for(const key of keys){const v=wcs?.[key]??wcs?.[key.toLowerCase()];if(v!==undefined&&v!==null)return v}return '?'}
 function gvColorLine(label,value,color){const row=document.createElement('div');const key=document.createElement('span'),val=document.createElement('span');key.textContent=label;val.textContent=value;key.style.color=val.style.color=color;row.append(key,val);return row}
 function gvSetDiagnostic(el,rows){el.replaceChildren(...rows)}
-function gvPublishDecodedAvm(destination,layer){const wcs=layer?.options?.wcs||layer?.wcs||{};gvSetDiagnostic(gvAvmDiagnostic,[gvColorLine('DECODED AVM / WCS (FIXED)','','#fff'),gvColorLine('IMAGE: ',directHdUrl(destination),'#39e7ff'),gvColorLine('CRVAL RA/DEC: ',gvWcsValue(wcs,'CRVAL1')+'  '+gvWcsValue(wcs,'CRVAL2'),'#ff5b5b'),gvColorLine('CRPIX X/Y: ',gvWcsValue(wcs,'CRPIX1')+'  '+gvWcsValue(wcs,'CRPIX2'),'#fff'),gvColorLine('NAXIS X/Y: ',gvWcsValue(wcs,'NAXIS1')+'  '+gvWcsValue(wcs,'NAXIS2'),'#fff'),gvColorLine('CDELT X/Y: ',gvWcsValue(wcs,'CDELT1')+'  '+gvWcsValue(wcs,'CDELT2'),'#fff'),gvColorLine('AVM ROTATION: ',String(gvWcsValue(wcs,'CROTA2','CROTA1','ROTATION')),'#62ff72')])}
-function gvPublishDiagnostic(destination){gvAvmDiagnostic.textContent='AVM / WCS — WAITING FOR DECODE\nIMAGE: '+directHdUrl(destination)}
+function gvPublishCatalogWcs(destination,record,wcs){gvSetDiagnostic(gvAvmDiagnostic,[gvColorLine('JSON RUNTIME WCS (AUTHORITATIVE)','','#fff'),gvColorLine('IMAGE: ',directHdUrl(destination),'#39e7ff'),gvColorLine('AUTHORITY: ',String(record?.authority||'RUNTIME_JSON'),'#ffe45c'),gvColorLine('CRVAL RA/DEC: ',String(record?.ra)+'  '+String(record?.dec),'#ff5b5b'),gvColorLine('FOV X/Y: ',String(record?.fovXDegrees)+'  '+String(record?.fovYDegrees),'#5ca9ff'),gvColorLine('CRPIX X/Y: ',gvWcsValue(wcs,'CRPIX1')+'  '+gvWcsValue(wcs,'CRPIX2'),'#fff'),gvColorLine('NAXIS X/Y: ',gvWcsValue(wcs,'NAXIS1')+'  '+gvWcsValue(wcs,'NAXIS2'),'#fff'),gvColorLine('CDELT X/Y: ',gvWcsValue(wcs,'CDELT1')+'  '+gvWcsValue(wcs,'CDELT2'),'#fff'),gvColorLine('CATALOG ROTATION: ',String(record?.aladinRotation??record?.spatialRotationDeg),'#62ff72')])}
+function gvPublishDiagnostic(destination){gvAvmDiagnostic.textContent='JSON RUNTIME WCS — WAITING FOR CATALOG\nIMAGE: '+directHdUrl(destination)}
 function gvPublishLiveAladin(){let r=[],f=[],rot='?',p='?',frame='?',survey='?';try{r=aladin.getRaDec?.()||[]}catch(_){}try{f=aladin.getFov?.()||[]}catch(_){}try{rot=aladin.getRotation?.()??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}try{const x=aladin.getBaseImageLayer?.();survey=x?.name??x?.id??x?.url??'?'}catch(_){}const q=v=>Number.isFinite(Number(v))?Number(v).toFixed(8):'?';gvSetDiagnostic(gvLiveDiagnostic,[gvColorLine('ALADIN LIVE (100 ms)','','#fff'),gvColorLine('RA/DEC: ',q(r[0])+'  '+q(r[1]),'#ff5b5b'),gvColorLine('FOV X/Y: ',q(f[0])+'  '+q(f[1]),'#5ca9ff'),gvColorLine('ROTATION: ',q(rot)+'°','#62ff72'),gvColorLine('PROJECTION: ',String(p),'#ffe45c'),gvColorLine('SURVEY / FRAME: ',String(survey)+' / '+String(frame),'#fff')])}
 gvPublishLiveAladin();setInterval(gvPublishLiveAladin,100);
 
@@ -697,8 +739,7 @@ function gvControlPanel(id,title,side){
     Object.assign(thumb.style,{position:'absolute',left:side==='left'?'32px':'25px',top:'145px',width:'18px',height:'18px',borderRadius:'50%',transform:'translate(-50%,-50%)',background:'#72e8ff',border:'2px solid rgba(224,255,255,.98)',boxShadow:'0 0 12px rgba(185,250,255,.98),0 0 28px rgba(20,176,255,.82)',pointerEvents:'none'});
     Object.assign(hit.style,{position:'absolute',inset:'0',zIndex:'3',pointerEvents:'auto',touchAction:'none',background:'transparent'});
     document.getElementById('aladin-cosmic-command-test').appendChild(panel);
-    return {panel,rail,thumb,hit};
-}
+    return {panel,rail,thumb,hit};}
 
 const crossFadeControl=gvControlPanel('gv-cross-fade','CROSS FADE','left');
 const crossFadeInput=document.createElement('input');
@@ -794,56 +835,6 @@ async function fetchVignetteBitmap(url){
     }
     throw new Error('VIGNETTE SOURCE FAILED: '+last);
 }
-function jpegApp1Segments(bytes){
-    if(bytes[0]!==0xff||bytes[1]!==0xd8)throw new Error('DIAGNOSTIC SOURCE IS NOT JPEG');
-    const segments=[];let p=2;
-    while(p+3<bytes.length){
-        if(bytes[p]!==0xff){p++;continue}
-        while(p<bytes.length&&bytes[p]===0xff)p++;
-        const marker=bytes[p++];if(marker===0xda||marker===0xd9)break;
-        if(marker===0x01||(marker>=0xd0&&marker<=0xd7))continue;
-        if(p+1>=bytes.length)break;
-        const n=(bytes[p]<<8)|bytes[p+1];if(n<2||p+n>bytes.length)break;
-        const start=p-2,end=p+n;
-        if(marker===0xe1)segments.push(bytes.slice(start,end));
-        p=end;
-    }
-    return segments;
-}
-async function makePreAladinDiagnosticJpeg(url){
-    const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0056'];let last='';
-    for(const source of attempts){
-        try{
-            const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
-            if(!response.ok)throw new Error('HTTP '+response.status);
-            const sourceBlob=await response.blob();if(!sourceBlob.size)throw new Error('EMPTY IMAGE BLOB');
-            const sourceBytes=new Uint8Array(await sourceBlob.arrayBuffer());
-            const app1=jpegApp1Segments(sourceBytes);
-            if(!app1.length)throw new Error('AVM/XMP APP1 METADATA MISSING');
-            const bitmap=await createImageBitmap(sourceBlob);
-            try{
-                const w=bitmap.width,h=bitmap.height;
-                const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-                const ctx=canvas.getContext('2d');if(!ctx)throw new Error('DIAGNOSTIC 2D CONTEXT UNAVAILABLE');
-                ctx.drawImage(bitmap,0,0,w,h);
-                const line=Math.max(3,Math.round(Math.min(w,h)/250));
-                ctx.strokeStyle='white';ctx.lineWidth=line;
-                ctx.strokeRect(line/2,line/2,w-line,h-line);
-                ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
-                const markedBlob=await new Promise((resolve,reject)=>canvas.toBlob(v=>v?resolve(v):reject(new Error('DIAGNOSTIC JPEG ENCODE FAILED')),'image/jpeg',.96));
-                const marked=new Uint8Array(await markedBlob.arrayBuffer());
-                if(marked[0]!==0xff||marked[1]!==0xd8)throw new Error('DIAGNOSTIC ENCODE IS NOT JPEG');
-                const metadataBytes=app1.reduce((n,x)=>n+x.length,0);
-                const merged=new Uint8Array(marked.length+metadataBytes);
-                merged.set(marked.slice(0,2),0);let q=2;
-                for(const segment of app1){merged.set(segment,q);q+=segment.length}
-                merged.set(marked.slice(2),q);
-                return new Blob([merged],{type:'image/jpeg'});
-            }finally{try{bitmap.close?.()}catch(_){}}
-        }catch(error){last=String(error?.message||error||'')}
-    }
-    throw new Error('PRE-ALADIN DIAGNOSTIC JPEG FAILED: '+last);
-}
 async function makeVignetteBlob(url){
     const bitmap=await fetchVignetteBitmap(url);
     try{
@@ -868,37 +859,47 @@ async function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    try{aladin.removeImageLayer?.(DIRECT_HD_AVM_DECODER)}catch(_){}
     directHdOverlay=null;
-    let markedUrl='',blob=null;
+    let imageObjectUrl='';
     try{
-        blob=await makePreAladinDiagnosticJpeg(url);
+        const [record,raster]=await Promise.all([gvRuntimeAvmRecord(destination),makeVignetteBlob(url)]);
         if(directHdDestination!==destination)return false;
-        markedUrl=URL.createObjectURL(blob);
-    }catch(error){console.error('GV PRE-ALADIN DIAGNOSTIC PREP FAILED',error);return false}
-    const probe=await createImageBitmap(blob);
-    const width=probe.width,height=probe.height;try{probe.close?.()}catch(_){}
-    const ra=Number(destination.ra),dec=Number(destination.dec),fov=Number(destination.fovDegrees);
-    if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fov)||fov<=0)throw new Error('GV DIRECT HD SYNTHETIC WCS INPUT INVALID');
-    const span=fov;
-    const scale=span/Math.max(width,height);
-    const displayWcs={NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,CDELT1:-scale,CDELT2:scale,NAXIS1:width,NAXIS2:height};
-    const layer=A.image(markedUrl,{
-        name:DIRECT_HD_LAYER,
-        imgFormat:'jpeg',
-        wcs:displayWcs,
-        opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();gvPublishDecodedAvm(destination,layer);setTimeout(()=>URL.revokeObjectURL(markedUrl),30000)},
-        errorCallback:error=>console.error('GV DIRECT HD ALADIN LAYER LOAD FAILED',error)
-    });
-    directHdOverlay=layer;
-    aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
-    return true;
+        imageObjectUrl=URL.createObjectURL(raster.blob);
+        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.outputWidth,raster.outputHeight);
+        const ra=Number(record.ra),dec=Number(record.dec);
+        const fovX=Number(record.fovXDegrees??record.fovDegrees);
+        const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+        aladin.setProjection('TAN');
+        aladin.gotoRaDec(ra,dec);
+        aladin.setFoV(fovX/0.80);
+        aladin.setRotation(rotation);
+        coordinate.update(ra,dec);
+        const layer=A.image(imageObjectUrl,{
+            name:DIRECT_HD_LAYER,
+            imgFormat:'png',
+            wcs:displayWcs,
+            opacity:directHdOpacity(),
+            successCallback:()=>{
+                if(directHdDestination!==destination)return;
+                directHdOverlay=layer;
+                applyDirectHdOpacity();
+                gvPublishCatalogWcs(destination,record,displayWcs);
+                setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000);
+            },
+            errorCallback:error=>console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)
+        });
+        directHdOverlay=layer;
+        aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+        return true;
+    }catch(error){
+        console.error('GV DIRECT HD JSON-WCS PREP FAILED',error);
+        if(imageObjectUrl)try{URL.revokeObjectURL(imageObjectUrl)}catch(_){}
+        return false;
+    }
 }
 
 
-// ============================================================================
-// SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
+// ============================================================================// SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
 // ECO: GV200-001
 // ============================================================================
 const activeRoute=navigationRuntime.active?.route;
@@ -934,7 +935,7 @@ function showDestination(destination){
     aladin.setProjection('TAN');
     aladin.gotoRaDec(v.ra,v.dec);
     aladin.setFoV(v.fov/0.80);
-    aladin.setRotation(0);
+    aladin.setRotation(v.rotation);
     coordinate.update(v.ra,v.dec);
     gvPublishDiagnostic(v.destination);
     loadDirectHdOnArrival(v.destination);
