@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-002';
-const GV200001_BUILD='0066';
+const GV200001_BUILD='0068';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-002',
@@ -686,7 +686,7 @@ async function gvRuntimeAvmRecord(destination){
     const catalog=await gvLoadAvmRuntimeCatalog();
     const url=directHdUrl(destination).toLowerCase();
     const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
-    const record=catalog.byUrl.get(url)||catalog.byId.get(id);
+    const record=catalog.byId.get(id)||catalog.byUrl.get(url);
     if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(id||url));
     return record;
 }
@@ -861,13 +861,14 @@ async function makeVignetteBlob(url){
     }finally{try{bitmap.close?.()}catch(_){}}
 }
 async function loadDirectHdOnArrival(destination){
-    const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=null;
     let imageObjectUrl='';
     try{
         const record=await gvRuntimeAvmRecord(destination);
+        const url=String(record.imageUrl||'').trim();
+        if(!url)throw new Error('GV JSON IMAGE URL MISSING');
         const ra=Number(record.ra),dec=Number(record.dec);
         const fovX=Number(record.fovXDegrees??record.fovDegrees);
         const fovY=Number(record.fovYDegrees??record.fovDegrees);
