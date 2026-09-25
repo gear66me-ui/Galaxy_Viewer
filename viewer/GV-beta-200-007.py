@@ -41,7 +41,6 @@ display(HTML("""
      ECO: GV200-001
      ======================================================================= -->
 <div id="gv-hamburger-host"></div>
-<div id="gv-coordinate-host"></div>
 <div id="gv-target-host"></div>
 <div id="gv-navigation-host"></div>
 
@@ -60,7 +59,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
      ======================================================================= -->
 <style>
 #gv-hamburger-host{position:absolute;inset:0;z-index:7200;pointer-events:none}
-#gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
 #gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
@@ -83,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0015';
+const GV200001_BUILD='0016';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -93,7 +91,6 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
     hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js',
-    coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0027',
@@ -145,7 +142,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 // ============================================================================
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
-    'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
+    'hamburgerBaseUrl','hamburgerUrl','targetUrl',
     'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
@@ -461,7 +458,6 @@ window.aladin_cosmic_command_test=aladin;
 await loadScript(fresh(config.hamburgerBaseUrl));
 await loadScript(fresh(config.hamburgerUrl));
 await Promise.all([
-    loadScript(fresh(config.coordinateUrl)),
     loadScript(fresh(config.targetUrl)),
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
@@ -475,7 +471,6 @@ await Promise.all([
 // ECO: GV200-001
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0007')throw new Error('HAMBURGER 0007 EXPORT MISSING');
-if(window.GalaxyCoordinateOverlay?.VERSION!=='0006')throw new Error('COORDINATE 0006 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 0004 EXPORT MISSING');
 if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS 0019 EXPORT MISSING');
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
@@ -513,7 +508,6 @@ if(!aladin)throw new Error('ALADIN VIEWER INITIALIZATION FAILED');
 // ============================================================================
 const hosts=Object.freeze({
     hamburger:document.getElementById('gv-hamburger-host'),
-    coordinate:document.getElementById('gv-coordinate-host'),
     target:document.getElementById('gv-target-host'),
     navigation:document.getElementById('gv-navigation-host')
 });
@@ -550,25 +544,6 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
-
-
-// ============================================================================
-// SECTION 024 — COORDINATE OVERLAY 0006 INITIALIZATION
-// ECO: GV200-001
-// ============================================================================
-const coordinate=window.GalaxyCoordinateOverlay.mount(hosts.coordinate,{});
-await coordinate.ready;
-coordinate.setFrame('ICRSd');
-coordinate.update(HOME.ra,HOME.dec);
-let gvCoordinateSyncFrame=0;
-function gvSyncCoordinateFromAladin(){
-    try{
-        const center=aladin.getRaDec?.();
-        if(Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
-    }catch(_){}
-    gvCoordinateSyncFrame=requestAnimationFrame(gvSyncCoordinateFromAladin);
-}
-gvCoordinateSyncFrame=requestAnimationFrame(gvSyncCoordinateFromAladin);
 
 
 // ============================================================================
@@ -739,23 +714,6 @@ function gvTanPixelToWorld(wcs,x,y){
     ra=((ra*r2d)%360+360)%360;
     return [ra,dec*r2d];
 }
-const gvDiagnosticStrip=document.createElement('div');
-Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'92px',zIndex:'7313',padding:'8px 10px',borderRadius:'8px',background:'rgba(0,0,0,.80)',color:'#dff8ff',font:'10px/1.35 monospace',overflowWrap:'normal',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',boxShadow:'0 0 14px rgba(88,191,255,.18)'});
-const gvAvmDiagnostic=document.createElement('div'),gvLiveDiagnostic=document.createElement('div');
-gvAvmDiagnostic.style.whiteSpace=gvLiveDiagnostic.style.whiteSpace='pre-wrap';gvDiagnosticStrip.append(gvAvmDiagnostic,gvLiveDiagnostic);document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
-function gvCatalogJsonUrl(destination){const key=String(destination?.catalogKey||'').trim().toLowerCase();const paths={hubble:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',jwst:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',eso:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',chandra:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',spitzer:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',noirlab:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'};return paths[key]?new URL(paths[key],GV_MASTER_CATALOG_URL).href:'UNKNOWN'}
-function gvWcsValue(wcs,...keys){for(const key of keys){const v=wcs?.[key]??wcs?.[key.toLowerCase()];if(v!==undefined&&v!==null)return v}return '?'}
-function gvColorLine(label,value,color){const row=document.createElement('div');const key=document.createElement('span'),val=document.createElement('span');Object.assign(row.style,{display:'grid',gridTemplateColumns:'92px 1fr',gap:'8px',alignItems:'baseline'});key.textContent=label;val.textContent=value;key.style.color=color;val.style.color='#ffffff';key.style.opacity='.92';val.style.fontWeight='600';row.append(key,val);return row}
-function gvPanelTitle(text){const row=document.createElement('div');row.textContent=text;Object.assign(row.style,{color:'#7CCBFF',fontWeight:'700',letterSpacing:'.5px',marginBottom:'3px',textTransform:'uppercase'});return row}
-function gvSetDiagnostic(el,rows){el.replaceChildren(...rows)}
-function gvFmt(v,d=6){const n=Number(v);return Number.isFinite(n)?n.toFixed(d):'?'}
-function gvPublishCatalogWcs(destination,record,wcs){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(record?.name||destination?.name||record?.archiveId||'?'),'#7CCBFF'),gvColorLine('RA',gvFmt(record?.ra,8),'#ff8b8b'),gvColorLine('Dec',gvFmt(record?.dec,8),'#ff8b8b'),gvColorLine('Rotation',gvFmt(record?.aladinRotation??record?.spatialRotationDeg,4)+'°','#62ff72'),gvColorLine('Image FoV X',gvFmt(record?.fovXDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('Image FoV Y',gvFmt(record?.fovYDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('Viewport target','1.375 × image max FoV (intentional)','#ffe45c')])}
-function gvPublishDiagnostic(destination){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(destination?.name||destination?.archiveId||destination?.id||'?'),'#7CCBFF'),gvColorLine('Status','loading catalog record','#ffe45c')])}
-function gvReadAladinRaDec(){let v=null;try{v=aladin.getRaDec?.()}catch(_){}if(Array.isArray(v))return [v[0],v[1]];if(v&&typeof v==='object')return [v.ra??v.RA??v.lon??v.lng??v[0],v.dec??v.DE??v.lat??v[1]];for(const c of [aladin.view?.center,aladin.view?.viewCenter,aladin.view?.cooCenter,aladin.view?.radec]){if(Array.isArray(c))return [c[0],c[1]];if(c&&typeof c==='object')return [c.ra??c.RA??c.lon??c.lng??c.x,c.dec??c.DE??c.lat??c.y]}return []}
-function gvReadAladinFov(){let v=null;try{v=aladin.getFov?.()}catch(_){}if(Array.isArray(v))return v;if(Number.isFinite(Number(v)))return [v,v];try{const f=aladin.view?.fov;if(Array.isArray(f))return f;if(Number.isFinite(Number(f)))return [f,f]}catch(_){}return []}
-function gvPublishLiveAladin(){let r=gvReadAladinRaDec(),f=gvReadAladinFov(),rot='?',p='?',frame='?';if(Number.isFinite(Number(r[0]))&&Number.isFinite(Number(r[1])))coordinate.update(Number(r[0]),Number(r[1]));try{rot=aladin.getRotation?.()??aladin.view?.rotation??'?'}catch(_){}try{p=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}gvSetDiagnostic(gvLiveDiagnostic,[gvPanelTitle('ALADIN LIVE'),gvColorLine('RA',gvFmt(r[0],8),'#ff8b8b'),gvColorLine('Dec',gvFmt(r[1],8),'#ff8b8b'),gvColorLine('Rotation',gvFmt(rot,4)+'°','#62ff72'),gvColorLine('Viewport FoV X',gvFmt(f[0],8)+'°','#5ca9ff'),gvColorLine('Viewport FoV Y',gvFmt(f[1]??f[0],8)+'°','#5ca9ff'),gvColorLine('Projection',String(p),'#ffe45c'),gvColorLine('Frame',String(frame),'#ffffff')])}
-gvPublishLiveAladin();setInterval(gvPublishLiveAladin,100);
-
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
     panel.id=id;
@@ -857,22 +815,34 @@ function zoomStep(){
     }catch(_){}
     zoomFrame=requestAnimationFrame(zoomStep);
 }
+function gvSettleAutoZoom(result=false){
+    if(!gvAutoZoom)return;
+    const done=gvAutoZoom.resolve;gvAutoZoom=null;
+    try{done(result)}catch(_){}
+}
 function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,approachMs=500,linearLanding=true,onApproach=null}={}){
     const target=Number(targetFov),direction=Math.sign(Number(command));
     if(!Number.isFinite(target)||target<=0||!direction)return Promise.resolve(false);
     const raw=aladin.getFov?.(),start=Number(Array.isArray(raw)?raw[0]:raw);
     if(!Number.isFinite(start)||start<=0)return Promise.resolve(false);
+    gvSettleAutoZoom(false);
     return new Promise(resolve=>{gvAutoZoom={target,start,direction,started:performance.now(),attackMs,landingMs,approachMs,linearLanding,onApproach,approachStarted:false,resolve};gvSetZoomCommand(direction*.035);if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep)});
+}
+function gvEnergizeZoomToTarget(targetFov,options={}){
+    const target=Number(targetFov),raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
+    if(!Number.isFinite(target)||target<=0||!Number.isFinite(current)||current<=0)return Promise.resolve(false);
+    if(Math.abs(target-current)<=Math.max(1e-7,target*.001)){aladin.setFov(target);gvSettleAutoZoom(true);gvSetZoomCommand(0);return Promise.resolve(true)}
+    return gvEnergizeZoomJoystick(current>target?1:-1,target,options);
 }
 function setZoomCommandFromY(clientY){
     const r=zoomControl.rail.getBoundingClientRect();
     if(!r.height)return;
-    gvAutoZoom=null;
+    gvSettleAutoZoom(false);
     gvSetZoomCommand(((clientY-(r.top+r.height/2))/(r.height/2)));
     if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
 }
 function releaseZoom(){
-    gvAutoZoom=null;
+    gvSettleAutoZoom(false);
     gvSetZoomCommand(0);
     if(zoomFrame){cancelAnimationFrame(zoomFrame);zoomFrame=0}
     zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+zoomControl.rail.offsetHeight/2}px`;
@@ -911,8 +881,8 @@ async function gvLoadGate2MImage(url){
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
 }
-async function gvPrepareDirectHd(destination){
-    const record=await gvRuntimeAvmRecord(destination);
+async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(destination)){
+    const record=await recordPromise;
     const url=String(record.imageUrl||'').trim();
     if(!url)throw new Error('GV JSON IMAGE URL MISSING');
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
@@ -929,17 +899,41 @@ function gvInstallPreparedHd(prepared){
     directHdDestination=destination;
     const layer=A.image(imageObjectUrl,{
         name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();gvPublishCatalogWcs(destination,record,displayWcs);setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000)},
-        errorCallback:error=>{console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error);gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Image load','FAILED: '+String(error),'#ff6666')])}
+        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000)},
+        errorCallback:error=>{console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
     });
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return true;
 }
-function gvTravelTo(destination,durationMs=2500,{translate=true,rotate=true}={}){
+function gvTravelTo(destination,durationMs=3000,{translate=true,rotate=true}={}){
     const v=validateDestination(destination),startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec];
     const ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);let rot0=0;try{rot0=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     const dra=((v.ra-ra0+540)%360)-180,drot=((v.rotation-rot0+540)%360)-180;
     return new Promise(resolve=>{const started=performance.now();function frame(now){const t=Math.min(1,(now-started)/durationMs);if(translate)aladin.gotoRaDec((ra0+dra*t+360)%360,dec0+(v.dec-dec0)*t);if(rotate)aladin.setRotation(rot0+drot*t);if(t<1)requestAnimationFrame(frame);else resolve(v)}requestAnimationFrame(frame)});
+}
+function gvChoreographedTravel(destination,onArrivalZoom){
+    const v=validateDestination(destination),startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec];
+    const ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);let rot0=0;try{rot0=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
+    const dra=((v.ra-ra0+540)%360)-180,ddec=v.dec-dec0,drot=((v.rotation-rot0+540)%360)-180;
+    gvEnergizeZoomJoystick(-1,120,{attackMs:500,landingMs:500,approachMs:0,linearLanding:true});
+    return new Promise(resolve=>{
+        const started=performance.now();let arrivalStarted=false;
+        function frame(now){
+            const elapsed=now-started;
+            if(elapsed>=2500){
+                const translationT=Math.min(1,(elapsed-2500)/3500);
+                aladin.gotoRaDec((ra0+dra*translationT+360)%360,dec0+ddec*translationT);
+            }
+            if(elapsed>=3000){
+                const rotationT=Math.min(1,(elapsed-3000)/2500);
+                aladin.setRotation(rot0+drot*rotationT);
+            }
+            if(!arrivalStarted&&elapsed>=5500){arrivalStarted=true;try{onArrivalZoom?.()}catch(error){console.error('GV ARRIVAL ZOOM START FAILED',error)}}
+            if(elapsed<6000)requestAnimationFrame(frame);
+            else{aladin.gotoRaDec(v.ra,v.dec);aladin.setRotation(v.rotation);resolve(v)}
+        }
+        requestAnimationFrame(frame);
+    });
 }
 
 
@@ -975,21 +969,21 @@ function validateDestination(destination){
 // ECO: GV200-001
 // ============================================================================
 async function showDestination(destination,{firstTrip=false}={}){
-    const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
-    if(firstTrip){
-        await gvTravelTo(v.destination,2500,{translate:true,rotate:true});
-        const prepared=await preparedPromise;activeDestination=v.destination;gvPublishDiagnostic(v.destination);gvInstallPreparedHd(prepared);
-        await gvEnergizeZoomJoystick(1,prepared.finalFov,{attackMs:500,landingMs:2500,approachMs:0,linearLanding:true});
-        headsUpDisplay.render();return v.destination;
+    const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination);
+    const finalFovPromise=recordPromise.then(record=>Math.max(Number(record.fovXDegrees??record.fovDegrees),Number(record.fovYDegrees??record.fovDegrees))*1.375);
+    const preparedPromise=gvPrepareDirectHd(v.destination,recordPromise);
+    activeDestination=v.destination;
+    preparedPromise.then(prepared=>{if(activeDestination===v.destination)gvInstallPreparedHd(prepared)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
+    function beginArrivalZoom(){
+        if(activeDestination!==v.destination)return;
+        gvSettleAutoZoom(false);gvSetZoomCommand(.035);if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
+        finalFovPromise.then(target=>{if(activeDestination===v.destination)gvEnergizeZoomToTarget(target,{attackMs:500,landingMs:2500,approachMs:0,linearLanding:true})}).catch(error=>{console.error('GV FINAL FOV PREPARE FAILED',error);if(activeDestination===v.destination){gvSettleAutoZoom(false);gvSetZoomCommand(0)}});
     }
-    let beginApproach;const approachStarted=new Promise(resolve=>{beginApproach=resolve});
-    const zoomOut=gvEnergizeZoomJoystick(-1,120,{attackMs:500,landingMs:500,approachMs:500,linearLanding:true,onApproach:beginApproach});
-    await approachStarted;
-    await gvTravelTo(v.destination,500,{translate:true,rotate:false});
-    await zoomOut;
-    await gvTravelTo(v.destination,2500,{translate:true,rotate:true});
-    const prepared=await preparedPromise;activeDestination=v.destination;gvPublishDiagnostic(v.destination);gvInstallPreparedHd(prepared);
-    await gvEnergizeZoomJoystick(1,prepared.finalFov,{attackMs:500,landingMs:2500,approachMs:500,linearLanding:true});
+    if(firstTrip){
+        await gvTravelTo(v.destination,3000,{translate:true,rotate:true});
+        beginArrivalZoom();headsUpDisplay.render();return v.destination;
+    }
+    await gvChoreographedTravel(v.destination,beginArrivalZoom);
     headsUpDisplay.render();return v.destination;
 }
 
@@ -1060,7 +1054,6 @@ window.GalaxyViewerCore=Object.freeze({
     aladin,
     home:HOME,
     hamburger,
-    coordinate,
     target,
     diagnostics,
     headsUpDisplay,
