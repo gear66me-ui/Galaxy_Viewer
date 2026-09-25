@@ -83,7 +83,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-002';
-const GV200001_BUILD='0002';
+const GV200001_BUILD='0004';
+const GV_RUNTIME='0072';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-002',
@@ -492,6 +493,11 @@ const galaxyNavigator=window.GalaxyNavigator.mount(earlyNavigationHost,{
 galaxyNavigator.setEnabled({back:false,random:false,forward:false});
 galaxyNavigator.setBusy(true);
 
+const gvVersionReadout=document.createElement('div');
+gvVersionReadout.id='gv-version-readout';
+gvVersionReadout.textContent='200-002   BLD 0004   RT 0072';
+Object.assign(gvVersionReadout.style,{display:'block',width:'100%',font:'9px/1.2 monospace',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0 0 3px',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
+earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
 
 
 // ============================================================================
@@ -700,12 +706,12 @@ function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     if(!Number.isFinite(rotation))throw new Error('GV JSON WCS ROTATION INVALID');
     if(!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0)throw new Error('GV JSON WCS DIMENSION INVALID');
     const sx=fovX/width,sy=fovY/height,t=rotation*Math.PI/180,c=Math.cos(t),s=Math.sin(t);
-    return Object.freeze({
+    return {
         NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',
         CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,
         CD1_1:-sx*c,CD1_2:-sy*s,CD2_1:-sx*s,CD2_2:sy*c,
         NAXIS1:width,NAXIS2:height
-    });
+    };
 }
 const gvDiagnosticStrip=document.createElement('div');
 Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'8px',right:'8px',bottom:'92px',zIndex:'7313',padding:'8px 10px',borderRadius:'8px',background:'rgba(0,0,0,.80)',color:'#dff8ff',font:'10px/1.35 monospace',overflowWrap:'normal',pointerEvents:'none',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',boxShadow:'0 0 14px rgba(88,191,255,.18)'});
@@ -825,40 +831,22 @@ function releaseZoom(){
 for(const ev of ['pointerdown','pointermove'])zoomControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
 for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.hit.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
 
-async function fetchVignetteBitmap(url){
+async function gvLoadGate2MImage(url){
     if(typeof createImageBitmap!=='function')throw new Error('createImageBitmap unavailable');
     const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0037'];
     let last='';
     for(const source of attempts){
         try{
-            const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'force-cache',redirect:'follow'});
+            const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'no-store',redirect:'follow'});
             if(!response.ok)throw new Error('HTTP '+response.status);
             const blob=await response.blob();
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
-            return await createImageBitmap(blob);
+            const bitmap=await createImageBitmap(blob);
+            try{return {blob,width:bitmap.width,height:bitmap.height}}
+            finally{try{bitmap.close?.()}catch(_){}}
         }catch(error){last=String(error?.message||error||'')}
     }
-    throw new Error('VIGNETTE SOURCE FAILED: '+last);
-}
-async function makeVignetteBlob(url){
-    const bitmap=await fetchVignetteBitmap(url);
-    try{
-        const w=bitmap.width,h=bitmap.height;
-        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-        const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
-        ctx.drawImage(bitmap,0,0,w,h);
-        const p=VIGNETTE,cx=w/2,cy=h/2,rx=w*.5*p.diameter,ry=h*.5*p.diameter;
-        const core=Math.max(0,Math.min(.98,p.core));
-        const mid1=core+(1-core)*p.mid1,mid2=core+(1-core)*p.mid2,mid3=core+(1-core)*p.mid3;
-        ctx.save();ctx.globalCompositeOperation='destination-in';ctx.translate(cx,cy);ctx.scale(rx,ry);
-        const mask=ctx.createRadialGradient(0,0,0,0,0,1);
-        mask.addColorStop(0,'rgba(0,0,0,1)');mask.addColorStop(core,'rgba(0,0,0,1)');
-        mask.addColorStop(mid1,`rgba(0,0,0,${p.alpha1})`);mask.addColorStop(mid2,`rgba(0,0,0,${p.alpha2})`);
-        mask.addColorStop(mid3,`rgba(0,0,0,${p.alpha3})`);mask.addColorStop(1,'rgba(0,0,0,0)');
-        ctx.fillStyle=mask;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore();
-        const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('DISPLAY JPEG ENCODE FAILED')),'image/jpeg',.96));
-        return {blob,sourceWidth:bitmap.width,sourceHeight:bitmap.height,outputWidth:w,outputHeight:h};
-    }finally{try{bitmap.close?.()}catch(_){}}
+    throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
 }
 async function loadDirectHdOnArrival(destination){
     directHdDestination=destination;
@@ -875,10 +863,10 @@ async function loadDirectHdOnArrival(destination){
         const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
         const previewWcs={CRVAL1:ra,CRVAL2:dec,NAXIS1:'?',NAXIS2:'?',CRPIX1:'?',CRPIX2:'?',CDELT1:'?',CDELT2:'?'};
         gvPublishCatalogWcs(destination,record,previewWcs);
-        const raster=await makeVignetteBlob(url);
+        const raster=await gvLoadGate2MImage(url);
         if(directHdDestination!==destination)return false;
         imageObjectUrl=URL.createObjectURL(raster.blob);
-        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.outputWidth,raster.outputHeight);
+        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
         aladin.setProjection('TAN');
         aladin.gotoRaDec(ra,dec);
         aladin.setFoV(Math.max(fovX,fovY)*2.5);
