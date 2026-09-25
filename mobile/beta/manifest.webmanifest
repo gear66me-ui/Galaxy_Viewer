@@ -3,7 +3,7 @@
   "name": "GALAXY VIEWER 200-007",
   "short_name": "200-007",
   "description": "GALAXY VIEWER 200-007",
-  "start_url": "/Galaxy_Viewer/mobile/beta/generic-app.html?source=pwa&v=0081",
+  "start_url": "/Galaxy_Viewer/mobile/beta/generic-app.html?source=pwa&v=0082",
   "scope": "/Galaxy_Viewer/mobile/beta/",
   "display": "standalone",
   "orientation": "any",
