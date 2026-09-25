@@ -81,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0016';
+const GV200001_BUILD='0017';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -976,8 +976,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     preparedPromise.then(prepared=>{if(activeDestination===v.destination)gvInstallPreparedHd(prepared)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     function beginArrivalZoom(){
         if(activeDestination!==v.destination)return;
-        gvSettleAutoZoom(false);gvSetZoomCommand(.035);if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
-        finalFovPromise.then(target=>{if(activeDestination===v.destination)gvEnergizeZoomToTarget(target,{attackMs:500,landingMs:2500,approachMs:0,linearLanding:true})}).catch(error=>{console.error('GV FINAL FOV PREPARE FAILED',error);if(activeDestination===v.destination){gvSettleAutoZoom(false);gvSetZoomCommand(0)}});
+        finalFovPromise.then(target=>{if(activeDestination===v.destination)gvEnergizeZoomToTarget(target,{attackMs:500,landingMs:0,approachMs:0,linearLanding:false})}).catch(error=>{console.error('GV FINAL FOV PREPARE FAILED',error);if(activeDestination===v.destination){gvSettleAutoZoom(false);gvSetZoomCommand(0)}});
     }
     if(firstTrip){
         await gvTravelTo(v.destination,3000,{translate:true,rotate:true});
