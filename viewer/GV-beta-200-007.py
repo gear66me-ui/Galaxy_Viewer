@@ -917,15 +917,14 @@ async function gvLoadGate2MImage(url){
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(bitmap,0,0,w,h);
-                const p=VIGNETTE,cx=w/2,cy=h/2,rx=w*.5*p.diameter,ry=h*.5*p.diameter;
-                const core=Math.max(0,Math.min(.98,p.core));
-                const mid1=core+(1-core)*p.mid1,mid2=core+(1-core)*p.mid2,mid3=core+(1-core)*p.mid3;
-                ctx.save();ctx.globalCompositeOperation='destination-in';ctx.translate(cx,cy);ctx.scale(rx,ry);
-                const mask=ctx.createRadialGradient(0,0,0,0,0,1);
+                const p=VIGNETTE,cx=w/2,cy=h/2,r=Math.min(w,h)*.5*.96;
+                const core=0.68,mid1=0.78,mid2=0.88,mid3=0.95;
+                ctx.save();ctx.globalCompositeOperation='destination-in';
+                const mask=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
                 mask.addColorStop(0,'rgba(0,0,0,1)');mask.addColorStop(core,'rgba(0,0,0,1)');
-                mask.addColorStop(mid1,`rgba(0,0,0,${p.alpha1})`);mask.addColorStop(mid2,`rgba(0,0,0,${p.alpha2})`);
-                mask.addColorStop(mid3,`rgba(0,0,0,${p.alpha3})`);mask.addColorStop(1,'rgba(0,0,0,0)');
-                ctx.fillStyle=mask;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore();
+                mask.addColorStop(mid1,'rgba(0,0,0,0.88)');mask.addColorStop(mid2,'rgba(0,0,0,0.48)');
+                mask.addColorStop(mid3,'rgba(0,0,0,0.12)');mask.addColorStop(1,'rgba(0,0,0,0)');
+                ctx.fillStyle=mask;ctx.fillRect(0,0,w,h);ctx.restore();
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
                 return {blob:vignetteBlob,width:w,height:h};
             }finally{try{bitmap.close?.()}catch(_){}}
