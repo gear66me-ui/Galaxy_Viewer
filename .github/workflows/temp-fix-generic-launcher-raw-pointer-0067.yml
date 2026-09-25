@@ -1,0 +1,55 @@
+name: TEMP Fix Generic Launcher Raw Pointer 0067
+
+on:
+  push:
+    branches: [ beta ]
+    paths:
+      - '.github/workflows/temp-fix-generic-launcher-raw-pointer-0067.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+      - name: Patch generic launcher to use raw beta viewer pointer
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('mobile/beta/generic-app.html')
+          s=p.read_text(encoding='utf-8')
+          before=s
+          def one(old,new,label):
+              global s
+              n=s.count(old)
+              if n!=1:
+                  raise SystemExit(f'{label}: expected 1 found {n}')
+              s=s.replace(old,new)
+          one("const POINTER_URL='../../viewer/gv-current-viewer.json';", "const POINTER_URL='../../viewer/gv-current-viewer.json';\nconst RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';", 'raw base insert')
+          old="""const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
+const loadPointer=async()=>{
+  const pointer=JSON.parse(await text(POINTER_URL));"""
+          new="""const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
+const textAny=async urls=>{let last=null;for(const url of urls){try{return await text(url)}catch(error){last=error;console.warn('GV GENERIC FETCH FALLBACK',url,error)}}throw last||new Error('GV GENERIC FETCH FAILED')};
+const loadPointer=async()=>{
+  const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json',POINTER_URL]));"""
+          one(old,new,'pointer fallback')
+          one("const source=await text('../../viewer/'+viewer);", "const source=await textAny([RAW_VIEWER_BASE+viewer,'../../viewer/'+viewer]);", 'viewer fallback')
+          one("const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-ACTIVE-POINTER-002';", "const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-ACTIVE-POINTER-003';", 'launcher revision')
+          p.write_text(s,encoding='utf-8')
+          print('PATCH_OK')
+          print('chars_before',len(before))
+          print('chars_after',len(s))
+          print('RAW_VIEWER_BASE',s.count('RAW_VIEWER_BASE'))
+          PY
+      - name: Commit launcher patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add mobile/beta/generic-app.html
+          git commit -m 'GV generic launcher: use raw beta pointer fallback (0067)'
+          git push origin beta
