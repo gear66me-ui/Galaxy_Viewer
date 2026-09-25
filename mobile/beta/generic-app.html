@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>GALAXY VIEWER</title>
 <style>
+@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-generic-cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}
 #gv-loading-mark{position:relative;display:flex;align-items:center;justify-content:center;width:min(52vw,280px);height:min(52vw,280px);--gv-orbit-radius:min(24vw,122px)}
@@ -23,9 +24,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-loading-comet i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
 #gv-loading-comet i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
 @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:Arial,sans-serif;text-align:center;text-shadow:0 0 12px #058cff;white-space:nowrap}
-#gv-generic-version{min-height:20px;font-size:16px;line-height:20px;letter-spacing:1.2px}
-#gv-generic-build{min-height:16px;margin-top:-14px;font-size:11px;line-height:16px;letter-spacing:1px}
+#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:"Space Age",Arial,sans-serif;text-align:center;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;white-space:nowrap}
+#gv-generic-version{min-height:22px;font-size:17px;line-height:22px;letter-spacing:1.2px}
+#gv-generic-build{min-height:22px;margin-top:-8px;font-size:17px;line-height:22px;letter-spacing:1.1px}
 #gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
 </style>
 </head>
@@ -42,7 +43,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
 'use strict';
-const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0068';
+const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0069';
 const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
 const REL_VIEWER_BASE='../../viewer/';
 const VIEWER_TIMEOUT_MS=30000;
@@ -85,7 +86,7 @@ function mountHtml(html){
   }
 }
 function patchViewerSource(source){
-  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0068';");
+  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0069';");
   const wcsStart=s.indexOf('function gvSyntheticWcsFromRuntimeRecord(record,width,height){');
   const diagStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');",wcsStart);
   if(wcsStart>=0&&diagStart>wcsStart){
@@ -129,6 +130,14 @@ function gvPublishUnifiedDiagnostic(status){gvCurrentStatus=status||gvCurrentSta
 function gvPublishCatalogWcs(destination,record,wcs,status){gvCurrentCatalogRecord=record;gvCurrentCatalogWcs=wcs;gvPublishUnifiedDiagnostic(status||'catalog loaded')}
 function gvPublishDiagnostic(destination){gvCurrentCatalogRecord={name:destination?.name||destination?.archiveId||destination?.id||'?'};gvCurrentCatalogWcs=null;gvPublishUnifiedDiagnostic('loading catalog')}
 gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic(),250);
+function installGvRuntimeBanner(){
+    if(document.getElementById('gv-runtime-build-banner'))return;
+    const root=document.getElementById('aladin-cosmic-command-test');if(!root)return;
+    const banner=document.createElement('div');banner.id='gv-runtime-build-banner';
+    banner.textContent=VERSION+'  •  BUILD '+GV200001_BUILD+' + RUNTIME 0069';
+    Object.assign(banner.style,{position:'absolute',left:'50%',bottom:'58px',transform:'translateX(-50%)',zIndex:'7311',padding:'5px 10px',border:'1px solid rgba(124,203,255,.65)',borderRadius:'7px',background:'linear-gradient(145deg,rgba(8,27,58,.90),rgba(11,49,119,.78))',color:'#DDF8FF',font:'400 10px/1.25 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',textAlign:'center',textShadow:'0 0 8px rgba(88,191,255,.70)',boxShadow:'0 0 10px rgba(88,191,255,.24)',pointerEvents:'none',whiteSpace:'nowrap'});
+    root.appendChild(banner);
+}
 
 `+s.slice(dEnd);
   }
@@ -156,12 +165,13 @@ gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic
 }
 `+s.slice(lEnd);
   }
+  s=s.replace('updateNavigationAvailability();','installGvRuntimeBanner();\nupdateNavigationAvailability();');
   return s;
 }
 async function loadPointer(){
-  const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json',REL_VIEWER_BASE+'gv-current-viewer.json']));
+  const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json?v=0069',REL_VIEWER_BASE+'gv-current-viewer.json?v=0069']));
   const version=String(pointer.version||'').trim();versionEl.textContent=version?'VERSION '+version:'VERSION';
-  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0068':'BUILD RUNTIME 0068';
+  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0069':'BUILD RUNTIME 0069';
   try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}
   return pointer;
 }
@@ -169,7 +179,7 @@ async function prepareViewer(){
   const pointer=await loadPointer();
   const viewer=String(pointer.viewer||'').trim();
   if(!/^GV-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
-  const source=patchViewerSource(await textAny([RAW_VIEWER_BASE+viewer,REL_VIEWER_BASE+viewer]));
+  const source=patchViewerSource(await textAny([RAW_VIEWER_BASE+viewer+'?v=0069',REL_VIEWER_BASE+viewer+'?v=0069']));
   const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
   const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
   if(!htmlMatch||!jsMatches.length)throw new Error('ACTIVE VIEWER EXTRACTION FAILED: '+viewer);
