@@ -42,7 +42,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
 'use strict';
-const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RAW-BETA-004';
+const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0067';
 const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
 const REL_VIEWER_BASE='../../viewer/';
 const VIEWER_TIMEOUT_MS=30000;
@@ -84,10 +84,84 @@ function mountHtml(html){
     }else document.body.appendChild(node);
   }
 }
+function patchViewerSource(source){
+  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0067';");
+  const wcsStart=s.indexOf('function gvSyntheticWcsFromRuntimeRecord(record,width,height){');
+  const diagStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');",wcsStart);
+  if(wcsStart>=0&&diagStart>wcsStart){
+    s=s.slice(0,wcsStart)+`function gvPair(value){return Array.isArray(value)?value:[]}
+function gvFiniteOr(value,fallback){const n=Number(value);return Number.isFinite(n)?n:fallback}
+function gvSyntheticWcsFromRuntimeRecord(record){
+    const ra=Number(record?.ra),dec=Number(record?.dec);
+    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
+    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg??0);
+    const dim=gvPair(record?.referenceDimension),pix=gvPair(record?.referencePixel),scale=gvPair(record?.scale);
+    const width=Math.max(2,Math.round(gvFiniteOr(record?.naxisX,gvFiniteOr(record?.width,gvFiniteOr(dim[0],2048)))));
+    const height=Math.max(2,Math.round(gvFiniteOr(record?.naxisY,gvFiniteOr(record?.height,gvFiniteOr(dim[1],width)))));
+    const crpix1=gvFiniteOr(record?.crpix1,gvFiniteOr(pix[0],(width+1)/2));
+    const crpix2=gvFiniteOr(record?.crpix2,gvFiniteOr(pix[1],(height+1)/2));
+    const sx=Math.abs(gvFiniteOr(scale[0],fovX/width));
+    const sy=Math.abs(gvFiniteOr(scale[1],fovY/height));
+    const cdelt1=-sx,cdelt2=sy;
+    if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
+    if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
+    const theta=rotation*Math.PI/180,c=Math.cos(theta),sn=Math.sin(theta);
+    return Object.freeze({NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,NAXIS1:width,NAXIS2:height,CDELT1:cdelt1,CDELT2:cdelt2,CROTA2:rotation,ROTATION:rotation,CD1_1:cdelt1*c,CD1_2:-cdelt2*sn,CD2_1:cdelt1*sn,CD2_2:cdelt2*c});
+}
+function gvAladinImageUrl(url){return CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv-aladin-url-0067'}
+`+s.slice(diagStart);
+  }
+  const dStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');");
+  const dEnd=s.indexOf('function gvControlPanel(id,title,side){',dStart);
+  if(dStart>=0&&dEnd>dStart){
+    s=s.slice(0,dStart)+`const gvDiagnosticStrip=document.createElement('div');
+Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'6px',right:'6px',bottom:'86px',zIndex:'7313',padding:'8px 8px',borderRadius:'8px',background:'rgba(0,0,0,.82)',color:'#dff8ff',font:'12px/1.30 monospace',pointerEvents:'none',display:'grid',gridTemplateColumns:'74px 1fr 1fr',columnGap:'8px',rowGap:'3px',boxShadow:'0 0 14px rgba(88,191,255,.18)'});
+document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
+let gvCurrentCatalogRecord=null,gvCurrentCatalogWcs=null,gvCurrentStatus='waiting';
+function gvFmt(v,d=6){const n=Number(v);return Number.isFinite(n)?n.toFixed(d):'?'}
+function gvText(v){return (v===undefined||v===null||v==='')?'?':String(v)}
+function gvDiagCell(text,color,weight='500'){const cell=document.createElement('div');cell.textContent=text;Object.assign(cell.style,{color:color||'#fff',fontWeight:weight,whiteSpace:'normal',overflow:'visible',overflowWrap:'anywhere',minWidth:'0'});return cell}
+function gvDiagRow(field,catalog,live,color){gvDiagnosticStrip.append(gvDiagCell(field,'#7CCBFF','700'),gvDiagCell(catalog,color||'#fff','600'),gvDiagCell(live,color||'#fff','600'))}
+function gvReadAladinRaDec(){let v=null;try{v=aladin.getRaDec?.()}catch(_){}if(Array.isArray(v))return [v[0],v[1]];if(v&&typeof v==='object')return [v.ra??v.RA??v.lon??v.lng??v[0],v.dec??v.DE??v.lat??v[1]];for(const c of [aladin.view?.center,aladin.view?.viewCenter,aladin.view?.cooCenter,aladin.view?.radec]){if(Array.isArray(c))return [c[0],c[1]];if(c&&typeof c==='object')return [c.ra??c.RA??c.lon??c.lng??c.x,c.dec??c.DE??c.lat??c.y]}return []}
+function gvReadAladinFov(){let v=null;try{v=aladin.getFov?.()}catch(_){}if(Array.isArray(v))return v;if(Number.isFinite(Number(v)))return [v,v];try{const f=aladin.view?.fov;if(Array.isArray(f))return f;if(Number.isFinite(Number(f)))return [f,f]}catch(_){}return []}
+function gvPublishUnifiedDiagnostic(status){gvCurrentStatus=status||gvCurrentStatus||'waiting';const r=gvCurrentCatalogRecord||{},w=gvCurrentCatalogWcs||{};const liveRaDec=gvReadAladinRaDec(),liveFov=gvReadAladinFov();let liveRot='?',proj='?',frame='?';try{liveRot=aladin.getRotation?.()??aladin.view?.rotation??'?'}catch(_){}try{proj=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}gvDiagnosticStrip.replaceChildren();gvDiagnosticStrip.append(gvDiagCell('FIELD','#ffffff','800'),gvDiagCell('JSON / AVM CATALOG','#ffffff','800'),gvDiagCell('ALADIN LIVE','#ffffff','800'));gvDiagRow('Galaxy',gvText(r.name||r.archiveId),'status: '+gvCurrentStatus,'#7CCBFF');gvDiagRow('RA',gvFmt(r.ra,7),gvFmt(liveRaDec[0],7),'#ff9b9b');gvDiagRow('Dec',gvFmt(r.dec,7),gvFmt(liveRaDec[1],7),'#ff9b9b');gvDiagRow('Rotation',gvFmt(r.aladinRotation??r.spatialRotationDeg,3)+'°',gvFmt(liveRot,3)+'°','#62ff72');gvDiagRow('FoV X',gvFmt(r.fovXDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[0],7)+'°','#5ca9ff');gvDiagRow('FoV Y',gvFmt(r.fovYDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[1]??liveFov[0],7)+'°','#5ca9ff');gvDiagRow('Projection',gvText(r.projection||w.CTYPE1||'TAN'),gvText(proj),'#ffe45c');gvDiagRow('Frame',gvText(r.coordinateFrame||'ICRS'),gvText(frame),'#ffffff')}
+function gvPublishCatalogWcs(destination,record,wcs,status){gvCurrentCatalogRecord=record;gvCurrentCatalogWcs=wcs;gvPublishUnifiedDiagnostic(status||'catalog loaded')}
+function gvPublishDiagnostic(destination){gvCurrentCatalogRecord={name:destination?.name||destination?.archiveId||destination?.id||'?'};gvCurrentCatalogWcs=null;gvPublishUnifiedDiagnostic('loading catalog')}
+gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic(),250);
+
+`+s.slice(dEnd);
+  }
+  const lStart=s.indexOf('async function loadDirectHdOnArrival(destination){');
+  const lEnd=s.indexOf('\n\n\n// ============================================================================\n// SECTION 034',lStart);
+  if(lStart>=0&&lEnd>lStart){
+    s=s.slice(0,lStart)+`async function loadDirectHdOnArrival(destination){
+    const url=directHdUrl(destination);if(!url)return false;
+    directHdDestination=destination;
+    try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+    directHdOverlay=null;
+    try{
+        const record=await gvRuntimeAvmRecord(destination);
+        if(directHdDestination!==destination)return false;
+        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record);
+        const ra=Number(record.ra),dec=Number(record.dec);
+        const fovX=Number(record.fovXDegrees??record.fovDegrees);
+        const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+        gvPublishCatalogWcs(destination,record,displayWcs,'catalog loaded');
+        aladin.setProjection('TAN');aladin.gotoRaDec(ra,dec);aladin.setFoV(fovX);aladin.setRotation(rotation);coordinate.update(ra,dec);
+        const imageUrl=gvAladinImageUrl(url);
+        const layer=A.image(imageUrl,{name:DIRECT_HD_LAYER,imgFormat:'jpeg',wcs:displayWcs,opacity:directHdOpacity(),successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();gvPublishCatalogWcs(destination,record,displayWcs,'image loaded')},errorCallback:error=>{console.error('GV DIRECT HD URL-WCS LAYER LOAD FAILED',error);gvPublishCatalogWcs(destination,record,displayWcs,'image failed')}});
+        directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);gvPublishCatalogWcs(destination,record,displayWcs,'image loading');return true;
+    }catch(error){console.error('GV DIRECT HD URL-WCS PREP FAILED',error);gvCurrentStatus='catalog/image failed';gvPublishUnifiedDiagnostic(gvCurrentStatus);return false;}
+}
+`+s.slice(lEnd);
+  }
+  return s;
+}
 async function loadPointer(){
   const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json',REL_VIEWER_BASE+'gv-current-viewer.json']));
   const version=String(pointer.version||'').trim();versionEl.textContent=version?'VERSION '+version:'VERSION';
-  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build:'BUILD';
+  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0067':'BUILD RUNTIME 0067';
   try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}
   return pointer;
 }
@@ -95,7 +169,7 @@ async function prepareViewer(){
   const pointer=await loadPointer();
   const viewer=String(pointer.viewer||'').trim();
   if(!/^GV-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
-  const source=await textAny([RAW_VIEWER_BASE+viewer,REL_VIEWER_BASE+viewer]);
+  const source=patchViewerSource(await textAny([RAW_VIEWER_BASE+viewer,REL_VIEWER_BASE+viewer]));
   const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
   const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
   if(!htmlMatch||!jsMatches.length)throw new Error('ACTIVE VIEWER EXTRACTION FAILED: '+viewer);
@@ -106,18 +180,10 @@ async function initializeViewer(prepared){
   mountHtml(prepared.html);
   for(const source of prepared.scripts){const script=document.createElement('script');script.textContent=source;document.body.appendChild(script)}
   const deadline=performance.now()+VIEWER_TIMEOUT_MS;
-  while(performance.now()<deadline){
-    const root=document.getElementById('aladin-cosmic-command-test');
-    if(root?.querySelector('canvas'))return prepared.viewer;
-    await sleep(100);
-  }
+  while(performance.now()<deadline){const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas'))return prepared.viewer;await sleep(100)}
   throw new Error('ACTIVE VIEWER STARTUP TIMEOUT: '+prepared.viewer);
 }
-try{
-  const prepared=await prepareViewer();
-  await initializeViewer(prepared);
-  if(cover.isConnected)cover.remove();
-}catch(error){console.error(error);fail(error)}
+try{const prepared=await prepareViewer();await initializeViewer(prepared);if(cover.isConnected)cover.remove()}catch(error){console.error(error);fail(error)}
 })();
 </script>
 </body>
