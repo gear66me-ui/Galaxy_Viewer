@@ -81,7 +81,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0017';
+const GV200001_BUILD='0018';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -828,11 +828,38 @@ function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,a
     gvSettleAutoZoom(false);
     return new Promise(resolve=>{gvAutoZoom={target,start,direction,started:performance.now(),attackMs,landingMs,approachMs,linearLanding,onApproach,approachStarted:false,resolve};gvSetZoomCommand(direction*.035);if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep)});
 }
-function gvEnergizeZoomToTarget(targetFov,options={}){
-    const target=Number(targetFov),raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
-    if(!Number.isFinite(target)||target<=0||!Number.isFinite(current)||current<=0)return Promise.resolve(false);
-    if(Math.abs(target-current)<=Math.max(1e-7,target*.001)){aladin.setFov(target);gvSettleAutoZoom(true);gvSetZoomCommand(0);return Promise.resolve(true)}
-    return gvEnergizeZoomJoystick(current>target?1:-1,target,options);
+function gvTimedZoomToTarget(targetFov,{durationMs=null,attackMs=500,releaseMs=500}={}){
+    const target=Number(targetFov),raw=aladin.getFov?.(),start=Number(Array.isArray(raw)?raw[0]:raw);
+    if(!Number.isFinite(target)||target<=0||!Number.isFinite(start)||start<=0)return Promise.resolve(false);
+    gvSettleAutoZoom(false);
+    if(zoomFrame){cancelAnimationFrame(zoomFrame);zoomFrame=0}
+    const direction=target>start?-1:1,logDistance=Math.abs(Math.log(target/start));
+    const naturalMs=(logDistance/(.018*60))*1000+(attackMs+releaseMs)/2;
+    const totalMs=Math.max(attackMs+releaseMs+1,Number.isFinite(durationMs)?durationMs:naturalMs);
+    const cruiseMs=Math.max(0,totalMs-attackMs-releaseMs);
+    const totalArea=(attackMs/2)+cruiseMs+(releaseMs/2);
+    return new Promise(resolve=>{
+        const started=performance.now();
+        function frame(now){
+            const elapsed=Math.min(totalMs,now-started);
+            let level,area;
+            if(elapsed<attackMs){
+                level=elapsed/attackMs;area=elapsed*elapsed/(2*attackMs);
+            }else if(elapsed<attackMs+cruiseMs){
+                level=1;area=(attackMs/2)+(elapsed-attackMs);
+            }else{
+                const u=Math.min(releaseMs,elapsed-attackMs-cruiseMs);
+                level=Math.max(0,1-u/releaseMs);
+                area=(attackMs/2)+cruiseMs+u-u*u/(2*releaseMs);
+            }
+            const progress=totalArea>0?Math.max(0,Math.min(1,area/totalArea)):1;
+            gvSetZoomCommand(direction*level);
+            aladin.setFov(start*Math.exp(Math.log(target/start)*progress));
+            if(elapsed<totalMs)requestAnimationFrame(frame);
+            else{gvSetZoomCommand(0);resolve(true)}
+        }
+        requestAnimationFrame(frame);
+    });
 }
 function setZoomCommandFromY(clientY){
     const r=zoomControl.rail.getBoundingClientRect();
@@ -905,32 +932,20 @@ function gvInstallPreparedHd(prepared){
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return true;
 }
-function gvTravelTo(destination,durationMs=3000,{translate=true,rotate=true}={}){
-    const v=validateDestination(destination),startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec];
-    const ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);let rot0=0;try{rot0=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    const dra=((v.ra-ra0+540)%360)-180,drot=((v.rotation-rot0+540)%360)-180;
-    return new Promise(resolve=>{const started=performance.now();function frame(now){const t=Math.min(1,(now-started)/durationMs);if(translate)aladin.gotoRaDec((ra0+dra*t+360)%360,dec0+(v.dec-dec0)*t);if(rotate)aladin.setRotation(rot0+drot*t);if(t<1)requestAnimationFrame(frame);else resolve(v)}requestAnimationFrame(frame)});
-}
-function gvChoreographedTravel(destination,onArrivalZoom){
-    const v=validateDestination(destination),startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec];
-    const ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);let rot0=0;try{rot0=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    const dra=((v.ra-ra0+540)%360)-180,ddec=v.dec-dec0,drot=((v.rotation-rot0+540)%360)-180;
-    gvEnergizeZoomJoystick(-1,120,{attackMs:500,landingMs:500,approachMs:0,linearLanding:true});
+function gvTravelToImageCenter(prepared,durationMs=3000){
+    const center=prepared?.imageCenter,ra1=Number(center?.[0]),dec1=Number(center?.[1]),rot1=Number(prepared?.rotation);
+    if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(rot1))throw new Error('GV PREPARED IMAGE CENTER INVALID');
+    const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);
+    let rot0=0;try{rot0=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
+    const dra=((ra1-ra0+540)%360)-180,ddec=dec1-dec0,drot=((rot1-rot0+540)%360)-180;
     return new Promise(resolve=>{
-        const started=performance.now();let arrivalStarted=false;
+        const started=performance.now();
         function frame(now){
-            const elapsed=now-started;
-            if(elapsed>=2500){
-                const translationT=Math.min(1,(elapsed-2500)/3500);
-                aladin.gotoRaDec((ra0+dra*translationT+360)%360,dec0+ddec*translationT);
-            }
-            if(elapsed>=3000){
-                const rotationT=Math.min(1,(elapsed-3000)/2500);
-                aladin.setRotation(rot0+drot*rotationT);
-            }
-            if(!arrivalStarted&&elapsed>=5500){arrivalStarted=true;try{onArrivalZoom?.()}catch(error){console.error('GV ARRIVAL ZOOM START FAILED',error)}}
-            if(elapsed<6000)requestAnimationFrame(frame);
-            else{aladin.gotoRaDec(v.ra,v.dec);aladin.setRotation(v.rotation);resolve(v)}
+            const t=Math.min(1,(now-started)/durationMs);
+            aladin.gotoRaDec((ra0+dra*t+360)%360,dec0+ddec*t);
+            aladin.setRotation(rot0+drot*t);
+            if(t<1)requestAnimationFrame(frame);
+            else{aladin.gotoRaDec(ra1,dec1);aladin.setRotation(rot1);resolve(prepared)}
         }
         requestAnimationFrame(frame);
     });
@@ -969,20 +984,14 @@ function validateDestination(destination){
 // ECO: GV200-001
 // ============================================================================
 async function showDestination(destination,{firstTrip=false}={}){
-    const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination);
-    const finalFovPromise=recordPromise.then(record=>Math.max(Number(record.fovXDegrees??record.fovDegrees),Number(record.fovYDegrees??record.fovDegrees))*1.375);
-    const preparedPromise=gvPrepareDirectHd(v.destination,recordPromise);
+    const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
-    preparedPromise.then(prepared=>{if(activeDestination===v.destination)gvInstallPreparedHd(prepared)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
-    function beginArrivalZoom(){
-        if(activeDestination!==v.destination)return;
-        finalFovPromise.then(target=>{if(activeDestination===v.destination)gvEnergizeZoomToTarget(target,{attackMs:500,landingMs:0,approachMs:0,linearLanding:false})}).catch(error=>{console.error('GV FINAL FOV PREPARE FAILED',error);if(activeDestination===v.destination){gvSettleAutoZoom(false);gvSetZoomCommand(0)}});
-    }
-    if(firstTrip){
-        await gvTravelTo(v.destination,3000,{translate:true,rotate:true});
-        beginArrivalZoom();headsUpDisplay.render();return v.destination;
-    }
-    await gvChoreographedTravel(v.destination,beginArrivalZoom);
+    if(!firstTrip)await gvTimedZoomToTarget(120,{durationMs:3000,attackMs:500,releaseMs:500});
+    const prepared=await preparedPromise;
+    if(activeDestination!==v.destination)return v.destination;
+    await gvTravelToImageCenter(prepared,3000);
+    gvInstallPreparedHd(prepared);
+    await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:500});
     headsUpDisplay.render();return v.destination;
 }
 
