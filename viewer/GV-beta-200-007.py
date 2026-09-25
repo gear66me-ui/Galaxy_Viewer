@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0019';
+const GV200001_BUILD='0020';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -461,7 +461,7 @@ window.aladin_cosmic_command_test=aladin;
 await loadScript(fresh(config.hamburgerBaseUrl));
 await loadScript(fresh(config.hamburgerUrl));
 await Promise.all([
-    loadScript(fresh(config.coordinateUrl)),
+    loadScript(fresh(config.coordinateUrl)).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
     loadScript(fresh(config.targetUrl)),
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
@@ -475,7 +475,7 @@ await Promise.all([
 // ECO: GV200-001
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0007')throw new Error('HAMBURGER 0007 EXPORT MISSING');
-if(window.GalaxyCoordinateOverlay?.VERSION!=='0006')throw new Error('COORDINATE 0006 EXPORT MISSING');
+if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='0006')console.error('COORDINATE 0006 EXPORT INVALID');
 if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 0004 EXPORT MISSING');
 if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS 0019 EXPORT MISSING');
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
@@ -556,14 +556,20 @@ hamburger.menuButton.style.pointerEvents='auto';
 // SECTION 024 — COORDINATE OVERLAY 0006 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const coordinate=window.GalaxyCoordinateOverlay.mount(hosts.coordinate,{});
-await coordinate.ready;
-coordinate.setFrame('ICRSd');
-coordinate.update(HOME.ra,HOME.dec);
+let coordinate=null;
+try{
+    if(window.GalaxyCoordinateOverlay?.mount){
+        coordinate=window.GalaxyCoordinateOverlay.mount(hosts.coordinate,{});
+        coordinate.ready.then(()=>{
+            coordinate.setFrame('ICRSd');
+            coordinate.update(HOME.ra,HOME.dec);
+        }).catch(error=>console.error('COORDINATE OVERLAY READY FAILED',error));
+    }
+}catch(error){console.error('COORDINATE OVERLAY MOUNT FAILED',error)}
 function gvSyncCoordinateFromAladin(){
     try{
         const center=aladin.getRaDec?.();
-        if(Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
+        if(coordinate&&Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
     }catch(_){}
     requestAnimationFrame(gvSyncCoordinateFromAladin);
 }
@@ -956,7 +962,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const imageObjectUrl=URL.createObjectURL(raster.blob);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-    return {destination,record,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.375};
+    return {destination,record,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
@@ -1020,15 +1026,36 @@ function validateDestination(destination){
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
 // ============================================================================
+async function gvTravelToImageCenterFromRecord(destination,durationMs=3000){
+    const record=await gvRuntimeAvmRecord(destination);
+    const fovX=Number(record.fovXDegrees??record.fovDegrees),fovY=Number(record.fovYDegrees??record.fovDegrees);
+    const rawWidth=Number(record.referenceDimension?.width??record.width??record.naxis1);
+    const rawHeight=Number(record.referenceDimension?.height??record.height??record.naxis2);
+    const width=Number(record.pixelWidth??rawWidth),height=Number(record.pixelHeight??rawHeight);
+    const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,width,height);
+    const imageCenter=gvTanPixelToWorld(displayWcs,(width+1)/2,(height+1)/2);
+    return gvTravelToImageCenter({imageCenter,rotation:Number(record.aladinRotation??record.spatialRotationDeg),finalFov:Math.max(fovX,fovY)*1.0},durationMs);
+}
+
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
+    const preparedTask=preparedPromise.catch(error=>{console.error('GV DIRECT HD PREPARE FAILED',error);return null});
     if(!firstTrip)await gvTimedZoomToTarget(120,{durationMs:3000,attackMs:500,releaseMs:500});
-    const prepared=await preparedPromise;
-    if(activeDestination!==v.destination)return v.destination;
+    if(firstTrip){
+        const travel=gvTravelToImageCenterFromRecord(v.destination,3000);
+        const prepared=await preparedTask;
+        await travel;
+        if(!prepared||activeDestination!==v.destination)return v.destination;
+        gvInstallPreparedHd(prepared);
+        await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:1000});
+        headsUpDisplay.render();return v.destination;
+    }
+    const prepared=await preparedTask;
+    if(!prepared||activeDestination!==v.destination)return v.destination;
     await gvTravelToImageCenter(prepared,3000);
     gvInstallPreparedHd(prepared);
-    await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:500});
+    await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:1000});
     headsUpDisplay.render();return v.destination;
 }
 
