@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0061';
+const GV200001_BUILD='0062';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -883,19 +883,12 @@ async function loadDirectHdOnArrival(destination){
     const span=fov/0.80;
     const scale=span/Math.max(width,height);
     const displayWcs={NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,CDELT1:-scale,CDELT2:scale,NAXIS1:width,NAXIS2:height};
-    const decoder=A.image(markedUrl,{
-        name:DIRECT_HD_AVM_DECODER,
-        opacity:0,
-        successCallback:()=>{if(directHdDestination!==destination)return;gvPublishDecodedAvm(destination,decoder);try{aladin.removeImageLayer?.(DIRECT_HD_AVM_DECODER)}catch(_){}},
-        errorCallback:error=>console.error('GV AVM DECODE LOAD FAILED',error)
-    });
-    aladin.setOverlayImageLayer(decoder,DIRECT_HD_AVM_DECODER);
     const layer=A.image(markedUrl,{
         name:DIRECT_HD_LAYER,
         imgFormat:'jpeg',
         wcs:displayWcs,
         opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();setTimeout(()=>URL.revokeObjectURL(markedUrl),30000)},
+        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();gvPublishDecodedAvm(destination,layer);setTimeout(()=>URL.revokeObjectURL(markedUrl),30000)},
         errorCallback:error=>console.error('GV DIRECT HD ALADIN LAYER LOAD FAILED',error)
     });
     directHdOverlay=layer;
@@ -939,8 +932,8 @@ function showDestination(destination){
     const v=validateDestination(destination);
     activeDestination=v.destination;
     aladin.gotoRaDec(v.ra,v.dec);
+    aladin.setFoV(v.fov);
     aladin.setRotation(0);
-    loadDirectHdOnArrival(v.destination);
     coordinate.update(v.ra,v.dec);
     gvPublishDiagnostic(v.destination);
     loadDirectHdOnArrival(v.destination);
