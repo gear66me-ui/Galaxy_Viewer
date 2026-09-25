@@ -83,8 +83,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-002';
-const GV200001_BUILD='0007';
-const GV_RUNTIME='0075';
+const GV200001_BUILD='0008';
+const GV_RUNTIME='0076';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-002',
@@ -732,7 +732,7 @@ function gvColorLine(label,value,color){const row=document.createElement('div');
 function gvPanelTitle(text){const row=document.createElement('div');row.textContent=text;Object.assign(row.style,{color:'#7CCBFF',fontWeight:'700',letterSpacing:'.5px',marginBottom:'3px',textTransform:'uppercase'});return row}
 function gvSetDiagnostic(el,rows){el.replaceChildren(...rows)}
 function gvFmt(v,d=6){const n=Number(v);return Number.isFinite(n)?n.toFixed(d):'?'}
-function gvPublishCatalogWcs(destination,record,wcs){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(record?.name||destination?.name||record?.archiveId||'?'),'#7CCBFF'),gvColorLine('RA',gvFmt(record?.ra,8),'#ff8b8b'),gvColorLine('Dec',gvFmt(record?.dec,8),'#ff8b8b'),gvColorLine('Rotation',gvFmt(record?.aladinRotation??record?.spatialRotationDeg,4)+'°','#62ff72'),gvColorLine('Image FoV X',gvFmt(record?.fovXDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('Image FoV Y',gvFmt(record?.fovYDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('Viewport target','1.250 × image max FoV (intentional)','#ffe45c')])}
+function gvPublishCatalogWcs(destination,record,wcs){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(record?.name||destination?.name||record?.archiveId||'?'),'#7CCBFF'),gvColorLine('RA',gvFmt(record?.ra,8),'#ff8b8b'),gvColorLine('Dec',gvFmt(record?.dec,8),'#ff8b8b'),gvColorLine('Rotation',gvFmt(record?.aladinRotation??record?.spatialRotationDeg,4)+'°','#62ff72'),gvColorLine('Image FoV X',gvFmt(record?.fovXDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('Image FoV Y',gvFmt(record?.fovYDegrees??record?.fovDegrees,8)+'°','#5ca9ff'),gvColorLine('Viewport target','1.375 × image max FoV (intentional)','#ffe45c')])}
 function gvPublishDiagnostic(destination){gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Galaxy',String(destination?.name||destination?.archiveId||destination?.id||'?'),'#7CCBFF'),gvColorLine('Status','loading catalog record','#ffe45c')])}
 function gvReadAladinRaDec(){let v=null;try{v=aladin.getRaDec?.()}catch(_){}if(Array.isArray(v))return [v[0],v[1]];if(v&&typeof v==='object')return [v.ra??v.RA??v.lon??v.lng??v[0],v.dec??v.DE??v.lat??v[1]];for(const c of [aladin.view?.center,aladin.view?.viewCenter,aladin.view?.cooCenter,aladin.view?.radec]){if(Array.isArray(c))return [c[0],c[1]];if(c&&typeof c==='object')return [c.ra??c.RA??c.lon??c.lng??c.x,c.dec??c.DE??c.lat??c.y]}return []}
 function gvReadAladinFov(){let v=null;try{v=aladin.getFov?.()}catch(_){}if(Array.isArray(v))return v;if(Number.isFinite(Number(v)))return [v,v];try{const f=aladin.view?.fov;if(Array.isArray(f))return f;if(Number.isFinite(Number(f)))return [f,f]}catch(_){}return []}
@@ -893,7 +893,7 @@ async function loadDirectHdOnArrival(destination){
         const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
         aladin.setProjection('TAN');
         aladin.gotoRaDec(ra,dec);
-        aladin.setFoV(Math.max(fovX,fovY)*1.25);
+        aladin.setFoV(Math.max(fovX,fovY)*1.375);
         aladin.setRotation(rotation);
         coordinate.update(ra,dec);
         const layer=A.image(imageObjectUrl,{
