@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>GALAXY VIEWER</title>
 <style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #gv-generic-cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}
 #gv-loading-mark{position:relative;display:flex;align-items:center;justify-content:center;width:min(52vw,280px);height:min(52vw,280px);--gv-orbit-radius:min(24vw,122px)}
@@ -24,12 +23,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-loading-comet i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
 #gv-loading-comet i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
 @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:"Space Age",sans-serif;text-align:center;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;white-space:nowrap}
+#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:Arial,sans-serif;text-align:center;text-shadow:0 0 12px #058cff;white-space:nowrap}
 #gv-generic-version{min-height:20px;font-size:16px;line-height:20px;letter-spacing:1.2px}
 #gv-generic-build{min-height:16px;margin-top:-14px;font-size:11px;line-height:16px;letter-spacing:1px}
-#gv-generic-splash{position:fixed;inset:0;z-index:2147483646;width:100%;height:100%;border:0;background:#000;visibility:hidden}
 #gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
-@media (prefers-reduced-motion:reduce){#gv-loading-comet{animation-duration:5.6s}}
 </style>
 </head>
 <body>
@@ -41,93 +38,41 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   <div id="gv-generic-version">VERSION</div>
   <div id="gv-generic-build">BUILD</div>
 </div>
-<iframe id="gv-generic-splash" title="GALAXY VIEWER SPLASH"></iframe>
 <div id="gv-generic-error" role="alert"></div>
 <script>
 (async()=>{
 'use strict';
-const POINTER_URL='../../viewer/gv-current-viewer.json';
-const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-ACTIVE-POINTER-002';
-const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
-const ICON_HOLD_MS=750;
-const POST_SPLASH_HOLD_MS=1000;
+const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RAW-BETA-004';
+const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+const REL_VIEWER_BASE='../../viewer/';
 const VIEWER_TIMEOUT_MS=30000;
 const cover=document.getElementById('gv-generic-cover');
 const versionEl=document.getElementById('gv-generic-version');
 const buildEl=document.getElementById('gv-generic-build');
-const splash=document.getElementById('gv-generic-splash');
 const errorBox=document.getElementById('gv-generic-error');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-const coverPainted=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
 const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
-const loadPointer=async()=>{
-  const pointer=JSON.parse(await text(POINTER_URL));
-  const version=String(pointer.version||'').trim();
-  versionEl.textContent=version?'VERSION '+version:'VERSION';
-  const build=String(pointer.build||'').trim();
-  buildEl.textContent=build?'BUILD '+build:'BUILD';
-  try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION;}catch(_){ }
-  return pointer;
-};
+const textAny=async urls=>{let last=null;for(const url of urls){try{return await text(url)}catch(error){last=error;console.warn('GV GENERIC FETCH FALLBACK',url,error)}}throw last||new Error('GV GENERIC FETCH FAILED')};
 function installCatalogImagePolicy(){
   const nativeFetch=window.fetch.bind(window);
   const hubbleCatalogPattern=/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i;
-
   window.fetch=(input,init)=>{
     const raw=typeof input==='string'?input:String(input?.url||'');
-
-    // ALADIN / HiPS / DSS / all non-catalog traffic:
-    // return the browser's native fetch Promise directly.
-    // No await, cloning, JSON inspection, or response reconstruction.
-    if(!hubbleCatalogPattern.test(raw)){
-      return nativeFetch(input,init);
-    }
-
-    // Only the Hubble catalog JSON is intercepted.
+    if(!hubbleCatalogPattern.test(raw))return nativeFetch(input,init);
     return (async()=>{
-      const response=await nativeFetch(input,init);
-      if(!response.ok)return response;
-
+      const response=await nativeFetch(input,init);if(!response.ok)return response;
       const payload=await response.clone().json();
-
       if(Array.isArray(payload?.entries)){
         payload.entries=payload.entries.map(entry=>{
           if(!entry||typeof entry!=='object')return entry;
-
-          const candidates=Array.isArray(entry.jpegCandidates)
-            ?entry.jpegCandidates
-              .map(value=>String(value||'').trim())
-              .filter(Boolean)
-            :[];
-
-          const screen=candidates.find(
-            url=>/\/archives\/images\/screen\//i.test(url)
-          );
-
-          if(!screen)return entry;
-
-          return {
-            ...entry,
-            selectedImageUrl:screen,
-            githubImageUrl:''
-          };
+          const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];
+          const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));
+          return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry;
         });
       }
-
-      const headers=new Headers(response.headers);
-      headers.delete('content-length');
-      headers.delete('content-encoding');
-      headers.set('content-type','application/json; charset=utf-8');
-
-      return new Response(
-        JSON.stringify(payload),
-        {
-          status:response.status,
-          statusText:response.statusText,
-          headers
-        }
-      );
+      const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');
+      return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers});
     })();
   };
 }
@@ -135,17 +80,22 @@ function mountHtml(html){
   const template=document.createElement('template');template.innerHTML=html;
   for(const node of [...template.content.childNodes]){
     if(node.nodeName==='SCRIPT'){
-      const script=document.createElement('script');
-      for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);
-      script.textContent=node.textContent;document.body.appendChild(script);
+      const script=document.createElement('script');for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);script.textContent=node.textContent;document.body.appendChild(script);
     }else document.body.appendChild(node);
   }
+}
+async function loadPointer(){
+  const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json',REL_VIEWER_BASE+'gv-current-viewer.json']));
+  const version=String(pointer.version||'').trim();versionEl.textContent=version?'VERSION '+version:'VERSION';
+  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build:'BUILD';
+  try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}
+  return pointer;
 }
 async function prepareViewer(){
   const pointer=await loadPointer();
   const viewer=String(pointer.viewer||'').trim();
   if(!/^GV-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
-  const source=await text('../../viewer/'+viewer);
+  const source=await textAny([RAW_VIEWER_BASE+viewer,REL_VIEWER_BASE+viewer]);
   const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
   const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
   if(!htmlMatch||!jsMatches.length)throw new Error('ACTIVE VIEWER EXTRACTION FAILED: '+viewer);
@@ -163,76 +113,9 @@ async function initializeViewer(prepared){
   }
   throw new Error('ACTIVE VIEWER STARTUP TIMEOUT: '+prepared.viewer);
 }
-function collectSplashAssetUrls(html){
-  const base=new URL(SPLASH_URL,location.href);
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  const urls=new Set();
-  for(const node of doc.querySelectorAll('[src]')){
-    const raw=node.getAttribute('src');
-    if(raw&&!raw.startsWith('data:')&&!raw.startsWith('blob:'))urls.add(new URL(raw,base).href);
-  }
-  for(const node of doc.querySelectorAll('link[href]')){
-    const raw=node.getAttribute('href');
-    if(raw&&!raw.startsWith('data:')&&!raw.startsWith('blob:'))urls.add(new URL(raw,base).href);
-  }
-  for(const match of html.matchAll(/url\((['\"]?)(.*?)\1\)/gi)){
-    const raw=String(match[2]||'').trim();
-    if(raw&&!raw.startsWith('data:')&&!raw.startsWith('blob:'))urls.add(new URL(raw,base).href);
-  }
-  return [...urls];
-}
-async function preloadSplash(){
-  const response=await fetch(SPLASH_URL,{cache:'reload'});
-  if(!response.ok)throw new Error('HTTP '+response.status+' '+SPLASH_URL);
-  const html=await response.text();
-  const assets=collectSplashAssetUrls(html);
-  await Promise.all(assets.map(async url=>{
-    const asset=await fetch(url,{cache:'reload'});
-    if(!asset.ok)throw new Error('HTTP '+asset.status+' '+url);
-    await asset.arrayBuffer();
-  }));
-  const baseHref=new URL('./',new URL(SPLASH_URL,location.href)).href;
-  const baseTag='<base href="'+baseHref+'">';
-  return /<head(?:\s[^>]*)?>/i.test(html)
-    ?html.replace(/<head(\s[^>]*)?>/i,match=>match+baseTag)
-    :baseTag+html;
-}
-async function runSplash(preloadedHtml){
-  const splashCompletion=new Promise((resolve,reject)=>{
-    let settled=false;
-    const done=()=>{if(settled)return;settled=true;resolve()};
-    const timer=setTimeout(()=>{if(settled)return;console.warn('SPLASH COMPLETION TIMEOUT — CONTINUING TO VIEWER');done()},30000);
-    splash.addEventListener('load',()=>{
-      try{
-        const w=splash.contentWindow;if(!w)throw new Error('SPLASH WINDOW UNAVAILABLE');
-        w.addEventListener('galaxy-splash-complete',()=>{clearTimeout(timer);done()},{once:true});
-      }catch(error){clearTimeout(timer);reject(error)}
-    },{once:true});
-    splash.addEventListener('error',()=>{clearTimeout(timer);reject(new Error('SPLASH FAILED TO LOAD'))},{once:true});
-  });
-  splash.style.visibility='visible';
-  cover.style.display='none';
-  splash.srcdoc=preloadedHtml;
-  await splashCompletion;
-}
 try{
-  await coverPainted();
-  const minimumHold=sleep(ICON_HOLD_MS);
-  const splashReadyPromise=preloadSplash();
-  const preparedViewerPromise=prepareViewer();
-  const [preloadedSplash,preparedViewer]=await Promise.all([
-    Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html),
-    preparedViewerPromise
-  ]);
-  await runSplash(preloadedSplash);
-  const loadingIcon=cover.querySelector('#gv-loading-mark>img');
-  if(loadingIcon)loadingIcon.style.display='none';
-  versionEl.style.display='none';
-  buildEl.style.display='none';
-  cover.style.display='flex';
-  const viewerReadyPromise=initializeViewer(preparedViewer);
-  await viewerReadyPromise;
-  if(splash.isConnected)splash.remove();
+  const prepared=await prepareViewer();
+  await initializeViewer(prepared);
   if(cover.isConnected)cover.remove();
 }catch(error){console.error(error);fail(error)}
 })();
