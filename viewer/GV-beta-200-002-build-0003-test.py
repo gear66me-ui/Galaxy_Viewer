@@ -493,16 +493,13 @@ const galaxyNavigator=window.GalaxyNavigator.mount(earlyNavigationHost,{
 galaxyNavigator.setEnabled({back:false,random:false,forward:false});
 galaxyNavigator.setBusy(true);
 
-// Two-second compact build readout directly above Random Galaxy.
-const gvRandomButton=document.getElementById('gv-random-galaxy');
-if(gvRandomButton){
-    const gvVersionReadout=document.createElement('div');
-    gvVersionReadout.id='gv-version-readout';
-    gvVersionReadout.textContent='200-002   0003   '+GV_RUNTIME;
-    Object.assign(gvVersionReadout.style,{font:'9px/1.2 monospace',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0 0 3px',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
-    gvRandomButton.parentElement?.insertBefore(gvVersionReadout,gvRandomButton);
-    setTimeout(()=>gvVersionReadout.remove(),2000);
-}
+// Compact build readout above the entire navigator; startup hold begins only after it is visible.
+const gvVersionReadout=document.createElement('div');
+gvVersionReadout.id='gv-version-readout';
+gvVersionReadout.textContent='200-002   BLD 0003   RT '+GV_RUNTIME;
+Object.assign(gvVersionReadout.style,{display:'block',width:'100%',font:'9px/1.2 monospace',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0 0 3px',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
+earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
+requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>{gvVersionReadout.style.visibility='visible'},2000)));
 
 
 // ============================================================================
