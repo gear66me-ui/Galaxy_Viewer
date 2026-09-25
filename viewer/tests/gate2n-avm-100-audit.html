@@ -18,7 +18,7 @@ table{border-collapse:collapse;width:100%;font:10px monospace;margin-top:10px}th
 <th>JPEG W</th><th>JPEG H</th><th>JSON FoV X</th><th>JSON FoV Y</th><th>JSON RefPix</th><th>JSON RefDim</th><th>JSON Scale</th><th>JSON CD</th>
 </tr></thead><tbody id="body"></tbody></table></div></div>
 <script>
-const CAT="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json";
+const CAT="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json";\nconst IMAGE_PROXY="https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=";
 let results=[];
 const num=v=>{v=Number(v);return Number.isFinite(v)?v:null};
 function text(buf){return new TextDecoder("latin1").decode(new Uint8Array(buf))}
@@ -59,7 +59,10 @@ function addRow(r){
  vals.forEach(v=>{const td=document.createElement("td");td.textContent=cell(v);tr.appendChild(td)});document.getElementById("body").appendChild(tr)
 }
 async function one(rec,i){
- const resp=await fetch(rec.imageUrl,{mode:"cors",credentials:"omit",cache:"no-store"});if(!resp.ok)throw Error("HTTP "+resp.status);
+ let resp=null,last="";
+ const attempts=[rec.imageUrl,IMAGE_PROXY+encodeURIComponent(rec.imageUrl)+"&consumer=gate2n"];
+ for(const url of attempts){try{const q=await fetch(url,{mode:"cors",credentials:"omit",cache:"no-store"});if(q.ok){resp=q;break}last="HTTP "+q.status}catch(e){last=String(e)}}
+ if(!resp)throw Error("DIRECT+PROXY FETCH FAIL: "+last);
  const blob=await resp.blob(), [w,h]=await dimensions(blob); let avm={};try{avm=rawAVM(await blob.arrayBuffer())}catch(e){}
  const rv=(avm.referenceValue||[]).map(num), rp=(avm.referencePixel||[]).map(num), rd=(avm.referenceDimension||[]).map(num), sc=(avm.scale||[]).map(num);
  const ar=num((avm.rotation||[])[0]), jr=num(rec.aladinRotation??rec.spatialRotationDeg);
