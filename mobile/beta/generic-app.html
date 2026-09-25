@@ -42,7 +42,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
 'use strict';
-const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0067';
+const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0068';
 const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
 const REL_VIEWER_BASE='../../viewer/';
 const VIEWER_TIMEOUT_MS=30000;
@@ -85,7 +85,7 @@ function mountHtml(html){
   }
 }
 function patchViewerSource(source){
-  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0067';");
+  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0068';");
   const wcsStart=s.indexOf('function gvSyntheticWcsFromRuntimeRecord(record,width,height){');
   const diagStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');",wcsStart);
   if(wcsStart>=0&&diagStart>wcsStart){
@@ -109,7 +109,7 @@ function gvSyntheticWcsFromRuntimeRecord(record){
     const theta=rotation*Math.PI/180,c=Math.cos(theta),sn=Math.sin(theta);
     return Object.freeze({NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,NAXIS1:width,NAXIS2:height,CDELT1:cdelt1,CDELT2:cdelt2,CROTA2:rotation,ROTATION:rotation,CD1_1:cdelt1*c,CD1_2:-cdelt2*sn,CD2_1:cdelt1*sn,CD2_2:cdelt2*c});
 }
-function gvAladinImageUrl(url){return CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv-aladin-url-0067'}
+function gvAladinImageUrl(url){return url}
 `+s.slice(diagStart);
   }
   const dStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');");
@@ -125,7 +125,7 @@ function gvDiagCell(text,color,weight='500'){const cell=document.createElement('
 function gvDiagRow(field,catalog,live,color){gvDiagnosticStrip.append(gvDiagCell(field,'#7CCBFF','700'),gvDiagCell(catalog,color||'#fff','600'),gvDiagCell(live,color||'#fff','600'))}
 function gvReadAladinRaDec(){let v=null;try{v=aladin.getRaDec?.()}catch(_){}if(Array.isArray(v))return [v[0],v[1]];if(v&&typeof v==='object')return [v.ra??v.RA??v.lon??v.lng??v[0],v.dec??v.DE??v.lat??v[1]];for(const c of [aladin.view?.center,aladin.view?.viewCenter,aladin.view?.cooCenter,aladin.view?.radec]){if(Array.isArray(c))return [c[0],c[1]];if(c&&typeof c==='object')return [c.ra??c.RA??c.lon??c.lng??c.x,c.dec??c.DE??c.lat??c.y]}return []}
 function gvReadAladinFov(){let v=null;try{v=aladin.getFov?.()}catch(_){}if(Array.isArray(v))return v;if(Number.isFinite(Number(v)))return [v,v];try{const f=aladin.view?.fov;if(Array.isArray(f))return f;if(Number.isFinite(Number(f)))return [f,f]}catch(_){}return []}
-function gvPublishUnifiedDiagnostic(status){gvCurrentStatus=status||gvCurrentStatus||'waiting';const r=gvCurrentCatalogRecord||{},w=gvCurrentCatalogWcs||{};const liveRaDec=gvReadAladinRaDec(),liveFov=gvReadAladinFov();let liveRot='?',proj='?',frame='?';try{liveRot=aladin.getRotation?.()??aladin.view?.rotation??'?'}catch(_){}try{proj=aladin.getProjectionName?.()??aladin.getProjection?.()?.name??aladin.view?.projection?.name??'?'}catch(_){}try{frame=aladin.getFrame?.()??aladin.view?.cooFrame??'?'}catch(_){}gvDiagnosticStrip.replaceChildren();gvDiagnosticStrip.append(gvDiagCell('FIELD','#ffffff','800'),gvDiagCell('JSON / AVM CATALOG','#ffffff','800'),gvDiagCell('ALADIN LIVE','#ffffff','800'));gvDiagRow('Galaxy',gvText(r.name||r.archiveId),'status: '+gvCurrentStatus,'#7CCBFF');gvDiagRow('RA',gvFmt(r.ra,7),gvFmt(liveRaDec[0],7),'#ff9b9b');gvDiagRow('Dec',gvFmt(r.dec,7),gvFmt(liveRaDec[1],7),'#ff9b9b');gvDiagRow('Rotation',gvFmt(r.aladinRotation??r.spatialRotationDeg,3)+'°',gvFmt(liveRot,3)+'°','#62ff72');gvDiagRow('FoV X',gvFmt(r.fovXDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[0],7)+'°','#5ca9ff');gvDiagRow('FoV Y',gvFmt(r.fovYDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[1]??liveFov[0],7)+'°','#5ca9ff');gvDiagRow('Projection',gvText(r.projection||w.CTYPE1||'TAN'),gvText(proj),'#ffe45c');gvDiagRow('Frame',gvText(r.coordinateFrame||'ICRS'),gvText(frame),'#ffffff')}
+function gvPublishUnifiedDiagnostic(status){gvCurrentStatus=status||gvCurrentStatus||'waiting';const r=gvCurrentCatalogRecord||{};const liveRaDec=gvReadAladinRaDec(),liveFov=gvReadAladinFov();let liveRot='?';try{liveRot=aladin.getRotation?.()??aladin.view?.rotation??'?'}catch(_){}gvDiagnosticStrip.replaceChildren();gvDiagnosticStrip.append(gvDiagCell('FIELD','#ffffff','800'),gvDiagCell('JSON / AVM CATALOG','#ffffff','800'),gvDiagCell('ALADIN LIVE','#ffffff','800'));gvDiagRow('Galaxy',gvText(r.name||r.archiveId),'status: '+gvCurrentStatus,'#7CCBFF');gvDiagRow('RA',gvFmt(r.ra,7),gvFmt(liveRaDec[0],7),'#ff9b9b');gvDiagRow('Dec',gvFmt(r.dec,7),gvFmt(liveRaDec[1],7),'#ff9b9b');gvDiagRow('Rotation',gvFmt(r.aladinRotation??r.spatialRotationDeg,3)+'°',gvFmt(liveRot,3)+'°','#62ff72');gvDiagRow('FoV X',gvFmt(r.fovXDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[0],7)+'°','#5ca9ff');gvDiagRow('FoV Y',gvFmt(r.fovYDegrees??r.fovDegrees,7)+'°',gvFmt(liveFov[1]??liveFov[0],7)+'°','#5ca9ff')}
 function gvPublishCatalogWcs(destination,record,wcs,status){gvCurrentCatalogRecord=record;gvCurrentCatalogWcs=wcs;gvPublishUnifiedDiagnostic(status||'catalog loaded')}
 function gvPublishDiagnostic(destination){gvCurrentCatalogRecord={name:destination?.name||destination?.archiveId||destination?.id||'?'};gvCurrentCatalogWcs=null;gvPublishUnifiedDiagnostic('loading catalog')}
 gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic(),250);
@@ -161,7 +161,7 @@ gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic
 async function loadPointer(){
   const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json',REL_VIEWER_BASE+'gv-current-viewer.json']));
   const version=String(pointer.version||'').trim();versionEl.textContent=version?'VERSION '+version:'VERSION';
-  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0067':'BUILD RUNTIME 0067';
+  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0068':'BUILD RUNTIME 0068';
   try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}
   return pointer;
 }
