@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0064';
+const GV200001_BUILD='0065';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -871,7 +871,7 @@ async function loadDirectHdOnArrival(destination){
         const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
         aladin.setProjection('TAN');
         aladin.gotoRaDec(ra,dec);
-        aladin.setFoV(fovX/0.80);
+        aladin.setFoV(fovX);
         aladin.setRotation(rotation);
         coordinate.update(ra,dec);
         const layer=A.image(imageObjectUrl,{
@@ -899,7 +899,8 @@ async function loadDirectHdOnArrival(destination){
 }
 
 
-// ============================================================================// SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
+// ============================================================================
+// SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
 // ECO: GV200-001
 // ============================================================================
 const activeRoute=navigationRuntime.active?.route;
