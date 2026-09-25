@@ -843,12 +843,14 @@ function zoomStep(){
         if(Number.isFinite(current)&&current>0){
             if(gvAutoZoom){
                 const a=gvAutoZoom;
-                const span=Math.max(1e-9,Math.abs(a.target-a.start));
                 const remaining=Math.abs(a.target-current);
-                const edge=Math.min(1,remaining/(span*0.18));
                 const elapsed=performance.now()-a.started;
                 const attack=Math.min(1,elapsed/550);
-                const eased=Math.max(0.08,Math.min(1,attack,edge));
+                const logDistance=Math.abs(Math.log(current/a.target));
+                const fullSpeedEtaMs=(logDistance/0.018)*(1000/60);
+                if(a.decelStarted===null&&fullSpeedEtaMs<=750)a.decelStarted=performance.now();
+                const landing=a.decelStarted===null?1:Math.max(0.08,1-(performance.now()-a.decelStarted)/750);
+                const eased=Math.max(0.08,Math.min(1,attack,landing));
                 gvSetZoomCommand(a.direction*eased);
                 if((a.direction<0&&current>=a.target)||(a.direction>0&&current<=a.target)||remaining<=Math.max(1e-7,a.target*0.001)){
                     aladin.setFov(a.target);
@@ -872,7 +874,7 @@ function gvEnergizeZoomJoystick(command,targetFov){
     const start=Number(Array.isArray(raw)?raw[0]:raw);
     if(!Number.isFinite(start)||start<=0)return Promise.resolve(false);
     return new Promise(resolve=>{
-        gvAutoZoom={target,start,direction,started:performance.now(),resolve};
+        gvAutoZoom={target,start,direction,started:performance.now(),decelStarted:null,resolve};
         gvSetZoomCommand(direction*0.08);
         if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
     });
