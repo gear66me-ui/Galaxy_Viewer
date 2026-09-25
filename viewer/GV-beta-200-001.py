@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-001';
-const GV200001_BUILD='0062';
+const GV200001_BUILD='0063';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-001',
@@ -880,7 +880,7 @@ async function loadDirectHdOnArrival(destination){
     const width=probe.width,height=probe.height;try{probe.close?.()}catch(_){}
     const ra=Number(destination.ra),dec=Number(destination.dec),fov=Number(destination.fovDegrees);
     if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fov)||fov<=0)throw new Error('GV DIRECT HD SYNTHETIC WCS INPUT INVALID');
-    const span=fov/0.80;
+    const span=fov;
     const scale=span/Math.max(width,height);
     const displayWcs={NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,CDELT1:-scale,CDELT2:scale,NAXIS1:width,NAXIS2:height};
     const layer=A.image(markedUrl,{
@@ -931,8 +931,9 @@ function validateDestination(destination){
 function showDestination(destination){
     const v=validateDestination(destination);
     activeDestination=v.destination;
+    aladin.setProjection('TAN');
     aladin.gotoRaDec(v.ra,v.dec);
-    aladin.setFoV(v.fov);
+    aladin.setFoV(v.fov/0.80);
     aladin.setRotation(0);
     coordinate.update(v.ra,v.dec);
     gvPublishDiagnostic(v.destination);
