@@ -83,8 +83,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0013';
-const GV_RUNTIME='0081';
+const GV200001_BUILD='0014';
+const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-007',
@@ -829,9 +829,11 @@ const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 let zoomCommand=0;
 let zoomFrame=0;
-let gvAutoZoomTarget=null;
-let gvAutoZoomResolve=null;
-let gvAutoZoomDestination=null;
+let gvAutoZoom=null;
+function gvSetZoomCommand(command){
+    zoomCommand=Math.max(-1,Math.min(1,Number(command)||0));
+    zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
+}
 function zoomStep(){
     zoomFrame=0;
     if(!zoomCommand)return;
@@ -839,41 +841,52 @@ function zoomStep(){
         const raw=aladin.getFov?.();
         const current=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(current)&&current>0){
-            if(gvAutoZoomTarget!==null&&directHdDestination===gvAutoZoomDestination&&((zoomCommand<0&&current>=gvAutoZoomTarget)||(zoomCommand>0&&current<=gvAutoZoomTarget))){
-                aladin.setFov(gvAutoZoomTarget);
-                const done=gvAutoZoomResolve;
-                gvAutoZoomTarget=null;gvAutoZoomResolve=null;gvAutoZoomDestination=null;
-                releaseZoom();
-                done?.(true);
-                return;
+            if(gvAutoZoom){
+                const a=gvAutoZoom;
+                const span=Math.max(1e-9,Math.abs(a.target-a.start));
+                const remaining=Math.abs(a.target-current);
+                const edge=Math.min(1,remaining/(span*0.18));
+                const elapsed=performance.now()-a.started;
+                const attack=Math.min(1,elapsed/550);
+                const eased=Math.max(0.08,Math.min(1,attack,edge));
+                gvSetZoomCommand(a.direction*eased);
+                if((a.direction<0&&current>=a.target)||(a.direction>0&&current<=a.target)||remaining<=Math.max(1e-7,a.target*0.001)){
+                    aladin.setFov(a.target);
+                    const done=a.resolve;
+                    gvAutoZoom=null;
+                    gvSetZoomCommand(0);
+                    done(true);
+                    return;
+                }
             }
-            const next=Math.max(0.0001,Math.min(180,current*Math.exp(-zoomCommand*0.018)));
+            const next=Math.max(0.0001,Math.min(360,current*Math.exp(-zoomCommand*0.018)));
             aladin.setFov(next);
         }
     }catch(_){}
     zoomFrame=requestAnimationFrame(zoomStep);
 }
-function gvEnergizeZoomJoystick(command,targetFov,destination){
-    const target=Number(targetFov);
-    if(!Number.isFinite(target)||target<=0)return Promise.resolve(false);
+function gvEnergizeZoomJoystick(command,targetFov){
+    const target=Number(targetFov),direction=Math.sign(Number(command));
+    if(!Number.isFinite(target)||target<=0||!direction)return Promise.resolve(false);
+    const raw=aladin.getFov?.();
+    const start=Number(Array.isArray(raw)?raw[0]:raw);
+    if(!Number.isFinite(start)||start<=0)return Promise.resolve(false);
     return new Promise(resolve=>{
-        gvAutoZoomTarget=target;
-        gvAutoZoomResolve=resolve;
-        gvAutoZoomDestination=destination;
-        zoomCommand=Math.max(-1,Math.min(1,Number(command)));
-        zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
+        gvAutoZoom={target,start,direction,started:performance.now(),resolve};
+        gvSetZoomCommand(direction*0.08);
         if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
     });
 }
 function setZoomCommandFromY(clientY){
     const r=zoomControl.rail.getBoundingClientRect();
     if(!r.height)return;
-    zoomCommand=Math.max(-1,Math.min(1,((clientY-(r.top+r.height/2))/(r.height/2))));
-    zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
+    gvAutoZoom=null;
+    gvSetZoomCommand(((clientY-(r.top+r.height/2))/(r.height/2)));
     if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
 }
 function releaseZoom(){
-    zoomCommand=0;
+    gvAutoZoom=null;
+    gvSetZoomCommand(0);
     if(zoomFrame){cancelAnimationFrame(zoomFrame);zoomFrame=0}
     zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+zoomControl.rail.offsetHeight/2}px`;
 }
@@ -912,54 +925,59 @@ async function gvLoadGate2MImage(url){
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
 }
-async function loadDirectHdOnArrival(destination){
+async function gvPrepareDirectHd(destination){
+    const record=await gvRuntimeAvmRecord(destination);
+    const url=String(record.imageUrl||'').trim();
+    if(!url)throw new Error('GV JSON IMAGE URL MISSING');
+    const fovX=Number(record.fovXDegrees??record.fovDegrees);
+    const fovY=Number(record.fovYDegrees??record.fovDegrees);
+    const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+    const raster=await gvLoadGate2MImage(url);
+    const imageObjectUrl=URL.createObjectURL(raster.blob);
+    const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
+    const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
+    return {destination,record,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.375};
+}
+function gvInstallPreparedHd(prepared){
+    const {destination,record,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov}=prepared;
     directHdDestination=destination;
+    const layer=A.image(imageObjectUrl,{
+        name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
+        successCallback:()=>{
+            if(directHdDestination!==destination)return;
+            directHdOverlay=layer;
+            applyDirectHdOpacity();
+            gvPublishCatalogWcs(destination,record,displayWcs);
+            requestAnimationFrame(()=>requestAnimationFrame(()=>gvEnergizeZoomJoystick(1,finalFov)));
+            setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000);
+        },
+        errorCallback:error=>{console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error);gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Image load','FAILED: '+String(error),'#ff6666')])}
+    });
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    directHdOverlay=null;
-    let imageObjectUrl='';
-    try{
-        const record=await gvRuntimeAvmRecord(destination);
-        const url=String(record.imageUrl||'').trim();
-        if(!url)throw new Error('GV JSON IMAGE URL MISSING');
-        const ra=Number(record.ra),dec=Number(record.dec);
-        const fovX=Number(record.fovXDegrees??record.fovDegrees);
-        const fovY=Number(record.fovYDegrees??record.fovDegrees);
-        const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
-        const previewWcs={CRVAL1:ra,CRVAL2:dec,NAXIS1:'?',NAXIS2:'?',CRPIX1:'?',CRPIX2:'?',CDELT1:'?',CDELT2:'?'};
-        gvPublishCatalogWcs(destination,record,previewWcs);
-        const raster=await gvLoadGate2MImage(url);
-        if(directHdDestination!==destination)return false;
-        imageObjectUrl=URL.createObjectURL(raster.blob);
-        const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
-        const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-        const finalFov=Math.max(fovX,fovY)*1.375;
-        aladin.setProjection('TAN');
-        aladin.setFov(120);
-        aladin.gotoRaDec(imageCenter[0],imageCenter[1]);
-        aladin.setRotation(rotation);
-        const layer=A.image(imageObjectUrl,{
-            name:DIRECT_HD_LAYER,
-            imgFormat:'png',
-            wcs:displayWcs,
-            opacity:directHdOpacity(),
-            successCallback:()=>{
-                if(directHdDestination!==destination)return;
-                directHdOverlay=layer;
-                applyDirectHdOpacity();
-                gvPublishCatalogWcs(destination,record,displayWcs);
-                requestAnimationFrame(()=>requestAnimationFrame(()=>gvEnergizeZoomJoystick(1,finalFov,destination)));
-                setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000);
-            },
-            errorCallback:error=>{console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error);gvSetDiagnostic(gvAvmDiagnostic,[gvPanelTitle('JSON CATALOG'),gvColorLine('Image load','FAILED: '+String(error),'#ff6666')])}
-        });
-        directHdOverlay=layer;
-        aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
-        return true;
-    }catch(error){
-        console.error('GV DIRECT HD JSON-WCS PREP FAILED',error);
-        if(imageObjectUrl)try{URL.revokeObjectURL(imageObjectUrl)}catch(_){}
-        return false;
-    }
+    directHdOverlay=layer;
+    aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+    aladin.gotoRaDec(imageCenter[0],imageCenter[1]);
+    aladin.setRotation(rotation);
+    return true;
+}
+function gvTravelTo(destination,durationMs=3000){
+    const v=validateDestination(destination);
+    const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec];
+    const ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);
+    let rot0=0;try{rot0=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
+    const dra=((v.ra-ra0+540)%360)-180;
+    const drot=((v.rotation-rot0+540)%360)-180;
+    return new Promise(resolve=>{
+        const started=performance.now();
+        function frame(now){
+            const t=Math.min(1,(now-started)/durationMs);
+            const e=t*t*(3-2*t);
+            aladin.gotoRaDec((ra0+dra*e+360)%360,dec0+(v.dec-dec0)*e);
+            aladin.setRotation(rot0+drot*e);
+            if(t<1)requestAnimationFrame(frame);else resolve(v);
+        }
+        requestAnimationFrame(frame);
+    });
 }
 
 
@@ -994,17 +1012,15 @@ function validateDestination(destination){
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
 // ============================================================================
-async function showDestination(destination){
+async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination);
+    const preparedPromise=gvPrepareDirectHd(v.destination);
+    if(!firstTrip)await gvEnergizeZoomJoystick(-1,120);
+    await gvTravelTo(v.destination,3000);
+    const prepared=await preparedPromise;
     activeDestination=v.destination;
-    directHdDestination=v.destination;
-    aladin.setProjection('TAN');
-    aladin.gotoRaDec(v.ra,v.dec);
-    aladin.setRotation(v.rotation);
     gvPublishDiagnostic(v.destination);
-    await gvEnergizeZoomJoystick(-1,120,v.destination);
-    if(activeDestination!==v.destination)return v.destination;
-    await loadDirectHdOnArrival(v.destination);
+    gvInstallPreparedHd(prepared);
     headsUpDisplay.render();
     return v.destination;
 }
@@ -1023,8 +1039,9 @@ async function navigateRandom(){
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
         history.push(destination);
         historyIndex=history.length-1;
+        const firstTrip=routeIndex===0;
         routeIndex++;
-        showDestination(destination);
+        await showDestination(destination,{firstTrip});
     }finally{
         galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
