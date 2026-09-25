@@ -83,8 +83,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-002';
-const GV200001_BUILD='0004';
-const GV_RUNTIME='0072';
+const GV200001_BUILD='0005';
+const GV_RUNTIME='0073';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-002',
@@ -495,7 +495,7 @@ galaxyNavigator.setBusy(true);
 
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
-gvVersionReadout.textContent='200-002   BLD 0004   RT 0072';
+gvVersionReadout.textContent=`${VERSION.replace(/^GV-beta-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
 Object.assign(gvVersionReadout.style,{display:'block',width:'100%',font:'9px/1.2 monospace',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0 0 3px',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
 earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
 
