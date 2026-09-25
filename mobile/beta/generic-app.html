@@ -43,7 +43,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <script>
 (async()=>{
 'use strict';
-const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0069';
+const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-RUNTIME-PATCH-0070';
 const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
 const REL_VIEWER_BASE='../../viewer/';
 const VIEWER_TIMEOUT_MS=30000;
@@ -55,68 +55,28 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
 const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
 const textAny=async urls=>{let last=null;for(const url of urls){try{return await text(url)}catch(error){last=error;console.warn('GV GENERIC FETCH FALLBACK',url,error)}}throw last||new Error('GV GENERIC FETCH FAILED')};
-function installCatalogImagePolicy(){
-  const nativeFetch=window.fetch.bind(window);
-  const hubbleCatalogPattern=/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i;
-  window.fetch=(input,init)=>{
-    const raw=typeof input==='string'?input:String(input?.url||'');
-    if(!hubbleCatalogPattern.test(raw))return nativeFetch(input,init);
-    return (async()=>{
-      const response=await nativeFetch(input,init);if(!response.ok)return response;
-      const payload=await response.clone().json();
-      if(Array.isArray(payload?.entries)){
-        payload.entries=payload.entries.map(entry=>{
-          if(!entry||typeof entry!=='object')return entry;
-          const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];
-          const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));
-          return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry;
-        });
-      }
-      const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');
-      return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers});
-    })();
-  };
-}
-function mountHtml(html){
-  const template=document.createElement('template');template.innerHTML=html;
-  for(const node of [...template.content.childNodes]){
-    if(node.nodeName==='SCRIPT'){
-      const script=document.createElement('script');for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);script.textContent=node.textContent;document.body.appendChild(script);
-    }else document.body.appendChild(node);
-  }
-}
+function installCatalogImagePolicy(){const nativeFetch=window.fetch.bind(window);const hubbleCatalogPattern=/gv-hubble-galaxies-full-\d+\.json(?:[?#]|$)/i;window.fetch=(input,init)=>{const raw=typeof input==='string'?input:String(input?.url||'');if(!hubbleCatalogPattern.test(raw))return nativeFetch(input,init);return (async()=>{const response=await nativeFetch(input,init);if(!response.ok)return response;const payload=await response.clone().json();if(Array.isArray(payload?.entries)){payload.entries=payload.entries.map(entry=>{if(!entry||typeof entry!=='object')return entry;const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry})}const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})})()}}
+function mountHtml(html){const template=document.createElement('template');template.innerHTML=html;for(const node of [...template.content.childNodes]){if(node.nodeName==='SCRIPT'){const script=document.createElement('script');for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);script.textContent=node.textContent;document.body.appendChild(script)}else document.body.appendChild(node)}}
+function replaceBlock(s,startText,endText,newText,label){const start=s.indexOf(startText);const end=s.indexOf(endText,start);if(start<0||end<=start)throw new Error('RUNTIME PATCH BOUNDARY MISSING: '+label);return s.slice(0,start)+newText+s.slice(end)}
 function patchViewerSource(source){
-  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0069';");
-  const wcsStart=s.indexOf('function gvSyntheticWcsFromRuntimeRecord(record,width,height){');
-  const diagStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');",wcsStart);
-  if(wcsStart>=0&&diagStart>wcsStart){
-    s=s.slice(0,wcsStart)+`function gvPair(value){return Array.isArray(value)?value:[]}
+  let s=source.replace("const GV200001_BUILD='0066';","const GV200001_BUILD='0070';");
+  s=replaceBlock(s,'function gvSyntheticWcsFromRuntimeRecord(record,width,height){',"const gvDiagnosticStrip=document.createElement('div');",`function gvPair(value){return Array.isArray(value)?value:[]}
 function gvFiniteOr(value,fallback){const n=Number(value);return Number.isFinite(n)?n:fallback}
 function gvSyntheticWcsFromRuntimeRecord(record){
-    const ra=Number(record?.ra),dec=Number(record?.dec);
-    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
-    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
-    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg??0);
+    const ra=Number(record?.ra),dec=Number(record?.dec),fovX=Number(record?.fovXDegrees??record?.fovDegrees),fovY=Number(record?.fovYDegrees??record?.fovDegrees),rotation=Number(record?.aladinRotation??record?.spatialRotationDeg??0);
     const dim=gvPair(record?.referenceDimension),pix=gvPair(record?.referencePixel),scale=gvPair(record?.scale);
-    const width=Math.max(2,Math.round(gvFiniteOr(record?.naxisX,gvFiniteOr(record?.width,gvFiniteOr(dim[0],2048)))));
-    const height=Math.max(2,Math.round(gvFiniteOr(record?.naxisY,gvFiniteOr(record?.height,gvFiniteOr(dim[1],width)))));
-    const crpix1=gvFiniteOr(record?.crpix1,gvFiniteOr(pix[0],(width+1)/2));
-    const crpix2=gvFiniteOr(record?.crpix2,gvFiniteOr(pix[1],(height+1)/2));
-    const sx=Math.abs(gvFiniteOr(scale[0],fovX/width));
-    const sy=Math.abs(gvFiniteOr(scale[1],fovY/height));
-    const cdelt1=-sx,cdelt2=sy;
+    const width=Math.max(2,Math.round(gvFiniteOr(record?.naxisX,gvFiniteOr(record?.width,gvFiniteOr(dim[0],2048))))),height=Math.max(2,Math.round(gvFiniteOr(record?.naxisY,gvFiniteOr(record?.height,gvFiniteOr(dim[1],width)))));
+    const crpix1=gvFiniteOr(record?.crpix1,gvFiniteOr(pix[0],(width+1)/2)),crpix2=gvFiniteOr(record?.crpix2,gvFiniteOr(pix[1],(height+1)/2));
+    const sx=Math.abs(gvFiniteOr(scale[0],fovX/width)),sy=Math.abs(gvFiniteOr(scale[1],fovY/height));
+    const cdelt1=-sx,cdelt2=sy,theta=rotation*Math.PI/180,c=Math.cos(theta),sn=Math.sin(theta);
     if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
     if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
-    const theta=rotation*Math.PI/180,c=Math.cos(theta),sn=Math.sin(theta);
     return Object.freeze({NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,NAXIS1:width,NAXIS2:height,CDELT1:cdelt1,CDELT2:cdelt2,CROTA2:rotation,ROTATION:rotation,CD1_1:cdelt1*c,CD1_2:-cdelt2*sn,CD2_1:cdelt1*sn,CD2_2:cdelt2*c});
 }
 function gvAladinImageUrl(url){return url}
-`+s.slice(diagStart);
-  }
-  const dStart=s.indexOf("const gvDiagnosticStrip=document.createElement('div');");
-  const dEnd=s.indexOf('function gvControlPanel(id,title,side){',dStart);
-  if(dStart>=0&&dEnd>dStart){
-    s=s.slice(0,dStart)+`const gvDiagnosticStrip=document.createElement('div');
+function gvForceImageVisible(layer){try{crossFadeInput.value='0'}catch(_){}try{layer?.setOpacity?.(1)}catch(error){console.warn('GV IMAGE SET OPACITY FAILED',error)}try{layer?.setAlpha?.(1)}catch(error){console.warn('GV IMAGE SET ALPHA FAILED',error)}try{layer?.setOptions?.({opacity:1,transparency:1})}catch(error){console.warn('GV IMAGE SET OPTIONS FAILED',error)}try{if(layer?.options){layer.options.opacity=1;layer.options.transparency=1;layer.options.visible=true}}catch(_){}return layer}
+`,'wcs');
+  s=replaceBlock(s,"const gvDiagnosticStrip=document.createElement('div');",'function gvControlPanel(id,title,side){',`const gvDiagnosticStrip=document.createElement('div');
 Object.assign(gvDiagnosticStrip.style,{position:'absolute',left:'6px',right:'6px',bottom:'86px',zIndex:'7313',padding:'8px 8px',borderRadius:'8px',background:'rgba(0,0,0,.82)',color:'#dff8ff',font:'12px/1.30 monospace',pointerEvents:'none',display:'grid',gridTemplateColumns:'74px 1fr 1fr',columnGap:'8px',rowGap:'3px',boxShadow:'0 0 14px rgba(88,191,255,.18)'});
 document.getElementById('aladin-cosmic-command-test').appendChild(gvDiagnosticStrip);
 let gvCurrentCatalogRecord=null,gvCurrentCatalogWcs=null,gvCurrentStatus='waiting';
@@ -130,21 +90,11 @@ function gvPublishUnifiedDiagnostic(status){gvCurrentStatus=status||gvCurrentSta
 function gvPublishCatalogWcs(destination,record,wcs,status){gvCurrentCatalogRecord=record;gvCurrentCatalogWcs=wcs;gvPublishUnifiedDiagnostic(status||'catalog loaded')}
 function gvPublishDiagnostic(destination){gvCurrentCatalogRecord={name:destination?.name||destination?.archiveId||destination?.id||'?'};gvCurrentCatalogWcs=null;gvPublishUnifiedDiagnostic('loading catalog')}
 gvPublishUnifiedDiagnostic('waiting');setInterval(()=>gvPublishUnifiedDiagnostic(),250);
-function installGvRuntimeBanner(){
-    if(document.getElementById('gv-runtime-build-banner'))return;
-    const root=document.getElementById('aladin-cosmic-command-test');if(!root)return;
-    const banner=document.createElement('div');banner.id='gv-runtime-build-banner';
-    banner.textContent=VERSION+'  •  BUILD '+GV200001_BUILD+' + RUNTIME 0069';
-    Object.assign(banner.style,{position:'absolute',left:'50%',bottom:'58px',transform:'translateX(-50%)',zIndex:'7311',padding:'5px 10px',border:'1px solid rgba(124,203,255,.65)',borderRadius:'7px',background:'linear-gradient(145deg,rgba(8,27,58,.90),rgba(11,49,119,.78))',color:'#DDF8FF',font:'400 10px/1.25 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',textAlign:'center',textShadow:'0 0 8px rgba(88,191,255,.70)',boxShadow:'0 0 10px rgba(88,191,255,.24)',pointerEvents:'none',whiteSpace:'nowrap'});
-    root.appendChild(banner);
-}
+function installGvRuntimeBanner(){if(document.getElementById('gv-runtime-build-banner'))return;const root=document.getElementById('aladin-cosmic-command-test');if(!root)return;const banner=document.createElement('div');banner.id='gv-runtime-build-banner';banner.textContent=VERSION+'  •  BUILD '+GV200001_BUILD+' + RUNTIME 0070';Object.assign(banner.style,{position:'absolute',left:'50%',bottom:'58px',transform:'translateX(-50%)',zIndex:'7311',padding:'5px 10px',border:'1px solid rgba(124,203,255,.65)',borderRadius:'7px',background:'linear-gradient(145deg,rgba(8,27,58,.90),rgba(11,49,119,.78))',color:'#DDF8FF',font:'400 10px/1.25 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',textAlign:'center',textShadow:'0 0 8px rgba(88,191,255,.70)',boxShadow:'0 0 10px rgba(88,191,255,.22)',pointerEvents:'none',whiteSpace:'nowrap'});root.appendChild(banner)}
+installGvRuntimeBanner();
 
-`+s.slice(dEnd);
-  }
-  const lStart=s.indexOf('async function loadDirectHdOnArrival(destination){');
-  const lEnd=s.indexOf('\n\n\n// ============================================================================\n// SECTION 034',lStart);
-  if(lStart>=0&&lEnd>lStart){
-    s=s.slice(0,lStart)+`async function loadDirectHdOnArrival(destination){
+`,'diagnostics');
+  s=replaceBlock(s,'async function loadDirectHdOnArrival(destination){','\n\n\n// ============================================================================\n// SECTION 034',`async function loadDirectHdOnArrival(destination){
     const url=directHdUrl(destination);if(!url)return false;
     directHdDestination=destination;
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
@@ -153,46 +103,25 @@ function installGvRuntimeBanner(){
         const record=await gvRuntimeAvmRecord(destination);
         if(directHdDestination!==destination)return false;
         const displayWcs=gvSyntheticWcsFromRuntimeRecord(record);
-        const ra=Number(record.ra),dec=Number(record.dec);
-        const fovX=Number(record.fovXDegrees??record.fovDegrees);
-        const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+        const ra=Number(record.ra),dec=Number(record.dec),fovX=Number(record.fovXDegrees??record.fovDegrees),rotation=Number(record.aladinRotation??record.spatialRotationDeg);
         gvPublishCatalogWcs(destination,record,displayWcs,'catalog loaded');
         aladin.setProjection('TAN');aladin.gotoRaDec(ra,dec);aladin.setFoV(fovX);aladin.setRotation(rotation);coordinate.update(ra,dec);
         const imageUrl=gvAladinImageUrl(url);
-        const layer=A.image(imageUrl,{name:DIRECT_HD_LAYER,imgFormat:'jpeg',wcs:displayWcs,opacity:directHdOpacity(),successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();gvPublishCatalogWcs(destination,record,displayWcs,'image loaded')},errorCallback:error=>{console.error('GV DIRECT HD URL-WCS LAYER LOAD FAILED',error);gvPublishCatalogWcs(destination,record,displayWcs,'image failed')}});
-        directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);gvPublishCatalogWcs(destination,record,displayWcs,'image loading');return true;
+        const layer=A.image(imageUrl,{name:DIRECT_HD_LAYER,imgFormat:'jpeg',wcs:displayWcs,opacity:1,transparency:1,successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=gvForceImageVisible(layer);applyDirectHdOpacity();gvForceImageVisible(directHdOverlay);gvPublishCatalogWcs(destination,record,displayWcs,'image loaded + forced visible')},errorCallback:error=>{console.error('GV DIRECT HD URL-WCS LAYER LOAD FAILED',error);gvPublishCatalogWcs(destination,record,displayWcs,'image layer error')}});
+        directHdOverlay=gvForceImageVisible(layer);
+        aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+        try{directHdOverlay=gvForceImageVisible(aladin.getOverlayImageLayer?.(DIRECT_HD_LAYER)||layer)}catch(_){directHdOverlay=gvForceImageVisible(layer)}
+        try{aladin.setBaseImageLayer?.(layer);gvPublishCatalogWcs(destination,record,displayWcs,'base+overlay installed')}catch(error){console.warn('GV SET BASE IMAGE LAYER TEST FAILED',error);gvPublishCatalogWcs(destination,record,displayWcs,'overlay installed')}
+        return true;
     }catch(error){console.error('GV DIRECT HD URL-WCS PREP FAILED',error);gvCurrentStatus='catalog/image failed';gvPublishUnifiedDiagnostic(gvCurrentStatus);return false;}
 }
-`+s.slice(lEnd);
-  }
-  s=s.replace('updateNavigationAvailability();','installGvRuntimeBanner();\nupdateNavigationAvailability();');
+`,'loadDirectHdOnArrival');
   return s;
 }
-async function loadPointer(){
-  const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json?v=0069',REL_VIEWER_BASE+'gv-current-viewer.json?v=0069']));
-  const version=String(pointer.version||'').trim();versionEl.textContent=version?'VERSION '+version:'VERSION';
-  const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0069':'BUILD RUNTIME 0069';
-  try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}
-  return pointer;
-}
-async function prepareViewer(){
-  const pointer=await loadPointer();
-  const viewer=String(pointer.viewer||'').trim();
-  if(!/^GV-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);
-  const source=patchViewerSource(await textAny([RAW_VIEWER_BASE+viewer+'?v=0069',REL_VIEWER_BASE+viewer+'?v=0069']));
-  const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
-  const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
-  if(!htmlMatch||!jsMatches.length)throw new Error('ACTIVE VIEWER EXTRACTION FAILED: '+viewer);
-  return {viewer,html:htmlMatch[1],scripts:jsMatches.map(match=>match[1])};
-}
-async function initializeViewer(prepared){
-  installCatalogImagePolicy();
-  mountHtml(prepared.html);
-  for(const source of prepared.scripts){const script=document.createElement('script');script.textContent=source;document.body.appendChild(script)}
-  const deadline=performance.now()+VIEWER_TIMEOUT_MS;
-  while(performance.now()<deadline){const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas'))return prepared.viewer;await sleep(100)}
-  throw new Error('ACTIVE VIEWER STARTUP TIMEOUT: '+prepared.viewer);
-}
+function installLauncherBanner(pointer){const root=document.getElementById('aladin-cosmic-command-test');if(!root||document.getElementById('gv-launcher-runtime-banner'))return;const b=document.createElement('div');b.id='gv-launcher-runtime-banner';b.textContent=(pointer.version||'GV-beta-200-001')+'  •  BUILD '+(pointer.build||'?')+' + RUNTIME 0070';Object.assign(b.style,{position:'absolute',left:'50%',bottom:'58px',transform:'translateX(-50%)',zIndex:'7311',padding:'5px 10px',border:'1px solid rgba(124,203,255,.65)',borderRadius:'7px',background:'rgba(8,27,58,.90)',color:'#DDF8FF',font:'400 10px/1.25 "Space Age",Arial,sans-serif',letterSpacing:'.7px',textAlign:'center',textShadow:'0 0 8px rgba(88,191,255,.70)',pointerEvents:'none',whiteSpace:'nowrap'});root.appendChild(b)}
+async function loadPointer(){const pointer=JSON.parse(await textAny([RAW_VIEWER_BASE+'gv-current-viewer.json?v=0070',REL_VIEWER_BASE+'gv-current-viewer.json?v=0070']));const version=String(pointer.version||'').trim();versionEl.textContent=version?'VERSION '+version:'VERSION';const build=String(pointer.build||'').trim();buildEl.textContent=build?'BUILD '+build+' + RUNTIME 0070':'BUILD RUNTIME 0070';try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}return pointer}
+async function prepareViewer(){const pointer=await loadPointer();const viewer=String(pointer.viewer||'').trim();if(!/^GV-[A-Za-z0-9._-]+\.py$/.test(viewer)||viewer.includes('/')||/archive/i.test(viewer))throw new Error('INVALID ACTIVE VIEWER POINTER: '+viewer);const source=patchViewerSource(await textAny([RAW_VIEWER_BASE+viewer+'?v=0070',REL_VIEWER_BASE+viewer+'?v=0070']));const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(!htmlMatch||!jsMatches.length)throw new Error('ACTIVE VIEWER EXTRACTION FAILED: '+viewer);return {viewer,pointer,html:htmlMatch[1],scripts:jsMatches.map(match=>match[1])}}
+async function initializeViewer(prepared){installCatalogImagePolicy();mountHtml(prepared.html);installLauncherBanner(prepared.pointer);for(const source of prepared.scripts){const script=document.createElement('script');script.textContent=source;document.body.appendChild(script)}const deadline=performance.now()+VIEWER_TIMEOUT_MS;while(performance.now()<deadline){const root=document.getElementById('aladin-cosmic-command-test');if(root?.querySelector('canvas'))return prepared.viewer;await sleep(100)}throw new Error('ACTIVE VIEWER STARTUP TIMEOUT: '+prepared.viewer)}
 try{const prepared=await prepareViewer();await initializeViewer(prepared);if(cover.isConnected)cover.remove()}catch(error){console.error(error);fail(error)}
 })();
 </script>
