@@ -1,7 +1,9 @@
 name: GV Nanoscopic Audit
 on:
   push:
-    branches: [beta, main]
+    branches: [beta]
+  pull_request:
+    branches: [beta]
   workflow_dispatch:
 permissions:
   contents: read
@@ -9,74 +11,47 @@ jobs:
   nanoscopic-audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch complete history
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Audit every touched file before and after
-        env:
-          EVENT_BEFORE: ${{ github.event.before }}
-          EVENT_HEAD: ${{ github.sha }}
+      - name: Audit every touched file
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import collections, hashlib, json, os, re, subprocess, sys
-          from pathlib import Path
-          def git(*a,binary=False):
-              p=subprocess.run(["git",*a],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-              return p.stdout if binary else p.stdout.decode("utf-8","replace")
-          head=os.environ["EVENT_HEAD"]; base=os.environ.get("EVENT_BEFORE","")
-          if not base or base=="0"*40: base=git("rev-parse",head+"^").strip()
-          def blob(ref,path):
-              try:return git("show",ref+":"+path,binary=True)
-              except subprocess.CalledProcessError:return b""
+          import collections, hashlib, json, pathlib, re, subprocess, sys
+          def git(*a): return subprocess.check_output(["git",*a],text=True)
+          head=git("rev-parse","HEAD").strip()
+          try: base=git("rev-parse",head+"^").strip()
+          except: base=head
+          def blob(ref,p):
+              try:return subprocess.check_output(["git","show",ref+":"+p])
+              except:return b""
+          punct=list("{}[](),;:'\".+-*/%=<>!?&#@_$\\|")
+          multi=["==","!=","=>","::","&&","||","//","/*","*/","33"]
+          def m(data):
+              s=data.decode("utf-8","replace"); cf=collections.Counter(s); dg=collections.Counter(c for c in s if c.isdigit())
+              funcs=re.findall(r"\\bfunction\\s+([A-Za-z_$][\\w$]*)\\s*\\(",s)
+              arrows=re.findall(r"\\b([A-Za-z_$][\\w$]*)\\s*=\\s*(?:async\\s*)?(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*=>",s)
+              decs=re.findall(r"\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)",s)
+              return {"sha256":hashlib.sha256(data).hexdigest(),"bytes":len(data),"lines":len(s.splitlines()),"characters":len(s),"letters":sum(c.isalpha() for c in s),"uppercase":sum(c.isupper() for c in s),"lowercase":sum(c.islower() for c in s),"digits":sum(c.isdigit() for c in s),"digit_frequency":dict(sorted(dg.items())),"words":len(re.findall(r"[A-Za-z_$][A-Za-z0-9_$-]*",s)),"numeric_tokens":len(re.findall(r"[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)",s)),"spaces":s.count(" "),"tabs":s.count("\\t"),"newlines":s.count("\\n"),"whitespace":sum(c.isspace() for c in s),"punctuation":{p:s.count(p) for p in punct},"multi_tokens":{p:s.count(p) for p in multi},"functions":{"count":len(funcs)+len(arrows),"named":funcs,"arrow":arrows},"declarations":{"count":len(decs),"names":decs},"balanced":{"braces":s.count("{")==s.count("}"),"brackets":s.count("[")==s.count("]"),"parentheses":s.count("(")==s.count(")")},"character_frequency":dict(sorted(cf.items()))}
           rows=[]
-          for line in git("diff","--name-status","--find-renames",base,head).splitlines():
-              c=line.split("\t"); status=c[0]; rows.append((status,c[-2] if status[:1] in "RC" else c[-1],c[-1]))
-          punctuation=list("{}[](),.;:'\"<>+-=*/%!?&#|^~\\@$")
-          def met(raw):
-              t=raw.decode("utf-8","replace"); ch=list(t)
-              letters=collections.Counter(c for c in ch if c.isalpha()); digits=collections.Counter(c for c in ch if c.isdigit())
-              punct=collections.Counter(c for c in ch if c in punctuation); freq=collections.Counter(ch)
-              words=re.findall(r"[A-Za-z_][A-Za-z0-9_-]*",t); nums=re.findall(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)",t)
-              tokens=re.findall(r"[A-Za-z_$][\w$-]*|[-+]?(?:\d+(?:\.\d*)?|\.\d+)|[{}\[\](),.;:+*/%!?<>=&#|^~\\-]",t)
-              funcs=[]
-              funcs += re.findall(r"\bfunction\s+([A-Za-z_$][\w$]*)\s*\(",t)
-              funcs += re.findall(r"(?m)^\s*def\s+([A-Za-z_][\w]*)\s*\(",t)
-              funcs += re.findall(r"\b([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>",t)
-              return {"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"lines":len(t.splitlines()) if t else 0,"characters":len(ch),
-              "words":len(words),"numeric_literals":len(nums),"tokens":len(tokens),"spaces":t.count(" "),"tabs":t.count("\t"),"newlines":t.count("\n"),
-              "carriage_returns":t.count("\r"),"whitespace":sum(c.isspace() for c in ch),"nonwhitespace":sum(not c.isspace() for c in ch),
-              "functions":len(funcs),"function_names":funcs,"count_33":t.count("33"),"letters":dict(sorted(letters.items())),
-              "digits":{str(i):digits[str(i)] for i in range(10)},"punctuation":{c:punct[c] for c in punctuation},
-              "character_frequency":dict(sorted(freq.items(),key=lambda x:ord(x[0])))}
-          scalar=["bytes","lines","characters","words","numeric_literals","tokens","spaces","tabs","newlines","carriage_returns","whitespace","nonwhitespace","functions","count_33"]
-          report={"eco":"ECO-GB-BUILD-PIPELINE-01","base":base,"head":head,"touched_files":len(rows),"files":[]}
-          md=["# GV Nanoscopic Audit","",f"ECO: ECO-GB-BUILD-PIPELINE-01",f"Base: {base}",f"Head: {head}",f"Touched files: {len(rows)}",""]
-          for status,bp,ap in rows:
-              b=met(b"" if status.startswith("A") else blob(base,bp)); a=met(b"" if status.startswith("D") else blob(head,ap))
-              delta={k:a[k]-b[k] for k in scalar}; keys=set(b["character_frequency"])|set(a["character_frequency"])
-              cd={k:a["character_frequency"].get(k,0)-b["character_frequency"].get(k,0) for k in keys}; cd={k:v for k,v in cd.items() if v}
-              report["files"].append({"status":status,"before_path":bp,"after_path":ap,"before":b,"after":a,"delta":delta,"changed_character_frequency":cd})
-              md += [f"## {status} {ap}","","| Metric | Before | After | Delta |","|---|---:|---:|---:|"]
-              for k in scalar: md.append(f"| {k} | {b[k]} | {a[k]} | {delta[k]:+d} |")
-              md += ["",f"Before SHA256: {b['sha256']}",f"After SHA256: {a['sha256']}",f"Functions before: {b['function_names']}",
-                     f"Functions after: {a['function_names']}",f"Exact 33 occurrences: {b['count_33']} -> {a['count_33']}","",
-                     "### Letter census",json.dumps({"before":b["letters"],"after":a["letters"]},ensure_ascii=False,sort_keys=True),"",
-                     "### Digit census",json.dumps({"before":b["digits"],"after":a["digits"]},sort_keys=True),"",
-                     "### Brackets commas quotes punctuation census",json.dumps({"before":b["punctuation"],"after":a["punctuation"]},ensure_ascii=False,sort_keys=True),"",
-                     "### Changed character frequencies",json.dumps(cd,ensure_ascii=False,sort_keys=True),""]
-          out=Path("gv-nanoscopic-audit");out.mkdir(exist_ok=True)
-          (out/"report.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n")
-          (out/"report.md").write_text("\n".join(md)+"\n")
-          (out/"exact.diff").write_text(git("diff","--no-ext-diff","--find-renames",base,head))
-          print("\n".join(md))
-          if not rows: print("FAIL: no touched files",file=sys.stderr);sys.exit(1)
+          for line in git("diff","--name-status","-M",base,head).splitlines():
+              p=line.split("\\t"); st=p[0]; old=p[1]; new=p[2] if st.startswith("R") else p[1]
+              a=m(b"" if st.startswith("A") else blob(base,old)); b=m(b"" if st.startswith("D") else blob(head,new))
+              scalar=["bytes","lines","characters","letters","uppercase","lowercase","digits","words","numeric_tokens","spaces","tabs","newlines","whitespace"]
+              chars=set(a["character_frequency"])|set(b["character_frequency"])
+              rows.append({"status":st,"old_path":old,"new_path":new,"before":a,"after":b,"delta":{k:b[k]-a[k] for k in scalar},"punctuation_delta":{k:b["punctuation"][k]-a["punctuation"][k] for k in punct},"digit_delta":{str(k):b["digit_frequency"].get(str(k),0)-a["digit_frequency"].get(str(k),0) for k in range(10)},"multi_token_delta":{k:b["multi_tokens"][k]-a["multi_tokens"][k] for k in multi},"changed_character_frequency":{c:b["character_frequency"].get(c,0)-a["character_frequency"].get(c,0) for c in sorted(chars) if b["character_frequency"].get(c,0)!=a["character_frequency"].get(c,0)}})
+          report={"base":base,"head":head,"touched_files":len(rows),"files":rows}
+          pathlib.Path("artifacts").mkdir(exist_ok=True)
+          pathlib.Path("artifacts/gv-nanoscopic-audit.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\\n")
+          out=["# GV Nanoscopic Audit","Base: "+base,"Head: "+head,"Touched files: "+str(len(rows)),""]
+          for r in rows:
+              out += ["## "+r["status"]+" "+r["new_path"],"Delta: "+json.dumps(r["delta"],sort_keys=True),"Punctuation delta: "+json.dumps(r["punctuation_delta"],sort_keys=True),"Digit delta: "+json.dumps(r["digit_delta"],sort_keys=True),"Token delta: "+json.dumps(r["multi_token_delta"],sort_keys=True),"Functions: "+str(r["before"]["functions"]["count"])+" -> "+str(r["after"]["functions"]["count"]),"Declarations: "+str(r["before"]["declarations"]["count"])+" -> "+str(r["after"]["declarations"]["count"]),"Balanced after: "+json.dumps(r["after"]["balanced"],sort_keys=True),""]
+          pathlib.Path("artifacts/gv-nanoscopic-audit.md").write_text("\\n".join(out)+"\\n")
+          print("\\n".join(out))
+          if any(not all(r["after"]["balanced"].values()) for r in rows if r["after"]["bytes"]): sys.exit("FAIL: delimiter balance")
           PY
-      - name: Upload nanoscopic evidence
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: gv-nanoscopic-audit-${{ github.sha }}
-          path: gv-nanoscopic-audit/
-          if-no-files-found: error
-          retention-days: 90
+          path: artifacts/
