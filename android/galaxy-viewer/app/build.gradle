@@ -9,11 +9,11 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'com.gear66me.galaxyviewer'
+        applicationId 'com.gear66me.galaxyviewer.beta43'
         minSdk 29
         targetSdk 35
-        versionCode 9
-        versionName 'generic-1'
+        versionCode 43
+        versionName 'beta43-0043'
     }
 
     sourceSets {
