@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0016';
+const GV200001_BUILD='0017';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -486,7 +486,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0003'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0003 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0004'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0004 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -991,14 +991,16 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
+    let resolveReady,rejectReady;
+    const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
     directHdDestination=destination;
     const layer=A.image(imageObjectUrl,{
         name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination)return;directHdOverlay=layer;applyDirectHdOpacity();setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000)},
-        errorCallback:error=>{console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
+        successCallback:()=>{if(directHdDestination!==destination){resolveReady(false);return}directHdOverlay=layer;applyDirectHdOpacity();resolveReady(true);setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000)},
+        errorCallback:error=>{rejectReady(error);console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
     });
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return true;
+    directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return ready;
 }
 function gvFlightClamp01(value){return Math.max(0,Math.min(1,Number(value)))}
 function gvFlightNavigationSmootherstep(value){const t=gvFlightClamp01(value);return 35*t**4-84*t**5+70*t**6-20*t**7}
@@ -1089,8 +1091,8 @@ async function showDestination(destination,{firstTrip=false}={}){
     activeDestination=v.destination;
     destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?7.5:17});
-    let zoomInStarted=false,installed=false;
-    const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){gvInstallPreparedHd(prepared);installed=true}return prepared};
+    let zoomInStarted=false,installed=false,displayReady=Promise.resolve(false);
+    const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return prepared};
     preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
     const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,targetPromise:preparedPromise,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
@@ -1098,7 +1100,8 @@ async function showDestination(destination,{firstTrip=false}={}){
     headsUpDisplay.markReady?.(v.destination);
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
-    if(!installed){gvInstallPreparedHd(prepared);installed=true}
+    if(!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}
+    await displayReady;
     travelPresentation.end();
     destinationPresentation.arrive(v.destination,{imageUrl:String(v.destination?.hdUrl||directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();return v.destination;
