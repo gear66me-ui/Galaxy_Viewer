@@ -26,7 +26,10 @@ function plan(records){const e=eligible(records);if(e.length<130)throw Error(`EL
 function imageUrl(r){const a=[...(Array.isArray(r?.jpegCandidates)?r.jpegCandidates:[]),r?.selectedImageUrl,r?.hdUrl].map(clean).filter(Boolean);return a.find(x=>/\/screen\//i.test(x))||a[0]||''}
 function normalizeRaw(r,i,catalogKey,meta){
  const science=(r?.science&&typeof r.science==='object')?r.science:{};
- const distanceMly=finite(science.distanceMly??r?.distanceMly??r?.distance_mly);
+ const distanceDisplay=clean(science.distanceDisplay??r?.distance);
+ const distanceMatch=distanceDisplay.match(/([0-9]+(?:\.[0-9]+)?)\s*(billion|million|thousand)\s+light\s*-?\s*years?/i);
+ const distanceScale=distanceMatch?(distanceMatch[2].toLowerCase()==='billion'?1000:distanceMatch[2].toLowerCase()==='thousand'?0.001:1):null;
+ const distanceMly=finite(science.distanceMly??r?.distanceMly??r?.distance_mly)??(distanceMatch?Number(distanceMatch[1])*distanceScale:null);
  const ageGyr=finite(science.ageGyr??r?.ageGyr);
  const ageYears=finite(r?.ageYears)??(ageGyr!==null?ageGyr*1e9:null);
  const sizeKly=Array.isArray(science.sizeKly)?science.sizeKly.map(finite).filter(v=>v!==null):[];
@@ -42,7 +45,7 @@ function normalizeRaw(r,i,catalogKey,meta){
   commonName,
   pseudonym:clean(r?.pseudonym??r?.pseudo??r?.alias??r?.alternateName??commonName),
   ra:finite(r?.ra),dec:finite(r?.dec),
-  distance:clean(science.distanceDisplay??r?.distance),
+  distance:distanceDisplay,
   distanceMly,
   distanceMethod:clean(science.distanceMethod),
   distanceEstimated:science.distanceEstimated??null,
