@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0038';
+const GV200001_BUILD='0039';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -539,6 +539,40 @@ for(const [name,host] of Object.entries(hosts)){
 // SECTION 023 — HAMBURGER 0007 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
+const GV_DOE_RATES=Object.freeze([20,60,120]);
+let gvDoeRate=20;
+const gvDoeReports={20:[],60:[],120:[]};
+let gvDoeActiveRun=null;
+function gvDoeNow(){return performance.now()}
+function gvDoeBeginRun(meta){
+    const run={schema:'gv-flight-doe-0001',build:GV200001_BUILD,rateHz:gvDoeRate,startedAt:gvDoeNow(),meta:{...meta},browserRaf:[],aladinRedraw:[],commands:[]};
+    gvDoeActiveRun=run;return run;
+}
+function gvDoeCommand(type,args){if(gvDoeActiveRun)gvDoeActiveRun.commands.push({t:gvDoeNow()-gvDoeActiveRun.startedAt,type,args})}
+function gvDoeFinishRun(run){
+    if(gvDoeActiveRun===run)gvDoeActiveRun=null;
+    run.endedAt=gvDoeNow();run.durationMs=run.endedAt-run.startedAt;
+    gvDoeReports[run.rateHz]?.push(run);return run;
+}
+function gvDoeDownload(rate){
+    const selected=Number(rate);
+    const payload={schema:'gv-flight-doe-report-0001',viewer:VERSION,build:GV200001_BUILD,aladinVersion:config.aladinVersion,selectedRateHz:selected,generatedAt:new Date().toISOString(),runs:gvDoeReports[selected]||[]};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=`GV_DOE_${selected}Hz_BLD${GV200001_BUILD}_${Date.now()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+try{
+    const view=aladin.view;
+    if(view&&typeof view.redrawClbk==='function'&&!view.__gvDoeWrapped){
+        const original=view.redrawClbk;
+        view.redrawClbk=function(now){
+            if(gvDoeActiveRun)gvDoeActiveRun.aladinRedraw.push({t:gvDoeNow()-gvDoeActiveRun.startedAt,rafNow:Number(now),rendering:typeof view.wasm?.isRendering==='function'?!!view.wasm.isRendering():null});
+            return original(now);
+        };
+        view.__gvDoeWrapped=true;
+    }
+}catch(error){console.error('GV DOE ALADIN REDRAW PROBE FAILED',error)}
+
 const hamburger=window.GalaxyViewerHamburgerMenu.init({
     host:hosts.hamburger,
     onMenuAction(action){
@@ -557,6 +591,11 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
+hamburger.root.addEventListener('gv-doe-rate-selected',event=>{
+    const rate=Number(event.detail?.rate);
+    if(GV_DOE_RATES.includes(rate))gvDoeRate=rate;
+});
+hamburger.root.addEventListener('gv-doe-download',event=>gvDoeDownload(Number(event.detail?.rate)));
 
 
 // ============================================================================
@@ -1037,24 +1076,27 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,target
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
+    const doeRun=gvDoeBeginRun({firstHomeTrip,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
-            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*30/1000);
+            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*gvDoeRate/1000);
+            doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
             if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip,startFov,finalFov,maxFov:120,startRotation,targetRotation});
-                aladin.setFov(state.fov);
-                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
-                else if(state.translation>=1&&!destinationCenterApplied){aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
-                aladin.setRotation(state.rotation);lastSample=sample;
+                gvDoeCommand('setFov',[state.fov]);aladin.setFov(state.fov);
+                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
+                else if(state.translation>=1&&!destinationCenterApplied){gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
+                gvDoeCommand('setRotation',[state.rotation]);aladin.setRotation(state.rotation);lastSample=sample;
             }
             if(t<1){requestAnimationFrame(frame);return}
-            if(!destinationCenterApplied){aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);aladin.setRotation(targetRotation);resolve(prepared);
+            if(!destinationCenterApplied){gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
+            gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);resolve(prepared);
         }catch(error){reject(error)}};
         requestAnimationFrame(frame);
     });
-    if(targetPromise){applyPreparedTarget(await targetPromise);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);aladin.setFov(finalFov);aladin.setRotation(targetRotation)}
+    if(targetPromise){applyPreparedTarget(await targetPromise);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation)}
+    doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);
     return prepared;
 }
 
@@ -1097,9 +1139,9 @@ async function showDestination(destination,{firstTrip=false}={}){
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?7.5:17});
     let zoomInStarted=false,installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return prepared};
-    preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
     const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,targetPromise:preparedPromise,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
+    preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     const prepared=await preparedPromise;
     headsUpDisplay.markReady?.(v.destination);
     await travelPromise;
