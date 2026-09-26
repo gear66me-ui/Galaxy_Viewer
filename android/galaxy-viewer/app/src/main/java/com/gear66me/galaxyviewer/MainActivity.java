@@ -17,6 +17,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
@@ -80,8 +81,11 @@ public final class MainActivity extends Activity {
             }
         });
         webView.setDownloadListener(new GalaxyDownloadListener());
+        webView.stopLoading();
+        webView.clearHistory();
         webView.clearCache(true);
-        String launchUrl = APP_URL + "&launch=" + System.currentTimeMillis();
+        WebStorage.getInstance().deleteAllData();
+        String launchUrl = APP_URL + "&launch=" + System.currentTimeMillis() + "&apk=fresh-2";
         webView.loadUrl(launchUrl);
     }
 
