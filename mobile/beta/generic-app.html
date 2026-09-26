@@ -27,7 +27,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:"Space Age",Arial,sans-serif;text-align:center;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;white-space:nowrap}
 #gv-generic-version{min-height:22px;font-size:17px;line-height:22px;letter-spacing:1.2px}
 #gv-generic-build{min-height:22px;margin-top:-8px;font-size:17px;line-height:22px;letter-spacing:1.1px}
-#gv-generic-splash{position:fixed;inset:0;z-index:2147483646;width:100%;height:100%;border:0;background:#000;visibility:hidden}\n#gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
+#gv-generic-splash{position:fixed;inset:0;z-index:2147483646;width:100%;height:100%;border:0;background:#000;visibility:hidden}
+#gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
 </style>
 </head>
 <body>
@@ -39,19 +40,24 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
   <div id="gv-generic-version">VERSION</div>
   <div id="gv-generic-build">BUILD</div>
 </div>
-<iframe id="gv-generic-splash" title="GALAXY VIEWER SPLASH"></iframe>\n<div id="gv-generic-error" role="alert"></div>
+<iframe id="gv-generic-splash" title="GALAXY VIEWER SPLASH"></iframe>
+<div id="gv-generic-error" role="alert"></div>
 <script>
 (async()=>{
 'use strict';
 const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-0085';
 const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
 const REL_VIEWER_BASE='../../viewer/';
-const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';\nconst ICON_HOLD_MS=750;\nconst VIEWER_TIMEOUT_MS=30000;
+const SPLASH_URL='../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
+const ICON_HOLD_MS=750;
+const VIEWER_TIMEOUT_MS=30000;
 const cover=document.getElementById('gv-generic-cover');
 const versionEl=document.getElementById('gv-generic-version');
 const buildEl=document.getElementById('gv-generic-build');
-const splash=document.getElementById('gv-generic-splash');\nconst errorBox=document.getElementById('gv-generic-error');
-const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));\nconst coverPainted=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+const splash=document.getElementById('gv-generic-splash');
+const errorBox=document.getElementById('gv-generic-error');
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const coverPainted=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
 const text=async url=>{const response=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
 const textAny=async urls=>{let last=null;for(const url of urls){try{return await text(url)}catch(error){last=error;console.warn('GV GENERIC FETCH FALLBACK',url,error)}}throw last||new Error('GV GENERIC FETCH FAILED')};
