@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0035';
+const GV200001_BUILD='0036';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -1039,7 +1039,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,target
     const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
-            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*60/1000);
+            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*120/1000);
             if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip,startFov,finalFov,maxFov:120,startRotation,targetRotation});
