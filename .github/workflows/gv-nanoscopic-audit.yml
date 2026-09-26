@@ -1,0 +1,79 @@
+name: GV Nanoscopic Audit
+on:
+  push:
+    branches: [beta, main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  nanoscopic-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Audit every touched file before and after
+        env:
+          EVENT_BEFORE: ${{ github.event.before }}
+          EVENT_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import collections, hashlib, json, os, re, subprocess, sys
+          from pathlib import Path
+          def git(*a,binary=False):
+              p=subprocess.run(["git",*a],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+              return p.stdout if binary else p.stdout.decode("utf-8","replace")
+          head=os.environ["EVENT_HEAD"]; base=os.environ.get("EVENT_BEFORE","")
+          if not base or base=="0"*40: base=git("rev-parse",head+"^").strip()
+          def blob(ref,path):
+              try:return git("show",ref+":"+path,binary=True)
+              except subprocess.CalledProcessError:return b""
+          rows=[]
+          for line in git("diff","--name-status","--find-renames",base,head).splitlines():
+              c=line.split("\t"); status=c[0]; rows.append((status,c[-2] if status[:1] in "RC" else c[-1],c[-1]))
+          punctuation=list("{}[](),.;:'\"<>+-=*/%!?&#|^~\\@$")
+          def met(raw):
+              t=raw.decode("utf-8","replace"); ch=list(t)
+              letters=collections.Counter(c for c in ch if c.isalpha()); digits=collections.Counter(c for c in ch if c.isdigit())
+              punct=collections.Counter(c for c in ch if c in punctuation); freq=collections.Counter(ch)
+              words=re.findall(r"[A-Za-z_][A-Za-z0-9_-]*",t); nums=re.findall(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)",t)
+              tokens=re.findall(r"[A-Za-z_$][\w$-]*|[-+]?(?:\d+(?:\.\d*)?|\.\d+)|[{}\[\](),.;:+*/%!?<>=&#|^~\\-]",t)
+              funcs=re.findall(r"\bfunction\s+([A-Za-z_$][\w$]*)\s*\(",t)
+              return {"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"lines":len(t.splitlines()) if t else 0,"characters":len(ch),
+              "words":len(words),"numeric_literals":len(nums),"tokens":len(tokens),"spaces":t.count(" "),"tabs":t.count("\t"),"newlines":t.count("\n"),
+              "carriage_returns":t.count("\r"),"whitespace":sum(c.isspace() for c in ch),"nonwhitespace":sum(not c.isspace() for c in ch),
+              "functions":len(funcs),"function_names":funcs,"count_33":t.count("33"),"letters":dict(sorted(letters.items())),
+              "digits":{str(i):digits[str(i)] for i in range(10)},"punctuation":{c:punct[c] for c in punctuation},
+              "character_frequency":dict(sorted(freq.items(),key=lambda x:ord(x[0])))}
+          scalar=["bytes","lines","characters","words","numeric_literals","tokens","spaces","tabs","newlines","carriage_returns","whitespace","nonwhitespace","functions","count_33"]
+          report={"eco":"ECO-GB-BUILD-PIPELINE-01","base":base,"head":head,"touched_files":len(rows),"files":[]}
+          md=["# GV Nanoscopic Audit","",f"ECO: ECO-GB-BUILD-PIPELINE-01",f"Base: {base}",f"Head: {head}",f"Touched files: {len(rows)}",""]
+          for status,bp,ap in rows:
+              b=met(b"" if status.startswith("A") else blob(base,bp)); a=met(b"" if status.startswith("D") else blob(head,ap))
+              delta={k:a[k]-b[k] for k in scalar}; keys=set(b["character_frequency"])|set(a["character_frequency"])
+              cd={k:a["character_frequency"].get(k,0)-b["character_frequency"].get(k,0) for k in keys}; cd={k:v for k,v in cd.items() if v}
+              report["files"].append({"status":status,"before_path":bp,"after_path":ap,"before":b,"after":a,"delta":delta,"changed_character_frequency":cd})
+              md += [f"## {status} {ap}","","| Metric | Before | After | Delta |","|---|---:|---:|---:|"]
+              for k in scalar: md.append(f"| {k} | {b[k]} | {a[k]} | {delta[k]:+d} |")
+              md += ["",f"Before SHA256: {b['sha256']}",f"After SHA256: {a['sha256']}",f"Functions before: {b['function_names']}",
+                     f"Functions after: {a['function_names']}",f"Exact 33 occurrences: {b['count_33']} -> {a['count_33']}","",
+                     "### Letter census",json.dumps({"before":b["letters"],"after":a["letters"]},ensure_ascii=False,sort_keys=True),"",
+                     "### Digit census",json.dumps({"before":b["digits"],"after":a["digits"]},sort_keys=True),"",
+                     "### Brackets commas quotes punctuation census",json.dumps({"before":b["punctuation"],"after":a["punctuation"]},ensure_ascii=False,sort_keys=True),"",
+                     "### Changed character frequencies",json.dumps(cd,ensure_ascii=False,sort_keys=True),""]
+          out=Path("gv-nanoscopic-audit");out.mkdir(exist_ok=True)
+          (out/"report.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n")
+          (out/"report.md").write_text("\n".join(md)+"\n")
+          (out/"exact.diff").write_text(git("diff","--no-ext-diff","--find-renames",base,head))
+          print("\n".join(md))
+          if not rows: print("FAIL: no touched files",file=sys.stderr);sys.exit(1)
+          PY
+      - name: Upload nanoscopic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gv-nanoscopic-audit-${{ github.sha }}
+          path: gv-nanoscopic-audit/
+          if-no-files-found: error
+          retention-days: 90
