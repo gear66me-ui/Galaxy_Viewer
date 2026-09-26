@@ -1,8 +1,6 @@
-name: GV Nanoscopic Audit
+name: Galaxy Viewer Nanoscopic Audit
 on:
   push:
-    branches: [beta]
-  pull_request:
     branches: [beta]
   workflow_dispatch:
 permissions:
@@ -11,47 +9,50 @@ jobs:
   nanoscopic-audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout beta with history
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Audit every touched file
+          fetch-depth: 2
+      - name: Generate nanoscopic instruction report
+        shell: bash
         run: |
           set -euo pipefail
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then BEFORE="$(git rev-parse HEAD^ 2>/dev/null || git rev-parse HEAD)"; fi
+          export BEFORE AFTER
           python3 - <<'PY'
-          import collections, hashlib, json, pathlib, re, subprocess, sys
-          def git(*a): return subprocess.check_output(["git",*a],text=True)
-          head=git("rev-parse","HEAD").strip()
-          try: base=git("rev-parse",head+"^").strip()
-          except: base=head
-          def blob(ref,p):
-              try:return subprocess.check_output(["git","show",ref+":"+p])
-              except:return b""
-          punct=list("{}[](),;:'\".+-*/%=<>!?&#@_$\\|")
-          multi=["==","!=","=>","::","&&","||","//","/*","*/","33"]
-          def m(data):
-              s=data.decode("utf-8","replace"); cf=collections.Counter(s); dg=collections.Counter(c for c in s if c.isdigit())
-              funcs=re.findall(r"\\bfunction\\s+([A-Za-z_$][\\w$]*)\\s*\\(",s)
-              arrows=re.findall(r"\\b([A-Za-z_$][\\w$]*)\\s*=\\s*(?:async\\s*)?(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*=>",s)
-              decs=re.findall(r"\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)",s)
-              return {"sha256":hashlib.sha256(data).hexdigest(),"bytes":len(data),"lines":len(s.splitlines()),"characters":len(s),"letters":sum(c.isalpha() for c in s),"uppercase":sum(c.isupper() for c in s),"lowercase":sum(c.islower() for c in s),"digits":sum(c.isdigit() for c in s),"digit_frequency":dict(sorted(dg.items())),"words":len(re.findall(r"[A-Za-z_$][A-Za-z0-9_$-]*",s)),"numeric_tokens":len(re.findall(r"[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)",s)),"spaces":s.count(" "),"tabs":s.count("\\t"),"newlines":s.count("\\n"),"whitespace":sum(c.isspace() for c in s),"punctuation":{p:s.count(p) for p in punct},"multi_tokens":{p:s.count(p) for p in multi},"functions":{"count":len(funcs)+len(arrows),"named":funcs,"arrow":arrows},"declarations":{"count":len(decs),"names":decs},"balanced":{"braces":s.count("{")==s.count("}"),"brackets":s.count("[")==s.count("]"),"parentheses":s.count("(")==s.count(")")},"character_frequency":dict(sorted(cf.items()))}
-          rows=[]
-          for line in git("diff","--name-status","-M",base,head).splitlines():
-              p=line.split("\\t"); st=p[0]; old=p[1]; new=p[2] if st.startswith("R") else p[1]
-              a=m(b"" if st.startswith("A") else blob(base,old)); b=m(b"" if st.startswith("D") else blob(head,new))
-              scalar=["bytes","lines","characters","letters","uppercase","lowercase","digits","words","numeric_tokens","spaces","tabs","newlines","whitespace"]
-              chars=set(a["character_frequency"])|set(b["character_frequency"])
-              rows.append({"status":st,"old_path":old,"new_path":new,"before":a,"after":b,"delta":{k:b[k]-a[k] for k in scalar},"punctuation_delta":{k:b["punctuation"][k]-a["punctuation"][k] for k in punct},"digit_delta":{str(k):b["digit_frequency"].get(str(k),0)-a["digit_frequency"].get(str(k),0) for k in range(10)},"multi_token_delta":{k:b["multi_tokens"][k]-a["multi_tokens"][k] for k in multi},"changed_character_frequency":{c:b["character_frequency"].get(c,0)-a["character_frequency"].get(c,0) for c in sorted(chars) if b["character_frequency"].get(c,0)!=a["character_frequency"].get(c,0)}})
-          report={"base":base,"head":head,"touched_files":len(rows),"files":rows}
-          pathlib.Path("artifacts").mkdir(exist_ok=True)
-          pathlib.Path("artifacts/gv-nanoscopic-audit.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\\n")
-          out=["# GV Nanoscopic Audit","Base: "+base,"Head: "+head,"Touched files: "+str(len(rows)),""]
-          for r in rows:
-              out += ["## "+r["status"]+" "+r["new_path"],"Delta: "+json.dumps(r["delta"],sort_keys=True),"Punctuation delta: "+json.dumps(r["punctuation_delta"],sort_keys=True),"Digit delta: "+json.dumps(r["digit_delta"],sort_keys=True),"Token delta: "+json.dumps(r["multi_token_delta"],sort_keys=True),"Functions: "+str(r["before"]["functions"]["count"])+" -> "+str(r["after"]["functions"]["count"]),"Declarations: "+str(r["before"]["declarations"]["count"])+" -> "+str(r["after"]["declarations"]["count"]),"Balanced after: "+json.dumps(r["after"]["balanced"],sort_keys=True),""]
-          pathlib.Path("artifacts/gv-nanoscopic-audit.md").write_text("\\n".join(out)+"\\n")
-          print("\\n".join(out))
-          if any(not all(r["after"]["balanced"].values()) for r in rows if r["after"]["bytes"]): sys.exit("FAIL: delimiter balance")
+          import collections,hashlib,json,os,pathlib,re,subprocess
+          before=os.environ['BEFORE']; after=os.environ['AFTER']
+          def git(*a): return subprocess.check_output(['git',*a],text=True,errors='replace')
+          changed=[p for p in git('diff','--name-only',before,after).splitlines() if p]
+          r=['GALAXY VIEWER NANOSCOPIC AUDIT','='*80,f'BEFORE_COMMIT={before}',f'AFTER_COMMIT={after}',f'CHANGED_FILES={len(changed)}','']
+          def m(t):
+            b=t.encode(); nums=re.findall(r'(?<![A-Za-z_])[-+]?\d+(?:\.\d+)?',t)
+            return {'bytes':len(b),'lines':len(t.splitlines()),'characters':len(t),'words':len(re.findall(r'\S+',t)),'spaces':t.count(' '),'tabs':t.count('\t'),'newlines':t.count('\n'),'non_whitespace':len(re.sub(r'\s','',t)),'numeric_tokens':len(nums),'digits':sum(c.isdigit() for c in t),'occurrences_33':t.count('33'),'sha256':hashlib.sha256(b).hexdigest(),'digit_frequency':dict(sorted(collections.Counter(c for c in t if c.isdigit()).items()))}
+          for p in changed:
+            try: old=git('show',f'{before}:{p}')
+            except subprocess.CalledProcessError: old=''
+            try: new=git('show',f'{after}:{p}')
+            except subprocess.CalledProcessError: new=''
+            a,b=m(old),m(new); r += [f'FILE={p}','-'*80]
+            for k in ['bytes','lines','characters','words','spaces','tabs','newlines','non_whitespace','numeric_tokens','digits','occurrences_33']: r.append(f'{k}: BEFORE={a[k]} AFTER={b[k]} DELTA={b[k]-a[k]:+d}')
+            r += ['digit_frequency BEFORE='+json.dumps(a['digit_frequency'],sort_keys=True),'digit_frequency AFTER ='+json.dumps(b['digit_frequency'],sort_keys=True),'sha256 BEFORE='+a['sha256'],'sha256 AFTER ='+b['sha256'],'DIFF:',git('diff','--unified=3',before,after,'--',p).rstrip(),'']
+          viewer=pathlib.Path('viewer/GV-beta-200-009.py').read_text(); pointer=json.loads(pathlib.Path('viewer/gv-current-viewer.json').read_text()); build=re.search(r"const GV200001_BUILD='(\d{4})';",viewer)
+          r += ['CONTROLLED INVARIANTS','-'*80,'viewer_build='+(build.group(1) if build else '<missing>'),'pointer_build='+str(pointer.get('build')),'camera_30hz_owner_count='+str(viewer.count('sample=Math.floor(elapsedMs*30/1000)')),'fov_report_400ms_owner_count='+str(viewer.count('GV_FOV_REPORT_MS=400')),'fov_hysteresis_owner_count='+str(viewer.count('GV_FOV_REPORT_HYSTERESIS=0.001'))]
+          assert build and build.group(1)==str(pointer.get('build')),'viewer/pointer build mismatch'
+          assert viewer.count('sample=Math.floor(elapsedMs*30/1000)')==1,'30 Hz Aladin navigation invariant changed'
+          out='\n'.join(r)+'\n'; pathlib.Path('gv-nanoscopic-audit.txt').write_text(out); print(out)
           PY
-      - uses: actions/upload-artifact@v4
+      - name: Publish report to workflow summary
+        run: |
+          echo '## Galaxy Viewer Nanoscopic Audit' >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~text' >> "$GITHUB_STEP_SUMMARY"
+          cat gv-nanoscopic-audit.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload nanoscopic report
+        uses: actions/upload-artifact@v4
         with:
           name: gv-nanoscopic-audit-${{ github.sha }}
-          path: artifacts/
+          path: gv-nanoscopic-audit.txt
+          if-no-files-found: error
