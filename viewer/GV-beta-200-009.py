@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0042';
+const GV200001_BUILD='0043';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -1006,20 +1006,58 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
-async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null}={}){
-    const center=prepared?.imageCenter;const ra1=Number(center?.[0]),dec1=Number(center?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
+async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,registeredPromise=null}={}){
+    const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
-    const doeRun=gvDoeBeginRun({firstHomeTrip,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
+    if(firstHomeTrip){
+        const translateSeconds=4.0,zoomSeconds=8.5,durationSeconds=translateSeconds+zoomSeconds;
+        const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
+        const translateStarted=performance.now();let lastSample=-1;
+        await new Promise((resolve,reject)=>{
+            const frame=now=>{try{
+                const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
+                doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
+                if(sample!==lastSample){
+                    const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u);
+                    const rotation=startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*u;
+                    gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
+                    gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);lastSample=sample;
+                }
+                if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
+            }catch(error){reject(error)}};requestAnimationFrame(frame);
+        });
+        if(registeredPromise){
+            const registered=await registeredPromise,center=registered?.imageCenter;
+            ra1=Number(center?.[0]);dec1=Number(center?.[1]);finalFov=Number(registered?.finalFov);targetRotation=Number(registered?.rotation);
+            if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV FIRST TRIP REGISTERED STATE INVALID');
+            gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
+            gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+            try{await onZoomInStart?.(registered)}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
+        }else{try{await onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}
+        const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
+        await new Promise((resolve,reject)=>{
+            const frame=now=>{try{
+                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
+                doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
+                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvDoeCommand('setFov',[fov]);aladin.setFov(fov);lastSample=sample}
+                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
+            }catch(error){reject(error)}};requestAnimationFrame(frame);
+        });
+        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
+        gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+        doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
+    }
+    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
+    const doeRun=gvDoeBeginRun({firstHomeTrip:false,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*gvDoeRate/1000);
             doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
             if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
             if(t<1&&sample!==lastSample){
-                const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip,startFov,finalFov,maxFov:120,startRotation,targetRotation});
+                const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:120,startRotation,targetRotation});
                 gvDoeCommand('setFov',[state.fov]);aladin.setFov(state.fov);
                 if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
                 else if(state.translation>=1&&!destinationCenterApplied){gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
@@ -1028,11 +1066,9 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null}={}){
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
             gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);resolve(prepared);
-        }catch(error){reject(error)}};
-        requestAnimationFrame(frame);
+        }catch(error){reject(error)}};requestAnimationFrame(frame);
     });
-    doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);
-    return prepared;
+    doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
 }
 
 
@@ -1069,27 +1105,23 @@ function validateDestination(destination){
 // ============================================================================
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
-    activeDestination=v.destination;
-    destinationPresentation.depart();
-    travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?7.5:17});
-    let zoomInStarted=false,installed=false,displayReady=Promise.resolve(false);
-    const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return prepared};
-    // Start travel immediately. Never gate choreography on image/WCS preparation.
-    // Catalog coordinates are used only as the immediate flight target; AVM/WCS preparation remains parallel.
-    const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
-    preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
-    const prepared=await preparedPromise;
-    headsUpDisplay.markReady?.(v.destination);
-    await travelPromise;
-    if(activeDestination!==v.destination)return v.destination;
-    if(!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}
-    await displayReady;
-    // Arrival choreography owns the camera. Installing the HD overlay must not issue
-    // a second post-arrival goto/FOV/rotation command, which causes the visible snap.
-    travelPresentation.end();
-    destinationPresentation.arrive(v.destination,{imageUrl:String(v.destination?.hdUrl||directHdUrl(v.destination)).trim()});
-    headsUpDisplay.render();return v.destination;
+    activeDestination=v.destination;destinationPresentation.depart();
+    travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?12.5:17});
+    let installed=false,displayReady=Promise.resolve(false);
+    const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
+    if(firstTrip){
+        const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:installWhenReady});
+        const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
+        if(activeDestination!==v.destination)return v.destination;
+        if(!installed)await installWhenReady(prepared);else await displayReady;
+        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
+    }
+    const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);
+    const travelPromise=gvFly130H(prepared,{firstHomeTrip:false,onZoomInStart:()=>{installWhenReady(prepared).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
+    await travelPromise;if(activeDestination!==v.destination)return v.destination;
+    if(!installed)await installWhenReady(prepared);else await displayReady;
+    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
 }
 
 // ============================================================================
