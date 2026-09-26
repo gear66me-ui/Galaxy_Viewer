@@ -35,6 +35,7 @@ function installStyle(){
 #gv-random-galaxy .gvrg-random-comet i:nth-child(1){--a:0deg;--s:1;--o:1;background:#FF4414;box-shadow:0 0 2px 1px #FF4414,0 0 5px 1px #FF8420}
 #gv-random-galaxy .gvrg-random-comet i:nth-child(2){--a:-15deg;--s:.88;--o:.84}#gv-random-galaxy .gvrg-random-comet i:nth-child(3){--a:-30deg;--s:.76;--o:.68}#gv-random-galaxy .gvrg-random-comet i:nth-child(4){--a:-45deg;--s:.64;--o:.52}#gv-random-galaxy .gvrg-random-comet i:nth-child(5){--a:-60deg;--s:.52;--o:.38}#gv-random-galaxy .gvrg-random-comet i:nth-child(6){--a:-75deg;--s:.42;--o:.26}#gv-random-galaxy .gvrg-random-comet i:nth-child(7){--a:-90deg;--s:.32;--o:.16}#gv-random-galaxy .gvrg-random-comet i:nth-child(8){--a:-105deg;--s:.24;--o:.08}
 #gv-random-galaxy.gvrg-random-busy .gvrg-random-comet{opacity:1;animation-play-state:running}
+#gv-random-galaxy.gvrg-random-traveling{background:linear-gradient(145deg,#062B1D 0%,#08783F 42%,#13B968 76%,#38E69A 100%) padding-box,linear-gradient(135deg,#38E69A 0%,#78FFAB 48%,#D9FFE9 100%) border-box;color:#DFFFF0;text-shadow:0 0 5px rgba(120,255,171,.9);box-shadow:inset 0 0 8px rgba(120,255,171,.22),0 0 12px rgba(56,230,154,.62)}
 #gv-random-galaxy .gvrg-random-comet-left{animation-delay:-1.4s}
 @keyframes gvrg-random-comet-orbit-0031{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 `;
@@ -53,6 +54,7 @@ function mount(host,handlers={}){
  forward.addEventListener('click',()=>{if(!forward.disabled)handlers.onForward?.()});
  return Object.freeze({VERSION,host,back,random,forward,
   setBusy(busy){random.classList.toggle('gvrg-random-busy',Boolean(busy));random.disabled=Boolean(busy)},
+  setTraveling(traveling){const on=Boolean(traveling);random.classList.toggle('gvrg-random-traveling',on);const label=random.querySelector('.gvrg-random-label');if(label)label.textContent=on?'TRAVELING':'RANDOM GALAXY';random.setAttribute('aria-label',on?'TRAVELING':'RANDOM GALAXY')},
   setEnabled({back:be=true,random:re=true,forward:fe=true}={}){back.disabled=!be;random.disabled=!re;forward.disabled=!fe}
  });
 }

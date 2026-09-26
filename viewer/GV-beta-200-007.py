@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0024';
+const GV200001_BUILD='0025';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -568,7 +568,7 @@ try{
 }catch(error){console.error('COORDINATE OVERLAY MOUNT FAILED',error)}
 function gvSyncCoordinateFromAladin(){
     try{
-        const center=aladin.getRaDec?.();
+        const size=aladin.getSize?.(),center=Array.isArray(size)&&size.length>=2?aladin.pix2world?.(Number(size[0])/2,Number(size[1])/2):aladin.getRaDec?.();
         if(coordinate&&Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
     }catch(_){}
     requestAnimationFrame(gvSyncCoordinateFromAladin);
@@ -816,8 +816,8 @@ updateCrossFadeThumb();
 const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 const gvFovReadout=document.createElement('div');
-gvFovReadout.innerHTML='<span id="gv-fov-title">FOV</span><span id="gv-fov-int">360</span><span id="gv-fov-dot">.</span><span id="gv-fov-frac">000</span><span id="gv-fov-degree">°</span>';
-Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'18px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/18px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-12px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-degree').style,{position:'absolute',left:'46px',width:'5px',textAlign:'left'});
+gvFovReadout.innerHTML='<span id="gv-fov-title">FOV DEGREES</span><span id="gv-fov-int">360</span><span id="gv-fov-dot">.</span><span id="gv-fov-frac">000</span>';
+Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'18px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/18px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-12px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});
 document.getElementById('aladin-cosmic-command-test').appendChild(gvFovReadout);
 function gvSyncFovReadout(){
     try{
@@ -896,7 +896,7 @@ function gvTimedZoomToTarget(targetFov,{durationMs=null,attackMs=500,releaseMs=5
                 area=(attackMs/2)+cruiseMs+u-u*u/(2*releaseMs);
             }
             const progress=totalArea>0?Math.max(0,Math.min(1,area/totalArea)):1;
-            gvSetZoomCommand(direction*level);
+            gvSetZoomCommand(direction*Math.min(.8,level));
             aladin.setFov(start*Math.exp(Math.log(target/start)*progress));
             if(elapsed<totalMs)requestAnimationFrame(frame);
             else{gvSetZoomCommand(0);resolve(true)}
@@ -1031,7 +1031,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
     let zoomOut=null;
-    if(!firstTrip)zoomOut=gvTimedZoomToTarget(120,{durationMs:3750,attackMs:500,releaseMs:500});
+    if(!firstTrip)zoomOut=gvTimedZoomToTarget(120,{durationMs:4687.5,attackMs:500,releaseMs:500});
     if(!firstTrip)await new Promise(resolve=>setTimeout(resolve,3000));
     const prepared=await preparedPromise;
     if(activeDestination!==v.destination)return v.destination;
@@ -1050,6 +1050,7 @@ async function navigateRandom(){
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     galaxyNavigator.setBusy(true);
+    galaxyNavigator.setTraveling?.(true);
     try{
         const destination=await navigationRuntime.nextDestination();
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
@@ -1059,6 +1060,7 @@ async function navigateRandom(){
         routeIndex++;
         await showDestination(destination,{firstTrip});
     }finally{
+        galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
     }
