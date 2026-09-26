@@ -258,7 +258,7 @@ function createCenterReticle(root){
     const compass=document.createElement('img');
     compass.id='gv-compass-reticle';
     compass.src=fresh(RETICLE_URL); compass.alt=''; compass.width=SIZE; compass.height=SIZE;
-    Object.assign(compass.style,{position:'absolute',inset:'0',width:`${SIZE}px`,height:`${SIZE}px`,objectFit:'contain',transform:'rotate(0deg)',transformOrigin:'50% 50%',pointerEvents:'none',willChange:'transform'});
+    Object.assign(compass.style,{position:'absolute',inset:'0',width:`${SIZE}px`,height:`${SIZE}px`,objectFit:'contain',opacity:'0.8',transform:'rotate(0deg)',transformOrigin:'50% 50%',pointerEvents:'none',willChange:'transform'});
     reticle.appendChild(compass);
     reticle.gvDirectional={northRotor:compass,lastNorthBearing:null};
     root.appendChild(reticle);
