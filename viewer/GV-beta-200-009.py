@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0040';
+const GV200001_BUILD='0041';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -1083,6 +1083,12 @@ async function showDestination(destination,{firstTrip=false}={}){
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}
     await displayReady;
+    // Reassert the authoritative navigation destination after HD overlay installation.
+    // setOverlayImageLayer may perturb the Aladin camera; the overlay must never own sky centering.
+    aladin.gotoRaDec(v.ra,v.dec);
+    aladin.setFov(v.fov);
+    aladin.setRotation(v.rotation);
+    coordinate?.update(v.ra,v.dec);
     travelPresentation.end();
     destinationPresentation.arrive(v.destination,{imageUrl:String(v.destination?.hdUrl||directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();return v.destination;
