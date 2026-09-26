@@ -4,37 +4,12 @@
   const VERSION='0007';
   const base=window.GalaxyViewerHamburgerMenu;
   if(!base||base.version!=='0005')throw new Error('HAMBURGER 0007 REQUIRES FROZEN 0005');
-  const leftLabels=['PROJECTION','DIAGNOSTICS','TRAVEL SETTINGS','SURVEY','RETICLE ON/OFF'];
-  function relabelRow(row,name){
-    if(!row)return;
-    row.dataset.gvMenuAction=name;
-    const label=row.querySelector('.gv-viewer-menu-label');
-    const glyph=label?.querySelector('.gv-space-age-glyph');
-    if(glyph)glyph.textContent=name;else if(label)label.textContent=name;
-    label?.setAttribute('aria-label',name);
-    const icon=row.querySelector('.gv-viewer-menu-icon');
-    icon?.setAttribute('aria-label',name);icon?.setAttribute('title',name);
-  }
+  const leftLabels=['PROJECTION','SURVEY','RETICLE ON/OFF'];
   function init(options={}){
-    const originalAction=options.onMenuAction;
-    let instance=null;
-    const wrapped={...options,onMenuAction(action,context){
-      if(action==='DIAGNOSTICS'){
-        window.GalaxyViewerDiagnostics?.open?.();
-        setTimeout(()=>instance?.close?.(),0);
-        return;
-      }
-      if(action==='TRAVEL SETTINGS'){
-        window.GalaxyViewerNavigationAdmin?.open?.();
-        setTimeout(()=>instance?.close?.(),0);
-        return;
-      }
-      originalAction?.(action,context);
-    }};
-    instance=base.init(wrapped);
+    const instance=base.init(options);
     const rows=[...instance.leftMenu.querySelectorAll('.gv-viewer-menu-row')];
-    relabelRow(rows[1],'DIAGNOSTICS');
-    relabelRow(rows[2],'TRAVEL SETTINGS');
+    rows[2]?.remove();
+    rows[1]?.remove();
     instance.root.dataset.gvHamburgerMenuVersion=VERSION;
     return instance;
   }
