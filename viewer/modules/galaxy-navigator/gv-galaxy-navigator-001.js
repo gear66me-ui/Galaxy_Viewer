@@ -15,7 +15,7 @@ function installStyle(){
  style.id='gv-galaxy-navigator-001-style';
  style.textContent=`
 @font-face{font-family:"GV Space Age";src:url("${FONT_URL}") format("opentype");font-display:swap}
-.gv-galaxy-navigator{display:flex;align-items:center;justify-content:center;gap:5px;width:min(100%,430px);margin:0 auto}
+.gv-galaxy-navigator{display:flex;align-items:center;justify-content:center;gap:5px;width:min(100%,430px);margin:0 auto}.gv-galaxy-history-back{display:none!important}
 #gv-random-galaxy{appearance:none;-webkit-appearance:none;position:static;display:flex;flex:1 1 auto;min-width:0;align-items:center;justify-content:center;height:36px;margin:0;padding:0 12px;border:2px solid transparent;border-radius:6px;background:linear-gradient(145deg,#081B3A 0%,#0B3177 40%,#1484DB 74%,#296DBD 100%) padding-box,linear-gradient(135deg,#296DBD 0%,#58BFFF 38%,#8DDAFF 70%,#F4FDFF 100%) border-box;color:#EAF8FF;font:400 15.5px/1 "GV Space Age",sans-serif;letter-spacing:.38px;text-transform:uppercase;text-shadow:0 0 5px rgba(221,248,255,.54);box-shadow:inset 0 0 8px rgba(221,248,255,.14),0 0 9px rgba(88,191,255,.34);filter:brightness(1.04);cursor:pointer;touch-action:manipulation;outline:none;pointer-events:auto}
 .gv-galaxy-history{appearance:none;-webkit-appearance:none;position:relative;display:flex;flex:0 0 36px;align-items:center;justify-content:center;width:36px;height:36px;margin:0;padding:0;border:2px solid transparent;border-radius:6px;background:linear-gradient(145deg,#081B3A 0%,#0B3177 40%,#1484DB 74%,#296DBD 100%) padding-box,linear-gradient(135deg,#296DBD 0%,#58BFFF 38%,#8DDAFF 70%,#F4FDFF 100%) border-box;color:transparent;box-shadow:inset 0 0 8px rgba(221,248,255,.14),0 0 9px rgba(88,191,255,.34);filter:brightness(1.04);cursor:pointer;touch-action:manipulation;outline:none;overflow:hidden;pointer-events:auto}
 .gv-galaxy-history::before,.gv-galaxy-history::after{content:"";position:absolute;left:50%;top:50%;width:17px;height:17px;border-style:solid;border-left:0;border-bottom:0;pointer-events:none;box-sizing:border-box}
@@ -55,7 +55,7 @@ function mount(host,handlers={}){
  return Object.freeze({VERSION,host,back,random,forward,
   setBusy(busy){random.classList.toggle('gvrg-random-busy',Boolean(busy));random.disabled=Boolean(busy)},
   setTraveling(traveling){const on=Boolean(traveling);random.classList.toggle('gvrg-random-traveling',on);const label=random.querySelector('.gvrg-random-label');if(label)label.textContent=on?'TRAVELING':'RANDOM GALAXY';random.setAttribute('aria-label',on?'TRAVELING':'RANDOM GALAXY')},
-  setEnabled({back:be=true,random:re=true,forward:fe=true}={}){back.disabled=!be;random.disabled=!re;forward.disabled=!fe}
+  setEnabled({back:be=true,random:re=true,forward:fe=true}={}){back.disabled=true;random.disabled=!re;forward.disabled=!fe}
  });
 }
 global.GalaxyNavigator=Object.freeze({VERSION,mount});
