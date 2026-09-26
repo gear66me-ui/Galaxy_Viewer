@@ -12,28 +12,28 @@ VIEWER_VERSION = "GV-beta-200-008"
 # ECO: GV200-001
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"
+ALADIN_CSS_URL = "./frozen/aladin/aladin.css"
+ALADIN_JS_URL = "./frozen/aladin/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js"
-HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js"
-COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
-TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
-DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
-GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0003"
-GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003"
-HEADS_UP_DISPLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js"
+HAMBURGER_BASE_URL = "./frozen/modules/gv-hamburger-menu-0005.js"
+HAMBURGER_URL = "./frozen/modules/gv-hamburger-menu-0007.js"
+COORDINATE_URL = "./frozen/modules/gv-coordinate-overlay-0006.js"
+TARGET_URL = "./frozen/modules/gv-target-simbad-0004.js"
+DIAGNOSTICS_URL = "./frozen/modules/gv-diagnostics-0019.js"
+GALAXY_ROUTE_ENGINE_URL = "./frozen/modules/gv-galaxy-route-engine-001.js?v=0003"
+GALAXY_NAVIGATOR_URL = "./frozen/modules/gv-galaxy-navigator-001.js?v=0003"
+HEADS_UP_DISPLAY_URL = "./frozen/modules/gv-heads-up-display-0001.js"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css" />
+<link rel="stylesheet" href="./frozen/aladin/aladin.css" />
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -89,16 +89,16 @@ const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-008',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js',
-    hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
-    hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js',
-    coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
-    targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
-    diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
-    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0003',
-    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003',
-    headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js'
+    aladinCssUrl:'./frozen/aladin/aladin.css',
+    aladinJsUrl:'./frozen/aladin/aladin.js',
+    hamburgerBaseUrl:'./frozen/modules/gv-hamburger-menu-0005.js',
+    hamburgerUrl:'./frozen/modules/gv-hamburger-menu-0007.js',
+    coordinateUrl:'./frozen/modules/gv-coordinate-overlay-0006.js',
+    targetUrl:'./frozen/modules/gv-target-simbad-0004.js',
+    diagnosticsUrl:'./frozen/modules/gv-diagnostics-0019.js',
+    galaxyRouteEngineUrl:'./frozen/modules/gv-galaxy-route-engine-001.js?v=0003',
+    galaxyNavigatorUrl:'./frozen/modules/gv-galaxy-navigator-001.js?v=0003',
+    headsUpDisplayUrl:'./frozen/modules/gv-heads-up-display-0001.js'
 });
 
 
@@ -206,7 +206,7 @@ const HOME=Object.freeze({
     rotation:0
 });
 
-const GV_SPACE_AGE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const GV_SPACE_AGE_URL='./frozen/artwork/Space-Age-GV-9A.otf';
 const gvSpaceAgeFace=new FontFace('GV Space Age',`url("${GV_SPACE_AGE_URL}")`,{style:'normal',weight:'400'});
 const gvSpaceAgeReady=gvSpaceAgeFace.load().then(face=>{
     document.fonts.add(face);
@@ -245,7 +245,7 @@ gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('G
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
 // ECO: GV200-001
 // ============================================================================
-const RETICLE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-reticle.svg';
+const RETICLE_URL='./frozen/artwork/galaxy-viewer-reticle.svg';
 
 function createCenterReticle(root){
     const COSMIC_BLUE='#58BFFF';
@@ -680,8 +680,8 @@ const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
-const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json';
+const GV_MASTER_CATALOG_URL='./frozen/catalogs/gv-master-catalog.json';
+const GV_AVM_RUNTIME_CATALOG_URL='./frozen/catalogs/gv-avm-runtime-catalog-0001.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
