@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0020';
+const GV200001_BUILD='0021';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -817,8 +817,8 @@ const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 const gvFovReadout=document.createElement('div');
 gvFovReadout.textContent='FOV 360.000°';
-Object.assign(gvFovReadout.style,{position:'absolute',left:'50%',top:'-25px',transform:'translateX(-50%)',minWidth:'74px',padding:'3px 6px',border:'1px solid rgba(124,203,255,.82)',borderRadius:'5px',background:'linear-gradient(145deg,rgba(8,27,58,.92),rgba(18,63,134,.92))',boxShadow:'0 0 8px rgba(88,191,255,.42)',font:'400 9px/1.2 "GV Space Age",sans-serif',letterSpacing:'.25px',color:'#bdeaff',textAlign:'center',whiteSpace:'nowrap',pointerEvents:'none'});
-zoomControl.root.appendChild(gvFovReadout);
+Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 110px)',zIndex:'7313',minWidth:'74px',padding:'4px 7px',border:'1px solid rgba(124,203,255,.92)',borderRadius:'6px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 6px rgba(158,230,255,.95),0 0 16px rgba(46,172,255,.72)',font:'400 9px/1.2 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',textAlign:'center',whiteSpace:'nowrap',pointerEvents:'none'});
+document.getElementById('aladin-cosmic-command-test').appendChild(gvFovReadout);
 function gvSyncFovReadout(){
     try{
         const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
@@ -1026,39 +1026,17 @@ function validateDestination(destination){
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
 // ============================================================================
-async function gvTravelToImageCenterFromRecord(destination,durationMs=3000){
-    const record=await gvRuntimeAvmRecord(destination);
-    const fovX=Number(record.fovXDegrees??record.fovDegrees),fovY=Number(record.fovYDegrees??record.fovDegrees);
-    const rawWidth=Number(record.referenceDimension?.width??record.width??record.naxis1);
-    const rawHeight=Number(record.referenceDimension?.height??record.height??record.naxis2);
-    const width=Number(record.pixelWidth??rawWidth),height=Number(record.pixelHeight??rawHeight);
-    const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,width,height);
-    const imageCenter=gvTanPixelToWorld(displayWcs,(width+1)/2,(height+1)/2);
-    return gvTravelToImageCenter({imageCenter,rotation:Number(record.aladinRotation??record.spatialRotationDeg),finalFov:Math.max(fovX,fovY)*1.0},durationMs);
-}
-
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
-    const preparedTask=preparedPromise.catch(error=>{console.error('GV DIRECT HD PREPARE FAILED',error);return null});
     if(!firstTrip)await gvTimedZoomToTarget(120,{durationMs:3000,attackMs:500,releaseMs:500});
-    if(firstTrip){
-        const travel=gvTravelToImageCenterFromRecord(v.destination,3000);
-        const prepared=await preparedTask;
-        await travel;
-        if(!prepared||activeDestination!==v.destination)return v.destination;
-        gvInstallPreparedHd(prepared);
-        await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:1000});
-        headsUpDisplay.render();return v.destination;
-    }
-    const prepared=await preparedTask;
-    if(!prepared||activeDestination!==v.destination)return v.destination;
+    const prepared=await preparedPromise;
+    if(activeDestination!==v.destination)return v.destination;
     await gvTravelToImageCenter(prepared,3000);
     gvInstallPreparedHd(prepared);
-    await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:1000});
+    await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:500});
     headsUpDisplay.render();return v.destination;
 }
-
 
 // ============================================================================
 // SECTION 037 — RANDOM GALAXY ACTION
