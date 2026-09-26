@@ -1,7 +1,7 @@
 (()=>{'use strict';
-const VERSION='0009';
+const VERSION='0010';
 const FONT='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
-const ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
+const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/';
 const CONSTELLATIONS=ART+'Constellations/';
 const HD_LAYOUT=Object.freeze({bannerRatio:403/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});
 const ICONS=Object.freeze({chandra:'Chandra/Chandra.jpg',eso:'ESO/ESO.jpg',euclid:'Euclid/Euclid.jpg',galex:'GALEX/GALEX.jpg',herschel:'Herschel/Herschel.jpg',hubble:'Hubble/Hubble.jpg',jwst:'JWST/JWST.jpeg',nrao:'NRAO/NRAO.jpg',noirlab:'NoirLabs/NOIRLab.jpg',nustar:'NuSTAR/NuSTAR.jpg',spitzer:'Spitzer/Spitzer.jpg'});
