@@ -1049,6 +1049,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
         gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
         doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
     }
+    if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
     const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
     const doeRun=gvDoeBeginRun({firstHomeTrip:false,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
     await new Promise((resolve,reject)=>{
@@ -1117,9 +1118,12 @@ async function showDestination(destination,{firstTrip=false}={}){
         if(!installed)await installWhenReady(prepared);else await displayReady;
         travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
     }
-    const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);
-    const travelPromise=gvFly130H(prepared,{firstHomeTrip:false,onZoomInStart:()=>{installWhenReady(prepared).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
+    let prepared=null;
+    preparedPromise.then(value=>{prepared=value;headsUpDisplay.markReady?.(v.destination)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
+    const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,registeredPromise:preparedPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
     await travelPromise;if(activeDestination!==v.destination)return v.destination;
+    prepared=prepared||await preparedPromise;
     if(!installed)await installWhenReady(prepared);else await displayReady;
     travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
 }
