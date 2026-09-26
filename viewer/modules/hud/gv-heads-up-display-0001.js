@@ -74,7 +74,7 @@ function installStyle(){
 .gv-hud-row{display:grid;grid-template-columns:28px 12px;align-items:center;justify-content:end;gap:3px;min-height:18px;padding:1px 2px;border:1px solid rgba(67,207,255,.72);border-radius:6px;background:linear-gradient(180deg,rgba(23,78,134,.90),rgba(4,27,62,.92) 54%,rgba(13,90,152,.86));box-shadow:inset 0 1px 1px rgba(225,251,255,.70),inset 0 -2px 3px rgba(0,0,0,.45),inset 0 0 8px rgba(41,153,255,.26),0 0 2px rgba(221,248,255,.82),0 0 7px rgba(50,190,255,.52);color:#DDF8FF;text-shadow:0 0 5px rgba(88,191,255,.35);font-size:7px;line-height:1;letter-spacing:.2px}
 .gv-hud-row[data-state="current"]{background:linear-gradient(180deg,rgba(17,83,91,.94),rgba(5,42,62,.94) 54%,rgba(12,104,119,.88))}
 .gv-hud-led{display:block;width:12px;height:12px;overflow:visible;filter:drop-shadow(0 0 2px rgba(221,248,255,.92)) drop-shadow(0 0 5px rgba(88,191,255,.72))}
-.gv-hud-provider{color:#7CCBFF;font-weight:700;text-shadow:0 0 3px rgba(221,248,255,.74),0 0 7px rgba(88,191,255,.60)}
+.gv-hud-provider{color:#7CCBFF;font-weight:700;text-shadow:0 0 3px rgba(221,248,255,.74),0 0 7px rgba(88,191,255,.60);transform:translateX(3px)}
 .gv-hud-row[data-state="current"] .gv-hud-provider{color:#78FFAB}
 .gv-hud-empty{opacity:.42}
 `;
