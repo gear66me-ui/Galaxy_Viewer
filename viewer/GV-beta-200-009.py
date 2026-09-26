@@ -258,7 +258,7 @@ function createCenterReticle(root){
     const compass=document.createElement('img');
     compass.id='gv-compass-reticle';
     compass.src=fresh(RETICLE_URL); compass.alt=''; compass.width=SIZE; compass.height=SIZE;
-    Object.assign(compass.style,{position:'absolute',inset:'0',width:`${SIZE}px`,height:`${SIZE}px`,objectFit:'contain',opacity:'0.8',transform:'rotate(0deg)',transformOrigin:'50% 50%',pointerEvents:'none',willChange:'transform'});
+    Object.assign(compass.style,{position:'absolute',inset:'0',width:`${SIZE}px`,height:`${SIZE}px`,objectFit:'contain',opacity:'0.6',transform:'rotate(0deg)',transformOrigin:'50% 50%',pointerEvents:'none',willChange:'transform'});
     reticle.appendChild(compass);
     reticle.gvDirectional={northRotor:compass,lastNorthBearing:null};
     root.appendChild(reticle);
@@ -1085,13 +1085,8 @@ async function showDestination(destination,{firstTrip=false}={}){
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}
     await displayReady;
-    // Reassert the exact same AVM/WCS image authority after overlay installation.
-    // Catalog RA/Dec is metadata only; it must not recenter the displayed image.
-    const finalRa=Number(prepared.imageCenter[0]),finalDec=Number(prepared.imageCenter[1]);
-    aladin.gotoRaDec(finalRa,finalDec);
-    aladin.setFov(prepared.finalFov);
-    aladin.setRotation(prepared.rotation);
-    coordinate?.update(finalRa,finalDec);
+    // Arrival choreography owns the camera. Installing the HD overlay must not issue
+    // a second post-arrival goto/FOV/rotation command, which causes the visible snap.
     travelPresentation.end();
     destinationPresentation.arrive(v.destination,{imageUrl:String(v.destination?.hdUrl||directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();return v.destination;
