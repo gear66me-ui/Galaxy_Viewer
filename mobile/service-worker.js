@@ -1,11 +1,11 @@
-const CACHE_NAME='galaxy-viewer-mobile-gv200-runtime-0086';
+const CACHE_NAME='galaxy-viewer-mobile-gv200-runtime-0088';
 const CACHE_PREFIX='galaxy-viewer-mobile-';
 const APP_SHELL=[
   './',
   './index.html',
   './beta/',
   './beta/index.html',
-  './beta/generic-app.html?v=0086'
+  './beta/generic-app.html?v=0088'
 ];
 
 self.addEventListener('install',event=>{
@@ -44,10 +44,12 @@ self.addEventListener('fetch',event=>{
   const url=new URL(request.url);
   const sameOrigin=url.origin===self.location.origin;
   const pointerRequest=sameOrigin&&url.pathname.endsWith('/viewer/gv-current-viewer.json');
+  const launcherRequest=sameOrigin&&url.pathname.endsWith('/mobile/beta/generic-app.html');
+  const activeViewerRequest=sameOrigin&&/\/viewer\/GV-beta-200-009\.py$/.test(url.pathname);
   const cacheKey=url.searchParams.get('v');
   const versioned=sameOrigin&&(cacheKey==='0085'||cacheKey==='0081'||cacheKey==='0080'||cacheKey==='0079'||cacheKey==='0078'||cacheKey==='0077'||cacheKey==='0076'||cacheKey==='0075'||cacheKey==='0074'||cacheKey==='0073'||cacheKey==='0072'||cacheKey==='0071'||cacheKey==='0070'||cacheKey==='0069'||cacheKey==='6I-public-mobile-001');
 
-  if(pointerRequest){
+  if(pointerRequest||launcherRequest||activeViewerRequest){
     event.respondWith(fetch(request,{cache:'no-store'}));
     return;
   }
