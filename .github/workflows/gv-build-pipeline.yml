@@ -23,6 +23,8 @@ on:
 
 permissions:
   contents: write
+  actions: read
+  pages: read
 
 concurrency:
   group: galaxy-viewer-build-pipeline-beta
@@ -75,6 +77,8 @@ jobs:
           print('Android APK -> mobile/beta/generic-app.html')
           print('generic-app.html -> viewer/gv-current-viewer.json')
           print('gv-current-viewer.json -> '+viewer.name)
+          print('Pointer requested build -> '+str(d.get('build','<missing>')))
+          print('Viewer current build -> '+(re.search(r"const GV200001_BUILD='([0-9]{4})';",s).group(1) if re.search(r"const GV200001_BUILD='([0-9]{4})';",s) else '<missing>'))
           print('Viewer build cache key -> GV200001-'+build)
           for u in urls:
               print('Viewer dependency -> '+u)
@@ -154,22 +158,56 @@ jobs:
           print('REPOSITORY FETCH-BACK PASS:',build)
           PY
 
-      - name: Wait for GitHub Pages and verify published build
+      - name: Wait for the Pages deployment of this exact promotion
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          promoted_sha="$(git rev-parse HEAD)"
+          echo "PROMOTED SHA: $promoted_sha"
+          for attempt in $(seq 1 40); do
+            run_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/pages.yml/runs?branch=beta&event=push&per_page=20")"
+            match="$(printf '%s' "$run_json" | jq -c --arg sha "$promoted_sha" '.workflow_runs[] | select(.head_sha==$sha) | .' | head -n1)"
+            if [ -n "$match" ]; then
+              status="$(printf '%s' "$match" | jq -r '.status')"
+              conclusion="$(printf '%s' "$match" | jq -r '.conclusion // ""')"
+              echo "Pages run for $promoted_sha: status=$status conclusion=$conclusion"
+              if [ "$status" = "completed" ] && [ "$conclusion" = "success" ]; then
+                break
+              fi
+              if [ "$status" = "completed" ] && [ "$conclusion" != "success" ]; then
+                echo "PAGES DEPLOYMENT FAILED FOR PROMOTED SHA $promoted_sha" >&2
+                exit 1
+              fi
+            else
+              echo "Waiting for Pages run tied to promoted SHA: attempt $attempt/40"
+            fi
+            [ "$attempt" -lt 40 ] || { echo "NO SUCCESSFUL PAGES RUN FOR PROMOTED SHA $promoted_sha" >&2; exit 1; }
+            sleep 10
+          done
+
+      - name: Verify published pointer, viewer, launcher and cache owner
         env:
           BUILD: ${{ inputs.build }}
         run: |
           set -euo pipefail
           base='https://gear66me-ui.github.io/Galaxy_Viewer'
           for attempt in $(seq 1 30); do
-            pointer="$(curl -fsSL --retry 2 --max-time 15 "$base/viewer/gv-current-viewer.json?pipeline=$BUILD-$attempt" || true)"
-            viewer="$(curl -fsSL --retry 2 --max-time 15 "$base/viewer/GV-beta-200-009.py?pipeline=$BUILD-$attempt" || true)"
-            if printf '%s' "$pointer" | grep -Fq "\"build\": \"$BUILD\"" &&
-               printf '%s' "$viewer" | grep -Fq "const GV200001_BUILD='$BUILD';"; then
-              echo "PUBLISHED BUILD VERIFIED: $BUILD"
+            nonce="$BUILD-$(git rev-parse --short HEAD)-$attempt-$(date +%s)"
+            pointer="$(curl -fsSL --retry 2 --max-time 15 -H 'Cache-Control: no-cache, no-store, max-age=0' "$base/viewer/gv-current-viewer.json?pipeline=$nonce" || true)"
+            viewer="$(curl -fsSL --retry 2 --max-time 15 -H 'Cache-Control: no-cache, no-store, max-age=0' "$base/viewer/GV-beta-200-009.py?pipeline=$nonce" || true)"
+            launcher="$(curl -fsSL --retry 2 --max-time 15 -H 'Cache-Control: no-cache, no-store, max-age=0' "$base/mobile/beta/generic-app.html?pipeline=$nonce" || true)"
+            pointer_build="$(printf '%s' "$pointer" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("build",""))' 2>/dev/null || true)"
+            viewer_build="$(printf '%s' "$viewer" | sed -n "s/.*const GV200001_BUILD='\([0-9][0-9][0-9][0-9]\)';.*/\1/p" | head -n1)"
+            echo "PUBLIC FETCH $attempt: pointer=$pointer_build viewer=$viewer_build requested=$BUILD"
+            if [ "$pointer_build" = "$BUILD" ] &&
+               [ "$viewer_build" = "$BUILD" ] &&
+               printf '%s' "$launcher" | grep -Fq "RAW_VIEWER_BASE+'gv-current-viewer.json'" &&
+               printf '%s' "$launcher" | grep -Fq "RAW_VIEWER_BASE+viewer+'?v='+encodeURIComponent(build)"; then
+              echo "PUBLIC DEPENDENCY TREE VERIFIED: launcher -> pointer $BUILD -> viewer $BUILD -> cache key $BUILD"
               exit 0
             fi
-            echo "Waiting for Pages deployment: attempt $attempt/30"
             sleep 10
           done
-          echo "PUBLISHED BUILD DID NOT CONVERGE TO $BUILD" >&2
+          echo "PUBLIC RELEASE TREE DID NOT CONVERGE TO BUILD $BUILD" >&2
           exit 1
