@@ -1161,7 +1161,7 @@ function navigateForward(){
 
 function updateNavigationAvailability(){
     galaxyNavigator.setEnabled({
-        back:false,
+        back:historyIndex>0,
         random:true,
         forward:historyIndex>=0&&historyIndex<history.length-1
     });
