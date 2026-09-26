@@ -1,1 +1,60 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Galaxy Viewer — 200-0008 Build 0003</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dff6ff;font-family:Arial,sans-serif}#boot,#splash,#app{position:fixed;inset:0;background:#000}#boot{display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:3}#boot img{width:132px;height:132px;object-fit:cover;border-radius:28px;box-shadow:0 0 30px #58bfff66}.v{margin-top:24px;text-align:center;letter-spacing:2px;line-height:1.55}.name{font-size:20px;margin-top:16px}iframe{border:0;width:100%;height:100%;display:block}#splash{display:none;z-index:2}#app{display:none;z-index:1}</style></head><body><div id="boot"><img src="./viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png" alt="Galaxy Viewer"><div class="name">GALAXY VIEWER</div><div class="v">200-0008<br>Build 0003</div></div><div id="splash"><iframe src="./viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html"></iframe></div><div id="app"><iframe src="./app.html"></iframe></div><script>setTimeout(()=>{boot.style.display='none';splash.style.display='block';setTimeout(()=>{splash.style.display='none';app.style.display='block'},4200)},1800)</script></body></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><title>GALAXY VIEWER 200-0008 BUILD 0003</title>
+<style>
+@font-face{font-family:"Space Age";src:url("./viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-display:block}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
+#gv-launch-cover{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}
+#gv-launch-cover img{display:block;width:min(58vw,280px);height:min(58vw,280px);max-width:280px;max-height:280px;object-fit:contain;background:transparent}
+#gv-version{color:#FFD85A;text-align:center;font:400 16px/1.45 "Space Age",sans-serif;letter-spacing:1.2px;text-shadow:0 0 7px rgba(255,216,90,.55);white-space:nowrap}
+#gv-splash-frame,#gv-app-frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:#000}
+#gv-splash-frame{z-index:20;visibility:visible}#gv-app-frame{z-index:10}
+#gv-launch-error{display:none;position:fixed;inset:0;z-index:40;padding:24px;background:#000;color:#FFD85A;white-space:pre-wrap;font:14px/1.45 monospace}
+</style></head><body>
+<iframe id="gv-app-frame" src="./app.html" title="GALAXY VIEWER"></iframe>
+<iframe id="gv-splash-frame" title="GALAXY VIEWER SPLASH"></iframe>
+<div id="gv-launch-cover"><img src="./viewer/artwork/App%20Icons/GV-app-icon-512.png" alt="GALAXY VIEWER"><div id="gv-version">200-0008<br>Build 0003</div></div>
+<div id="gv-launch-error" role="alert"></div>
+<script>
+(()=>{'use strict';
+const ICON_MIN_HOLD_MS=3500;
+const SPLASH_FIRST_FRAME_TIMEOUT_MS=5000;
+const SPLASH_COMPLETE_TIMEOUT_MS=25000;
+const VIEWER_TIMEOUT_MS=60000;
+const started=performance.now();
+const cover=document.getElementById('gv-launch-cover');
+const splash=document.getElementById('gv-splash-frame');
+const app=document.getElementById('gv-app-frame');
+const errorBox=document.getElementById('gv-launch-error');
+const showError=e=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e?.stack||e)};
+const waitIcon=()=>new Promise(r=>setTimeout(r,Math.max(0,ICON_MIN_HOLD_MS-(performance.now()-started))));
+const waitViewer=()=>new Promise((resolve,reject)=>{
+ const deadline=performance.now()+VIEWER_TIMEOUT_MS;
+ const check=()=>{try{
+   const w=app.contentWindow,d=app.contentDocument;
+   if(w?.GalaxyViewerCore?.aladin&&d?.querySelector('#aladin-cosmic-command-test canvas'))return requestAnimationFrame(()=>requestAnimationFrame(resolve));
+   if(performance.now()>=deadline)return reject(new Error('GALAXY VIEWER READY TIMEOUT'));
+   setTimeout(check,100);
+ }catch(e){reject(e)}}; app.addEventListener('load',check,{once:true});
+});
+const runSplash=async()=>{await waitIcon();return new Promise((resolve,reject)=>{
+ let settled=false,completionTimer=0;
+ const finish=()=>{if(settled)return;settled=true;clearTimeout(completionTimer);resolve()};
+ const fail=e=>{if(settled)return;settled=true;clearTimeout(completionTimer);reject(e)};
+ splash.addEventListener('load',()=>{try{
+   const w=splash.contentWindow;if(!w)throw new Error('FINAL SPLASH WINDOW UNAVAILABLE');
+   w.addEventListener('galaxy-splash-complete',finish,{once:true});
+   const deadline=performance.now()+SPLASH_FIRST_FRAME_TIMEOUT_MS;
+   const reveal=()=>{try{
+     const d=w.document,scene=d.getElementById('scene'),poster=d.getElementById('poster');
+     if(scene?.style.opacity==='1'||poster?.style.visibility==='visible'){if(cover.isConnected)cover.remove();return}
+     if(performance.now()>=deadline)return fail(new Error('FINAL SPLASH FIRST FRAME TIMEOUT'));
+     requestAnimationFrame(reveal);
+   }catch(e){fail(e)}};requestAnimationFrame(reveal);
+   completionTimer=setTimeout(()=>fail(new Error('FINAL SPLASH COMPLETION TIMEOUT')),SPLASH_COMPLETE_TIMEOUT_MS);
+ }catch(e){fail(e)}},{once:true});
+ splash.addEventListener('error',()=>fail(new Error('FINAL SPLASH FAILED TO LOAD')),{once:true});
+ splash.src='./viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html';
+})};
+Promise.all([waitViewer(),runSplash()]).then(()=>requestAnimationFrame(()=>{if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove()})).catch(e=>{console.error(e);showError(e)});
+})();
+</script></body></html>
