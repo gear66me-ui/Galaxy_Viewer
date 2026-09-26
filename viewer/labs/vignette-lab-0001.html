@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Galaxy Viewer — Vignette Lab 0001</title>
-<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.css">
+<link rel="stylesheet" href="../../aladin-source-clone/src/css/aladin.css">
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020713;color:#dff8ff;font-family:Arial,sans-serif}#aladin{position:absolute;inset:0}.panel{position:fixed;right:10px;top:10px;bottom:10px;width:min(300px,38vw);overflow:auto;padding:12px;border:1px solid #68d7ff;border-radius:12px;background:rgba(3,18,42,.88);box-shadow:0 0 18px rgba(45,190,255,.45);z-index:20}.panel h2{margin:0 0 6px;font-size:16px}.meta{font-size:11px;line-height:1.35;opacity:.86;margin-bottom:8px}.row{display:grid;grid-template-columns:110px 1fr 44px;gap:6px;align-items:center;margin:18px 0;font-size:11px;min-height:38px}.row input{width:100%;height:32px;touch-action:none}.row label{line-height:1.2}.row output{text-align:right}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}.buttons button{padding:10px;border-radius:8px;border:1px solid #7ccbff;background:linear-gradient(145deg,#081b3a,#1484db);color:white}.note{font-size:10px;opacity:.7}.badge{font-size:10px;padding:3px 6px;border:1px solid #78ffab;border-radius:6px;color:#78ffab;display:inline-block;margin-bottom:6px}
 @media(max-width:700px){.panel{width:46vw;padding:9px}.row{grid-template-columns:82px 1fr 36px;font-size:9px;margin:20px 0;min-height:42px}.row input{height:36px}}
@@ -14,7 +14,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020713;col
 <div class="row"><label>Decay</label><input id="decay" type="range" min=".15" max="6" step=".05" value="1.6"><output></output></div>
 <div class="row"><label>Edge distance</label><input id="edgeDistance" type="range" min="0" max=".45" step=".01" value=".08"><output></output></div>
 <div class="note">Mask is elliptical and aspect-aware. Edge start controls where transparency begins; Blend distance controls how far the transition extends; Decay changes the nonlinear/log-like softness; Edge distance adds a rectangular edge-distance fade so long images do not expose a hard JPEG boundary.</div></div>
-<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script><script>
+<script type="module">
+import A from '../../aladin-source-clone/dist/aladin.js';
 const CAT='../image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json';
 let aladin,records=[],order=[],cursor=-1,layer=null,current=null,objectUrl='',renderToken=0;
 const ids=['opacity','ellipseX','ellipseY','edgeStart','blendDistance','decay','edgeDistance'];
