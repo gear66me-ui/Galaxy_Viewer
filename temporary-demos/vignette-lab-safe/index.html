@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>GALAXY VIEWER — VIGNETTE LAB</title>
 <style>
-@font-face{font-family:"Space Age";src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:"Space Age";src:url("/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
 html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff}
 #aladin-cosmic-command-test{height:100dvh!important;max-height:100dvh!important}
 #gv-navigation-host{bottom:max(12px,env(safe-area-inset-bottom))!important}
@@ -37,7 +37,7 @@ html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;backgrou
 <body>
 <div id="gv-generic-cover">
   <div id="gv-loading-mark">
-    <img src="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/icon.svg" alt="GALAXY VIEWER">
+    <img src="/Galaxy_Viewer/viewer/artwork/icon.svg" alt="GALAXY VIEWER">
     <span id="gv-loading-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
   </div>
   <div id="gv-generic-version">VERSION</div>
@@ -58,9 +58,9 @@ html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;backgrou
 (async()=>{
 'use strict';
 const GV_GENERIC_APP_REVISION='GV-GENERIC-APP-0089';
-const RAW_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+const RAW_VIEWER_BASE='/Galaxy_Viewer/viewer/';
 const GV_EXPECTED_BUILD=null;
-const REL_VIEWER_BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+const REL_VIEWER_BASE='/Galaxy_Viewer/viewer/';
 const VIEWER_TIMEOUT_MS=30000;
 const cover=document.getElementById('gv-generic-cover');
 const versionEl=document.getElementById('gv-generic-version');
