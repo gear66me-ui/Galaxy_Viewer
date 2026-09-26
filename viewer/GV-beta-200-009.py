@@ -99,7 +99,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js',
-    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation-0241.js'
+    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation-0242.js'
 });
 
 
@@ -1076,7 +1076,6 @@ async function showDestination(destination,{firstTrip=false}={}){
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){gvInstallPreparedHd(prepared);installed=true}
-    travelPresentation.end();
     headsUpDisplay.render();return v.destination;
 }
 
