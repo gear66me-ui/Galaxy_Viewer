@@ -1,4 +1,5 @@
 {
-  "version": "12AR-130H",
-  "viewer": "GV-12AR-130H.py"
+  "version": "GV-beta-200-009",
+  "viewer": "GV-beta-200-009.py",
+  "build": "0006"
 }
