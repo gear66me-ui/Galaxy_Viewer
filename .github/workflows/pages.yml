@@ -1,6 +1,6 @@
 name: Deploy GitHub Pages
 
-# Publication refresh: redeploy the complete beta branch, including Galaxy Viewer Singularity 0019.
+# Publication refresh: force redeploy current beta branch after Build 0006 launcher recovery.
 on:
   push:
     branches:
