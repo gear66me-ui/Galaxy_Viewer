@@ -70,7 +70,6 @@ function normalizeRaw(r,i,catalogKey,meta){
   facility:Object.freeze(Array.isArray(r?.facility)?r.facility.map(clean).filter(Boolean):[]),
   instrument:Object.freeze(Array.isArray(r?.instrument)?r.instrument.map(clean).filter(Boolean):[]),
   sourceUrl:clean(r?.sourceUrl),
-  astroPixSourceUrl:clean(r?.astroPixSourceUrl),
   hdUrl:clean(r?.hdUrl),
   githubImageUrl:clean(r?.githubImageUrl),
   sha256:clean(r?.sha256),
