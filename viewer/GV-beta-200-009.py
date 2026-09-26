@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0013';
+const GV200001_BUILD='0014';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -99,7 +99,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js',
-    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation.js'
+    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
+    destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation.js'
 });
 
 
@@ -468,7 +469,8 @@ await Promise.all([
     loadScript(fresh(config.galaxyRouteEngineUrl)),
     loadScript(fresh(config.galaxyNavigatorUrl)),
     loadScript(fresh(config.headsUpDisplayUrl)),
-    loadScript(fresh(config.travelPresentationUrl))
+    loadScript(fresh(config.travelPresentationUrl)),
+    loadScript(fresh(config.destinationPresentationUrl))
 ]);
 
 
@@ -484,6 +486,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0001'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0001 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -668,6 +671,7 @@ const randomGalaxyBridge=Object.freeze({
 });
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
 const travelPresentation=window.GalaxyRandomTravelPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
+const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
@@ -1083,6 +1087,7 @@ function validateDestination(destination){
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
     activeDestination=v.destination;
+    destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?7.5:17});
     let zoomInStarted=false,installed=false;
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){gvInstallPreparedHd(prepared);installed=true}return prepared};
@@ -1094,6 +1099,8 @@ async function showDestination(destination,{firstTrip=false}={}){
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){gvInstallPreparedHd(prepared);installed=true}
+    travelPresentation.end();
+    destinationPresentation.arrive(v.destination,{imageUrl:directHdUrl(v.destination)});
     headsUpDisplay.render();return v.destination;
 }
 
