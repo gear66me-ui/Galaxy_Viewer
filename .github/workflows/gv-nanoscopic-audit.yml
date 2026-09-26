@@ -40,7 +40,10 @@ jobs:
               punct=collections.Counter(c for c in ch if c in punctuation); freq=collections.Counter(ch)
               words=re.findall(r"[A-Za-z_][A-Za-z0-9_-]*",t); nums=re.findall(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)",t)
               tokens=re.findall(r"[A-Za-z_$][\w$-]*|[-+]?(?:\d+(?:\.\d*)?|\.\d+)|[{}\[\](),.;:+*/%!?<>=&#|^~\\-]",t)
-              funcs=re.findall(r"\bfunction\s+([A-Za-z_$][\w$]*)\s*\(",t)
+              funcs=[]
+              funcs += re.findall(r"\bfunction\s+([A-Za-z_$][\w$]*)\s*\(",t)
+              funcs += re.findall(r"(?m)^\s*def\s+([A-Za-z_][\w]*)\s*\(",t)
+              funcs += re.findall(r"\b([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>",t)
               return {"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"lines":len(t.splitlines()) if t else 0,"characters":len(ch),
               "words":len(words),"numeric_literals":len(nums),"tokens":len(tokens),"spaces":t.count(" "),"tabs":t.count("\t"),"newlines":t.count("\n"),
               "carriage_returns":t.count("\r"),"whitespace":sum(c.isspace() for c in ch),"nonwhitespace":sum(not c.isspace() for c in ch),
