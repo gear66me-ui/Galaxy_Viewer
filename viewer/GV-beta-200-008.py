@@ -24,8 +24,8 @@ HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamb
 COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
 DIAGNOSTICS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js"
-GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0002"
-GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0002"
+GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0003"
+GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003"
 HEADS_UP_DISPLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js"
 
 # ============================================================================
@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-008';
-const GV200001_BUILD='0002';
+const GV200001_BUILD='0003';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -96,8 +96,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
-    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0002',
-    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0002',
+    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0003',
+    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js'
 });
 
@@ -816,8 +816,8 @@ updateCrossFadeThumb();
 const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 const gvFovReadout=document.createElement('div');
-gvFovReadout.innerHTML='<span id="gv-fov-title">FOV DEGREES</span><span id="gv-fov-int">360</span><span id="gv-fov-dot">.</span><span id="gv-fov-frac">000</span>';
-Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'18px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/18px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-12px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});
+gvFovReadout.innerHTML='<span id="gv-fov-title">FOV °</span><span id="gv-fov-int">360</span><span id="gv-fov-dot">.</span><span id="gv-fov-frac">000</span>';
+Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'16.2px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/16.2px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-12px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});
 document.getElementById('aladin-cosmic-command-test').appendChild(gvFovReadout);
 function gvSyncFovReadout(){
     try{
@@ -853,7 +853,7 @@ function zoomStep(){
                     aladin.setFov(a.target);const done=a.resolve;gvAutoZoom=null;gvSetZoomCommand(0);done(true);return;
                 }
             }
-            aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*(zoomCommand<0?.0144:.018)))));
+            aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*.018))));
         }
     }catch(_){}
     zoomFrame=requestAnimationFrame(zoomStep);
@@ -998,15 +998,18 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
-async function gvFly130H(prepared,{firstHomeTrip=false}={}){
-    const center=prepared?.imageCenter,ra1=Number(center?.[0]),dec1=Number(center?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
+async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,targetPromise=null}={}){
+    const center=prepared?.imageCenter;let ra1=Number(center?.[0]),dec1=Number(center?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
+    const applyPreparedTarget=next=>{const c=next?.imageCenter,r=Number(c?.[0]),d=Number(c?.[1]),f=Number(next?.finalFov),rot=Number(next?.rotation);if(Number.isFinite(r)&&Number.isFinite(d)&&Number.isFinite(f)&&f>0&&Number.isFinite(rot)){ra1=r;dec1=d;finalFov=f;targetRotation=rot}return next};
+    if(targetPromise)Promise.resolve(targetPromise).then(applyPreparedTarget).catch(error=>console.error('GV 130H PREPARED TARGET FAILED',error));
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now();let lastSample=-1,destinationCenterApplied=false;
+    const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=firstHomeTrip?4/7.5:.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*15/1000);
+            if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip,startFov,finalFov,maxFov:120,startRotation,targetRotation});
                 aladin.setFov(state.fov);
@@ -1020,6 +1023,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false}={}){
         }catch(error){reject(error)}};
         requestAnimationFrame(frame);
     });
+    if(targetPromise){applyPreparedTarget(await targetPromise);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);aladin.setFov(finalFov);aladin.setRotation(targetRotation)}
     return prepared;
 }
 
@@ -1058,16 +1062,15 @@ function validateDestination(destination){
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
-    const travelPrepared={
-        imageCenter:[v.ra,v.dec],
-        finalFov:v.fov,
-        rotation:v.rotation
-    };
-    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip});
+    let zoomInStarted=false,installed=false;
+    const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){gvInstallPreparedHd(prepared);installed=true}return prepared};
+    preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
+    const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,targetPromise:preparedPromise,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
     const prepared=await preparedPromise;
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
-    gvInstallPreparedHd(prepared);
+    if(!installed){gvInstallPreparedHd(prepared);installed=true}
     headsUpDisplay.render();return v.destination;
 }
 
