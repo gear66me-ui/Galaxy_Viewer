@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0006';
+const GV200001_BUILD='0007';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -821,16 +821,30 @@ const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 const gvFovReadout=document.createElement('div');
 gvFovReadout.innerHTML='<span id="gv-fov-title">FOV °</span><span id="gv-fov-int">360</span><span id="gv-fov-dot">.</span><span id="gv-fov-frac">000</span>';
-Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'16.2px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/16.2px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-12px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});
+Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'16.2px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/16.2px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-14px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});
 document.getElementById('aladin-cosmic-command-test').appendChild(gvFovReadout);
+function gvSetFovDigits(element,value,digitWidth){
+    if(element.dataset.gvDigits===value)return;
+    element.dataset.gvDigits=value;
+    element.replaceChildren(...Array.from(value,digit=>{
+        const slot=document.createElement('span');
+        Object.assign(slot.style,{display:'inline-block',width:digitWidth,textAlign:'center'});
+        slot.textContent=digit;
+        return slot;
+    }));
+}
 function gvSyncFovReadout(){
     try{
         const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
-        if(Number.isFinite(fov)&&fov>=0){const parts=fov.toFixed(3).split('.');gvFovReadout.querySelector('#gv-fov-int').textContent=parts[0];gvFovReadout.querySelector('#gv-fov-frac').textContent=parts[1];}
+        if(Number.isFinite(fov)&&fov>=0){
+            const parts=fov.toFixed(3).split('.');
+            gvSetFovDigits(gvFovReadout.querySelector('#gv-fov-int'),parts[0].padStart(3,' '),'7px');
+            gvSetFovDigits(gvFovReadout.querySelector('#gv-fov-frac'),parts[1],'6px');
+        }
     }catch(_){}
-    requestAnimationFrame(gvSyncFovReadout);
 }
-requestAnimationFrame(gvSyncFovReadout);
+gvSyncFovReadout();
+setInterval(gvSyncFovReadout,100);
 
 let zoomCommand=0;
 let zoomFrame=0;
