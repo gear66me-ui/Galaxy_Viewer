@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -70,14 +71,25 @@ public final class MainActivity extends Activity {
                         && uri.getPath().startsWith(APP_PATH);
             }
 
+            private boolean openExternal(Uri uri) {
+                if (uri == null || !"https".equalsIgnoreCase(uri.getScheme())) return true;
+                if (allowed(uri)) return false;
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                } catch (Exception error) {
+                    Toast.makeText(MainActivity.this, "Could not open website", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return !allowed(request.getUrl());
+                return openExternal(request.getUrl());
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return !allowed(Uri.parse(url));
+                return openExternal(Uri.parse(url));
             }
         });
         webView.setDownloadListener(new GalaxyDownloadListener());
