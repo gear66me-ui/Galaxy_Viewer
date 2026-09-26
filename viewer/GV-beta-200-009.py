@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0009';
+const GV200001_BUILD='0010';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -659,6 +659,7 @@ const forwardButton=galaxyNavigator.forward;
 const history=[];
 let historyIndex=-1;
 let routeIndex=0;
+let navigationInFlight=false;
 let activeDestination=null;
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
@@ -1087,6 +1088,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
     const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,targetPromise:preparedPromise,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
     const prepared=await preparedPromise;
+    headsUpDisplay.markReady?.(v.destination);
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){gvInstallPreparedHd(prepared);installed=true}
@@ -1100,8 +1102,10 @@ async function showDestination(destination,{firstTrip=false}={}){
 async function navigateRandom(){
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
+    navigationInFlight=true;
     galaxyNavigator.setBusy(true);
     galaxyNavigator.setTraveling?.(true);
+    updateNavigationAvailability();
     try{
         const destination=await navigationRuntime.nextDestination();
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
@@ -1111,6 +1115,7 @@ async function navigateRandom(){
         routeIndex++;
         await showDestination(destination,{firstTrip});
     }finally{
+        navigationInFlight=false;
         galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
@@ -1123,7 +1128,7 @@ async function navigateRandom(){
 // ECO: GV200-001
 // ============================================================================
 function navigateBack(){
-    if(historyIndex<=0)return;
+    if(navigationInFlight||historyIndex<=0)return;
     historyIndex--;
     showDestination(history[historyIndex]);
     updateNavigationAvailability();
@@ -1143,7 +1148,7 @@ function navigateForward(){
 
 function updateNavigationAvailability(){
     galaxyNavigator.setEnabled({
-        back:historyIndex>0,
+        back:!navigationInFlight&&historyIndex>0,
         random:true,
         forward:historyIndex>=0&&historyIndex<history.length-1
     });
