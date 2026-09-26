@@ -1,0 +1,175 @@
+name: Galaxy Viewer Build Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: 'Four-digit Galaxy Viewer build, e.g. 0024'
+        required: true
+        type: string
+      eco_id:
+        description: 'Authorized ECO ID'
+        required: true
+        type: string
+      requirements:
+        description: 'Authorized requirement IDs'
+        required: true
+        type: string
+      user_go:
+        description: 'Confirm explicit user GO for this ECO'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-viewer-build-pipeline-beta
+  cancel-in-progress: false
+
+jobs:
+  promote-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Validate dependency tree and requested build
+        env:
+          BUILD: ${{ inputs.build }}
+          USER_GO: ${{ inputs.user_go }}
+        run: |
+          set -euo pipefail
+          [[ "$BUILD" =~ ^[0-9]{4}$ ]]
+          [ "$USER_GO" = "true" ]
+          python3 - <<'PY'
+          import json, pathlib, re, os
+          build=os.environ['BUILD']
+          viewer=pathlib.Path('viewer/GV-beta-200-009.py')
+          pointer=pathlib.Path('viewer/gv-current-viewer.json')
+          launcher=pathlib.Path('mobile/beta/generic-app.html')
+          for p in (viewer,pointer,launcher):
+              if not p.is_file():
+                  raise SystemExit('MISSING DEPENDENCY: '+str(p))
+          s=viewer.read_text(encoding='utf-8')
+          if s.count("const GV200001_BUILD='") != 1:
+              raise SystemExit('VIEWER BUILD OWNER COUNT != 1')
+          d=json.loads(pointer.read_text(encoding='utf-8'))
+          if d.get('viewer') != viewer.name:
+              raise SystemExit('POINTER VIEWER MISMATCH')
+          l=launcher.read_text(encoding='utf-8')
+          required=[
+              "gv-current-viewer.json",
+              "const build=String(pointer.build||'').trim()",
+              "RAW_VIEWER_BASE+viewer+'?v='+encodeURIComponent(build)"
+          ]
+          for marker in required:
+              if marker not in l:
+                  raise SystemExit('LAUNCHER DEPENDENCY MISSING: '+marker)
+          urls=re.findall(r"(?:Url|URL)\s*:\s*'([^']+)'",s)
+          print('DEPENDENCY TREE')
+          print('Android APK -> mobile/beta/generic-app.html')
+          print('generic-app.html -> viewer/gv-current-viewer.json')
+          print('gv-current-viewer.json -> '+viewer.name)
+          print('Viewer build cache key -> GV200001-'+build)
+          for u in urls:
+              print('Viewer dependency -> '+u)
+          PY
+
+      - name: Promote build atomically
+        env:
+          BUILD: ${{ inputs.build }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, re, os
+          build=os.environ['BUILD']
+          vp=pathlib.Path('viewer/GV-beta-200-009.py')
+          pp=pathlib.Path('viewer/gv-current-viewer.json')
+          s=vp.read_text(encoding='utf-8')
+          s2,n=re.subn(r"const GV200001_BUILD='[0-9]{4}';","const GV200001_BUILD='"+build+"';",s,count=1)
+          if n != 1:
+              raise SystemExit('BUILD REPLACEMENT COUNT != 1')
+          vp.write_text(s2,encoding='utf-8',newline='\n')
+          d=json.loads(pp.read_text(encoding='utf-8'))
+          d['version']='GV-beta-200-009'
+          d['viewer']='GV-beta-200-009.py'
+          d['build']=build
+          pp.write_text(json.dumps(d,indent=2)+'\n',encoding='utf-8',newline='\n')
+          PY
+
+      - name: Verify synchronized build owners
+        env:
+          BUILD: ${{ inputs.build }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, os
+          build=os.environ['BUILD']
+          s=pathlib.Path('viewer/GV-beta-200-009.py').read_text(encoding='utf-8')
+          d=json.loads(pathlib.Path('viewer/gv-current-viewer.json').read_text(encoding='utf-8'))
+          assert s.count("const GV200001_BUILD='"+build+"';") == 1
+          assert d == {'version':'GV-beta-200-009','viewer':'GV-beta-200-009.py','build':build}
+          print('BUILD OWNERS SYNCHRONIZED:',build)
+          PY
+
+      - name: Commit exact build promotion
+        env:
+          BUILD: ${{ inputs.build }}
+          ECO_ID: ${{ inputs.eco_id }}
+          REQUIREMENTS: ${{ inputs.requirements }}
+        run: |
+          set -euo pipefail
+          test "$(git diff --name-only | sort)" = "$(printf '%s\n' viewer/GV-beta-200-009.py viewer/gv-current-viewer.json | sort)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/GV-beta-200-009.py viewer/gv-current-viewer.json
+          git commit -m "Promote Galaxy Viewer build $BUILD
+
+          ECO-ID: $ECO_ID
+          AUTHORIZED-PATHS: viewer/GV-beta-200-009.py, viewer/gv-current-viewer.json
+          REQUIREMENTS: $REQUIREMENTS
+          ARCHIVE-AUTHORIZED: false
+          USER-GO: true"
+          git pull --rebase origin beta
+          git push origin HEAD:beta
+
+      - name: Verify repository fetch-back
+        env:
+          BUILD: ${{ inputs.build }}
+        run: |
+          set -euo pipefail
+          git fetch origin beta
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          build=os.environ['BUILD']
+          pointer=json.loads(subprocess.check_output(['git','show','origin/beta:viewer/gv-current-viewer.json'],text=True))
+          viewer=subprocess.check_output(['git','show','origin/beta:viewer/GV-beta-200-009.py'],text=True)
+          assert pointer['build']==build
+          assert viewer.count("const GV200001_BUILD='"+build+"';")==1
+          print('REPOSITORY FETCH-BACK PASS:',build)
+          PY
+
+      - name: Wait for GitHub Pages and verify published build
+        env:
+          BUILD: ${{ inputs.build }}
+        run: |
+          set -euo pipefail
+          base='https://gear66me-ui.github.io/Galaxy_Viewer'
+          for attempt in $(seq 1 30); do
+            pointer="$(curl -fsSL --retry 2 --max-time 15 "$base/viewer/gv-current-viewer.json?pipeline=$BUILD-$attempt" || true)"
+            viewer="$(curl -fsSL --retry 2 --max-time 15 "$base/viewer/GV-beta-200-009.py?pipeline=$BUILD-$attempt" || true)"
+            if printf '%s' "$pointer" | grep -Fq "\"build\": \"$BUILD\"" &&
+               printf '%s' "$viewer" | grep -Fq "const GV200001_BUILD='$BUILD';"; then
+              echo "PUBLISHED BUILD VERIFIED: $BUILD"
+              exit 0
+            fi
+            echo "Waiting for Pages deployment: attempt $attempt/30"
+            sleep 10
+          done
+          echo "PUBLISHED BUILD DID NOT CONVERGE TO $BUILD" >&2
+          exit 1
