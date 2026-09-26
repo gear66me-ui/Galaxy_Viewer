@@ -1100,7 +1100,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){gvInstallPreparedHd(prepared);installed=true}
     travelPresentation.end();
-    destinationPresentation.arrive(v.destination,{imageUrl:directHdUrl(v.destination)});
+    destinationPresentation.arrive(v.destination,{imageUrl:String(v.destination?.hdUrl||directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();return v.destination;
 }
 
