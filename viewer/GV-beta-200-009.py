@@ -1037,7 +1037,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,target
     const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
-            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*15/1000);
+            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*5/1000);
             if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip,startFov,finalFov,maxFov:120,startRotation,targetRotation});
