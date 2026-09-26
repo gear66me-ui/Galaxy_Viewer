@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 
 public final class MainActivity extends Activity {
-    private static final String APP_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/generic-app.html?source=android-app";
+    private static final String APP_URL = "https://raw.githack.com/gear66me-ui/Galaxy_Viewer/beta/mobile/beta/generic-app.html?source=android-app&build=0043";
     private static final String APP_HOST = "gear66me-ui.github.io";
     private static final String APP_PATH = "/Galaxy_Viewer/";
     private WebView webView;
@@ -97,7 +97,7 @@ public final class MainActivity extends Activity {
         webView.clearHistory();
         webView.clearCache(true);
         WebStorage.getInstance().deleteAllData();
-        String launchUrl = APP_URL + "&launch=" + System.currentTimeMillis() + "&apk=fresh-2";
+        String launchUrl = APP_URL + "&launch=" + System.currentTimeMillis() + "&apk=beta43-cacheproof";
         webView.loadUrl(launchUrl);
     }
 
