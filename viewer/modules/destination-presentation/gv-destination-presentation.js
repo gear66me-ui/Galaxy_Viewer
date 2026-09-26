@@ -4,7 +4,7 @@ const FONT='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Spa
 const ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const CONSTELLATIONS=ART+'Constellations/';
 const HD_LAYOUT=Object.freeze({bannerRatio:403/1536,imageRatio:630/1536,gap:6,edge:6,iconInset:20});
-const ICONS=Object.freeze({chandra:'Chandra/Chandra.jpg',eso:'ESO/ESO.jpg',euclid:'Euclid/Euclid.jpg',galex:'GALEX/GALEX.jpg',herschel:'Herschel/Herschel.jpg',hubble:'Hubble/Hubble.jpg',jwst:'JWST/JWST.jpg',nrao:'NRAO/NRAO.jpg',noirlab:'NoirLabs/NOIRLab.jpg',nustar:'NuSTAR/NuSTAR.jpg',spitzer:'Spitzer/Spitzer.jpg'});
+const ICONS=Object.freeze({chandra:'Chandra/Chandra.jpg',eso:'ESO/ESO.jpg',euclid:'Euclid/Euclid.jpg',galex:'GALEX/GALEX.jpg',herschel:'Herschel/Herschel.jpg',hubble:'Hubble/Hubble.jpg',jwst:'JWST/JWST.jpeg',nrao:'NRAO/NRAO.jpg',noirlab:'NoirLabs/NOIRLab.jpg',nustar:'NuSTAR/NuSTAR.jpg',spitzer:'Spitzer/Spitzer.jpg'});
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
 function providerIdentity(d){const evidence=[d?.provider,d?.providerLabel,d?.telescope,d?.source,d?.hdUrl,d?.sourceUrl].map(clean).join(' ').toLowerCase();let slug='';if(/noir|gemini|noao/.test(evidence))slug='noirlab';else if(/hubble|hst/.test(evidence))slug='hubble';else if(/james webb|webb|jwst/.test(evidence))slug='jwst';else for(const key of Object.keys(ICONS))if(evidence.includes(key)){slug=key;break}const label=(slug==='hubble'?'HUBBLE':clean(d?.providerLabel||d?.provider||d?.telescope||slug||'IMAGE')).toUpperCase();return {slug,label,icon:slug?ART+ICONS[slug]:''}}
