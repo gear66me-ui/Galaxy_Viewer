@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0023';
+const GV200001_BUILD='0024';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -816,13 +816,13 @@ updateCrossFadeThumb();
 const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 const gvFovReadout=document.createElement('div');
-gvFovReadout.innerHTML='<span id="gv-fov-title">FOV</span><span id="gv-fov-value">360.000°</span>';
-Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 116px)',zIndex:'7313',width:'67.2px',padding:'10.4px 5.6px 3.2px',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4.8px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 6px rgba(158,230,255,.95),0 0 16px rgba(46,172,255,.72)',font:'400 7.2px/1.2 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',textAlign:'center',whiteSpace:'pre',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-10.4px',transform:'translateX(-50%)',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)'});Object.assign(gvFovReadout.querySelector('#gv-fov-value').style,{display:'block',fontVariantNumeric:'tabular-nums',fontFeatureSettings:'"tnum" 1',letterSpacing:'.7px'});
+gvFovReadout.innerHTML='<span id="gv-fov-title">FOV</span><span id="gv-fov-int">360</span><span id="gv-fov-dot">.</span><span id="gv-fov-frac">000</span><span id="gv-fov-degree">°</span>';
+Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 108px)',zIndex:'7313',width:'52px',height:'18px',padding:'0',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 5px rgba(158,230,255,.95),0 0 12px rgba(46,172,255,.72)',font:'400 7.2px/18px "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.3px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',whiteSpace:'nowrap',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-12px',transform:'translateX(-50%)',lineHeight:'9px',color:'#8fe7ff'});Object.assign(gvFovReadout.querySelector('#gv-fov-int').style,{position:'absolute',right:'27px',width:'21px',textAlign:'right',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-dot').style,{position:'absolute',left:'25px',width:'3px',textAlign:'center'});Object.assign(gvFovReadout.querySelector('#gv-fov-frac').style,{position:'absolute',left:'28px',width:'18px',textAlign:'left',fontVariantNumeric:'tabular-nums'});Object.assign(gvFovReadout.querySelector('#gv-fov-degree').style,{position:'absolute',left:'46px',width:'5px',textAlign:'left'});
 document.getElementById('aladin-cosmic-command-test').appendChild(gvFovReadout);
 function gvSyncFovReadout(){
     try{
         const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
-        if(Number.isFinite(fov)&&fov>=0){const value=gvFovReadout.querySelector('#gv-fov-value');if(value)value.textContent=`${fov.toFixed(3).padStart(7,' ')}°`;}
+        if(Number.isFinite(fov)&&fov>=0){const parts=fov.toFixed(3).split('.');gvFovReadout.querySelector('#gv-fov-int').textContent=parts[0];gvFovReadout.querySelector('#gv-fov-frac').textContent=parts[1];}
     }catch(_){}
     requestAnimationFrame(gvSyncFovReadout);
 }
