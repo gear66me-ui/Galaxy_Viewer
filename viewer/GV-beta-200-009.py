@@ -1074,12 +1074,12 @@ async function showDestination(destination,{firstTrip=false}={}){
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?7.5:17});
     let zoomInStarted=false,installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return prepared};
-    // AVM/WCS image center is the camera authority. Resolve it once before flight so the
-    // destination cannot switch asynchronously between catalog RA/Dec and image center.
+    // Start travel immediately. Never gate choreography on image/WCS preparation.
+    // Catalog coordinates are used only as the immediate flight target; AVM/WCS preparation remains parallel.
+    const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
+    preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     const prepared=await preparedPromise;
-    const travelPrepared={imageCenter:prepared.imageCenter,finalFov:prepared.finalFov,rotation:prepared.rotation};
-    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,onZoomInStart:()=>{zoomInStarted=true;installWhenReady(prepared)}});
-
     headsUpDisplay.markReady?.(v.destination);
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
