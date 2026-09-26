@@ -60,7 +60,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
      ECO: GV200-001
      ======================================================================= -->
 <style>
-#gv-hamburger-host{position:absolute;inset:0;z-index:7200;pointer-events:none}
+#gv-hamburger-host{position:absolute;inset:0;z-index:9000;pointer-events:none}
 #gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
 #gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0043';
+const GV200001_BUILD='0044';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
