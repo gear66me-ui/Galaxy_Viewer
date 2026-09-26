@@ -38,7 +38,7 @@ jobs:
           for marker in ("GV-GENERIC-APP-0089","attempt<=8","cache:'no-store'","RAW_VIEWER_BASE"):
               if marker not in launcher: raise SystemExit('launcher marker missing: '+marker)
           main=pathlib.Path('android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java').read_text()
-          for marker in ('WebSettings.LOAD_NO_CACHE','clearCache(true)','WebStorage.getInstance().deleteAllData()','apk=fresh-2'):
+          for marker in ('WebSettings.LOAD_NO_CACHE','clearCache(true)','WebStorage.getInstance().deleteAllData()','apk=beta43-cacheproof'):
               if marker not in main: raise SystemExit('Android fresh-launch marker missing: '+marker)
           for required in ('android/galaxy-viewer/app/build.gradle','android/galaxy-viewer/app/src/main/AndroidManifest.xml','android/galaxy-viewer/settings.gradle'):
               if not pathlib.Path(required).is_file(): raise SystemExit('Android build input missing: '+required)
@@ -73,8 +73,8 @@ jobs:
           APK='android/galaxy-viewer/app/build/outputs/apk/debug/app-debug.apk'
           test -s "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/gv-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer'" /tmp/gv-badging.txt
-          grep -q "versionName='generic-1'" /tmp/gv-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.beta43'" /tmp/gv-badging.txt
+          grep -q "versionName='beta43-0043'" /tmp/gv-badging.txt
           grep -q "launchable-activity: name='com.gear66me.galaxyviewer.MainActivity'" /tmp/gv-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           unzip -t "$APK"
