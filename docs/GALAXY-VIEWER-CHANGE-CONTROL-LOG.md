@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-7636bf9cc61f — ECO-GB-BUILD-PIPELINE-01
+
+**Recorded:** 2026-09-26T11:50:11-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7636bf9cc61f90192373af43942eaef9019a59a2`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7636bf9cc61f90192373af43942eaef9019a59a2)  
+**Parent/baseline:** `8c242eae974d7ec5078212d182e3ebd1bdb40c04`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8c242eae974d7ec5078212d182e3ebd1bdb40c04...7636bf9cc61f90192373af43942eaef9019a59a2)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-GB-BUILD-PIPELINE-01`  
+**Requirements:** `REQ-001,REQ-005`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `viewer/gv-current-viewer.json`
+- Actual: `viewer/gv-current-viewer.json`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `viewer/gv-current-viewer.json`
+
+- Git status: `M`
+- SHA-256 before: `5d6b0cf14aa17c2478bd7737645f0bc5599fb59a9010a609abd3dba61e0734ec`
+- SHA-256 after: `b646402ae55da9b0bc4f5cffb7f3acbccff8397fe1671579182b1a7fc2a3a54a`
+- Bytes: `88` -> `88`
+- Lines: `5` -> `5`
+- Characters: `88` -> `88`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `1`
+- Deleted characters: `1`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-72cc733b022f — ECO-001
 
 **Recorded:** 2026-09-22T20:24:07-05:00  
