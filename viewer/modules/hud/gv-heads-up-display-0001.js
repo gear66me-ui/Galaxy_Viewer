@@ -112,7 +112,7 @@ function mount(root,options={}){
         image.src=key;
       });
       readiness.set(key,'ready');
-    })().catch(()=>readiness.set(key,'failed')).finally(()=>{
+    })().catch(()=>{if(readiness.get(key)!=='ready')readiness.set(key,'failed')}).finally(()=>{
       probes.delete(key);
       if(hud?.isConnected)render();
     });
