@@ -138,8 +138,4 @@ try{
 })();
 </script>
 </body>
-</html>try{await coverPainted();const minimumHold=sleep(ICON_HOLD_MS);const splashReadyPromise=preloadSplash();const preparedViewerPromise=prepareViewer();const [preloadedSplash,preparedViewer]=await Promise.all([Promise.all([minimumHold,splashReadyPromise]).then(([,html])=>html),preparedViewerPromise]);await runSplash(preloadedSplash);const loadingIcon=cover.querySelector('#gv-loading-mark>img');if(loadingIcon)loadingIcon.style.display='none';versionEl.style.display='none';buildEl.style.display='none';cover.style.display='flex';await initializeViewer(preparedViewer);if(splash.isConnected)splash.remove();if(cover.isConnected)cover.remove()}catch(error){console.error(error);fail(error)}
-})();
-</script>
-</body>
 </html>
