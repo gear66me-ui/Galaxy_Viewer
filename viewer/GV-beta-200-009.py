@@ -1068,11 +1068,9 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
-async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,targetPromise=null}={}){
-    const center=prepared?.imageCenter;let ra1=Number(center?.[0]),dec1=Number(center?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
+async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null}={}){
+    const center=prepared?.imageCenter;const ra1=Number(center?.[0]),dec1=Number(center?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
-    const applyPreparedTarget=next=>{const c=next?.imageCenter,r=Number(c?.[0]),d=Number(c?.[1]),f=Number(next?.finalFov),rot=Number(next?.rotation);if(Number.isFinite(r)&&Number.isFinite(d)&&Number.isFinite(f)&&f>0&&Number.isFinite(rot)){ra1=r;dec1=d;finalFov=f;targetRotation=rot}return next};
-    if(targetPromise)Promise.resolve(targetPromise).then(applyPreparedTarget).catch(error=>console.error('GV 130H PREPARED TARGET FAILED',error));
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
@@ -1095,7 +1093,6 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,target
         }catch(error){reject(error)}};
         requestAnimationFrame(frame);
     });
-    if(targetPromise){applyPreparedTarget(await targetPromise);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation)}
     doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);
     return prepared;
 }
@@ -1140,7 +1137,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     let zoomInStarted=false,installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return prepared};
     const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,targetPromise:preparedPromise,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
+    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
     preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     const prepared=await preparedPromise;
     headsUpDisplay.markReady?.(v.destination);
