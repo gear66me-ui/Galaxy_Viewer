@@ -52,6 +52,7 @@ display(HTML("""
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #aladin-cosmic-command-test{position:relative;width:100%;height:100vh;overflow:hidden;background:#000}
+#aladin-cosmic-command-test .aladin-logo-container,#aladin-cosmic-command-test .aladin-logo{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
 
 <!-- =======================================================================
