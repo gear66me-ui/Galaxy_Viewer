@@ -1,0 +1,64 @@
+schema: galaxy-viewer-beta-promotion-gate-0001
+purpose: Prevent incomplete Galaxy Viewer beta promotions and stale dependency/version failures.
+rules:
+  branch: beta
+  runtime_directory: viewer/
+  never_test_until_all_gates_pass: true
+promotion_inputs:
+  build: "NNNN"
+  viewer_file: "viewer/GV-beta-*.py"
+  changed_modules: []
+gates:
+  - id: viewer_internal_identity
+    verify:
+      - VIEWER_VERSION matches promoted viewer filename
+      - VERSION matches promoted viewer filename
+      - GV200001_BUILD equals promoted build
+  - id: module_export_contracts
+    for_each_changed_module:
+      verify:
+        - module exported VERSION equals viewer required VERSION
+        - viewer module URL points to intended module
+        - module syntax parses before promotion
+  - id: viewer_pointer
+    file: viewer/gv-current-viewer.json
+    verify:
+      - version equals promoted viewer version
+      - viewer equals promoted viewer filename
+      - build equals promoted build
+  - id: generic_launcher
+    file: mobile/beta/generic-app.html
+    action:
+      - bump GV_GENERIC_APP_REVISION
+    verify:
+      - launcher fetches viewer/gv-current-viewer.json
+      - no stale expected-build pin conflicts with promoted build
+  - id: mobile_entry
+    file: mobile/beta/index.html
+    action:
+      - bump generic-app cache-buster to generic launcher revision
+    verify:
+      - entry revision equals GV_GENERIC_APP_REVISION numeric generation
+  - id: fetch_back_reconciliation
+    verify:
+      - fetch all promotion files from beta after writes
+      - viewer build equals pointer build
+      - viewer filename equals pointer viewer
+      - every required module version equals its exported version
+      - mobile entry generation equals generic launcher generation
+  - id: boot_order
+    verify:
+      - all required module validation gates pass before declaring build testable
+      - navigation module can mount after validation
+  - id: changed_file_scope
+    verify:
+      - diff contains only intended production files plus this procedure when intentionally revised
+release_decision:
+  pass: "BUILD MAY BE TESTED"
+  fail: "DO NOT ASK USER TO TEST; repair failed gate first"
+permanent_dependencies:
+  - viewer/GV-beta-*.py
+  - viewer/gv-current-viewer.json
+  - mobile/beta/generic-app.html
+  - mobile/beta/index.html
+  - changed module files and their viewer VERSION validation gates
