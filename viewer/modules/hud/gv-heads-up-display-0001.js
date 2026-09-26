@@ -147,6 +147,13 @@ function mount(root,options={}){
   return Object.freeze({
     root:hud,
     render,
+    markReady(record){
+      const key=readinessKey(record);
+      if(!key)return false;
+      readiness.set(key,'ready');
+      render();
+      return true;
+    },
     destroy(){hud.remove();readiness.clear();probes.clear()}
   });
 }
