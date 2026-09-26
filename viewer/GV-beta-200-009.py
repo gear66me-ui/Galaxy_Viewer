@@ -483,7 +483,7 @@ if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
-if(window.GalaxyRandomTravelPresentation?.VERSION!=='0241'||typeof window.GalaxyRandomTravelPresentation.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION 0241 EXPORT MISSING');
+if(window.GalaxyRandomTravelPresentation?.VERSION!=='0242'||typeof window.GalaxyRandomTravelPresentation.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION 0242 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
