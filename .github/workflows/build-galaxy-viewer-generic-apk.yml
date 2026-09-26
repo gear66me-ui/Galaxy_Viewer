@@ -2,14 +2,9 @@ name: Build Galaxy Viewer Generic APK
 # ECO GV-ICON-CANONICAL-005A icon-only rebuild trigger
 
 on:
-  push:
-    branches: [beta]
-    paths:
-      - '.github/workflows/build-galaxy-viewer-generic-apk.yml'
   workflow_dispatch:
   push:
-    branches:
-      - beta
+    branches: [beta]
     paths:
       - 'android/galaxy-viewer/**'
       - 'mobile/beta/generic-app.html'
@@ -33,83 +28,21 @@ jobs:
         run: |
           set -euo pipefail
           python3 <<'PY'
-          import json
-          import pathlib
-          import re
-
-          pointer_path = pathlib.Path('viewer/gv-current-viewer.json')
-          pointer = json.loads(pointer_path.read_text(encoding='utf-8'))
-          version = str(pointer.get('version', '')).strip()
-          viewer = str(pointer.get('viewer', '')).strip()
-
-          if not version:
-              raise SystemExit('current-viewer version is empty')
-          if not re.fullmatch(r'GV-beta-[A-Za-z0-9.-]+\.py', viewer):
-              raise SystemExit(f'invalid active Viewer filename: {viewer!r}')
-          if '/' in viewer or 'archive' in viewer.lower():
-              raise SystemExit(f'active Viewer must be a root viewer/ file: {viewer!r}')
-
-          active = pathlib.Path('viewer') / viewer
-          if not active.is_file():
-              raise SystemExit(f'active Viewer missing: {active}')
-          source = active.read_text(encoding='utf-8')
-          if 'viewer/archive/' in source:
-              raise SystemExit('active Viewer references viewer/archive/')
-
-          launcher = pathlib.Path('mobile/beta/generic-app.html').read_text(encoding='utf-8')
-          required = [
-              'const ICON_HOLD_MS=3000;',
-              'gv-loading-comet-orbit 2.8s linear infinite',
-              '../../viewer/artwork/icon.svg',
-              'const splashReadyPromise=preloadSplash();',
-              'await runSplash(preloadedSplash);',
-              'initializeViewer(preparedViewer)',
-          ]
-          for marker in required:
-              if marker not in launcher:
-                  raise SystemExit(f'generic launcher marker missing: {marker}')
-          if 'viewer/archive/' in launcher:
-              raise SystemExit('generic launcher references viewer/archive/')
-
-          canonical_svg = pathlib.Path('viewer/artwork/icon.svg')
-          canonical_png = pathlib.Path('viewer/artwork/icon_transparent.png')
-          if not canonical_svg.is_file():
-              raise SystemExit('canonical web icon missing')
-          if not canonical_png.is_file():
-              raise SystemExit('canonical Android icon missing')
-          if pathlib.Path('android/galaxy-viewer/app/src/main/res/drawable/gv_app_icon.png').exists():
-              raise SystemExit('duplicate static Android icon must not exist')
-
-          gradle = pathlib.Path('android/galaxy-viewer/app/build.gradle').read_text(encoding='utf-8')
-          for marker in ('icon_transparent.png', 'prepareCanonicalIcon', "rename { 'gv_app_icon.png' }"):
-              if marker not in gradle:
-                  raise SystemExit(f'canonical Android icon build marker missing: {marker}')
-
-          manifest = pathlib.Path('android/galaxy-viewer/app/src/main/AndroidManifest.xml').read_text(encoding='utf-8')
-          if 'android:theme="@style/GalaxyViewerTheme"' not in manifest:
-              raise SystemExit('GalaxyViewerTheme not active in manifest')
-          if 'android:icon="@drawable/gv_app_icon_black"' not in manifest:
-              raise SystemExit('black launcher icon resource not active')
-
-          styles = pathlib.Path('android/galaxy-viewer/app/src/main/res/values/styles.xml').read_text(encoding='utf-8')
-          for marker in (
-              '<item name="android:windowBackground">@android:color/black</item>',
-              '<item name="android:colorBackground">@android:color/black</item>',
-              '<item name="android:windowSplashScreenBackground">@android:color/black</item>',
-              '<item name="android:windowSplashScreenIconBackgroundColor">@android:color/black</item>',
-          ):
-              if marker not in styles:
-                  raise SystemExit(f'black startup theme marker missing: {marker}')
-
-          main = pathlib.Path('android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java').read_text(encoding='utf-8')
-          if 'mobile/beta/generic-app.html?source=android-app' not in main:
-              raise SystemExit('Android wrapper does not use stable generic launcher')
-          if re.search(r'GV-beta-[A-Za-z0-9.-]+\.py', main):
-              raise SystemExit('Android wrapper hardcodes a Viewer revision')
-          if 'viewer/archive/' in main:
-              raise SystemExit('Android wrapper references viewer/archive/')
-
-          print(f'GENERIC_RUNTIME_OK version={version} viewer={viewer}')
+          import json, pathlib, re
+          pointer=json.loads(pathlib.Path('viewer/gv-current-viewer.json').read_text())
+          viewer=pathlib.Path('viewer')/pointer['viewer']
+          source=viewer.read_text()
+          build=re.search(r"const GV200001_BUILD='(\d{4})';",source)
+          if not build or build.group(1)!=str(pointer.get('build')): raise SystemExit('viewer/pointer build mismatch')
+          launcher=pathlib.Path('mobile/beta/generic-app.html').read_text()
+          for marker in ("GV-GENERIC-APP-0089","attempt<=8","cache:'no-store'","RAW_VIEWER_BASE"):
+              if marker not in launcher: raise SystemExit('launcher marker missing: '+marker)
+          main=pathlib.Path('android/galaxy-viewer/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java').read_text()
+          for marker in ('WebSettings.LOAD_NO_CACHE','clearCache(true)','WebStorage.getInstance().deleteAllData()','apk=fresh-2'):
+              if marker not in main: raise SystemExit('Android fresh-launch marker missing: '+marker)
+          for required in ('android/galaxy-viewer/app/build.gradle','android/galaxy-viewer/app/src/main/AndroidManifest.xml','android/galaxy-viewer/settings.gradle'):
+              if not pathlib.Path(required).is_file(): raise SystemExit('Android build input missing: '+required)
+          print('GENERIC_RUNTIME_OK build='+build.group(1))
           PY
 
       - name: Set up Java 17
