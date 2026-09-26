@@ -39,9 +39,9 @@ jobs:
             for k in ['bytes','lines','characters','words','spaces','tabs','newlines','non_whitespace','numeric_tokens','digits','occurrences_33']: r.append(f'{k}: BEFORE={a[k]} AFTER={b[k]} DELTA={b[k]-a[k]:+d}')
             r += ['digit_frequency BEFORE='+json.dumps(a['digit_frequency'],sort_keys=True),'digit_frequency AFTER ='+json.dumps(b['digit_frequency'],sort_keys=True),'sha256 BEFORE='+a['sha256'],'sha256 AFTER ='+b['sha256'],'DIFF:',git('diff','--unified=3',before,after,'--',p).rstrip(),'']
           viewer=pathlib.Path('viewer/GV-beta-200-009.py').read_text(); pointer=json.loads(pathlib.Path('viewer/gv-current-viewer.json').read_text()); build=re.search(r"const GV200001_BUILD='(\d{4})';",viewer)
-          r += ['CONTROLLED INVARIANTS','-'*80,'viewer_build='+(build.group(1) if build else '<missing>'),'pointer_build='+str(pointer.get('build')),'camera_30hz_owner_count='+str(viewer.count('sample=Math.floor(elapsedMs*30/1000)')),'fov_report_400ms_owner_count='+str(viewer.count('GV_FOV_REPORT_MS=400')),'fov_hysteresis_owner_count='+str(viewer.count('GV_FOV_REPORT_HYSTERESIS=0.001'))]
+          r += ['CONTROLLED INVARIANTS','-'*80,'viewer_build='+(build.group(1) if build else '<missing>'),'pointer_build='+str(pointer.get('build')),'camera_120hz_owner_count='+str(viewer.count('sample=Math.floor(elapsedMs*120/1000)')),'fov_report_400ms_owner_count='+str(viewer.count('GV_FOV_REPORT_MS=400')),'fov_hysteresis_owner_count='+str(viewer.count('GV_FOV_REPORT_HYSTERESIS=0.001'))]
           assert build and build.group(1)==str(pointer.get('build')),'viewer/pointer build mismatch'
-          assert viewer.count('sample=Math.floor(elapsedMs*30/1000)')==1,'30 Hz Aladin navigation invariant changed'
+          assert viewer.count('sample=Math.floor(elapsedMs*120/1000)')==1,'120 Hz Aladin navigation invariant changed'
           out='\n'.join(r)+'\n'; pathlib.Path('gv-nanoscopic-audit.txt').write_text(out); print(out)
           PY
       - name: Publish report to workflow summary
