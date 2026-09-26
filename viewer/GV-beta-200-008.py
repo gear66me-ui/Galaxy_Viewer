@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-008';
-const GV200001_BUILD='0003';
+const GV200001_BUILD='0004';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -98,7 +98,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-001.js?v=0003',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003',
-    headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js'
+    headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js',
+    randomPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-galaxy-0241.js'
 });
 
 
@@ -146,7 +147,7 @@ if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl'
+    'diagnosticsUrl','galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl','randomPresentationUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -466,7 +467,8 @@ await Promise.all([
     loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
     loadScript(fresh(config.galaxyNavigatorUrl)),
-    loadScript(fresh(config.headsUpDisplayUrl))
+    loadScript(fresh(config.headsUpDisplayUrl)),
+    loadScript(fresh(config.randomPresentationUrl))
 ]);
 
 
@@ -481,6 +483,7 @@ if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS
 if(window.GalaxyRouteEngine?.VERSION!=='0001')throw new Error('GALAXY ROUTE ENGINE 001 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
+if(window.GalaxyRandomGalaxyPresentation?.VERSION!=='0241'||typeof window.GalaxyRandomGalaxyPresentation.mount!=='function')throw new Error('RANDOM PRESENTATION 0241 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -496,7 +499,7 @@ galaxyNavigator.setBusy(true);
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
 gvVersionReadout.textContent=`${VERSION.replace(/^GV-beta-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
-Object.assign(gvVersionReadout.style,{position:'absolute',left:'0',top:'-15px',display:'block',width:'100%',font:'400 8px/1 "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
+Object.assign(gvVersionReadout.style,{position:'absolute',left:'0',top:'-11px',display:'block',width:'100%',font:'400 8px/1 "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none'});
 earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
 
 
@@ -663,6 +666,7 @@ const randomGalaxyBridge=Object.freeze({
     getState(){return {activeDestination,currentDestination:activeDestination}}
 });
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
+const randomPresentation=window.GalaxyRandomGalaxyPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
@@ -1062,6 +1066,7 @@ function validateDestination(destination){
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
+    randomPresentation.beginTravel(v.destination);
     let zoomInStarted=false,installed=false;
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){gvInstallPreparedHd(prepared);installed=true}return prepared};
     preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
@@ -1071,6 +1076,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){gvInstallPreparedHd(prepared);installed=true}
+    randomPresentation.arrive(v.destination);
     headsUpDisplay.render();return v.destination;
 }
 
@@ -1146,6 +1152,7 @@ window.GalaxyViewerCore=Object.freeze({
     target,
     diagnostics,
     headsUpDisplay,
+    randomPresentation,
     navigationRuntime,
     get routeIndex(){return routeIndex},
     get historyIndex(){return historyIndex},
