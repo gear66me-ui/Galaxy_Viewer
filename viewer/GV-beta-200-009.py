@@ -840,11 +840,13 @@ function gvSetFovDigits(element,value,digitWidth){
     }));
 }
 let gvDisplayedFov=null;
+const GV_FOV_REPORT_MS=400;
+const GV_FOV_REPORT_HYSTERESIS=0.001;
 function gvSyncFovReadout(){
     try{
         const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(fov)&&fov>=0){
-            if(gvDisplayedFov===null||Math.abs(fov-gvDisplayedFov)>=0.00055)gvDisplayedFov=Number(fov.toFixed(3));
+            if(gvDisplayedFov===null||Math.abs(fov-gvDisplayedFov)>=GV_FOV_REPORT_HYSTERESIS)gvDisplayedFov=Number(fov.toFixed(3));
             const parts=gvDisplayedFov.toFixed(3).split('.');
             gvSetFovDigits(gvFovReadout.querySelector('#gv-fov-int'),parts[0].padStart(3,' '),'8.4px');
             gvSetFovDigits(gvFovReadout.querySelector('#gv-fov-frac'),parts[1],'7.2px');
@@ -852,7 +854,7 @@ function gvSyncFovReadout(){
     }catch(_){}
 }
 gvSyncFovReadout();
-setInterval(gvSyncFovReadout,200);
+setInterval(gvSyncFovReadout,GV_FOV_REPORT_MS);
 
 let zoomCommand=0;
 let zoomFrame=0;
