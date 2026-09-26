@@ -7,6 +7,13 @@ on:
     paths:
       - '.github/workflows/build-galaxy-viewer-generic-apk.yml'
   workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - 'android/galaxy-viewer/**'
+      - 'mobile/beta/generic-app.html'
+      - '.github/workflows/build-galaxy-viewer-generic-apk.yml'
 
 permissions:
   contents: read
