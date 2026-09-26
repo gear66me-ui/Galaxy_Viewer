@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0018';
+const GV200001_BUILD='0019';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -486,7 +486,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0005'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0005 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0006'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0006 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -1016,9 +1016,10 @@ function gvFlightLogLerp(a,b,u){const x=Math.max(Number(a),1e-12),y=Math.max(Num
 function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
     const duration=firstHomeTrip?7.5:17,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
     if(firstHomeTrip){
-        const translationEnd=gvFlightClamp01(4/duration);
-        if(t<translationEnd){const p=gvFlightSmootherstep(t/translationEnd);return {translation:p,fov:startFov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*p}}
-        const p=gvFlightSmootherstep((t-translationEnd)/Math.max(1-translationEnd,0.000001));return {translation:1,fov:gvFlightLogLerp(startFov,finalFov,p),rotation:targetRotation};
+        const translateStart=.30,translationComplete=.70;
+        let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
+        let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
+        return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
     }
     const translateStart=.30,translationComplete=.70;
     let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
@@ -1032,7 +1033,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,target
     if(targetPromise)Promise.resolve(targetPromise).then(applyPreparedTarget).catch(error=>console.error('GV 130H PREPARED TARGET FAILED',error));
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=firstHomeTrip?4/7.5:.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
+    const durationSeconds=firstHomeTrip?7.5:17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*15/1000);
