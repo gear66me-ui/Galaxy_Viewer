@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+
+<div id="aladin-lite-div" style="width: 500px; height: 400px"></div>
+
+<script type="module">
+    import A from '../src/js/A.js';
+    let aladin;
+    A.init.then(() => {
+        aladin = A.aladin('#aladin-lite-div', {fullScreen: true, target: "orion", fov: 10, projection: 'SIN', showContextMenu: true});
+
+        const c1 = A.catalogFromURL('./data/votable/eso.xml', {onClick: 'showTable'});
+        aladin.addCatalog(c1);
+    });
+</script>
+</body>
+</html>

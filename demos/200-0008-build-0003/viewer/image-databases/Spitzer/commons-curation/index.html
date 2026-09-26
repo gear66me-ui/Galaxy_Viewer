@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Spitzer Commons Curation</title>
+<style>
+:root{--bg:#070910;--panel:#111621;--panel2:#171d29;--line:#2b3447;--text:#eef3fb;--muted:#a7b1c2;--good:#1f6b43;--alt:#725916;--bad:#742b31;--accent:#3567a8}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:20;background:#090d15f2;border-bottom:1px solid var(--line);backdrop-filter:blur(10px);padding:9px}
+.bar{max-width:1650px;margin:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap} h1{font-size:18px;margin:0 8px 0 0}
+button,input,select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:8px 10px}
+button{cursor:pointer} button:hover{border-color:#52627d}.nav button.active{background:var(--accent)} .stats{margin-left:auto;color:var(--muted)}
+main{max-width:1650px;margin:auto;padding:10px}.note{color:var(--muted);margin:2px 0 10px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}.imgbox{height:205px;background:#020307;display:flex;align-items:center;justify-content:center;position:relative}
+.imgbox img{width:100%;height:100%;object-fit:contain;display:block}.badge{position:absolute;top:5px;left:5px;background:#000c;border-radius:5px;padding:3px 5px;font-size:10px;max-width:90%}
+.body{padding:8px}.name{font-weight:700;font-size:13px;min-height:35px;word-break:break-word}.meta{color:var(--muted);font-size:11px;margin:4px 0 7px;min-height:28px}.flags{font-size:10px;color:#ffc47a;margin-bottom:6px;min-height:13px}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}.actions button{padding:7px 4px;font-size:11px}.primary.active{background:var(--good)}.alternate.active{background:var(--alt)}.reject.active{background:var(--bad)}
+.links{display:flex;gap:4px;margin-top:5px}.links a{flex:1;text-align:center;text-decoration:none;color:#bdd8ff;background:var(--panel2);border:1px solid var(--line);padding:6px 3px;border-radius:6px;font-size:10px}
+.rejected{opacity:.35}.loading{padding:40px;text-align:center;color:var(--muted)}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.imgbox{height:165px}.body{padding:6px}.stats{width:100%;margin-left:0}.name{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="bar">
+  <h1>Spitzer Commons Curation</h1>
+  <input id="search" placeholder="Search title / galaxy" autocomplete="off">
+  <select id="filter">
+   <option value="all">All</option>
+   <option value="unmarked">Unmarked</option>
+   <option value="primary">Primary</option>
+   <option value="alternate">Alternate</option>
+   <option value="reject">Rejected</option>
+   <option value="flagged">Auto-flagged</option>
+  </select>
+  <label><input type="checkbox" id="hideRejected" checked> hide rejected</label>
+  <button id="export">Export selections</button>
+  <button id="clear">Clear selections</button>
+  <span class="stats" id="stats">Loading Commons category…</span>
+ </div>
+ <div class="bar nav" id="nav"></div>
+</header>
+<main>
+ <p class="note">Only 240 px Wikimedia thumbnails are requested for the current page. HD originals are never loaded unless you tap <b>Open HD</b>. Default workflow: leave good images alone and quickly mark bad ones <b>REJECT</b>; use PRIMARY/ALTERNATE only when you want to make an explicit choice.</p>
+ <div id="grid" class="grid"><div class="loading">Loading Spitzer files from Wikimedia Commons…</div></div>
+</main>
+<script>
+const API='https://commons.wikimedia.org/w/api.php';
+const CATEGORY='Category:Images by Spitzer Space Telescope';
+const PAGE_SIZE=300;
+const STORAGE='gv-spitzer-commons-static-v1';
+let titles=[];
+let currentPage=0;
+let pageRecords=new Map();
+let selections=JSON.parse(localStorage.getItem(STORAGE)||'{}');
+
+const scientificRx=/\b(chart|plot|diagram|spectrum|spectra|spectral|light curve|histogram|comparison|annotat|labelled|labeled|inset|zoom|panel|simulation|model|schematic|temperature map|contour)\b/i;
+const nongalaxyRx=/\b(telescope|spacecraft|launch|rocket|instrument|engineer|technician|planet|comet|asteroid|nebula|star forming|star-forming|milky way|magellanic|exoplanet|saturn|jupiter|mars|earth)\b/i;
+const galaxyRx=/\b(galaxy|galaxies|spiral|elliptical|lenticular|interacting|merger|NGC\s*\d+|IC\s*\d+|UGC\s*\d+|PGC\s*\d+|Messier\s*\d+|\bM\s*\d+)\b/i;
+
+function save(){localStorage.setItem(STORAGE,JSON.stringify(selections));}
+function esc(s){return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));}
+function api(params){const u=new URL(API);Object.entries({...params,origin:'*',format:'json'}).forEach(([k,v])=>u.searchParams.set(k,v));return fetch(u).then(r=>{if(!r.ok)throw new Error('Commons HTTP '+r.status);return r.json()});}
+
+async function loadTitles(){
+ let cont=''; titles=[];
+ do{
+  const p={action:'query',list:'categorymembers',cmtitle:CATEGORY,cmtype:'file',cmlimit:'500'};
+  if(cont)p.cmcontinue=cont;
+  const j=await api(p);
+  titles.push(...(j.query?.categorymembers||[]).map(x=>x.title));
+  cont=j.continue?.cmcontinue||'';
+  document.getElementById('stats').textContent=`Found ${titles.length} files…`;
+ }while(cont);
+ if(!titles.length)throw new Error('Commons category returned zero files');
+ buildNav(); await loadPage(0);
+}
+
+function buildNav(){
+ const nav=document.getElementById('nav');nav.innerHTML='';
+ const pc=Math.ceil(titles.length/PAGE_SIZE);
+ for(let i=0;i<pc;i++){
+  const b=document.createElement('button');
+  b.textContent=`${i*PAGE_SIZE+1}-${Math.min((i+1)*PAGE_SIZE,titles.length)}`;
+  b.className=i===currentPage?'active':'';
+  b.onclick=()=>loadPage(i);
+  nav.appendChild(b);
+ }
+}
+
+async function loadPage(page){
+ currentPage=page;buildNav();pageRecords=new Map();
+ const slice=titles.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
+ document.getElementById('grid').innerHTML='<div class="loading">Loading lightweight thumbnails for this page…</div>';
+ document.getElementById('stats').textContent=`Page ${page+1}/${Math.ceil(titles.length/PAGE_SIZE)} — loading ${slice.length} thumbnails…`;
+ for(let i=0;i<slice.length;i+=50){
+  const batch=slice.slice(i,i+50);
+  const j=await api({action:'query',titles:batch.join('|'),prop:'imageinfo',iiprop:'url|size|sha1|mime|extmetadata',iiurlwidth:'240'});
+  for(const pg of Object.values(j.query?.pages||{})){
+   const ii=(pg.imageinfo||[{}])[0], em=ii.extmetadata||{};
+   const val=k=>(em[k]||{}).value||'';
+   const strip=x=>String(x||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+   const desc=strip(val('ImageDescription'));
+   const text=[pg.title,strip(val('ObjectName')),desc,strip(val('Categories'))].join(' ');
+   const flags=[];
+   const w=ii.width||0,h=ii.height||0,ratio=h?w/h:0;
+   if(ratio>=.94&&ratio<=1.06)flags.push('SQUARE');
+   if(ratio>=2.2||ratio<=.45)flags.push('EXTREME_ASPECT');
+   if(scientificRx.test(text))flags.push('SCIENTIFIC/ANNOTATED');
+   if(nongalaxyRx.test(text)&&!galaxyRx.test(text))flags.push('LIKELY_NON-GALAXY');
+   if(!galaxyRx.test(text))flags.push('GALAXY_ID UNCLEAR');
+   pageRecords.set(pg.title,{title:pg.title,pageid:pg.pageid,thumb:ii.thumburl||ii.url,original:ii.url,source:ii.descriptionurl||('https://commons.wikimedia.org/wiki/'+encodeURIComponent(pg.title.replaceAll(' ','_'))),width:w,height:h,bytes:ii.size||0,sha1:ii.sha1||'',description:desc,flags});
+  }
+  document.getElementById('stats').textContent=`Page ${page+1} — metadata ${Math.min(i+50,slice.length)}/${slice.length}`;
+ }
+ render();
+}
+
+function decisionFor(title){return selections[title]?.decision||'';}
+function setDecision(title,d){
+ selections[title]={...(selections[title]||{}),decision:d,updatedAt:new Date().toISOString()};save();render();
+}
+function filteredRecords(){
+ const q=document.getElementById('search').value.trim().toLowerCase();
+ const f=document.getElementById('filter').value;
+ const hide=document.getElementById('hideRejected').checked;
+ return [...pageRecords.values()].filter(r=>{
+  const d=decisionFor(r.title);
+  if(hide&&d==='reject'&&f!=='reject')return false;
+  if(q&&!(`${r.title} ${r.description}`).toLowerCase().includes(q))return false;
+  if(f==='unmarked'&&d)return false;
+  if(['primary','alternate','reject'].includes(f)&&d!==f)return false;
+  if(f==='flagged'&&!r.flags.length)return false;
+  return true;
+ });
+}
+
+function render(){
+ const data=filteredRecords(),g=document.getElementById('grid');g.innerHTML='';
+ for(const r of data){
+  const d=decisionFor(r.title),card=document.createElement('div');
+  card.className='card'+(d==='reject'?' rejected':'');
+  card.innerHTML=`<div class="imgbox"><img loading="lazy" decoding="async" src="${esc(r.thumb)}" alt=""><span class="badge">${r.width}×${r.height} · ${Math.round(r.bytes/1024)} KB original</span></div>
+  <div class="body"><div class="name">${esc(r.title.replace(/^File:/,''))}</div><div class="meta">${esc((r.description||'').slice(0,140))}</div><div class="flags">${esc(r.flags.join(' · '))}</div>
+  <div class="actions"><button class="primary ${d==='primary'?'active':''}">PRIMARY</button><button class="alternate ${d==='alternate'?'active':''}">ALTERNATE</button><button class="reject ${d==='reject'?'active':''}">REJECT</button></div>
+  <div class="links"><a target="_blank" rel="noopener" href="${esc(r.original)}">Open HD</a><a target="_blank" rel="noopener" href="${esc(r.source)}">Commons page</a></div></div>`;
+  const [bp,ba,br]=card.querySelectorAll('.actions button');
+  bp.onclick=()=>setDecision(r.title,d==='primary'?'':'primary');
+  ba.onclick=()=>setDecision(r.title,d==='alternate'?'':'alternate');
+  br.onclick=()=>setDecision(r.title,d==='reject'?'':'reject');
+  g.appendChild(card);
+ }
+ const all=Object.values(selections);let c={primary:0,alternate:0,reject:0};all.forEach(x=>{if(c[x.decision]!==undefined)c[x.decision]++});
+ document.getElementById('stats').textContent=`Page ${currentPage+1}/${Math.ceil(titles.length/PAGE_SIZE)} · showing ${data.length}/${pageRecords.size} · Primary ${c.primary} · Alt ${c.alternate} · Rejected ${c.reject}`;
+}
+
+document.getElementById('search').oninput=render;
+document.getElementById('filter').onchange=render;
+document.getElementById('hideRejected').onchange=render;
+document.getElementById('clear').onclick=()=>{if(confirm('Clear ALL saved Spitzer selections?')){selections={};save();render();}};
+document.getElementById('export').onclick=()=>{
+ const payload={version:'spitzer-commons-selection-0001',generatedAt:new Date().toISOString(),sourceCategory:CATEGORY,totalCategoryFiles:titles.length,selections};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='spitzer-commons-selections.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+loadTitles().catch(err=>{document.getElementById('grid').innerHTML=`<div class="loading">Failed to load Commons: ${esc(err.message)}<br><br>Reload the page to retry.</div>`;document.getElementById('stats').textContent='Load failed';});
+</script>
+</body>
+</html>

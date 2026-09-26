@@ -1,0 +1,28 @@
+{
+  "schema": "gv-curation-audit-summary",
+  "sessionId": "2026-08-25-spitzer-v19-500-new",
+  "officialAstroPixSpitzerFeedCount": 705,
+  "reviewPacketRecordCount": 500,
+  "decisionCounts": {
+    "KEEP": 123,
+    "REJECT": 171,
+    "MAYBE": 202,
+    "UNREVIEWED": 4
+  },
+  "officialFeedMatches": 290,
+  "notInOfficialFeed": 210,
+  "workingLinks": 290,
+  "brokenLinks": 210,
+  "maybe": {
+    "count": 202,
+    "workingLinks": 5,
+    "brokenLinks": 197
+  },
+  "keep": {
+    "count": 123,
+    "archivedOfficialPreviewImages": 116,
+    "missingOrInvalidLegacyIds": 7,
+    "downloadFailuresForOfficialKeepImages": 0
+  },
+  "conclusion": "The legacy v19 candidate page mixed authoritative AstroPix records with guessed IDs. All review decisions are retained in the master so none of these candidates are shown again in the ordinary NEW queue. KEEP images are retained regardless of object class; galaxy-only filtering is prohibited for the curation master."
+}

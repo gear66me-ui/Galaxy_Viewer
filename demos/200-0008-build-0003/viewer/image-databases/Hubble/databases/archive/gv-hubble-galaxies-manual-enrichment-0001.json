@@ -1,0 +1,27 @@
+{
+  "schema": "galaxy-viewer-hubble-manual-enrichment-v1",
+  "sourceCatalog": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0001.json",
+  "sourceBlob": "d02cfaae7c690b75db70010a7a5fa87c917d2f37",
+  "method": "manual_user_reviewed",
+  "entries": [
+    {
+      "archiveId": "potw1345a",
+      "name": "Antennae , Antennae Galaxies , NGC 4038 , NGC 4039",
+      "constellation": "Corvus",
+      "distanceMly": 65.0,
+      "sizeKly": [53.0, 53.0],
+      "age": {
+        "display": "EST. 0.1–1 BILLION YEARS",
+        "minGyr": 0.1,
+        "maxGyr": 1.0,
+        "estimated": true,
+        "method": "manual_stellar_population_range",
+        "reviewStatus": "user_approved"
+      },
+      "research": {
+        "searchQuery": "\"NGC 4038 NGC 4039\" stellar population age billion years",
+        "notes": "User-reviewed Google AI Mode result described multiple stellar populations; display range intentionally simplified to EST. 0.1–1 BILLION YEARS by user decision."
+      }
+    }
+  ]
+}

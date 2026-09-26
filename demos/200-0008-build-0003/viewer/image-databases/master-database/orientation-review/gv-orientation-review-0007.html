@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Galaxy Viewer — Orientation + FOV Review 0007</title>
+<style>
+:root{color-scheme:dark;--bg:#06090e;--p:#0f151f;--p2:#151d29;--l:#2a3545;--t:#eef4ff;--m:#9eacc0;--a:#8ab4ff;--g:#55e39a;--y:#ffd166;--r:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:13px}button,input{font:inherit}button{border:1px solid var(--l);background:#172130;color:var(--t);border-radius:7px;padding:6px 8px}button.primary{background:#18345d;border-color:#3562a5}button.good{border-color:#2b7a56}button.warn{border-color:#8a7130}button:disabled{opacity:.4}input{background:#090d13;color:var(--t);border:1px solid var(--l);border-radius:7px;padding:6px}a{color:var(--a)}
+header{position:sticky;top:0;z-index:100;background:#06090ef5;border-bottom:1px solid var(--l);padding:6px 8px}.bar{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.title{font-weight:800}.pill{border:1px solid var(--l);border-radius:999px;padding:3px 7px;font-size:11px}.ok{color:var(--g)}.bad{color:var(--r)}
+main{max-width:900px;margin:auto;padding:6px}.panel{background:var(--p);border:1px solid var(--l);border-radius:9px;padding:6px;margin-bottom:6px}.record{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.record .name{font-weight:800;font-size:15px;flex:1}.meta{font-size:10px;color:var(--m);line-height:1.25}.view{width:100%;height:170px;background:#020407;border:1px solid var(--l);border-radius:8px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}.view img{width:100%;height:100%;object-fit:contain}.view-label{position:absolute;left:5px;top:5px;z-index:20;background:#000b;padding:3px 5px;border-radius:5px;font-size:10px}.source{position:absolute;right:5px;top:5px;z-index:20;background:#000b;padding:3px 5px;border-radius:5px;font-size:10px}
+#aladin{width:100%;height:100%}.compass{position:absolute;right:7px;top:7px;z-index:30;width:68px;height:68px;border:2px solid white;border-radius:50%;background:#000a;pointer-events:none}.dial{position:absolute;inset:4px;transform-origin:center}.n{position:absolute;top:-3px;left:24px;font-size:16px;font-weight:900}.e{position:absolute;left:0;top:22px;font-size:14px;font-weight:900}.v{position:absolute;left:29px;top:13px;width:2px;height:39px;background:white}.v:before{content:"";position:absolute;top:-3px;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid white}.h{position:absolute;left:11px;top:30px;width:38px;height:2px;background:white}.h:before{content:"";position:absolute;left:-3px;top:-4px;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:9px solid white}.sky{position:absolute;left:5px;bottom:5px;z-index:30;background:#000b;padding:3px 5px;border-radius:5px;font-size:9px;max-width:80%}
+.controls{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.controls+.controls{margin-top:5px}.controls label{font-size:10px;color:var(--m)}.controls input[type=range]{flex:1;min-width:120px;padding:0}.deg{width:70px}.fov{width:95px}.phrase{flex:1;min-width:230px;font-weight:800;border:1px dashed #526177;border-radius:6px;padding:5px}.statusline{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.saved{color:var(--g);font-weight:800}.unsaved{color:var(--y);font-weight:800}
+footer{padding:8px;text-align:center;color:var(--m);font-size:10px}
+@media(max-height:700px){.view{height:145px}body{font-size:12px}button,input{padding:5px 6px}.panel{padding:5px;margin-bottom:5px}}
+@media(min-height:900px){.view{height:190px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="bar">
+  <span class="title">GV ORIENTATION + FOV 0007</span>
+  <span class="pill" id="progress">0 / 0</span>
+  <span class="pill" id="alist">Aladin loading…</span>
+  <span class="pill" id="saveState">UNSAVED</span>
+ </div>
+ <div class="bar" style="margin-top:5px">
+  <button id="prev">◀ PREVIOUS</button>
+  <button id="next" class="primary">NEXT ▶</button>
+  <button id="nextUnresolved">NEXT UNRESOLVED ▶</button>
+  <button id="confirm" class="good">CONFIRM ORIENTATION + FOV</button>
+  <button id="skip" class="warn">SKIP</button>
+ </div>
+</header>
+
+<main>
+ <section class="panel record">
+  <span class="pill" id="catalog">—</span>
+  <span class="name" id="name">Loading catalogs…</span>
+  <span class="pill" id="recordStatus">—</span>
+  <div class="meta" style="width:100%" id="meta">—</div>
+ </section>
+
+ <section class="panel">
+  <div class="view">
+   <span class="view-label">ORIGINAL IMAGE — UNTOUCHED</span>
+   <a class="source" id="sourceLink" target="_blank" rel="noopener">SOURCE ↗</a>
+   <img id="published" alt="Published observatory image">
+  </div>
+ </section>
+
+ <section class="panel">
+  <div class="view">
+   <span class="view-label">ALADIN — SAME VIEWER FOR EVERY RECORD</span>
+   <div id="aladin"></div>
+   <div class="compass"><div class="dial" id="dial"><b class="n">N</b><b class="e">E</b><i class="v"></i><i class="h"></i></div></div>
+   <div class="sky" id="sky">Initializing…</div>
+  </div>
+ </section>
+
+ <section class="panel">
+  <div class="controls">
+   <label>ROTATION</label>
+   <button data-r="-10">−10°</button><button data-r="-1">−1°</button><button data-r="-.1">−0.1°</button>
+   <input id="rotRange" type="range" min="-180" max="180" step=".1" value="0">
+   <button data-r=".1">+0.1°</button><button data-r="1">+1°</button><button data-r="10">+10°</button>
+   <input id="rotDeg" class="deg" type="number" min="-180" max="180" step=".1" value="0">
+   <button id="rotReset">0°</button>
+  </div>
+  <div class="controls">
+   <label>ORIENTATION</label><div class="phrase" id="phrase">North is up (0.0°)</div>
+   <button id="copyOrientation" class="primary">COPY ORIENTATION</button>
+  </div>
+  <div class="controls">
+   <label>FOV °</label>
+   <span>CATALOG:</span><b id="catalogFov">—</b>
+   <span>CURRENT ALADIN:</span><b id="currentFov">—</b>
+   <input id="confirmedFov" class="fov" type="number" min=".000001" step=".000001">
+   <button id="useAladinFov" class="primary">USE CURRENT ALADIN FOV</button>
+   <button id="resetCatalogFov">RESET CATALOG FOV</button>
+  </div>
+  <div class="controls">
+   <label>NOTE</label><input id="note" style="flex:1;min-width:180px" placeholder="optional">
+   <button id="recenter">RECENTER / RELOAD TARGET</button>
+  </div>
+ </section>
+
+ <section class="panel statusline">
+  <span>Confirmed this session:</span><b id="confirmedCount">0</b>
+  <span>•</span><span>Remaining:</span><b id="remaining">0</b>
+  <span style="flex:1"></span>
+  <button id="download" class="primary">DOWNLOAD CORRECTIONS JSON</button>
+  <button id="copyAll">COPY JSON</button>
+ </section>
+</main>
+<footer>The Aladin DOM never moves. NEXT only updates image URL, RA, Dec, FOV and rotation.</footer>
+
+<script>
+'use strict';
+const ALADIN_URL='https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js';
+const CATALOGS=[
+ {name:'Chandra',rev:'0002',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json'},
+ {name:'Hubble',rev:'0025',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json'},
+ {name:'JWST',rev:'0002',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json'},
+ {name:'Spitzer',rev:'0009',url:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0009.json'}
+];
+const STORE='gv-orientation-alignment-0003';
+let rows=[],idx=0,aladin=null,review={};
+try{review=JSON.parse(localStorage.getItem(STORE)||'{}')}catch{}
+const $=s=>document.querySelector(s);
+function save(){localStorage.setItem(STORE,JSON.stringify(review))}
+function missing(v){return v==null||(typeof v==='string'&&!v.trim())}
+function entries(d){if(Array.isArray(d))return d;for(const k of ['entries','galaxies','records','items','data','catalog'])if(Array.isArray(d?.[k]))return d[k];return[]}
+function nameOf(r){return r.displayName||r.name||r.title||r.designation||r.archiveId||'Unnamed'}
+function imageOf(r){return r.selectedImageUrl||r.githubImageUrl||r.esaPublicationJpeg||r.publicationJpeg||r.imageUrl||r.jpegUrl||r.image||(Array.isArray(r.jpegCandidates)?r.jpegCandidates[0]:'')||''}
+function sourceOf(r){return r.sourceUrl||r.sourcePageUrl||r.sourcePage||r.archiveUrl||r.infoUrl||r.webUrl||''}
+function numberField(r,ks){for(const k of ks){const n=Number(r[k]);if(Number.isFinite(n))return n}return null}
+function raOf(r){return numberField(r,['ra','RA','raDeg','raDegrees'])}
+function decOf(r){return numberField(r,['dec','Dec','DEC','decDeg','decDegrees'])}
+function fovDeg(r){
+ let v=r.fieldOfView??r.fov??r.FOV;
+ if(typeof v==='number'&&Number.isFinite(v))return v;
+ if(Array.isArray(v)){const a=v.map(Number).filter(Number.isFinite);return a.length?Math.max(...a):1}
+ const s=String(v??'').toLowerCase(),a=(s.match(/\d+(?:\.\d+)?/g)||[]).map(Number);if(!a.length)return 1;
+ let m=Math.max(...a);if(/arcsec|arcsecond|″/.test(s))m/=3600;else if(/arcmin|arcminute|′/.test(s))m/=60;else if(!/degree|\bdeg\b|°/.test(s)&&m>20)m/=60;return Math.max(m,.000001)
+}
+function fovDisplay(r){return String(r.fieldOfView??r.fov??r.FOV??'')}
+function keyOf(c,r,i){return `${c.name}:${r.archiveId||r.id||r.designation||r.name||i}`}
+function norm(v){let x=Number(v)||0;while(x>180)x-=360;while(x<=-180)x+=360;return Math.round(x*10)/10}
+function phrase(v){const x=norm(v);if(Math.abs(x)<.05)return 'North is up (0.0°)';return `North is ${Math.abs(x).toFixed(1)}° ${x>0?'left':'right'} of vertical`}
+function setCompass(v){$('#dial').style.transform=`rotate(${-norm(v)}deg)`}
+function aladinFovValue(){
+ try{
+   const v=aladin?.getFoV?.();
+   if(Array.isArray(v)){const nums=v.map(Number).filter(Number.isFinite);if(nums.length)return Math.max(...nums)}
+   const n=Number(v);if(Number.isFinite(n))return n
+ }catch{}
+ return null
+}
+function updateCurrentFov(){const v=aladinFovValue();$('#currentFov').textContent=v==null?'—':v.toFixed(6)}
+async function loadAladin(){
+ $('#alist').textContent='Aladin loading…';
+ if(!window.A?.init){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=ALADIN_URL;s.onload=resolve;s.onerror=()=>reject(Error('Aladin script failed'));document.head.appendChild(s)})}
+ if(!window.A?.init)throw Error('A.init missing');
+ await A.init;
+ aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 +0',fov:1,projection:'TAN',cooFrame:'ICRSd',lockNorthUp:false,northPoleOrientation:0,showReticle:true,showCooGrid:true,showZoomControl:true,showLayersControl:false,showFullscreenControl:false,inertia:false});
+ $('#alist').textContent='Aladin ready';$('#alist').classList.add('ok');
+ setInterval(updateCurrentFov,500)
+}
+function markDirty(){$('#saveState').textContent='UNCONFIRMED';$('#saveState').className='pill unsaved'}
+function row(){return rows[idx]}
+async function show(i){
+ if(!rows.length)return;
+ idx=Math.max(0,Math.min(rows.length-1,i));
+ const x=row(),r=x.r,s=review[x.key]||{},ra=raOf(r),dec=decOf(r),catF=fovDeg(r),rot=norm(s.aladinRotationDeg??0),confirmedF=Number(s.confirmedFovDeg);
+ $('#progress').textContent=`${idx+1} / ${rows.length}`;
+ $('#catalog').textContent=`${x.c.name} ${x.c.rev}`;
+ $('#name').textContent=nameOf(r);
+ $('#recordStatus').textContent=s.status==='confirmed'?'CONFIRMED':s.status==='skipped'?'SKIPPED':'UNRESOLVED';
+ $('#meta').textContent=`RA ${r.raText??r.ra??'—'} • Dec ${r.decText??r.dec??'—'} • Catalog FOV ${fovDisplay(r)} • ID ${r.archiveId||r.id||'—'}`;
+ const im=imageOf(r);$('#published').src=im;$('#published').alt=nameOf(r);
+ const su=sourceOf(r);$('#sourceLink').href=su||'#';$('#sourceLink').style.display=su?'':'none';
+ $('#rotRange').value=rot;$('#rotDeg').value=rot;$('#phrase').textContent=s.orientation||phrase(rot);setCompass(rot);
+ $('#catalogFov').textContent=catF.toFixed(6);$('#confirmedFov').value=Number.isFinite(confirmedF)?confirmedF.toFixed(6):catF.toFixed(6);$('#note').value=s.note||'';
+ $('#saveState').textContent=s.status==='confirmed'?'SAVED':'UNCONFIRMED';$('#saveState').className='pill '+(s.status==='confirmed'?'saved':'unsaved');
+ $('#prev').disabled=idx===0;$('#next').disabled=idx===rows.length-1;
+ if(aladin&&ra!=null&&dec!=null){
+   try{aladin.gotoRaDec(ra,dec);aladin.setFoV(Number.isFinite(confirmedF)&&s.status==='confirmed'?confirmedF:catF);aladin.setRotation(rot);try{aladin.setProjection('TAN')}catch{}$('#sky').textContent=`RA ${ra.toFixed(6)}° • DEC ${dec.toFixed(6)}° • FOV ${catF.toFixed(6)}° • ROT ${rot.toFixed(1)}°`;requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));setTimeout(updateCurrentFov,250)}catch(e){$('#alist').textContent='Aladin target error: '+String(e.message||e);$('#alist').className='pill bad'}
+ }
+ updateCounts()
+}
+function setRot(v){const x=norm(v);$('#rotRange').value=x;$('#rotDeg').value=x;$('#phrase').textContent=phrase(x);setCompass(x);try{aladin?.setRotation(x)}catch{}const k=row()?.key;if(k){review[k]={...(review[k]||{}),aladinRotationDeg:x,orientation:phrase(x)};save()}markDirty()}
+function updateCounts(){const confirmed=rows.filter(x=>review[x.key]?.status==='confirmed').length;$('#confirmedCount').textContent=confirmed;$('#remaining').textContent=rows.length-confirmed}
+function confirmCurrent(){const x=row(),r=x.r,rot=norm($('#rotDeg').value),cf=Number($('#confirmedFov').value);if(!Number.isFinite(cf)||cf<=0){alert('Confirmed FOV must be a positive number in degrees.');return}review[x.key]={...(review[x.key]||{}),status:'confirmed',catalog:x.c.name,revision:x.c.rev,archiveId:r.archiveId||r.id||null,name:nameOf(r),orientation:$('#phrase').textContent,aladinRotationDeg:rot,catalogFovDeg:fovDeg(r),catalogFovText:fovDisplay(r),confirmedFovDeg:cf,note:$('#note').value.trim(),sourceUrl:sourceOf(r),imageUrl:imageOf(r),reviewedAt:new Date().toISOString(),method:'visual_registration_persistent_aladin_source_image_fixed'};save();$('#recordStatus').textContent='CONFIRMED';$('#saveState').textContent='SAVED';$('#saveState').className='pill saved';updateCounts()}
+function payload(){const corrections=rows.filter(x=>review[x.key]?.status==='confirmed').map(x=>review[x.key]);return{schema:'gv-orientation-fov-corrections-0007',generatedAt:new Date().toISOString(),aladinVersion:'3.8.2',workflow:'single persistent Aladin viewer; original image fixed; confirm orientation and FOV',confirmedCount:corrections.length,corrections}}
+async function init(){
+ const results=await Promise.all(CATALOGS.map(async c=>{try{const q=await fetch(c.url,{cache:'no-store'});if(!q.ok)throw Error(q.status);const d=await q.json(),a=entries(d);return{c,m:a.filter(r=>missing(r.orientation))}}catch(e){return{c,m:[],error:String(e)}}}));
+ rows=[];results.forEach(x=>x.m.forEach((r,i)=>rows.push({c:x.c,r,key:keyOf(x.c,r,i)})));
+ try{await loadAladin()}catch(e){$('#alist').textContent='ALADIN FAILED: '+String(e.message||e);$('#alist').className='pill bad'}
+ show(0)
+}
+$('#prev').onclick=()=>show(idx-1);$('#next').onclick=()=>show(idx+1);
+$('#nextUnresolved').onclick=()=>{for(let n=1;n<=rows.length;n++){const j=(idx+n)%rows.length;if(review[rows[j].key]?.status!=='confirmed'){show(j);return}}};
+document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>setRot(Number($('#rotDeg').value)+Number(b.dataset.r)));
+$('#rotRange').oninput=e=>setRot(e.target.value);$('#rotDeg').onchange=e=>setRot(e.target.value);$('#rotReset').onclick=()=>setRot(0);
+$('#copyOrientation').onclick=async()=>{try{await navigator.clipboard.writeText($('#phrase').textContent);$('#copyOrientation').textContent='COPIED ✓';setTimeout(()=>$('#copyOrientation').textContent='COPY ORIENTATION',700)}catch{}};
+$('#useAladinFov').onclick=()=>{const v=aladinFovValue();if(v==null){alert('Could not read Aladin FOV.');return}$('#confirmedFov').value=v.toFixed(6);markDirty()};
+$('#resetCatalogFov').onclick=()=>{$('#confirmedFov').value=fovDeg(row().r).toFixed(6);try{aladin.setFoV(fovDeg(row().r))}catch{}markDirty()};
+$('#confirmedFov').onchange=markDirty;$('#note').oninput=markDirty;
+$('#recenter').onclick=()=>show(idx);$('#confirm').onclick=confirmCurrent;
+$('#skip').onclick=()=>{const x=row();review[x.key]={...(review[x.key]||{}),status:'skipped',note:$('#note').value.trim()};save();$('#recordStatus').textContent='SKIPPED';updateCounts();show(Math.min(idx+1,rows.length-1))};
+$('#download').onclick=()=>{const b=new Blob([JSON.stringify(payload(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-orientation-fov-corrections-0007.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('#copyAll').onclick=()=>navigator.clipboard.writeText(JSON.stringify(payload(),null,2));
+init();
+</script>
+</body>
+</html>

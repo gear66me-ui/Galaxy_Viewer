@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Coordinate Module Test 0001</title>
+<style>
+html,body{margin:0;min-height:100%;background:#000;color:#fff;font-family:Arial,sans-serif}
+body{display:grid;place-items:center}
+main{width:390px;max-width:100%;padding:22px 0;display:grid;gap:14px;justify-items:center}
+.panel{width:360px;max-width:calc(100% - 24px);border:1px solid rgba(215,244,255,.35);border-radius:8px;padding:10px;background:rgba(0,7,18,.72);box-sizing:border-box}
+h1{font-size:12px;text-align:center;margin:0;color:#D7F4FF}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+button{min-height:38px;border:1px solid #62D8FF;border-radius:6px;background:#101024;color:#fff;font-size:11px;touch-action:manipulation}
+.joy{position:relative;width:90px;height:90px;margin:0 auto;border:1px solid #D7F4FF;border-radius:12px;background:linear-gradient(rgba(215,244,255,.14),rgba(215,244,255,.14)) 50% 0/1px 100% no-repeat,linear-gradient(90deg,rgba(215,244,255,.14),rgba(215,244,255,.14)) 0 50%/100% 1px no-repeat,rgba(0,0,0,.82);touch-action:none}
+.stick{position:absolute;left:100%;top:100%;width:20px;height:20px;border:1px solid #D7F4FF;border-radius:50%;background:rgba(98,216,255,.18);transform:translate(-50%,-50%);pointer-events:none}
+pre{width:290px;margin:0;border:1px solid rgba(215,244,255,.35);border-radius:8px;padding:10px;background:#02060d;color:#D7F4FF;font:11px/1.5 monospace;white-space:pre-wrap;box-sizing:border-box}
+</style>
+</head>
+<body>
+<main>
+  <div id="mount"></div>
+  <section class="panel">
+    <h1>Standalone Coordinate Module</h1>
+    <div class="controls">
+      <button id="frame">Toggle ICRSD / GAL</button>
+      <button id="max">Maximum values</button>
+    </div>
+  </section>
+  <section class="panel"><div id="joy" class="joy"><span id="stick" class="stick"></span></div></section>
+  <pre id="audit">Loading module…</pre>
+</main>
+<script src="../../modules/gv-coordinate-overlay-0001.js"></script>
+<script>
+(async()=>{
+  const mount=document.getElementById('mount'),audit=document.getElementById('audit');
+  const overlay=GalaxyCoordinateOverlay.mount(mount);await overlay.ready;
+  const show=()=>{const m=overlay.getMeasurements();audit.textContent=`FRAME = ${m.frame}\nWIDTH = ${m.renderedWidth}px\nHEIGHT = ${m.renderedHeight}px\nICRSD_LEFT = ${m.icrsdLeft}px\nGAL_LEFT = ${m.galLeft}px\nDIVIDER_CENTER_X = ${m.dividerCenterX}px\nX_FIELD_LEFT = ${m.xFieldLeft}px\nX_DECIMAL_FROM_FIELD_LEFT = ${m.xDecimalFromFieldLeft}px\nLAMBDA_CENTER_X = ${m.lambdaCenterX}px\nY_FIELD_LEFT = ${m.yFieldLeft}px\nY_DECIMAL_FROM_FIELD_LEFT = ${m.yDecimalFromFieldLeft}px\nX = ${m.longitude.toFixed(4)}\nY = ${m.latitude.toFixed(4)}\nDPR = ${window.devicePixelRatio}`};
+  document.getElementById('frame').onclick=()=>{overlay.setFrame(overlay.frame==='ICRSD'?'GAL':'ICRSD');show()};
+  document.getElementById('max').onclick=()=>{overlay.update(359.9999,-90);show()};
+  const joy=document.getElementById('joy'),stick=document.getElementById('stick');let drag=false;
+  const point=e=>{const r=joy.getBoundingClientRect(),px=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),py=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));stick.style.left=`${px*100}%`;stick.style.top=`${py*100}%`;overlay.update(px*359.9999,90-py*180);show()};
+  joy.onpointerdown=e=>{drag=true;joy.setPointerCapture(e.pointerId);point(e)};joy.onpointermove=e=>{if(drag)point(e)};joy.onpointerup=e=>{drag=false;joy.releasePointerCapture(e.pointerId)};joy.onpointercancel=()=>drag=false;
+  show();
+})();
+</script>
+</body>
+</html>

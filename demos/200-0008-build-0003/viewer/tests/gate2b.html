@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Gate 2B — CD-WCS Rectangle</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.css">
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;background:#080b12;color:#fff;font-family:system-ui}.app{width:min(430px,96vw);margin:12px auto}
+#wrap{position:relative;height:520px;border:1px solid #556;border-radius:8px;overflow:hidden}#aladin{position:absolute;inset:0}#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.row{display:grid;grid-template-columns:55px 1fr 78px;gap:8px;align-items:center;margin:10px 0}input{width:100%}.mono{font:12px monospace;background:#111927;border:1px solid #39465b;padding:10px;border-radius:7px;white-space:pre-wrap}h1{font-size:15px}</style></head>
+<body><div class="app"><h1>Gate 2B — CD-WCS Rectangular JPEG + Attached Frame</h1><div id="wrap"><div id="aladin"></div><canvas id="ov"></canvas></div>
+<div class="row"><b>ROT</b><input id="rot" type="range" min="-180" max="180" step="0.01" value="-29.46"><output id="rv">-29.46°</output></div>
+<div id="read" class="mono">Loading NGC 2261…</div></div>
+<script>
+let aladin,layer,imgW=3657,imgH=3920;
+const RA=99.787711821,DEC=8.754055887,FX=0.0410612,FY=0.04198173,IMAGE_ROT=-29.46;
+const IMAGE_URL="https://cdn.esahubble.org/archives/images/screen/heic1705a.jpg";
+function cdMatrix(){const sx=FX/imgW,sy=FY/imgH,t=IMAGE_ROT*Math.PI/180,c=Math.cos(t),s=Math.sin(t);return{CD1_1:-sx*c,CD1_2:-sy*s,CD2_1:-sx*s,CD2_2:sy*c}}
+function wcs(){const cd=cdMatrix();return{NAXIS:2,CTYPE1:"RA---TAN",CTYPE2:"DEC--TAN",EQUINOX:2000,LONPOLE:180,CUNIT1:"deg",CUNIT2:"deg",CRVAL1:RA,CRVAL2:DEC,CRPIX1:(imgW+1)/2,CRPIX2:(imgH+1)/2,CD1_1:cd.CD1_1,CD1_2:cd.CD1_2,CD2_1:cd.CD2_1,CD2_2:cd.CD2_2,NAXIS1:imgW,NAXIS2:imgH}}
+function sky(ix,iy){const cd=cdMatrix(),dx=ix-(imgW+1)/2,dy=iy-(imgH+1)/2,east=cd.CD1_1*dx+cd.CD1_2*dy,north=cd.CD2_1*dx+cd.CD2_2*dy;return[RA+east/Math.cos(DEC*Math.PI/180),DEC+north]}
+function P(x,y){let q=sky(x,y);return aladin.world2pix(q[0],q[1])}
+function draw(){const cv=document.getElementById("ov"),r=cv.getBoundingClientRect(),d=devicePixelRatio||1;cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);let c=cv.getContext("2d");c.setTransform(d,0,0,d,0,0);let a=P(.5,.5),b=P(imgW+.5,.5),e=P(imgW+.5,imgH+.5),f=P(.5,imgH+.5),l=P(.5,(imgH+1)/2),rr=P(imgW+.5,(imgH+1)/2),t=P((imgW+1)/2,.5),bb=P((imgW+1)/2,imgH+.5);c.strokeStyle="#78ffab";c.lineWidth=2;c.beginPath();c.moveTo(...a);c.lineTo(...b);c.lineTo(...e);c.lineTo(...f);c.closePath();c.stroke();c.lineWidth=1.5;c.beginPath();c.moveTo(...l);c.lineTo(...rr);c.moveTo(...t);c.lineTo(...bb);c.stroke()}
+function read(){let q=aladin.getRaDec(),f=aladin.getFov(),r=aladin.getRotation?.();document.getElementById("read").textContent="IMAGE: NGC 2261 | "+imgW+" × "+imgH+"px\nIMAGE WCS ROT = "+IMAGE_ROT.toFixed(2)+"°\nALADIN ROT = "+Number(r).toFixed(4)+"°\nRA/DEC = "+q[0]+" / "+q[1]+"\nFoV X/Y = "+f[0]+" / "+f[1];draw()}
+window.addEventListener("load",async()=>{await A.init;aladin=A.aladin("#aladin",{survey:"P/DSS2/color",target:RA+" "+DEC,fov:.105,projection:"SIN",showReticle:true,showZoomControl:true,showLayersControl:true});aladin.gotoRaDec(RA,DEC);aladin.setFoV(.105);aladin.setRotation(IMAGE_ROT);try{let resp=await fetch(IMAGE_URL,{mode:"cors",credentials:"omit"});if(!resp.ok)throw Error("HTTP "+resp.status);let blob=await resp.blob();let bmp=await createImageBitmap(blob);imgW=bmp.width;imgH=bmp.height;bmp.close();let u=URL.createObjectURL(blob);layer=A.image(u,{name:"GATE2_IMAGE",imgFormat:"jpeg",wcs:wcs(),opacity:1,successCallback:()=>{document.getElementById("read").textContent="IMAGE READY";read()},errorCallback:e=>{document.getElementById("read").textContent="IMAGE LAYER ERROR: "+e}});aladin.setOverlayImageLayer(layer,"GATE2_IMAGE")}catch(e){document.getElementById("read").textContent="IMAGE FETCH ERROR: "+e}document.getElementById("rot").addEventListener("input",e=>{let v=+e.target.value;document.getElementById("rv").value=v.toFixed(2)+"°";aladin.setRotation(v);read()});setInterval(read,250)});
+</script></body></html>

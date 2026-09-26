@@ -1,0 +1,23 @@
+{
+  "version": "spitzer-commons-selection-0001",
+  "generatedAt": "2026-08-21T20:57:31.190Z",
+  "sourceCategory": "Category:Images by Spitzer Space Telescope",
+  "totalCategoryFiles": 500,
+  "summary": {
+    "reviewed_total": 500,
+    "explicit_reject": 76,
+    "explicit_primary": 1,
+    "explicit_alternate": 0,
+    "unmarked_keep_candidates": 423,
+    "current_keep_pool": 424,
+    "note": "Preservation summary of the user's exported curation pass. Full per-file decisions remain in the exported source artifact; this repository file records the authoritative tally pending full Commons pagination and catalog matching."
+  },
+  "primary": [
+    "File:Ultraluminous Galaxy Merger NGC 6240.jpg"
+  ],
+  "policy": {
+    "reject": "Exclude from Galaxy Viewer candidate pool",
+    "primary": "Explicitly selected as Galaxy Viewer primary candidate",
+    "unmarked": "Reviewed/not rejected; retain as candidate pending galaxy identity, duplicate resolution, metadata completion and final catalog matching"
+  }
+}

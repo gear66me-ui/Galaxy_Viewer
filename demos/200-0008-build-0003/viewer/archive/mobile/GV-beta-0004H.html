@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer — GV-beta-0004H Mobile Laboratory</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.min.css">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#000;font-family:"Roboto Mono",Consolas,monospace}
+#gv-mobile-shell{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:#000}
+#aladin-lite-div{position:absolute;inset:0;width:100%;height:100%}
+#gv-phone-hud{position:fixed;z-index:2147483647;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
+#gv-size-readout{padding:6px 9px;border:1px solid rgba(69,231,255,.85);border-radius:6px;background:rgba(0,0,0,.78);color:#7DF4FF;font-size:11px;line-height:1.25;text-shadow:0 0 5px rgba(69,231,255,.55);white-space:nowrap;pointer-events:none}
+#gv-fullscreen-button{appearance:none;-webkit-appearance:none;border:1px solid #fff;border-radius:6px;background:rgba(0,0,0,.82);color:#fff;padding:9px 12px;font:700 12px/1 "Roboto Mono",Consolas,monospace;cursor:pointer;touch-action:manipulation;pointer-events:auto;box-shadow:0 0 8px rgba(69,231,255,.35)}
+#gv-fullscreen-button:active{transform:scale(.97)}
+#gv-startup{position:fixed;z-index:2147483646;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#000;color:#7DF4FF;text-align:center;font-size:13px;line-height:1.5}
+body.gv-ready #gv-startup{display:none}
+@media (orientation:landscape){#gv-size-readout{font-size:10px}#gv-fullscreen-button{padding:7px 10px}}
+</style>
+</head>
+<body>
+<div id="gv-mobile-shell"><div id="aladin-lite-div"></div></div>
+<div id="gv-startup">Loading Galaxy Viewer 4H…</div>
+<div id="gv-phone-hud">
+  <div id="gv-size-readout">Measuring screen…</div>
+  <button id="gv-fullscreen-button" type="button">ENTER FULL SCREEN</button>
+</div>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
+<script>
+(() => {
+  const shell=document.getElementById('gv-mobile-shell');
+  const readout=document.getElementById('gv-size-readout');
+  const fullscreenButton=document.getElementById('gv-fullscreen-button');
+
+  function viewportSize(){
+    const vv=window.visualViewport;
+    return {width:Math.round(vv?vv.width:window.innerWidth),height:Math.round(vv?vv.height:window.innerHeight)};
+  }
+
+  function updateMeasurement(){
+    const vp=viewportSize();
+    const orientation=vp.width>=vp.height?'LANDSCAPE':'PORTRAIT';
+    readout.textContent=`VIEW ${vp.width}×${vp.height}  SCREEN ${screen.width}×${screen.height}  ${orientation}`;
+  }
+
+  function updateFullscreenLabel(){
+    fullscreenButton.textContent=document.fullscreenElement?'EXIT FULL SCREEN':'ENTER FULL SCREEN';
+  }
+
+  async function toggleFullscreen(){
+    try{
+      if(!document.fullscreenElement){
+        const request=shell.requestFullscreen||shell.webkitRequestFullscreen;
+        if(request)await request.call(shell);
+      }else{
+        const exit=document.exitFullscreen||document.webkitExitFullscreen;
+        if(exit)await exit.call(document);
+      }
+    }catch(error){console.error('GV-beta-0004H fullscreen request failed',error)}
+    updateFullscreenLabel();
+    setTimeout(updateMeasurement,100);
+  }
+
+  fullscreenButton.addEventListener('click',toggleFullscreen);
+  document.addEventListener('fullscreenchange',()=>{updateFullscreenLabel();updateMeasurement()});
+  window.addEventListener('resize',updateMeasurement);
+  window.addEventListener('orientationchange',()=>setTimeout(updateMeasurement,250));
+  window.visualViewport?.addEventListener('resize',updateMeasurement);
+  updateMeasurement();
+
+  if(!window.A||!window.A.init){
+    document.getElementById('gv-startup').textContent='GV-beta-0004H startup failure: Aladin 3.8.2 did not create window.A.';
+    return;
+  }
+
+  window.A.init.then(() => {
+    const aladin=window.A.aladin('#aladin-lite-div',{
+      target:'M 31',survey:'P/DSS2/color',fov:1.5,cooFrame:'ICRSd',projection:'TAN',
+      reticleColor:'#62D8FF',reticleSize:22,showReticle:true,
+      showZoomControl:true,showFullscreenControl:true,showLayersControl:true,
+      showGotoControl:true,showCooGridControl:true,showSimbadPointerControl:true,
+      showProjectionControl:true
+    });
+    window.aladin_cosmic_command_test=aladin;
+    document.body.classList.add('gv-ready');
+    updateMeasurement();
+  }).catch(error => {
+    console.error('GV-beta-0004H A.init failure',error);
+    document.getElementById('gv-startup').textContent='GV-beta-0004H startup failure. Open the browser console for details.';
+  });
+})();
+</script>
+</body>
+</html>

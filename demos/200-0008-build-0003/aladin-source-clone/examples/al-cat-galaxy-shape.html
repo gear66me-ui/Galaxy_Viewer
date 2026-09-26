@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+
+<div id="aladin-lite-div" style="width: 200px; height: 768px"></div>
+<script>let aladin;</script>
+<script type="module">
+  import A from '../src/js/A.js';
+  A.init.then(() => {
+      // Start up Aladin Lite
+      aladin = A.aladin('#aladin-lite-div', {
+        target: "M31",
+        fov: 89.78,
+        showContextMenu: true,
+        showSimbadPointerControl: true,
+        showShareControl: true,
+        showSettingsControl: true,
+        showStackLayerControl: true,
+        samp: true,
+      });
+
+      aladin.addCatalog(A.catalogFromVizieR("VII/237/pgc", "M31", 3, {
+        limit: 1000,
+        //orderBy: 'nb_ref',
+        onClick: 'showTable',
+        onlyFootprints: false,
+        color: (s) => {
+          let coo = A.coo();
+          coo.parse(s.data['RAJ2000'] + ' ' + s.data['DEJ2000'])
+
+          let a = (0.1 * Math.pow(10, +s.data.logD25)) / 60;
+          let b = (1.0 / Math.pow(10, +s.data.logR25)) * a
+
+          return `rgb(${s.data["logR25"]*255.0}, ${s.data["logR25"]*255.0}, 255)`
+        },
+        hoverColor: 'red',
+        shape: (s) => {
+          let coo = A.coo();
+          coo.parse(s.data['RAJ2000'] + ' ' + s.data['DEJ2000'])
+
+          let a = (0.1 * Math.pow(10, +s.data.logD25)) / 60;
+          let b = (1.0 / Math.pow(10, +s.data.logR25)) * a
+
+          return A.ellipse(coo.lon, coo.lat, a, b, +s.data.PA, {lineWidth: 3});
+        }
+      }));
+  });
+</script>
+
+</body>
+</html>

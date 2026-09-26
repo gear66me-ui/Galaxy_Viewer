@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Galaxy Viewer Font Generator Lab 0001</title>
+<style>
+:root{--ink:#72a7e8;--bg:#03060b;--panel:#090e15;--line:#263746}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#eef8ff}
+body{font-family:Arial,sans-serif;padding:8px}button,input,textarea{font:inherit}.lab{width:374px;max-width:100%;margin:0 auto}
+h1{margin:2px 0 8px;text-align:center;font-size:15px;font-weight:600;letter-spacing:.4px}.panel{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:8px;margin-bottom:8px}
+.label{font-size:10px;text-transform:uppercase;color:#a9bfd1;margin-bottom:5px}.banner{height:36px;border:1px solid #d7f4ff;border-radius:6px;background:#000;box-shadow:0 0 8px rgba(98,216,255,.28);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 7px}.wide{width:298px}.narrow{width:228px}.inspection{height:112px;width:100%;border-color:#526f88}.compare{height:66px;width:100%;border-color:#526f88}.svgline{width:100%;height:100%;display:block}
+.control{display:grid;grid-template-columns:96px 1fr 52px;gap:7px;align-items:center;min-height:34px}.control label{font-size:11px;text-transform:uppercase}.control output{text-align:right;font:10px monospace;color:#7df4ff}input[type=range]{width:100%}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}button{min-height:36px;border:1px solid #62d8ff;border-radius:7px;background:#111a29;color:#fff;text-transform:uppercase;font-size:11px}
+.hexrow{display:grid;grid-template-columns:1fr 110px;gap:7px}.hexrow input{height:38px;border:1px solid #62d8ff;border-radius:6px;background:#050a11;color:#fff;text-align:center;font:700 16px monospace;text-transform:uppercase}.status{min-height:14px;text-align:center;font:10px monospace;color:#8ef0b5;margin:5px 0}.color{width:100%;height:34px;border:none;padding:0;background:transparent}.strip{height:18px;border:1px solid #526f88;border-radius:6px;background:var(--ink);margin-top:7px}
+textarea{width:100%;height:190px;resize:vertical;border:1px solid #526f88;border-radius:7px;background:#050a11;color:#dff7ff;padding:8px;font:11px/1.4 monospace}.note{font-size:10px;line-height:1.35;color:#9eb3c5;margin-top:6px}
+@media(max-width:350px){.lab{width:304px}.wide{width:228px}.narrow{width:228px}.control{grid-template-columns:88px 1fr 46px}}
+</style>
+</head>
+<body>
+<main class="lab">
+<h1>Galaxy Viewer Font Generator Lab 0001</h1>
+<section class="panel">
+  <div class="label">Production banner — 298 × 36 px</div><div class="banner wide"><svg id="prodWide" class="svgline" aria-label="Production size numeric banner"></svg></div>
+  <div class="label">Narrow banner — 228 × 36 px</div><div class="banner narrow"><svg id="prodNarrow" class="svgline" aria-label="Narrow production size numeric banner"></svg></div>
+  <div class="actions"><button id="randomize" type="button">New Number</button><button id="hold" type="button">Auto: On</button></div>
+</section>
+<section class="panel">
+  <div class="label">Large inspection</div><div class="banner inspection"><svg id="inspection" class="svgline"></svg></div>
+  <div class="label">Legibility test</div><div class="banner compare"><svg id="compare" class="svgline"></svg></div>
+</section>
+<section class="panel">
+  <div class="control"><label for="digitWidth">Digit width</label><input id="digitWidth" type="range" min="420" max="900" step="10" value="700"><output id="digitWidthOut"></output></div>
+  <div class="control"><label for="digitHeight">Digit height</label><input id="digitHeight" type="range" min="500" max="1000" step="10" value="820"><output id="digitHeightOut"></output></div>
+  <div class="control"><label for="hStroke">Horizontal bar</label><input id="hStroke" type="range" min="60" max="220" step="2" value="110"><output id="hStrokeOut"></output></div>
+  <div class="control"><label for="vStroke">Vertical bar</label><input id="vStroke" type="range" min="60" max="220" step="2" value="110"><output id="vStrokeOut"></output></div>
+  <div class="control"><label for="radius">Corner radius</label><input id="radius" type="range" min="0" max="80" step="2" value="18"><output id="radiusOut"></output></div>
+  <div class="control"><label for="spacing">Spacing</label><input id="spacing" type="range" min="0" max="120" step="2" value="34"><output id="spacingOut"></output></div>
+  <div class="control"><label for="decimalSize">Decimal size</label><input id="decimalSize" type="range" min="40" max="180" step="2" value="76"><output id="decimalSizeOut"></output></div>
+  <div class="actions"><button id="reset" type="button">Reset</button><button id="copyDefinition" type="button">Copy Definition</button></div>
+  <div id="notice" class="status"></div>
+</section>
+<section class="panel">
+  <div class="label">Font color</div>
+  <div class="hexrow"><input id="hexColor" value="#72A7E8" maxlength="7" spellcheck="false"><button id="applyColor" type="button">Apply Color</button></div>
+  <input id="colorPicker" class="color" type="color" value="#72a7e8" aria-label="Font color picker">
+  <div class="strip"></div>
+</section>
+<section class="panel">
+  <div class="label">Copy this definition and send it back to ChatGPT</div>
+  <textarea id="definition" readonly></textarea>
+  <div class="note">This lab previews geometry only. It does not create or overwrite an OTF file.</div>
+</section>
+</main>
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const defaults={digitWidth:700,digitHeight:820,hStroke:110,vStroke:110,radius:18,spacing:34,decimalSize:76,color:"#72A7E8"};
+const state={...defaults,auto:true,sequence:""};
+const maps={0:"AB CDEF".replace(/ /g,""),1:"BC",2:"ABDEG",3:"ABCDG",4:"BCFG",5:"ACDFG",6:"ACDEFG",7:"ABC",8:"ABCDEFG",9:"ABCDFG"};
+function makeSequence(){const a=Array.from({length:10},()=>Math.floor(Math.random()*10));const p=2+Math.floor(Math.random()*6);a.splice(p,0,".");state.sequence=a.join("");}
+function rect(svg,x,y,w,h,r){const n=document.createElementNS("http://www.w3.org/2000/svg","rect");n.setAttribute("x",x);n.setAttribute("y",y);n.setAttribute("width",Math.max(0,w));n.setAttribute("height",Math.max(0,h));n.setAttribute("rx",Math.min(r,w/2,h/2));n.setAttribute("fill",state.color);svg.appendChild(n)}
+function glyph(svg,ch,x,y,s){const W=state.digitWidth,H=state.digitHeight,hs=state.hStroke,vs=state.vStroke,r=state.radius,half=(H-hs)/2;if(ch==="."){rect(svg,x+(W-state.decimalSize)/2,y+H-state.decimalSize,state.decimalSize,state.decimalSize,state.decimalSize/2);return W*.45}
+const seg=maps[ch]||"";const draw={A:()=>rect(svg,x+vs,y,W-2*vs,hs,r),G:()=>rect(svg,x+vs,y+(H-hs)/2,W-2*vs,hs,r),D:()=>rect(svg,x+vs,y+H-hs,W-2*vs,hs,r),F:()=>rect(svg,x,y+hs,vs,half-hs/2,r),B:()=>rect(svg,x+W-vs,y+hs,vs,half-hs/2,r),E:()=>rect(svg,x,y+half+hs/2,vs,half-hs/2,r),C:()=>rect(svg,x+W-vs,y+half+hs/2,vs,half-hs/2,r)};[...seg].forEach(k=>draw[k]());return W}
+function renderLine(id,text,pad=18){const svg=$(id),box=svg.getBoundingClientRect();svg.replaceChildren();const chars=[...text];let total=0;chars.forEach(c=>total+=(c==="."?state.digitWidth*.45:state.digitWidth)+state.spacing);total=Math.max(1,total-state.spacing);const sx=(box.width-pad*2)/total,sy=(box.height-pad*2)/state.digitHeight,scale=Math.min(sx,sy);svg.setAttribute("viewBox",`0 0 ${box.width} ${box.height}`);const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("transform",`translate(${(box.width-total*scale)/2} ${(box.height-state.digitHeight*scale)/2}) scale(${scale})`);svg.appendChild(g);let x=0;chars.forEach(c=>{x+=glyph(g,c,x,0,scale)+state.spacing})}
+function normalizeHex(v){const s=v.trim().replace(/^#/,"");if(/^[0-9a-f]{3}$/i.test(s))return "#"+s.split("").map(c=>c+c).join("").toUpperCase();if(/^[0-9a-f]{6}$/i.test(s))return "#"+s.toUpperCase();return null}
+function definition(){return ["GALAXY VIEWER CUSTOM DIGIT FONT DEFINITION","lab=GV-font-generator-lab-0001","model=GV-Digits-Parametric-0001","segment_style=GV-9A","digit_width="+state.digitWidth,"digit_height="+state.digitHeight,"horizontal_stroke="+state.hStroke,"vertical_stroke="+state.vStroke,"corner_radius="+state.radius,"character_spacing="+state.spacing,"decimal_size="+state.decimalSize,"color="+state.color,"target_banner_width=298","target_banner_height=36","narrow_banner_width=228","narrow_banner_height=36","test_sequence="+state.sequence,"instruction=Generate a standalone custom OTF from these exact numeric glyph parameters. Preserve all non-numeric glyphs unless separately authorized."].join("\n")}
+function render(randomize=false){if(randomize||!state.sequence)makeSequence();document.documentElement.style.setProperty("--ink",state.color);["digitWidth","digitHeight","hStroke","vStroke","radius","spacing","decimalSize"].forEach(k=>$(k+"Out").textContent=state[k]);$("hexColor").value=state.color;$("colorPicker").value=state.color.toLowerCase();$("hold").textContent="Auto: "+(state.auto?"On":"Off");renderLine("prodWide",state.sequence,8);renderLine("prodNarrow",state.sequence,6);renderLine("inspection","0123456789",12);renderLine("compare","55 59 95 99 0123456789".replace(/ /g,""),8);$("definition").value=definition()}
+["digitWidth","digitHeight","hStroke","vStroke","radius","spacing","decimalSize"].forEach(k=>$(k).addEventListener("input",e=>{state[k]=Number(e.target.value);render(state.auto)}));
+$("randomize").onclick=()=>render(true);$("hold").onclick=()=>{state.auto=!state.auto;render(false)};$("reset").onclick=()=>{Object.assign(state,defaults,{auto:true});["digitWidth","digitHeight","hStroke","vStroke","radius","spacing","decimalSize"].forEach(k=>$(k).value=state[k]);render(true);$("notice").textContent="RESET"};
+function applyColor(v){const c=normalizeHex(v);if(!c){$("notice").textContent="INVALID HEX — USE #RRGGBB";return}state.color=c;render(false);$("notice").textContent="COLOR APPLIED: "+c}
+$("applyColor").onclick=()=>applyColor($("hexColor").value);$("hexColor").addEventListener("keydown",e=>{if(e.key==="Enter")applyColor(e.target.value)});$("colorPicker").addEventListener("input",e=>{state.color=e.target.value.toUpperCase();render(false)});
+$("copyDefinition").onclick=async()=>{try{await navigator.clipboard.writeText(definition());$("notice").textContent="DEFINITION COPIED"}catch{const t=$("definition");t.focus();t.select();document.execCommand("copy");$("notice").textContent="DEFINITION COPIED"}};
+window.addEventListener("resize",()=>render(false));render(true);
+})();
+</script>
+</body>
+</html>

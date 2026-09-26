@@ -1,0 +1,15 @@
+{
+  "version": "hubble-nebulae-ingest-0001",
+  "purpose": "Staging database for automated ESA/Hubble Nebulae archive ingestion. Not a production Viewer dependency.",
+  "sourceArchiveUrl": "https://esahubble.org/images/archive/category/nebulae/",
+  "sourceCount": 704,
+  "processedCount": 0,
+  "acceptedCount": 0,
+  "rejectedCount": 0,
+  "duplicateIn0018Count": 0,
+  "nextOffset": 0,
+  "batchSize": 50,
+  "complete": false,
+  "lastRun": null,
+  "entries": []
+}

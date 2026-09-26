@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Coordinate Grid 0007</title>
+<style>
+@font-face{font-family:"Space Age";src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf?v=6R-space-age-regular-001") format("opentype");font-display:block}
+@font-face{font-family:"GV Coordinate Digits";src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0004.otf?v=7K-centered-coordinate-digits-0004") format("opentype");font-display:block}
+*{box-sizing:border-box}
+html,body{margin:0;min-width:100%;min-height:100%;background:#000;color:#fff;font-family:"Space Age",sans-serif}
+body{display:grid;place-items:center}
+button{font-family:"Space Age",sans-serif;text-transform:uppercase}
+.lab{display:grid;gap:14px;justify-items:center;width:390px;max-width:100%;padding:22px 0}
+.ruler-wrap{position:relative;width:290px;padding-top:16px}
+.labels{position:absolute;left:0;top:0;width:290px;height:14px;font:400 6px/1 Arial,sans-serif;color:#fff;pointer-events:none}
+.labels span{position:absolute;top:0;width:10px;text-align:center;transform:translateX(-5px)}
+.tile{position:relative;width:290px;min-width:290px;max-width:290px;height:36px;min-height:36px;max-height:36px;overflow:hidden;background:rgba(0,0,0,.88);border-radius:6px;box-shadow:inset 0 0 0 1px #D7F4FF,0 0 10px rgba(98,216,255,.44);color:#72A7E8}
+.ten-grid{position:absolute;inset:0;pointer-events:none}
+.ten-grid i{position:absolute;top:0;width:1px;height:36px;background:rgba(255,255,255,.24);transform:translateX(-.5px)}
+.frame-label{position:absolute;left:5px;top:50%;display:inline-flex;align-items:baseline;gap:.8px;font:400 12.5px/1 "Space Age",sans-serif;white-space:nowrap;transform:translateY(-50%) scaleY(1.1);transform-origin:left center}
+.frame-label .d{font-size:60%;transform-origin:left bottom}
+.divider{position:absolute;left:52.5px;top:50%;width:1px;height:15px;background:rgba(114,167,232,.75);transform:translate(-.5px,-50%)}
+.number{position:absolute;top:3px;height:30px;font:400 20px/30px "GV Coordinate Digits",sans-serif;white-space:nowrap}
+.number .cell{position:absolute;top:0;height:30px;display:flex;align-items:center;justify-content:center;line-height:30px;transform:scaleY(1.15);transform-origin:center}
+#x-number{left:55px;width:87px}
+#y-number{left:166px;width:82px}
+.lambda{position:absolute;left:154.5px;top:50%;width:9px;height:30px;font:400 9px/30px Arial,sans-serif;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center}
+.panel{width:min(100%,360px);border:1px solid rgba(215,244,255,.35);border-radius:8px;padding:10px;background:rgba(0,7,18,.72)}
+.title{margin:0 0 8px;text-align:center;color:#D7F4FF;font:400 10px/1.3 "Space Age",sans-serif}
+.joy{position:relative;width:90px;height:90px;margin:0 auto;border:1px solid #D7F4FF;border-radius:12px;background:linear-gradient(rgba(215,244,255,.14),rgba(215,244,255,.14)) 50% 0/1px 100% no-repeat,linear-gradient(90deg,rgba(215,244,255,.14),rgba(215,244,255,.14)) 0 50%/100% 1px no-repeat,rgba(0,0,0,.82);touch-action:none}
+.stick{position:absolute;left:50%;top:50%;width:20px;height:20px;border:1px solid #D7F4FF;border-radius:50%;background:rgba(98,216,255,.18);transform:translate(-50%,-50%);pointer-events:none}
+.corners{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.corners button,.shift-row button{min-height:32px;border:1px solid #62D8FF;border-radius:6px;background:#101024;color:#fff;font-size:8px}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.toggles button{min-height:32px;border:1px solid #62D8FF;border-radius:6px;background:#101024;color:#fff;font-size:8px}
+.toggles button[aria-pressed="true"]{background:#16304a}
+.grid-hidden .ten-grid,.grid-hidden .labels{display:none}
+.shifts{display:grid;gap:7px}
+.shift-row{display:grid;grid-template-columns:88px 1fr 1fr;gap:6px;align-items:center}
+.shift-name{font:400 8px/1.25 "Space Age",sans-serif;color:#D7F4FF;text-align:center}
+.transfer{width:290px;border:1px solid rgba(215,244,255,.35);border-radius:8px;padding:10px;background:#02060d;color:#D7F4FF;font:400 8px/1.55 monospace;white-space:pre-wrap;user-select:text}
+.audit{width:290px;color:#FFD166;font:400 8px/1.5 "Space Age",sans-serif;text-align:center;white-space:pre-wrap}
+canvas{display:none}
+</style>
+</head>
+<body>
+<main class="lab">
+  <div class="ruler-wrap">
+    <div id="labels" class="labels"></div>
+    <div id="tile" class="tile">
+      <div id="grid" class="ten-grid"></div>
+      <span id="frame-icrsd" class="frame-label"><span>I</span><span>C</span><span>R</span><span>S</span><span class="d">D</span></span>
+      <span id="frame-gal" class="frame-label" hidden><span>G</span><span>A</span><span>L</span></span>
+      <span id="divider" class="divider"></span>
+      <div id="x-number" class="number"></div>
+      <span id="lambda" class="lambda">Λ</span>
+      <div id="y-number" class="number"></div>
+    </div>
+  </div>
+
+  <section class="panel">
+    <h2 class="title">FRAME AND GRID TOGGLES</h2>
+    <div class="toggles">
+      <button type="button" id="frame-toggle" aria-pressed="false">SHOW GAL</button>
+      <button type="button" id="grid-toggle" aria-pressed="true">GRID ON</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="title">LIVE MAXIMUM COORDINATE JOYSTICK</h2>
+    <div id="joy" class="joy"><span id="stick" class="stick"></span></div>
+    <div class="corners">
+      <button type="button" data-x="0" data-y="90">Upper left</button>
+      <button type="button" data-x="359.9999" data-y="90">Upper right</button>
+      <button type="button" data-x="0" data-y="-90">Lower left</button>
+      <button type="button" data-x="359.9999" data-y="-90">Lower right</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="title">INDEPENDENT X POSITION SHIFTERS</h2>
+    <div id="shift-controls" class="shifts"></div>
+  </section>
+
+  <pre id="transfer" class="transfer"></pre>
+  <div id="audit" class="audit">LOADING APPROVED FONTS…</div>
+  <canvas id="measure" width="1024" height="256"></canvas>
+</main>
+<script>
+(()=>{
+  const RANGE={xMin:0,xMax:359.9999,yMin:-90,yMax:90};
+  const BASE={icrsd:11,gal:11,divider:63.5,x:79,lambda:181.5,y:193};
+  const offsets={icrsd:0,gal:0,divider:0,x:0,lambda:0,y:0};
+  const names={icrsd:'1 · ICRSD',gal:'2 · GAL',divider:'3 · DIVIDER',x:'4 · X',lambda:'5 · LAMBDA',y:'6 · Y'};
+  const tile=document.getElementById('tile');
+  const joy=document.getElementById('joy');
+  const stick=document.getElementById('stick');
+  const xNumber=document.getElementById('x-number');
+  const yNumber=document.getElementById('y-number');
+  const audit=document.getElementById('audit');
+  const transfer=document.getElementById('transfer');
+  const canvas=document.getElementById('measure');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  let metrics=null,state={x:359.9999,y:-90},dragging=false,activeFrame='ICRSD',gridVisible=true;
+
+  for(let n=1;n<=28;n++){
+    const line=document.createElement('i');line.style.left=`${n*10}px`;document.getElementById('grid').appendChild(line);
+  }
+  for(let n=1;n<=29;n++){
+    const label=document.createElement('span');label.textContent=n;label.style.left=`${(n-.5)*10}px`;document.getElementById('labels').appendChild(label);
+  }
+
+  function scan(text,font,size){
+    const S=4,W=1024,H=256;canvas.width=W;canvas.height=H;ctx.clearRect(0,0,W,H);
+    ctx.save();ctx.scale(S,S);ctx.font=`400 ${size}px "${font}"`;ctx.textBaseline='alphabetic';ctx.fillStyle='#fff';ctx.fillText(text,32,48);ctx.restore();
+    const d=ctx.getImageData(0,0,W,H).data;let min=W,max=-1;
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(d[(y*W+x)*4+3]>24){if(x<min)min=x;if(x>max)max=x}
+    return max<min?0:(max-min+1)/S;
+  }
+  function measure(){
+    let widest=0,char='0';
+    for(const c of '0123456789'){const w=scan(c,'GV Coordinate Digits',20);if(w>widest){widest=w;char=c}}
+    const digit=Math.ceil(widest),decimal=Math.ceil(scan('.','GV Coordinate Digits',20)),minus=Math.ceil(scan('-','GV Coordinate Digits',20));
+    return {digit,decimal,minus,widest:char};
+  }
+  function cell(parent,char,left,width){
+    const s=document.createElement('span');s.className='cell';s.textContent=char;s.style.left=`${left}px`;s.style.width=`${width}px`;parent.appendChild(s);
+  }
+  function formatX(v){const [integer,fraction]=Math.max(0,Math.min(359.9999,v)).toFixed(4).split('.');return {integer,fraction}}
+  function formatY(v){v=Math.max(-90,Math.min(90,v));const [integer,fraction]=Math.abs(v).toFixed(4).split('.');return {sign:v<0?'-':'',integer,fraction}}
+  function renderNumber(parent,value,anchor,integerSlots,signCell){
+    const {digit,decimal}=metrics;parent.textContent='';const dl=anchor-decimal/2;cell(parent,'.',dl,decimal);
+    let cursor=dl;const integer=value.integer.padStart(integerSlots,' ');
+    for(let i=integer.length-1;i>=0;i--){cursor-=digit;if(integer[i]!==' ')cell(parent,integer[i],cursor,digit)}
+    if(signCell){cursor-=signCell;cell(parent,value.sign,cursor,signCell)}
+    cursor=dl+decimal;for(const c of value.fraction){cell(parent,c,cursor,digit);cursor+=digit}
+  }
+  function applyPositions(){
+    document.getElementById('frame-icrsd').style.left=`${BASE.icrsd+offsets.icrsd}px`;
+    document.getElementById('frame-gal').style.left=`${BASE.gal+offsets.gal}px`;
+    document.getElementById('divider').style.left=`${BASE.divider+offsets.divider}px`;
+    xNumber.style.left=`${BASE.x+offsets.x}px`;
+    document.getElementById('lambda').style.left=`${BASE.lambda+offsets.lambda}px`;
+    yNumber.style.left=`${BASE.y+offsets.y}px`;
+  }
+  function render(){
+    if(!metrics)return;
+    renderNumber(xNumber,formatX(state.x),37.5,3,0);
+    renderNumber(yNumber,formatY(state.y),34.5,2,metrics.minus);
+    applyPositions();
+    document.querySelectorAll('[data-offset-value]').forEach(el=>{const k=el.dataset.offsetValue;el.textContent=`${names[k]} ${offsets[k]>=0?'+':''}${offsets[k]} PX`});
+    transfer.textContent=
+`ACTIVE_FRAME = ${activeFrame}
+ICRSD_LEFT = ${BASE.icrsd+offsets.icrsd}px
+GAL_LEFT = ${BASE.gal+offsets.gal}px
+DIVIDER_CENTER_X = ${BASE.divider+offsets.divider}px
+X_FIELD_LEFT = ${BASE.x+offsets.x}px
+X_DECIMAL_FROM_FIELD_LEFT = 37.5px
+LAMBDA_CENTER_X = ${BASE.lambda+offsets.lambda}px
+Y_FIELD_LEFT = ${BASE.y+offsets.y}px
+Y_DECIMAL_FROM_FIELD_LEFT = 34.5px
+GRID_VISIBLE = ${gridVisible}
+
+OFFSETS
+ICRSD_X_OFFSET = ${offsets.icrsd}px
+GAL_X_OFFSET = ${offsets.gal}px
+DIVIDER_X_OFFSET = ${offsets.divider}px
+X_COORDINATE_X_OFFSET = ${offsets.x}px
+LAMBDA_X_OFFSET = ${offsets.lambda}px
+Y_COORDINATE_X_OFFSET = ${offsets.y}px`;
+    audit.textContent=`290 × 36 CSS PX · 29 EQUAL 10 PX SPACES · 28 INTERNAL 1 PX BARS
+RENDERED WIDTH: ${tile.getBoundingClientRect().width.toFixed(2)} PX · DPR: ${window.devicePixelRatio}
+X ${state.x.toFixed(4)} · Y ${state.y.toFixed(4)} · DIGIT ${metrics.digit} PX · DECIMAL ${metrics.decimal} PX · MINUS ${metrics.minus} PX`;
+  }
+  function setCoordinates(x,y,move=true){
+    state.x=Math.max(0,Math.min(359.9999,x));state.y=Math.max(-90,Math.min(90,y));
+    if(move){stick.style.left=`${state.x/359.9999*100}%`;stick.style.top=`${(1-(state.y+90)/180)*100}%`}
+    render();
+  }
+  function pointer(e){
+    const r=joy.getBoundingClientRect(),px=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),py=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+    stick.style.left=`${px*100}%`;stick.style.top=`${py*100}%`;setCoordinates(px*359.9999,90-py*180,false);
+  }
+
+  const controls=document.getElementById('shift-controls');
+  for(const key of ['icrsd','gal','divider','x','lambda','y']){
+    const row=document.createElement('div');row.className='shift-row';
+    row.innerHTML=`<div class="shift-name" data-offset-value="${key}"></div><button type="button" data-key="${key}" data-step="-1">−1 PX</button><button type="button" data-key="${key}" data-step="1">+1 PX</button>`;
+    controls.appendChild(row);
+  }
+  controls.addEventListener('click',e=>{const b=e.target.closest('button[data-key]');if(!b)return;offsets[b.dataset.key]+=Number(b.dataset.step);render()});
+  joy.addEventListener('pointerdown',e=>{dragging=true;joy.setPointerCapture(e.pointerId);pointer(e)});
+  joy.addEventListener('pointermove',e=>{if(dragging)pointer(e)});
+  joy.addEventListener('pointerup',e=>{dragging=false;joy.releasePointerCapture(e.pointerId)});
+  joy.addEventListener('pointercancel',()=>dragging=false);
+  document.querySelectorAll('.corners button').forEach(b=>b.addEventListener('click',()=>setCoordinates(Number(b.dataset.x),Number(b.dataset.y))));
+  document.getElementById('frame-toggle').addEventListener('click',()=>{
+    activeFrame=activeFrame==='ICRSD'?'GAL':'ICRSD';
+    document.getElementById('frame-icrsd').hidden=activeFrame!=='ICRSD';
+    document.getElementById('frame-gal').hidden=activeFrame!=='GAL';
+    const button=document.getElementById('frame-toggle');
+    button.textContent=activeFrame==='ICRSD'?'SHOW GAL':'SHOW ICRSD';
+    button.setAttribute('aria-pressed',String(activeFrame==='GAL'));
+    render();
+  });
+  document.getElementById('grid-toggle').addEventListener('click',()=>{
+    gridVisible=!gridVisible;
+    document.querySelector('.ruler-wrap').classList.toggle('grid-hidden',!gridVisible);
+    const button=document.getElementById('grid-toggle');
+    button.textContent=gridVisible?'GRID ON':'GRID OFF';
+    button.setAttribute('aria-pressed',String(gridVisible));
+    render();
+  });
+
+  async function init(){
+    await Promise.all([document.fonts.load('400 12.5px "Space Age"'),document.fonts.load('400 7.5px "Space Age"'),document.fonts.load('400 20px "GV Coordinate Digits"')]);
+    await document.fonts.ready;metrics=measure();setCoordinates(359.9999,-90);
+  }
+  init().catch(e=>{audit.textContent=`INITIALIZATION FAILED: ${e.message}`;console.error(e)});
+})();
+</script>
+</body>
+</html>

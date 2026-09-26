@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Coordinate Grid 0004</title>
+<style>
+@font-face{
+  font-family:"Space Age";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf?v=6R-space-age-regular-001") format("opentype");
+  font-style:normal;font-weight:400;font-display:block;
+}
+@font-face{
+  font-family:"GV Coordinate Digits";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0004.otf?v=7K-centered-coordinate-digits-0004") format("opentype");
+  font-style:normal;font-weight:400;font-display:block;
+}
+:root{
+  --tile-width:290px;
+  --tile-height:36px;
+  --tile-border:#D7F4FF;
+  --coordinate-color:#72A7E8;
+
+  /* Authorized fixed 0-290 pixel budget. */
+  --field-left:5px;
+  --field-frame:45px;
+  --field-separator:5px;
+  --field-x:87px;
+  --field-x-space:8px;
+  --field-lambda:9px;
+  --field-lambda-space:7px;
+  --field-y:82px;
+  --field-right:42px;
+
+  /* Initial independently adjustable decimal anchors. */
+  --x-decimal-anchor:37.5px;
+  --y-decimal-anchor:34.5px;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;min-width:100%;min-height:100%;
+  background:#000;color:#fff;
+  font-family:"Space Age",sans-serif;
+}
+body{display:grid;place-items:center;padding:18px}
+button{font-family:"Space Age",sans-serif;text-transform:uppercase}
+.gv-lab{display:grid;gap:16px;justify-items:center;width:min(100%,620px)}
+.gv-coordinate-tile{
+  position:relative;
+  width:var(--tile-width);min-width:var(--tile-width);max-width:var(--tile-width);
+  height:var(--tile-height);min-height:var(--tile-height);max-height:var(--tile-height);
+  overflow:hidden;
+  background:rgba(0,0,0,.86);
+  border-radius:6px;
+  box-shadow:inset 0 0 0 1px var(--tile-border),0 0 10px rgba(98,216,255,.44);
+  color:var(--coordinate-color);
+}
+.gv-field{
+  position:absolute;top:0;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:visible;
+}
+.gv-left{left:0;width:5px}
+.gv-frame{left:5px;width:45px}
+.gv-separator-field{left:50px;width:5px}
+.gv-x{left:55px;width:87px}
+.gv-x-space{left:142px;width:8px}
+.gv-lambda-field{left:150px;width:9px}
+.gv-lambda-space{left:159px;width:7px}
+.gv-y{left:166px;width:82px}
+.gv-right{left:248px;width:42px}
+.gv-boundary{
+  position:absolute;top:0;width:1px;height:36px;
+  transform:translateX(-.5px);
+  pointer-events:none;
+}
+.b5{left:5px;background:rgba(255,91,91,.40)}
+.b50{left:50px;background:rgba(255,190,80,.40)}
+.b55{left:55px;background:rgba(255,238,88,.40)}
+.b142{left:142px;background:rgba(100,255,133,.40)}
+.b150{left:150px;background:rgba(74,225,255,.40)}
+.b159{left:159px;background:rgba(105,132,255,.40)}
+.b166{left:166px;background:rgba(194,103,255,.40)}
+.b248{left:248px;background:rgba(255,114,209,.40)}
+.gv-center-mark{
+  position:absolute;top:0;bottom:0;left:50%;width:1px;
+  background:rgba(215,244,255,.14);
+  transform:translateX(-.5px);pointer-events:none;
+}
+.gv-frame-label{
+  position:absolute;right:0;top:50%;
+  display:inline-flex;align-items:baseline;justify-content:flex-end;
+  column-gap:.8px;
+  font:400 12.5px/1 "Space Age",sans-serif;
+  white-space:nowrap;text-transform:none;
+  transform:translateY(-50%);
+}
+.gv-frame-glyph{
+  display:inline-flex;align-items:center;justify-content:center;
+  transform:scaleY(1.1);transform-origin:center;
+}
+.gv-frame-small-d{
+  font-size:60%;line-height:1;align-self:baseline;
+  transform:scaleY(1.1);transform-origin:left bottom;
+}
+.gv-short-separator{
+  position:absolute;left:2.5px;top:50%;
+  width:1px;height:15px;
+  background:rgba(114,167,232,.58);
+  transform:translate(-.5px,-50%);
+}
+.gv-number-field{
+  position:absolute;inset:0;
+  height:30px;top:3px;
+  font:400 20px/30px "GV Coordinate Digits",sans-serif;
+  font-variant-numeric:normal;font-feature-settings:normal;
+  letter-spacing:0;white-space:nowrap;
+}
+.gv-cell{
+  position:absolute;top:0;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  line-height:30px;
+  transform:scaleY(1.15);transform-origin:center;
+}
+.gv-lambda-anchor{
+  position:absolute;left:4.5px;top:50%;
+  width:9px;height:30px;
+  transform:translate(-50%,-50%);
+  font:400 9px/30px Arial,sans-serif;
+}
+.gv-lambda{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);line-height:30px;
+}
+.gv-controls{
+  width:min(100%,430px);
+  display:grid;gap:12px;
+}
+.gv-panel{
+  border:1px solid rgba(215,244,255,.35);
+  border-radius:8px;padding:10px;
+  background:rgba(0,7,18,.72);
+}
+.gv-panel-title{
+  margin:0 0 8px;color:#D7F4FF;
+  font:400 11px/1.3 "Space Age",sans-serif;text-align:center;
+}
+.gv-joystick{
+  position:relative;width:180px;height:180px;margin:0 auto;
+  border:1px solid #D7F4FF;border-radius:12px;
+  background:
+    linear-gradient(rgba(215,244,255,.14),rgba(215,244,255,.14)) 50% 0/1px 100% no-repeat,
+    linear-gradient(90deg,rgba(215,244,255,.14),rgba(215,244,255,.14)) 0 50%/100% 1px no-repeat,
+    rgba(0,0,0,.82);
+  touch-action:none;
+}
+.gv-stick{
+  position:absolute;left:50%;top:50%;
+  width:26px;height:26px;border:1px solid #D7F4FF;border-radius:50%;
+  background:rgba(98,216,255,.18);
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 8px rgba(98,216,255,.45);
+  pointer-events:none;
+}
+.gv-corners{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px;
+}
+.gv-corners button,.gv-anchor-buttons button{
+  min-height:34px;border:1px solid #62D8FF;border-radius:6px;
+  background:#101024;color:#fff;font-size:9px;
+}
+.gv-anchor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gv-anchor-value{
+  text-align:center;color:#D7F4FF;font:400 10px/1.4 "Space Age",sans-serif;
+}
+.gv-anchor-buttons{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.gv-audit{
+  width:min(100%,620px);color:#D7F4FF;
+  font:400 10px/1.55 "Space Age",sans-serif;
+  text-align:center;white-space:pre-wrap;
+}
+.gv-warning{color:#FFD166}
+.gv-measure-canvas{display:none}
+</style>
+</head>
+<body>
+<main class="gv-lab">
+  <div id="tile" class="gv-coordinate-tile" role="img" aria-label="290 pixel fixed coordinate field grid">
+    <div class="gv-field gv-left"><span class="gv-center-mark"></span></div>
+    <div class="gv-field gv-frame">
+      <span class="gv-center-mark"></span>
+      <span class="gv-frame-label">
+        <span class="gv-frame-glyph">I</span><span class="gv-frame-glyph">C</span><span class="gv-frame-glyph">R</span><span class="gv-frame-glyph">S</span><span class="gv-frame-glyph gv-frame-small-d">D</span>
+      </span>
+    </div>
+    <div class="gv-field gv-separator-field"><span class="gv-center-mark"></span><span class="gv-short-separator"></span></div>
+    <div class="gv-field gv-x"><span class="gv-center-mark"></span><div id="x-number" class="gv-number-field"></div></div>
+    <div class="gv-field gv-x-space"><span class="gv-center-mark"></span></div>
+    <div class="gv-field gv-lambda-field"><span class="gv-center-mark"></span><span class="gv-lambda-anchor"><span class="gv-lambda">Λ</span></span></div>
+    <div class="gv-field gv-lambda-space"><span class="gv-center-mark"></span></div>
+    <div class="gv-field gv-y"><span class="gv-center-mark"></span><div id="y-number" class="gv-number-field"></div></div>
+    <div class="gv-field gv-right"><span class="gv-center-mark"></span></div>
+
+    <span class="gv-boundary b5"></span><span class="gv-boundary b50"></span><span class="gv-boundary b55"></span>
+    <span class="gv-boundary b142"></span><span class="gv-boundary b150"></span><span class="gv-boundary b159"></span>
+    <span class="gv-boundary b166"></span><span class="gv-boundary b248"></span>
+  </div>
+
+  <section class="gv-controls">
+    <div class="gv-panel">
+      <h2 class="gv-panel-title">LIVE MAXIMUM COORDINATE JOYSTICK</h2>
+      <div id="joystick" class="gv-joystick" aria-label="Coordinate joystick">
+        <span id="stick" class="gv-stick"></span>
+      </div>
+      <div class="gv-corners">
+        <button type="button" data-x="0" data-y="90">UPPER LEFT</button>
+        <button type="button" data-x="359.9999" data-y="90">UPPER RIGHT</button>
+        <button type="button" data-x="0" data-y="-90">LOWER LEFT</button>
+        <button type="button" data-x="359.9999" data-y="-90">LOWER RIGHT</button>
+      </div>
+    </div>
+
+    <div class="gv-panel">
+      <h2 class="gv-panel-title">IMMUTABLE DECIMAL ANCHORS</h2>
+      <div class="gv-anchor-grid">
+        <div>
+          <div id="x-anchor-value" class="gv-anchor-value"></div>
+          <div class="gv-anchor-buttons">
+            <button type="button" id="x-minus">X −1 PX</button>
+            <button type="button" id="x-plus">X +1 PX</button>
+          </div>
+        </div>
+        <div>
+          <div id="y-anchor-value" class="gv-anchor-value"></div>
+          <div class="gv-anchor-buttons">
+            <button type="button" id="y-minus">Y −1 PX</button>
+            <button type="button" id="y-plus">Y +1 PX</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="audit" class="gv-audit">LOADING APPROVED FONTS…</div>
+  <canvas id="measure" class="gv-measure-canvas" width="1024" height="256"></canvas>
+</main>
+
+<script>
+(()=>{
+  const GEOMETRY={
+    tile:290,
+    fields:{left:5,frame:45,separator:5,x:87,xSpace:8,lambda:9,lambdaSpace:7,y:82,right:42},
+    boundaries:[5,50,55,142,150,159,166,248]
+  };
+  const RANGE={xMin:0,xMax:359.9999,yMin:-90,yMax:90};
+  const SCALE=4;
+  const canvas=document.getElementById('measure');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const audit=document.getElementById('audit');
+  const xNumber=document.getElementById('x-number');
+  const yNumber=document.getElementById('y-number');
+  const joystick=document.getElementById('joystick');
+  const stick=document.getElementById('stick');
+  const xAnchorValue=document.getElementById('x-anchor-value');
+  const yAnchorValue=document.getElementById('y-anchor-value');
+  const tile=document.getElementById('tile');
+
+  let xAnchor=37.5;
+  let yAnchor=34.5;
+  let metrics=null;
+  let state={x:359.9999,y:-90};
+
+  function scanText(text,font,sizePx){
+    const W=1024,H=256;
+    canvas.width=W;canvas.height=H;
+    ctx.clearRect(0,0,W,H);
+    ctx.save();
+    ctx.scale(SCALE,SCALE);
+    ctx.font=`400 ${sizePx}px "${font}"`;
+    ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#fff';
+    ctx.fillText(text,32,48);
+    ctx.restore();
+    const data=ctx.getImageData(0,0,W,H).data;
+    let minX=W,maxX=-1;
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      if(data[(y*W+x)*4+3]>24){if(x<minX)minX=x;if(x>maxX)maxX=x}
+    }
+    if(maxX<minX)return {width:0};
+    return {width:(maxX-minX+1)/SCALE};
+  }
+
+  function measureGlyphs(){
+    let widest={char:'0',width:0};
+    for(const char of '0123456789'){
+      const width=scanText(char,'GV Coordinate Digits',20).width;
+      if(width>widest.width)widest={char,width};
+    }
+    const digitCell=Math.ceil(widest.width);
+    const decimalCell=Math.ceil(scanText('.','GV Coordinate Digits',20).width);
+    const minusCell=Math.ceil(scanText('-','GV Coordinate Digits',20).width);
+    const signCell=minusCell;
+    return {widest,digitCell,decimalCell,minusCell,signCell};
+  }
+
+  function addCell(parent,char,left,width){
+    const span=document.createElement('span');
+    span.className='gv-cell';
+    span.textContent=char;
+    span.style.left=`${left}px`;
+    span.style.width=`${width}px`;
+    parent.appendChild(span);
+  }
+
+  function formatX(value){
+    const fixed=Math.max(RANGE.xMin,Math.min(RANGE.xMax,value)).toFixed(4);
+    const [integer,fraction]=fixed.split('.');
+    return {integer,fraction};
+  }
+
+  function formatY(value){
+    const clamped=Math.max(RANGE.yMin,Math.min(RANGE.yMax,value));
+    const sign=clamped<0?'-':'';
+    const [integer,fraction]=Math.abs(clamped).toFixed(4).split('.');
+    return {sign,integer,fraction};
+  }
+
+  function renderX(){
+    const {digitCell,decimalCell}=metrics;
+    const value=formatX(state.x);
+    xNumber.textContent='';
+    const decimalLeft=xAnchor-decimalCell/2;
+    addCell(xNumber,'.',decimalLeft,decimalCell);
+    let cursor=decimalLeft;
+    const integer=value.integer.padStart(3,' ');
+    for(let i=integer.length-1;i>=0;i--){
+      cursor-=digitCell;
+      if(integer[i]!==' ')addCell(xNumber,integer[i],cursor,digitCell);
+    }
+    cursor=decimalLeft+decimalCell;
+    for(const char of value.fraction){addCell(xNumber,char,cursor,digitCell);cursor+=digitCell}
+  }
+
+  function renderY(){
+    const {digitCell,decimalCell,signCell}=metrics;
+    const value=formatY(state.y);
+    yNumber.textContent='';
+    const decimalLeft=yAnchor-decimalCell/2;
+    addCell(yNumber,'.',decimalLeft,decimalCell);
+    let cursor=decimalLeft;
+    const integer=value.integer.padStart(2,' ');
+    for(let i=integer.length-1;i>=0;i--){
+      cursor-=digitCell;
+      if(integer[i]!==' ')addCell(yNumber,integer[i],cursor,digitCell);
+    }
+    cursor-=signCell;
+    addCell(yNumber,value.sign,cursor,signCell);
+    cursor=decimalLeft+decimalCell;
+    for(const char of value.fraction){addCell(yNumber,char,cursor,digitCell);cursor+=digitCell}
+  }
+
+  function updateAnchorLabels(){
+    xAnchorValue.textContent=`X DECIMAL: ${xAnchor.toFixed(1)} PX`;
+    yAnchorValue.textContent=`Y DECIMAL: ${yAnchor.toFixed(1)} PX`;
+  }
+
+  function renderAll(){
+    renderX();renderY();updateAnchorLabels();updateAudit();
+  }
+
+  function setCoordinates(x,y,updateStick=true){
+    state.x=Math.max(RANGE.xMin,Math.min(RANGE.xMax,x));
+    state.y=Math.max(RANGE.yMin,Math.min(RANGE.yMax,y));
+    if(updateStick){
+      const px=(state.x-RANGE.xMin)/(RANGE.xMax-RANGE.xMin);
+      const py=1-(state.y-RANGE.yMin)/(RANGE.yMax-RANGE.yMin);
+      stick.style.left=`${px*100}%`;
+      stick.style.top=`${py*100}%`;
+    }
+    renderAll();
+  }
+
+  function updateFromPointer(event){
+    const rect=joystick.getBoundingClientRect();
+    const px=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+    const py=Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height));
+    const x=RANGE.xMin+px*(RANGE.xMax-RANGE.xMin);
+    const y=RANGE.yMax-py*(RANGE.yMax-RANGE.yMin);
+    stick.style.left=`${px*100}%`;
+    stick.style.top=`${py*100}%`;
+    setCoordinates(x,y,false);
+  }
+
+  function fieldFit(){
+    const {digitCell,decimalCell,signCell}=metrics;
+    const xLeft=xAnchor-decimalCell/2-3*digitCell;
+    const xRight=xAnchor+decimalCell/2+4*digitCell;
+    const yLeft=yAnchor-decimalCell/2-2*digitCell-signCell;
+    const yRight=yAnchor+decimalCell/2+4*digitCell;
+    return {
+      x:{left:xLeft,right:xRight,ok:xLeft>=0&&xRight<=GEOMETRY.fields.x},
+      y:{left:yLeft,right:yRight,ok:yLeft>=0&&yRight<=GEOMETRY.fields.y}
+    };
+  }
+
+  function updateAudit(){
+    if(!metrics)return;
+    const fit=fieldFit();
+    const warning=(!fit.x.ok||!fit.y.ok)?' · FIELD OVERFLOW DETECTED':'';
+    audit.classList.toggle('gv-warning',warning!=='');
+    audit.textContent=
+`5 + 45 + 5 + 87 + 8 + 9 + 7 + 82 + 42 = 290 PX
+BOUNDARY CENTERS: 5, 50, 55, 142, 150, 159, 166, 248
+WIDEST DIGIT: ${metrics.widest.char} · DIGIT CELL: ${metrics.digitCell} PX · DECIMAL CELL: ${metrics.decimalCell} PX
+SIGN CELL: ${metrics.signCell} PX (MINUS ONLY: ${metrics.minusCell} PX)
+CSS TILE WIDTH: 290 PX · RENDERED BOUNDING WIDTH: ${tile.getBoundingClientRect().width.toFixed(2)} PX · DEVICE PIXEL RATIO: ${window.devicePixelRatio}
+X: ${state.x.toFixed(4)} · DECIMAL ${xAnchor.toFixed(1)} PX · PAINTED CONSTRUCTION ${fit.x.left.toFixed(1)}–${fit.x.right.toFixed(1)} OF 87
+Y: ${state.y.toFixed(4)} · DECIMAL ${yAnchor.toFixed(1)} PX · PAINTED CONSTRUCTION ${fit.y.left.toFixed(1)}–${fit.y.right.toFixed(1)} OF 82${warning}`;
+  }
+
+  async function initialize(){
+    await Promise.all([
+      document.fonts.load('400 12.5px "Space Age"'),
+      document.fonts.load('400 7.5px "Space Age"'),
+      document.fonts.load('400 20px "GV Coordinate Digits"')
+    ]);
+    await document.fonts.ready;
+    metrics=measureGlyphs();
+    setCoordinates(state.x,state.y);
+  }
+
+  joystick.addEventListener('pointerdown',event=>{
+    joystick.setPointerCapture(event.pointerId);
+    updateFromPointer(event);
+  });
+  joystick.addEventListener('pointermove',event=>{
+    if(joystick.hasPointerCapture(event.pointerId))updateFromPointer(event);
+  });
+
+  document.querySelectorAll('[data-x][data-y]').forEach(button=>{
+    button.addEventListener('click',()=>setCoordinates(Number(button.dataset.x),Number(button.dataset.y)));
+  });
+
+  document.getElementById('x-minus').addEventListener('click',()=>{xAnchor-=1;renderAll()});
+  document.getElementById('x-plus').addEventListener('click',()=>{xAnchor+=1;renderAll()});
+  document.getElementById('y-minus').addEventListener('click',()=>{yAnchor-=1;renderAll()});
+  document.getElementById('y-plus').addEventListener('click',()=>{yAnchor+=1;renderAll()});
+
+  initialize().catch(error=>{
+    audit.classList.add('gv-warning');
+    audit.textContent=`INITIALIZATION FAILED: ${error.message}`;
+    console.error(error);
+  });
+})();
+</script>
+</body>
+</html>

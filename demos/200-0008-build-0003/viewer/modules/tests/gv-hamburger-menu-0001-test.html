@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Galaxy Viewer Hamburger Menu 0001 — Standalone Test</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+#gv-hamburger-test-host{position:fixed;inset:0;background:#000}
+</style>
+</head>
+<body>
+<div id="gv-hamburger-test-host"></div>
+<script src="../gv-hamburger-menu-0001.js"></script>
+<script>
+(() => {
+  const host=document.getElementById("gv-hamburger-test-host");
+  window.GV_HAMBURGER_TEST_LAST_EVENT=null;
+  window.GV_HAMBURGER_TEST=GalaxyViewerHamburgerMenu.init({
+    host,
+    onProjectionSelected(name,detail){window.GV_HAMBURGER_TEST_LAST_EVENT={type:"projection",name,detail}},
+    onMenuAction(action){window.GV_HAMBURGER_TEST_LAST_EVENT={type:"menu",action}}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{
+  "schema": "gv-curator-server-analysis-0001",
+  "generatedBy": "embedded Chandra AVM center/FoV + Chandra Fast Facts + existing human-gold rotation + real Aladin live readback",
+  "records": [
+    {
+      "key": "Chandra:chandra-2001-0144",
+      "catalog": "Chandra",
+      "archiveId": "chandra-2001-0144",
+      "name": "NGC 4636",
+      "analysisMethod": "embedded-avm-center-fov-plus-human-gold-rotation-live-aladin-verified",
+      "authoritativeSourcePage": "https://chandra.harvard.edu/photo/2001/0144/",
+      "authoritativeImageUrl": "https://chandra.harvard.edu/photo/2001/0144/0144_xray.jpg",
+      "catalogRaDeg": 190.7075,
+      "catalogDecDeg": 2.6877777778,
+      "selectedRaDeg": 190.709059,
+      "selectedDecDeg": 2.6862401,
+      "selectedFovDeg": 0.084082743,
+      "sourceFovWidthDeg": 0.084082743,
+      "sourceFovHeightDeg": 0.065597335209,
+      "selectedRotationDeg": 0.0,
+      "rotationSource": "gv-human-gold-0009-min",
+      "humanGoldFovDeg": 0.083333,
+      "sourceSpatialRotationDeg": null,
+      "projection": "TAN",
+      "orientationNeedsHumanValidation": false,
+      "validatedCenterFov": true,
+      "validatedRotation": true,
+      "validated": true,
+      "aladinReadback": {
+        "radec": [
+          190.70905899999994,
+          2.686240100000001
+        ],
+        "fov": [
+          0.08408274299997583,
+          0.08408274299997583
+        ],
+        "rotation": 0
+      },
+      "sourceImageSize": [
+        472,
+        368
+      ],
+      "referenceDimension": [
+        1965.0,
+        1533.0
+      ],
+      "referencePixel": [
+        983.5,
+        767.5
+      ],
+      "scaleDegPerPixel": [
+        4.27902e-05,
+        4.2790173e-05
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "gv-orientation-audit-inventory-0001",
+  "catalogs": {
+    "Chandra": {
+      "revision": "0002",
+      "path": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0002.json",
+      "records": 81,
+      "withImage": 81,
+      "withRaDec": 81,
+      "eligible": 81,
+      "orientationPresent": 0,
+      "orientationMissing": 81,
+      "eligibleMissingOrientation": 81
+    },
+    "Hubble": {
+      "revision": "0025",
+      "path": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0025.json",
+      "records": 910,
+      "withImage": 910,
+      "withRaDec": 910,
+      "eligible": 910,
+      "orientationPresent": 910,
+      "orientationMissing": 0,
+      "eligibleMissingOrientation": 0
+    },
+    "JWST": {
+      "revision": "0002",
+      "path": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0002.json",
+      "records": 85,
+      "withImage": 85,
+      "withRaDec": 85,
+      "eligible": 85,
+      "orientationPresent": 15,
+      "orientationMissing": 70,
+      "eligibleMissingOrientation": 70
+    },
+    "Spitzer": {
+      "revision": "0009",
+      "path": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0009.json",
+      "records": 70,
+      "withImage": 70,
+      "withRaDec": 70,
+      "eligible": 70,
+      "orientationPresent": 70,
+      "orientationMissing": 0,
+      "eligibleMissingOrientation": 0
+    }
+  },
+  "totals": {
+    "records": 1146,
+    "withImage": 1146,
+    "withRaDec": 1146,
+    "eligible": 1146,
+    "orientationPresent": 995,
+    "orientationMissing": 151,
+    "eligibleMissingOrientation": 151
+  }
+}

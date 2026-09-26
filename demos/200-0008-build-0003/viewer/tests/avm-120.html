@@ -1,0 +1,135 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AVM 120</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080b12;color:#eef;font-family:system-ui}.app{width:min(1500px,98vw);margin:12px auto}
+button{padding:10px 14px;margin:3px}progress{width:100%;height:22px}.status{font:12px monospace;background:#111927;border:1px solid #39465b;padding:10px;white-space:pre-wrap}
+table{border-collapse:collapse;width:100%;font:10px monospace;margin-top:10px}th,td{border:1px solid #39465b;padding:4px;white-space:nowrap}th{position:sticky;top:0;background:#162238}.scroll{overflow:auto;max-height:68vh}
+.good{background:#12351e}.bad{background:#451a1a}.warn{background:#443713}
+</style></head><body><div class="app">
+<h2>AVM 120</h2>
+<p>This diagnostic preserves raw embedded AVM values and compares them with the existing runtime JSON. It randomly samples exactly 20 random images from EACH of the six catalogs: Hubble, JWST, ESO, NOIRLab, Spitzer, and Chandra. It does not modify either source.</p>
+<button id="selftest">SELF TEST</button><button id="run" disabled>RUN EXACT 120</button><button id="csv">DOWNLOAD CSV</button><button id="json">DOWNLOAD RAW JSON</button>
+<progress id="bar" max="120" value="0"></progress><div id="status" class="status">Ready.</div>
+<div class="scroll"><table><thead><tr>
+<th>#</th><th>Object</th><th>Decode</th><th>AVM RA</th><th>JSON RA</th><th>ΔRA</th><th>AVM Dec</th><th>JSON Dec</th><th>ΔDec</th>
+<th>AVM Rot RAW</th><th>JSON Rot</th><th>ΔRot wrap</th><th>AVM Scale X RAW</th><th>AVM Scale Y RAW</th>
+<th>AVM RefPix X RAW</th><th>AVM RefPix Y RAW</th><th>AVM RefDim X RAW</th><th>AVM RefDim Y RAW</th>
+<th>JPEG W</th><th>JPEG H</th><th>JSON FoV X</th><th>JSON FoV Y</th><th>JSON RefPix</th><th>JSON RefDim</th><th>JSON Scale</th><th>JSON CD</th>
+</tr></thead><tbody id="body"></tbody></table></div></div>
+<script>
+const CAT="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json";\nconst IMAGE_PROXY="https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=";
+
+const SOURCE_CATALOGS={
+ hubble:"https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+ jwst:"https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+ eso:"https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+ noirlab:"https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
+ spitzer:"https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+ chandra:"https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json"
+};
+function recordsOf(d){if(Array.isArray(d))return d;for(const k of ["entries","galaxies","records","items","data","catalog"])if(Array.isArray(d?.[k]))return d[k];return[]}
+function selectedImage(r){return String(r?.selectedImageUrl??r?.githubImageUrl??r?.esaPublicationJpeg??r?.publicationJpeg??r?.imageUrl??r?.jpegUrl??r?.image??"").trim()}
+let results=[],SELF_TEST_OK=false;
+const num=v=>{v=Number(v);return Number.isFinite(v)?v:null};
+function text(buf){return new TextDecoder("latin1").decode(new Uint8Array(buf))}
+function avmArray(x,key){
+ const leaf=key.split(".").pop(); let p=x.indexOf("avm:"+key);
+ if(p<0)p=x.indexOf("avm:"+leaf); if(p<0)p=x.indexOf(key); if(p<0)return[];
+ const z=x.slice(p,p+8000);
+ const a=[...z.matchAll(/<rdf:li[^>]*>([^<]+)<\/rdf:li>/gi)].map(m=>m[1].trim());
+ if(a.length)return a;
+ const q=z.match(/=["']([^"']+)["']/); return q?[q[1]]:[];
+}
+function rawAVM(buf){
+ const x=text(buf);
+ const get=k=>avmArray(x,k);
+ return {
+  referenceValue:get("Spatial.ReferenceValue"),
+  referenceDimension:get("Spatial.ReferenceDimension"),
+  referencePixel:get("Spatial.ReferencePixel"),
+  scale:get("Spatial.Scale"),
+  rotation:get("Spatial.Rotation"),
+  cdMatrix:get("Spatial.CDMatrix"),
+  projection:get("Spatial.Projection"),
+  coordinateFrame:get("Spatial.CoordinateFrame"),
+  equinox:get("Spatial.Equinox"),
+  quality:get("Spatial.Quality"),
+  notes:get("Spatial.Notes")
+ };
+}
+function wrap(d){if(!Number.isFinite(d))return null;return ((d+180)%360+360)%360-180}
+async function dimensions(blob){const b=await createImageBitmap(blob);const z=[b.width,b.height];b.close();return z}
+function usable(r){return r&&r.imageUrl&&Number.isFinite(num(r.ra))&&Number.isFinite(num(r.dec))}
+function cell(v){return v==null?"":String(v)}
+function addRow(r){
+ const tr=document.createElement("tr");tr.className=r.decode==="OK"?"good":"warn";
+ const vals=[r.i,r.object,r.decode,r.avmRA,r.jsonRA,r.dRA,r.avmDec,r.jsonDec,r.dDec,r.avmRot,r.jsonRot,r.dRot,
+ r.avmScaleX,r.avmScaleY,r.avmPixX,r.avmPixY,r.avmDimX,r.avmDimY,r.jpegW,r.jpegH,r.jsonFovX,r.jsonFovY,
+ JSON.stringify(r.jsonRefPix),JSON.stringify(r.jsonRefDim),JSON.stringify(r.jsonScale),JSON.stringify(r.jsonCD)];
+ vals.forEach(v=>{const td=document.createElement("td");td.textContent=cell(v);tr.appendChild(td)});document.getElementById("body").appendChild(tr)
+}
+async function one(rec,i){
+ let resp=null,last="";
+ const attempts=[selectedImage(rec),IMAGE_PROXY+encodeURIComponent(selectedImage(rec))+"&consumer=gv0037"];
+ for(const url of attempts){try{const q=await fetch(url,{mode:"cors",credentials:"omit",cache:"no-store"});if(q.ok){resp=q;break}last="HTTP "+q.status}catch(e){last=String(e)}}
+ if(!resp)throw Error("DIRECT+PROXY FETCH FAIL: "+last);
+ const blob=await resp.blob(), [w,h]=await dimensions(blob); let avm={};try{avm=rawAVM(await blob.arrayBuffer())}catch(e){}
+ const rv=(avm.referenceValue||[]).map(num), rp=(avm.referencePixel||[]).map(num), rd=(avm.referenceDimension||[]).map(num), sc=(avm.scale||[]).map(num);
+ const ar=num((avm.rotation||[])[0]), jr=num(rec.aladinRotation??rec.spatialRotationDeg);
+ return {i,object:(rec.providerKey||"")+" — "+(rec.name||rec.archiveId||""),imageUrl:selectedImage(rec),decode:(rv.length>=2&&sc.length>=2&&ar!=null)?"OK":"PARTIAL",
+  rawAVM:avm,avmRA:rv[0],jsonRA:num(rec.ra),dRA:rv[0]==null?null:rv[0]-num(rec.ra),
+  avmDec:rv[1],jsonDec:num(rec.dec),dDec:rv[1]==null?null:rv[1]-num(rec.dec),
+  avmRot:ar,jsonRot:jr,dRot:(ar==null||jr==null)?null:wrap(ar-jr),
+  avmScaleX:sc[0],avmScaleY:sc[1],avmPixX:rp[0],avmPixY:rp[1],avmDimX:rd[0],avmDimY:rd[1],
+  jpegW:w,jpegH:h,jsonFovX:num(rec.fovXDegrees??rec.fovDegrees),jsonFovY:num(rec.fovYDegrees??rec.fovDegrees),
+  jsonRefPix:rec.referencePixel??null,jsonRefDim:rec.referenceDimension??null,jsonScale:rec.scale??null,jsonCD:rec.cdMatrix??null,
+  jsonRecord:rec};
+}
+async function selfTest(){
+ const st=document.getElementById("status"),runBtn=document.getElementById("run");
+ runBtn.disabled=true;SELF_TEST_OK=false;
+ try{
+  const P=["hubble","jwst","eso","noirlab","spitzer","chandra"],loaded={};
+  for(let i=0;i<P.length;i++){
+   const p=P[i];st.textContent="AVM 120 INIT "+(i+1)+"/6 — "+p.toUpperCase();
+   const q=await fetch(SOURCE_CATALOGS[p]+"?t="+Date.now(),{cache:"no-store"});
+   if(!q.ok)throw Error(p+" CATALOG HTTP "+q.status);
+   loaded[p]=recordsOf(await q.json()).filter(r=>selectedImage(r));
+   if(loaded[p].length<20)throw Error(p+" HAS ONLY "+loaded[p].length+" RECORDS WITH IMAGE");
+  }
+  st.textContent="AVM 120 FETCH TEST — selectedImageUrl authority";
+  let probe=null,err="";
+  for(const p of P){for(const r of loaded[p].slice(0,10)){try{await one(r,0);probe={p,r};break}catch(e){err=String(e?.message||e)}}if(probe)break}
+  if(!probe)throw Error("JPEG FETCH FAILED: "+err);
+  window.AVM120_SOURCE=loaded;SELF_TEST_OK=true;runBtn.disabled=false;
+  st.textContent="AVM 120 READY — 6 catalogs PASS — JPEG PASS: "+probe.p.toUpperCase()+" / "+(probe.r.name||probe.r.archiveId||"record")+" — RUN EXACT 120 ENABLED";
+ }catch(e){st.textContent="AVM 120 INIT FAILED — "+String(e?.message||e)}
+}
+async function run(){\n if(!SELF_TEST_OK){document.getElementById("status").textContent="RUN BLOCKED — pass SELF TEST first.";return;}
+ results=[];document.getElementById("body").innerHTML="";document.getElementById("bar").value=0;
+ const PROVIDERS=["hubble","jwst","eso","noirlab","spitzer","chandra"];
+ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+ let rows=[];
+ for(const provider of PROVIDERS)rows.push(...shuffle(window.AVM120_SOURCE[provider]).slice(0,20));
+ if(rows.length!==120)throw Error("INTERNAL SAMPLE ERROR: "+rows.length);
+ document.getElementById("bar").max=rows.length;
+ let ok=0,partial=0,fail=0;
+ for(let i=0;i<rows.length;i++){
+  document.getElementById("status").textContent=`Image ${i+1}/${rows.length}: ${rows[i].name||rows[i].archiveId}`;
+  try{const r=await one(rows[i],i+1);results.push(r);addRow(r);r.decode==="OK"?ok++:partial++}
+  catch(e){fail++;const r={i:i+1,object:(rows[i].providerKey||"")+" — "+(rows[i].name||""),decode:"FETCH FAIL",error:String(e)};results.push(r);addRow(r)}
+  document.getElementById("bar").value=i+1;
+ }
+ document.getElementById("status").textContent=`DONE — ${results.length} images | decoded ${ok} | partial ${partial} | fetch fail ${fail}. Download CSV and RAW JSON for correlation analysis.`;
+}
+function download(name,type,data){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+function csv(){
+ const keys=["i","object","decode","avmRA","jsonRA","dRA","avmDec","jsonDec","dDec","avmRot","jsonRot","dRot","avmScaleX","avmScaleY","avmPixX","avmPixY","avmDimX","avmDimY","jpegW","jpegH","jsonFovX","jsonFovY"];
+ const esc=v=>'"'+String(v??"").replaceAll('"','""')+'"';
+ download("gv-avm-120-comparison.csv","text/csv",keys.join(",")+"\n"+results.map(r=>keys.map(k=>esc(r[k])).join(",")).join("\n"))
+}
+document.getElementById("selftest").onclick=selfTest;\ndocument.getElementById("run").onclick=run;
+document.getElementById("csv").onclick=csv;
+document.getElementById("json").onclick=()=>download("gv-avm-120-raw.json","application/json",JSON.stringify(results,null,2));
+</script></body></html>

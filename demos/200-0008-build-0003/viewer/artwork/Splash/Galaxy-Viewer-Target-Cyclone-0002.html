@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer — Target Cyclone Lab 0002</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:monospace}
+body{display:flex;align-items:center;justify-content:center}
+#source{display:none}
+#stage{width:min(82vw,58vh,440px);aspect-ratio:1/1;position:relative}
+#scene{width:100%;height:100%;display:block;background:#000}
+#title{position:fixed;top:12px;left:0;right:0;text-align:center;font:700 13px monospace;letter-spacing:.11em;color:#d9f6ff;pointer-events:none}
+#dev{position:fixed;left:6px;right:6px;bottom:6px;z-index:10;padding:7px;border:1px solid rgba(157,234,255,.65);border-radius:7px;background:rgba(0,0,0,.82);color:#fff;font:11px monospace}
+#devBtns{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
+#dev button{min-width:38px;padding:5px 7px;border:1px solid rgba(255,255,255,.45);border-radius:5px;background:rgba(20,20,20,.92);color:#fff;font:11px monospace}
+#dev button.active{outline:2px solid #9deaff}
+#devOut{white-space:pre-wrap;line-height:1.27}
+#error{display:none;position:fixed;left:8px;right:8px;top:42px;z-index:20;padding:8px;border:1px solid #ff8090;background:rgba(0,0,0,.9);color:#ffb7c1;font:12px monospace}
+</style>
+</head>
+<body>
+<img id="source" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJHYWxheHkgVmlld2VyIHRhcmdldCBpY29uIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZyIgeDE9IjQuNSIgeTE9IjEwIiB4Mj0iMjcuNSIgeTI9IjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzQ1RTdGRiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNTIiIHN0b3AtY29sb3I9IiM0RjlERkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzU3NUZGIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSI5LjUiIGZpbGw9IiMwMDAwMDAiIHN0cm9rZT0iI0ZGNkIyRCIgc3Ryb2tlLXdpZHRoPSIxLjgiLz4KICA8ZWxsaXBzZSBjeD0iMTYiIGN5PSIxNiIgcng9IjExLjUiIHJ5PSI0LjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNyaW5nKSIgc3Ryb2tlLXdpZHRoPSIyLjIiIHRyYW5zZm9ybT0icm90YXRlKC0xOCAxNiAxNikiLz4KICA8ZWxsaXBzZSBjeD0iMTYiIGN5PSIxNiIgcng9IjUuNyIgcnk9IjIuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNDVFN0ZGIiBzdHJva2Utd2lkdGg9IjEuNiIgdHJhbnNmb3JtPSJyb3RhdGUoLTE4IDE2IDE2KSIvPgogIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjEuNiIgZmlsbD0iIzc1NzVGRiIvPgogIDxwYXRoIGQ9Ik0xNiAyLjVWNyBNMTYgMjVWMjkuNSBNMi41IDE2SDcgTTI1IDE2SDI5LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K" alt="embedded exact repository target icon">
+<div id="stage"><canvas id="scene"></canvas></div>
+<div id="title">TARGET CYCLONE LAB 0002 — EXACT 0057 VORTEX CORE</div>
+<div id="error"></div>
+<div id="dev"><div id="devBtns">
+<button data-act="rewind">↺ 0</button><button data-act="stepBack">◀ frame</button><button data-act="play">Pause</button><button data-act="stepForward">frame ▶</button>
+<button data-speed=".25" class="active">0.25×</button><button data-speed=".5">0.5×</button><button data-speed=".75">0.75×</button><button data-speed="1">1×</button><button data-speed="1.25">1.25×</button><button data-speed="1.5">1.5×</button>
+</div><div id="devOut"></div></div>
+<script>(()=>{'use strict';
+/* GALAXY VIEWER CHANGE ORDER: standalone icon-only extraction of the exact 0057 cyclone core. The background vortex equations are copied from protected 0057; only local coordinate/time normalization is adapted. No target-specific capture overlay, no annuli, no historical ghost trail, no alternate motion system. Existing repository files remain protected. */
+const SOURCE_ASSET_BLOB='92b223268c18c7ed67c69c56374fc0bd968b8236';
+const BASELINE_0057_BLOB='ec0a16f0407b5b3b55b92926a87fddfac6b74714';
+const DEV_STEP=16.6667;
+const C=Object.freeze({siphonStart:2500,collapseEnd:6046});
+const LAB_START_PRODUCTION_MS=C.siphonStart,LAB_END_PRODUCTION_MS=6000,LAB_DURATION=LAB_END_PRODUCTION_MS-LAB_START_PRODUCTION_MS;
+const FIELD_H=0.061659624857,FIELD_SCALE=0.557037037037;
+const source=document.getElementById('source'),scene=document.getElementById('scene'),devOut=document.getElementById('devOut'),playBtn=document.querySelector('[data-act="play"]'),error=document.getElementById('error');
+let gl,pr,u={},rafId=0,devMs=0,devPaused=false,devSpeed=.25,devLast=0,dpr=1;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a),0,1);return x*x*(3-2*x)};
+function fail(m){error.style.display='block';error.textContent='Target cyclone lab error: '+m;devPaused=true;playBtn.textContent='Play'}
+function productionState(ms){const flowX=clamp((ms-C.siphonStart)/(C.collapseEnd-C.siphonStart),0,1),flowEase=flowX*flowX*(3-2*flowX),flow=.75*flowEase+.25*flowX,collapse=Math.pow(flow,1.14);return{flowX,flowEase,flow,collapse}}
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s)||'shader compile failed');return s}
+function initGL(){
+ gl=scene.getContext('webgl',{alpha:false,antialias:true,powerPreference:'default',preserveDrawingBuffer:true});
+ if(!gl)throw Error('WebGL unavailable');
+ const vs='attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+ const fs=`precision highp float;
+ varying vec2 uv;
+ uniform sampler2D tex;
+ uniform float flow,collapse,fieldScale;
+ void main(){
+   vec2 q=(uv-.5)*fieldScale;
+   float r=length(q),a=atan(q.y,q.x);
+   float rn=clamp(r/.92,0.,1.);
+   float mask=exp(-pow(r/.235,2.));
+   float release=smoothstep(.15+.43*rn,1.,flow);
+   float pull=pow(release,1.61803399);
+   float finalPull=pow(collapse,6.);
+   float primary=pull*(.70+.30*rn);
+   float convergence=1.-(1.-primary)*(1.-finalPull);
+   float rawRadial=1.-convergence;
+   float radial=.00001+.99999*rawRadial;
+   float localTurns=2.10*flow*mask;
+   float releasedTurns=1.45*pow(release,1.18)*flow*(.45+.55*rn);
+   float sourceAngle=a-6.28318531*(localTurns+releasedTurns);
+   float sourceRadius=r/radial;
+   vec2 src=vec2(cos(sourceAngle),sin(sourceAngle))*sourceRadius;
+   vec2 texUv=.5+src/fieldScale;
+   float ok=step(0.,texUv.x)*step(texUv.x,1.)*step(0.,texUv.y)*step(texUv.y,1.);
+   vec4 col=texture2D(tex,clamp(texUv,0.,1.))*ok;
+   gl_FragColor=vec4(col.rgb,1.);
+ }`;
+ pr=gl.createProgram();gl.attachShader(pr,shader(gl.VERTEX_SHADER,vs));gl.attachShader(pr,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);
+ if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(pr)||'link failed');
+ gl.useProgram(pr);
+ const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+ const p=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+ const tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source);
+ const L=n=>gl.getUniformLocation(pr,n);u={flow:L('flow'),collapse:L('collapse'),fieldScale:L('fieldScale')};
+ gl.uniform1f(u.fieldScale,FIELD_SCALE);
+}
+function resize(){const r=document.getElementById('stage').getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2);const n=Math.max(2,Math.round(Math.min(r.width,r.height)*dpr));if(scene.width!==n||scene.height!==n){scene.width=scene.height=n;if(gl)gl.viewport(0,0,n,n)}}
+function renderAt(labMs){const productionMs=LAB_START_PRODUCTION_MS+labMs,s=productionState(productionMs);resize();gl.useProgram(pr);gl.uniform1f(u.flow,s.flow);gl.uniform1f(u.collapse,s.collapse);gl.drawArrays(gl.TRIANGLES,0,6);const frame60=Math.round(labMs/DEV_STEP);devOut.textContent='lab ms '+labMs.toFixed(3)+'   frame60 '+frame60+'   '+(devPaused?'PAUSED':'RUNNING')+'   speed '+devSpeed.toFixed(2)+'×\n'+'production ms '+productionMs.toFixed(3)+'   0057 baseline '+BASELINE_0057_BLOB.slice(0,12)+'\n'+'flow '+s.flow.toFixed(6)+'   collapse '+s.collapse.toFixed(6)+'\n'+'FIELD_SCALE '+FIELD_SCALE.toFixed(9)+'   source '+SOURCE_ASSET_BLOB.slice(0,12);window.__targetCycloneState={labMs,frame60,productionMs,...s}}
+function frame(now){if(!devLast)devLast=now;if(!devPaused)devMs=clamp(devMs+(now-devLast)*devSpeed,0,LAB_DURATION);devLast=now;renderAt(devMs);if(!devPaused&&devMs<LAB_DURATION)rafId=requestAnimationFrame(frame);else if(devMs>=LAB_DURATION){devPaused=true;playBtn.textContent='Play'}}
+function setPaused(v){devPaused=v;playBtn.textContent=v?'Play':'Pause';cancelAnimationFrame(rafId);if(!v){if(devMs>=LAB_DURATION)devMs=0;devLast=performance.now();rafId=requestAnimationFrame(frame)}else renderAt(devMs)}
+document.getElementById('devBtns').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.speed){devSpeed=Number(b.dataset.speed);document.querySelectorAll('[data-speed]').forEach(x=>x.classList.toggle('active',x===b));renderAt(devMs);return}const a=b.dataset.act;if(a==='play'){setPaused(!devPaused);return}if(a==='rewind'){setPaused(true);devMs=0;renderAt(devMs);return}if(a==='stepBack'||a==='stepForward'){setPaused(true);devMs=clamp(devMs+(a==='stepForward'?DEV_STEP:-DEV_STEP),0,LAB_DURATION);renderAt(devMs)}});
+async function boot(){try{if(source.decode)await source.decode();if(!source.naturalWidth)throw Error('embedded exact target SVG failed to load');resize();initGL();resize();addEventListener('resize',()=>renderAt(devMs),{passive:true});devMs=0;devPaused=false;devSpeed=.25;devLast=performance.now();renderAt(0);rafId=requestAnimationFrame(frame)}catch(e){fail(e.message||String(e))}}
+window.__targetCycloneSetMs=ms=>{setPaused(true);devMs=clamp(Number(ms)||0,0,LAB_DURATION);renderAt(devMs);return window.__targetCycloneState};
+if(source.complete&&source.naturalWidth)boot();else{source.onload=boot;source.onerror=()=>fail('embedded exact target SVG failed to load')}
+})();</script>
+</body>
+</html>

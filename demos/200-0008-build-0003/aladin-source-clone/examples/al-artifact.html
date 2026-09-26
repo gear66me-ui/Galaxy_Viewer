@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+
+<div id="aladin-lite-div" style="width: 1024px; height: 768px;"></div>
+
+<script type="module">
+    import A from '../src/js/A.js';
+    let aladin;
+    A.init.then(() => {
+        var aladin = A.aladin(
+            '#aladin-lite-div',
+            {
+                survey: 'data/hips/wcs', // set initial image survey
+                projection: 'SIN', // set a projection
+                fov: 80.0, // initial field of view in degrees
+                target: '96.5279427 -88.0037230', // initial target
+                cooFrame: 'galactic', // set galactic frame
+                showCooGrid: true, // set the grid,
+                fullScreen: true,
+                showSettingsControl: true,
+            }
+        );
+    });
+</script>
+
+</body>
+</html>

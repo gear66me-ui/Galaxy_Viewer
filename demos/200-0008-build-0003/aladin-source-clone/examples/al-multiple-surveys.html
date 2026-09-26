@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+<div id="aladin-lite-div" style="width: 1024px; height: 768px"></div>
+<script>var aladin;</script>
+<script type="module">
+    import A from '../src/js/A.js';
+    A.init.then(() => {
+        aladin = A.aladin('#aladin-lite-div', {projection: 'MOL', lockNorthUp: true, fullScreen: true, showSettingsControl: true, fov: 360, survey: ['P/DM/vizMine', 'P/HST/GOODS/color', 'P/MATLAS/g'], target: '0 0', showProjectionControl: false, showSettingsControl: true,  showLayersControl: true, showCooGrid: true, showFrame: false, showCooLocation: false});
+    });
+</script>
+
+</body>
+</html>

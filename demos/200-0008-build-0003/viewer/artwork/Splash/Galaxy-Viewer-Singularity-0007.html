@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000">
+<title>Galaxy Viewer — Singularity 0007</title>
+<style>
+@font-face{font-family:"Space Age";src:url("../Fonts/Space%20Age/space%20age.otf") format("opentype");font-display:swap}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}#sig{z-index:5;pointer-events:none;background:transparent}
+#laser{position:fixed;z-index:7;width:8px;height:8px;border-radius:50%;background:#fff;opacity:0;pointer-events:none;box-shadow:0 0 4px #fff,0 0 12px #a8efff,0 0 25px #16aaff,0 0 42px #005cff}
+#laser:before{content:"";position:absolute;inset:-12px;border:1px solid rgba(155,237,255,.9);border-radius:50%}
+#black{position:fixed;inset:0;z-index:20;background:#000;opacity:0;pointer-events:none}
+#error{display:none;position:fixed;inset:0;z-index:30;background:#000;color:#ff8c9a;padding:20px;white-space:pre-wrap;font:14px monospace}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas><canvas id="sig"></canvas><i id="laser"></i><div id="black"></div><div id="error"></div>
+<script>
+(()=>{'use strict';
+const C={etchStart:500,etchEnd:2000,glowStart:2000,glowEnd:2480,siphonStart:2500,collapseEnd:6800,annulusEnd:7250,diskEnd:7580,pointEnd:7850,pulsarEnd:8150,fadeStart:8200,fadeEnd:8900,blackAt:9020,launchAt:9250,cx:.50,cy:.43,hr:.095,maxDpr:1.55};
+const SRC='Galaxy%20Splash%20Ibis%20NO%20NAME.png',scene=document.getElementById('scene'),sig=document.getElementById('sig'),laser=document.getElementById('laser'),black=document.getElementById('black'),err=document.getElementById('error'),im=new Image();
+const gl=scene.getContext('webgl',{alpha:false,antialias:false,preserveDrawingBuffer:false,powerPreference:'high-performance'}),sg=sig.getContext('2d');
+let start=0,dpr=1,fit={};const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a),0,1);return x*x*(3-2*x)};
+function fail(m){err.style.display='block';err.textContent=m}
+im.onerror=()=>fail('Galaxy Splash Ibis NO NAME.png could not be loaded.');im.onload=boot;im.src=SRC;
+function boot(){if(!gl){fail('WebGL is unavailable.');return}const vs=`attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
+const fs=`precision highp float;varying vec2 uv;uniform sampler2D tex;uniform vec2 res,imgSz,ctr;uniform float hr,t,flow,collapse,annulus,disk,point,pulsar;
+vec2 containUV(vec2 q){float sa=res.x/res.y,ia=imgSz.x/imgSz.y;vec2 z=q;if(sa>ia){float s=ia/sa;z.x=(z.x-.5)/s+.5;}else{float s=sa/ia;z.y=(z.y-.5)/s+.5;}return z;}
+void main(){vec2 q=uv-ctr;q.x*=res.x/res.y;float r=length(q),a=atan(q.y,q.x);float H=max(hr,.035);float edgeDist=min(min(uv.x,1.-uv.x),min(uv.y,1.-uv.y));float cornerHold=1.-smoothstep(.0,.30,edgeDist);float yield=smooth(.02+cornerHold*.55,1.,flow);float near=pow(max(0.,1.-r/.82),1.45);float rim=exp(-pow((r-H)/max(.003,H*.045),2.));float inside=1.-smoothstep(H*.90,H*1.02,r);
+float spin=flow*(rim*3.0+near*(.20+5.4*near))*yield;float pull=flow*(.05+.31*near)*yield;float sheet=collapse*(.12+.84*near)*yield;
+a+=spin*(1.25+t*.42);float scale=max(.004,1.-.982*sheet);float sr=(r/scale+pull*near)*(1.+flow*.82*near);sr+=sin(a*6.0+t*5.5)*.008*flow*near*yield;
+vec2 src=vec2(cos(a),sin(a))*sr;src.x/=res.x/res.y;vec2 base=containUV(src+ctr);vec2 original=containUV(q/vec2(res.x/res.y,1.)+ctr);base=mix(base,original,inside*(1.-collapse));float ok=step(0.,base.x)*step(base.x,1.)*step(0.,base.y)*step(base.y,1.);vec3 col=texture2D(tex,clamp(base,0.,1.)).rgb*ok;
+float throat=smoothstep(H*scale*1.08,0.,r)*(flow*.36+collapse*.98);col*=1.-throat;float rr=H*.25*(1.-annulus*.70),rw=max(.0015,H*.025);float ring=exp(-pow((r-rr)/rw,2.));col+=vec3(.10,.55,1.)*ring*annulus*3.1;float d=1.-smoothstep(rr,rr+rw,r);col+=vec3(.05,.35,1.)*d*disk*2.8;float px=1.25/res.y,pt=1.-smoothstep(px,px*2.,r);col+=vec3(1.)*pt*point*7.;float L=.052*pulsar,fall=1.-smoothstep(.006,L,r),h=(1.-smoothstep(px*.5,px*1.1,abs(q.y)))*fall,v=(1.-smoothstep(px*.5,px*1.1,abs(q.x)))*fall;col+=vec3(.72,.94,1.)*(h+v)*pulsar*3.3;gl_FragColor=vec4(col,1.);}`;
+const sh=(ty,s)=>{const x=gl.createShader(ty);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(x));return x};let pr;try{pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(pr))}catch(e){fail(e.message);return}gl.useProgram(pr);const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const p=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);const tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);
+const L=n=>gl.getUniformLocation(pr,n),u={res:L('res'),imgSz:L('imgSz'),ctr:L('ctr'),hr:L('hr'),t:L('t'),flow:L('flow'),collapse:L('collapse'),annulus:L('annulus'),disk:L('disk'),point:L('point'),pulsar:L('pulsar')};
+function resize(){dpr=Math.min(devicePixelRatio||1,C.maxDpr);scene.width=sig.width=Math.max(1,Math.round(innerWidth*dpr));scene.height=sig.height=Math.max(1,Math.round(innerHeight*dpr));gl.viewport(0,0,scene.width,scene.height);sg.setTransform(dpr,0,0,dpr,0,0);const ia=im.width/im.height,sa=innerWidth/innerHeight;let w,h,x,y;if(sa>ia){h=innerHeight;w=h*ia;x=(innerWidth-w)/2;y=0}else{w=innerWidth;h=w/ia;x=0;y=(innerHeight-h)/2}fit={x,y,w,h,cx:x+C.cx*w,cy:y+C.cy*h,hr:C.hr*w};}
+addEventListener('resize',resize,{passive:true});resize();start=performance.now();requestAnimationFrame(frame);
+function signature(ms){sg.clearRect(0,0,innerWidth,innerHeight);if(ms<C.etchStart)return;const x=fit.x+fit.w*.5,y=fit.y+fit.h*.925,p=clamp((ms-C.etchStart)/(C.etchEnd-C.etchStart),0,1),fade=1-smooth(C.fadeStart,C.fadeEnd,ms),glow=smooth(C.glowStart,C.glowStart+150,ms)*(1-smooth(C.glowStart+180,C.glowEnd,ms)),text='BY GERMÁN ARCINIEGAS',font=Math.max(17,fit.w*.0325);sg.save();sg.font=`${font}px "Space Age",sans-serif`;sg.textAlign='center';sg.textBaseline='middle';sg.lineJoin='round';sg.lineWidth=Math.max(1.5,font*.085);sg.strokeStyle='#063f8f';sg.fillStyle='#f2fdff';sg.shadowColor='#058cff';sg.shadowBlur=16+glow*28;sg.globalAlpha=fade;const tw=sg.measureText(text).width,tx=x-tw/2;if(p<1){sg.beginPath();const tracks=14;for(let i=0;i<tracks;i++){const z=clamp(p*tracks-i,0,1);if(z>0)sg.rect(tx,y-font*.74+i*font*1.48/tracks,tw*z,font*1.55/tracks)}sg.clip()}sg.strokeText(text,x,y);sg.fillText(text,x,y);sg.restore();if(p>0&&p<1){const tracks=14,row=Math.min(tracks-1,Math.floor(p*tracks)),scan=(p*tracks)%1,lx=tx+tw*scan,ly=y-font*.68+(row+.5)*font*1.36/tracks;laser.style.opacity='1';laser.style.left=(lx-4)+'px';laser.style.top=(ly-4)+'px';sg.save();sg.globalCompositeOperation='lighter';for(let i=0;i<16;i++){const aa=Math.random()*Math.PI*2,r=Math.random()*23;sg.fillStyle=`rgba(150,232,255,${Math.random()*.9})`;sg.fillRect(lx+Math.cos(aa)*r,ly+Math.sin(aa)*r,1.3,1.3)}sg.restore()}else laser.style.opacity='0';if(ms>C.fadeStart&&ms<C.fadeEnd){const q=smooth(C.fadeStart,C.fadeEnd,ms);sg.save();sg.globalCompositeOperation='lighter';for(let i=0;i<80;i++){const px=tx+Math.random()*tw*q,py=y-font*.4+Math.random()*font+q*58*Math.random();sg.fillStyle=`rgba(120,205,255,${(1-q)*Math.random()})`;sg.fillRect(px,py,1.2,1.2)}sg.restore()}}
+function frame(now){const ms=now-start,flow=smooth(C.siphonStart,C.collapseEnd,ms),collapse=Math.pow(flow,1.16),ann=smooth(C.collapseEnd,C.annulusEnd,ms)*(1-smooth(C.annulusEnd,C.diskEnd,ms)),disk=smooth(C.annulusEnd,C.diskEnd,ms)*(1-smooth(C.diskEnd,C.pointEnd,ms)),point=smooth(C.diskEnd,C.pointEnd,ms)*(1-smooth(C.pointEnd,C.pulsarEnd,ms)),pulsar=smooth(C.pointEnd,C.pulsarEnd,ms)*(1-smooth(C.pulsarEnd,C.fadeStart,ms));gl.uniform2f(u.res,scene.width,scene.height);gl.uniform2f(u.imgSz,im.width,im.height);gl.uniform2f(u.ctr,fit.cx/innerWidth,1-fit.cy/innerHeight);gl.uniform1f(u.hr,fit.hr/innerHeight);gl.uniform1f(u.t,Math.max(0,ms-C.siphonStart)/1000);gl.uniform1f(u.flow,flow);gl.uniform1f(u.collapse,collapse);gl.uniform1f(u.annulus,ann);gl.uniform1f(u.disk,disk);gl.uniform1f(u.point,point);gl.uniform1f(u.pulsar,pulsar);gl.drawArrays(gl.TRIANGLES,0,6);signature(ms);black.style.opacity=String(smooth(C.blackAt,C.launchAt,ms));if(ms<C.launchAt)requestAnimationFrame(frame);else location.href='../../../mobile/beta/'}
+})();
+</script>
+</body>
+</html>

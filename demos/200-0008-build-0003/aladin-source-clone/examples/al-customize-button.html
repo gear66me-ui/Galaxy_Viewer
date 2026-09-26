@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, initial-scale=1.0, user-scalable=no">
+    </head>
+<body>
+
+
+<div id="aladin-lite-div" style="width: 1024px; height: 768px"></div>
+
+<script type="module">
+    import A from '../src/js/A.js';
+    let aladin;
+    A.init.then(() => {
+        var aladin = A.aladin(
+            '#aladin-lite-div',
+            {
+                survey: 'P/allWISE/color', // set initial image survey
+                projection: 'AIT', // set a projection
+                fov: 1.5, // initial field of view in degrees
+                target: 'NGC 2175', // initial target
+                cooFrame: 'icrs', // set galactic frame
+                reticleColor: '#ff89ff', // change reticle color
+                reticleSize: 64, // change reticle size
+                showContextMenu: true,
+                fullScreen: true,
+            }
+        );
+
+        let btn = A.button({
+            content: 'My button',
+            classList: ['myButton'],
+            tooltip: {cssStyle: {color: 'red'}, content: 'Create a moc in pink!', position: {direction: 'top'}},
+            action(o) {
+                aladin.select('poly', p => {
+                    try {
+                        let ra = []
+                        let dec = []
+                        for (const v of p.vertices) {
+                            let [lon, lat] = aladin.pix2world(v.x, v.y);
+                            ra.push(lon)
+                            dec.push(lat)
+                        }
+
+                        let moc = A.MOCFromPolygon(
+                            {ra, dec},
+                            {name: 'poly', lineWidth: 3.0, color: 'pink'},
+                        );
+                        aladin.addMOC(moc)
+                    } catch(_) {
+                        alert('Selection covers a region out of the projection definition domain.');
+                    }
+                })
+            }
+        });
+        let btn2 = A.button({
+            content: 'I do nothing',
+            tooltip: {cssStyle: {color: 'red'}, content: 'Create a moc in pink!', position: {direction: 'top'}},
+        });
+
+        aladin.addUI(btn)
+
+        aladin.addUI(A.box({
+            header: {
+                title: "My window",
+                draggable: true,
+            },
+            classList: ['myBox'],
+            content: "This is the content of my window<br/> I can write proper html",
+        }))
+
+        aladin.addStatusBarMessage({
+            duration: 10000,
+            type: 'info',
+            message: 'Aladin Lite v3.3 is out. New features available:<ul><li>New Button, Box <b>objects</b></li><li>Polygonal, circular selection</li></ul>'
+        })
+    });
+</script>
+<style>
+
+
+    .myBox {
+        top: unset;
+        bottom: 0;
+        left: 0;
+    }
+
+    .myButton {
+        position: absolute;
+        bottom: 100px;
+        left: 0;
+
+        background-color: pink;
+    }
+    
+</style>
+</body>
+</html>

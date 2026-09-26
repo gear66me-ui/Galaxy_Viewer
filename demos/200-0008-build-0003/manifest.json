@@ -1,0 +1,9 @@
+{
+  "name": "Galaxy Viewer Demo",
+  "version": "200-0008",
+  "build": "0003",
+  "sourceCommit": "570a971ce35b28bbd9e4ea0fe867ee20358f2dbf",
+  "frozen": true,
+  "created": "2026-09-25",
+  "entry": "index.html"
+}

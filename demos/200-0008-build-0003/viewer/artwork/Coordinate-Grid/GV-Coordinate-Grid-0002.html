@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Coordinate Grid 0002</title>
+<style>
+@font-face{
+  font-family:"Space Age";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf?v=6R-space-age-regular-001") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+@font-face{
+  font-family:"GV Coordinate Digits";
+  src:url("https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0004.otf?v=7K-centered-coordinate-digits-0004") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+:root{
+  --tile-width:290px;
+  --tile-height:36px;
+  --tile-border:#D7F4FF;
+  --coordinate-color:#72A7E8;
+  --field-separator:5px;
+  --field-x-space:8px;
+  --field-lambda:9px;
+  --field-lambda-space:7px;
+  --field-frame:0px;
+  --field-x:0px;
+  --field-y:0px;
+  --field-right-space:0px;
+  --x-decimal-anchor:0px;
+  --y-decimal-anchor:0px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-width:100%;min-height:100%;background:#000;color:#fff;font-family:"Space Age",sans-serif}
+body{display:grid;place-items:center;padding:24px}
+.gv-coordinate-lab{display:grid;gap:18px;justify-items:center}
+.gv-coordinate-tile{position:relative;width:var(--tile-width);min-width:var(--tile-width);max-width:var(--tile-width);height:var(--tile-height);min-height:var(--tile-height);max-height:var(--tile-height);display:grid;grid-template-columns:var(--field-frame) var(--field-separator) var(--field-x) var(--field-x-space) var(--field-lambda) var(--field-lambda-space) var(--field-y) var(--field-right-space);align-items:center;overflow:visible;background:rgba(0,0,0,.86);border-radius:6px;box-shadow:inset 0 0 0 1px var(--tile-border),0 0 10px rgba(98,216,255,.44);color:var(--coordinate-color)}
+.gv-field{position:relative;height:36px;min-width:0;display:flex;align-items:center;justify-content:center;overflow:visible}
+.gv-field::after{content:"";position:absolute;top:0;right:0;width:1px;height:36px;pointer-events:none}
+.gv-field:nth-child(1)::after{background:rgba(255,91,91,.40)}
+.gv-field:nth-child(2)::after{background:rgba(255,190,80,.40)}
+.gv-field:nth-child(3)::after{background:rgba(255,238,88,.40)}
+.gv-field:nth-child(4)::after{background:rgba(100,255,133,.40)}
+.gv-field:nth-child(5)::after{background:rgba(74,225,255,.40)}
+.gv-field:nth-child(6)::after{background:rgba(105,132,255,.40)}
+.gv-field:nth-child(7)::after{background:rgba(194,103,255,.40)}
+.gv-field:nth-child(8)::after{display:none}
+.gv-center-mark{position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(215,244,255,.18);transform:translateX(-.5px);pointer-events:none}
+.gv-frame-label{display:inline-flex;align-items:baseline;justify-content:center;column-gap:.8px;font:400 12.5px/1 "Space Age",sans-serif;white-space:nowrap;text-transform:none}
+.gv-frame-glyph{display:inline-flex;align-items:center;justify-content:center;transform:scaleY(1.1);transform-origin:center}
+.gv-frame-small-d{font-size:60%;line-height:1;align-self:baseline;transform:scaleY(1.1);transform-origin:left bottom}
+.gv-short-separator{position:absolute;left:2px;top:50%;width:1px;height:15px;background:rgba(114,167,232,.58);transform:translateY(-50%)}
+.gv-number-field{position:relative;height:30px;font:400 20px/30px "GV Coordinate Digits",sans-serif;font-variant-numeric:normal;font-feature-settings:normal;letter-spacing:0;white-space:nowrap}
+.gv-digit,.gv-minus,.gv-decimal{position:absolute;top:0;height:30px;display:flex;align-items:center;justify-content:center;line-height:30px;transform:scaleY(1.15);transform-origin:center}
+.gv-lambda-anchor{position:absolute;left:4.5px;top:50%;width:9px;height:30px;transform:translate(-50%,-50%);font:400 9px/30px Arial,sans-serif}
+.gv-lambda{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);line-height:30px}
+.gv-audit{width:min(100%,620px);color:#D7F4FF;font:400 10px/1.55 "Space Age",sans-serif;text-align:center;white-space:pre-wrap}
+.gv-measure-canvas{display:none}
+</style>
+</head>
+<body>
+<main class="gv-coordinate-lab">
+  <div id="tile" class="gv-coordinate-tile" role="img" aria-label="290 pixel measured coordinate field grid">
+    <div class="gv-field" id="frame-field"><span class="gv-center-mark"></span><span class="gv-frame-label"><span class="gv-frame-glyph">I</span><span class="gv-frame-glyph">C</span><span class="gv-frame-glyph">R</span><span class="gv-frame-glyph">S</span><span class="gv-frame-glyph gv-frame-small-d">D</span></span></div>
+    <div class="gv-field"><span class="gv-center-mark"></span><span class="gv-short-separator"></span></div>
+    <div class="gv-field"><span class="gv-center-mark"></span><div id="x-number" class="gv-number-field" aria-label="359.9999"></div></div>
+    <div class="gv-field"><span class="gv-center-mark"></span></div>
+    <div class="gv-field"><span class="gv-center-mark"></span><span class="gv-lambda-anchor"><span class="gv-lambda">Λ</span></span></div>
+    <div class="gv-field"><span class="gv-center-mark"></span></div>
+    <div class="gv-field"><span class="gv-center-mark"></span><div id="y-number" class="gv-number-field" aria-label="-90.0000"></div></div>
+    <div class="gv-field"><span class="gv-center-mark"></span></div>
+  </div>
+  <div id="audit" class="gv-audit">MEASURING APPROVED FONTS…</div>
+  <canvas id="measure" class="gv-measure-canvas" width="1024" height="256"></canvas>
+</main>
+<script>
+(()=>{
+  const TILE_WIDTH=290;
+  const FIXED={separator:5,xSpace:8,lambda:9,lambdaSpace:7};
+  const X_VALUE={integer:'359',fraction:'9999'};
+  const Y_VALUE={sign:'-',integer:'90',fraction:'0000'};
+  const MAX_DIGIT_CANDIDATES='0123456789';
+  const SCALE=4;
+  const canvas=document.getElementById('measure');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const root=document.documentElement;
+  const audit=document.getElementById('audit');
+  function scanText(text,font,sizePx){
+    const W=1024,H=256;
+    canvas.width=W;canvas.height=H;
+    ctx.clearRect(0,0,W,H);
+    ctx.save();ctx.scale(SCALE,SCALE);ctx.font=`400 ${sizePx}px \"${font}\"`;ctx.textBaseline='alphabetic';ctx.fillStyle='#fff';ctx.fillText(text,32,48);ctx.restore();
+    const data=ctx.getImageData(0,0,W,H).data;
+    let minX=W,maxX=-1,minY=H,maxY=-1;
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(data[(y*W+x)*4+3]>24){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y}
+    if(maxX<minX)return {left:0,right:0,width:0,height:0};
+    return {left:minX/SCALE,right:(maxX+1)/SCALE,width:(maxX-minX+1)/SCALE,height:(maxY-minY+1)/SCALE};
+  }
+  function widestDigit(){let winner={char:'0',width:0};for(const char of MAX_DIGIT_CANDIDATES){const m=scanText(char,'GV Coordinate Digits',20);if(m.width>winner.width)winner={char,width:m.width}}return winner}
+  function measureFrame(){const main=scanText('ICRS','Space Age',12.5);const small=scanText('D','Space Age',7.5);return Math.ceil(main.width+small.width+4*.8)}
+  function measureSymbol(char,font,size){return Math.ceil(scanText(char,font,size).width)}
+  function addGlyph(parent,char,left,width,className){const span=document.createElement('span');span.className=className;span.textContent=char;span.style.left=`${left}px`;span.style.width=`${width}px`;parent.appendChild(span)}
+  function buildNumber(parent,fieldWidth,decimalAnchor,integer,fraction,digitCell,decimalCell,sign=''){
+    parent.textContent='';parent.style.width=`${fieldWidth}px`;
+    const decimalLeft=decimalAnchor-decimalCell/2;addGlyph(parent,'.',decimalLeft,decimalCell,'gv-decimal');
+    let cursor=decimalLeft;const leftChars=(sign?sign:'')+integer;
+    for(let i=leftChars.length-1;i>=0;i--){const char=leftChars[i];cursor-=digitCell;addGlyph(parent,char,cursor,digitCell,char==='-'?'gv-minus':'gv-digit')}
+    cursor=decimalLeft+decimalCell;for(const char of fraction){addGlyph(parent,char,cursor,digitCell,'gv-digit');cursor+=digitCell}
+  }
+  async function initialize(){
+    await Promise.all([document.fonts.load('400 12.5px "Space Age"'),document.fonts.load('400 7.5px "Space Age"'),document.fonts.load('400 20px "GV Coordinate Digits"')]);
+    await document.fonts.ready;
+    const widest=widestDigit();const digitCell=Math.ceil(widest.width);const decimalCell=measureSymbol('.','GV Coordinate Digits',20);const minusCell=measureSymbol('-','GV Coordinate Digits',20);const frameField=measureFrame();
+    const xField=3*digitCell+decimalCell+4*digitCell;const xDecimalAnchor=3*digitCell+decimalCell/2;
+    const yField=minusCell+2*digitCell+decimalCell+4*digitCell;const yDecimalAnchor=minusCell+2*digitCell+decimalCell/2;
+    const used=frameField+FIXED.separator+xField+FIXED.xSpace+FIXED.lambda+FIXED.lambdaSpace+yField;const rightField=TILE_WIDTH-used;
+    if(rightField<0)throw new Error(`MEASURED FIELDS EXCEED 290 PX BY ${Math.abs(rightField)} PX`);
+    root.style.setProperty('--field-frame',`${frameField}px`);root.style.setProperty('--field-x',`${xField}px`);root.style.setProperty('--field-y',`${yField}px`);root.style.setProperty('--field-right-space',`${rightField}px`);root.style.setProperty('--x-decimal-anchor',`${xDecimalAnchor}px`);root.style.setProperty('--y-decimal-anchor',`${yDecimalAnchor}px`);
+    buildNumber(document.getElementById('x-number'),xField,xDecimalAnchor,X_VALUE.integer,X_VALUE.fraction,digitCell,decimalCell);
+    buildNumber(document.getElementById('y-number'),yField,yDecimalAnchor,Y_VALUE.integer,Y_VALUE.fraction,digitCell,decimalCell,Y_VALUE.sign);
+    audit.textContent=`${frameField} + 5 + ${xField} + 8 + 9 + 7 + ${yField} + ${rightField} = 290 PX\nWIDEST DIGIT: ${widest.char} · DIGIT CELL: ${digitCell} PX · DECIMAL CELL: ${decimalCell} PX · MINUS CELL: ${minusCell} PX\nX DECIMAL ANCHOR: ${xDecimalAnchor} PX FROM X FIELD LEFT · Y DECIMAL ANCHOR: ${yDecimalAnchor} PX FROM Y FIELD LEFT`;
+  }
+  initialize().catch(error=>{audit.textContent=`MEASUREMENT FAILED: ${error.message}`;console.error(error)});
+})();
+</script>
+</body>
+</html>

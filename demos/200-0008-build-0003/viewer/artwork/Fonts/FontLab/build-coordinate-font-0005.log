@@ -1,0 +1,7 @@
+Program root: /usr
+Traceback (most recent call last):
+  File "/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py", line 138, in <module>
+    build()
+  File "/home/runner/work/Galaxy_Viewer/Galaxy_Viewer/viewer/artwork/Fonts/FontLab/build-coordinate-font-0005.py", line 71, in build
+    raise FileExistsError(f"Refusing to overwrite {OUTPUT_FONT}")
+FileExistsError: Refusing to overwrite /home/runner/work/Galaxy_Viewer/Galaxy_Viewer/viewer/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf

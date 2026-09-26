@@ -1,0 +1,7 @@
+{
+  // Cloudflare build trigger: ECO-072 corrected two-stage DSS2 base patch 2026-09-03T04:06Z
+  "name": "gv-triangle-consensus-sandbox-0006",
+  "main": "gv-triangle-consensus-sandbox-0006-worker.js",
+  "compatibility_date": "2026-09-02",
+  "workers_dev": true
+}

@@ -1,0 +1,59 @@
+(()=>{
+'use strict';
+const VERSION="0021";
+const WATCH_MS=260;
+const ARRIVAL_SETTLE_MS=650;
+const LAYER_NAME="Galaxy Viewer AVM Overlay";
+const PANEL_ID="gv-avm-overlay-lab";
+const STYLE_ID="gv-avm-overlay-lab-style-0021";
+const DEFAULT_SLIDER="0";
+let ARef=null,aladinRef=null,randomRef=null,rootRef=null,overlay=null,watchTimer=null,arrivalTimer=0,lastKey="",loadingKey="",scheduledKey="",lastContext=null,navigationSeen=false;
+function clamp(n,min,max){n=Number(n);if(!Number.isFinite(n))n=min;return Math.max(min,Math.min(max,n))}
+function panel(){return document.getElementById(PANEL_ID)}
+function hdOpen(){return document.body?.classList?.contains('gv-hd-open')||document.documentElement?.classList?.contains('gv-hd-open')}
+function stateOf(){try{return randomRef?.getState?.()||{}}catch(_){return {}}}
+function isArrivedStable(){const st=stateOf();return !hdOpen()&&navigationSeen===true&&st.arrived===true&&st.busy!==true}
+function randomInTransit(){const st=stateOf();return Boolean(st.busy||st.arrived===false)}
+function slider(){return panel()?.querySelector('input[type="range"]')||null}
+function rail(){return panel()?.querySelector('.gv-avm-rail')||null}
+function thumb(){return panel()?.querySelector('.gv-avm-thumb')||null}
+function opacityNow(){const sl=slider();const raw=sl?sl.value:DEFAULT_SLIDER;const v=clamp(raw,0,100);return clamp(Math.max(0.01,1-(v/100)),0,1)}
+function activeOverlay(){return overlay||lastContext?.overlay||null}
+function applyOpacity(){const op=opacityNow();const target=activeOverlay();try{if(target&&typeof target.setOpacity==="function")target.setOpacity(op)}catch(_){}try{if(target&&typeof target.setAlpha==="function")target.setAlpha(op)}catch(_){}try{if(target?.options)target.options.opacity=op}catch(_){}updateThumb();return op}
+function setPanelVisible(on){const p=panel();if(!p)return;if(hdOpen()||randomInTransit())on=false;p.dataset.on=on?'1':'0';p.style.display=on?'block':'none'}
+function ensureStyle(){if(document.getElementById(STYLE_ID))return;const st=document.createElement('style');st.id=STYLE_ID;st.textContent=`
+#${PANEL_ID}{position:fixed;left:0px;top:calc(50% - 105px);width:76px;height:210px;z-index:7312;display:none;pointer-events:none;font-family:"Space Age",sans-serif;color:#9eefff;filter:drop-shadow(0 0 10px rgba(76,205,255,.82))}
+#${PANEL_ID}[data-on="1"]{display:block}
+body.gv-hd-open #${PANEL_ID},html.gv-hd-open #${PANEL_ID}{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+#${PANEL_ID} .gv-avm-touch-shield{position:absolute;left:0;top:0;width:76px;height:210px;border-radius:24px;background:rgba(0,22,54,.12);pointer-events:auto;touch-action:none;overscroll-behavior:contain}
+#${PANEL_ID} .gv-avm-title{position:absolute;left:3px;top:50%;transform:translateY(-50%);height:144px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;font:400 8px/1 "Space Age",sans-serif;letter-spacing:2px;color:#6feaff;text-shadow:0 0 4px rgba(190,250,255,.96),0 0 10px rgba(35,190,255,.9);user-select:none;pointer-events:none;white-space:nowrap}
+#${PANEL_ID} .gv-avm-rail{position:absolute;left:36px;top:18px;width:13px;height:174px;border-radius:999px;background:linear-gradient(180deg,rgba(18,187,255,.95),rgba(4,18,58,.82));box-shadow:0 0 8px rgba(100,226,255,.88),0 0 18px rgba(18,157,255,.72);pointer-events:none}
+#${PANEL_ID} .gv-avm-thumb{position:absolute;left:42.5px;top:192px;width:24px;height:24px;border-radius:50%;transform:translate(-50%,-50%);background:#72e8ff;border:3px solid rgba(224,255,255,.98);box-shadow:0 0 12px rgba(185,250,255,.98),0 0 28px rgba(20,176,255,.82);pointer-events:none}
+#${PANEL_ID} input[type="range"]{position:absolute;left:12px;top:18px;width:52px;height:174px;opacity:.001;appearance:none;-webkit-appearance:none;pointer-events:auto;touch-action:none}
+@media(max-height:740px){#${PANEL_ID}{top:calc(50% - 92px);height:184px}#${PANEL_ID} .gv-avm-touch-shield{height:184px}#${PANEL_ID} .gv-avm-rail{height:150px}#${PANEL_ID} .gv-avm-thumb{top:168px}#${PANEL_ID} input[type="range"]{height:150px}}
+`;document.head.appendChild(st)}
+function valueFromY(y){const r=rail()?.getBoundingClientRect?.()||panel()?.getBoundingClientRect?.();if(!r||!r.height)return Number(slider()?.value||DEFAULT_SLIDER);return clamp(Math.round(((r.bottom-y)/r.height)*100),0,100)}
+function setSliderValue(v){const sl=slider();if(!sl)return;sl.value=String(clamp(v,0,100));applyOpacity()}
+function updateThumb(){const sl=slider(),r=rail(),t=thumb();if(!sl||!r||!t)return;const v=clamp(sl.value,0,100);const top=r.offsetTop+((100-v)/100)*r.offsetHeight;t.style.top=`${top}px`}
+function handlePanelPoint(e){if(!panel()?.dataset?.on||panel().dataset.on!=='1')return;if(e.cancelable)e.preventDefault();e.stopPropagation();const touch=e.touches?.[0]||e.changedTouches?.[0]||e;setSliderValue(valueFromY(touch.clientY))}
+function ensurePanel(){ensureStyle();let p=panel();if(p)return p;p=document.createElement('div');p.id=PANEL_ID;p.dataset.on='0';p.innerHTML='<div class="gv-avm-touch-shield" aria-hidden="true"></div><div class="gv-avm-title">CROSS FADE</div><div class="gv-avm-rail" aria-hidden="true"></div><div class="gv-avm-thumb" aria-hidden="true"></div><input aria-label="CROSS FADE" type="range" min="0" max="100" step="1" value="'+DEFAULT_SLIDER+'">';document.body.appendChild(p);const shield=p.querySelector('.gv-avm-touch-shield');for(const el of [shield,p.querySelector('input')]){if(!el)continue;for(const ev of ['pointerdown','pointermove','touchstart','touchmove','mousedown','mousemove'])el.addEventListener(ev,handlePanelPoint,{capture:true,passive:false});for(const ev of ['pointerup','touchend','mouseup','click'])el.addEventListener(ev,e=>{e.stopPropagation();},{capture:true,passive:true})}const sl=slider();if(sl){sl.addEventListener('input',()=>{applyOpacity();setPanelVisible(!!lastKey)},{passive:true});sl.addEventListener('change',()=>{applyOpacity();setPanelVisible(!!lastKey)},{passive:true})}updateThumb();return p}
+function avmUrlFor(d){if(!d)return '';return d.selectedImageUrl||d.imageUrl||d.screenUrl||d.hdUrl||d.largeUrl||d.url||d.thumbnailUrl||''}
+function destinationKey(d,url){if(!d&&!url)return '';return String(d?.id||d?.archiveId||d?.sourceId||d?.designation||d?.name||url||'').trim()+'|'+String(url||avmUrlFor(d)||'').trim()}
+function addCandidate(out,d){const url=avmUrlFor(d);if(!url)return;const key=destinationKey(d,url);if(!key)return;if(out.some(x=>x.key===key))return;out.push({d,url,key})}
+function liveCandidates(){const s=stateOf();const g=globalThis.GalaxyRandomGalaxy||{};const out=[];for(const d of [s.activeDestination,s.currentDestination,randomRef?.activeDestination,randomRef?.currentDestination,g.activeDestination,g.currentDestination])addCandidate(out,d);return out}
+function bestDestination(){return liveCandidates()[0]||null}
+function currentKey(){return bestDestination()?.key||''}
+function destinationStillCurrent(key){return !!key&&key===currentKey()}
+function clearArrivalTimer(){if(arrivalTimer){clearTimeout(arrivalTimer);arrivalTimer=0}scheduledKey=''}
+function clearOverlay(){clearArrivalTimer();try{if(aladinRef&&typeof aladinRef.removeOverlayImageLayer==='function')aladinRef.removeOverlayImageLayer(LAYER_NAME)}catch(_){}overlay=null;lastKey='';loadingKey='';setPanelVisible(false)}
+function hideOverlayForTravel(){navigationSeen=true;const sl=slider();if(sl)sl.value=DEFAULT_SLIDER;clearOverlay();setPanelVisible(false)}
+function installTravelButtonGuard(){const buttons=document.querySelectorAll('#gv-random-galaxy,.gv-galaxy-history');for(const b of buttons){if(!b||b.dataset.gvAvmGuard0021)continue;b.dataset.gvAvmGuard0021='1';for(const ev of ['pointerdown','touchstart','click'])b.addEventListener(ev,hideOverlayForTravel,{capture:true,passive:true})}}
+function imageFormatFor(url){return /\.png(?:[?#]|$)/i.test(url)?'png':'jpeg'}
+function canCommandAladin(key){return isArrivedStable()&&destinationStillCurrent(key)}
+function setExactImageFov(ra,dec,fov,d,key){if(!canCommandAladin(key))return false;try{if(Number.isFinite(ra)&&Number.isFinite(dec)&&typeof aladinRef.gotoRaDec==='function')aladinRef.gotoRaDec(ra,dec)}catch(_){}try{const x=Number(d?.imageFovXDeg);const y=Number(d?.imageFovYDeg);const callbackFov=Number(fov);const scalar=Number(callbackFov||d?.imageFovDeg||d?.fovDegrees||d?.fov);let target=scalar;if(!(Number.isFinite(callbackFov)&&callbackFov>0)&&Number.isFinite(x)&&x>0&&Number.isFinite(y)&&y>0){const rect=(rootRef||document.body).getBoundingClientRect?.();const aspect=(rect&&rect.height>0)?rect.width/rect.height:1;target=Math.max(x,y*aspect)}if(Number.isFinite(target)&&target>0){if(typeof aladinRef.setFoV==='function')aladinRef.setFoV(target);else if(typeof aladinRef.setFov==='function')aladinRef.setFov(target)}}catch(e){try{console.warn('GV AVM LAB 0021 FOV WARNING',e)}catch(_){}}return true}
+function loadArrivedCandidate(candidate,reason){if(!candidate||!canCommandAladin(candidate.key)||candidate.key===loadingKey)return false;loadingKey=candidate.key;try{const url=candidate.url;const op=opacityNow();const imageLayer=ARef.image(url,{name:LAYER_NAME,imgFormat:imageFormatFor(url),opacity:op,successCallback:(ra,dec,fov,image)=>{if(!canCommandAladin(candidate.key)){loadingKey='';return}if(!setExactImageFov(ra,dec,fov,candidate.d,candidate.key)){loadingKey='';return}overlay=imageLayer;if(typeof aladinRef.setOverlayImageLayer==='function')aladinRef.setOverlayImageLayer(imageLayer,LAYER_NAME);lastKey=candidate.key;loadingKey='';lastContext={version:VERSION,mode:'arrival-only-original-metadata',reason,destination:candidate.d,url,opacity:opacityNow(),ra,dec,fov,image,overlay:imageLayer};globalThis.GalaxyViewerAvmOverlayLab.lastContext=lastContext;applyOpacity();setPanelVisible(true);try{console.info('GV AVM LAB 0021 ARRIVAL CURRENT LOADED',lastContext)}catch(_){}} ,errorCallback:(error)=>{loadingKey='';try{console.warn('GV AVM LAB 0021 IMAGE LOAD FAILED',{reason,key:candidate.key,url,error})}catch(_){}}});return Boolean(imageLayer)}catch(e){loadingKey='';try{console.error('GV AVM LAB 0021 FAILED',e)}catch(_){}return false}}
+function maybeLoadAfterArrival(reason){installTravelButtonGuard();ensurePanel();if(hdOpen()){clearOverlay();return false}if(!isArrivedStable()){setPanelVisible(false);return false}const candidate=bestDestination();if(!candidate||!canCommandAladin(candidate.key))return false;if(candidate.key===lastKey){applyOpacity();setPanelVisible(true);return true}if(candidate.key===loadingKey||candidate.key===scheduledKey)return true;clearOverlay();scheduledKey=candidate.key;arrivalTimer=setTimeout(()=>{arrivalTimer=0;const fresh=bestDestination();if(!fresh||fresh.key!==scheduledKey||!canCommandAladin(fresh.key)){scheduledKey='';return}scheduledKey='';loadArrivedCandidate(fresh,'arrival-settle-'+reason)},ARRIVAL_SETTLE_MS);return true}
+function install({A,aladin,viewerRoot,randomGalaxy}={}){if(!A)throw new Error('ALADIN A NAMESPACE MISSING');if(!aladin)throw new Error('ALADIN INSTANCE MISSING');ARef=A;aladinRef=aladin;randomRef=randomGalaxy;rootRef=viewerRoot||document.body;ensurePanel();installTravelButtonGuard();setPanelVisible(false);if(!watchTimer)watchTimer=setInterval(()=>{maybeLoadAfterArrival('watch')},WATCH_MS);try{console.info('GV AVM LAB 0021 INSTALLED arrival-only metadata-fov slider-touch')}catch(_){}return {version:VERSION,panel:panel(),loadForBestDestination:maybeLoadAfterArrival}}
+function uninstall(){clearArrivalTimer();if(watchTimer){clearInterval(watchTimer);watchTimer=null}clearOverlay();try{panel()?.remove()}catch(_){}try{document.getElementById(STYLE_ID)?.remove()}catch(_){}}
+globalThis.GalaxyViewerAvmOverlayLab={VERSION,install,uninstall,loadForBestDestination:maybeLoadAfterArrival,get lastContext(){return lastContext}};
+})();

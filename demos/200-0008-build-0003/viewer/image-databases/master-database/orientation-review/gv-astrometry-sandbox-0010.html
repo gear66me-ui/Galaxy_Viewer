@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Galaxy Viewer Astrometry Sandbox 0010</title></head>
+<body><div id="gv-bootstrap" style="font:14px system-ui;padding:20px;background:#05080d;color:#eef5ff;min-height:100vh">Loading Astrometry Engine 023…</div>
+<script>
+'use strict';
+(async()=>{
+const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/fcf413428accb443b7d29ddb880493252bf98729/viewer/image-databases/master-database/orientation-review/gv-astrometry-sandbox-0010.html';
+const engine023=async function engine023(){
+  const ECO='023-FOV-FIRST-GENEROUS';
+  const GATE=.065, SRC_MAX=9, REF_MAX=18;
+  let fovSolved=null, rotSolved=null;
+
+  function st(){
+    const s=readLiveState();
+    return s&&Number.isFinite(+s.ra)&&Number.isFinite(+s.dec)&&Number.isFinite(+s.fov)
+      ? {ra:+s.ra,dec:+s.dec,fov:+s.fov,rot:Number.isFinite(+s.rot)?+s.rot:0,survey:s.survey||currentSurveyId}
+      : null;
+  }
+  function strong(stars,max,sep=.055){
+    const ranked=[...(stars||[])].sort((a,b)=>
+      ((b.prominent?8:0)-(a.prominent?8:0))+
+      ((b.offGalaxy?3:0)-(a.offGalaxy?3:0))+
+      (+b.anchorWeight||0)-(+a.anchorWeight||0)+
+      .01*((+b.b||0)-(+a.b||0))
+    );
+    const out=[];
+    for(const p of ranked){
+      if(out.length>=max) break;
+      if(out.every(q=>Math.hypot(p.x-q.x,p.y-q.y)>=sep)) out.push(p);
+    }
+    for(const p of ranked){ if(out.length>=max) break; if(!out.includes(p)) out.push(p); }
+    return out;
+  }
+  function drawBigSource(S){
+    const o=overlayContext('#sourceAnchors'),g=o.g;
+    g.lineWidth=3; g.font='bold 13px monospace';
+    S.forEach((p,i)=>{
+      const x=p.x*o.w,y=p.y*o.h;
+      g.strokeStyle='#5ee7ff';g.fillStyle='#5ee7ff';
+      g.beginPath();g.arc(x,y,15,0,Math.PI*2);g.stroke();
+      g.fillText('A'+String(i+1).padStart(2,'0'),x+18,y-10);
+    });
+    log('GENEROUS SOURCE ANCHORS',{eco:ECO,count:S.length,visible_radius_px:15,matching_gate_normalized:GATE,matching_gate_px_at_512:GATE*512});
+  }
+  function pd(P){
+    const d=[];
+    for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+      const v=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);
+      if(v>.025)d.push(v);
+    }
+    return d;
+  }
+  function fovMetric(S,A){
+    const a=pd(S),b=pd(A);
+    if(a.length<3||b.length<3)return 1e9;
+    const errs=a.map(x=>{
+      let best=1e9;
+      for(const y of b){const e=Math.abs(Math.log(Math.max(1e-6,x)/Math.max(1e-6,y)));if(e<best)best=e}
+      return best;
+    }).sort((x,y)=>x-y);
+    const keep=errs.slice(0,Math.max(3,Math.ceil(errs.length*.65)));
+    return keep.reduce((s,x)=>s+x,0)/keep.length;
+  }
+  function coverage(P){
+    const q=new Set(P.map(p=>(p.x>=.5?1:0)+(p.y>=.5?2:0)));
+    return q.size/4;
+  }
+  function generousTranslate(S,A,gate=GATE){
+    let best={matches:0,mean:1,coverage:0,pairs:[]};
+    for(const s0 of S)for(const a0 of A){
+      const tx=a0.x-s0.x,ty=a0.y-s0.y,used=new Set(),pairs=[];
+      for(let si=0;si<S.length;si++){
+        const s=S[si],x=s.x+tx,y=s.y+ty;let bi=-1,bd=gate;
+        for(let ai=0;ai<A.length;ai++){
+          if(used.has(ai))continue;
+          const d=Math.hypot(x-A[ai].x,y-A[ai].y);
+          if(d<bd){bd=d;bi=ai}
+        }
+        if(bi>=0){used.add(bi);pairs.push({si,ai:bi,d:bd,source:s,ref:A[bi]})}
+      }
+      const mean=pairs.length?pairs.reduce((z,p)=>z+p.d,0)/pairs.length:1;
+      const cov=coverage(pairs.map(p=>p.source));
+      const score=pairs.length*100+cov*45-mean*900;
+      const old=best.matches*100+best.coverage*45-best.mean*900;
+      if(score>old)best={matches:pairs.length,mean,coverage:cov,pairs,tx,ty};
+    }
+    return best;
+  }
+  async function snapAnchors(max=REF_MAX){
+    const u=await captureAladin(),d=await imageDataFromUrl(u),m=features(d);
+    return strong(detectStars(d,m),max,.035);
+  }
+  async function solveFov(start,S){
+    const coarse=[.35,.50,.70,1.00,1.40,2.00,2.80];
+    let best=null;
+    log('AUTO FOV START',{eco:ECO,start_fov:start.fov,rotation_held:start.rot,candidates:coarse.map(x=>start.fov*x)});
+    for(let i=0;i<coarse.length;i++){
+      const F=clamp(start.fov*coarse[i],.00001,180);
+      action('AUTO 1/3 · FOV COARSE '+(i+1)+'/'+coarse.length+' · '+F.toFixed(6)+'°');
+      applyState({...start,fov:F});await sleep(460);updateLive();
+      const A=await snapAnchors(),metric=fovMetric(S,A);
+      log('AUTO FOV SAMPLE',{eco:ECO,stage:'coarse',fov:F,metric,source_anchors:S.length,aladin_anchors:A.length});
+      if(!best||metric<best.metric)best={F,metric};
+    }
+    const refine=[.75,.85,.93,1.00,1.08,1.18,1.33];
+    for(let i=0;i<refine.length;i++){
+      const F=clamp(best.F*refine[i],.00001,180);
+      action('AUTO 1/3 · FOV REFINE '+(i+1)+'/'+refine.length+' · '+F.toFixed(6)+'°');
+      applyState({...start,fov:F});await sleep(460);updateLive();
+      const A=await snapAnchors(),metric=fovMetric(S,A);
+      log('AUTO FOV SAMPLE',{eco:ECO,stage:'refine',fov:F,metric});
+      if(metric<best.metric)best={F,metric};
+    }
+    fovSolved=best.F;
+    applyState({...start,fov:fovSolved});await sleep(550);updateLive();
+    log('AUTO FOV FINAL',{eco:ECO,fov:fovSolved,metric:best.metric,rotation_preserved:start.rot});
+    return best;
+  }
+  async function solveRotation(start,S,F){
+    let best=null;
+    const rots=[];for(let d=0;d<360;d+=15)rots.push(norm(start.rot+d));
+    for(let i=0;i<rots.length;i++){
+      const r=rots[i];
+      action('AUTO 2/3 · ROTATION '+(i+1)+'/'+rots.length+' · '+r.toFixed(0)+'°');
+      applyState({...start,fov:F,rot:r});await sleep(390);updateLive();
+      const A=await snapAnchors(),g=generousTranslate(S,A);
+      const score=g.matches*100+g.coverage*45-g.mean*900;
+      log('AUTO ROT SAMPLE',{eco:ECO,rotation:r,fov:F,matches:g.matches,mean_residual:g.mean,coverage:g.coverage,score});
+      if(!best||score>best.score)best={r,g,score};
+    }
+    const center=best.r;
+    for(let d=-12;d<=12;d+=3){
+      const r=norm(center+d);
+      applyState({...start,fov:F,rot:r});await sleep(360);updateLive();
+      const A=await snapAnchors(),g=generousTranslate(S,A),score=g.matches*100+g.coverage*45-g.mean*900;
+      if(score>best.score)best={r,g,score};
+    }
+    const fine=best.r;
+    for(let d=-3;d<=3;d+=1){
+      const r=norm(fine+d);
+      applyState({...start,fov:F,rot:r});await sleep(350);updateLive();
+      const A=await snapAnchors(),g=generousTranslate(S,A),score=g.matches*100+g.coverage*45-g.mean*900;
+      if(score>best.score)best={r,g,score};
+    }
+    const trusted=best.g.matches>=4&&best.g.coverage>=.5&&best.g.mean<=GATE*.75;
+    rotSolved={rot:best.r,fov:F,trusted,...best.g};
+    applyState({...start,fov:F,rot:best.r});await sleep(500);updateLive();
+    document.querySelector('#sBestRot').textContent=best.r.toFixed(2)+'°';
+    document.querySelector('#sBestFov').textContent=F.toFixed(6)+'°';
+    document.querySelector('#sStar').textContent=best.g.matches+' generous centroid matches';
+    document.querySelector('#sConsensus').textContent=Math.round(best.g.coverage*100)+'% coverage · RMS gate '+(best.g.mean*512).toFixed(1)+' px';
+    log('AUTO ROT FINAL',{eco:ECO,rotation:best.r,fov:F,trusted,matches:best.g.matches,mean_residual:best.g.mean,coverage:best.g.coverage,gate:GATE});
+    return rotSolved;
+  }
+  async function runAll(){
+    if(!record||!aladin||busy)return;
+    const start=st();if(!start)throw Error('visible Aladin state unavailable');
+    busy=true;
+    const b=document.querySelector('#auto023'),old=b.textContent;
+    try{
+      b.disabled=true;b.textContent='AUTO SOLVING…';
+      clearAnchorOverlays();
+      const sd=imageDataFromImage(document.querySelector('#source')),sm=features(sd),S=strong(detectStars(sd,sm),SRC_MAX,.07);
+      if(S.length<5)throw Error('fewer than five strong source centroids');
+      drawBigSource(S);
+      log('AUTO ENGINE START',{eco:ECO,sequence:['FOV','VISIBLE_ROTATION','GAIA_ASTROMETRY'],start,source_anchors:S.length});
+      const fv=await solveFov(start,S);
+      const rr=await solveRotation(start,S,fv.F);
+      let gaia=null,gaiaError=null;
+      action('AUTO 3/3 · GAIA ASTROMETRY');
+      try{gaia=await solveGaiaPrecision()}catch(e){gaiaError=String(e?.message||e);log('AUTO GAIA ERROR',{eco:ECO,message:gaiaError},'ERROR')}
+      if(gaia?.accepted){
+        action('AUTO COMPLETE · GAIA TRUSTED · ROT '+gaia.rot.toFixed(2)+'° · FOV '+gaia.fov.toFixed(6)+'°','good');
+      }else if(rr.trusted){
+        applyState({...start,fov:rr.fov,rot:rr.rot});await sleep(450);retainAladinState();updateLive();
+        action('AUTO COMPLETE · GENEROUS ROTATION TRUSTED · GAIA REJECTED','good');
+      }else{
+        applyState(start);await sleep(450);retainAladinState();updateLive();
+        action('AUTO REJECTED · STARTING VIEW RESTORED','bad');
+      }
+      log('AUTO ENGINE FINAL',{eco:ECO,fov:{value:fv.F,metric:fv.metric},rotation:rr,gaia:gaia?{accepted:gaia.accepted,ra:gaia.ra,dec:gaia.dec,fov:gaia.fov,rot:gaia.rot,reasons:gaia.hard_reject_reasons}:null,gaia_error:gaiaError,visible_final:st()});
+    }finally{busy=false;b.disabled=false;b.textContent=old}
+  }
+  function install(){
+    const orient=document.querySelector('#orient');if(!orient||document.querySelector('#auto023'))return;
+    const b=document.createElement('button');
+    b.id='auto023';b.textContent='AUTO FOV → ROTATE → ASTROMETRY';
+    b.style.cssText='background:#14532d;color:#fff;font-weight:900;border:2px solid #65e7a4';
+    b.onclick=()=>runAll().catch(fail);
+    orient.insertAdjacentElement('afterend',b);
+    log('ECO 023 READY',{fov_first:true,generous_centroid_gate:GATE,visible_anchor_radius_px:15,one_button:true});
+  }
+  install();
+};
+const PATCH='<script>('+engine023.toString()+')();<'+'/script>';
+const r=await fetch(BASE,{cache:'no-store'});
+if(!r.ok)throw Error('verified baseline HTTP '+r.status);
+let html=await r.text();
+html=html.replace('</body>',PATCH+'\n</body>');
+document.open();document.write(html);document.close();
+})().catch(e=>{document.getElementById('gv-bootstrap').textContent='BOOTSTRAP FAILED — '+String(e?.message||e)});
+</script></body></html>

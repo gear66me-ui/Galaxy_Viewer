@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Loading Galaxy Viewer Auto Curator 0016…</title></head>
+<body style="margin:0;background:#06090e;color:white;font:14px system-ui;padding:18px">Loading Galaxy Viewer Auto Curator 0016…
+<script>
+(async()=>{
+'use strict';
+try{
+ const r=await fetch('./gv-auto-curator-0015.html?v=0016-base',{cache:'no-store'});if(!r.ok)throw Error(`0015 baseline HTTP ${r.status}`);let h=await r.text();
+ h=h.replaceAll('0015','0016');
+ const needle="const Q=s=>document.querySelector(s);let markersVisible0016=true;";
+ const replacement=`const Q=s=>document.querySelector(s);
+const directLoadImage0016=loadImage;
+window.__gvLastImageAccess0016='NOT READ';
+function proxyImageLoad0016(proxyUrl,label){return new Promise((res,rej)=>{const im=new Image();im.crossOrigin='anonymous';im.referrerPolicy='no-referrer';im.onload=()=>{window.__gvLastImageAccess0016=label;res(im)};im.onerror=()=>rej(Error(label+' failed'));im.src=proxyUrl})}
+loadImage=async function(url){
+ if(!url)throw Error('no source image URL');
+ try{const im=await directLoadImage0016(url);window.__gvLastImageAccess0016='DIRECT SOURCE PIXELS';return im}catch(directError){}
+ const stripped=String(url).replace(/^https?:\\/\\//i,'');
+ const proxies=[
+  ['CORS ANALYSIS PROXY — WESERV','https://wsrv.nl/?url='+encodeURIComponent(stripped)+'&output=jpg'],
+  ['CORS ANALYSIS PROXY — CORSPROXY.IO','https://corsproxy.io/?url='+encodeURIComponent(url)]
+ ];
+ let last=null;
+ for(const [label,purl] of proxies){try{return await proxyImageLoad0016(purl,label)}catch(e){last=e}}
+ window.__gvLastImageAccess0016='PIXEL ACCESS FAILED';
+ throw Error('source image pixel access blocked: direct CORS and both analysis proxies failed'+(last?' ('+last.message+')':''));
+};
+let markersVisible0016=true;`;
+ if(!h.includes(needle))throw Error('0016 patch anchor not found in 0015 baseline');
+ h=h.replace(needle,replacement);
+ h=h.replace("renderFinal0016();await drawOverlay0016();return out","renderFinal0016();const ev0016=Q('#analysisEvidence0016');if(ev0016)ev0016.textContent+='\\nPIXEL ACCESS: '+(window.__gvLastImageAccess0016||'UNKNOWN');await drawOverlay0016();const obj0016=Q('#analysisObject0016');if(obj0016)obj0016.textContent+=' · '+(window.__gvLastImageAccess0016||'PIXELS UNKNOWN');return out");
+ h=h.replace("Q('#analysisEvidence0016').textContent+='\\nSOURCE OVERLAY unavailable: '+e.message","Q('#analysisEvidence0016').textContent+='\\nSOURCE OVERLAY unavailable: '+e.message+' · pixel path '+(window.__gvLastImageAccess0016||'UNKNOWN')");
+ document.open();document.write(h);document.close();
+}catch(e){document.body.textContent='0016 STARTUP ERROR: '+e.message}
+})();
+</script>
+</body></html>

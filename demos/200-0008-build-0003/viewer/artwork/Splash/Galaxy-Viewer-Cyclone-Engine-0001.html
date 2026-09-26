@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Galaxy Viewer — Bare Cyclone Engine 0001</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#dff7ff;font-family:monospace}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;background:#000}
+#controls{position:fixed;top:max(10px,env(safe-area-inset-top));left:10px;right:10px;z-index:2;display:flex;gap:8px;align-items:center;flex-wrap:wrap;pointer-events:none}
+button,label,#readout{pointer-events:auto;border:1px solid #148cff;border-radius:7px;background:rgba(0,0,0,.76);color:#eafaff;min-height:40px;padding:8px 12px;font:12px monospace;box-shadow:0 0 10px rgba(20,140,255,.45)}
+button{touch-action:manipulation}
+label{display:flex;gap:7px;align-items:center}
+#readout{margin-left:auto;min-width:148px;text-align:right}
+#error{display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:3;padding:9px;background:rgba(0,0,0,.9);color:#ffb7c1;border:1px solid #ff8090;font:12px monospace}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="controls">
+  <button id="pause" type="button" aria-pressed="false">PAUSE</button>
+  <button id="restart" type="button">RESTART</button>
+  <label><input id="center" type="checkbox" checked> CENTER</label>
+  <div id="readout">0.000 s · READY</div>
+</div>
+<div id="error"></div>
+<script>(()=>{'use strict';
+const RETICLE_CENTER_X=.52427,RETICLE_CENTER_Y=.58329,RETICLE_RADIUS=.088;
+const C=Object.freeze({siphonStart:2500,collapseEnd:6500,annulusEnd:6650,diskEnd:6800,pointEnd:6900,flashEnd:7150,launchAt:12300,cx:RETICLE_CENTER_X,cy:RETICLE_CENTER_Y,hr:RETICLE_RADIUS,maxDpr:1.35});
+const scene=document.getElementById('scene'),pause=document.getElementById('pause'),restart=document.getElementById('restart'),center=document.getElementById('center'),readout=document.getElementById('readout'),error=document.getElementById('error');
+let gl,program,uniforms={},dpr=1,start=0,paused=false,pauseStartedAt=0,rafId=0;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a),0,1);return x*x*(3-2*x)};
+function fail(message){error.style.display='block';error.textContent='Cyclone engine unavailable: '+message}
+function compile(type,source){const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(shader)||'shader compile failed');return shader}
+function init(){
+  gl=scene.getContext('webgl',{alpha:false,antialias:false,powerPreference:'default'});
+  if(!gl)throw Error('WebGL unavailable');
+  const vertexSource='attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+  const fragmentSource=`precision mediump float;
+varying vec2 uv;
+uniform vec2 res,ctr;
+uniform float H,flow,collapse,ann,disk,point,flash,showCenter;
+const float PI=3.14159265359;
+const float TAU=6.28318530718;
+float line(float value,float width){return 1.-smoothstep(width,width*2.,abs(value));}
+float sourceField(vec2 s,out vec3 tint){
+  float sr=length(s),sa=atan(s.y,s.x);
+  float ringCell=fract(sr/.055)-.5;
+  float sectorCell=fract((sa+PI)/TAU*20.)-.5;
+  float rings=line(ringCell,.055);
+  float spokes=line(sectorCell,.065)*(1.-smoothstep(.02,.72,sr));
+  float dots=line(ringCell,.12)*line(sectorCell,.14);
+  float dash=step(.52,fract((sa+PI)/TAU*48.+sr*31.));
+  float vectors=spokes*dash;
+  float beacon=line(atan(s.y,s.x),.020)*(1.-smoothstep(.10,.78,sr));
+  float phase=.5+.5*cos(sa*3.-sr*34.);
+  tint=mix(vec3(.10,.55,1.),vec3(.85,.98,1.),phase);
+  return max(max(rings*.40,vectors*.75),max(dots,beacon));
+}
+void main(){
+  float asp=res.x/res.y;
+  vec2 q=uv-ctr;
+  q.x*=asp;
+  float r=length(q),a=atan(q.y,q.x);
+  float rn=clamp(r/.92,0.,1.);
+  float mask=exp(-pow(r/.235,2.));
+  float release=smoothstep(.15+.43*rn,1.,flow);
+  float pull=pow(release,1.61803399);
+  float finalPull=pow(collapse,6.);
+  float primary=pull*(.70+.30*rn);
+  float convergence=1.-(1.-primary)*(1.-finalPull);
+  float rawRadial=1.-convergence;
+  float radial=.004+.996*(sqrt(rawRadial*rawRadial+.000016)-.004)/(sqrt(1.000016)-.004);
+  float localTurns=2.10*flow*mask;
+  float releasedTurns=1.45*pow(release,1.18)*flow*(.45+.55*rn);
+  float sourceAngle=a-TAU*(localTurns+releasedTurns);
+  float sourceRadius=r/radial;
+  vec2 src=vec2(cos(sourceAngle),sin(sourceAngle))*sourceRadius;
+  vec2 srcOpp=-src;
+  vec3 tintA,tintB;
+  float fieldA=sourceField(src,tintA),fieldB=sourceField(srcOpp,tintB);
+  float balance=smoothstep(.08,.88,flow)*smoothstep(H*.55,H*1.45,r);
+  vec3 col=mix(tintA*fieldA,(tintA*fieldA+tintB*fieldB)*.5,balance);
+  float coreLock=1.-smoothstep(H*.50,H*.72,r);
+  vec3 fixedTint;
+  float fixedField=sourceField(q,fixedTint);
+  col=mix(col,fixedTint*fixedField,coreLock);
+  col*=1.-smoothstep(.965,1.,collapse);
+  float rr=H*.25*(1.-ann*.72),rw=max(.0014,H*.025);
+  float ring=exp(-pow((r-rr)/rw,2.));
+  col+=vec3(.08,.50,1.)*ring*ann*3.2;
+  float dd=1.-smoothstep(rr,rr+rw,r);
+  col+=vec3(.04,.32,1.)*dd*disk*2.8;
+  float px=1.2/res.y,pt=1.-smoothstep(px,px*2.,r);
+  col+=vec3(1.)*pt*point*7.;
+  float L=.032*flash,fall=1.-smoothstep(.004,L,r);
+  float h=(1.-smoothstep(px*.5,px,abs(q.y)))*fall;
+  float v=(1.-smoothstep(px*.5,px,abs(q.x)))*fall;
+  col+=vec3(.75,.95,1.)*(h+v)*flash*3.2;
+  float markerRing=line(r-H*.18,px*1.7);
+  float markerCross=(line(q.x,px*1.2)+line(q.y,px*1.2))*(1.-smoothstep(H*.05,H*.25,r));
+  col+=vec3(.05,.75,1.)*(markerRing+markerCross)*showCenter;
+  gl_FragColor=vec4(col,1.);
+}`;
+  program=gl.createProgram();
+  gl.attachShader(program,compile(gl.VERTEX_SHADER,vertexSource));
+  gl.attachShader(program,compile(gl.FRAGMENT_SHADER,fragmentSource));
+  gl.linkProgram(program);
+  if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program)||'program link failed');
+  gl.useProgram(program);
+  const buffer=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const p=gl.getAttribLocation(program,'p');
+  gl.enableVertexAttribArray(p);
+  gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+  const location=name=>gl.getUniformLocation(program,name);
+  uniforms={res:location('res'),ctr:location('ctr'),H:location('H'),flow:location('flow'),collapse:location('collapse'),ann:location('ann'),disk:location('disk'),point:location('point'),flash:location('flash'),showCenter:location('showCenter')};
+  gl.clearColor(0,0,0,1);
+}
+function resize(){
+  dpr=Math.min(devicePixelRatio||1,C.maxDpr);
+  scene.width=Math.round(innerWidth*dpr);
+  scene.height=Math.round(innerHeight*dpr);
+  gl.viewport(0,0,scene.width,scene.height);
+}
+function phaseName(ms){
+  if(ms<C.siphonStart)return 'FIELD';
+  if(ms<C.collapseEnd)return 'CYCLONE';
+  if(ms<C.annulusEnd)return 'ANNULUS';
+  if(ms<C.diskEnd)return 'DISK';
+  if(ms<C.pointEnd)return 'POINT';
+  if(ms<C.flashEnd)return 'FLASH';
+  return 'COMPLETE';
+}
+function frame(now,scheduleNext=true){
+  const ms=Math.min(C.launchAt,now-start),flowX=clamp((ms-C.siphonStart)/(C.collapseEnd-C.siphonStart),0,1),flowEase=flowX*flowX*(3-2*flowX),flow=.75*flowEase+.25*flowX,collapse=Math.pow(flow,1.14),ann=smooth(C.collapseEnd-180,C.annulusEnd,ms)*(1-smooth(C.annulusEnd,C.diskEnd,ms)),disk=smooth(C.annulusEnd,C.diskEnd,ms)*(1-smooth(C.diskEnd,C.pointEnd,ms)),point=smooth(C.diskEnd,C.pointEnd,ms)*(1-smooth(C.pointEnd,C.flashEnd,ms)),flash=smooth(C.pointEnd,C.pointEnd+70,ms)*(1-smooth(C.pointEnd+90,C.flashEnd,ms));
+  gl.uniform2f(uniforms.res,scene.width,scene.height);
+  gl.uniform2f(uniforms.ctr,C.cx,1.-C.cy);
+  gl.uniform1f(uniforms.H,C.hr*innerWidth/innerHeight);
+  gl.uniform1f(uniforms.flow,flow);
+  gl.uniform1f(uniforms.collapse,collapse);
+  gl.uniform1f(uniforms.ann,ann);
+  gl.uniform1f(uniforms.disk,disk);
+  gl.uniform1f(uniforms.point,point);
+  gl.uniform1f(uniforms.flash,flash);
+  gl.uniform1f(uniforms.showCenter,center.checked?1:0);
+  gl.drawArrays(gl.TRIANGLES,0,6);
+  readout.textContent=(ms/1000).toFixed(3)+' s · '+phaseName(ms);
+  if(scheduleNext&&ms<C.launchAt)rafId=requestAnimationFrame(frame);
+}
+function restartSequence(){
+  if(rafId)cancelAnimationFrame(rafId);
+  paused=false;
+  pause.textContent='PAUSE';
+  pause.setAttribute('aria-pressed','false');
+  start=performance.now();
+  rafId=requestAnimationFrame(frame);
+}
+function togglePause(){
+  if(!paused){
+    paused=true;
+    pauseStartedAt=performance.now();
+    if(rafId)cancelAnimationFrame(rafId);
+    pause.textContent='RESUME';
+    pause.setAttribute('aria-pressed','true');
+  }else{
+    const now=performance.now();
+    start+=now-pauseStartedAt;
+    paused=false;
+    pause.textContent='PAUSE';
+    pause.setAttribute('aria-pressed','false');
+    rafId=requestAnimationFrame(frame);
+  }
+}
+pause.addEventListener('click',togglePause,{passive:true});
+restart.addEventListener('click',restartSequence,{passive:true});
+center.addEventListener('change',()=>{if(paused)frame(pauseStartedAt,false)},{passive:true});
+try{
+  init();
+  resize();
+  addEventListener('resize',resize,{passive:true});
+  restartSequence();
+}catch(e){fail(e.message||String(e))}
+})();</script>
+</body>
+</html>

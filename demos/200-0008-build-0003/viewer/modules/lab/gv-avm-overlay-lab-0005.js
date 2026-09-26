@@ -1,0 +1,41 @@
+((global)=>{
+"use strict";
+const VERSION="0005",LAYER_NAME="GV AVM LAB OVERLAY";
+let overlay=null,rotationOffset=0,rotationSign=1,lastContext=null;
+function finite(x){const n=Number(x);return Number.isFinite(n)?n:null}
+function firstHttps(){for(const v of arguments){const t=String(v||"").trim();if(/^https:\/\//i.test(t))return t}return ""}
+function getDestination(r){return r?.getState?.()?.activeDestination||r?.activeDestination||global.GalaxyRandomGalaxy?.currentDestination||null}
+function imageUrlFor(d){return firstHttps(d?.hdUrl,d?.githubImageUrl,d?.sourceUrl,d?.imageUrl,d?.imageURL,d?.url)}
+function loadPixelDimensions(url){return new Promise((res,rej)=>{const img=new Image();img.decoding="async";img.onload=()=>res({width:img.naturalWidth||img.width||0,height:img.naturalHeight||img.height||0,source:"https"});img.onerror=()=>rej(new Error("AVM LAB IMAGE DIMENSION LOAD FAILED"));img.src=url})}
+function preparedDimensions(d){const img=d?.preparedHdImage;return img instanceof HTMLImageElement&&img.naturalWidth&&img.naturalHeight?{width:img.naturalWidth,height:img.naturalHeight,source:"preparedHdImage"}:null}
+function avmUrlFor(d){
+  const fields=["avmSourceUrl","screenUrl","hdUrl","selectedImageUrl","esaPublicationJpeg","githubImageUrl","imageUrl","imageURL","sourceUrl"];
+  const urls=[];
+  for(const k of fields){
+    const v=d?.[k];
+    if(typeof v==="string" && /^https:\/\//i.test(v.trim()))urls.push(v.trim());
+  }
+  const variants=d?.imageVariants||d?.variants||[];
+  if(Array.isArray(variants)){
+    for(const v of variants){
+      if(typeof v==="string" && /^https:\/\//i.test(v.trim()))urls.push(v.trim());
+      else if(v&&typeof v==="object"){
+        for(const x of Object.values(v)){
+          if(typeof x==="string" && /^https:\/\//i.test(x.trim()))urls.push(x.trim());
+        }
+      }
+    }
+  }
+  const screen=urls.find(u=>/\/screen\//i.test(u));
+  if(screen)return screen;
+  const jpeg=urls.find(u=>/\.(jpg|jpeg)(?:[?#]|$)/i.test(u));
+  if(jpeg)return jpeg;
+  return urls[0]||"";
+}
+function panel(){let p=document.getElementById("gv-avm-overlay-lab");if(p)return p;p=document.createElement("div");p.id="gv-avm-overlay-lab";p.innerHTML="<button id=\"gv-avm-overlay-load\" type=\"button\">AVM LAB OVERLAY</button><label id=\"gv-avm-opacity-label\"><span>OPACITY</span><input id=\"gv-avm-overlay-opacity\" type=\"range\" min=\"0\" max=\"100\" value=\"55\"></label><div id=\"gv-avm-overlay-status\">native AVM 0005</div><div id=\"gv-avm-rotation-controls\"><div id=\"gv-avm-rotation-label\">NATIVE AVM - NO MANUAL WCS</div><input id=\"gv-avm-rotation-offset\" type=\"range\" min=\"-30\" max=\"30\" step=\"1\" value=\"0\"><button id=\"gv-avm-rot-minus5\" type=\"button\">-5</button><button id=\"gv-avm-rot-plus5\" type=\"button\">+5</button><button id=\"gv-avm-rot-sign\" type=\"button\">SIGN +</button><button id=\"gv-avm-rot-reset\" type=\"button\">RESET</button></div>";document.body.appendChild(p);let s=document.getElementById("gv-avm-overlay-lab-style-0005");if(s===null){s=document.createElement("style");s.id="gv-avm-overlay-lab-style-0005";s.textContent=["#gv-avm-overlay-lab{position:fixed;top:106px;left:50%;width:min(680px,calc(100vw - 24px));transform:translateX(-50%);z-index:2147482000;display:grid;grid-template-columns:150px 1fr 110px;grid-template-rows:auto auto auto;align-items:center;gap:7px 10px;padding:8px 10px;border:1px solid rgba(124,203,255,.92);border-radius:10px;background:rgba(2,7,15,.88);color:#DDF8FF;font:700 10px/1.2 system-ui,sans-serif;box-shadow:0 0 12px rgba(88,191,255,.34)}","#gv-avm-overlay-load{grid-column:1;grid-row:1 / span 2;width:150px;height:46px;border:1px solid #7CCBFF;border-radius:7px;background:#08264d;color:#EAF8FF;font:800 10px/1 system-ui,sans-serif}","#gv-avm-opacity-label{grid-column:2 / span 2;grid-row:1 / span 2;display:align-items:center;width:100%;gap:8px}","#gv-avm-overlay-opacity{width:100%;height:36px}","#gv-avm-overlay-status{grid-column:3;grid-row:1;justify-self:end;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#9FE5FF}","#gv-avm-rotation-controls{grid-column:1 / span 3;grid-row:3;display:grid;grid-template-columns:1fr 44px 44px 74px 72px;gap:6px;align-items:center;width:100%}","#gv-avm-rotation-label{grid-column:1 / span 5;color:#9FE5FF;text-align:center;letter-spacing:.7px}","#gv-avm-rotation-offset{grid-column:1;width:100%;height:34px}","#gv-avm-rotation-controls button{height:30px;padding:0 6px;border:1px solid #7CCBFF;border-radius:6px;background:#08264d;color:#EAF8FF;font:800 10px/1 system-ui,sans-serif}"].join("");document.head.appendChild(s)}return p}
+function install({A,aladin,viewerRoot,randomGalaxy}={}){if(A==null)throw new Error("ALADIN A NAMESPACE MISSING");if(aladin==null)throw new Error("ALADIN INSTANCE MISSING");if(viewerRoot==null)throw new Error("VIEWER ROOT MISSING");const p=panel(),button=p.querySelector("#gv-avm-overlay-load"),slider=p.querySelector("#gv-avm-overlay-opacity"),status=p.querySelector("#gv-avm-overlay-status"),rotLabel=p.querySelector("#gv-avm-rotation-label"),rotRange=p.querySelector("#gv-avm-rotation-offset"),minus5=p.querySelector("#gv-avm-rot-minus5"),plus5=p.querySelector("#gv-avm-rot-plus5"),signButton=p.querySelector("#gv-avm-rot-sign"),resetButton=p.querySelector("#gv-avm-rot-reset");const setStatus=t=>{status.textContent=String(t||"")};function updateRot(){rotRange.value=String(rotationOffset);rotLabel.textContent="ROT OFFSET "+rotationOffset+" DEG   SIGN "+rotationSign;signButton.textContent=rotationSign>0?"SIGN +":"SIGN -"}function setRot(v){rotationOffset=Math.max(-30,Math.min(30,Math.round(Number(v)||0)));updateRot();setStatus("rot "+rotationOffset+" press overlay")}slider.addEventListener("input",()=>{const op=Math.max(0,Math.min(1,Number(slider.value)/100));try{overlay?.setOpacity?.(op)}catch(_){}try{overlay?.setAlpha?.(op)}catch(_){}try{overlay?.setOptions?.({opacity:op})}catch(_){}setStatus("opacity "+Math.round(op*100)+"%")});rotRange.addEventListener("input",()=>setRot(rotRange.value));minus5.addEventListener("click",()=>setRot(rotationOffset-5));plus5.addEventListener("click",()=>setRot(rotationOffset+5));signButton.addEventListener("click",()=>{rotationSign=rotationSign>0?-1:1;updateRot();setStatus("sign "+rotationSign+" press overlay")});resetButton.addEventListener("click",()=>{rotationOffset=0;rotationSign=1;updateRot();setStatus("rotation reset")});button.addEventListener("click",async()=>{try{setStatus("loading");const d=getDestination(randomGalaxy);if(d==null)throw new Error("NO ACTIVE DESTINATION");const url=avmUrlFor(d);if(url==="")throw new Error("NO HTTPS HD URL");const op=Math.max(0,Math.min(1,Number(slider.value)/100));overlay=A.image(url,{name:LAYER_NAME,imgFormat:/\.png(?:[?#]|$)/i.test(url)?"png":"jpeg",opacity:op});if(overlay==null)throw new Error("A.image returned empty overlay");if(typeof aladin.setOverlayImageLayer!=="function")throw new Error("ALADIN setOverlayImageLayer unavailable");aladin.setOverlayImageLayer(overlay,LAYER_NAME);lastContext={version:VERSION,destination:d,url,opacity:op,overlay,mode:"native-avm-no-manual-wcs"};global.GalaxyViewerAvmOverlayLab.last=lastContext;setStatus("loaded native AVM");console.info("GV AVM LAB OVERLAY LOADED",lastContext)}catch(e){console.error("GV AVM LAB OVERLAY FAILED",e);setStatus(String(e?.message||e).slice(0,96))}});updateRot();global.GalaxyViewerAvmOverlayLab.instance={panel:p,button,slider,rotRange,signButton,resetButton,get last(){return lastContext}};console.info("GV AVM LAB INSTALLED",VERSION)}
+global.GalaxyViewerAvmOverlayLab=Object.freeze({VERSION,install});
+})(window);
+
+/* GV AR91: hide obsolete manual rotation controls */
+try{const s=document.createElement("style");s.textContent="#gv-avm-rotation-controls{display:none!important}";document.head.appendChild(s)}catch(_){}
