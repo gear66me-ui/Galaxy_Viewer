@@ -84,7 +84,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-009';
-const GV200001_BUILD='0041';
+const GV200001_BUILD='0042';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -1074,21 +1074,24 @@ async function showDestination(destination,{firstTrip=false}={}){
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?7.5:17});
     let zoomInStarted=false,installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&zoomInStarted&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return prepared};
-    const travelPrepared={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,onZoomInStart:()=>{zoomInStarted=true;preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
-    preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
+    // AVM/WCS image center is the camera authority. Resolve it once before flight so the
+    // destination cannot switch asynchronously between catalog RA/Dec and image center.
     const prepared=await preparedPromise;
+    const travelPrepared={imageCenter:prepared.imageCenter,finalFov:prepared.finalFov,rotation:prepared.rotation};
+    const travelPromise=gvFly130H(travelPrepared,{firstHomeTrip:firstTrip,onZoomInStart:()=>{zoomInStarted=true;installWhenReady(prepared)}});
+
     headsUpDisplay.markReady?.(v.destination);
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     if(!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}
     await displayReady;
-    // Reassert the authoritative navigation destination after HD overlay installation.
-    // setOverlayImageLayer may perturb the Aladin camera; the overlay must never own sky centering.
-    aladin.gotoRaDec(v.ra,v.dec);
-    aladin.setFov(v.fov);
-    aladin.setRotation(v.rotation);
-    coordinate?.update(v.ra,v.dec);
+    // Reassert the exact same AVM/WCS image authority after overlay installation.
+    // Catalog RA/Dec is metadata only; it must not recenter the displayed image.
+    const finalRa=Number(prepared.imageCenter[0]),finalDec=Number(prepared.imageCenter[1]);
+    aladin.gotoRaDec(finalRa,finalDec);
+    aladin.setFov(prepared.finalFov);
+    aladin.setRotation(prepared.rotation);
+    coordinate?.update(finalRa,finalDec);
     travelPresentation.end();
     destinationPresentation.arrive(v.destination,{imageUrl:String(v.destination?.hdUrl||directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();return v.destination;
