@@ -83,7 +83,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-007';
-const GV200001_BUILD='0022';
+const GV200001_BUILD='0023';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}?v=GV200001-${GV200001_BUILD}`;
 window.GV_BOOT_CONFIG=Object.freeze({
@@ -817,7 +817,7 @@ const zoomControl=gvControlPanel('gv-spring-zoom','ZOOM','right');
 zoomControl.thumb.style.top='79px';
 const gvFovReadout=document.createElement('div');
 gvFovReadout.innerHTML='<span id="gv-fov-title">FOV</span><span id="gv-fov-value">360.000°</span>';
-Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 116px)',zIndex:'7313',width:'84px',padding:'13px 7px 4px',border:'1px solid rgba(124,203,255,.92)',borderRadius:'6px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 6px rgba(158,230,255,.95),0 0 16px rgba(46,172,255,.72)',font:'400 9px/1.2 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',textAlign:'center',whiteSpace:'pre',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-13px',transform:'translateX(-50%)',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)'});Object.assign(gvFovReadout.querySelector('#gv-fov-value').style,{display:'block',fontVariantNumeric:'tabular-nums',fontFeatureSettings:'"tnum" 1',letterSpacing:'.7px'});
+Object.assign(gvFovReadout.style,{position:'absolute',right:'2px',top:'calc(50% - 116px)',zIndex:'7313',width:'67.2px',padding:'10.4px 5.6px 3.2px',border:'1px solid rgba(124,203,255,.92)',borderRadius:'4.8px',background:'linear-gradient(145deg,rgba(4,20,48,.96),rgba(12,52,116,.96))',boxShadow:'0 0 6px rgba(158,230,255,.95),0 0 16px rgba(46,172,255,.72)',font:'400 7.2px/1.2 "GV Space Age","Space Age",Arial,sans-serif',letterSpacing:'.7px',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)',textAlign:'center',whiteSpace:'pre',pointerEvents:'none'});Object.assign(gvFovReadout.querySelector('#gv-fov-title').style,{position:'absolute',left:'50%',top:'-10.4px',transform:'translateX(-50%)',color:'#8fe7ff',textShadow:'0 0 3px #d8f8ff,0 0 8px rgba(66,195,255,.95)'});Object.assign(gvFovReadout.querySelector('#gv-fov-value').style,{display:'block',fontVariantNumeric:'tabular-nums',fontFeatureSettings:'"tnum" 1',letterSpacing:'.7px'});
 document.getElementById('aladin-cosmic-command-test').appendChild(gvFovReadout);
 function gvSyncFovReadout(){
     try{
@@ -984,11 +984,12 @@ function gvTravelToImageCenter(prepared,durationMs=3000){
     return new Promise(resolve=>{
         const started=performance.now();
         function frame(now){
-            const t=Math.min(1,(now-started)/durationMs);
-            aladin.gotoRaDec((ra0+dra*t+360)%360,dec0+ddec*t);
+            const t=Math.min(1,(now-started)/durationMs),ra=(ra0+dra*t+360)%360,dec=dec0+ddec*t;
+            aladin.gotoRaDec(ra,dec);
+            coordinate?.update(ra,dec);
             aladin.setRotation(rot0+drot*t);
             if(t<1)requestAnimationFrame(frame);
-            else{aladin.gotoRaDec(ra1,dec1);aladin.setRotation(rot1);resolve(prepared)}
+            else{aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);aladin.setRotation(rot1);resolve(prepared)}
         }
         requestAnimationFrame(frame);
     });
@@ -1029,10 +1030,13 @@ function validateDestination(destination){
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination);
     activeDestination=v.destination;
-    if(!firstTrip)await gvTimedZoomToTarget(120,{durationMs:3000,attackMs:500,releaseMs:500});
+    let zoomOut=null;
+    if(!firstTrip)zoomOut=gvTimedZoomToTarget(120,{durationMs:3750,attackMs:500,releaseMs:500});
+    if(!firstTrip)await new Promise(resolve=>setTimeout(resolve,3000));
     const prepared=await preparedPromise;
     if(activeDestination!==v.destination)return v.destination;
-    await gvTravelToImageCenter(prepared,3000);
+    const travel=gvTravelToImageCenter(prepared,3000);
+    if(zoomOut)await Promise.all([zoomOut,travel]);else await travel;
     gvInstallPreparedHd(prepared);
     await gvTimedZoomToTarget(prepared.finalFov,{attackMs:500,releaseMs:500});
     headsUpDisplay.render();return v.destination;
