@@ -99,7 +99,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js?v=0003',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js',
-    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation-0246.js'
+    travelPresentationUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/modules/random-galaxy/gv-random-travel-presentation.js'
 });
 
 
@@ -483,7 +483,7 @@ if(window.GalaxyViewerDiagnostics?.VERSION!=='0019')throw new Error('DIAGNOSTICS
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
-if(window.GalaxyRandomTravelPresentation?.VERSION!=='0246'||typeof window.GalaxyRandomTravelPresentation.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION 0246 EXPORT MISSING');
+if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
