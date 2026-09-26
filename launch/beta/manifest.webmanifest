@@ -1,0 +1,23 @@
+{
+  "id": "/Galaxy_Viewer/launch/beta/12AR-64-launcher",
+  "name": "GALAXY VIEWER BETA 12AR-64",
+  "short_name": "GV 12AR-64",
+  "description": "GALAXY VIEWER BETA 12AR-64",
+  "start_url": "/Galaxy_Viewer/mobile/beta/generic-app.html?source=launcher-pwa&v=12AR-64-launcher-001",
+  "scope": "/Galaxy_Viewer/",
+  "display": "standalone",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/Galaxy_Viewer/viewer/artwork/icon_transparent.png",
+      "sizes": "1536x1536",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

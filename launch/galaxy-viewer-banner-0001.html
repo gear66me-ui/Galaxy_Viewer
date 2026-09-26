@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Web Banner 0001</title>
+<style>
+@font-face{
+  font-family:"Space Age";
+  src:url("../viewer/artwork/Fonts/Space%20Age/space%20age.otf") format("opentype");
+  font-display:swap;
+}
+
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  background:#000;
+}
+body{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  overflow-x:hidden;
+}
+
+.gv-banner{
+  position:relative;
+  width:100%;
+  aspect-ratio:1536/512;
+  min-height:220px;
+  max-height:520px;
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 12% 48%,rgba(35,77,139,.20) 0%,rgba(15,38,79,.09) 22%,transparent 47%),
+    radial-gradient(ellipse at 88% 24%,rgba(80,116,174,.12) 0%,rgba(30,58,105,.055) 24%,transparent 50%),
+    radial-gradient(ellipse at 52% 86%,rgba(14,61,112,.09) 0%,transparent 42%),
+    linear-gradient(180deg,#030712 0%,#020611 50%,#00030a 100%);
+}
+
+.gv-banner::before,
+.gv-banner::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.gv-banner::before{
+  z-index:-3;
+  opacity:.86;
+  background-image:
+    radial-gradient(circle at 3% 12%,rgba(255,255,255,.95) 0 1px,transparent 1.7px),
+    radial-gradient(circle at 7% 69%,rgba(170,207,255,.82) 0 1.2px,transparent 2px),
+    radial-gradient(circle at 12% 31%,rgba(255,255,255,.58) 0 .8px,transparent 1.5px),
+    radial-gradient(circle at 16% 82%,rgba(139,190,255,.66) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 21% 18%,rgba(255,255,255,.72) 0 .7px,transparent 1.4px),
+    radial-gradient(circle at 25% 56%,rgba(192,220,255,.58) 0 1px,transparent 1.6px),
+    radial-gradient(circle at 30% 76%,rgba(255,255,255,.78) 0 .85px,transparent 1.5px),
+    radial-gradient(circle at 34% 9%,rgba(135,181,255,.64) 0 .9px,transparent 1.7px),
+    radial-gradient(circle at 39% 41%,rgba(255,255,255,.52) 0 .7px,transparent 1.4px),
+    radial-gradient(circle at 43% 88%,rgba(174,207,255,.67) 0 .9px,transparent 1.6px),
+    radial-gradient(circle at 47% 22%,rgba(255,255,255,.74) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 52% 64%,rgba(130,185,255,.48) 0 .8px,transparent 1.5px),
+    radial-gradient(circle at 56% 11%,rgba(255,255,255,.65) 0 .75px,transparent 1.5px),
+    radial-gradient(circle at 61% 84%,rgba(191,218,255,.80) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 65% 35%,rgba(255,255,255,.58) 0 .75px,transparent 1.4px),
+    radial-gradient(circle at 70% 68%,rgba(134,185,255,.68) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 74% 13%,rgba(255,255,255,.82) 0 .9px,transparent 1.6px),
+    radial-gradient(circle at 79% 48%,rgba(186,216,255,.62) 0 .8px,transparent 1.5px),
+    radial-gradient(circle at 84% 78%,rgba(255,255,255,.70) 0 1px,transparent 1.7px),
+    radial-gradient(circle at 89% 38%,rgba(151,194,255,.66) 0 .85px,transparent 1.6px),
+    radial-gradient(circle at 94% 17%,rgba(255,255,255,.88) 0 1.05px,transparent 1.8px),
+    radial-gradient(circle at 97% 70%,rgba(188,218,255,.56) 0 .8px,transparent 1.5px),
+    radial-gradient(circle at 10% 93%,rgba(255,255,255,.50) 0 .7px,transparent 1.4px),
+    radial-gradient(circle at 28% 7%,rgba(255,255,255,.46) 0 .65px,transparent 1.3px),
+    radial-gradient(circle at 58% 46%,rgba(255,255,255,.42) 0 .65px,transparent 1.3px),
+    radial-gradient(circle at 76% 91%,rgba(255,255,255,.50) 0 .7px,transparent 1.4px);
+}
+
+.gv-banner::after{
+  z-index:-2;
+  background:
+    radial-gradient(circle at 8% 22%,rgba(211,232,255,.86) 0 1px,rgba(101,171,255,.22) 2px,transparent 6px),
+    linear-gradient(90deg,transparent 6.5%,rgba(175,218,255,.22) 8%,transparent 9.5%),
+    linear-gradient(0deg,transparent 20.5%,rgba(175,218,255,.14) 22%,transparent 23.5%),
+    radial-gradient(circle at 91% 67%,rgba(229,241,255,.90) 0 1px,rgba(105,174,255,.20) 2px,transparent 7px),
+    linear-gradient(90deg,transparent 89.7%,rgba(170,214,255,.18) 91%,transparent 92.3%),
+    linear-gradient(0deg,transparent 65.8%,rgba(170,214,255,.12) 67%,transparent 68.2%);
+  opacity:.78;
+}
+
+.gv-haze{
+  position:absolute;
+  inset:-18% -8%;
+  z-index:-1;
+  opacity:.34;
+  filter:blur(10px);
+  background:
+    radial-gradient(ellipse at 17% 58%,rgba(74,118,205,.28) 0%,rgba(39,74,142,.12) 18%,transparent 43%),
+    radial-gradient(ellipse at 83% 42%,rgba(113,145,203,.20) 0%,rgba(45,79,137,.08) 20%,transparent 45%);
+}
+
+.gv-copy{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(10px,1.7vw,24px);
+  padding:clamp(26px,5vw,72px) clamp(18px,5vw,78px);
+  text-align:center;
+}
+
+.gv-title{
+  margin:0;
+  color:#fff;
+  font-family:"Space Age",sans-serif;
+  font-size:clamp(42px,8.1vw,132px);
+  font-weight:400;
+  line-height:.88;
+  letter-spacing:clamp(.02em,.22vw,.07em);
+  white-space:nowrap;
+  -webkit-text-stroke:clamp(1.5px,.42vw,7px) #0b3dff;
+  paint-order:stroke fill;
+  text-shadow:
+    0 0 .045em #fff,
+    0 0 .10em rgba(181,226,255,.96),
+    0 0 .20em rgba(76,168,255,.76),
+    0 0 .36em rgba(0,70,255,.62),
+    0 0 .62em rgba(0,70,255,.30);
+}
+
+.gv-subtitle{
+  margin:0;
+  color:rgba(236,245,255,.92);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(11px,1.95vw,31px);
+  font-weight:300;
+  line-height:1.2;
+  letter-spacing:clamp(.16em,.48vw,.28em);
+  white-space:nowrap;
+  text-shadow:
+    0 0 5px rgba(255,255,255,.25),
+    0 0 13px rgba(73,147,255,.20);
+}
+
+.gv-rule{
+  width:min(54%,820px);
+  height:1px;
+  margin-top:clamp(-3px,-.3vw,-1px);
+  background:linear-gradient(90deg,transparent,rgba(96,180,255,.17),rgba(185,226,255,.48),rgba(96,180,255,.17),transparent);
+  box-shadow:0 0 12px rgba(30,130,255,.17);
+}
+
+@media (max-width:700px){
+  .gv-banner{min-height:190px;aspect-ratio:16/5.5}
+  .gv-copy{gap:10px;padding:28px 14px}
+  .gv-title{font-size:clamp(34px,10.2vw,66px);letter-spacing:.01em}
+  .gv-subtitle{font-size:clamp(8px,2.45vw,14px);letter-spacing:.11em}
+  .gv-rule{width:68%}
+}
+
+@media (max-width:420px){
+  .gv-banner{min-height:170px}
+  .gv-title{font-size:clamp(31px,9.8vw,44px)}
+  .gv-subtitle{white-space:normal;max-width:94%;font-size:10px;line-height:1.35;letter-spacing:.12em}
+}
+</style>
+</head>
+<body>
+<header class="gv-banner" role="banner" aria-label="Galaxy Viewer">
+  <div class="gv-haze" aria-hidden="true"></div>
+  <div class="gv-copy">
+    <h1 class="gv-title">GALAXY VIEWER</h1>
+    <div class="gv-rule" aria-hidden="true"></div>
+    <p class="gv-subtitle">OVER 2 TRILLION GALAXIES OUT THERE TO EXPLORE.</p>
+  </div>
+</header>
+</body>
+</html>
