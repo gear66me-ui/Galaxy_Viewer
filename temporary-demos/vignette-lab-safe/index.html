@@ -107,6 +107,8 @@ button{box-sizing:border-box}
 'use strict';
 const RAW='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/';
 const MASTER=RAW+'viewer/image-databases/master-database/gv-master-catalog.json';
+const AVM_RUNTIME=RAW+'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json';
+let avmRuntimePromise=null;
 const ids=['sky','zoom','opacity','crossblend','diameter','blend','decay','core','feather','curve','dissolve','dark','block'], C={};
 ids.forEach(k=>C[k]=document.getElementById(k));
 const info=document.getElementById('info'),status=document.getElementById('status');
@@ -120,6 +122,23 @@ function urlOf(r){return r.avmAuthorityUrl||r.avmSourceUrl||r.selectedImageUrl||
 function shuffle(a){for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
 function hash(x,y){let n=(x*374761393+y*668265263)>>>0;n=(n^(n>>>13))*1274126177>>>0;n^=n>>>16;return(n>>>0)/4294967295}
 function cleanWcs(w){let o={};for(const [k,v] of Object.entries(w||{}))if(v!=null&&['string','number','boolean'].includes(typeof v))o[k]=v;let cd=['CD1_1','CD1_2','CD2_1','CD2_2'].every(k=>Number.isFinite(+o[k]));if(String(o.CTYPE1||'').toUpperCase().startsWith('RA---')&&String(o.CTYPE2||'').toUpperCase().startsWith('DEC--')&&!cd&&+o.CDELT1>0&&+o.CDELT2>0)o.CDELT1=-Math.abs(+o.CDELT1);return o}
+async function runtimeAvmRecord(r){
+ if(!avmRuntimePromise)avmRuntimePromise=fetch(AVM_RUNTIME+'?t='+Date.now(),{cache:'no-store'}).then(x=>{if(!x.ok)throw Error('AVM catalog HTTP '+x.status);return x.json()}).then(j=>{
+  const a=Array.isArray(j)?j:j.records;if(!Array.isArray(a))throw Error('AVM catalog invalid');
+  const byId=new Map(),byUrl=new Map();for(const q of a){const id=String(q?.archiveId||'').trim().toLowerCase(),u=String(q?.imageUrl||'').trim().toLowerCase();if(id)byId.set(id,q);if(u)byUrl.set(u,q)}return {byId,byUrl};
+ });
+ const m=await avmRuntimePromise,id=String(r?.archiveId||r?.id||r?.providerId||'').trim().toLowerCase(),u=urlOf(r).trim().toLowerCase();
+ const q=m.byId.get(id)||m.byUrl.get(u);if(!q)throw Error('AVM runtime record missing · '+(id||u));return q;
+}
+function runtimeWcs(record,width,height){
+ const ra=Number(record?.ra),dec=Number(record?.dec),fx=Number(record?.fovXDegrees??record?.fovDegrees),fy=Number(record?.fovYDegrees??record?.fovDegrees),rot=Number(record?.aladinRotation??record?.spatialRotationDeg);
+ if(![ra,dec,fx,fy,rot,width,height].every(Number.isFinite)||fx<=0||fy<=0||width<=0||height<=0)throw Error('AVM runtime WCS invalid');
+ const sx=fx/width,sy=fy/height,t=rot*Math.PI/180,co=Math.cos(t),si=Math.sin(t),rp=record?.referencePixel,rd=record?.referenceDimension;
+ const rw=Number(rd?.[0]),rh=Number(rd?.[1]),rpx=Number(rp?.[0]),rpy=Number(rp?.[1]);
+ const crpix1=Number.isFinite(rpx)&&Number.isFinite(rw)&&rw>0?rpx*(width/rw):(width+1)/2;
+ const crpix2=Number.isFinite(rpy)&&Number.isFinite(rh)&&rh>0?rpy*(height/rh):(height+1)/2;
+ return {NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,CD1_1:-sx*co,CD1_2:-sy*si,CD2_1:-sx*si,CD2_2:sy*co,NAXIS1:width,NAXIS2:height};
+}
 function removeLayer(){try{aladin.removeOverlayImageLayer(LAYER)}catch(_){} layer=null;if(blobUrl){URL.revokeObjectURL(blobUrl);blobUrl=null}}
 async function fetchImageBlob(url){
  const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=vignette-lab-v15'];
@@ -170,7 +189,7 @@ async function makeVignette(url){
    if(hash(xx,yy)<prob*.28)alpha*=0.35;
    d[i+3]=Math.round(d[i+3]*Math.max(0,Math.min(1,alpha)));
  }
- x.putImageData(q,0,0);return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(Error('PNG encode failed')),'image/png'));
+ x.putImageData(q,0,0);const png=await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(Error('PNG encode failed')),'image/png'));return {png,sourceBlob:blob,width:w,height:h,source:fetched.source};
 }
 function cameraSnapshot(){
  let ra=null,dec=null,fov=null,orientation=null;
@@ -214,48 +233,25 @@ function exportPayload(){
  };
 }
 async function installCurrent(){
- const lockedCamera=cameraSnapshot();
- const token=++loadToken,r=current,u=urlOf(r);removeLayer();status.textContent='Reading AVM/WCS from the real image…';
- // First let Aladin parse the real image's AVM metadata, exactly as Random 0194 does.
- const probeName='GV WCS PROBE';
- try{aladin.removeOverlayImageLayer(probeName)}catch(_){}
- await new Promise((resolve,reject)=>{
-  let probe;
-  try{
-   probe=A.image(u,{name:probeName,imgFormat:/\.png(?:[?#]|$)/i.test(u)?'png':'jpeg',opacity:.001,
-    successCallback:(ra,dec,fov,image)=>{
-     if(token!==loadToken)return reject(Error('superseded'));
-     const wcs=cleanWcs(image?.options?.wcs||{});
-     try{aladin.removeOverlayImageLayer(probeName)}catch(_){}
-     if(!Object.keys(wcs).length)return reject(Error('AVM/WCS not found'));
-     if(!rawLayer){
-       aladin.gotoRaDec(Number(ra),Number(dec));
-       // Initial image load only: establish the requested Galaxy Viewer camera.
-       applyCamera();
-     }else{
-       // Filter rebuild: preserve the exact live camera.
-       restoreCamera(lockedCamera);
-     }
-     status.textContent=rawMode?'Installing ORIGINAL image — no filtering…':'Building vignette pixels; WCS is preserved…';
-     makeVignette(u).then(png=>{
-       if(token!==loadToken)throw Error('superseded');
-       blobUrl=URL.createObjectURL(png);
-       rawLayer=A.image(u,{name:LAYER+' RAW',imgFormat:/\.png(?:[?#]|$)/i.test(u)?'png':'jpeg',wcs,opacity:rawMode?1:0,
-         successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
-         errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · ORIGINAL LAYER · '+String(e||'unknown')}
-       });
-       effectLayer=A.image(blobUrl,{name:LAYER+' EFFECT',imgFormat:'png',wcs,opacity:rawMode?0:(val('opacity')/100)*(val('crossblend')/100),
-         successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
-         errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · EFFECT LAYER · '+String(e||'unknown')}
-       });
-       aladin.setOverlayImageLayer(rawLayer,LAYER+' RAW');
-       aladin.setOverlayImageLayer(effectLayer,LAYER+' EFFECT');
-       layer=effectLayer;restoreCamera(lockedCamera);resolve();
-     }).catch(reject);
-    },errorCallback:reject});
-   aladin.setOverlayImageLayer(probe,probeName);
-  }catch(e){reject(e)}
- }).catch(e=>{try{aladin.removeOverlayImageLayer(probeName)}catch(_){}status.dataset.hd='failed';status.textContent='HD LOAD FAILED · '+String(e?.message||e)});
+ const lockedCamera=cameraSnapshot(),token=++loadToken,r=current,u=urlOf(r);removeLayer();status.textContent='Loading AVM runtime geometry + HD image…';
+ try{
+  const [record,raster]=await Promise.all([runtimeAvmRecord(r),makeVignette(u)]);
+  if(token!==loadToken)throw Error('superseded');
+  const wcs=runtimeWcs(record,raster.width,raster.height);
+  const rawUrl=URL.createObjectURL(raster.sourceBlob);blobUrl=URL.createObjectURL(raster.png);
+  rawLayer=A.image(rawUrl,{name:LAYER+' RAW',imgFormat:'jpeg',wcs,opacity:rawMode?1:0,
+   successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
+   errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · ORIGINAL LAYER · '+String(e||'unknown')}
+  });
+  effectLayer=A.image(blobUrl,{name:LAYER+' EFFECT',imgFormat:'png',wcs,opacity:rawMode?0:(val('opacity')/100)*(val('crossblend')/100),
+   successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
+   errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · EFFECT LAYER · '+String(e||'unknown')}
+  });
+  aladin.setOverlayImageLayer(rawLayer,LAYER+' RAW');aladin.setOverlayImageLayer(effectLayer,LAYER+' EFFECT');layer=effectLayer;
+  aladin.gotoRaDec(Number(record.ra),Number(record.dec));document.getElementById('orientinput').value=Number(record?.aladinRotation??record?.spatialRotationDeg)||0;
+  const fy=Number(record?.fovYDegrees??record?.fovDegrees);if(Number.isFinite(fy)&&fy>0){document.getElementById('fovinput').value=fy;baseFov=fy}
+  applyCamera();status.textContent='HD REGISTERING · '+raster.source+' · JSON/CD WCS';
+ }catch(e){status.dataset.hd='failed';status.textContent='HD LOAD FAILED · '+String(e?.message||e)}
 }
 async function loadCatalogs(){
  let m=await(await fetch(MASTER+'?t='+Date.now())).json(),all=[];
