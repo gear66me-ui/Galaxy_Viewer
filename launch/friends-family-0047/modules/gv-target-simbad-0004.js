@@ -9,7 +9,7 @@
   const VERSION='0004';
   const STYLE_ID='gv-target-simbad-0004-style';
   const FONT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
-  const TARGET_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';
+  const TARGET_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0047/assets/runtime-navigation-galaxy-viewer-target-icon.svg';
 
   function installStyles(){
     if(document.getElementById(STYLE_ID))return;
