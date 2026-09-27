@@ -45,19 +45,47 @@ html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;backgrou
 <script>
 (async()=>{
 'use strict';
-const GV_GENERIC_APP_REVISION='GV-FRIENDS-FAMILY-0049-0002';
+const GV_GENERIC_APP_REVISION='GV-FRIENDS-FAMILY-0049-0004';
 const POINTER=Object.freeze({version:'GV-beta-200-013',viewer:'GV-beta-200-013.py',build:'0049'});
-const VIEWER_URL='../../viewer/GV-beta-200-013.py';
 const VIEWER_TIMEOUT_MS=30000;
 const cover=document.getElementById('gv-generic-cover');
 const versionEl=document.getElementById('gv-generic-version');
 const buildEl=document.getElementById('gv-generic-build');
 const errorBox=document.getElementById('gv-generic-error');
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-const LAUNCH_NONCE=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-const freshLaunch=url=>url+(url.includes('?')?'&':'?')+'launch='+encodeURIComponent(LAUNCH_NONCE);
+const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
-const text=async url=>{const response=await fetch(freshLaunch(url),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status+' '+url);return response.text()};
+function fresh(url){return url+(url.includes('?')?'&':'?')+'ff0049='+encodeURIComponent(nonce)}
+function xhrText(url){
+  return new Promise((resolve,reject)=>{
+    try{
+      const xhr=new XMLHttpRequest();
+      xhr.open('GET',fresh(url),true);
+      xhr.timeout=20000;
+      xhr.onload=()=>{xhr.status>=200&&xhr.status<300?resolve(xhr.responseText):reject(new Error('XHR HTTP '+xhr.status+' '+url))};
+      xhr.onerror=()=>reject(new Error('XHR NETWORK '+url));
+      xhr.ontimeout=()=>reject(new Error('XHR TIMEOUT '+url));
+      xhr.send();
+    }catch(error){reject(error)}
+  });
+}
+async function fetchText(url){
+  try{
+    const response=await fetch(fresh(url),{cache:'no-store',mode:'cors'});
+    if(!response.ok)throw new Error('HTTP '+response.status+' '+url);
+    return await response.text();
+  }catch(fetchError){
+    console.warn('GV 0049 fetch fallback to XHR',url,fetchError);
+    return await xhrText(url);
+  }
+}
+async function textAny(urls){
+  let last=null;
+  for(const url of urls){
+    try{return await fetchText(url)}catch(error){last=error;console.warn('GV 0049 viewer source fallback failed',url,error)}
+  }
+  throw last||new Error('GV 0049 viewer source fetch failed');
+}
 function mountHtml(html){
   const template=document.createElement('template');
   template.innerHTML=html;
@@ -78,8 +106,14 @@ function patchViewerSource(source){
 async function prepareViewer(){
   versionEl.textContent='VERSION '+POINTER.version;
   buildEl.textContent='BUILD '+POINTER.build+' ';
-  try{document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION}catch(_){}
-  const source=patchViewerSource(await text(VIEWER_URL));
+  document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION;
+  const viewerCandidates=[
+    new URL('../../viewer/GV-beta-200-013.py',location.href).href,
+    'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/GV-beta-200-013.py',
+    'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3d1e1f8b36efe011d1cded4c0169fd949f6ec47d/viewer/GV-beta-200-013.py',
+    'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-200-013.py'
+  ];
+  const source=patchViewerSource(await textAny(viewerCandidates));
   const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
   const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
   if(!htmlMatch||!jsMatches.length)throw new Error('VIEWER EXTRACTION FAILED: '+POINTER.viewer);
