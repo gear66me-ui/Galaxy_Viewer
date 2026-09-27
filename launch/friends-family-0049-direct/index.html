@@ -21,6 +21,8 @@ html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;backgrou
 function hideParentClose(){try{const button=parent?.document?.getElementById?.('gv-inline-close');if(button){button.style.setProperty('display','none','important');button.style.setProperty('visibility','hidden','important');button.style.setProperty('pointer-events','none','important');button.setAttribute('aria-hidden','true')}}catch(_){}}
 hideParentClose();
 setInterval(hideParentClose,500);
+function installDirectLayoutStyle(){try{if(document.getElementById('gv-ff0049-direct-mobile-layout'))return;const style=document.createElement('style');style.id='gv-ff0049-direct-mobile-layout';style.textContent='#gv-navigation-host{bottom:76px!important;z-index:7300!important}.gvdp-card{bottom:132px!important}#gv-version-readout{bottom:188px!important;z-index:2147482001!important}';document.head.appendChild(style)}catch(_){}}
+installDirectLayoutStyle();
 const VERSION='GV-beta-200-013';
 const BUILD='0049';
 const TIMEOUT=45000;
@@ -84,7 +86,7 @@ function patchSource(src){
   s=s.replace("const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;","const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-ffdirect-${Date.now().toString(36)}`;");
   s=s.replace("destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation.js'","destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0049-hotfix.js'");
   s=s.replace("#gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}","#gv-navigation-host{position:absolute;left:50%;bottom:76px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}");
-  s=s.replace(/Object\.assign\(gvVersionReadout\.style,\{position:'absolute',left:'0',top:'-15px'[\s\S]*?pointerEvents:'none'\}\);/,"Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'132px',zIndex:'2147482001',transform:'translateX(-50%)',display:'block',width:'auto',font:'400 8px/1 \\\"GV Space Age\\\",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'2px 6px',border:'1px solid rgba(124,203,255,.55)',borderRadius:'6px',background:'rgba(0,8,20,.58)',boxShadow:'0 0 6px rgba(88,191,255,.45)',pointerEvents:'none'});");
+  s=s.replace(/Object\.assign\(gvVersionReadout\.style,\{position:'absolute',left:'0',top:'-15px'[\s\S]*?pointerEvents:'none'\}\);/,"Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'188px',zIndex:'2147482001',transform:'translateX(-50%)',display:'block',width:'auto',font:'400 8px/1 \\\"GV Space Age\\\",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'2px 6px',border:'1px solid rgba(124,203,255,.55)',borderRadius:'6px',background:'rgba(0,8,20,.58)',boxShadow:'0 0 6px rgba(88,191,255,.45)',pointerEvents:'none'});");
   return s;
 }
 function extract(src){
@@ -99,12 +101,14 @@ try{
   if(declared!==BUILD)throw new Error('Build mismatch: expected '+BUILD+' got '+declared);
   const parts=extract(source);
   mountHtml(parts.html);
+  installDirectLayoutStyle();
   for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
   const deadline=performance.now()+TIMEOUT;
   while(performance.now()<deadline){
     hideParentClose();
+    installDirectLayoutStyle();
     const root=document.getElementById('aladin-cosmic-command-test');
-    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();if(cover.isConnected)cover.remove();return}
+    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();installDirectLayoutStyle();if(cover.isConnected)cover.remove();return}
     await sleep(120);
   }
   throw new Error('Viewer startup timeout after loading Build 49 source');
