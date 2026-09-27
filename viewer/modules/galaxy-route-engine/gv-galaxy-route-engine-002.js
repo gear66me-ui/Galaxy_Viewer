@@ -30,6 +30,7 @@ function normalizeRaw(r,i,catalogKey,meta){
  const distanceMatch=distanceDisplay.match(/([0-9]+(?:\.[0-9]+)?)\s*(billion|million|thousand)\s+light\s*-?\s*years?/i);
  const distanceScale=distanceMatch?(distanceMatch[2].toLowerCase()==='billion'?1000:distanceMatch[2].toLowerCase()==='thousand'?0.001:1):null;
  const distanceMly=finite(science.distanceMly??r?.distanceMly??r?.distance_mly)??(distanceMatch?Number(distanceMatch[1])*distanceScale:null);
+ const distanceForDisplay=distanceMly!==null&&distanceMly>0&&distanceMly<1?`${distanceDisplay.toUpperCase().includes('EST.')?'EST. ':''}${Number((distanceMly*1000).toFixed(3)).toString()} KLY`:distanceDisplay;
  const ageGyr=finite(science.ageGyr??r?.ageGyr);
  const ageYears=finite(r?.ageYears)??(ageGyr!==null?ageGyr*1e9:null);
  const sizeKly=Array.isArray(science.sizeKly)?science.sizeKly.map(finite).filter(v=>v!==null):[];
@@ -45,7 +46,7 @@ function normalizeRaw(r,i,catalogKey,meta){
   commonName,
   pseudonym:clean(r?.pseudonym??r?.pseudo??r?.alias??r?.alternateName??commonName),
   ra:finite(r?.ra),dec:finite(r?.dec),
-  distance:distanceDisplay,
+  distance:distanceForDisplay,
   distanceMly,
   distanceMethod:clean(science.distanceMethod),
   distanceEstimated:science.distanceEstimated??null,
