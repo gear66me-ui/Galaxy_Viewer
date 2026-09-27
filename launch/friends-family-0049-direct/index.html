@@ -8,9 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>GALAXY VIEWER — BUILD 0049 DIRECT</title>
 <style>
-@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:swap}
-@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:swap}
-html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif!important}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:Arial,sans-serif}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font-size:17px;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
 </style>
 </head>
 <body>
@@ -18,6 +16,7 @@ html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;backgrou
 <script>
 (async()=>{
 'use strict';
+const VERSION='GV-beta-200-013';
 const BUILD='0049';
 const TIMEOUT=45000;
 const cover=document.getElementById('cover');
@@ -63,22 +62,6 @@ async function loadSource(){
   }
   throw new Error(errors.join('\n'));
 }
-function installViewerFixStyle(){
-  if(document.getElementById('gv-ff0049-visibility-fix'))return;
-  const style=document.createElement('style');
-  style.id='gv-ff0049-visibility-fix';
-  style.textContent=`
-@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:swap}
-@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:swap}
-#aladin-cosmic-command-test,#aladin-cosmic-command-test *{font-family:"GV Space Age","Space Age",Arial,sans-serif!important}
-#gv-version-readout{font:400 8px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:.3px!important;color:#9edcff!important;text-shadow:0 0 5px rgba(141,218,255,.9),0 0 10px rgba(88,191,255,.65)!important;top:-15px!important;display:block!important;visibility:visible!important;opacity:1!important}
-#gv-navigation-host{position:fixed!important;left:50%!important;bottom:max(104px,calc(env(safe-area-inset-bottom) + 92px))!important;z-index:2147483000!important;display:flex!important;gap:5px!important;width:min(430px,calc(100vw - 20px))!important;transform:translateX(-50%)!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;overflow:visible!important}
-#gv-navigation-host .gv-galaxy-navigator,#gv-random-galaxy,.gv-galaxy-history{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
-#gv-random-galaxy{min-height:42px!important;height:42px!important;flex:1 1 auto!important}
-@media(max-height:740px){#gv-navigation-host{bottom:max(82px,calc(env(safe-area-inset-bottom) + 70px))!important}}
-`;
-  document.head.appendChild(style);
-}
 function mountHtml(html){
   const t=document.createElement('template');
   t.innerHTML=html;
@@ -90,13 +73,10 @@ function mountHtml(html){
       document.body.appendChild(s);
     }else document.body.appendChild(node);
   }
-  installViewerFixStyle();
 }
 function patchSource(src){
   let s=String(src||'');
   s=s.replace("const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;","const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-ffdirect-${Date.now().toString(36)}`;");
-  s=s.replace("#gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}","#gv-navigation-host{position:fixed;left:50%;bottom:max(104px,calc(env(safe-area-inset-bottom) + 92px));z-index:2147483000;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto;visibility:visible;opacity:1;overflow:visible}");
-  s=s.replace("font:'400 8px/1 \"GV Space Age\",sans-serif'","font:'400 8px/1 \"GV Space Age\",\"Space Age\",Arial,sans-serif'");
   return s;
 }
 function extract(src){
@@ -105,42 +85,17 @@ function extract(src){
   if(!html||!js.length)throw new Error('Viewer extraction failed from Build 49 source');
   return {html,js};
 }
-function keepControlsVisible(){
-  installViewerFixStyle();
-  const host=document.getElementById('gv-navigation-host');
-  if(host){
-    host.style.setProperty('position','fixed','important');
-    host.style.setProperty('left','50%','important');
-    host.style.setProperty('bottom','max(104px, calc(env(safe-area-inset-bottom) + 92px))','important');
-    host.style.setProperty('z-index','2147483000','important');
-    host.style.setProperty('display','flex','important');
-    host.style.setProperty('visibility','visible','important');
-    host.style.setProperty('opacity','1','important');
-    host.style.setProperty('pointer-events','auto','important');
-  }
-  const readout=document.getElementById('gv-version-readout');
-  if(readout){
-    readout.style.setProperty('font','400 8px/1 "GV Space Age","Space Age",Arial,sans-serif','important');
-    readout.style.setProperty('display','block','important');
-    readout.style.setProperty('visibility','visible','important');
-    readout.style.setProperty('opacity','1','important');
-  }
-}
 try{
   const source=patchSource(await loadSource());
   const declared=(source.match(/const GV200001_BUILD='(\d{4})'/)||[])[1]||'';
   if(declared!==BUILD)throw new Error('Build mismatch: expected '+BUILD+' got '+declared);
   const parts=extract(source);
   mountHtml(parts.html);
-  installViewerFixStyle();
   for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
-  const interval=setInterval(keepControlsVisible,250);
   const deadline=performance.now()+TIMEOUT;
   while(performance.now()<deadline){
-    keepControlsVisible();
     const root=document.getElementById('aladin-cosmic-command-test');
-    const nav=document.getElementById('gv-random-galaxy');
-    if(root&&root.querySelector('canvas')&&nav){await sleep(1800);keepControlsVisible();if(cover.isConnected)cover.remove();clearInterval(interval);return}
+    if(root&&root.querySelector('canvas')){await sleep(1600);if(cover.isConnected)cover.remove();return}
     await sleep(120);
   }
   throw new Error('Viewer startup timeout after loading Build 49 source');
