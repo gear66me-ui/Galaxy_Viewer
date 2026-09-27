@@ -16,8 +16,10 @@ const BASE='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/GV-beta-200-013.p
 const H5='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js';
 const H7='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0007.js';
 const D19='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/diagnostics/gv-diagnostics-0019.js';
+const PROVIDER_BROWSER='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/provider-browser/gv-provider-browser-0001.js';
 const text=async url=>{const r=await fetch(url+(url.includes('?')?'&':'?')+'v=gv014-0001-'+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+url);return r.text()};
 function mountHtml(html){const t=document.createElement('template');t.innerHTML=html;for(const n of [...t.content.childNodes])document.body.appendChild(n)}
+function loadExternalScript(url){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=url+(url.includes('?')?'&':'?')+'v=gv014-provider-browser-'+Date.now();s.async=true;s.onload=()=>resolve(s);s.onerror=()=>reject(new Error('SCRIPT LOAD FAILED: '+url));document.head.appendChild(s);});}
 function patch(s){
  s=String(s||'').replaceAll('GV-beta-200-013','GV-beta-200-014');
  s=s.replaceAll("const GV200001_BUILD='0049';","const GV200001_BUILD='0001';");
@@ -36,6 +38,9 @@ try{
  if(!html||!scripts.length)throw new Error('GV014 extraction failed');
  mountHtml(html);
  for(const js of scripts){const el=document.createElement('script');el.textContent=js;document.body.appendChild(el)}
+ window.GV_PROVIDER_BROWSER_AUTO_OPEN=true;
+ window.GV_PROVIDER_BROWSER_DELAY_MS=3200;
+ await loadExternalScript(PROVIDER_BROWSER);
 }catch(e){console.error(e);const p=document.createElement('pre');p.textContent='GV014 FAILED\n\n'+String(e?.stack||e);Object.assign(p.style,{position:'fixed',inset:'0',zIndex:'2147483647',background:'#000',color:'#FFD166',padding:'20px',margin:'0',whiteSpace:'pre-wrap'});document.body.appendChild(p)}
 })();
 """))
