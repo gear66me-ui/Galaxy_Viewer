@@ -90,7 +90,7 @@ button{box-sizing:border-box}
 <div class="c"><span>Zoom / FoV</span><input id="zoom" type="range" min="25" max="800" value="125"><output></output></div>
 <div class="c"><span>HD opacity</span><input id="opacity" type="range" min="0" max="100" value="100"><output></output></div>
 <div class="c"><span>Image ↔ DSS</span><input id="crossblend" type="range" min="0" max="100" value="100"><output></output></div>
-<div class="c"><span>Vignette dia.</span><input id="diameter" type="range" min="65" max="150" value="112"><output></output></div>
+<div class="c"><span>Vignette dia.</span><input id="diameter" type="range" min="65" max="150" value="125"><output></output></div>
 <div class="c"><span>Blend width</span><input id="blend" type="range" min="2" max="55" value="24"><output></output></div>
 <div class="c"><span>Exp decay</span><input id="decay" type="range" min="10" max="500" value="175"><output></output></div>
 <div class="c"><span>Opaque core</span><input id="core" type="range" min="15" max="95" value="72"><output></output></div>
@@ -112,7 +112,7 @@ let avmRuntimePromise=null;
 const ids=['sky','zoom','opacity','crossblend','diameter','blend','decay','core','feather','curve','dissolve','dark','block'], C={};
 ids.forEach(k=>C[k]=document.getElementById(k));
 const info=document.getElementById('info'),status=document.getElementById('status');
-let aladin,records=[],order=[],pos=-1,current=null,baseFov=.25,layer=null,rawLayer=null,effectLayer=null,hdOn=true,blobUrl=null,loadToken=0,rawMode=false,hardMode=false;
+let aladin,records=[],order=[],pos=-1,current=null,baseFov=.25,layer=null,rawLayer=null,effectLayer=null,hdOn=true,blobUrl=null,loadToken=0,rawMode=false,hardMode=true;
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const LAYER='GV VIGNETTE WCS ORIGINAL-TILE CURATION LAB';
 const val=k=>+C[k].value;
@@ -328,7 +328,7 @@ function applyCamera(){
  try{if(Number.isFinite(r)&&typeof aladin.setRotation==='function')aladin.setRotation(r)}catch(_){}
 }
 
-function show(n){rawLayer=null;effectLayer=null;layer=null;if(!records.length)return;pos=(n+order.length)%order.length;current=records[order[pos]];rawMode=false;hardMode=false;document.getElementById('fovinput').value=recordFov(current);document.getElementById('orientinput').value=recordOrientation(current);setFilterButton();document.getElementById('hard').textContent='EDGE BLEND';loadImageSettings();info.textContent=`${current.name||current.displayName||current.archiveId||'Galaxy'} · ${(current._provider||'').toUpperCase()} · AR ${Number(current._aspectRatio).toFixed(3)} · ${pos+1}/${records.length}`;installCurrent()}
+function show(n){rawLayer=null;effectLayer=null;layer=null;if(!records.length)return;pos=(n+order.length)%order.length;current=records[order[pos]];rawMode=false;hardMode=true;document.getElementById('fovinput').value=recordFov(current);document.getElementById('orientinput').value=recordOrientation(current);setFilterButton();document.getElementById('hard').textContent='EDGE ✓';loadImageSettings();info.textContent=`${current.name||current.displayName||current.archiveId||'Galaxy'} · ${(current._provider||'').toUpperCase()} · AR ${Number(current._aspectRatio).toFixed(3)} · ${pos+1}/${records.length}`;installCurrent()}
 function toggle(){hdOn=!hdOn;if(layer)try{layer.setOpacity(hdOn?val('opacity')/100:0)}catch(_){}}
 document.getElementById('next').onclick=()=>show(pos+1);document.getElementById('back').onclick=()=>show(pos-1);document.getElementById('random').onclick=()=>show(Math.floor(Math.random()*order.length));document.getElementById('toggle').onclick=toggle;document.getElementById('x').onclick=toggle;
 document.getElementById('ab').onclick=()=>{rawMode=!rawMode;applyFilterVisibility()};
