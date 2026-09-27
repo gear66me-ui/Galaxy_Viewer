@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GALAXY VIEWER — APK STYLE 049</title>
+<style>
+@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:block}
+@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:block}
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif;touch-action:manipulation}
+#launcher{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(circle at center,#071a35 0,#000 56%,#000 100%);text-align:center;padding:24px;box-sizing:border-box}
+#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain;filter:drop-shadow(0 0 20px rgba(93,202,255,.75))}
+.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.sub{font-size:10px;color:#78ffab;text-shadow:0 0 8px #35ff8b}.small{font-size:8px;color:#8fdcff;text-shadow:0 0 8px #058cff}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite;display:none}@keyframes r{to{transform:rotate(360deg)}}
+#launchBtn{margin-top:10px;padding:14px 22px;border:1px solid rgba(132,222,255,.95);border-radius:14px;background:linear-gradient(180deg,#1d79c4,#08285e);box-shadow:0 0 18px rgba(72,190,255,.8),inset 0 0 18px rgba(153,231,255,.35);color:#fff;font:400 18px/1 "GV Space Age","Space Age",Arial,sans-serif;letter-spacing:1px;text-shadow:0 0 10px #8ee9ff}
+#launchBtn:active{transform:scale(.98)}
+#status{min-height:14px}.loading #launchBtn{display:none}.loading .spin{display:block}
+#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
+</style>
+</head>
+<body>
+<div id="launcher">
+  <img id="logo" src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER">
+  <div class="label">VERSION GV-beta-200-013</div>
+  <div class="label">BUILD 0049</div>
+  <button id="launchBtn" type="button">LAUNCH APP</button>
+  <div class="spin"></div>
+  <div id="status" class="label sub">APK STYLE PORTAL 049</div>
+  <div class="label small">tap once to enter fullscreen, then the app loads cleanly</div>
+</div>
+<div id="err"></div>
+<script>
+(()=>{
+'use strict';
+const BUILD='0049';
+const TIMEOUT=45000;
+const launcher=document.getElementById('launcher');
+const button=document.getElementById('launchBtn');
+const status=document.getElementById('status');
+const err=document.getElementById('err');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+const candidates=[
+  '../../viewer/GV-beta-200-013.py',
+  'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/GV-beta-200-013.py',
+  'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3d1e1f8b36efe011d1cded4c0169fd949f6ec47d/viewer/GV-beta-200-013.py',
+  'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-200-013.py'
+];
+function fail(message){launcher.style.display='none';err.style.display='block';err.textContent='GALAXY VIEWER APK PORTAL FAILED TO LOAD\n\n'+message}
+function bust(url){return url+(url.includes('?')?'&':'?')+'apk049='+encodeURIComponent(nonce)}
+async function enterFullscreen(){
+  const el=document.documentElement;
+  try{if(el.requestFullscreen)await el.requestFullscreen()}catch(_){ }
+  try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(()=>{})}catch(_){ }
+}
+async function fetchText(url){
+  const u=bust(url);
+  try{
+    const r=await fetch(u,{cache:'no-store',mode:url.startsWith('http')?'cors':'same-origin'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return await r.text();
+  }catch(fetchError){
+    return await new Promise((resolve,reject)=>{
+      try{
+        const x=new XMLHttpRequest();
+        x.open('GET',u,true);
+        x.timeout=20000;
+        x.onload=()=>x.status>=200&&x.status<300?resolve(x.responseText):reject(new Error('XHR HTTP '+x.status));
+        x.onerror=()=>reject(new Error('XHR network failure after fetch failure: '+fetchError.message));
+        x.ontimeout=()=>reject(new Error('XHR timeout after fetch failure: '+fetchError.message));
+        x.send();
+      }catch(xhrError){reject(new Error('FETCH '+fetchError.message+' / XHR '+xhrError.message))}
+    });
+  }
+}
+async function loadSource(){
+  const errors=[];
+  for(const url of candidates){
+    status.textContent='LOADING BUILD 0049';
+    try{
+      const text=await fetchText(url);
+      if(text.includes("const GV200001_BUILD='0049'"))return text;
+      errors.push(url+' :: fetched but Build 0049 marker missing');
+    }catch(e){errors.push(url+' :: '+(e&&e.message?e.message:String(e)))}
+  }
+  throw new Error(errors.join('\n'));
+}
+function mountHtml(html){
+  const t=document.createElement('template');
+  t.innerHTML=html;
+  for(const node of [...t.content.childNodes]){
+    if(node.nodeName==='SCRIPT'){
+      const s=document.createElement('script');
+      for(const a of [...node.attributes])s.setAttribute(a.name,a.value);
+      s.textContent=node.textContent;
+      document.body.appendChild(s);
+    }else document.body.appendChild(node);
+  }
+}
+function extract(src){
+  const html=(src.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/)||[])[1];
+  const js=[...src.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)].map(m=>m[1]);
+  if(!html||!js.length)throw new Error('Viewer extraction failed from Build 49 source');
+  return {html,js};
+}
+async function launch(){
+  try{
+    button.disabled=true;
+    launcher.classList.add('loading');
+    status.textContent='ENTERING FULLSCREEN';
+    await enterFullscreen();
+    await sleep(300);
+    status.textContent='STARTING SPLASH';
+    const source=await loadSource();
+    const declared=(source.match(/const GV200001_BUILD='(\d{4})'/)||[])[1]||'';
+    if(declared!==BUILD)throw new Error('Build mismatch: expected '+BUILD+' got '+declared);
+    const parts=extract(source);
+    mountHtml(parts.html);
+    status.textContent='GALAXY VIEWER SPLASH';
+    await sleep(350);
+    for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
+    await sleep(350);
+    if(launcher.isConnected)launcher.remove();
+    const deadline=performance.now()+TIMEOUT;
+    while(performance.now()<deadline){
+      const root=document.getElementById('aladin-cosmic-command-test');
+      if(root&&root.querySelector('canvas'))return;
+      await sleep(160);
+    }
+    throw new Error('Viewer startup timeout after loading clean Build 49 source');
+  }catch(e){console.error(e);fail(e&&e.stack?e.stack:String(e))}
+}
+button.addEventListener('click',launch,{once:true});
+})();
+</script>
+</body>
+</html>
