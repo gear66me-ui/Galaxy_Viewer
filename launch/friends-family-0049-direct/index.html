@@ -4,116 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>GALAXY VIEWER — BUILD 0049 DIRECT</title>
+<meta http-equiv="refresh" content="0;url=./apk-confirmed-splash.html?v=direct-confirmed-splash">
+<title>GALAXY VIEWER — BUILD 0049</title>
 <style>
-@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:block}
-@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:block}
-html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}#gv-web-debug{position:fixed;left:5px;top:5px;z-index:2147483000;padding:2px 5px;border:1px solid rgba(120,255,171,.75);border-radius:5px;background:rgba(0,12,20,.72);color:#78ffab;font:700 9px/1 monospace;letter-spacing:.4px;pointer-events:none;text-shadow:0 0 6px rgba(120,255,171,.8)}
+html,body{margin:0;width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Arial,sans-serif}a{color:#78ffab}
 </style>
+<script>
+location.replace('./apk-confirmed-splash.html?v=direct-confirmed-splash');
+</script>
 </head>
 <body>
-<div id="cover"><img id="logo" src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER"><div class="label">VERSION GV-beta-200-013</div><div class="label">BUILD 0049</div><div class="spin"></div></div><div id="err"></div><div id="gv-web-debug">WEB 03</div>
-<script>
-(async()=>{
-'use strict';
-function hideParentClose(){try{const button=parent?.document?.getElementById?.('gv-inline-close');if(button){button.style.setProperty('display','none','important');button.style.setProperty('visibility','hidden','important');button.style.setProperty('pointer-events','none','important');button.setAttribute('aria-hidden','true')}}catch(_){}}
-hideParentClose();
-setInterval(hideParentClose,500);
-function repairDirectRandom(){try{const host=document.getElementById('gv-navigation-host');if(!host)return;host.style.setProperty('position','fixed','important');host.style.setProperty('left','50%','important');host.style.setProperty('right','auto','important');host.style.setProperty('bottom','128px','important');host.style.setProperty('transform','translateX(-50%)','important');host.style.setProperty('z-index','2147482000','important');host.style.setProperty('pointer-events','auto','important');host.style.setProperty('visibility','visible','important');host.style.setProperty('opacity','1','important')}catch(_){}}
-function startDirectRandomRepair(){try{if(window.__gvFF0049RandomLiftWeb03)return;window.__gvFF0049RandomLiftWeb03=true;repairDirectRandom();setInterval(repairDirectRandom,200);new MutationObserver(repairDirectRandom).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});window.addEventListener('resize',repairDirectRandom,{passive:true});window.addEventListener('pageshow',repairDirectRandom,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)repairDirectRandom()},{passive:true})}catch(_){}}
-const VERSION='GV-beta-200-013';
-const BUILD='0049';
-const TIMEOUT=45000;
-const cover=document.getElementById('cover');
-const err=document.getElementById('err');
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-const candidates=[
-  '../../viewer/GV-beta-200-013.py',
-  'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/GV-beta-200-013.py',
-  'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3d1e1f8b36efe011d1cded4c0169fd949f6ec47d/viewer/GV-beta-200-013.py',
-  'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-200-013.py'
-];
-function bust(url){return url+(url.includes('?')?'&':'?')+'ffdirect='+encodeURIComponent(nonce)}
-function fail(message){err.style.display='block';err.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+message}
-async function fetchText(url){
-  const u=bust(url);
-  try{
-    const r=await fetch(u,{cache:'no-store',mode:url.startsWith('http')?'cors':'same-origin'});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    return await r.text();
-  }catch(fetchError){
-    return await new Promise((resolve,reject)=>{
-      try{
-        const x=new XMLHttpRequest();
-        x.open('GET',u,true);
-        x.timeout=20000;
-        x.onload=()=>x.status>=200&&x.status<300?resolve(x.responseText):reject(new Error('XHR HTTP '+x.status));
-        x.onerror=()=>reject(new Error('XHR network failure after fetch failure: '+fetchError.message));
-        x.ontimeout=()=>reject(new Error('XHR timeout after fetch failure: '+fetchError.message));
-        x.send();
-      }catch(xhrError){reject(new Error('FETCH '+fetchError.message+' / XHR '+xhrError.message))}
-    });
-  }
-}
-async function loadSource(){
-  const errors=[];
-  for(const url of candidates){
-    try{
-      const text=await fetchText(url);
-      if(text.includes("const GV200001_BUILD='0049'"))return text;
-      errors.push(url+' :: fetched but build marker missing');
-    }catch(e){errors.push(url+' :: '+(e&&e.message?e.message:String(e)))}
-  }
-  throw new Error(errors.join('\n'));
-}
-function mountHtml(html){
-  const t=document.createElement('template');
-  t.innerHTML=html;
-  for(const node of [...t.content.childNodes]){
-    if(node.nodeName==='SCRIPT'){
-      const s=document.createElement('script');
-      for(const a of [...node.attributes])s.setAttribute(a.name,a.value);
-      s.textContent=node.textContent;
-      document.body.appendChild(s);
-    }else document.body.appendChild(node);
-  }
-}
-function patchSource(src){
-  let s=String(src||'');
-  s=s.replace("const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;","const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-ffdirect-${Date.now().toString(36)}`;");
-  s=s.replace("destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation.js'","destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0049-hotfix.js'");
-  s=s.replace(/Object\.assign\(gvVersionReadout\.style,\{position:'absolute',left:'0',top:'-15px'[\s\S]*?pointerEvents:'none'\}\);/,"Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'58px',zIndex:'2147482001',transform:'translateX(-50%)',display:'block',width:'auto',font:'400 8px/1 \\\"GV Space Age\\\",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'2px 6px',border:'1px solid rgba(124,203,255,.55)',borderRadius:'6px',background:'rgba(0,8,20,.58)',boxShadow:'0 0 6px rgba(88,191,255,.45)',pointerEvents:'none'});");
-  return s;
-}
-function extract(src){
-  const html=(src.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/)||[])[1];
-  const js=[...src.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)].map(m=>m[1]);
-  if(!html||!js.length)throw new Error('Viewer extraction failed from Build 49 source');
-  return {html,js};
-}
-try{
-  const source=patchSource(await loadSource());
-  const declared=(source.match(/const GV200001_BUILD='(\d{4})'/)||[])[1]||'';
-  if(declared!==BUILD)throw new Error('Build mismatch: expected '+BUILD+' got '+declared);
-  const parts=extract(source);
-  mountHtml(parts.html);
-  startDirectRandomRepair();
-  for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
-  startDirectRandomRepair();
-  const deadline=performance.now()+TIMEOUT;
-  while(performance.now()<deadline){
-    hideParentClose();
-    repairDirectRandom();
-    const root=document.getElementById('aladin-cosmic-command-test');
-    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();repairDirectRandom();if(cover.isConnected)cover.remove();return}
-    await sleep(120);
-  }
-  throw new Error('Viewer startup timeout after loading Build 49 source');
-}catch(e){console.error(e);fail(e&&e.stack?e.stack:String(e))}
-})();
-</script>
+<div>
+<div>GALAXY VIEWER</div>
+<div>BUILD 0049</div>
+<div><a href="./apk-confirmed-splash.html?v=direct-confirmed-splash">Launch App</a></div>
+</div>
 </body>
 </html>
