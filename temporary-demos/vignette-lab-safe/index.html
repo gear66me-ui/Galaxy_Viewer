@@ -405,7 +405,7 @@ document.getElementById('importfile').onchange=async e=>{
  finally{e.target.value=''}
 };
 document.getElementById('reset').onclick=()=>{if(!current)return;localStorage.removeItem(imageKey(current));status.textContent='THIS IMAGE SETTINGS CLEARED.'};
-ids.forEach(k=>C[k].addEventListener('input',()=>{outputs();if(k==='sky')document.getElementById('aladin').style.opacity=val('sky')/100;else if(k==='zoom'&&aladin)commandVerticalFov(baseFov*(val('zoom')/100));else if(k==='opacity'&&layer)try{layer.setOpacity(val('opacity')/100)}catch(_){} }));
+ids.forEach(k=>C[k].addEventListener('input',()=>{outputs();if(k==='sky')document.getElementById('aladin').style.opacity=val('sky')/100;else if(k==='zoom'&&aladin)commandVerticalFov(baseFov*(val('zoom')/100));else if(k==='opacity'||k==='crossblend')applyFilterVisibility()}));
 document.getElementById('fovinput').addEventListener('change',applyCamera);
 document.getElementById('orientinput').addEventListener('change',applyCamera);
 // expensive pixel controls rebuild on change, not every finger movement
