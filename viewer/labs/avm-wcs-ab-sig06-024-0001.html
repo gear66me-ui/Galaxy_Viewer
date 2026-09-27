@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GV AVM WCS A/B — sig06-024</title>
+<link rel="stylesheet" href="../../aladin-source-clone/src/css/aladin.css">
+<style>html,body,#aladin{margin:0;width:100%;height:100%;overflow:hidden;background:#000}.p{position:fixed;left:8px;right:8px;top:8px;z-index:20;padding:9px;border-radius:9px;background:#06152de8;color:#dff8ff;font:11px/1.35 monospace}.b{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}button{padding:7px;border:1px solid #7ccbff;border-radius:6px;background:#0b3766;color:white}button.on{border-color:#78ffab;background:#07532f}</style></head>
+<body><div id="aladin"></div><div class="p"><b>GV AVM WCS A/B · sig06-024 · LAB ONLY</b><div id="m">loading…</div><div class="b"><button id="a">A CURRENT 49</button><button id="b">B WCS ROT ONLY</button><button id="c">C CAMERA ROT ONLY</button><button id="d">D AVM SCALE</button></div></div>
+<script type="module">
+import A from '../../aladin-source-clone/dist/aladin.js';
+const R={ra:10.687168887017261,dec:41.27243920621815,fovX:2.572404200320826,fovY:.8343868267527847,rot:53.0381859266,refPix:[3715,1205],refDim:[7430,2410],scale:[-.0003462186003123588,.0003462186003123588]};
+const URL='https://astropix.org/archive/spitzer/sig06-024/spitzer_sig06-024_320.jpg';
+const PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
+await A.init;const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'M 31',fov:3,projection:'TAN',cooFrame:'ICRS',showReticle:true});
+let layer,obj,w,h;
+async function raster(){for(const u of [URL,PROXY+encodeURIComponent(URL)+'&consumer=gv-wcs-ab-0001'])try{const q=await fetch(u,{mode:'cors',cache:'no-store'});if(!q.ok)continue;const b=await q.blob(),im=await createImageBitmap(b);w=im.width;h=im.height;const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0);im.close?.();const out=await new Promise(r=>c.toBlob(r,'image/png'));obj=URL.createObjectURL(out);return}catch(e){}throw Error('image load failed')}
+function wcs(rot,useAvmScale=false){const t=rot*Math.PI/180,c=Math.cos(t),s=Math.sin(t);let sx,sy;if(useAvmScale){sx=Math.abs(R.scale[0])*R.refDim[0]/w;sy=Math.abs(R.scale[1])*R.refDim[1]/h}else{sx=R.fovX/w;sy=R.fovY/h}return {NAXIS:2,NAXIS1:w,NAXIS2:h,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,LONPOLE:180,LATPOLE:R.dec,CRVAL1:R.ra,CRVAL2:R.dec,CRPIX1:R.refPix[0]*(w/R.refDim[0]),CRPIX2:R.refPix[1]*(h/R.refDim[1]),CD1_1:-sx*c,CD1_2:-sy*s,CD2_1:-sx*s,CD2_2:sy*c}}
+function show(mode){try{aladin.removeImageLayer?.('TEST')}catch(e){}let wr=R.rot,cam=R.rot,avm=false;if(mode==='b')cam=0;if(mode==='c')wr=0;if(mode==='d')avm=true;const W=wcs(wr,avm);layer=A.image(obj,{name:'TEST',imgFormat:'png',wcs:W,opacity:.82});aladin.setOverlayImageLayer(layer,'TEST');aladin.gotoRaDec(R.ra,R.dec);aladin.setFov(R.fovX);aladin.setRotation(cam);document.querySelectorAll('button').forEach(x=>x.classList.remove('on'));document.getElementById(mode).classList.add('on');const sx=Math.hypot(W.CD1_1,W.CD2_1),sy=Math.hypot(W.CD1_2,W.CD2_2);document.getElementById('m').textContent='raster '+w+'×'+h+' aspect='+(w/h).toFixed(6)+' | AVM aspect='+(R.refDim[0]/R.refDim[1]).toFixed(6)+' | sx='+sx.toExponential(7)+' sy='+sy.toExponential(7)+' | mode='+mode.toUpperCase()}
+await raster();['a','b','c','d'].forEach(id=>document.getElementById(id).onclick=()=>show(id));show('a');
+</script></body></html>
