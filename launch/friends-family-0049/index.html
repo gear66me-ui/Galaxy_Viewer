@@ -2,147 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>GALAXY VIEWER — FROZEN BUILD 0049</title>
-<style>
-@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
-html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff}
-#aladin-cosmic-command-test{height:100dvh!important;max-height:100dvh!important}
-#gv-navigation-host{bottom:max(12px,env(safe-area-inset-bottom))!important}
-#gv-generic-cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:#000}
-#gv-loading-mark{position:relative;display:flex;align-items:center;justify-content:center;width:min(52vw,280px);height:min(52vw,280px);--gv-orbit-radius:min(24vw,122px)}
-#gv-loading-mark>img{position:relative;z-index:2;display:block;width:min(42vw,220px);height:min(42vw,220px);object-fit:contain;background:transparent}
-#gv-loading-comet{position:absolute;left:50%;top:50%;width:0;height:0;animation:gv-loading-comet-orbit 2.8s linear infinite;pointer-events:none;z-index:3}
-#gv-loading-comet i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
-#gv-loading-comet i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
-#gv-loading-comet i:nth-child(2){--gv-angle:-15deg;--gv-scale:.88;--gv-opacity:.84}
-#gv-loading-comet i:nth-child(3){--gv-angle:-30deg;--gv-scale:.76;--gv-opacity:.68}
-#gv-loading-comet i:nth-child(4){--gv-angle:-45deg;--gv-scale:.64;--gv-opacity:.52}
-#gv-loading-comet i:nth-child(5){--gv-angle:-60deg;--gv-scale:.52;--gv-opacity:.38}
-#gv-loading-comet i:nth-child(6){--gv-angle:-75deg;--gv-scale:.42;--gv-opacity:.26}
-#gv-loading-comet i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
-#gv-loading-comet i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
-@keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-#gv-generic-version,#gv-generic-build{color:#f2fdff;font-family:"Space Age",Arial,sans-serif;text-align:center;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;white-space:nowrap}
-#gv-generic-version{min-height:22px;font-size:17px;line-height:22px;letter-spacing:1.2px}
-#gv-generic-build{min-height:22px;margin-top:-8px;font-size:17px;line-height:22px;letter-spacing:1.1px}
-#gv-generic-error{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:24px;background:#000;color:#FFD166;white-space:pre-wrap;font:14px/1.45 monospace}
-</style>
-</head>
-<body>
-<div id="gv-generic-cover">
-  <div id="gv-loading-mark">
-    <img src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER">
-    <span id="gv-loading-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-  </div>
-  <div id="gv-generic-version">VERSION GV-beta-200-013</div>
-  <div id="gv-generic-build">BUILD 0049</div>
-</div>
-<div id="gv-generic-error" role="alert"></div>
+<title>GALAXY VIEWER — BUILD 0049</title>
+<style>html,body{margin:0;width:100%;height:100%;background:#000;color:#fff;font:16px/1.5 Arial,sans-serif}body{display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}.box{max-width:420px}.glow{text-shadow:0 0 12px #058cff;letter-spacing:1px}.btn{display:inline-block;margin-top:18px;padding:12px 16px;border:1px solid #2f8cff;border-radius:10px;color:#fff;text-decoration:none;background:#071f49}</style>
 <script>
-(async()=>{
-'use strict';
-const GV_GENERIC_APP_REVISION='GV-FRIENDS-FAMILY-0049-0004';
-const POINTER=Object.freeze({version:'GV-beta-200-013',viewer:'GV-beta-200-013.py',build:'0049'});
-const VIEWER_TIMEOUT_MS=30000;
-const cover=document.getElementById('gv-generic-cover');
-const versionEl=document.getElementById('gv-generic-version');
-const buildEl=document.getElementById('gv-generic-build');
-const errorBox=document.getElementById('gv-generic-error');
-const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-const fail=error=>{errorBox.style.display='block';errorBox.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(error?.stack||error)};
-function fresh(url){return url+(url.includes('?')?'&':'?')+'ff0049='+encodeURIComponent(nonce)}
-function xhrText(url){
-  return new Promise((resolve,reject)=>{
-    try{
-      const xhr=new XMLHttpRequest();
-      xhr.open('GET',fresh(url),true);
-      xhr.timeout=20000;
-      xhr.onload=()=>{xhr.status>=200&&xhr.status<300?resolve(xhr.responseText):reject(new Error('XHR HTTP '+xhr.status+' '+url))};
-      xhr.onerror=()=>reject(new Error('XHR NETWORK '+url));
-      xhr.ontimeout=()=>reject(new Error('XHR TIMEOUT '+url));
-      xhr.send();
-    }catch(error){reject(error)}
-  });
-}
-async function fetchText(url){
-  try{
-    const response=await fetch(fresh(url),{cache:'no-store',mode:'cors'});
-    if(!response.ok)throw new Error('HTTP '+response.status+' '+url);
-    return await response.text();
-  }catch(fetchError){
-    console.warn('GV 0049 fetch fallback to XHR',url,fetchError);
-    return await xhrText(url);
-  }
-}
-async function textAny(urls){
-  let last=null;
-  for(const url of urls){
-    try{return await fetchText(url)}catch(error){last=error;console.warn('GV 0049 viewer source fallback failed',url,error)}
-  }
-  throw last||new Error('GV 0049 viewer source fetch failed');
-}
-function mountHtml(html){
-  const template=document.createElement('template');
-  template.innerHTML=html;
-  for(const node of [...template.content.childNodes]){
-    if(node.nodeName==='SCRIPT'){
-      const script=document.createElement('script');
-      for(const attr of [...node.attributes])script.setAttribute(attr.name,attr.value);
-      script.textContent=node.textContent;
-      document.body.appendChild(script);
-    }else document.body.appendChild(node);
-  }
-}
-function patchViewerSource(source){
-  let patched=String(source||'');
-  patched=patched.replaceAll("const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;","const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-ff0049-${Date.now().toString(36)}`;");
-  return patched;
-}
-async function prepareViewer(){
-  versionEl.textContent='VERSION '+POINTER.version;
-  buildEl.textContent='BUILD '+POINTER.build+' ';
-  document.documentElement.dataset.gvGenericAppRevision=GV_GENERIC_APP_REVISION;
-  const viewerCandidates=[
-    new URL('../../viewer/GV-beta-200-013.py',location.href).href,
-    'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/GV-beta-200-013.py',
-    'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3d1e1f8b36efe011d1cded4c0169fd949f6ec47d/viewer/GV-beta-200-013.py',
-    'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-200-013.py'
-  ];
-  const source=patchViewerSource(await textAny(viewerCandidates));
-  const htmlMatch=source.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/);
-  const jsMatches=[...source.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];
-  if(!htmlMatch||!jsMatches.length)throw new Error('VIEWER EXTRACTION FAILED: '+POINTER.viewer);
-  const declared=(source.match(/const GV200001_BUILD='(\d{4})'/)||[])[1]||'';
-  if(declared!==POINTER.build)throw new Error('VIEWER BUILD MISMATCH: pointer='+POINTER.build+' viewer='+declared);
-  return {viewer:POINTER.viewer,pointer:POINTER,html:htmlMatch[1],scripts:jsMatches.map(match=>match[1])};
-}
-async function initializeViewer(prepared){
-  mountHtml(prepared.html);
-  for(const source of prepared.scripts){
-    const script=document.createElement('script');
-    script.textContent=source;
-    document.body.appendChild(script);
-  }
-  const deadline=performance.now()+VIEWER_TIMEOUT_MS;
-  while(performance.now()<deadline){
-    const root=document.getElementById('aladin-cosmic-command-test');
-    if(root?.querySelector('canvas'))return prepared.viewer;
-    await sleep(100);
-  }
-  throw new Error('VIEWER STARTUP TIMEOUT: '+prepared.viewer);
-}
-try{
-  const prepared=await prepareViewer();
-  await initializeViewer(prepared);
-  await sleep(2000);
-  if(cover.isConnected)cover.remove();
-}catch(error){console.error(error);fail(error)}
+(()=>{
+  const target='https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/?v=ff0049-direct-0001';
+  try{location.replace(target)}catch(_){location.href=target}
 })();
 </script>
+</head>
+<body>
+<div class="box">
+  <div class="glow">GALAXY VIEWER</div>
+  <div>VERSION GV-beta-200-013</div>
+  <div>BUILD 0049</div>
+  <p>Opening the stable Build 49 launcher…</p>
+  <a class="btn" href="https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/?v=ff0049-direct-0001">Launch Build 49</a>
+</div>
 </body>
 </html>
