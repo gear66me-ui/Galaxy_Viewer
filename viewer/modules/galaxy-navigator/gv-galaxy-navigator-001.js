@@ -44,16 +44,9 @@ function installStyle(){
 const comet='<span class="gvrg-random-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
 function mount(host,handlers={}){
  if(!(host instanceof Element))throw new Error('GALAXY NAVIGATOR HOST REQUIRED');
- installStyle();
- try{
-  if(location.pathname.includes('/launch/friends-family-0049-direct/')){
-   host.style.setProperty('bottom','76px','important');
-   host.style.setProperty('z-index','2147482000','important');
-  }
- }catch(_){}
- host.classList.add('gv-galaxy-navigator');
- host.innerHTML='<button class="gv-galaxy-history gv-galaxy-history-back" data-gv-nav="back" type="button" aria-label="Back"></button>'+
- '<button id="gv-random-galaxy" data-gv-nav="random" type="button" aria-label="RANDOM GALAXY"><span class="gvrg-random-layout"><span class="gvrg-random-star-wrap gvrg-random-star-wrap-left" aria-hidden="true"><span class="gvrg-random-star">✨</span>'+comet.replace('gvrg-random-comet','gvrg-random-comet gvrg-random-comet-left')+'</span><span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap gvrg-random-star-wrap-right" aria-hidden="true"><span class="gvrg-random-star">✨</span>'+comet+'</span></span></button>'+
+ installStyle();host.classList.add('gv-galaxy-navigator');
+ host.innerHTML='<button class="gv-galaxy-history gv-galaxy-history-back" data-gv-nav="back" type="button" aria-label="Back"></button>'+ 
+ '<button id="gv-random-galaxy" data-gv-nav="random" type="button" aria-label="RANDOM GALAXY"><span class="gvrg-random-layout"><span class="gvrg-random-star-wrap gvrg-random-star-wrap-left" aria-hidden="true"><span class="gvrg-random-star">✨</span>'+comet.replace('gvrg-random-comet','gvrg-random-comet gvrg-random-comet-left')+'</span><span class="gvrg-random-label">RANDOM GALAXY</span><span class="gvrg-random-star-wrap gvrg-random-star-wrap-right" aria-hidden="true"><span class="gvrg-random-star">✨</span>'+comet+'</span></span></button>'+ 
  '<button class="gv-galaxy-history" data-gv-nav="forward" type="button" aria-label="Forward"></button>';
  const back=host.querySelector('[data-gv-nav="back"]'),random=host.querySelector('[data-gv-nav="random"]'),forward=host.querySelector('[data-gv-nav="forward"]');
  back.addEventListener('click',()=>{if(!back.disabled)handlers.onBack?.()});
