@@ -6,6 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "GV-beta-200-013"
+# BUILD 0049 PUBLICATION SYNC — destination presentation 0011
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
