@@ -16,6 +16,9 @@ html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;backgrou
 <script>
 (async()=>{
 'use strict';
+function hideParentClose(){try{const button=parent?.document?.getElementById?.('gv-inline-close');if(button){button.style.setProperty('display','none','important');button.style.setProperty('visibility','hidden','important');button.style.setProperty('pointer-events','none','important');button.setAttribute('aria-hidden','true')}}catch(_){}}
+hideParentClose();
+setInterval(hideParentClose,500);
 const VERSION='GV-beta-200-013';
 const BUILD='0049';
 const TIMEOUT=45000;
@@ -94,8 +97,9 @@ try{
   for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
   const deadline=performance.now()+TIMEOUT;
   while(performance.now()<deadline){
+    hideParentClose();
     const root=document.getElementById('aladin-cosmic-command-test');
-    if(root&&root.querySelector('canvas')){await sleep(1600);if(cover.isConnected)cover.remove();return}
+    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();if(cover.isConnected)cover.remove();return}
     await sleep(120);
   }
   throw new Error('Viewer startup timeout after loading Build 49 source');
