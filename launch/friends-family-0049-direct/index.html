@@ -7,22 +7,61 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>GALAXY VIEWER — BUILD 0049 DIRECT</title>
+<link rel="preload" href="../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png" as="image">
 <style>
-@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:swap}
-@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:swap}
-html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif!important}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
+@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:block}
+@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:block}
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif!important}
+#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;background:#000;text-align:center;opacity:0;transition:opacity .25s ease}
+.fonts-ready #cover{opacity:1}
+#splash-wrap{position:relative;width:min(86vw,430px);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 18px rgba(80,190,255,.7))}
+#splash{width:100%;height:100%;object-fit:contain;animation:gvSplashPulse 4.2s ease-in-out infinite;transform-origin:50% 50%}
+#splash-comet{position:absolute;left:50%;top:50%;width:0;height:0;animation:gvCometOrbit 2.7s linear infinite;pointer-events:none}
+#splash-comet i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--a)) translateY(-140px) scale(var(--s));opacity:var(--o);box-shadow:0 0 7px rgba(98,216,255,.9)}
+#splash-comet i:nth-child(1){--a:0deg;--s:1;--o:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
+#splash-comet i:nth-child(2){--a:-15deg;--s:.88;--o:.84}#splash-comet i:nth-child(3){--a:-30deg;--s:.76;--o:.68}#splash-comet i:nth-child(4){--a:-45deg;--s:.64;--o:.52}#splash-comet i:nth-child(5){--a:-60deg;--s:.52;--o:.38}#splash-comet i:nth-child(6){--a:-75deg;--s:.42;--o:.26}#splash-comet i:nth-child(7){--a:-90deg;--s:.32;--o:.16}#splash-comet i:nth-child(8){--a:-105deg;--s:.24;--o:.08}
+.label{color:#f2fdff;text-shadow:-1px 0 #063f8f,0 1px #063f8f,1px 0 #063f8f,0 -1px #063f8f,0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px;text-transform:uppercase;min-height:20px}
+#build-label{margin-top:-4px}.launch-note{margin-top:4px;color:#8ddcff;font:400 8px/1.4 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.4px;text-transform:uppercase;text-shadow:0 0 8px rgba(88,191,255,.75)}
+#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
+@keyframes gvSplashPulse{0%,100%{transform:scale(.985);filter:brightness(.95) saturate(1)}50%{transform:scale(1.02);filter:brightness(1.12) saturate(1.12)}}
+@keyframes gvCometOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media(max-height:740px){#splash-wrap{width:min(72vw,330px)}#splash-comet i{transform:rotate(var(--a)) translateY(-108px) scale(var(--s))}.label{font-size:15px}.launch-note{font-size:7px}}
 </style>
 </head>
 <body>
-<div id="cover"><img id="logo" src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER"><div class="label">VERSION GV-beta-200-013</div><div class="label">BUILD 0049</div><div class="spin"></div></div><div id="err"></div>
+<div id="cover">
+  <div id="splash-wrap" aria-hidden="true">
+    <img id="splash" src="../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png?v=ff0049-splash-0001" alt="GALAXY VIEWER">
+    <span id="splash-comet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  </div>
+  <div class="label" id="version-label">VERSION GV-beta-200-013</div>
+  <div class="label" id="build-label">BUILD 0049</div>
+  <div class="launch-note">Initializing Galaxy Viewer</div>
+</div>
+<div id="err"></div>
 <script>
 (async()=>{
 'use strict';
 const BUILD='0049';
 const TIMEOUT=45000;
+const MIN_SPLASH_MS=3200;
 const cover=document.getElementById('cover');
 const err=document.getElementById('err');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const splashStarted=performance.now();
+async function readyFonts(){
+  try{
+    await Promise.all([
+      document.fonts.load('400 17px "GV Space Age"'),
+      document.fonts.load('400 17px "Space Age"')
+    ]);
+    await document.fonts.ready;
+  }catch(_){}
+  document.documentElement.classList.add('fonts-ready');
+}
+await readyFonts();
 const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 const candidates=[
   '../../viewer/GV-beta-200-013.py',
@@ -68,8 +107,8 @@ function installViewerFixStyle(){
   const style=document.createElement('style');
   style.id='gv-ff0049-visibility-fix';
   style.textContent=`
-@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:swap}
-@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:swap}
+@font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:block}
+@font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:block}
 #aladin-cosmic-command-test,#aladin-cosmic-command-test *{font-family:"GV Space Age","Space Age",Arial,sans-serif!important}
 #gv-version-readout{font:400 8px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:.3px!important;color:#9edcff!important;text-shadow:0 0 5px rgba(141,218,255,.9),0 0 10px rgba(88,191,255,.65)!important;top:-15px!important;display:block!important;visibility:visible!important;opacity:1!important}
 #gv-navigation-host{position:fixed!important;left:50%!important;bottom:max(104px,calc(env(safe-area-inset-bottom) + 92px))!important;z-index:2147483000!important;display:flex!important;gap:5px!important;width:min(430px,calc(100vw - 20px))!important;transform:translateX(-50%)!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;overflow:visible!important}
@@ -140,7 +179,15 @@ try{
     keepControlsVisible();
     const root=document.getElementById('aladin-cosmic-command-test');
     const nav=document.getElementById('gv-random-galaxy');
-    if(root&&root.querySelector('canvas')&&nav){await sleep(1800);keepControlsVisible();if(cover.isConnected)cover.remove();clearInterval(interval);return}
+    if(root&&root.querySelector('canvas')&&nav){
+      const elapsed=performance.now()-splashStarted;
+      if(elapsed<MIN_SPLASH_MS)await sleep(MIN_SPLASH_MS-elapsed);
+      await sleep(450);
+      keepControlsVisible();
+      if(cover.isConnected)cover.remove();
+      clearInterval(interval);
+      return;
+    }
     await sleep(120);
   }
   throw new Error('Viewer startup timeout after loading Build 49 source');
