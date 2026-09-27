@@ -52,7 +52,6 @@ display(HTML("""
      ======================================================================= -->
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-@media (orientation:landscape) and (max-height:600px){body::before{content:"";position:fixed;inset:0;z-index:2147483646;background:#000}body::after{content:"PORTRAIT MODE\A ROTATE DEVICE";white-space:pre;position:fixed;left:50%;top:50%;z-index:2147483647;transform:translate(-50%,-50%);color:#8DDAFF;text-align:center;font:600 16px/1.8 system-ui,sans-serif;letter-spacing:2px;text-shadow:0 0 10px #58BFFF}}
 #aladin-cosmic-command-test{position:relative;width:100%;height:100vh;overflow:hidden;background:#000}
 #aladin-cosmic-command-test .aladin-logo-container,#aladin-cosmic-command-test .aladin-logo{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
