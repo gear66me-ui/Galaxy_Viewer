@@ -111,6 +111,7 @@ const ids=['sky','zoom','opacity','crossblend','diameter','blend','decay','core'
 ids.forEach(k=>C[k]=document.getElementById(k));
 const info=document.getElementById('info'),status=document.getElementById('status');
 let aladin,records=[],order=[],pos=-1,current=null,baseFov=.25,layer=null,rawLayer=null,effectLayer=null,hdOn=true,blobUrl=null,loadToken=0,rawMode=false,hardMode=false;
+const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const LAYER='GV VIGNETTE WCS ORIGINAL-TILE CURATION LAB';
 const val=k=>+C[k].value;
 function outputs(){ids.forEach(k=>C[k].parentElement.querySelector('output').textContent=C[k].value+(k==='block'?'px':k==='curve'?'':'%'))}
@@ -120,9 +121,22 @@ function shuffle(a){for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(
 function hash(x,y){let n=(x*374761393+y*668265263)>>>0;n=(n^(n>>>13))*1274126177>>>0;n^=n>>>16;return(n>>>0)/4294967295}
 function cleanWcs(w){let o={};for(const [k,v] of Object.entries(w||{}))if(v!=null&&['string','number','boolean'].includes(typeof v))o[k]=v;let cd=['CD1_1','CD1_2','CD2_1','CD2_2'].every(k=>Number.isFinite(+o[k]));if(String(o.CTYPE1||'').toUpperCase().startsWith('RA---')&&String(o.CTYPE2||'').toUpperCase().startsWith('DEC--')&&!cd&&+o.CDELT1>0&&+o.CDELT2>0)o.CDELT1=-Math.abs(+o.CDELT1);return o}
 function removeLayer(){try{aladin.removeOverlayImageLayer(LAYER)}catch(_){} layer=null;if(blobUrl){URL.revokeObjectURL(blobUrl);blobUrl=null}}
+async function fetchImageBlob(url){
+ const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=vignette-lab-v15'];
+ let last='';
+ for(const source of attempts){
+  try{
+   const res=await fetch(source,{mode:'cors',credentials:'omit',cache:'no-store',redirect:'follow'});
+   if(!res.ok)throw Error('HTTP '+res.status);
+   const blob=await res.blob();if(!blob||blob.size<=0)throw Error('EMPTY IMAGE BLOB');
+   return {blob,source:source===url?'DIRECT':'PROXY'};
+  }catch(e){last=String(e?.message||e)}
+ }
+ throw Error('HD FETCH FAILED · '+last);
+}
 async function makeVignette(url){
- const res=await fetch(url,{mode:'cors'});if(!res.ok)throw Error('image fetch '+res.status);
- const blob=await res.blob();
+ const fetched=await fetchImageBlob(url);
+ const blob=fetched.blob;
  const bmp=await createImageBitmap(blob),w=bmp.width,h=bmp.height;
  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0);bmp.close?.();
  const q=x.getImageData(0,0,w,h),d=q.data,cx=w/2,cy=h/2;
@@ -227,12 +241,12 @@ async function installCurrent(){
        if(token!==loadToken)throw Error('superseded');
        blobUrl=URL.createObjectURL(png);
        rawLayer=A.image(u,{name:LAYER+' RAW',imgFormat:/\.png(?:[?#]|$)/i.test(u)?'png':'jpeg',wcs,opacity:rawMode?1:0,
-         successCallback:()=>applyFilterVisibility(),
-         errorCallback:e=>{status.textContent='Original WCS layer failed: '+String(e||'unknown')}
+         successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
+         errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · ORIGINAL LAYER · '+String(e||'unknown')}
        });
        effectLayer=A.image(blobUrl,{name:LAYER+' EFFECT',imgFormat:'png',wcs,opacity:rawMode?0:(val('opacity')/100)*(val('crossblend')/100),
-         successCallback:()=>applyFilterVisibility(),
-         errorCallback:e=>{status.textContent='Processed WCS layer failed: '+String(e||'unknown')}
+         successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
+         errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · EFFECT LAYER · '+String(e||'unknown')}
        });
        aladin.setOverlayImageLayer(rawLayer,LAYER+' RAW');
        aladin.setOverlayImageLayer(effectLayer,LAYER+' EFFECT');
@@ -241,7 +255,7 @@ async function installCurrent(){
     },errorCallback:reject});
    aladin.setOverlayImageLayer(probe,probeName);
   }catch(e){reject(e)}
- }).catch(e=>{try{aladin.removeOverlayImageLayer(probeName)}catch(_){}status.textContent='LOAD FAILED: '+String(e?.message||e)});
+ }).catch(e=>{try{aladin.removeOverlayImageLayer(probeName)}catch(_){}status.dataset.hd='failed';status.textContent='HD LOAD FAILED · '+String(e?.message||e)});
 }
 async function loadCatalogs(){
  let m=await(await fetch(MASTER+'?t='+Date.now())).json(),all=[];
@@ -274,12 +288,14 @@ function setFilterButton(){
 }
 function applyFilterVisibility(){
  const op=(val('opacity')/100)*(val('crossblend')/100);
+ if(!rawLayer&&!effectLayer){setFilterButton();status.dataset.hd='failed';status.textContent='HD NOT LOADED · FILTER SWITCH HAS NO IMAGE LAYER';return}
  try{if(rawLayer)rawLayer.setOpacity(rawMode?1:0)}catch(_){}
  try{if(effectLayer)effectLayer.setOpacity(rawMode?0:op)}catch(_){}
  setFilterButton();
+ status.dataset.hd='loaded';
  status.textContent=rawMode
-   ?'FILTERS OFF · 100% ORIGINAL — camera unchanged.'
-   :'FILTERS ON — same camera, same registration.';
+   ?'HD LOADED · FILTERS OFF · 100% ORIGINAL'
+   :'HD LOADED · FILTERS ON · PROCESSED AVM IMAGE';
 }
 function liveFovPair(){
  try{
