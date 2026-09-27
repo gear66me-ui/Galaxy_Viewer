@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Galaxy Web Browser Prototype</title>
+<style>
+@font-face{font-family:"Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-style:normal;font-weight:400;font-display:block}
+:root{--cyan:#8feaff;--blue:#1484db;--deep:#031124;--green:#78ffab;--amber:#ffd166}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#eaf8ff;font-family:"Space Age",Arial,sans-serif;text-transform:uppercase}
+body{background:radial-gradient(circle at 50% 14%,rgba(20,132,219,.34),transparent 38%),radial-gradient(circle at 82% 70%,rgba(120,255,171,.14),transparent 34%),linear-gradient(180deg,#020817,#000 74%)}
+.stars{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#fff 0.8px,transparent 1px),radial-gradient(#7ccbff 0.7px,transparent 1px);background-size:53px 53px,89px 89px;background-position:0 0,17px 29px;opacity:.26}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;width:100vw;height:100dvh;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom));gap:7px}.panel{border:1px solid rgba(124,203,255,.72);border-radius:12px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.82),rgba(41,109,189,.58));box-shadow:inset 0 2px 2px rgba(225,251,255,.36),inset 0 -3px 7px rgba(0,0,0,.55),0 0 7px rgba(50,190,255,.46),0 0 18px rgba(20,116,219,.22)}
+.header{height:48px;display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:7px;padding:5px 7px}.title{text-align:center;font-size:12px;letter-spacing:1.25px;color:#f2fdff;text-shadow:0 0 4px #58bfff,0 0 11px rgba(88,191,255,.72);white-space:nowrap}.logo{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(124,203,255,.78);background:radial-gradient(circle at 34% 28%,#fff 0 4%,#63b9ff 5% 24%,#063f8f 25% 70%,#031124 71%);box-shadow:inset 0 2px 2px rgba(255,255,255,.32),0 0 10px rgba(98,216,255,.54)}.logo span{font:700 8px/1 Arial,sans-serif;letter-spacing:-.5px;color:white;text-shadow:0 0 4px #000}.chrome{height:43px;display:grid;grid-template-columns:39px 39px 1fr 39px;gap:5px;align-items:center;padding:5px}.btn{height:32px;border:1px solid rgba(124,203,255,.78);border-radius:8px;background:linear-gradient(145deg,#081b3a,#0b3177 50%,#1484db);color:#eaffff;font:400 16px/1 Arial,sans-serif;box-shadow:inset 0 2px 2px rgba(225,251,255,.42),inset 0 -3px 5px rgba(0,0,0,.46),0 0 8px rgba(98,216,255,.48);touch-action:manipulation}.btn:disabled{opacity:.38;filter:grayscale(.4)}.addr{height:32px;display:flex;align-items:center;min-width:0;padding:0 9px;border:1px solid rgba(124,203,255,.54);border-radius:9px;background:rgba(0,8,22,.72);box-shadow:inset 0 1px 4px rgba(0,0,0,.65)}.lock{font-family:Arial,sans-serif;margin-right:6px;color:var(--green);font-size:12px}.addrText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:none;font:600 12px/1.1 Arial,sans-serif;color:#dff9ff}.viewport{position:relative;flex:1;min-height:0;border-radius:15px;padding:8px;overflow:hidden;border:1px solid rgba(124,203,255,.68);background:#030915;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 0 15px rgba(50,190,255,.20)}.webpage{height:100%;overflow:auto;border-radius:11px;background:linear-gradient(180deg,#060b14,#01040a 80%);border:1px solid rgba(255,255,255,.08);font-family:Arial,sans-serif;text-transform:none}.hero{min-height:45%;padding:18px 14px;background:radial-gradient(circle at 78% 36%,#ffd166 0 3%,#ff8a54 4% 9%,#7038ff 10% 22%,transparent 37%),radial-gradient(circle at 67% 44%,rgba(143,234,255,.8),transparent 23%),linear-gradient(125deg,#050914 0 48%,#0a234e 100%);position:relative}.providerLine{font:700 10px/1.1 Arial,sans-serif;letter-spacing:1.5px;color:#8feaff;text-transform:uppercase}.hero h1{margin:10px 0 8px;font:900 30px/.92 Arial,sans-serif;letter-spacing:-1px;color:#fff;text-transform:uppercase}.hero p{max-width:55%;margin:0;color:#cfe7ff;font:400 12px/1.35 Arial,sans-serif}.cta{display:inline-block;margin-top:14px;padding:9px 11px;border-radius:8px;background:#1484db;color:white;font:800 10px/1 Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px}.tiles{padding:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.tile{min-height:72px;padding:9px;border-radius:11px;background:linear-gradient(145deg,rgba(8,27,58,.95),rgba(20,132,219,.24));border:1px solid rgba(124,203,255,.42);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}.tile b{font-size:11px;letter-spacing:.5px}.tile small{margin-top:4px;color:#9edcff;font-size:9px}.news{margin:0 12px 12px;padding:11px;border-radius:12px;background:rgba(3,17,36,.86);border:1px solid rgba(124,203,255,.32);color:#eaf8ff}.news b{display:block;color:#8feaff;font-size:10px;text-transform:uppercase;letter-spacing:1px}.news span{display:block;margin-top:5px;font-size:13px;font-weight:800}.bottom{height:54px;display:flex;align-items:center;justify-content:center;border-radius:14px;border:1px solid rgba(120,255,171,.74);background:linear-gradient(145deg,rgba(6,55,31,.94),rgba(11,122,66,.86),rgba(32,201,107,.64));box-shadow:inset 0 2px 2px rgba(225,255,235,.44),inset 0 -3px 7px rgba(0,0,0,.48),0 0 13px rgba(120,255,171,.44);color:#effff4;text-shadow:0 0 7px rgba(120,255,171,.74);font-size:13px;letter-spacing:1.3px}.note{position:absolute;right:12px;bottom:10px;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.58);color:#ffd166;font:700 9px/1.2 Arial,sans-serif;text-transform:uppercase;border:1px solid rgba(255,209,102,.42)}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<main class="app">
+  <section class="header panel">
+    <div class="logo" id="leftLogo"><span>NASA</span></div>
+    <div class="title">GALAXY WEB BROWSER</div>
+    <div class="logo" id="rightLogo"><span>NASA</span></div>
+  </section>
+  <section class="chrome panel">
+    <button class="btn" id="backBtn" aria-label="Browser back">‹</button>
+    <button class="btn" id="forwardBtn" aria-label="Browser forward">›</button>
+    <div class="addr"><span class="lock">🔒</span><span class="addrText" id="addrText">nasa.gov</span></div>
+    <button class="btn" id="refreshBtn" aria-label="Refresh">⟳</button>
+  </section>
+  <section class="viewport">
+    <div class="webpage" id="webpage"></div>
+    <div class="note">prototype: no iframe</div>
+  </section>
+  <button class="bottom" id="backViewer">✦ BACK TO VIEWER ✦</button>
+</main>
+<script>
+(()=>{'use strict';
+const providers=[
+ {name:'NASA',url:'nasa.gov',headline:'Explore More',kicker:'A universe of discovery',body:'NASA explores the unknown in air and space, innovates for humanity, and inspires the world.',tiles:['The Moon','Mars','Telescope','Earth'],logo:'NASA'},
+ {name:'SPITZER',url:'spitzer.caltech.edu',headline:'Infrared Universe',kicker:'Spitzer Space Telescope',body:'A provider page preview for infrared galaxies, nebulae, archives, and Caltech/IPAC source material.',tiles:['Images','Missions','Archive','Science'],logo:'SPITZER'},
+ {name:'HUBBLE',url:'hubblesite.org',headline:'Deep Field Archive',kicker:'ESA / Hubble / STScI',body:'A provider page preview for Hubble imagery, release notes, and science-source navigation.',tiles:['Images','News','Galaxies','Releases'],logo:'HST'}
+];
+let i=0;
+const page=document.getElementById('webpage'),addr=document.getElementById('addrText'),left=document.getElementById('leftLogo'),right=document.getElementById('rightLogo');
+function paint(){const p=providers[i];addr.textContent=p.url;left.innerHTML=right.innerHTML='<span>'+p.logo+'</span>';document.getElementById('backBtn').disabled=i===0;document.getElementById('forwardBtn').disabled=i===providers.length-1;page.innerHTML=`<section class="hero"><div class="providerLine">${p.kicker}</div><h1>${p.headline}</h1><p>${p.body}</p><span class="cta">Explore ${p.name} →</span></section><section class="tiles">${p.tiles.map(t=>`<div class="tile"><b>${t} →</b><small>${p.url}</small></div>`).join('')}</section><section class="news"><b>${p.name} provider page</b><span>Galaxy Web Browser shell keeps navigation controls separate from Back to Viewer.</span></section>`;}
+document.getElementById('backBtn').onclick=()=>{if(i>0){i--;paint();}};document.getElementById('forwardBtn').onclick=()=>{if(i<providers.length-1){i++;paint();}};document.getElementById('refreshBtn').onclick=()=>{page.style.opacity='.35';setTimeout(()=>{page.style.opacity='1';paint();},180)};document.getElementById('backViewer').onclick=()=>{try{history.back()}catch(_){}};paint();
+})();
+</script>
+</body>
+</html>
