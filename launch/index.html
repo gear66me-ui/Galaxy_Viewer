@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>GALAXY VIEWER — DEVELOPMENT UPDATE</title>
+<title>GALAXY VIEWER — FRIENDS & FAMILY PREVIEW</title>
 <link rel="icon" href="../viewer/artwork/icon.svg?v=gv-update-20260922c" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../viewer/artwork/icon_transparent.png?v=gv-update-20260922c">
 <style>
@@ -360,14 +360,14 @@ body::after{
 
   <section class="update">
     <div class="update-head">
-      <p id="t-kicker" class="kicker">Galaxy Viewer · Development Update</p>
-      <h1 id="t-title">New Image Providers Are Coming In</h1>
+      <p id="t-kicker" class="kicker">Galaxy Viewer · Friends & Family Preview</p>
+      <h1 id="t-title">Galaxy Viewer Is Entering Its Final Stage</h1>
     </div>
 
     <div class="copy">
-      <p id="t-intro">I’m adding imagery from <strong>11 major observatories, space missions, and astronomical archives</strong> to Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</strong></p>
+      <p id="t-intro">I’ve been unusually quiet for the past couple of weeks because I’ve been deep in the catalog. I have personally reviewed <strong>more than 10,000 astronomical images, one by one</strong>—discarding duplicates, less compelling views, science banners, charts, and images that simply do not belong in the experience. I’m happy to report that Galaxy Viewer has made major progress.</p>
 
-      <p id="t-provider-list" class="provider-list">These providers are becoming part of a much larger curated image collection that Galaxy Viewer can take you to directly while you explore the sky.</p>
+      <p id="t-provider-list" class="provider-list">Galaxy Viewer now contains <strong>1,814 curated destinations</strong> from major observatories, space missions, and astronomical archives. My goal is approximately <strong>3,000 images before launch</strong>, and the database will continue growing after release.</p>
     </div>
 
     <section class="providers" aria-label="Galaxy Viewer image providers">
@@ -433,71 +433,71 @@ body::after{
     </section>
 
     <div class="copy continue">
-      <p id="t-final-pass">I’m now working through the final presentation passes, tuning each image so it feels like part of the sky instead of a rectangular photograph dropped on top of it.</p>
+      <p id="t-final-pass">Galaxy Viewer grew out of my fascination—and honestly my perplexity—with the sheer scale of the universe. I started by wondering how the stars and galaxies around us could be mapped in a way that actually feels connected. I realized I could not find an app that let me travel through the sky and connect some of its most beautiful locations with the extraordinary high-definition imagery produced by the world’s great observatories.</p>
 
-      <div id="t-tech" class="tech">That work includes per-image <strong>AVM/WCS registration</strong>, opacity and cross-fade tuning, <strong>vignetting, edge feathering and soft masks</strong>, black-level and tonal matching, local contrast control, framing, field-of-view calibration, and transition smoothing so the observatory imagery blends cleanly into the live Aladin sky background.</div>
+      <div id="t-tech" class="tech">The biggest breakthrough was learning how to place the <strong>high-definition observatory image directly over the live Aladin sky engine</strong>. Galaxy Viewer decodes astronomical metadata and performs precise pixel-scale registration, orientation, field-of-view calibration, blending, vignetting and cross-fading so the HD image becomes part of the sky instead of feeling pasted on top of it. I also developed a custom star-field filtering effect that gives dense multi-star scenes a subtle glittering response as you travel into them.</div>
 
-      <p id="t-curation">I’m doing that curation <strong>image by image</strong>. It is slower than simply loading a catalog, but it lets Galaxy Viewer preserve the scientific positioning while making the transition between survey imagery and the high-resolution observatory image much more natural.</p>
+      <p id="t-curation">At roughly <strong>30 seconds per trip</strong>, visiting all 1,814 destinations once would take about <strong>15.1 hours of continuous travel</strong>. A 3,000-image catalog would represent about <strong>25 hours</strong>—before revisiting a single destination.</p>
 
-      <p id="t-finishing">At the same time I’m finishing the last navigation, high-definition viewing, provider-link, caching, and stability work. There are still a few bugs to squash, but the app is now in the final stretch and the catalog is growing quickly.</p>
+      <p id="t-finishing">The first standalone Galaxy Viewer commit was uploaded to GitHub on <strong>July 20, 2026 at 21:15:46 UTC (4:15:46 PM in Colombia)</strong>. That was 68 days ago. Since then I decided to give myself a serious education in coding and software development. After thousands of iterations, tests and fixes, I’m proud to say that software app developer is now another title I can add to my résumé.</p>
 
-      <p id="t-thanks">Thanks for following the project. There are a lot more galaxies and a lot more images coming. In the meantime, <strong>enjoy the demo and go explore the universe.</strong></p>
+      <p id="t-thanks">I’m happy to announce that Galaxy Viewer is now in its final stages, and I’m targeting release on the <strong>Google Play Store within the next week or two</strong>. Download and image-loading performance have improved significantly, and this Friends & Family preview is frozen to this exact stable build so my ongoing development work will not interrupt your experience. <strong>Thank you for being part of the journey. Tap Launch and go explore the universe.</strong></p>
 
       <p class="signature">— Germán</p>
     </div>
   </section>
 
   <div class="launches">
-    <a id="gv-open-app" class="launch" href="../mobile/beta/?source=development-update-app&v=gv-update-20260922c">
+    <a id="gv-open-app" class="launch" href="./friends-family-0047/?source=friends-family-app&v=0047">
       <img src="../viewer/artwork/icon.svg?v=20260922c" alt="">
-      <div><strong id="t-app-title">Launch App Version</strong><span id="t-app-sub">Open the Galaxy Viewer demo on Android</span></div>
+      <div><strong id="t-app-title">Launch Friends & Family Preview</strong><span id="t-app-sub">Frozen Build 0047 · Full app-style experience</span></div>
       <span class="arrow">›</span>
     </a>
 
-    <a class="launch" href="../mobile/beta/?source=development-update-web&v=gv-update-20260922c">
+    <a class="launch" href="./friends-family-0047/?source=friends-family-web&v=0047">
       <img src="../viewer/artwork/icon.svg?v=20260922c" alt="">
-      <div><strong id="t-web-title">Launch Web Version</strong><span id="t-web-sub">Explore Galaxy Viewer in your browser</span></div>
+      <div><strong id="t-web-title">Launch in Browser</strong><span id="t-web-sub">Frozen Build 0047 · Same stable snapshot</span></div>
       <span class="arrow">›</span>
     </a>
   </div>
 
-  <footer id="t-footer" class="footer">Galaxy Viewer · Development Preview · Germán Arciniegas</footer>
+  <footer id="t-footer" class="footer">Galaxy Viewer · Friends & Family Preview · Germán Arciniegas</footer>
 </main>
 
 <script>
 (()=>{
   const translations={
     en:{
-      kicker:'Galaxy Viewer · Development Update',
-      title:'New Image Providers Are Coming In',
-      intro:'I’m adding imagery from <strong>11 major observatories, space missions, and astronomical archives</strong> to Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR, and NRAO.</strong>',
-      providerList:'These providers are becoming part of a much larger curated image collection that Galaxy Viewer can take you to directly while you explore the sky.',
-      finalPass:'I’m now working through the final presentation passes, tuning each image so it feels like part of the sky instead of a rectangular photograph dropped on top of it.',
-      tech:'That work includes per-image <strong>AVM/WCS registration</strong>, opacity and cross-fade tuning, <strong>vignetting, edge feathering and soft masks</strong>, black-level and tonal matching, local contrast control, framing, field-of-view calibration, and transition smoothing so the observatory imagery blends cleanly into the live Aladin sky background.',
-      curation:'I’m doing that curation <strong>image by image</strong>. It is slower than simply loading a catalog, but it lets Galaxy Viewer preserve the scientific positioning while making the transition between survey imagery and the high-resolution observatory image much more natural.',
-      finishing:'At the same time I’m finishing the last navigation, high-definition viewing, provider-link, caching, and stability work. There are still a few bugs to squash, but the app is now in the final stretch and the catalog is growing quickly.',
-      thanks:'Thanks for following the project. There are a lot more galaxies and a lot more images coming. In the meantime, <strong>enjoy the demo and go explore the universe.</strong>',
-      appTitle:'Launch App Version',
-      appSub:'Open the Galaxy Viewer demo on Android',
-      webTitle:'Launch Web Version',
-      webSub:'Explore Galaxy Viewer in your browser',
-      footer:'Galaxy Viewer · Development Preview · Germán Arciniegas'
+      kicker:'Galaxy Viewer · Friends & Family Preview',
+      title:'Galaxy Viewer Is Entering Its Final Stage',
+      intro:'I’ve been unusually quiet for the past couple of weeks because I’ve been deep in the catalog. I have personally reviewed <strong>more than 10,000 astronomical images, one by one</strong>—discarding duplicates, less compelling views, science banners, charts, and images that simply do not belong in the experience. I’m happy to report that Galaxy Viewer has made major progress.',
+      providerList:'Galaxy Viewer now contains <strong>1,814 curated destinations</strong> from major observatories, space missions, and astronomical archives. My goal is approximately <strong>3,000 images before launch</strong>, and the database will continue growing after release.',
+      finalPass:'Galaxy Viewer grew out of my fascination—and honestly my perplexity—with the sheer scale of the universe. I started by wondering how the stars and galaxies around us could be mapped in a way that actually feels connected. I realized I could not find an app that let me travel through the sky and connect some of its most beautiful locations with the extraordinary high-definition imagery produced by the world’s great observatories.',
+      tech:'The biggest breakthrough was learning how to place the <strong>high-definition observatory image directly over the live Aladin sky engine</strong>. Galaxy Viewer decodes astronomical metadata and performs precise pixel-scale registration, orientation, field-of-view calibration, blending, vignetting and cross-fading so the HD image becomes part of the sky instead of feeling pasted on top of it. I also developed a custom star-field filtering effect that gives dense multi-star scenes a subtle glittering response as you travel into them.',
+      curation:'At roughly <strong>30 seconds per trip</strong>, visiting all 1,814 destinations once would take about <strong>15.1 hours of continuous travel</strong>. A 3,000-image catalog would represent about <strong>25 hours</strong>—before revisiting a single destination.',
+      finishing:'The first standalone Galaxy Viewer commit was uploaded to GitHub on <strong>July 20, 2026 at 21:15:46 UTC (4:15:46 PM in Colombia)</strong>. That was 68 days ago. Since then I decided to give myself a serious education in coding and software development. After thousands of iterations, tests and fixes, I’m proud to say that software app developer is now another title I can add to my résumé.',
+      thanks:'I’m happy to announce that Galaxy Viewer is now in its final stages, and I’m targeting release on the <strong>Google Play Store within the next week or two</strong>. Download and image-loading performance have improved significantly, and this Friends & Family preview is frozen to this exact stable build so my ongoing development work will not interrupt your experience. <strong>Thank you for being part of the journey. Tap Launch and go explore the universe.</strong>',
+      appTitle:'Launch Friends & Family Preview',
+      appSub:'Frozen Build 0047 · Full app-style experience',
+      webTitle:'Launch in Browser',
+      webSub:'Frozen Build 0047 · Same stable snapshot',
+      footer:'Galaxy Viewer · Friends & Family Preview · Germán Arciniegas'
     },
     es:{
-      kicker:'Galaxy Viewer · Actualización de Desarrollo',
-      title:'Estoy Agregando Nuevos Proveedores de Imágenes',
-      intro:'Estoy agregando imágenes de <strong>11 importantes observatorios, misiones espaciales y archivos astronómicos</strong> a Galaxy Viewer: <strong>James Webb / STScI, NOIRLab, Spitzer, ESO, Chandra, ESA / Hubble, Euclid, Herschel, GALEX, NuSTAR y NRAO.</strong>',
-      providerList:'Estos proveedores están pasando a formar parte de una colección de imágenes curada mucho más grande, a la que Galaxy Viewer puede llevarte directamente mientras exploras el cielo.',
-      finalPass:'Ahora estoy trabajando en los últimos ajustes de presentación, afinando cada imagen para que se sienta como parte del cielo en lugar de una fotografía rectangular colocada encima.',
-      tech:'Ese trabajo incluye <strong>registro AVM/WCS</strong> para cada imagen, ajuste de opacidad y fundido cruzado, <strong>viñeteado, suavizado de bordes y máscaras suaves</strong>, igualación de nivel de negros y tonalidad, control de contraste local, encuadre, calibración del campo de visión y suavizado de las transiciones para que las imágenes de los observatorios se integren limpiamente con el fondo celeste en vivo de Aladin.',
-      curation:'Estoy haciendo esa curaduría <strong>imagen por imagen</strong>. Es más lento que simplemente cargar un catálogo, pero permite que Galaxy Viewer conserve el posicionamiento científico y al mismo tiempo haga mucho más natural la transición entre las imágenes del sondeo del cielo y las imágenes de alta resolución de los observatorios.',
-      finishing:'Al mismo tiempo estoy terminando los últimos trabajos de navegación, visualización en alta definición, enlaces a los proveedores, almacenamiento en caché y estabilidad. Todavía quedan algunos errores por corregir, pero la aplicación ya está en la etapa final y el catálogo sigue creciendo rápidamente.',
-      thanks:'Gracias por seguir el proyecto. Vienen muchas más galaxias y muchas más imágenes. Mientras tanto, <strong>disfruta la demostración y sal a explorar el universo.</strong>',
-      appTitle:'Abrir Versión de la Aplicación',
-      appSub:'Abrir la demostración de Galaxy Viewer en Android',
-      webTitle:'Abrir Versión Web',
-      webSub:'Explorar Galaxy Viewer en tu navegador',
-      footer:'Galaxy Viewer · Vista Previa de Desarrollo · Germán Arciniegas'
+      kicker:'Galaxy Viewer · Vista Previa para Amigos y Familia',
+      title:'Galaxy Viewer Entra en Su Etapa Final',
+      intro:'He estado inusualmente callado durante las últimas semanas porque he estado completamente dedicado al catálogo. He revisado personalmente <strong>más de 10.000 imágenes astronómicas, una por una</strong>, descartando duplicados, imágenes menos interesantes, banners científicos, gráficas y todo lo que no pertenece a la experiencia. Me alegra contarles que Galaxy Viewer ha avanzado enormemente.',
+      providerList:'Galaxy Viewer ya contiene <strong>1.814 destinos seleccionados</strong> de importantes observatorios, misiones espaciales y archivos astronómicos. Mi meta es llegar a aproximadamente <strong>3.000 imágenes antes del lanzamiento</strong>, y la base de datos seguirá creciendo después.',
+      finalPass:'Galaxy Viewer nació de mi fascinación—y sinceramente de mi asombro—ante la inmensidad del universo. Empecé preguntándome cómo se podían mapear las estrellas y galaxias que nos rodean de una manera que realmente se sintiera conectada. Me di cuenta de que no encontraba una aplicación que permitiera viajar por el cielo y conectar algunos de sus lugares más hermosos con las extraordinarias imágenes de alta definición producidas por los grandes observatorios del mundo.',
+      tech:'El gran avance fue aprender a colocar la <strong>imagen de alta definición del observatorio directamente sobre el motor celeste Aladin en vivo</strong>. Galaxy Viewer decodifica metadatos astronómicos y realiza registro preciso a escala de píxel, orientación, calibración del campo de visión, mezcla, viñeteado y fundido cruzado para que la imagen HD se convierta en parte del cielo en lugar de sentirse pegada encima. También desarrollé un efecto personalizado de filtrado de campos estelares que da un brillo sutil a las escenas densas de múltiples estrellas mientras viajas hacia ellas.',
+      curation:'Aproximadamente a <strong>30 segundos por viaje</strong>, visitar una sola vez los 1.814 destinos tomaría unas <strong>15,1 horas de viaje continuo</strong>. Un catálogo de 3.000 imágenes representaría aproximadamente <strong>25 horas</strong>, sin repetir un solo destino.',
+      finishing:'El primer commit independiente de Galaxy Viewer fue subido a GitHub el <strong>20 de julio de 2026 a las 21:15:46 UTC (4:15:46 p. m. en Colombia)</strong>. Eso fue hace 68 días. Desde entonces decidí darme una educación seria en programación y desarrollo de software. Después de miles de iteraciones, pruebas y correcciones, me enorgullece decir que desarrollador de aplicaciones de software es ahora otro título que puedo agregar a mi currículum.',
+      thanks:'Me alegra anunciar que Galaxy Viewer ya está en sus etapas finales y mi objetivo es publicarlo en <strong>Google Play Store dentro de la próxima semana o dos</strong>. El rendimiento de descarga y carga de imágenes ha mejorado significativamente, y esta vista previa para Amigos y Familia está congelada en esta versión estable exacta para que mi trabajo de desarrollo continuo no interrumpa su experiencia. <strong>Gracias por ser parte del viaje. Presiona Lanzar y sal a explorar el universo.</strong>',
+      appTitle:'Abrir Vista Previa para Amigos y Familia',
+      appSub:'Build 0047 congelado · Experiencia completa tipo app',
+      webTitle:'Abrir en el Navegador',
+      webSub:'Build 0047 congelado · La misma versión estable',
+      footer:'Galaxy Viewer · Vista Previa para Amigos y Familia · Germán Arciniegas'
     }
   };
   const ids={
@@ -521,7 +521,7 @@ body::after{
     esButton.classList.toggle('active',spanish);
     enButton.setAttribute('aria-pressed',String(!spanish));
     esButton.setAttribute('aria-pressed',String(spanish));
-    document.title=spanish?'GALAXY VIEWER — ACTUALIZACIÓN DE DESARROLLO':'GALAXY VIEWER — DEVELOPMENT UPDATE';
+    document.title=spanish?'GALAXY VIEWER — VISTA PREVIA PARA AMIGOS Y FAMILIA':'GALAXY VIEWER — FRIENDS & FAMILY PREVIEW';
     try{localStorage.setItem('gv-update-language',lang)}catch(_){}
   }
   enButton.addEventListener('click',()=>setLanguage('en'));
@@ -531,8 +531,8 @@ body::after{
   setLanguage(saved==='es'?'es':'en');
 
   const appButton=document.getElementById('gv-open-app');
-  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260922c';
-  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/?source=development-update-app&v=gv-update-20260922c#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
+  const fallback='https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0047/?source=friends-family-app&v=0047';
+  const intent='intent://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0047/?source=friends-family-app&v=0047#Intent;scheme=https;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
   appButton.addEventListener('click',event=>{
     if(/Android/i.test(navigator.userAgent)){
       event.preventDefault();
