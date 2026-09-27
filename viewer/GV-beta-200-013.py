@@ -1154,6 +1154,7 @@ async function showDestination(destination,{firstTrip=false}={}){
 // ECO: GV200-001
 // ============================================================================
 async function navigateRandom(){
+    if(navigationInFlight)return;
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
