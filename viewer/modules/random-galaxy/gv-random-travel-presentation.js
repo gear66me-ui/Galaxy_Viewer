@@ -2,7 +2,7 @@
 'use strict';
 const FONT='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
 const ICONS={chandra:'Chandra/Chandra.jpg',eso:'ESO/ESO.jpg',euclid:'Euclid/Euclid.jpg',galex:'GALEX/GALEX.jpg',herschel:'Herschel/Herschel.jpg',hubble:'Hubble/Hubble.jpg',jwst:'JWST/JWST.jpeg',nrao:'NRAO/NRAO.jpg',noirlab:'NoirLabs/NOIRLab.jpg',nustar:'NuSTAR/NuSTAR.jpg',spitzer:'Spitzer/Spitzer.jpg'};
-const ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
+const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/artwork/';
 const CONSTELLATIONS=ART+'Constellations/';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim(),num=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
 function iconUrl(d){const t=[d?.provider,d?.telescope,d?.source,d?.credit,d?.archiveId,d?.id,d?.hdUrl,d?.imageUrl].map(clean).join(' ').toLowerCase();let k='';if(/noir|gemini|noao/.test(t))k='noirlab';else if(/hubble|hst/.test(t))k='hubble';else if(/james webb|webb|jwst/.test(t))k='jwst';else for(const x of Object.keys(ICONS))if(t.includes(x)){k=x;break}return k?ART+ICONS[k]:''}
