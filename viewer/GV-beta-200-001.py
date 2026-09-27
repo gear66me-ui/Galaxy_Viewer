@@ -212,34 +212,6 @@ const gvSpaceAgeReady=gvSpaceAgeFace.load().then(face=>{
     return face;
 });
 
-// Top observable-universe callout. Geometry is copied from Random Galaxy 0166.
-async function installUniverseContext(){
-    if(document.getElementById('gv-universe-context'))return;
-    await gvSpaceAgeReady;
-    const style=document.createElement('style');
-    style.id='gv200001-universe-context-style';    style.textContent=`
-#gv-universe-context{position:absolute;left:50%;top:auto;bottom:calc(50% + min(25vw,50dvh) + 67px);z-index:7095;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:min(240px,66vw);pointer-events:none;transition:opacity .2s ease;font-family:"GV Space Age",sans-serif}
-#gv-universe-context .gv-universe-label{padding:8px 10px 9px;border:1px solid rgba(124,203,255,.78);border-radius:6px;background:linear-gradient(145deg,rgba(8,27,58,.94),rgba(11,49,119,.88),rgba(41,109,189,.78)) padding-box,linear-gradient(135deg,#DDF8FF,#58BFFF,#296DBD) border-box;box-shadow:inset 0 0 7px rgba(221,248,255,.09),0 0 8px rgba(88,191,255,.24);color:#DDF8FF;text-align:center;text-transform:uppercase;text-shadow:0 0 6px rgba(88,191,255,.42);font:400 9px/1.35 "GV Space Age",sans-serif;letter-spacing:.65px}
-#gv-universe-context .gv-universe-count{display:block;margin-top:2px;color:#7CCBFF;font-size:10px;letter-spacing:.8px}
-#gv-universe-context .gv-universe-size{display:block;margin-top:2px;color:#7CCBFF;font-size:9px;letter-spacing:.8px}
-#gv-universe-context .gv-universe-leader{position:relative;width:1px;height:18px;background:rgba(124,203,255,.86);box-shadow:0 0 7px rgba(88,191,255,.48)}
-#gv-universe-context .gv-universe-leader::after{content:"";position:absolute;left:50%;bottom:-1px;width:0;height:0;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #7CCBFF;filter:drop-shadow(0 0 4px rgba(88,191,255,.68))}
-`;
-    document.head.appendChild(style);
-    const universe=document.createElement('div');
-    universe.id='gv-universe-context';
-    universe.setAttribute('aria-live','polite');
-    universe.innerHTML=
-      '<div class="gv-universe-label">'+
-        'THIS IS OUR MAP OF THE OBSERVABLE UNIVERSE'+
-        '<span class="gv-universe-count">OVER 2 TRILLION GALAXIES</span>'+
-        '<span class="gv-universe-size">93 BILLION LIGHT-YEARS ACROSS</span>'+
-      '</div>'+
-      '<div class="gv-universe-leader" aria-hidden="true"></div>';
-    document.getElementById('aladin-cosmic-command-test').appendChild(universe);
-}
-gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('GV SPACE AGE FONT LOAD FAILURE',error));
-
 // ============================================================================
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
 // ECO: GV200-001
