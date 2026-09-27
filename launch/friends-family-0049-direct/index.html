@@ -10,29 +10,25 @@
 <style>
 @font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:block}
 @font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:block}
-html,body{margin:0;width:100%;min-height:100%;overflow-x:hidden;overflow-y:auto;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif;-webkit-overflow-scrolling:touch}
-#gv-direct-shell{width:100%;min-height:1120px;padding:0 0 120px;background:#000;box-sizing:border-box}
-#gv-direct-frame{display:block;width:100%;height:1000px;border:0;background:#000;overflow:hidden}
-#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
 </style>
 </head>
 <body>
 <div id="cover"><img id="logo" src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER"><div class="label">VERSION GV-beta-200-013</div><div class="label">BUILD 0049</div><div class="spin"></div></div><div id="err"></div>
-<div id="gv-direct-shell"><iframe id="gv-direct-frame" title="GALAXY VIEWER BUILD 0049" scrolling="no"></iframe></div>
 <script>
 (async()=>{
 'use strict';
 function hideParentClose(){try{const button=parent?.document?.getElementById?.('gv-inline-close');if(button){button.style.setProperty('display','none','important');button.style.setProperty('visibility','hidden','important');button.style.setProperty('pointer-events','none','important');button.setAttribute('aria-hidden','true')}}catch(_){}}
 hideParentClose();
 setInterval(hideParentClose,500);
+function isVisible(el){try{if(!el)return false;const cs=getComputedStyle(el);const r=el.getBoundingClientRect();return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)>0.01&&r.width>20&&r.height>20&&r.bottom>0&&r.top<innerHeight}catch(_){return false}}
+function repairDirectHomeRandom(){try{const host=document.getElementById('gv-navigation-host');if(!host)return;const cards=[...document.querySelectorAll('.gvdp-card,.gvdp-panel,.gvdp-root')];const destinationVisible=cards.some(el=>isVisible(el)&&/(VIEW\s+.*\s+HD|DESIGNATION|DISTANCE|HEADING\s+TO)/i.test(el.textContent||''));if(!destinationVisible){host.style.setProperty('bottom','76px','important');host.style.setProperty('z-index','7300','important')}else{host.style.removeProperty('bottom');host.style.removeProperty('z-index')}}catch(_){}}
+function startDirectHomeRandomRepair(){try{if(window.__gvFF0049HomeRandomRepair)return;window.__gvFF0049HomeRandomRepair=true;repairDirectHomeRandom();setInterval(repairDirectHomeRandom,350);new MutationObserver(repairDirectHomeRandom).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});window.addEventListener('resize',repairDirectHomeRandom,{passive:true});window.addEventListener('pageshow',repairDirectHomeRandom,{passive:true})}catch(_){}}
 const VERSION='GV-beta-200-013';
 const BUILD='0049';
-const APP_VIEWPORT_HEIGHT=1000;
 const TIMEOUT=45000;
 const cover=document.getElementById('cover');
 const err=document.getElementById('err');
-const frame=document.getElementById('gv-direct-frame');
-const shell=document.getElementById('gv-direct-shell');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 const candidates=[
@@ -41,8 +37,6 @@ const candidates=[
   'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3d1e1f8b36efe011d1cded4c0169fd949f6ec47d/viewer/GV-beta-200-013.py',
   'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/GV-beta-200-013.py'
 ];
-function setArtificialViewport(){frame.style.height=APP_VIEWPORT_HEIGHT+'px';shell.style.minHeight=(APP_VIEWPORT_HEIGHT+120)+'px'}
-setArtificialViewport();
 function bust(url){return url+(url.includes('?')?'&':'?')+'ffdirect='+encodeURIComponent(nonce)}
 function fail(message){err.style.display='block';err.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+message}
 async function fetchText(url){
@@ -76,10 +70,23 @@ async function loadSource(){
   }
   throw new Error(errors.join('\n'));
 }
+function mountHtml(html){
+  const t=document.createElement('template');
+  t.innerHTML=html;
+  for(const node of [...t.content.childNodes]){
+    if(node.nodeName==='SCRIPT'){
+      const s=document.createElement('script');
+      for(const a of [...node.attributes])s.setAttribute(a.name,a.value);
+      s.textContent=node.textContent;
+      document.body.appendChild(s);
+    }else document.body.appendChild(node);
+  }
+}
 function patchSource(src){
   let s=String(src||'');
   s=s.replace("const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;","const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-ffdirect-${Date.now().toString(36)}`;");
   s=s.replace("destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation.js'","destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0049-hotfix.js'");
+  s=s.replace(/Object\.assign\(gvVersionReadout\.style,\{position:'absolute',left:'0',top:'-15px'[\s\S]*?pointerEvents:'none'\}\);/,"Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'58px',zIndex:'2147482001',transform:'translateX(-50%)',display:'block',width:'auto',font:'400 8px/1 \\\"GV Space Age\\\",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'2px 6px',border:'1px solid rgba(124,203,255,.55)',borderRadius:'6px',background:'rgba(0,8,20,.58)',boxShadow:'0 0 6px rgba(88,191,255,.45)',pointerEvents:'none'});");
   return s;
 }
 function extract(src){
@@ -88,39 +95,21 @@ function extract(src){
   if(!html||!js.length)throw new Error('Viewer extraction failed from Build 49 source');
   return {html,js};
 }
-function prepareFrame(){
-  const d=frame.contentDocument||frame.contentWindow.document;
-  const baseHref=new URL('.',location.href).href;
-  d.open();
-  d.write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><base href="'+baseHref.replace(/"/g,'&quot;')+'"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}</style></head><body></body></html>');
-  d.close();
-  return d;
-}
-function mountHtml(d,html){
-  const t=d.createElement('template');
-  t.innerHTML=html;
-  for(const node of [...t.content.childNodes]){
-    if(node.nodeName==='SCRIPT'){
-      const s=d.createElement('script');
-      for(const a of [...node.attributes])s.setAttribute(a.name,a.value);
-      s.textContent=node.textContent;
-      d.body.appendChild(s);
-    }else d.body.appendChild(node);
-  }
-}
 try{
   const source=patchSource(await loadSource());
   const declared=(source.match(/const GV200001_BUILD='(\d{4})'/)||[])[1]||'';
   if(declared!==BUILD)throw new Error('Build mismatch: expected '+BUILD+' got '+declared);
   const parts=extract(source);
-  const d=prepareFrame();
-  mountHtml(d,parts.html);
-  for(const code of parts.js){const s=d.createElement('script');s.textContent=code;d.body.appendChild(s)}
+  mountHtml(parts.html);
+  startDirectHomeRandomRepair();
+  for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
+  startDirectHomeRandomRepair();
   const deadline=performance.now()+TIMEOUT;
   while(performance.now()<deadline){
     hideParentClose();
-    const root=d.getElementById('aladin-cosmic-command-test');
-    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();if(cover.isConnected)cover.remove();return}
+    repairDirectHomeRandom();
+    const root=document.getElementById('aladin-cosmic-command-test');
+    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();repairDirectHomeRandom();if(cover.isConnected)cover.remove();return}
     await sleep(120);
   }
   throw new Error('Viewer startup timeout after loading Build 49 source');
