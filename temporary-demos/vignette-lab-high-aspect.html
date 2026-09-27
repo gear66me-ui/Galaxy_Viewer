@@ -1,0 +1,416 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GV Vignette Lab — High Aspect Ratio Study</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#01050b;color:#def7ff;font-family:Arial,sans-serif;overflow:hidden}
+#app{height:100vh;display:flex;justify-content:center;gap:8px;padding:6px}
+#viewer{height:calc(100vh - 12px);aspect-ratio:9/19.5;max-width:calc(100vw - 254px);position:relative;background:#000;border:1px solid #377da5;border-radius:9px;overflow:hidden}
+#aladin{position:absolute;inset:0}
+#info{position:absolute;z-index:20;left:5px;top:5px;right:44px;background:#001326d9;border-radius:5px;padding:5px;font-size:10px;pointer-events:none}
+#x{position:absolute;z-index:30;right:5px;top:5px;width:34px;height:30px}
+#rail{width:240px;flex:0 0 240px;height:calc(100vh - 12px);overflow-y:auto;background:linear-gradient(#08294e,#020a13);border:1px solid #49bff5;border-radius:9px;padding:8px}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:14px}
+button{min-height:29px;padding:3px;background:linear-gradient(#155d9c,#082b50);border:1px solid #64d3ff;border-radius:6px;color:#fff;font-size:9px;font-weight:bold}
+.controls{display:grid;gap:15px}.c{display:grid;grid-template-columns:72px 1fr 34px;gap:5px;align-items:center;font-size:9px;min-height:28px}
+input[type=range]{width:100%}
+input[type=number]{width:100%;min-width:0;background:#03111e;color:#fff;border:1px solid #56bce9;border-radius:4px;padding:4px}
+#ab.filters-on{background:linear-gradient(#159447,#075c29);border-color:#7cff9e}
+#ab.filters-off{background:linear-gradient(#c92e2e,#751313);border-color:#ff8585}output{color:#ff976c;text-align:right}.status{font-size:9px;color:#a8dff8;margin-top:12px;line-height:1.35}
+@media(max-width:560px){#app{gap:4px;padding:3px}#viewer{height:calc(100vh - 6px);max-width:calc(100vw - 185px)}#rail{width:175px;flex-basis:175px;height:calc(100vh - 6px);padding:5px}.c{grid-template-columns:53px 1fr 27px;gap:3px}.controls{gap:13px}.actions{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+
+<style id="v14-layout-fix">
+/* LAYOUT ONLY — preserve original buttons/tiles and experiment logic */
+html,body{height:100%;margin:0;overflow:hidden}
+.wrap{
+  height:100vh!important;
+  max-height:100vh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.rail{
+  height:100vh!important;
+  max-height:100vh!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  box-sizing:border-box!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+}
+.controls{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+.c{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+.c input[type="range"]{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.c input[type="number"],.c input[type="text"]{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+/* Existing button rows stay exactly where they are; only allow wrapping inside their own tile. */
+.row,.buttons,.actions,.nav{
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+button{box-sizing:border-box}
+</style>
+</head><body><div id="app">
+<div id="viewer"><div id="aladin"></div><div id="info">Initializing WCS lab…</div><button id="x">×</button></div>
+<div id="rail"><div class="actions">
+<button id="back">◀ BACK</button><button id="random">🎲 RANDOM</button><button id="next">NEXT ▶</button>
+<button id="ab">FILTERS OFF · 100%</button><button id="hard">EDGE BLEND</button><button id="toggle">HD ON/OFF</button><button id="export">SAVE ALL SETTINGS</button><button id="import">IMPORT ALL</button><input id="importfile" type="file" accept="application/json,.json" hidden><button id="reset">RESET IMAGE</button>
+</div><div class="controls">
+<div class="c"><span>FoV °</span><input id="fovinput" type="number" min="0.000001" max="180" step="0.000001" value="1"><output>deg</output></div>
+<div class="c"><span>LIVE FoV Y°</span><input id="livefov" type="text" value="—" readonly><output>actual</output></div>
+<div class="c"><span>Orientation °</span><input id="orientinput" type="number" min="-360" max="360" step="0.001" value="0"><output>deg</output></div>
+<div class="c"><span>Aladin level</span><input id="sky" type="range" min="0" max="100" value="100"><output></output></div>
+<div class="c"><span>Zoom / FoV</span><input id="zoom" type="range" min="25" max="800" value="125"><output></output></div>
+<div class="c"><span>HD opacity</span><input id="opacity" type="range" min="0" max="100" value="100"><output></output></div>
+<div class="c"><span>Image ↔ DSS</span><input id="crossblend" type="range" min="0" max="100" value="100"><output></output></div>
+<div class="c"><span>Vignette dia.</span><input id="diameter" type="range" min="65" max="150" value="112"><output></output></div>
+<div class="c"><span>Blend width</span><input id="blend" type="range" min="2" max="55" value="24"><output></output></div>
+<div class="c"><span>Exp decay</span><input id="decay" type="range" min="10" max="500" value="175"><output></output></div>
+<div class="c"><span>Opaque core</span><input id="core" type="range" min="15" max="95" value="72"><output></output></div>
+<div class="c"><span>Feather</span><input id="feather" type="range" min="1" max="100" value="58"><output></output></div>
+<div class="c"><span>Curve</span><input id="curve" type="range" min="40" max="300" value="120"><output></output></div>
+<div class="c"><span>Dissolve</span><input id="dissolve" type="range" min="0" max="100" value="38"><output></output></div>
+<div class="c"><span>Dark first</span><input id="dark" type="range" min="0" max="100" value="72"><output></output></div>
+<div class="c"><span>Micro grain</span><input id="block" type="range" min="1" max="3" value="1"><output></output></div>
+</div><div class="status" id="status">WCS owns registration. FoV + Orientation fields own the Aladin camera, matching Galaxy Viewer behavior.</div></div>
+</div>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+'use strict';
+const RAW='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/';
+const MASTER=RAW+'viewer/image-databases/master-database/gv-master-catalog.json';
+const AVM_RUNTIME=RAW+'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json';
+let avmRuntimePromise=null;
+const ids=['sky','zoom','opacity','crossblend','diameter','blend','decay','core','feather','curve','dissolve','dark','block'], C={};
+ids.forEach(k=>C[k]=document.getElementById(k));
+const info=document.getElementById('info'),status=document.getElementById('status');
+let aladin,records=[],order=[],pos=-1,current=null,baseFov=.25,layer=null,rawLayer=null,effectLayer=null,hdOn=true,blobUrl=null,loadToken=0,rawMode=false,hardMode=false;
+const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
+const LAYER='GV VIGNETTE WCS ORIGINAL-TILE CURATION LAB';
+const val=k=>+C[k].value;
+function outputs(){ids.forEach(k=>C[k].parentElement.querySelector('output').textContent=C[k].value+(k==='block'?'px':k==='curve'?'':'%'))}
+function flatten(x){if(Array.isArray(x))return x;for(const k of ['entries','records','galaxies','items'])if(Array.isArray(x?.[k]))return x[k];return[]}
+function urlOf(r){return r.avmAuthorityUrl||r.avmSourceUrl||r.selectedImageUrl||r.hdUrl||r.screenUrl||r.largeUrl||(Array.isArray(r.jpegCandidates)?r.jpegCandidates[0]:'')||''}
+function shuffle(a){for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function hash(x,y){let n=(x*374761393+y*668265263)>>>0;n=(n^(n>>>13))*1274126177>>>0;n^=n>>>16;return(n>>>0)/4294967295}
+function cleanWcs(w){let o={};for(const [k,v] of Object.entries(w||{}))if(v!=null&&['string','number','boolean'].includes(typeof v))o[k]=v;let cd=['CD1_1','CD1_2','CD2_1','CD2_2'].every(k=>Number.isFinite(+o[k]));if(String(o.CTYPE1||'').toUpperCase().startsWith('RA---')&&String(o.CTYPE2||'').toUpperCase().startsWith('DEC--')&&!cd&&+o.CDELT1>0&&+o.CDELT2>0)o.CDELT1=-Math.abs(+o.CDELT1);return o}
+async function runtimeAvmRecord(r){
+ if(!avmRuntimePromise)avmRuntimePromise=fetch(AVM_RUNTIME+'?t='+Date.now(),{cache:'no-store'}).then(x=>{if(!x.ok)throw Error('AVM catalog HTTP '+x.status);return x.json()}).then(j=>{
+  const a=Array.isArray(j)?j:j.records;if(!Array.isArray(a))throw Error('AVM catalog invalid');
+  const byId=new Map(),byUrl=new Map();for(const q of a){const id=String(q?.archiveId||'').trim().toLowerCase(),u=String(q?.imageUrl||'').trim().toLowerCase();if(id)byId.set(id,q);if(u)byUrl.set(u,q)}return {byId,byUrl};
+ });
+ const m=await avmRuntimePromise,id=String(r?.archiveId||r?.id||r?.providerId||'').trim().toLowerCase(),u=urlOf(r).trim().toLowerCase();
+ const q=m.byId.get(id)||m.byUrl.get(u);if(!q)throw Error('AVM runtime record missing · '+(id||u));return q;
+}
+function runtimeWcs(record,width,height){
+ const ra=Number(record?.ra),dec=Number(record?.dec),fx=Number(record?.fovXDegrees??record?.fovDegrees),fy=Number(record?.fovYDegrees??record?.fovDegrees),rot=Number(record?.aladinRotation??record?.spatialRotationDeg);
+ if(![ra,dec,fx,fy,rot,width,height].every(Number.isFinite)||fx<=0||fy<=0||width<=0||height<=0)throw Error('AVM runtime WCS invalid');
+ const sx=fx/width,sy=fy/height,t=rot*Math.PI/180,co=Math.cos(t),si=Math.sin(t),rp=record?.referencePixel,rd=record?.referenceDimension;
+ const rw=Number(rd?.[0]),rh=Number(rd?.[1]),rpx=Number(rp?.[0]),rpy=Number(rp?.[1]);
+ const crpix1=Number.isFinite(rpx)&&Number.isFinite(rw)&&rw>0?rpx*(width/rw):(width+1)/2;
+ const crpix2=Number.isFinite(rpy)&&Number.isFinite(rh)&&rh>0?rpy*(height/rh):(height+1)/2;
+ return {NAXIS:2,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:'deg',CUNIT2:'deg',CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,CD1_1:-sx*co,CD1_2:-sy*si,CD2_1:-sx*si,CD2_2:sy*co,NAXIS1:width,NAXIS2:height};
+}
+function removeLayer(){try{aladin.removeOverlayImageLayer(LAYER)}catch(_){} layer=null;if(blobUrl){URL.revokeObjectURL(blobUrl);blobUrl=null}}
+async function fetchImageBlob(url){
+ const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=vignette-lab-v15'];
+ let last='';
+ for(const source of attempts){
+  try{
+   const res=await fetch(source,{mode:'cors',credentials:'omit',cache:'no-store',redirect:'follow'});
+   if(!res.ok)throw Error('HTTP '+res.status);
+   const blob=await res.blob();if(!blob||blob.size<=0)throw Error('EMPTY IMAGE BLOB');
+   return {blob,source:source===url?'DIRECT':'PROXY'};
+  }catch(e){last=String(e?.message||e)}
+ }
+ throw Error('HD FETCH FAILED · '+last);
+}
+async function makeVignette(url){
+ const fetched=await fetchImageBlob(url);
+ const blob=fetched.blob;
+ const bmp=await createImageBitmap(blob),w=bmp.width,h=bmp.height;
+ const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0);bmp.close?.();
+ const q=x.getImageData(0,0,w,h),d=q.data,cx=w/2,cy=h/2;
+ const dia=val('diameter')/100, rx=w*.5*dia, ry=h*.5*dia;
+ const core=Math.min(.98,val('core')/100), blend=val('blend')/100, decay=val('decay')/100;
+ const curve=val('curve')/100, dis=val('dissolve')/100,dark=val('dark')/100,bs=1;
+ for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+   let i=(yy*w+xx)*4;
+   let ex=(xx-cx)/rx, ey=(yy-cy)/ry, er=Math.hypot(ex,ey);
+   // Hard-edge blend starts from the rectangular frame and converges inward
+   // toward an ellipse slightly inside the inscribed image boundary.
+   let edgePx=Math.min(xx,yy,w-1-xx,h-1-yy);
+   let edgeNorm=edgePx/Math.max(1,Math.min(w,h)*.5);
+   let t;
+   if(hardMode){
+     let rectFade=Math.max(0,Math.min(1,edgeNorm/Math.max(.01,blend)));
+     let ellipseFade=er<=core?1:Math.max(0,1-(er-core)/Math.max(.001,1-core));
+     t=Math.min(rectFade,ellipseFade);
+   }else{
+     if(er<=core)t=1;
+     else if(er>=1)t=0;
+     else t=1-(er-core)/Math.max(.001,1-core);
+   }
+   // Shape the transition. Higher decay gives a more photographic/exponential tail.
+   let smooth=t*t*(3-2*t);
+   let expTail=(1-Math.exp(-Math.max(.1,decay)*t))/(1-Math.exp(-Math.max(.1,decay)));
+   let mix=Math.max(0,Math.min(1,blend*1.8));
+   let alpha=(1-mix)*Math.pow(smooth,curve)+mix*expTail;
+   let z=1-t, lum=(.2126*d[i]+.7152*d[i+1]+.0722*d[i+2])/255;
+   let prob=dis*Math.pow(z,1.35)*((1-dark)+dark*(1-lum));
+   if(hash(xx,yy)<prob*.28)alpha*=0.35;
+   d[i+3]=Math.round(d[i+3]*Math.max(0,Math.min(1,alpha)));
+ }
+ x.putImageData(q,0,0);const png=await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(Error('PNG encode failed')),'image/png'));return {png,sourceBlob:blob,width:w,height:h,source:fetched.source};
+}
+function cameraSnapshot(){
+ let ra=null,dec=null,fov=null,orientation=null;
+ try{
+   const c=aladin.getRaDec?.();
+   if(Array.isArray(c)){ra=Number(c[0]);dec=Number(c[1])}
+ }catch(_){}
+ try{
+   const f=aladin.getFov?.();
+   if(Array.isArray(f)&&Number.isFinite(Number(f[1])))fov=Number(f[1]);
+   else if(Number.isFinite(Number(f)))fov=Number(f);
+ }catch(_){}
+ if(!Number.isFinite(fov))fov=Number(document.getElementById('fovinput').value);
+ orientation=Number(document.getElementById('orientinput').value);
+ return {ra,dec,fov,orientation};
+}
+function restoreCamera(c){
+ if(!c)return;
+ try{if(Number.isFinite(c.ra)&&Number.isFinite(c.dec))aladin.gotoRaDec(c.ra,c.dec)}catch(_){}
+ try{if(Number.isFinite(c.fov)&&c.fov>0)commandVerticalFov(c.fov)}catch(_){}
+ try{if(Number.isFinite(c.orientation)&&typeof aladin.setRotation==='function')aladin.setRotation(c.orientation)}catch(_){}
+}
+function exportPayload(){
+ const key=String(current?.archiveId||current?.name||urlOf(current)||'unknown');
+ return {
+   schema:'galaxy-viewer-vignette-settings',
+   version:1,
+   exportedAt:new Date().toISOString(),
+   image:{
+     key,
+     archiveId:current?.archiveId??null,
+     name:current?.name??null,
+     sourceUrl:urlOf(current)
+   },
+   camera:{
+     fovDegrees:Number(document.getElementById('fovinput').value),
+     orientationDegrees:Number(document.getElementById('orientinput').value)
+   },
+   filters:captureSettings(),
+   modes:{hardEdgeBlend:hardMode}
+ };
+}
+async function installCurrent(){
+ const lockedCamera=cameraSnapshot(),token=++loadToken,r=current,u=urlOf(r);removeLayer();status.textContent='Loading AVM runtime geometry + HD image…';
+ try{
+  const [record,raster]=await Promise.all([runtimeAvmRecord(r),makeVignette(u)]);
+  if(token!==loadToken)throw Error('superseded');
+  const wcs=runtimeWcs(record,raster.width,raster.height);
+  const rawUrl=URL.createObjectURL(raster.sourceBlob);blobUrl=URL.createObjectURL(raster.png);
+  rawLayer=A.image(rawUrl,{name:LAYER+' RAW',imgFormat:'jpeg',wcs,opacity:rawMode?1:0,
+   successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
+   errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · ORIGINAL LAYER · '+String(e||'unknown')}
+  });
+  effectLayer=A.image(blobUrl,{name:LAYER+' EFFECT',imgFormat:'png',wcs,opacity:rawMode?0:(val('opacity')/100)*(val('crossblend')/100),
+   successCallback:()=>{status.dataset.hd='loaded';applyFilterVisibility()},
+   errorCallback:e=>{status.dataset.hd='failed';status.textContent='HD LOAD FAILED · EFFECT LAYER · '+String(e||'unknown')}
+  });
+  aladin.setOverlayImageLayer(rawLayer,LAYER+' RAW');aladin.setOverlayImageLayer(effectLayer,LAYER+' EFFECT');layer=effectLayer;
+  aladin.gotoRaDec(Number(record.ra),Number(record.dec));document.getElementById('orientinput').value=Number(record?.aladinRotation??record?.spatialRotationDeg)||0;
+  const fy=Number(record?.fovYDegrees??record?.fovDegrees);if(Number.isFinite(fy)&&fy>0){document.getElementById('fovinput').value=fy;baseFov=fy}
+  applyCamera();status.textContent='HD REGISTERING · '+raster.source+' · JSON/CD WCS';
+ }catch(e){status.dataset.hd='failed';status.textContent='HD LOAD FAILED · '+String(e?.message||e)}
+}
+async function loadCatalogs(){
+ let m=await(await fetch(MASTER+'?t='+Date.now())).json(),all=[];
+ for(const [provider,path] of Object.entries(m.catalogs||{})){try{let j=await(await fetch(RAW+path+'?t='+Date.now())).json();for(const r of flatten(j)){if(urlOf(r))all.push({...r,_provider:provider})}}catch(e){console.warn(provider,e)}}
+ records=all.map(r=>{const fx=Number(r?.avmHorizontalFovDegrees??r?.fovXDegrees??r?.fovDegrees),fy=Number(r?.avmVerticalFovDegrees??r?.fovYDegrees??r?.fovDegrees),rd=r?.referenceDimension||[];const rw=Number(rd[0]),rh=Number(rd[1]);let ar=Number.isFinite(rw)&&rw>0&&Number.isFinite(rh)&&rh>0?Math.max(rw/rh,rh/rw):(Number.isFinite(fx)&&fx>0&&Number.isFinite(fy)&&fy>0?Math.max(fx/fy,fy/fx):NaN);return {...r,_aspectRatio:ar}}).filter(r=>Number.isFinite(r._aspectRatio)&&r._aspectRatio>1.3).sort((a,b)=>b._aspectRatio-a._aspectRatio);
+ order=records.map((_,i)=>i);status.textContent=`HIGH-ASPECT STUDY · ${records.length} images · AR > 1.30 · highest first`;show(0);
+}
+
+function imageKey(r){return 'gv-v6-image:'+String(r?.archiveId||r?.name||urlOf(r))}
+function captureSettings(){return Object.fromEntries(ids.map(k=>[k,C[k].value]))}
+function applySettings(o){if(!o)return;ids.forEach(k=>{if(o[k]!=null)C[k].value=o[k]});outputs()}
+function loadImageSettings(){try{applySettings(JSON.parse(localStorage.getItem(imageKey(current))||'null'))}catch(_){}}
+function finite(v){const n=Number(v);return Number.isFinite(n)?n:null}
+function recordFov(r){
+ const candidates=[r?.avmVerticalFovDegrees,r?.imageFovYDeg,r?.fovDegrees,r?.fieldOfViewDegrees?.effectiveDegrees,r?.imageFovDeg,r?.imageFovDegrees];
+ for(const v of candidates){const n=finite(v);if(n&&n>0&&n<=180)return n}
+ return .25;
+}
+function recordOrientation(r){
+ const candidates=[
+   r?.aladinRotation,r?.avmCameraRotation,r?.cameraRotation,
+   r?.orientationDegrees,r?.avmRotation,r?.rotation
+ ];
+ for(const v of candidates){const n=finite(v);if(n!==null)return ((n%360)+360)%360}
+ return 0;
+}
+function setFilterButton(){
+ const b=document.getElementById('ab');
+ b.classList.toggle('filters-on',!rawMode); b.classList.toggle('filters-off',rawMode);
+ b.textContent=rawMode?'FILTERS OFF · 100%':'FILTERS ON';
+}
+function applyFilterVisibility(){
+ const op=(val('opacity')/100)*(val('crossblend')/100);
+ if(!rawLayer&&!effectLayer){setFilterButton();status.dataset.hd='failed';status.textContent='HD NOT LOADED · FILTER SWITCH HAS NO IMAGE LAYER';return}
+ try{if(rawLayer)rawLayer.setOpacity(rawMode?1:0)}catch(_){}
+ try{if(effectLayer)effectLayer.setOpacity(rawMode?0:op)}catch(_){}
+ setFilterButton();
+ status.dataset.hd='loaded';
+ status.textContent=rawMode
+   ?'HD LOADED · FILTERS OFF · 100% ORIGINAL'
+   :'HD LOADED · FILTERS ON · PROCESSED AVM IMAGE';
+}
+function liveFovPair(){
+ try{
+  const f=aladin.getFov?.();
+  if(Array.isArray(f)&&f.length>=2)return [Number(f[0]),Number(f[1])];
+  const n=Number(f);if(Number.isFinite(n))return [n,n];
+ }catch(_){}
+ return [NaN,NaN];
+}
+function updateLiveFov(){
+ const [,y]=liveFovPair();
+ document.getElementById('livefov').value=Number.isFinite(y)?y.toFixed(6):'—';
+}
+async function commandVerticalFov(targetY){
+ targetY=Number(targetY);if(!aladin||!Number.isFinite(targetY)||targetY<=0)return;
+ let command=targetY;
+ for(let i=0;i<5;i++){
+  try{aladin.setFoV(command)}catch(_){try{aladin.setFov(command)}catch(__){break}}
+  await new Promise(r=>setTimeout(r,40));
+  const [,actualY]=liveFovPair();
+  if(!Number.isFinite(actualY)||actualY<=0)break;
+  const ratio=targetY/actualY;
+  if(Math.abs(ratio-1)<0.0005)break;
+  command*=ratio;
+ }
+ updateLiveFov();
+}
+function applyCamera(){
+ if(!aladin||!current)return;
+ const f=Math.max(.000001,Math.min(180,Number(document.getElementById('fovinput').value)||recordFov(current)));
+ const r=Number(document.getElementById('orientinput').value);
+ baseFov=f; commandVerticalFov(f*(val('zoom')/100));
+ try{if(Number.isFinite(r)&&typeof aladin.setRotation==='function')aladin.setRotation(r)}catch(_){}
+}
+
+function show(n){rawLayer=null;effectLayer=null;layer=null;if(!records.length)return;pos=(n+order.length)%order.length;current=records[order[pos]];rawMode=false;hardMode=false;document.getElementById('fovinput').value=recordFov(current);document.getElementById('orientinput').value=recordOrientation(current);setFilterButton();document.getElementById('hard').textContent='EDGE BLEND';loadImageSettings();info.textContent=`${current.name||current.displayName||current.archiveId||'Galaxy'} · ${(current._provider||'').toUpperCase()} · AR ${Number(current._aspectRatio).toFixed(3)} · ${pos+1}/${records.length}`;installCurrent()}
+function toggle(){hdOn=!hdOn;if(layer)try{layer.setOpacity(hdOn?val('opacity')/100:0)}catch(_){}}
+document.getElementById('next').onclick=()=>show(pos+1);document.getElementById('back').onclick=()=>show(pos-1);document.getElementById('random').onclick=()=>show(Math.floor(Math.random()*order.length));document.getElementById('toggle').onclick=toggle;document.getElementById('x').onclick=toggle;
+document.getElementById('ab').onclick=()=>{rawMode=!rawMode;applyFilterVisibility()};
+document.getElementById('hard').onclick=()=>{hardMode=!hardMode;document.getElementById('hard').textContent=hardMode?'EDGE ✓':'EDGE BLEND';if(!rawMode&&current)installCurrent()};
+function currentArchiveEntry(){
+ const payload=exportPayload();
+ return {
+   image:payload.image,
+   camera:payload.camera,
+   filters:payload.filters,
+   modes:payload.modes
+ };
+}
+function collectAllSettings(){
+ const images={};
+ // Collect every per-image recipe already saved in this browser.
+ for(let i=0;i<localStorage.length;i++){
+   const k=localStorage.key(i);
+   if(!k||!k.startsWith('gv-v6-image:'))continue;
+   try{
+     const filters=JSON.parse(localStorage.getItem(k));
+     images[k.slice('gv-v6-image:'.length)]={filters};
+   }catch(_){}
+ }
+ // Always capture the image currently on screen, even if SAVE IMAGE was never pressed.
+ if(current){
+   const e=currentArchiveEntry();
+   images[e.image.key]=e;
+   localStorage.setItem(imageKey(current),JSON.stringify(e.filters));
+ }
+ return {
+   schema:'galaxy-viewer-vignette-settings-archive',
+   version:1,
+   exportedAt:new Date().toISOString(),
+   imageCount:Object.keys(images).length,
+   images
+ };
+}
+document.getElementById('export').onclick=()=>{
+ const archive=collectAllSettings();
+ const blob=new Blob([JSON.stringify(archive,null,2)],{type:'application/json'});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='gv-vignette-settings-archive.json';
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+ status.textContent=`ALL SETTINGS SAVED — ${archive.imageCount} IMAGE${archive.imageCount===1?'':'S'}.`;
+};
+document.getElementById('import').onclick=()=>document.getElementById('importfile').click();
+document.getElementById('importfile').onchange=async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+   const o=JSON.parse(await f.text());
+   if(o?.schema!=='galaxy-viewer-vignette-settings-archive'||!o.images)throw Error('not a GV vignette settings archive');
+   let count=0;
+   for(const [key,entry] of Object.entries(o.images)){
+     if(!entry?.filters)continue;
+     localStorage.setItem('gv-v6-image:'+key,JSON.stringify(entry.filters));
+     count++;
+   }
+   // Apply current image immediately if it exists in imported archive.
+   if(current){
+     const key=String(current?.archiveId||current?.name||urlOf(current));
+     const entry=o.images[key];
+     if(entry?.filters)applySettings(entry.filters);
+     if(Number.isFinite(Number(entry?.camera?.fovDegrees)))document.getElementById('fovinput').value=entry.camera.fovDegrees;
+     if(Number.isFinite(Number(entry?.camera?.orientationDegrees)))document.getElementById('orientinput').value=entry.camera.orientationDegrees;
+     if(entry?.modes)hardMode=Boolean(entry.modes.hardEdgeBlend);
+     document.getElementById('hard').textContent=hardMode?'EDGE ✓':'EDGE BLEND';
+     applyCamera();
+     if(!rawMode&&entry?.filters)installCurrent();
+   }
+   status.textContent=`ARCHIVE IMPORTED — ${count} IMAGE${count===1?'':'S'}.`;
+ }catch(err){status.textContent='IMPORT FAILED: '+err.message}
+ finally{e.target.value=''}
+};
+document.getElementById('reset').onclick=()=>{if(!current)return;localStorage.removeItem(imageKey(current));status.textContent='THIS IMAGE SETTINGS CLEARED.'};
+ids.forEach(k=>C[k].addEventListener('input',()=>{outputs();if(k==='sky')document.getElementById('aladin').style.opacity=val('sky')/100;else if(k==='zoom'&&aladin)commandVerticalFov(baseFov*(val('zoom')/100));else if(k==='opacity'||k==='crossblend')applyFilterVisibility()}));
+document.getElementById('fovinput').addEventListener('change',applyCamera);
+document.getElementById('orientinput').addEventListener('change',applyCamera);
+// expensive pixel controls rebuild on change, not every finger movement
+['diameter','blend','decay','core','feather','curve','dissolve','dark','block'].forEach(k=>C[k].addEventListener('change',()=>{if(current&&!rawMode)installCurrent()}));
+outputs();setFilterButton();await A.init;aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'M 31',fov:1,cooFrame:'ICRSd',projection:'TAN',showReticle:true,showZoomControl:true,showLayersControl:true,showGotoControl:true,showFullscreenControl:false});loadCatalogs().catch(e=>status.textContent='CATALOG ERROR: '+e.message);
+})();
+</script></body></html>
