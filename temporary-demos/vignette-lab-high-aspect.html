@@ -90,7 +90,7 @@ button{box-sizing:border-box}
 <div class="c"><span>Zoom / FoV</span><input id="zoom" type="range" min="25" max="800" value="125"><output></output></div>
 <div class="c"><span>HD opacity</span><input id="opacity" type="range" min="0" max="100" value="100"><output></output></div>
 <div class="c"><span>Image ↔ DSS</span><input id="crossblend" type="range" min="0" max="100" value="100"><output></output></div>
-<div class="c"><span>Vignette dia.</span><input id="diameter" type="range" min="65" max="150" value="125"><output></output></div>
+<div class="c"><span>Vignette dia.</span><input id="diameter" type="range" min="65" max="150" value="131"><output></output></div>
 <div class="c"><span>Blend width</span><input id="blend" type="range" min="2" max="55" value="24"><output></output></div>
 <div class="c"><span>Exp decay</span><input id="decay" type="range" min="10" max="500" value="175"><output></output></div>
 <div class="c"><span>Opaque core</span><input id="core" type="range" min="15" max="95" value="72"><output></output></div>
@@ -157,6 +157,8 @@ async function makeVignette(url){
  const fetched=await fetchImageBlob(url);
  const blob=fetched.blob;
  const bmp=await createImageBitmap(blob),w=bmp.width,h=bmp.height;
+ const actualAspect=Math.max(w/h,h/w),highAspect=actualAspect>1.3;
+ if(highAspect){C.diameter.value='131';hardMode=true}
  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0);bmp.close?.();
  const q=x.getImageData(0,0,w,h),d=q.data,cx=w/2,cy=h/2;
  const dia=val('diameter')/100, rx=w*.5*dia, ry=h*.5*dia;
