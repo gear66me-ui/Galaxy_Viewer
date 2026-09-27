@@ -10,20 +10,19 @@
 <style>
 @font-face{font-family:"GV Space Age";src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");font-display:block}
 @font-face{font-family:"Space Age";src:url("../../viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf") format("opentype");font-display:block}
-html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:#fff;font-family:"GV Space Age","Space Age",Arial,sans-serif}#cover{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#000;text-align:center}#logo{width:min(42vw,220px);height:min(42vw,220px);object-fit:contain}.label{color:#f2fdff;text-shadow:0 0 12px #058cff;font:400 17px/1 "GV Space Age","Space Age",Arial,sans-serif!important;letter-spacing:1.2px}.spin{width:42px;height:42px;border:3px solid rgba(98,216,255,.25);border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}#err{display:none;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;padding:22px;background:#000;color:#FFD166;white-space:pre-wrap;font:13px/1.45 monospace;overflow:auto}#gv-web-debug{position:fixed;left:5px;top:5px;z-index:2147483000;padding:2px 5px;border:1px solid rgba(120,255,171,.75);border-radius:5px;background:rgba(0,12,20,.72);color:#78ffab;font:700 9px/1 monospace;letter-spacing:.4px;pointer-events:none;text-shadow:0 0 6px rgba(120,255,171,.8)}
 </style>
 </head>
 <body>
-<div id="cover"><img id="logo" src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER"><div class="label">VERSION GV-beta-200-013</div><div class="label">BUILD 0049</div><div class="spin"></div></div><div id="err"></div>
+<div id="cover"><img id="logo" src="../../viewer/artwork/icon.svg" alt="GALAXY VIEWER"><div class="label">VERSION GV-beta-200-013</div><div class="label">BUILD 0049</div><div class="spin"></div></div><div id="err"></div><div id="gv-web-debug">WEB 01</div>
 <script>
 (async()=>{
 'use strict';
 function hideParentClose(){try{const button=parent?.document?.getElementById?.('gv-inline-close');if(button){button.style.setProperty('display','none','important');button.style.setProperty('visibility','hidden','important');button.style.setProperty('pointer-events','none','important');button.setAttribute('aria-hidden','true')}}catch(_){}}
 hideParentClose();
 setInterval(hideParentClose,500);
-function isVisible(el){try{if(!el)return false;const cs=getComputedStyle(el);const r=el.getBoundingClientRect();return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)>0.01&&r.width>20&&r.height>20&&r.bottom>0&&r.top<innerHeight}catch(_){return false}}
-function repairDirectHomeRandom(){try{const host=document.getElementById('gv-navigation-host');if(!host)return;const cards=[...document.querySelectorAll('.gvdp-card,.gvdp-panel,.gvdp-root')];const destinationVisible=cards.some(el=>isVisible(el)&&/(VIEW\s+.*\s+HD|DESIGNATION|DISTANCE|HEADING\s+TO)/i.test(el.textContent||''));if(!destinationVisible){host.style.setProperty('bottom','76px','important');host.style.setProperty('z-index','7300','important')}else{host.style.removeProperty('bottom');host.style.removeProperty('z-index')}}catch(_){}}
-function startDirectHomeRandomRepair(){try{if(window.__gvFF0049HomeRandomRepair)return;window.__gvFF0049HomeRandomRepair=true;repairDirectHomeRandom();setInterval(repairDirectHomeRandom,350);new MutationObserver(repairDirectHomeRandom).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});window.addEventListener('resize',repairDirectHomeRandom,{passive:true});window.addEventListener('pageshow',repairDirectHomeRandom,{passive:true})}catch(_){}}
+function repairDirectRandom(){try{const host=document.getElementById('gv-navigation-host');if(!host)return;host.style.setProperty('bottom','76px','important');host.style.setProperty('z-index','7300','important');host.style.setProperty('pointer-events','auto','important')}catch(_){}}
+function startDirectRandomRepair(){try{if(window.__gvFF0049RandomLiftWeb01)return;window.__gvFF0049RandomLiftWeb01=true;repairDirectRandom();setInterval(repairDirectRandom,250);new MutationObserver(repairDirectRandom).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});window.addEventListener('resize',repairDirectRandom,{passive:true});window.addEventListener('pageshow',repairDirectRandom,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)repairDirectRandom()},{passive:true})}catch(_){}}
 const VERSION='GV-beta-200-013';
 const BUILD='0049';
 const TIMEOUT=45000;
@@ -101,15 +100,15 @@ try{
   if(declared!==BUILD)throw new Error('Build mismatch: expected '+BUILD+' got '+declared);
   const parts=extract(source);
   mountHtml(parts.html);
-  startDirectHomeRandomRepair();
+  startDirectRandomRepair();
   for(const code of parts.js){const s=document.createElement('script');s.textContent=code;document.body.appendChild(s)}
-  startDirectHomeRandomRepair();
+  startDirectRandomRepair();
   const deadline=performance.now()+TIMEOUT;
   while(performance.now()<deadline){
     hideParentClose();
-    repairDirectHomeRandom();
+    repairDirectRandom();
     const root=document.getElementById('aladin-cosmic-command-test');
-    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();repairDirectHomeRandom();if(cover.isConnected)cover.remove();return}
+    if(root&&root.querySelector('canvas')){await sleep(1600);hideParentClose();repairDirectRandom();if(cover.isConnected)cover.remove();return}
     await sleep(120);
   }
   throw new Error('Viewer startup timeout after loading Build 49 source');
