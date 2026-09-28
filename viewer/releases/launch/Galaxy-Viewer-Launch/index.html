@@ -31,13 +31,18 @@ const paint2=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(
 try{
  const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));
  ver.textContent='VERSION '+String(p.version||'').toUpperCase();bld.textContent='BUILD '+String(p.build||'').toUpperCase();
+ const identityStarted=performance.now();
+ splash.src='../../splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=remote-'+Date.now();
+ await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH PRELOAD TIMEOUT')),12000);splash.addEventListener('load',()=>{clearTimeout(timeout);resolve()},{once:true})});
+ const identityRemain=Math.max(0,3000-(performance.now()-identityStarted));if(identityRemain)await sleep(identityRemain);
+ splash.style.display='block';
+ await paint2();
+ await sleep(900);
  const src=await read(BASE+p.viewer+'?t='+Date.now());
  const hm=src.match(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/),jm=src.match(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/);
  if(!hm||!jm)throw Error('VIEWER EXTRACTION FAILED');
  document.body.insertAdjacentHTML('beforeend',hm[1]);const e=document.createElement('script');e.textContent=jm[1];document.body.appendChild(e);
- await sleep(3000);
- splash.style.display='block';splash.src='../../splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=remote-'+Date.now();
- await sleep(12750);
+ await sleep(11850);
  const ready=()=>{const root=document.getElementById('aladin-cosmic-command-test'),nav=document.getElementById('gv-navigation-host'),ret=document.getElementById('gv-center-reticle'),canvas=root&&root.querySelector('canvas');return !!(root&&nav&&ret&&canvas&&ret.querySelector('img')&&ret.querySelector('img').complete)};
  const deadline=Date.now()+45000;while(!ready()&&Date.now()<deadline)await sleep(100);
  if(!ready())throw Error('VIEWER READINESS TIMEOUT');
