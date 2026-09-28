@@ -30,7 +30,7 @@ public final class MainActivity extends Activity {
   private WebView top, web, bottom;
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false;
-  private String providerIcon="", sourceUrl="";
+  private String providerIcon="", sourceUrl="", pendingProviderUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
   @Override public void onCreate(Bundle b){
@@ -78,7 +78,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;pendingProviderUrl="";} sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -88,7 +88,7 @@ public final class MainActivity extends Activity {
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
   private void launchGalaxyViewer(){ browserMode=false; WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(false); s.setAllowContentAccess(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE); top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); android.view.ViewParent parent=web.getParent(); if(parent instanceof FrameLayout){ FrameLayout frame=(FrameLayout)parent; LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)frame.getLayoutParams(); lp.setMargins(0,0,0,0); frame.setLayoutParams(lp); frame.setBackgroundColor(Color.BLACK); } web.loadUrl("https://appassets.androidplatform.net/assets/index.html"); }
-  private void openProvider(String u){ browserMode=true; sourceUrl=u; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); fetchPointer(); }
+  private void openProvider(String u){ browserMode=true; pendingProviderUrl=u; sourceUrl=u; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); fetchPointer(); }
   private void returnToViewer(){ browserMode=false; top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); if(web.canGoBack()) web.goBack(); else launchGalaxyViewer(); }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
   @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ browserMode=true; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); sourceUrl=u; fetchPointer(); } }
