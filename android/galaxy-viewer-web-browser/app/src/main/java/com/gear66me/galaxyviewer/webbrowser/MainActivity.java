@@ -100,7 +100,7 @@ public final class MainActivity extends Activity {
     while((x=r.readLine())!=null)b.append(x); r.close(); return new JSONObject(b.toString());
   }
   private void syncShell(){
-    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+")";
+    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+","+(web.canGoBack()?"true":"false")+")";
     top.loadUrl(js);
   }
   public final class Bridge{
