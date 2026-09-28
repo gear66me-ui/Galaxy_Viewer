@@ -4,7 +4,9 @@
     <application
         android:allowBackup="false"
         android:hardwareAccelerated="true"
-        android:label="Galaxy Viewer Web Browser"
+        android:icon="@drawable/gv_target_launcher"
+        android:roundIcon="@drawable/gv_target_launcher"
+        android:label="Galaxy Viewer"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">
         <activity
