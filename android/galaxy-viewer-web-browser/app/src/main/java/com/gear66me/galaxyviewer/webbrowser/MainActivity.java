@@ -6,6 +6,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.Outline;
 import android.view.ViewOutlineProvider;
 import android.os.Bundle;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -38,7 +40,7 @@ public final class MainActivity extends Activity {
     web.setBackgroundColor(Color.TRANSPARENT);
     FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
     GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);
-    frame.addView(web,0,wp); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0026"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
+    frame.addView(web,0,wp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
     setContentView(root); fetchPointer();
@@ -56,7 +58,7 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0026");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0027");
     v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
       @Override public void onPageFinished(WebView view,String url){ sourceUrl=url; syncShell(); }
     }); return v;
@@ -67,7 +69,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -76,6 +78,8 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
+  private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
+  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ sourceUrl=u; web.loadUrl(u); syncShell(); } }
   private JSONObject getJson(String u)throws Exception{
     HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
     c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
