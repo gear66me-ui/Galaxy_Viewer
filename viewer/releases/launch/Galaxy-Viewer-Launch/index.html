@@ -41,23 +41,21 @@ try{
  document.body.insertAdjacentHTML('beforeend',html);const e=document.createElement('script');e.textContent=js;document.body.appendChild(e);
 
  const identityRemain=Math.max(0,3000-(performance.now()-identityStarted));if(identityRemain)await sleep(identityRemain);
+ const splashReady=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH PREP TIMEOUT')),20000);const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};addEventListener('message',onMessage)});
+ splash.src='../../splash/Galaxy-Viewer-Singularity-FINAL/index.html?armed=1&v=prep-'+Date.now();
+
  const readiness=()=>{
    const root=document.getElementById('aladin-cosmic-command-test');
-   const core=window.GalaxyViewerCore,runtime=window.GalaxyViewerRuntime,navState=runtime?.navigationState;
-   return {root:!!root,core:!!core,runtime:!!runtime,aladin:!!core?.aladin,phase:navState?.phase??null,active:navState?.active??null};
- };
- const ready=()=>{const s=readiness();return !!(s.root&&s.core&&s.runtime&&s.aladin&&s.phase==='READY'&&s.active===100)};
- const deadline=Date.now()+60000;while(!ready()&&Date.now()<deadline)await sleep(100);
- if(!ready())throw Error('VIEWER APP READINESS TIMEOUT '+JSON.stringify(readiness()));
-
- // FINAL SPLASH: start it NOW, from frame zero, only after the complete viewer is READY.
- const splashLoaded=new Promise((resolve,reject)=>{
-   const timeout=setTimeout(()=>reject(Error('SPLASH LOAD TIMEOUT')),12000);
-   splash.addEventListener('load',()=>{clearTimeout(timeout);resolve()},{once:true});
- });
- const splashComplete=new Promise((resolve,reject)=>{
-   const timeout=setTimeout(()=>reject(Error('SPLASH COMPLETION TIMEOUT')),20000);
-   const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-complete'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};
+   const core=window.GalaxyViewerCore,runtime=window.GalaxyViewerRuntime,navState=runtime?.navigation // FINAL SPLASH: prepared behind spinner; hold spinner 2s, then reveal/start frame zero.
+ await splashReady;
+ await sleep(2000);
+ const splashComplete=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH COMPLETION TIMEOUT')),18000);const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-complete'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};addEventListener('message',onMessage)});
+ splash.style.display='block';
+ await paint2();
+ splash.contentWindow.postMessage({type:'galaxy-splash-start'},location.origin);
+ await splashComplete;
+ await paint2();await sleep(120);await paint2();
+{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-complete'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};
    addEventListener('message',onMessage);
  });
  splash.style.display='block';
