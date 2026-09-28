@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-014';
-const GV200001_BUILD='0008';
+const GV200001_BUILD='0009';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -342,7 +342,7 @@ function installHomeEarthPointer(){
           '<strong>WE ARE HERE</strong>'+
         '</div>'+
         '<div class="gv-home-sub">EARTH — MILKY WAY</div>'+
-        '<div class="gv-home-hint">TAP RANDOM GALAXY TO BEGIN</div>'+
+        '<div class="gv-home-hint">TAP START TO BEGIN</div>'+
       '</div>';
     document.getElementById('aladin-cosmic-command-test').appendChild(home);
 }
@@ -581,6 +581,7 @@ if(runtimeState.reserve!==30)throw new Error(`NAVIGATION RESERVE INVALID: ${runt
 if(runtimeState.excluded!==130)throw new Error(`NAVIGATION EXCLUSION INVALID: ${runtimeState.excluded}`);
 galaxyNavigator.setBusy(false);
 galaxyNavigator.setEnabled({back:false,random:true,forward:false});
+galaxyNavigator.setStart?.(true);
 
 
 // ============================================================================
@@ -1005,7 +1006,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
-        const translateSeconds=4.0,zoomSeconds=8.5,durationSeconds=translateSeconds+zoomSeconds;
+        const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
         const translateStarted=performance.now();let lastSample=-1;
         await new Promise((resolve,reject)=>{
@@ -1021,14 +1022,9 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        if(registeredPromise){
-            const registered=await registeredPromise,center=registered?.imageCenter;
-            const registeredRa=Number(center?.[0]),registeredDec=Number(center?.[1]),registeredFov=Number(registered?.finalFov);
-            if(!Number.isFinite(registeredRa)||!Number.isFinite(registeredDec)||!Number.isFinite(registeredFov)||registeredFov<=0)throw new Error('GV FIRST TRIP REGISTERED CENTER/FOV INVALID');
-            ra1=registeredRa;dec1=registeredDec;finalFov=registeredFov;
-            gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
-            try{await onZoomInStart?.(registered)}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
-        }else{try{await onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}
+        let registeredReady=null;
+        if(registeredPromise)registeredPromise.then(registered=>{registeredReady=registered;try{onZoomInStart?.(registered)}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}).catch(error=>console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error));
+        else{try{await onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
@@ -1038,6 +1034,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
+        if(registeredReady){const center=registeredReady?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registeredReady?.finalFov);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0){ra1=nra;dec1=ndec;finalFov=nfov}}
         gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
         gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
         doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
@@ -1100,7 +1097,7 @@ function validateDestination(destination){
 async function showDestination(destination,{firstTrip=false}={}){
     const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
     activeDestination=v.destination;destinationPresentation.depart();
-    travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?12.5:17});
+    travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
     if(firstTrip){
@@ -1154,11 +1151,10 @@ async function navigateRandom(){
 // SECTION 038 — BACK ACTION
 // ECO: GV200-001
 // ============================================================================
-function navigateBack(){
+async function navigateBack(){
     if(navigationInFlight||historyIndex<=0)return;
-    historyIndex--;
-    showDestination(history[historyIndex]);
-    updateNavigationAvailability();
+    navigationInFlight=true;galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
+    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
 
 
@@ -1166,11 +1162,10 @@ function navigateBack(){
 // SECTION 039 — FORWARD ACTION
 // ECO: GV200-001
 // ============================================================================
-function navigateForward(){
-    if(historyIndex>=history.length-1)return;
-    historyIndex++;
-    showDestination(history[historyIndex]);
-    updateNavigationAvailability();
+async function navigateForward(){
+    if(navigationInFlight||historyIndex>=history.length-1)return;
+    navigationInFlight=true;galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
+    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
 
 function updateNavigationAvailability(){
