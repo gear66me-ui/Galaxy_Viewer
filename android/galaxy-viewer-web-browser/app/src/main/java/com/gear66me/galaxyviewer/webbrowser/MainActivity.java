@@ -27,7 +27,8 @@ import java.net.URL;
 
 public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
-  private WebView top, web, bottom;
+  private WebView top, web, bottom, viewerWeb;
+  private LinearLayout browserLayer;
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false;
   private String providerIcon="", sourceUrl="", pendingProviderUrl="";
@@ -36,20 +37,52 @@ public final class MainActivity extends Activity {
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
     assetLoader=new WebViewAssetLoader.Builder().addPathHandler("/assets/",new WebViewAssetLoader.AssetsPathHandler(this)).build();
-    LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setBackgroundColor(Color.BLACK); root.setPadding(0,0,0,0);
+
+    FrameLayout root=new FrameLayout(this); root.setBackgroundColor(Color.BLACK);
+    viewerWeb=viewer();
+    root.addView(viewerWeb,new FrameLayout.LayoutParams(-1,-1));
+
+    browserLayer=new LinearLayout(this); browserLayer.setOrientation(LinearLayout.VERTICAL); browserLayer.setBackgroundColor(Color.BLACK); browserLayer.setPadding(0,0,0,0);
     top=shell(); web=provider(); bottom=shell();
-    LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); root.addView(top,tp); top.setTag(tp);
+    LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); browserLayer.addView(top,tp); top.setTag(tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(0,0,0,0);
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(10)); frame.setBackground(fg);
-    frame.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
-    frame.setClipToOutline(true);
+    frame.setOutlineProvider(ViewOutlineProvider.BACKGROUND); frame.setClipToOutline(true);
     web.setBackgroundColor(Color.TRANSPARENT);
     FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
     GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);
-    frame.addView(web,0,wp);
-    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); root.addView(frame,fp);
-    root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
-    setContentView(root); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null){ browserMode=true; clearProviderEntryHistory=true; fetchPointer(); } else { launchGalaxyViewer(); }
+    frame.addView(web,wp);
+    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); browserLayer.addView(frame,fp);
+    browserLayer.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
+    browserLayer.setVisibility(View.GONE);
+    root.addView(browserLayer,new FrameLayout.LayoutParams(-1,-1));
+    setContentView(root);
+
+    launchGalaxyViewer();
+    String launchUrl=launchSourceUrl(getIntent());
+    if(launchUrl!=null){ openProvider(launchUrl); }
+  }
+
+  private WebView viewer(){
+    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
+    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
+    s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+    s.setAllowFileAccess(false); s.setAllowContentAccess(false);
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0032");
+    v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
+    v.setWebViewClient(new WebViewClient(){
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
+      @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){
+        Uri u=request.getUrl();
+        if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){
+          String target=u.getQueryParameter("url");
+          if(target!=null&&target.startsWith("https://")){ openProvider(target); return true; }
+        }
+        return false;
+      }
+    });
+    return v;
   }
 
   private WebView shell(){
@@ -64,7 +97,7 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0031");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0032");
     v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
@@ -87,11 +120,11 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
-  private void launchGalaxyViewer(){ browserMode=false; WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(false); s.setAllowContentAccess(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE); top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); android.view.ViewParent parent=web.getParent(); if(parent instanceof FrameLayout){ FrameLayout frame=(FrameLayout)parent; LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)frame.getLayoutParams(); lp.setMargins(0,0,0,0); frame.setLayoutParams(lp); frame.setBackgroundColor(Color.BLACK); } web.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
-  private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); fetchPointer(); }
-  private void returnToViewer(){ browserMode=false; top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); if(web.canGoBack()) web.goBack(); else launchGalaxyViewer(); }
+  private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null&&"about:blank".equals(viewerWeb.getUrl()))viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
+  private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
+  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
-  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ browserMode=true; clearProviderEntryHistory=true; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); sourceUrl=u; fetchPointer(); } }
+  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ openProvider(u); } }
   private JSONObject getJson(String u)throws Exception{
     HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
     c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
@@ -110,7 +143,7 @@ public final class MainActivity extends Activity {
   }
   private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
   @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}
-  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else if(web!=null&&web.canGoBack())web.goBack();else finish();}
+  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else finish();}
   private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
   private static String esc(String s){return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");}
 }
