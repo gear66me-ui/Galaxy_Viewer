@@ -11,7 +11,7 @@ on:
       - 'viewer/GV-beta-200-014.py'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -97,3 +97,19 @@ jobs:
           path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0034.apk
           if-no-files-found: error
           retention-days: 30
+
+
+      - name: Publish APK for direct GitHub download
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p releases/apk
+          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0034.apk releases/apk/Galaxy-Viewer-Web-Browser-0034.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/apk/Galaxy-Viewer-Web-Browser-0034.apk
+          if git diff --cached --quiet; then
+            echo "APK already published"
+          else
+            git commit -m "Publish Galaxy Viewer Web Browser 0034 APK"
+            git push origin HEAD:beta
+          fi
