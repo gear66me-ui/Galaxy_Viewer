@@ -31,8 +31,8 @@ public final class MainActivity extends Activity {
     LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(72)); root.addView(top,tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(2),dp(2),dp(2),dp(2));
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(22)); frame.setBackground(fg);
-    GradientDrawable wg=new GradientDrawable(); wg.setColor(Color.WHITE); wg.setCornerRadius(dp(20)); web.setBackground(wg); web.setClipToOutline(true); frame.setClipToOutline(true); frame.addView(web,0,new FrameLayout.LayoutParams(-1,-1)); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0020"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
-    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.topMargin=0; fp.bottomMargin=0; root.addView(frame,fp);
+    GradientDrawable wg=new GradientDrawable(); wg.setColor(Color.WHITE); wg.setCornerRadius(dp(20)); web.setBackground(wg); web.setClipToOutline(true); frame.setClipToOutline(true); frame.addView(web,0,new FrameLayout.LayoutParams(-1,-1)); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0021"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
+    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),dp(-4),dp(2),dp(2)); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
     setContentView(root); fetchPointer();
   }
