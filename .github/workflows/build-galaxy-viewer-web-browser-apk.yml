@@ -37,43 +37,47 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq librsvg2-bin
           mkdir -p app/src/main/res/drawable
-          rsvg-convert -w 512 -h 512 ../../viewer/artwork/icon.svg -o app/src/main/res/drawable/gv_target_launcher.png
+          rsvg-convert -w 512 -h 512 ../../viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg -o app/src/main/res/drawable/gv_target_launcher.png
           test -s app/src/main/res/drawable/gv_target_launcher.png
-          echo '0029 icon gate repair 2'
+          echo '0030 icon gate repair 2'
 
-      - name: Audit 0029 source before build
+      - name: Audit 0030 source before build
         run: |
-          grep -q "versionCode 29" app/build.gradle
-          grep -q "versionName '0029'" app/build.gradle
+          grep -q "versionCode 30" app/build.gradle
+          grep -q "versionName '0030'" app/build.gradle
           grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
-          grep -q 'GV-GENERIC-app.html?v=0029-' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'https://appassets.androidplatform.net/assets/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'WebViewAssetLoader' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'VERSION ' app/src/main/assets/index.html
+          grep -q 'Galaxy-Viewer-Singularity-FINAL' app/src/main/assets/index.html
+          grep -q 'galaxy-viewer-target-icon.svg' app/src/main/assets/index.html
           ! grep -q 'file:///android_asset/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
 
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Audit finished 0029 APK
+      - name: Audit finished 0030 APK
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0029-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0029-badging.txt
-          grep -q "versionCode='29'" apk-0029-badging.txt
-          grep -q "versionName='0029'" apk-0029-badging.txt
-          grep -q "application-label:'Galaxy Viewer'" apk-0029-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0030-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0030-badging.txt
+          grep -q "versionCode='30'" apk-0030-badging.txt
+          grep -q "versionName='0030'" apk-0030-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-0030-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
 
       - name: Name APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0029.apk
-          test -s dist/Galaxy-Viewer-Web-Browser-0029.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0030.apk
+          test -s dist/Galaxy-Viewer-Web-Browser-0030.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Web-Browser-0029
-          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0029.apk
+          name: Galaxy-Viewer-Web-Browser-0030
+          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0030.apk
           if-no-files-found: error
           retention-days: 30
