@@ -48,7 +48,7 @@ jobs:
       - name: Audit 0036 source before build
         run: |
           grep -q 'android.useAndroidX=true' gradle.properties
-          grep -q "versionCode 35" app/build.gradle
+          grep -q "versionCode 36" app/build.gradle
           grep -q "versionName '0036'" app/build.gradle
           grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
@@ -79,7 +79,7 @@ jobs:
           test -s "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0036-badging.txt
           grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0036-badging.txt
-          grep -q "versionCode='35'" apk-0036-badging.txt
+          grep -q "versionCode='36'" apk-0036-badging.txt
           grep -q "versionName='0036'" apk-0036-badging.txt
           grep -q "application-label:'Galaxy Viewer'" apk-0036-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
