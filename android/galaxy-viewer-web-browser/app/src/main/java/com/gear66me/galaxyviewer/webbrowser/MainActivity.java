@@ -95,7 +95,7 @@ public final class MainActivity extends Activity {
         root.setBackground(spaceBackground());
 
         LinearLayout top = row();
-        titleText = label("GALAXY VIEW WEB BROWSER", 18, true);
+        titleText = label("GALAXY VIEWER", 18, true);
         titleText.setGravity(Gravity.CENTER);
         top.addView(box(titleText), new LinearLayout.LayoutParams(0, dp(58), 1f));
         providerIcon = iconWebView();
@@ -110,10 +110,8 @@ public final class MainActivity extends Activity {
 
         TextView back = button("‹",34);
         TextView forward = button("›",34);
-        TextView refresh = button("↻",27);
-        back.setOnClickListener(v -> goBackSafe());
+                back.setOnClickListener(v -> goBackSafe());
         forward.setOnClickListener(v -> randomWebsite());
-        refresh.setOnClickListener(v -> { if(web!=null) web.reload(); });
 
         controls.addView(back, new LinearLayout.LayoutParams(dp(48),dp(48)));
         LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(dp(48),dp(48)); fp.setMargins(dp(6),0,dp(6),0);
@@ -130,8 +128,7 @@ public final class MainActivity extends Activity {
         address.addView(lock,new LinearLayout.LayoutParams(dp(28),dp(44)));
         address.addView(urlText,new LinearLayout.LayoutParams(0,dp(44),1f));
         controls.addView(address,new LinearLayout.LayoutParams(0,dp(48),1f));
-        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(dp(48),dp(48)); rp.setMargins(dp(6),0,0,0);
-        controls.addView(refresh,rp);
+        
 
         LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,dp(62)); cp.setMargins(0,dp(7),0,dp(7));
         root.addView(controls,cp);
@@ -159,12 +156,12 @@ public final class MainActivity extends Activity {
         footer.setPadding(dp(6),dp(5),dp(6),dp(5));
         footer.setBackground(neonBox(14));
         TextView footBack = button("‹",34);
-        footBack.setOnClickListener(v -> previousRandomSource());
-        TextView footText = label("BACK TO PROVIDERS",15,true);
+        footBack.setOnClickListener(v -> finish());
+        TextView footText = label("BACK TO GALAXY VIEWER",15,true);
         footText.setGravity(Gravity.CENTER);
-        footText.setOnClickListener(v -> previousRandomSource());
+        footText.setOnClickListener(v -> finish());
         gvIcon = iconWebView();
-        setIconHtml(gvIcon,"https://gear66me-ui.github.io/Galaxy_Viewer/mobile/icon.svg");
+        setIconHtml(gvIcon,"https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg");
         footer.addView(footBack,new LinearLayout.LayoutParams(dp(54),dp(52)));
         footer.addView(footText,new LinearLayout.LayoutParams(0,dp(52),1f));
         footer.addView(gvIcon,new LinearLayout.LayoutParams(dp(54),dp(52)));
