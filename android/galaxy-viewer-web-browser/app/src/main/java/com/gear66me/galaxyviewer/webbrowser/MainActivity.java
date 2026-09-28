@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.Outline;
 import android.view.ViewOutlineProvider;
 import android.os.Bundle;
+import android.os.Message;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -99,8 +100,19 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0035");
+    s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0036");
     v.setWebChromeClient(new WebChromeClient(){
+      @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
+        WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
+        popup.setWebViewClient(new WebViewClient(){
+          private boolean handedOff=false;
+          private boolean handoff(String url){ if(handedOff||url==null||url.isEmpty()||"about:blank".equals(url))return false; handedOff=true; web.loadUrl(url); popup.destroy(); return true; }
+          @Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){ return handoff(r.getUrl()==null?null:r.getUrl().toString()); }
+          @Override public boolean shouldOverrideUrlLoading(WebView v,String url){ return handoff(url); }
+        });
+        WebView.WebViewTransport transport=(WebView.WebViewTransport)resultMsg.obj; transport.setWebView(popup); resultMsg.sendToTarget(); return true;
+      }
       @Override public void onShowCustomView(View view,CustomViewCallback callback){
         if(fullscreenView!=null){callback.onCustomViewHidden();return;}
         fullscreenView=view; fullscreenCallback=callback;
@@ -136,7 +148,7 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
-  private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null&&(viewerWeb.getUrl()==null||"about:blank".equals(viewerWeb.getUrl())))viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
+  private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
   private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
   private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
