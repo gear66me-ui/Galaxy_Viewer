@@ -14,6 +14,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import androidx.webkit.WebViewAssetLoader;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import org.json.JSONObject;
@@ -25,12 +28,14 @@ import java.net.URL;
 public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
   private WebView top, web, bottom;
+  private WebViewAssetLoader assetLoader;
   private boolean browserMode=false;
   private String providerIcon="", sourceUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
+    assetLoader=new WebViewAssetLoader.Builder().addPathHandler("/assets/",new WebViewAssetLoader.AssetsPathHandler(this)).build();
     LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setBackgroundColor(Color.BLACK); root.setPadding(0,0,0,0);
     top=shell(); web=provider(); bottom=shell();
     LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); root.addView(top,tp); top.setTag(tp);
@@ -59,8 +64,10 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0029");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0030");
     v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
       @Override public void onPageFinished(WebView view,String url){ sourceUrl=url; syncShell(); }
     }); return v;
   }
@@ -79,7 +86,7 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
-  private void launchGalaxyViewer(){ browserMode=false; WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(true); s.setAllowContentAccess(true); s.setAllowFileAccessFromFileURLs(true); s.setAllowUniversalAccessFromFileURLs(true); s.setCacheMode(WebSettings.LOAD_NO_CACHE); top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); android.view.ViewParent parent=web.getParent(); if(parent instanceof FrameLayout){ FrameLayout frame=(FrameLayout)parent; LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)frame.getLayoutParams(); lp.setMargins(0,0,0,0); frame.setLayoutParams(lp); frame.setBackgroundColor(Color.BLACK); } web.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/mobile/beta/GV-GENERIC-app.html?v=0029-"+System.currentTimeMillis()); }
+  private void launchGalaxyViewer(){ browserMode=false; WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(false); s.setAllowContentAccess(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE); top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); android.view.ViewParent parent=web.getParent(); if(parent instanceof FrameLayout){ FrameLayout frame=(FrameLayout)parent; LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)frame.getLayoutParams(); lp.setMargins(0,0,0,0); frame.setLayoutParams(lp); frame.setBackgroundColor(Color.BLACK); } web.loadUrl("https://appassets.androidplatform.net/assets/index.html"); }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
   @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ browserMode=true; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); sourceUrl=u; fetchPointer(); } }
   private JSONObject getJson(String u)throws Exception{
