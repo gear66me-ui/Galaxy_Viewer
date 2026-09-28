@@ -99,7 +99,7 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(false);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0032");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0034");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public void onShowCustomView(View view,CustomViewCallback callback){
         if(fullscreenView!=null){callback.onCustomViewHidden();return;}
