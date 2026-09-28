@@ -252,7 +252,7 @@ gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('G
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
 // ECO: GV200-001
 // ============================================================================
-const RETICLE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/compass/compass.png';
+const RETICLE_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-reticle.svg';
 
 function createCenterReticle(root){
     const SIZE=270;
