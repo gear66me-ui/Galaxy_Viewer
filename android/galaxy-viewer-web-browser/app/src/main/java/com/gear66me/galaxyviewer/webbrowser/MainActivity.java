@@ -27,13 +27,13 @@ public final class MainActivity extends Activity {
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
-    LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setBackgroundColor(Color.BLACK);
+    LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setBackgroundColor(Color.BLACK); root.setPadding(dp(7),0,dp(7),0);
     top=shell(); web=provider(); bottom=shell();
-    root.addView(top,new LinearLayout.LayoutParams(-1,dp(88)));
+    LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(88)); root.addView(top,tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(3),dp(3),dp(3),dp(3));
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(12)); frame.setBackground(fg);
     frame.addView(web,new FrameLayout.LayoutParams(-1,-1));
-    root.addView(frame,new LinearLayout.LayoutParams(-1,0,1));
+    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.topMargin=dp(3); fp.bottomMargin=dp(3); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(50)));
     setContentView(root); fetchPointer();
   }
