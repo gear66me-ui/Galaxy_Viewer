@@ -49,10 +49,15 @@ try{
  document.body.insertAdjacentHTML('beforeend',hm[1]);const e=document.createElement('script');e.textContent=jm[1];document.body.appendChild(e);
  await splashComplete;
  await sleep(750);
- const ready=()=>{const root=document.getElementById('aladin-cosmic-command-test'),nav=document.getElementById('gv-navigation-host'),ret=document.getElementById('gv-center-reticle'),canvas=root&&root.querySelector('canvas');return !!(root&&nav&&ret&&canvas&&ret.querySelector('img')&&ret.querySelector('img').complete)};
- const deadline=Date.now()+45000;while(!ready()&&Date.now()<deadline)await sleep(100);
- if(!ready())throw Error('VIEWER READINESS TIMEOUT');
- await paint2();await sleep(250);await paint2();
+ const ready=()=>{
+   const root=document.getElementById('aladin-cosmic-command-test'),nav=document.getElementById('gv-navigation-host'),ret=document.getElementById('gv-center-reticle'),canvas=root&&root.querySelector('canvas'),retImg=ret&&ret.querySelector('img');
+   const core=window.GalaxyViewerCore,runtime=window.GalaxyViewerRuntime,navState=runtime?.navigationState;
+   const randomButton=nav&&nav.querySelector('button');
+   return !!(root&&nav&&ret&&canvas&&retImg&&retImg.complete&&core&&runtime&&navState?.phase==='READY'&&navState?.active===100&&randomButton&&!randomButton.disabled);
+ };
+ const deadline=Date.now()+60000;while(!ready()&&Date.now()<deadline)await sleep(100);
+ if(!ready())throw Error('VIEWER FULL READINESS TIMEOUT');
+ await paint2();await sleep(350);await paint2();
  splash.remove();curtain.remove();
 }catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e&&e.stack||e)}
 })();
