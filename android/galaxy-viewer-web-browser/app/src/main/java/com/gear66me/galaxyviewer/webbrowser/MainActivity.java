@@ -49,7 +49,7 @@ public final class MainActivity extends Activity {
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(10)); frame.setBackground(fg);
     frame.setOutlineProvider(ViewOutlineProvider.BACKGROUND); frame.setClipToOutline(true);
     web.setBackgroundColor(Color.TRANSPARENT);
-    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
+    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(10),dp(2),dp(10));
     GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);
     frame.addView(web,wp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); browserLayer.addView(frame,fp);
