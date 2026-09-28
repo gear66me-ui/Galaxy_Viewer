@@ -36,13 +36,13 @@ jobs:
       - name: Name APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0005.apk
-          test -s dist/Galaxy-Viewer-Web-Browser-0005.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0024.apk
+          test -s dist/Galaxy-Viewer-Web-Browser-0024.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Web-Browser-0005
-          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0005.apk
+          name: Galaxy-Viewer-Web-Browser-0024
+          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0024.apk
           if-no-files-found: error
           retention-days: 30
