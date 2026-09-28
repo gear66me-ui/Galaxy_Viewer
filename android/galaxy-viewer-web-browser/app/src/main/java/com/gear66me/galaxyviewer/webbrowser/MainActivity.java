@@ -32,7 +32,7 @@ public final class MainActivity extends Activity {
     LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(88)); root.addView(top,tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(3),dp(3),dp(3),dp(3));
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(12)); frame.setBackground(fg);
-    frame.addView(web,new FrameLayout.LayoutParams(-1,-1));
+    GradientDrawable wg=new GradientDrawable(); wg.setColor(Color.WHITE); wg.setCornerRadius(dp(9)); web.setBackground(wg); web.setClipToOutline(true); frame.setClipToOutline(true); frame.addView(web,new FrameLayout.LayoutParams(-1,-1));
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.topMargin=dp(3); fp.bottomMargin=dp(3); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(50)));
     setContentView(root); fetchPointer();
@@ -79,7 +79,7 @@ public final class MainActivity extends Activity {
     top.loadUrl(js);
   }
   public final class Bridge{
-    @JavascriptInterface public void back(){runOnUiThread(()->{if(web.canGoBack())web.goBack();});}
+    @JavascriptInterface public void back(){runOnUiThread(()->{if(web.canGoBack())web.goBack(); else syncShell();});}
     @JavascriptInterface public void forward(){runOnUiThread(()->{try{if(sourceUrls.length()>0){sourceIndex=(sourceIndex+1)%sourceUrls.length(); sourceUrl=sourceUrls.getString(sourceIndex); web.loadUrl(sourceUrl);}}catch(Exception ignored){}});}
     @JavascriptInterface public void exit(){runOnUiThread(()->finish());}
   }
