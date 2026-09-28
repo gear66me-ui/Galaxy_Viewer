@@ -14,7 +14,7 @@ VIEWER_VERSION = "GV-beta-200-014"
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
 ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"
+ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
@@ -95,7 +95,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'GV-beta-200-014',
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js',
+    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
     hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
