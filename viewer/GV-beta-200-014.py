@@ -1049,7 +1049,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
         if(registeredPromise){
-            const registered=await registeredPromise;
+            const registered=await registeredPromise,center=registered?.imageCenter;
+            const registeredRa=Number(center?.[0]),registeredDec=Number(center?.[1]),registeredFov=Number(registered?.finalFov);
+            if(!Number.isFinite(registeredRa)||!Number.isFinite(registeredDec)||!Number.isFinite(registeredFov)||registeredFov<=0)throw new Error('GV FIRST TRIP REGISTERED CENTER/FOV INVALID');
+            ra1=registeredRa;dec1=registeredDec;finalFov=registeredFov;
+            gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
             try{await onZoomInStart?.(registered)}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
         }else{try{await onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
@@ -1065,7 +1069,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
         gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
         doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
     }
-    if(registeredPromise)registeredPromise.catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
+    if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0){ra1=nra;dec1=ndec;finalFov=nfov}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
     const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false;
     const doeRun=gvDoeBeginRun({firstHomeTrip:false,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
     await new Promise((resolve,reject)=>{
