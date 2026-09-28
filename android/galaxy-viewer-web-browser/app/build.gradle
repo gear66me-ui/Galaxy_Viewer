@@ -8,7 +8,7 @@ android {
         applicationId 'com.gear66me.galaxyviewer.webbrowser'
         minSdk 29
         targetSdk 35
-        versionCode 23
-        versionName '0023'
+        versionCode 24
+        versionName '0024'
     }
 }
