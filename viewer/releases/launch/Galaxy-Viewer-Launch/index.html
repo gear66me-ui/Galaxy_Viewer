@@ -39,7 +39,7 @@ try{
 
  // FULL BOOT BEHIND CURTAIN: viewer boot owns all heavy downloads/initialization here.
  const src=await read(BASE+p.viewer+'?t='+Date.now());
- const hm=src.match(/display\\(HTML\\(\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/),jm=src.match(/display\\(Javascript\\(r\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/);
+ const hm=src.match(/display\(HTML\("""([\s\S]*?)"""\)\)/),jm=src.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
  if(!hm||!jm)throw Error('VIEWER EXTRACTION FAILED');
  document.body.insertAdjacentHTML('beforeend',hm[1]);const e=document.createElement('script');e.textContent=jm[1];document.body.appendChild(e);
 
