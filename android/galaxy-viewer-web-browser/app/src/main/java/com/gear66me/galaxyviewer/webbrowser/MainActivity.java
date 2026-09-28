@@ -23,6 +23,7 @@ public final class MainActivity extends Activity {
   private WebView top, web, bottom;
   private String providerIcon="", sourceUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
+  private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -57,7 +58,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0; sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
