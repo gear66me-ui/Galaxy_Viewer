@@ -15,9 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 public final class MainActivity extends Activity {
-  private static final String START="https://www.spitzer.caltech.edu/image/ssc2006-01a1";
+  private static final String START="https://www.astropix.org/image/spitzer/ssc2004-15a1";
   private static final String TARGET="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg";
-  private static final String SPITZER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/providers/spitzer/spitzer-icon.png";
+  private static final String SPITZER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Spitzer/Spitzer.jpg";
   private WebView top,web,bottom;
 
   @Override public void onCreate(Bundle b){super.onCreate(b); immersive(); setContentView(ui()); web.loadUrl(START);}
@@ -29,8 +29,8 @@ public final class MainActivity extends Activity {
     top=shell(topHtml()); top.addJavascriptInterface(new Bridge(),"Android");
     root.addView(top,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,dp(82)));
 
-    FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(2),dp(2),dp(2),dp(2)); frame.setBackgroundColor(Color.rgb(67,207,255));
-    web=new WebView(this); configure(web); frame.addView(web,new FrameLayout.LayoutParams(-1,-1));
+    FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(3),dp(3),dp(3),dp(3)); android.graphics.drawable.GradientDrawable frameBg=new android.graphics.drawable.GradientDrawable(); frameBg.setColor(Color.rgb(2,7,15)); frameBg.setStroke(dp(2),Color.rgb(8,45,96)); frameBg.setCornerRadius(dp(12)); frame.setBackground(frameBg); frame.setClipToOutline(true); frame.setElevation(dp(4));
+    web=new WebView(this); configure(web); android.graphics.drawable.GradientDrawable webBg=new android.graphics.drawable.GradientDrawable(); webBg.setColor(Color.WHITE); webBg.setCornerRadius(dp(9)); web.setBackground(webBg); web.setClipToOutline(true); frame.addView(web,new FrameLayout.LayoutParams(-1,-1));
     root.addView(frame,new LinearLayout.LayoutParams(-1,0,1f));
 
     bottom=shell(bottomHtml()); bottom.addJavascriptInterface(new Bridge(),"Android");
@@ -45,7 +45,7 @@ public final class MainActivity extends Activity {
   }
   private void configure(WebView v){
     WebSettings s=v.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setDatabaseEnabled(true);s.setUseWideViewPort(true);s.setLoadWithOverviewMode(true);s.setSupportZoom(true);s.setBuiltInZoomControls(true);s.setDisplayZoomControls(false);s.setTextZoom(100);s.setMediaPlaybackRequiresUserGesture(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0002");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0003");
     v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public boolean shouldOverrideUrlLoading(WebView w, WebResourceRequest r){return r.getUrl()==null||!"https".equalsIgnoreCase(r.getUrl().getScheme());}
