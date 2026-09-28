@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GV Web Browser 0002 — Build 49 Style Calibration</title>
+<style>
+@font-face{font-family:GV;src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf") format("opentype");font-display:swap}
+:root{--cyan:#43CFFF;--ice:#DDF8FF;--label:#7CCBFF;--gap:5px}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:var(--ice);font-family:GV,sans-serif}
+.shell{height:100dvh;padding:6px 10px 10px;display:grid;grid-template-rows:46px 48px minmax(0,1fr) 58px;gap:var(--gap);background:#000}
+.panel{position:relative;border:1px solid var(--cyan);border-radius:10px;background:linear-gradient(180deg,#174E86 0%,#082C59 13%,#041B3E 54%,#07366A 88%,#0D5A98 100%);box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35)}
+.panel::before,.viewport::before{content:"";position:absolute;inset:0;z-index:50;border-radius:8px;padding:1px;background:linear-gradient(135deg,#DDF8FF,#8DDAFF 28%,#58BFFF 55%,#296DBD);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.header{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:5px}.title{display:grid;place-items:center;font-size:14px;letter-spacing:.75px;white-space:nowrap;overflow:hidden}.appicon{display:grid;place-items:center;padding:3px}.appicon img{width:100%;height:100%;object-fit:contain}
+.toolbar{display:grid;grid-template-columns:42px 42px minmax(0,1fr) 42px;gap:5px;padding:3px}
+.btn{position:relative;width:100%;height:100%;padding:0;appearance:none;border:1px solid var(--cyan);border-radius:7px;background:linear-gradient(180deg,#174E86 0%,#082C59 13%,#041B3E 54%,#07366A 88%,#0D5A98 100%);box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 7px rgba(50,190,255,.62);display:grid;place-items:center}
+.chev{position:relative;width:24px;height:24px;display:block}.chev::before{content:"";position:absolute;left:8px;top:5px;width:13px;height:13px;border-left:5px solid #F4FDFF;border-bottom:5px solid #F4FDFF;transform:rotate(45deg);filter:drop-shadow(0 0 4px #8DDAFF) drop-shadow(0 0 7px #58BFFF)}
+.forward .chev{transform:scaleX(-1)}
+.refresh svg{width:24px;height:24px;stroke:#F4FDFF;stroke-width:5;fill:none;stroke-linecap:round;filter:drop-shadow(0 0 4px #8DDAFF)}
+.address{min-width:0;height:100%;display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;border:1px solid rgba(124,203,255,.72);border-radius:7px;background:linear-gradient(180deg,#02081B,#020612);box-shadow:inset 0 1px 8px rgba(0,0,0,.75);font-family:Arial,sans-serif}
+.lock{display:grid;place-items:center}.lock svg{width:17px;height:21px;fill:#7CCBFF;filter:drop-shadow(0 0 4px rgba(88,191,255,.7))}
+.url{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:15px/1 Arial,sans-serif;color:#F4FDFF;padding-right:7px}
+.viewport{position:relative;min-height:0;border:1px solid var(--cyan);border-radius:10px;overflow:hidden;background:#02070F;box-shadow:inset 0 2px 2px rgba(225,251,255,.72),inset 0 -3px 5px rgba(0,0,0,.48),inset 0 0 13px rgba(41,153,255,.28),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35);padding:3px}
+.webview{height:100%;border-radius:7px;background:#02070F;display:grid;place-items:center;text-align:center;color:#7CCBFF;font-size:10px;letter-spacing:.65px}
+.footer{display:flex;align-items:center;justify-content:center;padding:7px 10px}
+.backcontrol{position:relative;width:76%;height:42px;border:1px solid var(--cyan);border-radius:10px;background:linear-gradient(180deg,#174E86 0%,#082C59 13%,#041B3E 54%,#07366A 88%,#0D5A98 100%);box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35);display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;color:#8DDAFF;font:11px/1 GV,sans-serif;letter-spacing:.45px;text-shadow:0 0 5px #fff,0 0 11px rgba(88,191,255,.78);padding:0 4px}
+.backcontrol .chev{justify-self:center}.backtext{text-align:center;white-space:nowrap}.backicon{width:34px;height:34px;object-fit:contain;justify-self:center}
+@media(max-width:390px){.shell{padding-left:7px;padding-right:7px}.title{font-size:12px}.toolbar{grid-template-columns:39px 39px minmax(0,1fr) 39px}.url{font-size:13px}.backcontrol{width:82%}}
+</style></head><body>
+<main class="shell">
+ <header class="header"><div class="panel title">GALAXY VIEW WEB BROWSER</div><div class="panel appicon"><img src="../../viewer/artwork/icon.svg"></div></header>
+ <nav class="panel toolbar">
+  <button class="btn back"><span class="chev"></span></button>
+  <button class="btn forward"><span class="chev"></span></button>
+  <div class="address"><span class="lock"><svg viewBox="0 0 24 30"><path d="M5 12V8a7 7 0 0 1 14 0v4h2v16H3V12h2zm3 0h8V8a4 4 0 0 0-8 0v4z"/></svg></span><span class="url">https://www.nasa.gov/galaxies/example/source/page</span></div>
+  <button class="btn refresh"><svg viewBox="0 0 40 40"><path d="M31 13A14 14 0 1 0 32 27"/><path d="M31 5v10h-10"/></svg></button>
+ </nav>
+ <section class="viewport"><div class="webview">REAL WEBVIEW</div></section>
+ <footer class="panel footer"><button class="backcontrol"><span class="chev"></span><span class="backtext">BACK TO VIEWER</span><img class="backicon" src="../../viewer/artwork/icon.svg"></button></footer>
+</main>
+<script>
+/* NANOSCOPIC CONTRACT — BUILD 49 AUTHORITY
+ PANEL border=#43CFFF radius=10px; exact gvdp-panel gradient/shadow copied from destination presentation 0011.
+ VIEWPORT exact gvdp-viewport border/radius/background/shadow family.
+ BACK chevron exact gvdp-chevron 24x24 / 13x13 / 5px borders / rotate(45deg).
+ FORWARD uses SAME chevron component mirrored only by scaleX(-1).
+ FOOTER back control width=76%, height=42px: exact gvdp-back dimensions from Build 49.
+ NO splash wallpaper. NO emoji lock. NO Unicode chevrons. NO status/debug band.
+*/
+document.querySelectorAll("button").forEach(b=>b.onclick=e=>e.preventDefault());
+</script></body></html>
