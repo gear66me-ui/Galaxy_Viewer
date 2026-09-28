@@ -49,6 +49,7 @@ jobs:
           grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'https://appassets.androidplatform.net/assets/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'WebViewAssetLoader' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'radial-gradient' app/src/main/assets/index.html
           grep -q 'VERSION ' app/src/main/assets/index.html
           grep -q 'Galaxy-Viewer-Singularity-FINAL' app/src/main/assets/index.html
           grep -q 'galaxy-viewer-target-icon.svg' app/src/main/assets/index.html
