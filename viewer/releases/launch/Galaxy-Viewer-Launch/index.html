@@ -39,9 +39,10 @@ try{
 
  // FULL BOOT BEHIND CURTAIN: viewer boot owns all heavy downloads/initialization here.
  const src=await read(BASE+p.viewer+'?t='+Date.now());
- const hm=src.match(/display\(HTML\("""([\s\S]*?)"""\)\)/),jm=src.match(/display\(Javascript\(r"""([\s\S]*?)"""\)\)/);
- if(!hm||!jm)throw Error('VIEWER EXTRACTION FAILED');
- document.body.insertAdjacentHTML('beforeend',hm[1]);const e=document.createElement('script');e.textContent=jm[1];document.body.appendChild(e);
+ const extract=(text,start,end)=>{const a=text.indexOf(start);if(a<0)return null;const from=a+start.length,b=text.indexOf(end,from);return b<0?null:text.slice(from,b)};
+ const html=extract(src,'display(HTML("""','"""))'),js=extract(src,'display(Javascript(r"""','"""))');
+ if(html==null||js==null)throw Error('VIEWER EXTRACTION FAILED html='+String(html!==null)+' js='+String(js!==null)+' bytes='+src.length);
+ document.body.insertAdjacentHTML('beforeend',html);const e=document.createElement('script');e.textContent=js;document.body.appendChild(e);
 
  const identityRemain=Math.max(0,3000-(performance.now()-identityStarted));if(identityRemain)await sleep(identityRemain);
  const readiness=()=>{
