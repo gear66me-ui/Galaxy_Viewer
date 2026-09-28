@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-014';
-const GV200001_BUILD='0011';
+const GV200001_BUILD='0012';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1105,13 +1105,9 @@ async function showDestination(destination,{firstTrip=false}={}){
     let installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
     if(firstTrip){
-        // First flight authority: resolve the prepared JPEG/WCS center before camera motion.
-        // Preparation starts above, in parallel with the departure presentation; once resolved,
-        // the same authoritative center/FOV drives translation, zoom, overlay install and arrival.
-        const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);
-        if(activeDestination!==v.destination)return v.destination;
-        const travelPromise=gvFly130H(prepared,{firstHomeTrip:true,onZoomInStart:()=>installWhenReady(prepared)});
-        await travelPromise;
+        const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:installWhenReady});
+        const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
         travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
