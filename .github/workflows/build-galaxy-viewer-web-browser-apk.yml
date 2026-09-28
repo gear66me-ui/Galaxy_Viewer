@@ -43,13 +43,13 @@ jobs:
           convert -size 512x512 xc:black /tmp/gv_target.png -gravity center -composite app/src/main/res/drawable/gv_target_launcher.png
           test -s app/src/main/res/drawable/gv_target_launcher.png
           identify app/src/main/res/drawable/gv_target_launcher.png
-          echo '0034 black launcher tile gate'
+          echo '0035 black launcher tile gate'
 
-      - name: Audit 0034 source before build
+      - name: Audit 0035 source before build
         run: |
           grep -q 'android.useAndroidX=true' gradle.properties
-          grep -q "versionCode 34" app/build.gradle
-          grep -q "versionName '0034'" app/build.gradle
+          grep -q "versionCode 35" app/build.gradle
+          grep -q "versionName '0035'" app/build.gradle
           grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'Galaxy-Viewer-Launch/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
@@ -58,9 +58,9 @@ jobs:
           grep -q 'browserLayer.setVisibility(View.GONE)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'windowSplashScreenAnimatedIcon">@android:color/transparent' app/src/main/res/values-v31/styles.xml
           ! grep -q 'if(web.canGoBack()) web.goBack(); else launchGalaxyViewer();' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          grep -q 's.setSupportZoom(false);' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          grep -q 's.setBuiltInZoomControls(false);' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          ! grep -q 's.setBuiltInZoomControls(true);' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 's.setSupportZoom(true);' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 's.setBuiltInZoomControls(true);' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 's.setDisplayZoomControls(false);' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'radial-gradient' app/src/main/assets/index.html
           grep -q 'VERSION ' app/src/main/assets/index.html
           grep -q "font-family:GV" app/src/main/assets/index.html
@@ -73,28 +73,28 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Audit finished 0034 APK
+      - name: Audit finished 0035 APK
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0034-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0034-badging.txt
-          grep -q "versionCode='34'" apk-0034-badging.txt
-          grep -q "versionName='0034'" apk-0034-badging.txt
-          grep -q "application-label:'Galaxy Viewer'" apk-0034-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0035-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0035-badging.txt
+          grep -q "versionCode='35'" apk-0035-badging.txt
+          grep -q "versionName='0035'" apk-0035-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-0035-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
 
       - name: Name APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0034.apk
-          test -s dist/Galaxy-Viewer-Web-Browser-0034.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0035.apk
+          test -s dist/Galaxy-Viewer-Web-Browser-0035.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Web-Browser-0034
-          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0034.apk
+          name: Galaxy-Viewer-Web-Browser-0035
+          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0035.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -103,13 +103,13 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           mkdir -p releases/apk
-          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0034.apk releases/apk/Galaxy-Viewer-Web-Browser-0034.apk
+          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0035.apk releases/apk/Galaxy-Viewer-Web-Browser-0035.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add releases/apk/Galaxy-Viewer-Web-Browser-0034.apk
+          git add releases/apk/Galaxy-Viewer-Web-Browser-0035.apk
           if git diff --cached --quiet; then
             echo "APK already published"
           else
-            git commit -m "Publish Galaxy Viewer Web Browser 0034 APK"
+            git commit -m "Publish Galaxy Viewer Web Browser 0035 APK"
             git push origin HEAD:beta
           fi
