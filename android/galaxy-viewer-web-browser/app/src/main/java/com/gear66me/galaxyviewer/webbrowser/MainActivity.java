@@ -70,7 +70,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0034");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0035");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -97,9 +97,9 @@ public final class MainActivity extends Activity {
   }
   private WebView provider(){
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
-    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(false);
-    s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0034");
+    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
+    s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0035");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public void onShowCustomView(View view,CustomViewCallback callback){
         if(fullscreenView!=null){callback.onCustomViewHidden();return;}
