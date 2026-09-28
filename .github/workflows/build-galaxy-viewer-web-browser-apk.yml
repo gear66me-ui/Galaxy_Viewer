@@ -32,8 +32,36 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Install SVG rasterizer and Galaxy Viewer launcher icon
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq librsvg2-bin
+          mkdir -p app/src/main/res/drawable
+          rsvg-convert -w 512 -h 512 ../../viewer/artwork/icon_target_vector.svg -o app/src/main/res/drawable/gv_target_launcher.png
+          test -s app/src/main/res/drawable/gv_target_launcher.png
+
+      - name: Audit 0029 source before build
+        run: |
+          grep -q "versionCode 29" app/build.gradle
+          grep -q "versionName '0029'" app/build.gradle
+          grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
+          grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
+          grep -q 'GV-GENERIC-app.html?v=0029-' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          ! grep -q 'file:///android_asset/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
+
+      - name: Audit finished 0029 APK
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0029-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0029-badging.txt
+          grep -q "versionCode='29'" apk-0029-badging.txt
+          grep -q "versionName='0029'" apk-0029-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-0029-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
 
       - name: Name APK
         run: |
