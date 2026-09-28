@@ -25,6 +25,7 @@ import java.net.URL;
 public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
   private WebView top, web, bottom;
+  private boolean browserMode=false;
   private String providerIcon="", sourceUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
@@ -43,7 +44,7 @@ public final class MainActivity extends Activity {
     frame.addView(web,0,wp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
-    setContentView(root); fetchPointer();
+    setContentView(root); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null){ browserMode=true; fetchPointer(); } else { launchGalaxyViewer(); }
   }
 
   private WebView shell(){
@@ -58,7 +59,7 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0027");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0028");
     v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
       @Override public void onPageFinished(WebView view,String url){ sourceUrl=url; syncShell(); }
     }); return v;
@@ -78,8 +79,9 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
+  private void launchGalaxyViewer(){ browserMode=false; WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(true); s.setAllowContentAccess(true); s.setAllowFileAccessFromFileURLs(true); s.setAllowUniversalAccessFromFileURLs(true); s.setCacheMode(WebSettings.LOAD_NO_CACHE); top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); android.view.ViewParent parent=web.getParent(); if(parent instanceof FrameLayout){ FrameLayout frame=(FrameLayout)parent; LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)frame.getLayoutParams(); lp.setMargins(0,0,0,0); frame.setLayoutParams(lp); frame.setBackgroundColor(Color.BLACK); } web.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/temporary-demos/friends-family/"); }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
-  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ sourceUrl=u; web.loadUrl(u); syncShell(); } }
+  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ browserMode=true; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); sourceUrl=u; fetchPointer(); } }
   private JSONObject getJson(String u)throws Exception{
     HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
     c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
