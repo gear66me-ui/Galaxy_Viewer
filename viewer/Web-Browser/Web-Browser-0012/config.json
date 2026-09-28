@@ -1,0 +1,10 @@
+{
+  "schema":"gv-web-browser-config-0001",
+  "version":"0012",
+  "sourceUrl":"https://www.astropix.org/image/spitzer/ssc2004-15a1",
+  "provider":"Spitzer",
+  "providerIcon":"https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Spitzer/Spitzer.jpg",
+  "topShell":"https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/Web-Browser-0012/top.html",
+  "bottomShell":"https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/Web-Browser-0012/bottom.html",
+  "frame":{"stroke":"#082D60","strokeDp":2,"radiusDp":12,"paddingDp":3,"background":"#02070F"}
+}
