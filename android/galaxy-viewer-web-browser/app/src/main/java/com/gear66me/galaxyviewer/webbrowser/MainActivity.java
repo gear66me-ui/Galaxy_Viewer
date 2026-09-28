@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -31,6 +32,7 @@ public final class MainActivity extends Activity {
   private LinearLayout browserLayer;
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false;
+  private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
   private String providerIcon="", sourceUrl="", pendingProviderUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
@@ -42,14 +44,14 @@ public final class MainActivity extends Activity {
     viewerWeb=viewer();
     root.addView(viewerWeb,new FrameLayout.LayoutParams(-1,-1));
 
-    browserLayer=new LinearLayout(this); browserLayer.setOrientation(LinearLayout.VERTICAL); browserLayer.setBackgroundColor(Color.BLACK); browserLayer.setPadding(0,0,0,0);
+    browserLayer=new LinearLayout(this); browserLayer.setOrientation(LinearLayout.VERTICAL); browserLayer.setBackgroundColor(Color.BLACK); browserLayer.setPadding(0,dp(12),0,dp(12));
     top=shell(); web=provider(); bottom=shell();
     LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); browserLayer.addView(top,tp); top.setTag(tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(0,0,0,0);
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(10)); frame.setBackground(fg);
     frame.setOutlineProvider(ViewOutlineProvider.BACKGROUND); frame.setClipToOutline(true);
     web.setBackgroundColor(Color.TRANSPARENT);
-    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(12),dp(2),dp(12));
+    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
     GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);
     frame.addView(web,wp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); browserLayer.addView(frame,fp);
@@ -68,7 +70,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0032");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0034");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -98,7 +100,21 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(false);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0032");
-    v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
+    v.setWebChromeClient(new WebChromeClient(){
+      @Override public void onShowCustomView(View view,CustomViewCallback callback){
+        if(fullscreenView!=null){callback.onCustomViewHidden();return;}
+        fullscreenView=view; fullscreenCallback=callback;
+        FrameLayout decor=(FrameLayout)getWindow().getDecorView();
+        decor.addView(view,new FrameLayout.LayoutParams(-1,-1));
+        if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE); immersive();
+      }
+      @Override public void onHideCustomView(){
+        if(fullscreenView==null)return;
+        ViewGroup parent=(ViewGroup)fullscreenView.getParent(); if(parent!=null)parent.removeView(fullscreenView);
+        fullscreenView=null; if(fullscreenCallback!=null){fullscreenCallback.onCustomViewHidden();fullscreenCallback=null;}
+        if(browserMode&&browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); immersive();
+      }
+    }); v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target); return true; } } return false; }
