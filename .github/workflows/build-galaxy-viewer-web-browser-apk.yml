@@ -43,6 +43,7 @@ jobs:
 
       - name: Audit 0030 source before build
         run: |
+          grep -q 'android.useAndroidX=true' gradle.properties
           grep -q "versionCode 30" app/build.gradle
           grep -q "versionName '0030'" app/build.gradle
           grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
