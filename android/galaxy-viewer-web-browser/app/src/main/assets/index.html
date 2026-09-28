@@ -1,1 +1,27 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#error{display:none;position:fixed;inset:0;padding:28px;white-space:pre-wrap;color:#9BE5FF;background:#000;font:12px monospace}</style></head><body><div id="error"></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';const read=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+u);return r.text()};const extract=s=>{const h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw new Error('VIEWER EXTRACTION FAILED');return[h[0][1],j[0][1]]};try{const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));const src=await read(BASE+p.viewer+'?t='+Date.now());const [h,j]=extract(src);document.body.insertAdjacentHTML('beforeend',h);const e=document.createElement('script');e.textContent=j;document.body.appendChild(e)}catch(e){const x=document.getElementById('error');x.style.display='block';x.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><style>
+@font-face{font-family:SpaceAge;src:url('https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf')}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
+#boot{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#000}
+#identity{text-align:center;transform:translateY(-2vh)}
+#halo{width:min(62vw,320px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(8,45,105,.98) 0%,rgba(5,32,82,.82) 31%,rgba(3,23,64,.52) 49%,rgba(1,11,33,.20) 66%,rgba(0,0,0,0) 80%)}
+#target{width:54%;height:54%;filter:drop-shadow(0 0 8px rgba(69,231,255,.42))}
+#target.spin{animation:spin 1.05s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+#ver,#bld{font:clamp(15px,4vw,25px) SpaceAge,sans-serif;letter-spacing:.055em;color:#f7fdff;-webkit-text-stroke:.6px #0b3dff;text-shadow:0 0 4px #fff,0 0 10px #075cff,0 0 20px #075cff}
+#ver{margin-top:16px}#bld{margin-top:22px}
+#splash{display:none;position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;z-index:200}
+#error{display:none;position:fixed;inset:0;z-index:300;padding:28px;white-space:pre-wrap;color:#9be5ff;background:#000;font:12px monospace}
+</style></head><body>
+<div id="boot"><div id="identity"><div id="halo"><img id="target" src="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg"></div><div id="ver">VERSION</div><div id="bld">BUILD</div></div></div>
+<iframe id="splash"></iframe><div id="error"></div>
+<script>
+(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';
+const read=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};
+const extract=s=>{const h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('VIEWER EXTRACTION FAILED');return[h[0][1],j[0][1]]};
+try{const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));
+ver.textContent='VERSION '+String(p.version).toUpperCase();bld.textContent='BUILD '+String(p.build).toUpperCase();
+const viewerPromise=read(BASE+p.viewer+'?t='+Date.now());await new Promise(r=>setTimeout(r,700));target.classList.add('spin');
+const src=await viewerPromise;await new Promise(r=>setTimeout(r,2200));
+splash.style.display='block';splash.src='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html?v=0030-'+Date.now();
+await new Promise(r=>setTimeout(r,12750));const parts=extract(src);splash.remove();boot.remove();document.body.insertAdjacentHTML('beforeend',parts[0]);const e=document.createElement('script');e.textContent=parts[1];document.body.appendChild(e)}
+catch(e){boot.remove();splash.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e&&e.stack||e)}})();
+</script></body></html>
