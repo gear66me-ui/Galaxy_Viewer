@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "GV-beta-200-014"
-# BUILD 0003 — frozen dependency set; native provider browser integration
+# BUILD 0004 — frozen dependency set; native provider browser integration
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -20,8 +20,8 @@ ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladi
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js"
-HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js"
+HAMBURGER_BASE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0008.js"
+HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0008.js"
 COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-014';
-const GV200001_BUILD='0003';
+const GV200001_BUILD='0004';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -96,11 +96,11 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js',
-    hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
-    hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
+    hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0008.js',
+    hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0008.js',
     coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0004.js',
-    diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0005.js',
+    diagnosticsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0008.js',
     galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js',
@@ -390,7 +390,7 @@ await Promise.all([
 // SECTION 019 — REQUIRED MODULE EXPORT VALIDATION
 // ECO: GV200-001
 // ============================================================================
-if(window.GalaxyViewerHamburgerMenu?.version!=='0005')throw new Error('HAMBURGER 0005 EXPORT MISSING');
+if(window.GalaxyViewerHamburgerMenu?.version!=='0008')throw new Error('HAMBURGER 0008 EXPORT MISSING');
 if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='0006')console.error('COORDINATE 0006 EXPORT INVALID');
 if(window.GalaxyViewerTargetSimbad?.version!=='0004')throw new Error('TARGET 0004 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
@@ -484,49 +484,22 @@ try{
     }
 }catch(error){console.error('GV DOE ALADIN REDRAW PROBE FAILED',error)}
 
-function gvPaintReticleMenuRow(row,visible){
-    const next=visible?'RETICLE OFF':'RETICLE ON';
-    row.dataset.gvReticleToggle='1';
-    row.dataset.gvMenuAction=next;
-    const glyph=row.querySelector('.gv-viewer-menu-label .gv-space-age-glyph');
-    if(glyph)glyph.textContent=next;
-    const label=row.querySelector('.gv-viewer-menu-label'),icon=row.querySelector('.gv-viewer-menu-icon');
-    for(const node of [label,icon]){
-        if(!node)continue;
-        node.style.background=visible?'linear-gradient(145deg,#06371f 0%,#0b7a42 55%,#20c96b 100%)':'rgba(72,82,92,.34)';
-        node.style.borderColor=visible?'#78ffab':'rgba(160,180,190,.38)';
-        node.style.opacity=visible?'1':'.62';
-    }
-}
 const hamburger=window.GalaxyViewerHamburgerMenu.init({
     host:hosts.hamburger,
     onMenuAction(action){
         if(action==='DIAGNOSTICS')window.GalaxyViewerDiagnostics?.open?.();
-        if(action==='SURVEY'&&typeof aladin.setBaseImageLayer==='function'){
-            aladin.setBaseImageLayer('https://alaskybis.unistra.fr/DSS/DSSColor');
-        }
         if(action==='RETICLE OFF'||action==='RETICLE ON'){
             const visible=action==='RETICLE ON';
             reticle.style.display=visible?'block':'none';
-            const row=hamburger.leftMenu?.querySelector('.gv-viewer-menu-row[data-gv-reticle-toggle="1"]');
-            if(row)gvPaintReticleMenuRow(row,visible);
+        }
+        if(action==='ABOUT'){
+            console.info('GALAXY VIEWER ABOUT',GV200001_VERSION,GV200001_BUILD);
         }
     },
     onProjectionSelected(name,detail){
         if(typeof aladin.setProjection==='function')aladin.setProjection(detail.code);
     }
 });
-const gvReticleMenuRow=hamburger.leftMenu?.querySelector('.gv-viewer-menu-row[data-gv-menu-action="RETICLE ON/OFF"]');
-if(gvReticleMenuRow){
-    gvPaintReticleMenuRow(gvReticleMenuRow,true);
-    const icon=gvReticleMenuRow.querySelector('.gv-viewer-menu-icon');
-    if(icon){
-        icon.replaceChildren();
-        const img=document.createElement('img'); img.src=fresh(RETICLE_URL); img.alt=''; img.width=30; img.height=30;
-        Object.assign(img.style,{width:'30px',height:'30px',objectFit:'contain',pointerEvents:'none'});
-        icon.appendChild(img);
-    }
-}
 hamburger.root.style.position='absolute';
 hamburger.root.style.inset='0';
 hamburger.root.style.width='100%';
