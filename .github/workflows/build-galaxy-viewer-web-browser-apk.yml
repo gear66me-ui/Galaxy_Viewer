@@ -43,13 +43,13 @@ jobs:
           convert -size 512x512 xc:black /tmp/gv_target.png -gravity center -composite app/src/main/res/drawable/gv_target_launcher.png
           test -s app/src/main/res/drawable/gv_target_launcher.png
           identify app/src/main/res/drawable/gv_target_launcher.png
-          echo '0033 black launcher tile gate'
+          echo '0034 black launcher tile gate'
 
-      - name: Audit 0033 source before build
+      - name: Audit 0034 source before build
         run: |
           grep -q 'android.useAndroidX=true' gradle.properties
-          grep -q "versionCode 33" app/build.gradle
-          grep -q "versionName '0033'" app/build.gradle
+          grep -q "versionCode 34" app/build.gradle
+          grep -q "versionName '0034'" app/build.gradle
           grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'Galaxy-Viewer-Launch/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
@@ -73,27 +73,27 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Audit finished 0033 APK
+      - name: Audit finished 0034 APK
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0033-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0033-badging.txt
-          grep -q "versionCode='33'" apk-0033-badging.txt
-          grep -q "versionName='0033'" apk-0033-badging.txt
-          grep -q "application-label:'Galaxy Viewer'" apk-0033-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0034-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0034-badging.txt
+          grep -q "versionCode='34'" apk-0034-badging.txt
+          grep -q "versionName='0034'" apk-0034-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-0034-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
 
       - name: Name APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0033.apk
-          test -s dist/Galaxy-Viewer-Web-Browser-0033.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-Web-Browser-0034.apk
+          test -s dist/Galaxy-Viewer-Web-Browser-0034.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Web-Browser-0033
-          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0033.apk
+          name: Galaxy-Viewer-Web-Browser-0034
+          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-Web-Browser-0034.apk
           if-no-files-found: error
           retention-days: 30
