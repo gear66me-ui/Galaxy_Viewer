@@ -1,86 +1,89 @@
 package com.gear66me.galaxyviewer.webbrowser;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public final class MainActivity extends Activity {
-  private static final String POINTER =
-      "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
+  private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
+  private WebView top, web, bottom;
+  private String providerIcon="", sourceUrl="";
 
-  private WebView web;
-
-  @Override public void onCreate(Bundle state) {
-    super.onCreate(state);
-    immersive();
-    web = new WebView(this);
-    configure(web);
-    setContentView(web);
-    web.loadUrl(POINTER);
+  @Override public void onCreate(Bundle b){
+    super.onCreate(b); immersive();
+    LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setBackgroundColor(Color.BLACK);
+    top=shell(); web=provider(); bottom=shell();
+    root.addView(top,new LinearLayout.LayoutParams(-1,dp(88)));
+    FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(3),dp(3),dp(3),dp(3));
+    GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(12)); frame.setBackground(fg);
+    frame.addView(web,new FrameLayout.LayoutParams(-1,-1));
+    root.addView(frame,new LinearLayout.LayoutParams(-1,0,1));
+    root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(50)));
+    setContentView(root); fetchPointer();
   }
 
-  private void immersive() {
-    getWindow().getDecorView().setSystemUiVisibility(
-        View.SYSTEM_UI_FLAG_FULLSCREEN |
-        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+  private WebView shell(){
+    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
+    s.setCacheMode(WebSettings.LOAD_NO_CACHE); v.clearCache(true); v.setBackgroundColor(Color.BLACK);
+    v.addJavascriptInterface(new Bridge(),"GV"); v.setWebViewClient(new WebViewClient()); return v;
   }
-
-  @Override public void onWindowFocusChanged(boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus);
-    if (hasFocus) immersive();
+  private WebView provider(){
+    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
+    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
+    s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0005");
+    v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
+      @Override public void onPageFinished(WebView view,String url){ sourceUrl=url; syncShell(); }
+    }); return v;
   }
-
-  private void configure(WebView v) {
-    WebSettings s = v.getSettings();
-    s.setJavaScriptEnabled(true);
-    s.setDomStorageEnabled(true);
-    s.setDatabaseEnabled(true);
-    s.setUseWideViewPort(true);
-    s.setLoadWithOverviewMode(false);
-    s.setSupportZoom(true);
-    s.setBuiltInZoomControls(true);
-    s.setDisplayZoomControls(false);
-    s.setMediaPlaybackRequiresUserGesture(false);
-    s.setUserAgentString(s.getUserAgentString() + " GalaxyViewerGenericBrowser/0004");
-
-    v.setWebChromeClient(new WebChromeClient());
-    v.setWebViewClient(new WebViewClient() {
-      @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        String u = request.getUrl() == null ? "" : request.getUrl().toString();
-        if (u.startsWith("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/") &&
-            u.endsWith("web-browser-current.json")) {
-          return false;
-        }
-        return false;
-      }
-
-      @Override public void onPageFinished(WebView view, String url) {
-        if (!url.startsWith(POINTER)) return;
-        view.evaluateJavascript(
-          "(function(){try{var p=JSON.parse(document.body.innerText);" +
-          "var u=p.url||p.shellUrl||p.entryUrl||'';" +
-          "if(u){location.replace(u);}else{document.body.innerHTML='<pre>WEB BROWSER POINTER HAS NO url</pre>';}" +
-          "}catch(e){document.body.innerHTML='<pre>WEB BROWSER POINTER ERROR: '+e+'</pre>';}})();",
-          null);
-      }
-    });
+  private void fetchPointer(){
+    new Thread(()->{try{
+      long t=System.currentTimeMillis();
+      JSONObject p=getJson(POINTER+"?gv="+t);
+      String config=p.getString("config");
+      JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon","");
+      String th=c.getString("topShell"), bh=c.getString("bottomShell");
+      runOnUiThread(()->{
+        top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
+        bottom.loadUrl(bh+(bh.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
+        web.loadUrl(sourceUrl);
+      });
+    }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
-
-  @Override public void onBackPressed() {
-    if (web != null && web.canGoBack()) web.goBack(); else finish();
+  private JSONObject getJson(String u)throws Exception{
+    HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
+    c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
+    c.setConnectTimeout(12000); c.setReadTimeout(12000);
+    BufferedReader r=new BufferedReader(new InputStreamReader(c.getInputStream())); StringBuilder b=new StringBuilder(); String x;
+    while((x=r.readLine())!=null)b.append(x); r.close(); return new JSONObject(b.toString());
   }
-
-  @Override protected void onDestroy() {
-    if (web != null) web.destroy();
-    super.onDestroy();
+  private void syncShell(){
+    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+")";
+    top.loadUrl(js);
   }
+  public final class Bridge{
+    @JavascriptInterface public void back(){runOnUiThread(()->{if(web.canGoBack())web.goBack();});}
+    @JavascriptInterface public void forward(){runOnUiThread(()->{if(web.canGoForward())web.goForward(); else if(!sourceUrl.isEmpty())web.loadUrl(sourceUrl);});}
+    @JavascriptInterface public void exit(){runOnUiThread(()->finish());}
+  }
+  private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
+  @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}
+  @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else finish();}
+  private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
+  private static String esc(String s){return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");}
 }
