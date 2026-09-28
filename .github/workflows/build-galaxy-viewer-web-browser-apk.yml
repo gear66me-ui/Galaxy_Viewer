@@ -37,6 +37,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq librsvg2-bin imagemagick
           mkdir -p app/src/main/res/drawable
+          cp "../../viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" app/src/main/assets/SpaceAge-GV-9A.otf
+          test -s app/src/main/assets/SpaceAge-GV-9A.otf
           rsvg-convert -w 390 -h 390 ../../viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg -o /tmp/gv_target.png
           convert -size 512x512 xc:black /tmp/gv_target.png -gravity center -composite app/src/main/res/drawable/gv_target_launcher.png
           test -s app/src/main/res/drawable/gv_target_launcher.png
@@ -54,6 +56,9 @@ jobs:
           grep -q 'WebViewAssetLoader' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'radial-gradient' app/src/main/assets/index.html
           grep -q 'VERSION ' app/src/main/assets/index.html
+          grep -q "font-family:GV" app/src/main/assets/index.html
+          grep -q "SpaceAge-GV-9A.otf" app/src/main/assets/index.html
+          test -s app/src/main/assets/SpaceAge-GV-9A.otf
           grep -q 'Galaxy-Viewer-Singularity-FINAL' app/src/main/assets/index.html
           grep -q 'galaxy-viewer-target-icon.svg' app/src/main/assets/index.html
           ! grep -q 'file:///android_asset/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
