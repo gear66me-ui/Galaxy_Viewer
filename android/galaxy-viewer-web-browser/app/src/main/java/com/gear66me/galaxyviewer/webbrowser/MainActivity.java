@@ -29,7 +29,7 @@ public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
   private WebView top, web, bottom;
   private WebViewAssetLoader assetLoader;
-  private boolean browserMode=false;
+  private boolean browserMode=false, clearProviderEntryHistory=false;
   private String providerIcon="", sourceUrl="", pendingProviderUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
@@ -49,7 +49,7 @@ public final class MainActivity extends Activity {
     frame.addView(web,0,wp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
-    setContentView(root); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null){ browserMode=true; fetchPointer(); } else { launchGalaxyViewer(); }
+    setContentView(root); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null){ browserMode=true; clearProviderEntryHistory=true; fetchPointer(); } else { launchGalaxyViewer(); }
   }
 
   private WebView shell(){
@@ -69,7 +69,7 @@ public final class MainActivity extends Activity {
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target); return true; } } return false; }
-      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ sourceUrl=url; syncShell(); } }
+      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }
     }); return v;
   }
   private void fetchPointer(){
@@ -88,10 +88,10 @@ public final class MainActivity extends Activity {
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
   private void launchGalaxyViewer(){ browserMode=false; WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(false); s.setAllowContentAccess(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE); top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); android.view.ViewParent parent=web.getParent(); if(parent instanceof FrameLayout){ FrameLayout frame=(FrameLayout)parent; LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)frame.getLayoutParams(); lp.setMargins(0,0,0,0); frame.setLayoutParams(lp); frame.setBackgroundColor(Color.BLACK); } web.loadUrl("https://appassets.androidplatform.net/assets/index.html"); }
-  private void openProvider(String u){ browserMode=true; pendingProviderUrl=u; sourceUrl=u; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); fetchPointer(); }
+  private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); fetchPointer(); }
   private void returnToViewer(){ browserMode=false; top.setVisibility(View.GONE); bottom.setVisibility(View.GONE); if(web.canGoBack()) web.goBack(); else launchGalaxyViewer(); }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
-  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ browserMode=true; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); sourceUrl=u; fetchPointer(); } }
+  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ browserMode=true; clearProviderEntryHistory=true; top.setVisibility(View.VISIBLE); bottom.setVisibility(View.VISIBLE); sourceUrl=u; fetchPointer(); } }
   private JSONObject getJson(String u)throws Exception{
     HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
     c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
