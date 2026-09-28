@@ -39,6 +39,7 @@ jobs:
           mkdir -p app/src/main/res/drawable
           rsvg-convert -w 512 -h 512 ../../viewer/artwork/icon.svg -o app/src/main/res/drawable/gv_target_launcher.png
           test -s app/src/main/res/drawable/gv_target_launcher.png
+          echo '0029 icon gate repair 2'
 
       - name: Audit 0029 source before build
         run: |
