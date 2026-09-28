@@ -23,18 +23,17 @@ public final class MainActivity extends Activity {
   private WebView top, web, bottom;
   private String providerIcon="", sourceUrl="";
   private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
-  private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
     LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setBackgroundColor(Color.BLACK); root.setPadding(0,0,0,0);
     top=shell(); web=provider(); bottom=shell();
-    LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); root.addView(top,tp);
+    LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(72)); root.addView(top,tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(dp(2),dp(2),dp(2),dp(2));
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(14)); frame.setBackground(fg);
-    GradientDrawable wg=new GradientDrawable(); wg.setColor(Color.WHITE); wg.setCornerRadius(dp(12)); web.setBackground(wg); web.setClipToOutline(true); frame.setClipToOutline(true); frame.addView(web,0,new FrameLayout.LayoutParams(-1,-1)); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0016"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
+    GradientDrawable wg=new GradientDrawable(); wg.setColor(Color.WHITE); wg.setCornerRadius(dp(12)); web.setBackground(wg); web.setClipToOutline(true); frame.setClipToOutline(true); frame.addView(web,0,new FrameLayout.LayoutParams(-1,-1)); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0018"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.topMargin=dp(1); fp.bottomMargin=dp(1); root.addView(frame,fp);
-    root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(40)));
+    root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
     setContentView(root); fetchPointer();
   }
 
@@ -58,7 +57,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0; sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
