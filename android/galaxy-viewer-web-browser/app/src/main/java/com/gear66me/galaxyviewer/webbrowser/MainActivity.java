@@ -22,6 +22,7 @@ public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
   private WebView top, web, bottom;
   private String providerIcon="", sourceUrl="";
+  private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -56,7 +57,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon","");
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -78,7 +79,7 @@ public final class MainActivity extends Activity {
   }
   public final class Bridge{
     @JavascriptInterface public void back(){runOnUiThread(()->{if(web.canGoBack())web.goBack();});}
-    @JavascriptInterface public void forward(){runOnUiThread(()->{if(web.canGoForward())web.goForward(); else if(!sourceUrl.isEmpty())web.loadUrl(sourceUrl);});}
+    @JavascriptInterface public void forward(){runOnUiThread(()->{try{if(sourceUrls.length()>0){sourceIndex=(sourceIndex+1)%sourceUrls.length(); sourceUrl=sourceUrls.getString(sourceIndex); web.loadUrl(sourceUrl);}}catch(Exception ignored){}});}
     @JavascriptInterface public void exit(){runOnUiThread(()->finish());}
   }
   private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
