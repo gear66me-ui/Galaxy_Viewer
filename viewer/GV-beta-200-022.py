@@ -484,12 +484,12 @@ try{
     }
 }catch(error){console.error('GV DOE ALADIN REDRAW PROBE FAILED',error)}
 
-const GV_ABOUT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/about/gv-about-presentation-0007.js';
+const GV_ABOUT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/about/gv-about-presentation-0008.js';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
     hamburger?.close?.();
     if(!gvAboutPromise)gvAboutPromise=loadScript(fresh(GV_ABOUT_URL)).then(()=>{
-        if(window.GalaxyViewerAbout?.VERSION!=='0007'||typeof window.GalaxyViewerAbout.mount!=='function')throw new Error('ABOUT PRESENTATION 0007 EXPORT MISSING');
+        if(window.GalaxyViewerAbout?.VERSION!=='0008'||typeof window.GalaxyViewerAbout.mount!=='function')throw new Error('ABOUT PRESENTATION 0008 EXPORT MISSING');
         return window.GalaxyViewerAbout.mount(document.getElementById('aladin-cosmic-command-test'));
     }).catch(error=>{gvAboutPromise=null;throw error});
     (await gvAboutPromise).open();
