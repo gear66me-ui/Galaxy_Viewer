@@ -32,12 +32,13 @@ public final class MainActivity extends Activity {
     top=shell(); web=provider(); bottom=shell();
     LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); root.addView(top,tp); top.setTag(tp);
     FrameLayout frame=new FrameLayout(this); frame.setPadding(0,0,0,0);
-    GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(14)); frame.setBackground(fg);
+    GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(10)); frame.setBackground(fg);
     frame.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
     frame.setClipToOutline(true);
     web.setBackgroundColor(Color.TRANSPARENT);
     FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
-    frame.addView(web,0,wp); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0025"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
+    GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);
+    frame.addView(web,0,wp); android.widget.TextView ver=new android.widget.TextView(this); ver.setText("VERSION 0026"); ver.setTextColor(Color.rgb(120,255,171)); ver.setTextSize(9); ver.setBackgroundColor(Color.argb(210,2,7,15)); ver.setPadding(dp(4),dp(2),dp(4),dp(2)); FrameLayout.LayoutParams vp=new FrameLayout.LayoutParams(-2,-2,android.view.Gravity.TOP|android.view.Gravity.RIGHT); vp.topMargin=dp(4); vp.rightMargin=dp(5); frame.addView(ver,vp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1); fp.setMargins(dp(2),0,dp(2),0); root.addView(frame,fp);
     root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(36)));
     setContentView(root); fetchPointer();
@@ -55,7 +56,7 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0025");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0026");
     v.setWebChromeClient(new WebChromeClient()); v.setWebViewClient(new WebViewClient(){
       @Override public void onPageFinished(WebView view,String url){ sourceUrl=url; syncShell(); }
     }); return v;
