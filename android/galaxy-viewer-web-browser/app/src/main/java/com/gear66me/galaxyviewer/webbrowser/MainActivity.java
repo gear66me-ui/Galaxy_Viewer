@@ -70,7 +70,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0043");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0044");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -90,7 +90,16 @@ public final class MainActivity extends Activity {
   private WebView shell(){
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setCacheMode(WebSettings.LOAD_NO_CACHE); v.clearCache(true); v.setBackgroundColor(Color.BLACK);
-    v.addJavascriptInterface(new Bridge(),"GV"); v.setWebViewClient(new WebViewClient(){ @Override public void onPageFinished(WebView view,String url){ if(view==top) fitTopShell(); }}); return v;
+    v.addJavascriptInterface(new Bridge(),"GV"); v.setWebViewClient(new WebViewClient(){
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
+      @Override public void onPageFinished(WebView view,String url){
+        if(view==top){
+          view.evaluateJavascript("(function(){var s=document.createElement('style');s.textContent=\"@font-face{font-family:'GVLOCAL';src:url('https://appassets.androidplatform.net/assets/SpaceAge-GV-9A.otf') format('opentype');font-display:block}.title{font-family:'GVLOCAL','GV',sans-serif!important;color:#EAFBFF!important;text-shadow:0 0 3px rgba(180,240,255,.98),0 0 9px rgba(67,207,255,.92),0 0 16px rgba(41,132,255,.58)!important}\";document.head.appendChild(s)})()",null);
+          fitTopShell();
+        }
+      }
+    }); return v;
   }
   private void fitTopShell(){
     top.evaluateJavascript("(function(){return Math.ceil(document.documentElement.getBoundingClientRect().height)})()", value->{ try{ int css=(int)Math.ceil(Double.parseDouble(value.replace("\\\"",""))); LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)top.getLayoutParams(); lp.height=dp(css); top.setLayoutParams(lp); }catch(Exception ignored){} });
@@ -100,7 +109,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0043");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0044");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
@@ -151,11 +160,16 @@ public final class MainActivity extends Activity {
     String s=u==null?"":u.toLowerCase();
     String base="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/";
     if(s.contains("spitzer.caltech.edu"))return base+"Spitzer/Spitzer.jpg";
-    if(s.contains("esawebb.org")||s.contains("webbtelescope.org")||s.contains("jwst.nasa.gov"))return base+"JWST/JWST.jpg";
+    if(s.contains("esawebb.org")||s.contains("webbtelescope.org")||s.contains("jwst.nasa.gov"))return base+"JWST/JWST.jpeg";
     if(s.contains("hubblesite.org")||s.contains("esahubble.org"))return base+"Hubble/Hubble.jpg";
-    if(s.contains("noirlab.edu"))return base+"NoirLab/NoirLab.jpg";
+    if(s.contains("noirlab.edu"))return base+"NoirLabs/NOIRLab.jpg";
     if(s.contains("eso.org"))return base+"ESO/ESO.jpg";
     if(s.contains("chandra.harvard.edu")||s.contains("chandra.si.edu"))return base+"Chandra/Chandra.jpg";
+    if(s.contains("euclid")||s.contains("esa.int"))return base+"Euclid/Euclid.jpg";
+    if(s.contains("herschel"))return base+"Herschel/Herschel.jpg";
+    if(s.contains("galex"))return base+"GALEX/GALEX.jpg";
+    if(s.contains("nustar"))return base+"NuSTAR/NuSTAR.jpg";
+    if(s.contains("nrao.edu"))return base+"NRAO/NRAO.jpg";
     return fallback;
   }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
