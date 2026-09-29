@@ -40,7 +40,7 @@ jobs:
           cp "../../viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" app/src/main/assets/SpaceAge-GV-9A.otf
           test -s app/src/main/assets/SpaceAge-GV-9A.otf
           # 0050: remove the obsolete corrupt resource before Android resource merge.
-          rm -f app/src/main/res/drawable/gv_launcher_approved.png app/src/main/res/drawable/gv_launcher_approved.png
+          rm -f app/src/main/res/drawable/gv_launcher_approved.jpg app/src/main/res/drawable/gv_launcher_approved.png
           # Use the repository's known-good PNG as the Android launcher source.
           # No JPEG decode and no redrawing of the trademark icon.
           test -s "../../viewer/artwork/galaxy_viewer_app_icon2.png"
