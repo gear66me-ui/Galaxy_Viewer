@@ -5,7 +5,7 @@ import json
 # SECTION 001 — FILE IDENTITY / PYTHON IMPORTS
 # ECO: GV200-001
 # ============================================================================
-VIEWER_VERSION = "GV-1.0.0"
+VIEWER_VERSION = "RC-V1.0.0"
 # BUILD 0008 — frozen dependency set; native provider browser integration
 
 # ============================================================================
@@ -84,7 +84,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
-const VERSION='GV-1.0.0';
+const VERSION='RC-V1.0.0';
 const GV200001_BUILD='0001';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
@@ -92,7 +92,7 @@ const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeo
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
-    viewerVersion:'GV-1.0.0',
+    viewerVersion:'RC-V1.0.0',
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/vendor/aladin-lite/3.8.2/aladin.js',
@@ -446,7 +446,7 @@ galaxyNavigator.setBusy(true);
 
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
-gvVersionReadout.textContent=`${VERSION.replace(/^GV-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
+gvVersionReadout.textContent=`${VERSION.replace(/^GV-beta-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
 Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'59px',transform:'translate(-50%,50%)',display:'block',width:'min(430px,calc(100vw - 20px))',height:'8px',font:'400 8px/8px "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none',zIndex:'7361'});
 document.body.appendChild(gvVersionReadout);
 

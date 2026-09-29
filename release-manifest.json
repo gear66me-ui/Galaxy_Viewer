@@ -1,7 +1,7 @@
 {
-  "release": "GV-1.0.0",
+  "release": "RC-V1.0.0",
   "sourceBranch": "beta",
-  "sourceCommit": "22da3e179e907cf1f8e16150308985add0a18a0d",
+  "sourceCommit": "7b7bc1e850434857d187a2391aa82a4a61ce75c3",
   "build": "0001",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
@@ -13,7 +13,7 @@
     "viewer/modules/random-galaxy/gv-random-travel-presentation.js",
     "viewer/modules/destination-presentation/gv-destination-presentation-0017.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
-    "viewer/GV-1.0.0.py",
+    "viewer/RC-V1.0.0.py",
     "viewer/gv-current-viewer.json",
     "viewer/modules/hud/gv-heads-up-display-0001.js"
   ],
@@ -132,12 +132,18 @@
     "viewer/artwork/Constellations/VELA.SVG",
     "viewer/artwork/Constellations/VIRGO.SVG",
     "viewer/artwork/Constellations/VOLANS.SVG",
-    "viewer/artwork/Constellations/VULPECULA.SVG"
+    "viewer/artwork/Constellations/VULPECULA.SVG",
+    "viewer/artwork/app_icon_4.png"
   ],
   "vendor": [
     "viewer/vendor/aladin-lite/3.8.2/aladin.js",
     "aladin-source-clone/src/css/aladin.css",
     "aladin-source-clone/assets/icons/search.svg",
     "aladin-source-clone/assets/icons/search-dark.svg"
+  ],
+  "splash": [
+    "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html",
+    "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png",
+    "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
   ]
 }
