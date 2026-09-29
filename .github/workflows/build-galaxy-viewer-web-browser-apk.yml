@@ -39,14 +39,14 @@ jobs:
           mkdir -p app/src/main/res/drawable
           cp "../../viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" app/src/main/assets/SpaceAge-GV-9A.otf
           test -s app/src/main/assets/SpaceAge-GV-9A.otf
-          # 0053: authoritative launcher source. Do not copy/rename/redraw it.
-          ICON="../../viewer/artwork/app_icon_3.png"
+          # 0054: authoritative launcher source. Do not copy/rename/redraw it.
+          ICON="../../viewer/artwork/app_icon_4.png"
           test -s "$ICON"
           file "$ICON" | grep -q 'PNG image data'
-          ln -sf "$GITHUB_WORKSPACE/viewer/artwork/app_icon_3.png" app/src/main/res/drawable/app_icon_3.png
-          test -L app/src/main/res/drawable/app_icon_3.png
+          ln -sf "$GITHUB_WORKSPACE/viewer/artwork/app_icon_4.png" app/src/main/res/drawable/app_icon_4.png
+          test -L app/src/main/res/drawable/app_icon_4.png
           test -s app/src/main/res/drawable/gv_launcher_foreground.xml
-          # Legacy mipmaps are build outputs only; source remains app_icon_3.
+          # Legacy mipmaps are build outputs only; source remains app_icon_4.
           for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
             density="${spec%%:*}"; px="${spec##*:}"
             mkdir -p "app/src/main/res/mipmap-${density}"
@@ -54,14 +54,14 @@ jobs:
             cp "app/src/main/res/mipmap-${density}/ic_launcher.png" "app/src/main/res/mipmap-${density}/ic_launcher_round.png"
           done
           test -s app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          echo '0053 adaptive Galaxy/reticle/Viewer launcher gate'
-          echo '0053 ECO build retry gate'
+          echo '0054 adaptive Galaxy/reticle/Viewer launcher gate'
+          echo '0054 ECO build retry gate'
 
-      - name: Audit 0053 source before build
+      - name: Audit 0054 source before build
         run: |
           grep -q 'android.useAndroidX=true' gradle.properties
-          grep -q "versionCode 53" app/build.gradle
-          grep -q "versionName '0053'" app/build.gradle
+          grep -q "versionCode 54" app/build.gradle
+          grep -q "versionName '0054'" app/build.gradle
           grep -q 'android:icon="@mipmap/ic_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@mipmap/ic_launcher_round"' app/src/main/AndroidManifest.xml
           test -s app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
@@ -69,7 +69,7 @@ jobs:
           grep -q '@drawable/gv_launcher_foreground' app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
           test -s app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           test -s app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-          grep -q 'android:src="@drawable/app_icon_3"' app/src/main/res/drawable/gv_launcher_foreground.xml
+          grep -q 'android:src="@drawable/app_icon_4"' app/src/main/res/drawable/gv_launcher_foreground.xml
           grep -q 'android:width="66dp"' app/src/main/res/drawable/gv_launcher_foreground.xml
           grep -q 'launchProviderIcon' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -q 'providerIconForUrl' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
@@ -91,35 +91,35 @@ jobs:
           grep -q 'Galaxy-Viewer-Singularity-FINAL' app/src/main/assets/index.html
           grep -q 'galaxy-viewer-target-icon.svg' app/src/main/assets/index.html
           ! grep -q 'file:///android_asset/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          grep -q 'GalaxyViewerWebBrowser/0053' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'GalaxyViewerWebBrowser/0054' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'restoreProviderHome();' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'if(web.canGoBack())web.goBack()' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
 
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Audit finished 0053 APK
+      - name: Audit finished 0054 APK
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0053-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0053-badging.txt
-          grep -q "versionCode='53'" apk-0053-badging.txt
-          grep -q "versionName='0053'" apk-0053-badging.txt
-          grep -q "application-label:'Galaxy Viewer'" apk-0053-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0054-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0054-badging.txt
+          grep -q "versionCode='54'" apk-0054-badging.txt
+          grep -q "versionName='0054'" apk-0054-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-0054-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
 
       - name: Name APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-0053.apk
-          test -s dist/Galaxy-Viewer-0053.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-0054.apk
+          test -s dist/Galaxy-Viewer-0054.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-0053
-          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0053.apk
+          name: Galaxy-Viewer-0054
+          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0054.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -128,13 +128,13 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           mkdir -p releases/apk
-          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0053.apk releases/apk/Galaxy-Viewer-0053.apk
+          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0054.apk releases/apk/Galaxy-Viewer-0054.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add releases/apk/Galaxy-Viewer-0053.apk
+          git add releases/apk/Galaxy-Viewer-0054.apk
           if git diff --cached --quiet; then
             echo "APK already published"
           else
-            git commit -m "Publish Galaxy Viewer Web Browser 0053 APK"
+            git commit -m "Publish Galaxy Viewer Web Browser 0054 APK"
             git push origin HEAD:beta
           fi
