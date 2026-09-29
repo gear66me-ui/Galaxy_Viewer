@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
 
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
@@ -125,7 +125,7 @@ jobs:
           </manifest>
           EOF
 
-          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java" <<'EOF'
+          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java" <<'EOF'
           package com.gear66me.galaxyviewer;
 
           import android.app.Activity;
@@ -224,8 +224,8 @@ jobs:
 
           test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"\n          test -s "$ROOT/app/src/main/assets/splash/index.html"\n          grep -q 'RC-V1.0.0.py' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java"
-          grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java"
+          grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
