@@ -39,14 +39,16 @@ jobs:
           mkdir -p app/src/main/res/drawable
           cp "../../viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" app/src/main/assets/SpaceAge-GV-9A.otf
           test -s app/src/main/assets/SpaceAge-GV-9A.otf
-          # 0047 launcher is a checked-in approved asset. Never redraw, crop, or regenerate it.
-          test -s app/src/main/res/drawable/gv_launcher_approved.jpg
+          # 0047: use the repository's known-good PNG as the Android launcher source.
+          # No JPEG decode and no redrawing of the trademark icon.
+          test -s "../../viewer/artwork/icon_transparent.png"
+          cp "../../viewer/artwork/icon_transparent.png" app/src/main/res/drawable/gv_launcher_approved.png
+          file app/src/main/res/drawable/gv_launcher_approved.png | grep -q 'PNG image data'
           test -s app/src/main/res/drawable/gv_launcher_foreground.xml
-          # Generate legacy launcher mipmaps too. Samsung may request these instead of the v26 adaptive resource.
           for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
             density="${spec%%:*}"; px="${spec##*:}"
             mkdir -p "app/src/main/res/mipmap-${density}"
-            convert app/src/main/res/drawable/gv_launcher_approved.jpg -resize "${px}x${px}" "app/src/main/res/mipmap-${density}/ic_launcher.png"
+            convert app/src/main/res/drawable/gv_launcher_approved.png -resize "${px}x${px}" "app/src/main/res/mipmap-${density}/ic_launcher.png"
             cp "app/src/main/res/mipmap-${density}/ic_launcher.png" "app/src/main/res/mipmap-${density}/ic_launcher_round.png"
           done
           test -s app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
