@@ -90,7 +90,7 @@ jobs:
           test -s "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0046-badging.txt
           grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0046-badging.txt
-          grep -q "versionCode='45'" apk-0046-badging.txt
+          grep -q "versionCode='46'" apk-0046-badging.txt
           grep -q "versionName='0046'" apk-0046-badging.txt
           grep -q "application-label:'Galaxy Viewer'" apk-0046-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
