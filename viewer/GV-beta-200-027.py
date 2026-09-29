@@ -366,23 +366,31 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 // ECO: GV200-001
 // ============================================================================
 window.aladin_cosmic_command_test=aladin;
-(function(){
+const gvCosmicReveal=(()=>{
     const root=document.getElementById('aladin-cosmic-command-test');
-    if(!root||document.getElementById('gv-cosmic-reveal'))return;
-    const veil=document.createElement('div');
-    veil.id='gv-cosmic-reveal';
-    Object.assign(veil.style,{position:'absolute',inset:'0',zIndex:'7400',pointerEvents:'none',overflow:'hidden',background:'radial-gradient(circle at 50% 50%,#061326 0%,#01050c 48%,#000 100%)',opacity:'1',transition:'opacity .72s cubic-bezier(.2,.7,.2,1)'});
-    root.appendChild(veil);
-    const count=78;
-    for(let i=0;i<count;i++){
-        const p=document.createElement('i');
-        const bright=i%11===0,size=bright?3.6:(1+Math.random()*1.7),delay=Math.random()*520;
-        Object.assign(p.style,{position:'absolute',left:(Math.random()*100)+'%',top:(Math.random()*100)+'%',width:size+'px',height:size+'px',borderRadius:'50%',background:bright?'#fff':'#dffaff',boxShadow:bright?'0 0 5px #fff,0 0 13px #79DFFF,0 0 24px rgba(121,223,255,.75)':'0 0 6px rgba(121,223,255,.95)',opacity:'0',transform:'scale(.15)',transition:'opacity .16s ease,transform .28s cubic-bezier(.2,.9,.2,1)'});
-        veil.appendChild(p);
-        setTimeout(()=>{p.style.opacity=bright?'1':String(.55+Math.random()*.45);p.style.transform=bright?'scale(1.8)':'scale(1)'},delay);
-        setTimeout(()=>{p.style.opacity='0';p.style.transform=bright?'scale(.35)':'scale(.7)'},delay+240+Math.random()*260);
+    if(!root)return ()=>{};
+    let veil=document.getElementById('gv-cosmic-reveal');
+    if(!veil){
+        veil=document.createElement('div');
+        veil.id='gv-cosmic-reveal';
+        Object.assign(veil.style,{position:'absolute',inset:'0',zIndex:'7400',pointerEvents:'none',overflow:'hidden',background:'radial-gradient(circle at 50% 50%,#061326 0%,#01050c 48%,#000 100%)',opacity:'1'});
+        root.appendChild(veil);
     }
-    setTimeout(()=>{veil.style.opacity='0';setTimeout(()=>veil.remove(),760)},720);
+    let fired=false;
+    return ()=>{
+        if(fired||!veil?.isConnected)return;
+        fired=true;
+        veil.style.transition='opacity .78s cubic-bezier(.2,.7,.2,1)';
+        const count=92;
+        for(let i=0;i<count;i++){
+            const p=document.createElement('i'),bright=i%10===0,size=bright?3.8:(1+Math.random()*1.8),delay=Math.random()*650;
+            Object.assign(p.style,{position:'absolute',left:(Math.random()*100)+'%',top:(Math.random()*100)+'%',width:size+'px',height:size+'px',borderRadius:'50%',background:bright?'#fff':'#dffaff',boxShadow:bright?'0 0 5px #fff,0 0 14px #79DFFF,0 0 26px rgba(121,223,255,.78)':'0 0 7px rgba(121,223,255,.96)',opacity:'0',transform:'scale(.12)',transition:'opacity .16s ease,transform .30s cubic-bezier(.2,.9,.2,1)'});
+            veil.appendChild(p);
+            setTimeout(()=>{p.style.opacity=bright?'1':String(.58+Math.random()*.42);p.style.transform=bright?'scale(1.9)':'scale(1)'},delay);
+            setTimeout(()=>{p.style.opacity='0';p.style.transform=bright?'scale(.3)':'scale(.7)'},delay+260+Math.random()*280);
+        }
+        setTimeout(()=>{veil.style.opacity='0';setTimeout(()=>veil.remove(),820)},900);
+    };
 })();
 
 
@@ -1130,6 +1138,17 @@ function validateDestination(destination){
 }
 
 
+function gvPrewarmProviderWebsite(destination){
+    const url=String(destination?.sourceUrl||'').trim();
+    if(!/^https:\/\//i.test(url))return;
+    try{
+        const link=document.createElement('link');
+        link.rel='prefetch';link.href=url;link.as='document';link.dataset.gvProviderPrewarm='1';
+        document.head.appendChild(link);
+        setTimeout(()=>link.remove(),15000);
+    }catch(error){console.warn('GV PROVIDER PREWARM FAILED',error)}
+}
+
 // ============================================================================
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
@@ -1146,7 +1165,7 @@ async function showDestination(destination,{firstTrip=false}={}){
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
-        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
+        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvPrewarmProviderWebsite(v.destination);return v.destination;
     }
     let prepared=null;
     preparedPromise.then(value=>{prepared=value;headsUpDisplay.markReady?.(v.destination)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
@@ -1155,7 +1174,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     await travelPromise;if(activeDestination!==v.destination)return v.destination;
     prepared=prepared||await preparedPromise;
     if(!installed)await installWhenReady(prepared);else await displayReady;
-    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();return v.destination;
+    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvPrewarmProviderWebsite(v.destination);return v.destination;
 }
 
 // ============================================================================
@@ -1240,6 +1259,9 @@ window.GalaxyViewerCore=Object.freeze({
     get navigationState(){return navigationRuntime.snapshot()}
 });
 
+await gvSpaceAgeReady.catch(()=>{});
+await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+gvCosmicReveal();
 console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
