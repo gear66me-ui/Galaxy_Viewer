@@ -43,7 +43,7 @@ jobs:
           rm -rf "$ROOT"
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
           mkdir -p "$ROOT/app/src/main/assets/splash"
-          mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26"
+          mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
 
           cat > "$ROOT/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
@@ -79,6 +79,7 @@ jobs:
           # Frozen RC launcher source: app_icon_4.png. Do not alter source artwork.
           test -s viewer/artwork/app_icon_4.png
           cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/assets/startup-icon.png"
           cat > "$ROOT/app/src/main/res/drawable/gv_launcher_background.xml" <<'EOF'
           <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
           EOF
@@ -99,6 +100,33 @@ jobs:
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/splash/Space-Age.otf"
 
+          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:colorAccent">#000000</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+          cat > "$ROOT/app/src/main/res/values-v31/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:windowSplashScreenBackground">#000000</item>
+              <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_icon_4</item>
+              <item name="android:windowSplashScreenAnimationDuration">0</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+
           cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -109,7 +137,7 @@ jobs:
               android:icon="@mipmap/ic_launcher"
               android:roundIcon="@mipmap/ic_launcher_round"
               android:label="Galaxy Viewer"
-              android:theme="@android:style/Theme.Material.NoActionBar"
+              android:theme="@style/GalaxyViewerTheme"
               android:usesCleartextTraffic="false">
               <activity
                 android:name=".MainActivity"
@@ -236,7 +264,34 @@ jobs:
           EOF
 
           cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}#splash,#error{position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;z-index:2147483647}#error{display:none;box-sizing:border-box;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}</style></head><body><div id="error"></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));const read=async u=>{const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};const extract=s=>{const h=s.match(/display\\(HTML\\(\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/),j=[...s.matchAll(/display\\(Javascript\\(r?\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/g)];if(!h||!j.length)throw Error('VIEWER EXTRACTION FAILED');return[h[1],j.map(x=>x[1])]};async function prepare(){const p=JSON.parse(await read(BASE+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0'||p.viewer!=='RC-V1.0.0.py'||p.build!=='0001')throw Error('RC POINTER MISMATCH');const src=await read(BASE+p.viewer);const declared=(src.match(/const GV200001_BUILD='(\\d{4})'/)||[])[1];if(declared!==p.build)throw Error('RC BUILD MISMATCH');const [html,js]=extract(src);return{html,js}}async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}const prepared=prepare();const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);let complete=false;addEventListener('message',async e=>{if(e.source!==splash.contentWindow)return;if(e.data?.type==='galaxy-splash-ready')splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');if(e.data?.type==='galaxy-splash-complete'&&!complete){complete=true;try{await mount(await prepared);splash.remove()}catch(err){splash.remove();error.style.display='block';error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err)}}});})().catch(err=>{const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
+          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>
+          @font-face{font-family:"Space Age";src:url("splash/Space-Age.otf") format("opentype");font-display:swap}
+          html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
+          #boot,#splash,#error{position:fixed;inset:0;width:100%;height:100%;box-sizing:border-box;background:#000;z-index:2147483647}
+          #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
+          #bootIconWrap{width:152px;height:152px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(20,96,150,.46) 0%,rgba(7,38,66,.28) 48%,rgba(0,0,0,0) 74%)}
+          #bootIcon{width:112px;height:112px;object-fit:contain}
+          #bootIcon.spin{animation:gvspin 1.15s linear infinite}
+          #bootTitle{margin-top:16px;font-size:25px;letter-spacing:2px}
+          #bootMeta{margin-top:18px;font-size:13px;line-height:1.75;letter-spacing:1.5px;color:#9be5ff}
+          @keyframes gvspin{to{transform:rotate(360deg)}}
+          #splash{border:0;display:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
+          </style></head><body>
+          <div id="boot"><div id="bootIconWrap"><img id="bootIcon" src="startup-icon.png" alt=""></div><div id="bootTitle">GALAXY VIEWER</div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="error"></div>
+          <script>(async()=>{'use strict';
+          const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';
+          const boot=document.getElementById('boot'),icon=document.getElementById('bootIcon'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const read=async u=>{const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};
+          const extract=s=>{const h=s.match(/display\\(HTML\\(\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/),j=[...s.matchAll(/display\\(Javascript\\(r?\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/g)];if(!h||!j.length)throw Error('VIEWER EXTRACTION FAILED');return[h[1],j.map(x=>x[1])]};
+          async function prepare(){const p=JSON.parse(await read(BASE+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0'||p.viewer!=='RC-V1.0.0.py'||p.build!=='0001')throw Error('RC POINTER MISMATCH');const src=await read(BASE+p.viewer);const declared=(src.match(/const GV200001_BUILD='(\\d{4})'/)||[])[1];if(declared!==p.build)throw Error('RC BUILD MISMATCH');const [html,js]=extract(src);return{html,js}}
+          async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}
+          const prepared=prepare();
+          await sleep(650); icon.classList.add('spin'); await sleep(2350);
+          const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);
+          let complete=false;
+          addEventListener('message',async e=>{if(e.source!==splash.contentWindow)return;if(e.data?.type==='galaxy-splash-ready'){splash.style.display='block';boot.style.display='none';splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*')}if(e.data?.type==='galaxy-splash-complete'&&!complete){complete=true;try{const v=await prepared;await mount(v);splash.remove()}catch(err){splash.remove();boot.style.display='none';error.style.display='block';error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err)}}});
+          })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
           test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
@@ -252,6 +307,13 @@ jobs:
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'WindowInsets.Type.displayCutout()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q -- '--gv-safe-top' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
+          grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
+          grep -q 'android:windowSplashScreenBackground">#000000' "$ROOT/app/src/main/res/values-v31/styles.xml"
+          grep -q 'startup-icon.png' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'gvspin' "$ROOT/app/src/main/assets/index.html"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
