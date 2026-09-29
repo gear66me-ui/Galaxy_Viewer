@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <!-- 0049: approved artwork reduced exactly 25% from 90dp to 67.5dp; tile/mask unchanged. -->
-  <item android:gravity="center" android:width="67.5dp" android:height="67.5dp">
+  <!-- 0050: icon2 already contains the approved extra safe-zone reduction; use full adaptive foreground canvas. -->
+  <item android:gravity="center" android:width="108dp" android:height="108dp">
     <bitmap android:src="@drawable/gv_launcher_approved" android:gravity="fill"/>
   </item>
 </layer-list>
