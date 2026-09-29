@@ -62,6 +62,8 @@ try{
  await splashComplete;
  await paint2();await sleep(120);await paint2();
  splash.remove();curtain.remove();
+ await paint2();
+ if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
 }catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e&&e.stack||e)}
 })();
 </script></body></html>
