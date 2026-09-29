@@ -84,15 +84,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
-const gvBootRoot=document.getElementById('aladin-cosmic-command-test');
-if(gvBootRoot&&!document.getElementById('gv-cosmic-reveal')){
-    const gvBootVeil=document.createElement('canvas');
-    gvBootVeil.id='gv-cosmic-reveal';
-    Object.assign(gvBootVeil.style,{position:'absolute',inset:'0',width:'100%',height:'100%',zIndex:'7400',pointerEvents:'none',background:'#000'});
-    gvBootRoot.appendChild(gvBootVeil);
-}
+const gvBootVeil=document.createElement('canvas');
+gvBootVeil.id='gv-cosmic-reveal';
+Object.assign(gvBootVeil.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',zIndex:'2147483646',pointerEvents:'none',background:'#000'});
+document.documentElement.appendChild(gvBootVeil);
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0006';
+const GV200001_BUILD='0007';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -381,8 +378,8 @@ const gvCosmicReveal=(()=>{
     return ()=>{
         if(fired)return;
         fired=true;
-        const dpr=Math.min(window.devicePixelRatio||1,2);
-        const w=Math.max(1,Math.round(root.clientWidth*dpr)),h=Math.max(1,Math.round(root.clientHeight*dpr));
+        const dpr=window.devicePixelRatio||1;
+        const w=Math.max(1,Math.round(innerWidth*dpr)),h=Math.max(1,Math.round(innerHeight*dpr));
         veil.width=w;veil.height=h;
         const gl=veil.getContext('webgl',{alpha:true,antialias:false,preserveDrawingBuffer:false});
         if(!gl){veil.remove();return}
@@ -449,7 +446,7 @@ galaxyNavigator.setBusy(true);
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
 gvVersionReadout.textContent=`${VERSION.replace(/^GV-beta-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
-Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'55px',transform:'translateX(-50%)',display:'block',width:'min(430px,calc(100vw - 20px))',height:'8px',font:'400 8px/8px "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none',zIndex:'7299'});
+Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'58px',transform:'translate(-50%,50%)',display:'block',width:'min(430px,calc(100vw - 20px))',height:'8px',font:'400 8px/8px "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none',zIndex:'7299'});
 earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
 
 
