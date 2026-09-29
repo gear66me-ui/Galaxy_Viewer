@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0013';
+const GV200001_BUILD='0014';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -696,6 +696,22 @@ const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 let directHdOverlay=null;
 let directHdDestination=null;
+// BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
+// Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
+const GV_HD_RESOURCE_WINDOW=10;
+const gvHdObjectUrls=[];
+function gvTrackHdObjectUrl(url){
+    gvHdObjectUrls.push(url);
+    while(gvHdObjectUrls.length>GV_HD_RESOURCE_WINDOW){
+        const stale=gvHdObjectUrls.shift();
+        try{URL.revokeObjectURL(stale)}catch(_){}
+    }
+}
+function gvReleaseHdObjectUrl(url){
+    const index=gvHdObjectUrls.indexOf(url);
+    if(index>=0)gvHdObjectUrls.splice(index,1);
+    try{URL.revokeObjectURL(url)}catch(_){}
+}
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json';
 const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json';
 let gvAvmRuntimePromise=null;
@@ -1009,7 +1025,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
     const raster=await gvLoadGate2MImage(url);
-    const imageObjectUrl=URL.createObjectURL(raster.blob);
+    const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
     return {destination,record,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
@@ -1021,8 +1037,8 @@ function gvInstallPreparedHd(prepared){
     directHdDestination=destination;
     const layer=A.image(imageObjectUrl,{
         name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination){resolveReady(false);return}directHdOverlay=layer;applyDirectHdOpacity();resolveReady(true);setTimeout(()=>URL.revokeObjectURL(imageObjectUrl),30000)},
-        errorCallback:error=>{rejectReady(error);console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
+        successCallback:()=>{if(directHdDestination!==destination){resolveReady(false);return}directHdOverlay=layer;applyDirectHdOpacity();resolveReady(true);setTimeout(()=>gvReleaseHdObjectUrl(imageObjectUrl),30000)},
+        errorCallback:error=>{gvReleaseHdObjectUrl(imageObjectUrl);rejectReady(error);console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
     });
     try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
     directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return ready;
