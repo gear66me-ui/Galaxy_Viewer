@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Release 1.0.0 Test APK
+name: Build Galaxy Viewer RC-V1.0.0 APK
 
 on:
   push:
@@ -32,8 +32,8 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Install SVG rasterizer
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq librsvg2-bin
+      - name: Install launcher tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
       - name: Generate Generic V2 Android shell
         shell: bash
@@ -41,14 +41,14 @@ jobs:
           set -euo pipefail
           ROOT=/tmp/galaxy-viewer-generic-v2
           rm -rf "$ROOT"
-          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2"
-          mkdir -p "$ROOT/app/src/main/assets/artwork"
-          mkdir -p "$ROOT/app/src/main/res/drawable"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
+          mkdir -p "$ROOT/app/src/main/assets/splash"
+          mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26"
 
           cat > "$ROOT/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
-          rootProject.name='GalaxyViewerGenericV2'
+          rootProject.name='GalaxyViewerRC'
           include ':app'
           EOF
 
@@ -64,20 +64,40 @@ jobs:
           cat > "$ROOT/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
           android {
-            namespace 'com.gear66me.galaxyviewergenericv2'
+            namespace 'com.gear66me.galaxyviewer'
             compileSdk 35
             defaultConfig {
-              applicationId 'com.gear66me.galaxyviewergenericv2'
+              applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 2
-              versionName 'GENERIC-2'
+              versionCode 10000
+              versionName 'RC-V1.0.0'
             }
           }
           EOF
 
-          cp viewer/artwork/icon_target_vector.svg "$ROOT/app/src/main/assets/artwork/target-icon.svg"
-          rsvg-convert -w 512 -h 512 viewer/artwork/icon_target_vector.svg -o "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+          # Frozen RC launcher source: app_icon_4.png. Do not alter source artwork.
+          test -s viewer/artwork/app_icon_4.png
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_background.xml" <<'EOF'
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
+          EOF
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_foreground.xml" <<'EOF'
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:gravity="center" android:width="66dp" android:height="66dp"><bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/></item></layer-list>
+          EOF
+          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/gv_launcher_background"/><foreground android:drawable="@drawable/gv_launcher_foreground"/></adaptive-icon>
+          EOF
+          cp "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+          for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            density="${spec%%:*}"; px="${spec##*:}"; mkdir -p "$ROOT/app/src/main/res/mipmap-${density}"
+            convert viewer/artwork/app_icon_4.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            cp "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
+          done
+          # Frozen FINAL splash package copied byte-for-byte from release.
+          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html "$ROOT/app/src/main/assets/splash/index.html"
+          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
+          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/splash/Space-Age.otf"
 
           cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
@@ -86,9 +106,9 @@ jobs:
             <application
               android:allowBackup="false"
               android:hardwareAccelerated="true"
-              android:icon="@drawable/gv_target_launcher"
-              android:roundIcon="@drawable/gv_target_launcher"
-              android:label="Galaxy Viewer GENERIC V2"
+              android:icon="@mipmap/ic_launcher"
+              android:roundIcon="@mipmap/ic_launcher_round"
+              android:label="Galaxy Viewer"
               android:theme="@android:style/Theme.Material.NoActionBar"
               android:usesCleartextTraffic="false">
               <activity
@@ -106,7 +126,7 @@ jobs:
           EOF
 
           cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java" <<'EOF'
-          package com.gear66me.galaxyviewergenericv2;
+          package com.gear66me.galaxyviewer;
 
           import android.app.Activity;
           import android.content.ContentValues;
@@ -199,10 +219,10 @@ jobs:
           EOF
 
           cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000000"><title>GALAXY VIEWER GENERIC V2</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}#cover,#error{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#cover img{width:min(46vw,260px);height:min(46vw,260px);object-fit:contain}.name{margin-top:18px;font:16px sans-serif;letter-spacing:2px;color:#fff}#error{display:none;padding:28px;white-space:pre-wrap;color:#9BE5FF;font:12px monospace}</style></head><body><div id="cover"><img src="artwork/target-icon.svg" alt="Galaxy Viewer target icon"><div class="name">GALAXY VIEWER</div></div><div id="error"></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const cover=document.getElementById('cover'),error=document.getElementById('error');const read=async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status+' '+url);return r.text()};const extract=source=>{const h=[...source.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...source.matchAll(/display\(Javascript\(r\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw new Error('VIEWER EXTRACTION FAILED');return[h[0][1],j[0][1]]};try{const manifest=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));if(!manifest||!/^GV-[0-9A-Z._-]+\.py$/i.test(String(manifest.viewer||'')))throw new Error('INVALID VIEWER POINTER');const source=await read(BASE+manifest.viewer+'?t='+Date.now());const [html,js]=extract(source);document.body.insertAdjacentHTML('beforeend',html);const script=document.createElement('script');script.textContent=js;document.body.appendChild(script);cover.remove()}catch(e){cover.remove();error.style.display='flex';error.textContent='GALAXY VIEWER GENERIC V2 FAILED TO LOAD\n\n'+String(e?.stack||e)}})();</script></body></html>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}#splash,#error{position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;z-index:2147483647}#error{display:none;box-sizing:border-box;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}</style></head><body><div id="error"></div><script>(async()=>{'use strict';const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));const read=async u=>{const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};const extract=s=>{const h=s.match(/display\\(HTML\\(\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/),j=[...s.matchAll(/display\\(Javascript\\(r?\"\"\"([\\s\\S]*?)\"\"\"\\)\\)/g)];if(!h||!j.length)throw Error('VIEWER EXTRACTION FAILED');return[h[1],j.map(x=>x[1])]};async function prepare(){const p=JSON.parse(await read(BASE+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0'||p.viewer!=='RC-V1.0.0.py'||p.build!=='0001')throw Error('RC POINTER MISMATCH');const src=await read(BASE+p.viewer);const declared=(src.match(/const GV200001_BUILD='(\\d{4})'/)||[])[1];if(declared!==p.build)throw Error('RC BUILD MISMATCH');const [html,js]=extract(src);return{html,js}}async function mount(v){const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}const prepared=prepare();const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);let complete=false;addEventListener('message',async e=>{if(e.source!==splash.contentWindow)return;if(e.data?.type==='galaxy-splash-ready')splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');if(e.data?.type==='galaxy-splash-complete'&&!complete){complete=true;try{await mount(await prepared);splash.remove()}catch(err){splash.remove();error.style.display='block';error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err)}}});})().catch(err=>{const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
-          test -s "$ROOT/app/src/main/res/drawable/gv_target_launcher.png"
+          test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"\n          test -s "$ROOT/app/src/main/assets/splash/index.html"\n          grep -q 'RC-V1.0.0.py' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
           grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java"
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewergenericv2/MainActivity.java"
@@ -215,17 +235,17 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-Release-1.0.0-Test.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.apk
           test -s "$APK"
           cp "$APK" "$OUT"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-v2-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewergenericv2'" apk-v2-badging.txt
-          grep -q "application-label:'Galaxy Viewer GENERIC V2'" apk-v2-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer'" apk-rc-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-rc-badging.txt
           unzip -p "$OUT" classes.dex >/dev/null
-          unzip -t "$OUT" | tee apk-v2-zip-test.txt
-          grep -q 'No errors detected' apk-v2-zip-test.txt
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-v2-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-Release-1.0.0-Test.apk.sha256
+          unzip -t "$OUT" | tee apk-rc-zip-test.txt
+          grep -q 'No errors detected' apk-rc-zip-test.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -233,17 +253,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-release-1.0.0-test
+          TAG=galaxy-viewer-rc-v1.0.0
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-Release-1.0.0-Test.apk Galaxy-Viewer-Release-1.0.0-Test.apk.sha256 --target release --title 'Galaxy Viewer Release 1.0.0 Test' --notes 'Isolated release-branch validation APK.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.apk Galaxy-Viewer-RC-V1.0.0.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Release-1.0.0-Test
+          name: Galaxy-Viewer-RC-V1.0.0
           path: |
-            Galaxy-Viewer-Release-1.0.0-Test.apk
-            Galaxy-Viewer-Release-1.0.0-Test.apk.sha256
-            apk-v2-badging.txt
-            apk-v2-signature.txt
-            apk-v2-zip-test.txt
+            Galaxy-Viewer-RC-V1.0.0.apk
+            Galaxy-Viewer-RC-V1.0.0.apk.sha256
+            apk-rc-badging.txt
+            apk-rc-signature.txt
+            apk-rc-zip-test.txt
           retention-days: 30
