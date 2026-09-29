@@ -34,7 +34,7 @@ public final class MainActivity extends Activity {
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
-  private String providerIcon="", sourceUrl="", pendingProviderUrl="", providerHomeUrl="";
+  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -62,7 +62,7 @@ public final class MainActivity extends Activity {
 
     launchGalaxyViewer();
     String launchUrl=launchSourceUrl(getIntent());
-    if(launchUrl!=null){ openProvider(launchUrl); }
+    if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); }
   }
 
   private WebView viewer(){
@@ -79,7 +79,7 @@ public final class MainActivity extends Activity {
         Uri u=request.getUrl();
         if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){
           String target=u.getQueryParameter("url");
-          if(target!=null&&target.startsWith("https://")){ openProvider(target); return true; }
+          if(target!=null&&target.startsWith("https://")){ openProvider(target,u.getQueryParameter("icon")); return true; }
         }
         return false;
       }
@@ -137,7 +137,7 @@ public final class MainActivity extends Activity {
     }); v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
-      @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target); return true; } } return false; }
+      @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target,u.getQueryParameter("icon")); return true; } } return false; }
       @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }
     }); return v;
   }
@@ -147,7 +147,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;pendingProviderUrl="";} providerIcon=providerIconForUrl(sourceUrl,c.optString("providerIcon","")); providerHomeUrl=sourceUrl;
+      sourceUrl=c.getString("sourceUrl"); String launchUrl=launchSourceUrl(getIntent()); String launchIcon=launchProviderIcon(getIntent()); if(launchUrl!=null){sourceUrl=launchUrl;providerIcon=launchIcon;} else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;providerIcon=pendingProviderIcon;pendingProviderUrl="";pendingProviderIcon="";} else {providerIcon=c.optString("providerIcon","");} providerHomeUrl=sourceUrl;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -156,24 +156,9 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
-  private String providerIconForUrl(String u,String fallback){
-    String s=u==null?"":u.toLowerCase();
-    String base="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/";
-    if(s.contains("spitzer.caltech.edu"))return base+"Spitzer/Spitzer.jpg";
-    if(s.contains("esawebb.org")||s.contains("webbtelescope.org")||s.contains("jwst.nasa.gov"))return base+"JWST/JWST.jpeg";
-    if(s.contains("hubblesite.org")||s.contains("esahubble.org"))return base+"Hubble/Hubble.jpg";
-    if(s.contains("noirlab.edu"))return base+"NoirLabs/NOIRLab.jpg";
-    if(s.contains("eso.org"))return base+"ESO/ESO.jpg";
-    if(s.contains("chandra.harvard.edu")||s.contains("chandra.si.edu"))return base+"Chandra/Chandra.jpg";
-    if(s.contains("euclid")||s.contains("esa.int"))return base+"Euclid/Euclid.jpg";
-    if(s.contains("herschel"))return base+"Herschel/Herschel.jpg";
-    if(s.contains("galex"))return base+"GALEX/GALEX.jpg";
-    if(s.contains("nustar"))return base+"NuSTAR/NuSTAR.jpg";
-    if(s.contains("nrao.edu"))return base+"NRAO/NRAO.jpg";
-    return fallback;
-  }
+  private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
-  private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
+  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
   private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }
   private void escapeToFreshViewer(){
     if(fullscreenView!=null){
@@ -184,13 +169,14 @@ public final class MainActivity extends Activity {
     browserMode=false;
     clearProviderEntryHistory=false;
     pendingProviderUrl="";
+    pendingProviderIcon="";
     sourceUrl="";
     if(web!=null){ try{web.stopLoading(); web.loadUrl("about:blank"); web.clearHistory();}catch(Exception ignored){} }
     if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
     launchGalaxyViewer();
   }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
-  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ openProvider(u); } }
+  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ openProvider(u,launchProviderIcon(intent)); } }
   private JSONObject getJson(String u)throws Exception{
     HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
     c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
