@@ -90,8 +90,20 @@ function normalizeRaw(r,i,catalogKey,meta){
   catalogKey,catalogIndex:i
  })
 }
-async function json(url){const r=await fetch(url,{cache:'no-cache'});if(!r.ok)throw Error(`HTTP ${r.status} ${url}`);return r.json()}
-async function catalogs(){const m=await json(MASTER);if(!m?.catalogs)throw Error('MASTER POINTER MAP MISSING');const records=[],counts={};for(const [k,p] of Object.entries(m.catalogs)){const x=await json(new URL(String(p),ROOT).href);if(!Array.isArray(x?.entries))throw Error(`${k} ENTRIES MISSING`);const meta={provider:x.provider,source:x.source};records.push(...x.entries.map((r,i)=>normalizeRaw(r,i,k,meta)));counts[k]=x.entries.length}return {version:m.version,records,counts}}
+async function json(url){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+ try{const r=await fetch(url,{cache:'no-cache',signal:controller.signal});if(!r.ok)throw Error(`HTTP ${r.status} ${url}`);return await r.json()}
+ catch(error){if(error?.name==='AbortError')throw Error(`CATALOG TIMEOUT ${url}`);throw error}
+ finally{clearTimeout(timer)}
+}
+async function catalogs(){
+ const m=await json(MASTER);if(!m?.catalogs)throw Error('MASTER POINTER MAP MISSING');
+ const pairs=Object.entries(m.catalogs);
+ const loaded=await Promise.all(pairs.map(async([k,p])=>{const x=await json(new URL(String(p),ROOT).href);if(!Array.isArray(x?.entries))throw Error(`${k} ENTRIES MISSING`);return [k,x]}));
+ const records=[],counts={};
+ for(const [k,x] of loaded){const meta={provider:x.provider,source:x.source};records.push(...x.entries.map((r,i)=>normalizeRaw(r,i,k,meta)));counts[k]=x.entries.length}
+ return {version:m.version,records,counts}
+}
 
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function avmUrl(r){return clean(r?.imageUrl??imageUrl(r))}
