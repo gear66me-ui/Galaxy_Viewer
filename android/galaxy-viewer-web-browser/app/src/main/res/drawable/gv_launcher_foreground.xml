@@ -2,6 +2,6 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
   <!-- 0052: Android adaptive safe-zone placement; source artwork is galaxy_viewer_app_icon2.png. -->
   <item android:gravity="center" android:width="66dp" android:height="66dp">
-    <bitmap android:src="@drawable/gv_launcher_approved" android:gravity="fill"/>
+    <bitmap android:src="@drawable/galaxy_viewer_app_icon2" android:gravity="fill"/>
   </item>
 </layer-list>
