@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0004';
+const GV200001_BUILD='0005';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -366,7 +366,38 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 // ECO: GV200-001
 // ============================================================================
 window.aladin_cosmic_command_test=aladin;
-const gvCosmicReveal=(()=>{const root=document.getElementById('aladin-cosmic-command-test');let fired=false;return ()=>{if(fired)return;fired=true;const veil=document.getElementById('gv-cosmic-reveal');if(veil)veil.remove();};})();
+const gvCosmicReveal=(()=>{
+    const root=document.getElementById('aladin-cosmic-command-test');
+    if(!root)return ()=>{};
+    let fired=false;
+    return ()=>{
+        if(fired)return;
+        fired=true;
+        const oldVeil=document.getElementById('gv-cosmic-reveal');
+        if(oldVeil)oldVeil.remove();
+        const veil=document.createElement('div');
+        veil.id='gv-pixel-reveal';
+        Object.assign(veil.style,{position:'absolute',inset:'0',zIndex:'7400',pointerEvents:'none',overflow:'hidden'});
+        root.appendChild(veil);
+        const block=14,cols=Math.ceil(root.clientWidth/block),rows=Math.ceil(root.clientHeight/block),cells=[];
+        for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,key:Math.random()});
+        cells.sort((a,b)=>a.key-b.key);
+        const total=2000,n=cells.length,step=total/Math.max(1,n);
+        for(let i=0;i<n;i++){
+            const cell=cells[i],tile=document.createElement('i');
+            Object.assign(tile.style,{position:'absolute',left:(cell.x*block)+'px',top:(cell.y*block)+'px',width:(block+1)+'px',height:(block+1)+'px',background:'#000',opacity:'1',willChange:'opacity,box-shadow'});
+            veil.appendChild(tile);
+            const delay=Math.floor(i*step);
+            setTimeout(()=>{
+                tile.style.boxShadow='0 0 5px rgba(121,223,255,.85)';
+                tile.style.transition='opacity 55ms linear,box-shadow 55ms linear';
+                tile.style.opacity='0';
+                setTimeout(()=>tile.remove(),65);
+            },delay);
+        }
+        setTimeout(()=>veil.remove(),total+90);
+    };
+})();
 
 // ============================================================================
 // SECTION 018 — GALAXY VIEWER MODULE LOAD
