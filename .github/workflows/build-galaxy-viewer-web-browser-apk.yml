@@ -43,14 +43,14 @@ jobs:
           convert -size 512x512 xc:black /tmp/gv_target.png -gravity center -composite app/src/main/res/drawable/gv_target_launcher.png
           test -s app/src/main/res/drawable/gv_target_launcher.png
           identify app/src/main/res/drawable/gv_target_launcher.png
-          echo '0039 black launcher tile gate'
-          echo '0039 ECO build retry gate'
+          echo '0040 black launcher tile gate'
+          echo '0040 ECO build retry gate'
 
-      - name: Audit 0039 source before build
+      - name: Audit 0040 source before build
         run: |
           grep -q 'android.useAndroidX=true' gradle.properties
-          grep -q "versionCode 39" app/build.gradle
-          grep -q "versionName '0039'" app/build.gradle
+          grep -q "versionCode 40" app/build.gradle
+          grep -q "versionName '0040'" app/build.gradle
           grep -q 'android:icon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@drawable/gv_target_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'Galaxy-Viewer-Launch/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
@@ -71,35 +71,35 @@ jobs:
           grep -q 'Galaxy-Viewer-Singularity-FINAL' app/src/main/assets/index.html
           grep -q 'galaxy-viewer-target-icon.svg' app/src/main/assets/index.html
           ! grep -q 'file:///android_asset/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          grep -q 'GalaxyViewerWebBrowser/0039' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'GalaxyViewerWebBrowser/0040' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'restoreProviderHome();' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'if(web.canGoBack())web.goBack()' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
 
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Audit finished 0039 APK
+      - name: Audit finished 0040 APK
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0039-badging.txt
-          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0039-badging.txt
-          grep -q "versionCode='39'" apk-0039-badging.txt
-          grep -q "versionName='0039'" apk-0039-badging.txt
-          grep -q "application-label:'Galaxy Viewer'" apk-0039-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-0040-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.webbrowser'" apk-0040-badging.txt
+          grep -q "versionCode='39'" apk-0040-badging.txt
+          grep -q "versionName='0040'" apk-0040-badging.txt
+          grep -q "application-label:'Galaxy Viewer'" apk-0040-badging.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
 
       - name: Name APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-0039.apk
-          test -s dist/Galaxy-Viewer-0039.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Galaxy-Viewer-0040.apk
+          test -s dist/Galaxy-Viewer-0040.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-0039
-          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0039.apk
+          name: Galaxy-Viewer-0040
+          path: android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0040.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -108,13 +108,14 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           mkdir -p releases/apk
-          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0039.apk releases/apk/Galaxy-Viewer-0039.apk
+          cp android/galaxy-viewer-web-browser/dist/Galaxy-Viewer-0040.apk releases/apk/Galaxy-Viewer-0040.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add releases/apk/Galaxy-Viewer-0039.apk
+          git add releases/apk/Galaxy-Viewer-0040.apk
           if git diff --cached --quiet; then
             echo "APK already published"
           else
-            git commit -m "Publish Galaxy Viewer Web Browser 0039 APK"
+            git commit -m "Publish Galaxy Viewer Web Browser 0040 APK"
+            git pull --rebase origin beta
             git push origin HEAD:beta
           fi
