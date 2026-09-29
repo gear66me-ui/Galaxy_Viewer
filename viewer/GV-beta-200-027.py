@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0016';
+const GV200001_BUILD='0017';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -105,7 +105,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js',
     travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
-    destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0015.js'
+    destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0017.js'
 });
 
 
@@ -114,21 +114,21 @@ window.GV_BOOT_CONFIG=Object.freeze({
 // ECO: GV200-001
 // ============================================================================
 function loadScript(url){
-    return new Promise((resolve,reject)=>{
+    const attempt=(retry=false)=>new Promise((resolve,reject)=>{
         const requested=new URL(url,window.location.href).href;
-        const existing=[...document.scripts].find(s=>new URL(s.src||'',window.location.href).href===requested);
-        if(existing){
-            if(existing.dataset.gvReady==='1')return resolve(existing);
-            existing.addEventListener('load',()=>resolve(existing),{once:true});
-            existing.addEventListener('error',()=>reject(new Error(`SCRIPT LOAD FAILED: ${url}`)),{once:true});
-            return;
-        }
-        const script=document.createElement('script');
-        script.src=url;
-        script.async=true;
-        script.addEventListener('load',()=>{script.dataset.gvReady='1';resolve(script)},{once:true});
-        script.addEventListener('error',()=>reject(new Error(`SCRIPT LOAD FAILED: ${url}`)),{once:true});
-        document.head.appendChild(script);
+        let script=[...document.scripts].find(s=>new URL(s.src||'',window.location.href).href===requested);
+        if(script?.dataset.gvReady==='1')return resolve(script);
+        if(retry&&script){script.remove();script=null}
+        if(!script){script=document.createElement('script');script.src=url;script.async=true;document.head.appendChild(script)}
+        let settled=false;
+        const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):(script.dataset.gvReady='1',resolve(script))};
+        script.addEventListener('load',()=>finish(),{once:true});
+        script.addEventListener('error',()=>finish(new Error(`SCRIPT LOAD FAILED: ${url}`)),{once:true});
+        const timer=setTimeout(()=>finish(new Error(`SCRIPT LOAD TIMEOUT: ${url}`)),12000);
+    });
+    return attempt(false).catch(error=>{
+        console.warn('GV SCRIPT RETRY',url,error);
+        return attempt(true);
     });
 }
 
@@ -431,7 +431,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0014'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0014 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0017'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0017 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
