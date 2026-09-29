@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <!-- 90dp on the 108dp adaptive-icon canvas keeps the approved GALAXY/VIEWER artwork inside the safe zone. -->
-  <item android:gravity="center" android:width="90dp" android:height="90dp">
+  <!-- 0049: approved artwork reduced exactly 25% from 90dp to 67.5dp; tile/mask unchanged. -->
+  <item android:gravity="center" android:width="67.5dp" android:height="67.5dp">
     <bitmap android:src="@drawable/gv_launcher_approved" android:gravity="fill"/>
   </item>
 </layer-list>
