@@ -366,6 +366,7 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 // ECO: GV200-001
 // ============================================================================
 window.aladin_cosmic_command_test=aladin;
+(function(){const root=document.getElementById('aladin-cosmic-command-test');if(!root||document.getElementById('gv-cosmic-reveal'))return;const veil=document.createElement('div');veil.id='gv-cosmic-reveal';Object.assign(veil.style,{position:'absolute',inset:'0',zIndex:'7400',pointerEvents:'none',background:'#000',opacity:'1',transition:'opacity .42s ease-out'});root.appendChild(veil);for(let i=0;i<22;i++){const p=document.createElement('i');Object.assign(p.style,{position:'absolute',left:(Math.random()*100)+'%',top:(Math.random()*100)+'%',width:'2px',height:'2px',borderRadius:'50%',background:'#dffaff',boxShadow:'0 0 7px #78dfff',opacity:'0',transition:'opacity .18s ease'});veil.appendChild(p);setTimeout(()=>p.style.opacity='1',i*16);setTimeout(()=>p.style.opacity='0',260+i*12)}setTimeout(()=>{veil.style.opacity='0';setTimeout(()=>veil.remove(),460)},180)})();
 
 
 // ============================================================================
@@ -484,12 +485,12 @@ try{
     }
 }catch(error){console.error('GV DOE ALADIN REDRAW PROBE FAILED',error)}
 
-const GV_ABOUT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/about/gv-about-presentation-0012.js';
+const GV_ABOUT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/about/gv-about-presentation-0013.js';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
     hamburger?.close?.();
     if(!gvAboutPromise)gvAboutPromise=loadScript(fresh(GV_ABOUT_URL)).then(()=>{
-        if(window.GalaxyViewerAbout?.VERSION!=='0012'||typeof window.GalaxyViewerAbout.mount!=='function')throw new Error('ABOUT PRESENTATION 0012 EXPORT MISSING');
+        if(window.GalaxyViewerAbout?.VERSION!=='0013'||typeof window.GalaxyViewerAbout.mount!=='function')throw new Error('ABOUT PRESENTATION 0013 EXPORT MISSING');
         return window.GalaxyViewerAbout.mount(document.getElementById('aladin-cosmic-command-test'));
     }).catch(error=>{gvAboutPromise=null;throw error});
     (await gvAboutPromise).open();
@@ -499,6 +500,10 @@ const hamburger=window.GalaxyViewerHamburgerMenu.init({
     host:hosts.hamburger,
     onMenuAction(action){
         if(action==='DIAGNOSTICS')window.GalaxyViewerDiagnostics?.open?.();
+        if(action==='GRID OFF'||action==='GRID ON'){
+            const enabled=action==='GRID ON';
+            try{aladin.setCooGrid?.({enabled,color:'#78DFFF',opacity:.68,thickness:1,labelSize:12})}catch(error){console.error('GV GRID TOGGLE FAILED',error)}
+        }
         if(action==='RETICLE OFF'||action==='RETICLE ON'){
             const visible=action==='RETICLE ON';
             reticle.style.display=visible?'block':'none';
@@ -976,6 +981,8 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
+    const liveHdRotation=Number(aladin.getRotation?.());
+    if(Number.isFinite(liveHdRotation)){prepared.rotation=liveHdRotation;try{aladin.setRotation(liveHdRotation)}catch(_){}}
     let resolveReady,rejectReady;
     const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
     directHdDestination=destination;
