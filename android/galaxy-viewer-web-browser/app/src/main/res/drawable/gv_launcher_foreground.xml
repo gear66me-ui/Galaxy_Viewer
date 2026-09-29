@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <!-- 0050: icon2 already contains the approved extra safe-zone reduction; use full adaptive foreground canvas. -->
-  <item android:gravity="center" android:width="108dp" android:height="108dp">
+  <!-- 0052: Android adaptive safe-zone placement; source artwork is galaxy_viewer_app_icon2.png. -->
+  <item android:gravity="center" android:width="66dp" android:height="66dp">
     <bitmap android:src="@drawable/gv_launcher_approved" android:gravity="fill"/>
   </item>
 </layer-list>
