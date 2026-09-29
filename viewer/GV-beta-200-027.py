@@ -84,8 +84,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
+const gvBootRoot=document.getElementById('aladin-cosmic-command-test');
+if(gvBootRoot&&!document.getElementById('gv-cosmic-reveal')){
+    const gvBootVeil=document.createElement('canvas');
+    gvBootVeil.id='gv-cosmic-reveal';
+    Object.assign(gvBootVeil.style,{position:'absolute',inset:'0',width:'100%',height:'100%',zIndex:'7400',pointerEvents:'none',background:'#000'});
+    gvBootRoot.appendChild(gvBootVeil);
+}
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0005';
+const GV200001_BUILD='0006';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -368,34 +375,31 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 window.aladin_cosmic_command_test=aladin;
 const gvCosmicReveal=(()=>{
     const root=document.getElementById('aladin-cosmic-command-test');
-    if(!root)return ()=>{};
+    const veil=document.getElementById('gv-cosmic-reveal');
+    if(!root||!veil)return ()=>{};
     let fired=false;
     return ()=>{
         if(fired)return;
         fired=true;
-        const oldVeil=document.getElementById('gv-cosmic-reveal');
-        if(oldVeil)oldVeil.remove();
-        const veil=document.createElement('div');
-        veil.id='gv-pixel-reveal';
-        Object.assign(veil.style,{position:'absolute',inset:'0',zIndex:'7400',pointerEvents:'none',overflow:'hidden'});
-        root.appendChild(veil);
-        const block=14,cols=Math.ceil(root.clientWidth/block),rows=Math.ceil(root.clientHeight/block),cells=[];
-        for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,key:Math.random()});
-        cells.sort((a,b)=>a.key-b.key);
-        const total=2000,n=cells.length,step=total/Math.max(1,n);
-        for(let i=0;i<n;i++){
-            const cell=cells[i],tile=document.createElement('i');
-            Object.assign(tile.style,{position:'absolute',left:(cell.x*block)+'px',top:(cell.y*block)+'px',width:(block+1)+'px',height:(block+1)+'px',background:'#000',opacity:'1',willChange:'opacity,box-shadow'});
-            veil.appendChild(tile);
-            const delay=Math.floor(i*step);
-            setTimeout(()=>{
-                tile.style.boxShadow='0 0 5px rgba(121,223,255,.85)';
-                tile.style.transition='opacity 55ms linear,box-shadow 55ms linear';
-                tile.style.opacity='0';
-                setTimeout(()=>tile.remove(),65);
-            },delay);
-        }
-        setTimeout(()=>veil.remove(),total+90);
+        const dpr=Math.min(window.devicePixelRatio||1,2);
+        const w=Math.max(1,Math.round(root.clientWidth*dpr)),h=Math.max(1,Math.round(root.clientHeight*dpr));
+        veil.width=w;veil.height=h;
+        const gl=veil.getContext('webgl',{alpha:true,antialias:false,preserveDrawingBuffer:false});
+        if(!gl){veil.remove();return}
+        const vs=gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vs,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}');gl.compileShader(vs);
+        const fs=gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fs,'precision highp float;uniform float u;float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453123);}void main(){float r=hash(floor(gl_FragCoord.xy));if(r<u)discard;gl_FragColor=vec4(0.,0.,0.,1.);}');gl.compileShader(fs);
+        const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);gl.useProgram(pr);
+        const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+        const p=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+        const u=gl.getUniformLocation(pr,'u'),t0=performance.now(),duration=2000;
+        const frame=now=>{
+            const t=Math.min(1,(now-t0)/duration);
+            gl.viewport(0,0,w,h);gl.uniform1f(u,t);gl.drawArrays(gl.TRIANGLES,0,3);
+            if(t<1)requestAnimationFrame(frame);else veil.remove();
+        };
+        requestAnimationFrame(frame);
     };
 })();
 
