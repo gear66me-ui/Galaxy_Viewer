@@ -449,8 +449,8 @@ galaxyNavigator.setBusy(true);
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
 gvVersionReadout.textContent=`${VERSION.replace(/^GV-beta-/,'')}   BLD ${GV200001_BUILD}   RT ${GV_RUNTIME}`;
-Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'58px',transform:'translate(-50%,50%)',display:'block',width:'min(430px,calc(100vw - 20px))',height:'8px',font:'400 8px/8px "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none',zIndex:'7299'});
-earlyNavigationHost.insertBefore(gvVersionReadout,earlyNavigationHost.firstChild);
+Object.assign(gvVersionReadout.style,{position:'fixed',left:'50%',bottom:'59px',transform:'translate(-50%,50%)',display:'block',width:'min(430px,calc(100vw - 20px))',height:'8px',font:'400 8px/8px "GV Space Age",sans-serif',letterSpacing:'.3px',color:'#9edcff',textAlign:'center',margin:'0',padding:'0',border:'0',background:'transparent',boxShadow:'none',pointerEvents:'none',zIndex:'7361'});
+document.body.appendChild(gvVersionReadout);
 
 
 // ============================================================================
