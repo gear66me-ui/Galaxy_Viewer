@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-7600146727d3 — APK-0039-YAML-REPAIR
+
+**Recorded:** 2026-09-28T23:43:39-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`7600146727d3c449fb5ba1e7c9c9e62a8e1483e7`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/7600146727d3c449fb5ba1e7c9c9e62a8e1483e7)  
+**Parent/baseline:** `6170f4680e02fe58d05929a5d31b2580725a65d0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/6170f4680e02fe58d05929a5d31b2580725a65d0...7600146727d3c449fb5ba1e7c9c9e62a8e1483e7)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `APK-0039-YAML-REPAIR`  
+**Requirements:** `REQ-001`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `.github/workflows/build-galaxy-viewer-cacheproof-0001.yml`
+- Actual: `.github/workflows/build-galaxy-viewer-cacheproof-0001.yml`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-cacheproof-0001.yml`
+
+- Git status: `M`
+- SHA-256 before: `21caa3dfe11cc7427aee9e9fd660583ca92d5ba1a8000f02d02ff82c2f074d5f`
+- SHA-256 after: `30a9a6bb9b4537a1e9186db39afdcb07df68b84f0536b94450476accea6c0c11`
+- Bytes: `4956` -> `4962`
+- Lines: `85` -> `86`
+- Characters: `4956` -> `4962`
+- Inserted lines: `2`
+- Deleted lines: `1`
+- Inserted characters: `9`
+- Deleted characters: `3`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-286cc08debf9 — APK-0039-BACK-AUTHORITY
 
 **Recorded:** 2026-09-28T23:26:25-05:00  
