@@ -4,8 +4,8 @@
     <application
         android:allowBackup="false"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/gv_target_launcher"
-        android:roundIcon="@drawable/gv_target_launcher"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="Galaxy Viewer"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">
