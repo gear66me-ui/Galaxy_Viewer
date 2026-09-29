@@ -34,8 +34,7 @@ public final class MainActivity extends Activity {
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
-  private String providerIcon="", sourceUrl="", pendingProviderUrl="";
-  private org.json.JSONArray sourceUrls=new org.json.JSONArray(); private int sourceIndex=0;
+  private String providerIcon="", sourceUrl="", pendingProviderUrl="", providerHomeUrl="";
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -71,7 +70,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0037");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0038");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -101,7 +100,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0037");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0038");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
@@ -139,7 +138,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;pendingProviderUrl="";} sourceUrls=c.optJSONArray("sourceUrls"); if(sourceUrls==null)sourceUrls=new org.json.JSONArray().put(sourceUrl); sourceIndex=0;
+      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;pendingProviderUrl="";} providerHomeUrl=sourceUrl;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -149,7 +148,7 @@ public final class MainActivity extends Activity {
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
-  private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
+  private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
   private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }
   private void escapeToFreshViewer(){
     if(fullscreenView!=null){
@@ -175,12 +174,12 @@ public final class MainActivity extends Activity {
     while((x=r.readLine())!=null)b.append(x); r.close(); return new JSONObject(b.toString());
   }
   private void syncShell(){
-    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+","+(web.canGoBack()?"true":"false")+")";
+    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+","+(web.canGoBack()?"true":"false")+","+(web.canGoForward()?"true":"false")+")";
     top.loadUrl(js);
   }
   public final class Bridge{
-    @JavascriptInterface public void back(){runOnUiThread(()->{if(web.canGoBack())web.goBack(); else syncShell();});}
-    @JavascriptInterface public void forward(){runOnUiThread(()->{try{if(sourceUrls.length()>0){sourceIndex=(sourceIndex+1)%sourceUrls.length(); sourceUrl=sourceUrls.getString(sourceIndex); web.loadUrl(sourceUrl);}}catch(Exception ignored){}});}
+    @JavascriptInterface public void back(){runOnUiThread(()->{if(web.canGoBack())web.goBack(); else if(providerHomeUrl!=null&&!providerHomeUrl.isEmpty())web.reload(); else syncShell();});}
+    @JavascriptInterface public void forward(){runOnUiThread(()->{if(web.canGoForward())web.goForward(); else syncShell();});}
     @JavascriptInterface public void exit(){runOnUiThread(()->returnToViewer());}
   }
   private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
