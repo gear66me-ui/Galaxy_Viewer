@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-363715b5345b — APK-0039-BACK-AUTHORITY
+
+**Recorded:** 2026-09-28T23:26:14-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`363715b5345bf5ee6e25798232f88228a5cf957c`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/363715b5345bf5ee6e25798232f88228a5cf957c)  
+**Parent/baseline:** `27bc8b64bfcafb87047a876e5d59d64f71a6dcf2`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/27bc8b64bfcafb87047a876e5d59d64f71a6dcf2...363715b5345bf5ee6e25798232f88228a5cf957c)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `APK-0039-BACK-AUTHORITY`  
+**Requirements:** `REQ-001,REQ-002,REQ-003,REQ-004,REQ-005,REQ-006`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java`
+- Actual: `android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java`
+
+- Git status: `M`
+- SHA-256 before: `00bfbdb6a25dc7c67d2e7f3b5aa940bd56e8daed0369971d8f74402512aac8dd`
+- SHA-256 after: `9962a1390cf2c2fce2b9f02aaddd861e7160c88ff6b084fc5072c32d4f8a84ea`
+- Bytes: `14195` -> `14710`
+- Lines: `190` -> `201`
+- Characters: `14195` -> `14710`
+- Inserted lines: `14`
+- Deleted lines: `3`
+- Inserted characters: `622`
+- Deleted characters: `107`
+- Changed diff blocks: `4`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-221e853f8e51 — APK-0038-BUILD-REPAIR
 
 **Recorded:** 2026-09-28T21:52:03-05:00  
