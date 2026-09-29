@@ -70,7 +70,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0042");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0043");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -100,7 +100,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0042");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0043");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
@@ -138,7 +138,7 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); providerIcon=c.optString("providerIcon",""); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;pendingProviderUrl="";} providerHomeUrl=sourceUrl;
+      sourceUrl=c.getString("sourceUrl"); String launchUrl=launchSourceUrl(getIntent()); if(launchUrl!=null)sourceUrl=launchUrl; else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;pendingProviderUrl="";} providerIcon=providerIconForUrl(sourceUrl,c.optString("providerIcon","")); providerHomeUrl=sourceUrl;
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -146,6 +146,17 @@ public final class MainActivity extends Activity {
         web.loadUrl(sourceUrl);
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
+  }
+  private String providerIconForUrl(String u,String fallback){
+    String s=u==null?"":u.toLowerCase();
+    String base="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/";
+    if(s.contains("spitzer.caltech.edu"))return base+"Spitzer/Spitzer.jpg";
+    if(s.contains("esawebb.org")||s.contains("webbtelescope.org")||s.contains("jwst.nasa.gov"))return base+"JWST/JWST.jpg";
+    if(s.contains("hubblesite.org")||s.contains("esahubble.org"))return base+"Hubble/Hubble.jpg";
+    if(s.contains("noirlab.edu"))return base+"NoirLab/NoirLab.jpg";
+    if(s.contains("eso.org"))return base+"ESO/ESO.jpg";
+    if(s.contains("chandra.harvard.edu")||s.contains("chandra.si.edu"))return base+"Chandra/Chandra.jpg";
+    return fallback;
   }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
   private void openProvider(String u){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
