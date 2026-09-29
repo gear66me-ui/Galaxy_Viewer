@@ -43,6 +43,8 @@ jobs:
           ICON="../../viewer/artwork/galaxy_viewer_app_icon2.png"
           test -s "$ICON"
           file "$ICON" | grep -q 'PNG image data'
+          ln -sf "$GITHUB_WORKSPACE/viewer/artwork/galaxy_viewer_app_icon2.png" app/src/main/res/drawable/galaxy_viewer_app_icon2.png
+          test -L app/src/main/res/drawable/galaxy_viewer_app_icon2.png
           test -s app/src/main/res/drawable/gv_launcher_foreground.xml
           # Legacy mipmaps are build outputs only; source remains icon2.
           for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
