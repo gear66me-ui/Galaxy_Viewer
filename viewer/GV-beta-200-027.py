@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0002';
+const GV200001_BUILD='0003';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1259,9 +1259,7 @@ window.GalaxyViewerCore=Object.freeze({
     get navigationState(){return navigationRuntime.snapshot()}
 });
 
-await gvSpaceAgeReady.catch(()=>{});
-await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-gvCosmicReveal();
+window.GalaxyViewerStartCosmicReveal=gvCosmicReveal;
 console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
