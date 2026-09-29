@@ -136,6 +136,5 @@ jobs:
             echo "APK already published"
           else
             git commit -m "Publish Galaxy Viewer Web Browser 0048 APK"
-            git pull --rebase origin beta
             git push origin HEAD:beta
           fi
