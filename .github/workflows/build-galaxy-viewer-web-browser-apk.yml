@@ -39,7 +39,9 @@ jobs:
           mkdir -p app/src/main/res/drawable
           cp "../../viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" app/src/main/assets/SpaceAge-GV-9A.otf
           test -s app/src/main/assets/SpaceAge-GV-9A.otf
-          # 0047: use the repository's known-good PNG as the Android launcher source.
+          # 0047: remove the obsolete corrupt resource before Android resource merge.
+          rm -f app/src/main/res/drawable/gv_launcher_approved.jpg
+          # Use the repository's known-good PNG as the Android launcher source.
           # No JPEG decode and no redrawing of the trademark icon.
           test -s "../../viewer/artwork/icon_transparent.png"
           cp "../../viewer/artwork/icon_transparent.png" app/src/main/res/drawable/gv_launcher_approved.png
