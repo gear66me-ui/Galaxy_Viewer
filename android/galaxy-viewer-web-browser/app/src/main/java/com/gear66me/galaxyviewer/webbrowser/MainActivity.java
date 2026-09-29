@@ -70,7 +70,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0039");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0040");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -100,7 +100,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0039");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0040");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
