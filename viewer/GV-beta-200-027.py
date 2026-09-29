@@ -84,12 +84,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
-const gvBootVeil=document.createElement('canvas');
-gvBootVeil.id='gv-cosmic-reveal';
-Object.assign(gvBootVeil.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',zIndex:'2147483646',pointerEvents:'none',background:'#000'});
-document.documentElement.appendChild(gvBootVeil);
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0008';
+const GV200001_BUILD='0009';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -371,26 +367,27 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 // ============================================================================
 window.aladin_cosmic_command_test=aladin;
 const gvCosmicReveal=(()=>{
-    const veil=document.getElementById('gv-cosmic-reveal');
-    if(!veil)return ()=>{};
     let fired=false;
     return ()=>{
         if(fired)return;
         fired=true;
+        const veil=document.createElement('canvas');
+        veil.id='gv-cosmic-reveal';
+        Object.assign(veil.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',zIndex:'98000',pointerEvents:'none',background:'transparent'});
+        document.body.appendChild(veil);
         const dpr=window.devicePixelRatio||1,w=Math.max(1,Math.round(innerWidth*dpr)),h=Math.max(1,Math.round(innerHeight*dpr));
         veil.width=w;veil.height=h;
         const ctx=veil.getContext('2d',{alpha:true});
         if(!ctx){veil.remove();return}
-        ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-        const image=ctx.getImageData(0,0,w,h),data=image.data,count=w*h,order=new Uint32Array(count);
+        ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+        const cell=5,cols=Math.ceil(w/cell),rows=Math.ceil(h/cell),count=cols*rows,order=new Uint32Array(count);
         for(let i=0;i<count;i++)order[i]=i;
         for(let i=count-1;i>0;i--){const j=(Math.random()*(i+1))|0,t=order[i];order[i]=order[j];order[j]=t}
-        let cursor=0,startTime=0,last=0;
+        let cursor=0,startTime=0;
         const frame=now=>{
             if(!startTime)startTime=now;
             const elapsed=Math.min(2000,now-startTime),target=Math.floor(count*(elapsed/2000));
-            for(;cursor<target;cursor++)data[order[cursor]*4+3]=0;
-            if(now-last>32||elapsed>=2000){ctx.putImageData(image,0,0);last=now}
+            for(;cursor<target;cursor++){const n=order[cursor],x=(n%cols)*cell,y=Math.floor(n/cols)*cell;ctx.clearRect(x,y,cell,cell)}
             if(elapsed<2000)requestAnimationFrame(frame);else veil.remove();
         };
         requestAnimationFrame(frame);
