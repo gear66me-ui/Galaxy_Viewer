@@ -115,7 +115,7 @@ jobs:
                 android:name=".MainActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:exported="true"
-                android:screenOrientation="fullSensor">
+                android:screenOrientation="portrait">
                 <intent-filter>
                   <action android:name="android.intent.action.MAIN" />
                   <category android:name="android.intent.category.LAUNCHER" />
@@ -232,6 +232,7 @@ jobs:
           grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
           grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
