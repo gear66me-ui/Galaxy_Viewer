@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0014';
+const GV200001_BUILD='0015';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -408,11 +408,9 @@ const gvCosmicReveal=(()=>{
 // ECO: GV200-001
 // ============================================================================
 await loadScript(fresh(config.hamburgerBaseUrl));
-await loadScript(fresh(config.hamburgerUrl));
 await Promise.all([
     loadScript(fresh(config.coordinateUrl)).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
     loadScript(fresh(config.targetUrl)),
-    loadScript(fresh(config.diagnosticsUrl)),
     loadScript(fresh(config.galaxyRouteEngineUrl)),
     loadScript(fresh(config.galaxyNavigatorUrl)),
     loadScript(fresh(config.headsUpDisplayUrl)),
