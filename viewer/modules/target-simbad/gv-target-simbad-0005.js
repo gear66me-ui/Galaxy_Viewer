@@ -8,8 +8,8 @@
 
   const VERSION='0005';
   const STYLE_ID='gv-target-simbad-0005-style';
-  const FONT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
-  const TARGET_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';
+  const FONT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
+  const TARGET_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';
 
   function installStyles(){
     if(document.getElementById(STYLE_ID))return;

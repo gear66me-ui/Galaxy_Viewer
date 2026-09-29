@@ -3,7 +3,7 @@
 const VERSION='0013';
 if(window.GalaxyViewerAbout?.VERSION===VERSION)return;
 const FONT='';
-const GV_ABOUT_BODY_FONT='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
+const GV_ABOUT_BODY_FONT='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
 const GV_ABOUT_DISPLAY_FONT=GV_ABOUT_BODY_FONT;
 const sections={
 en:`

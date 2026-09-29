@@ -1,0 +1,52 @@
+name: Build Galaxy Viewer Release Test APK
+on:
+  push:
+    branches: [release]
+    paths: ['release-build-trigger.txt']
+permissions: { contents: write }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: release }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - name: Build isolated release APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          R=/tmp/gvr; mkdir -p "$R/app/src/main/java/com/gear66me/galaxyviewerrelease" "$R/app/src/main/assets"
+          printf "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }\ndependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }\nrootProject.name='GVR'\ninclude ':app'\n" > "$R/settings.gradle"
+          printf "plugins { id 'com.android.application' version '8.7.3' apply false }\n" > "$R/build.gradle"
+          printf "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\nandroid.useAndroidX=false\n" > "$R/gradle.properties"
+          cat > "$R/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android { namespace 'com.gear66me.galaxyviewerrelease'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewerrelease'; minSdk 29; targetSdk 35; versionCode 10000; versionName '1.0.0-RELEASE-TEST' } }
+          EOF
+          cp viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg "$R/app/src/main/assets/target-icon.svg"
+          cat > "$R/app/src/main/AndroidManifest.xml" <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer Release 1.0.0" android:theme="@android:style/Theme.Material.NoActionBar" android:usesCleartextTraffic="false"><activity android:name=".MainActivity" android:exported="true" android:screenOrientation="portrait"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>
+          EOF
+          cat > "$R/app/src/main/java/com/gear66me/galaxyviewerrelease/MainActivity.java" <<'EOF'
+          package com.gear66me.galaxyviewerrelease; import android.app.*;import android.os.*;import android.graphics.*;import android.view.*;import android.webkit.*; public final class MainActivity extends Activity{WebView w;public void onCreate(Bundle b){super.onCreate(b);getWindow().getDecorView().setSystemUiVisibility(5894);w=new WebView(this);w.setBackgroundColor(Color.BLACK);WebSettings s=w.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowContentAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);w.setWebViewClient(new WebViewClient());w.setWebChromeClient(new WebChromeClient());setContentView(w);w.loadUrl("file:///android_asset/index.html");}}
+          EOF
+          cat > "$R/app/src/main/assets/index.html" <<'EOF'
+          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#9be5ff}#b,#e{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#b img{width:220px;height:220px}#e{display:none;padding:24px;white-space:pre-wrap;font:12px monospace}</style></head><body><div id="b"><img src="target-icon.svg"><div>GALAXY VIEWER 1.0.0 — RELEASE TEST</div></div><div id="e"></div><script>(async()=>{const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const r=async u=>{let x=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!x.ok)throw Error('HTTP '+x.status+' '+u);return x.text()};try{let p=JSON.parse(await r(B+'gv-current-viewer.json'));if(p.viewer!=='GV-1.0.0.py')throw Error('BAD RELEASE POINTER '+p.viewer);let s=await r(B+p.viewer),h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);let q=document.createElement('script');q.textContent=j[0][1];document.body.appendChild(q);document.getElementById('b').remove()}catch(x){document.getElementById('b').remove();let e=document.getElementById('e');e.style.display='flex';e.textContent=String(x.stack||x)}})()</script></body></html>
+          EOF
+          gradle --no-daemon -p "$R" :app:assembleDebug
+          cp "$R/app/build/outputs/apk/debug/app-debug.apk" Galaxy-Viewer-Release-1.0.0-Test.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-Release-1.0.0-Test.apk
+          sha256sum Galaxy-Viewer-Release-1.0.0-Test.apk > Galaxy-Viewer-Release-1.0.0-Test.apk.sha256
+      - name: Publish direct-download test asset
+        env: { GH_TOKEN: ${{ github.token }} }
+        run: |
+          T=galaxy-viewer-release-1.0.0-test
+          gh release delete "$T" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$T" Galaxy-Viewer-Release-1.0.0-Test.apk Galaxy-Viewer-Release-1.0.0-Test.apk.sha256 --target release --title "Galaxy Viewer Release 1.0.0 Test" --notes "Isolated release branch test APK."
+      - uses: actions/upload-artifact@v4
+        with: { name: Galaxy-Viewer-Release-1.0.0-Test, path: 'Galaxy-Viewer-Release-1.0.0-Test.apk*' }

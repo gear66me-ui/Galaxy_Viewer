@@ -8,8 +8,8 @@
     yFieldLeft:191,yDecimalFromFieldLeft:34.5
   });
   const FONT_URLS={
-    spaceAge:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf',
-    digits:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0005.otf'
+    spaceAge:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf',
+    digits:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0005.otf'
   };
   const FONT_NAMES={spaceAge:'GV Space Age 0003',digits:'GV Coordinate Digits 0003'};
   const instances=new WeakMap();

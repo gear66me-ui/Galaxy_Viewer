@@ -9,7 +9,7 @@
   const MODULE_VERSION = "0009";
   const STYLE_ID = "gv-hamburger-menu-0002-style";
   const DEFAULT_ROOT_CLASS = "gv-hamburger-module-root";
-  const FONT_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf";
+  const FONT_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf";
   const ROW_HEIGHT = 36;
   const TILE_GAP = 2;
   const LEFT_INSET = 12;

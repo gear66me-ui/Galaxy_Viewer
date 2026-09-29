@@ -1,3 +1,0 @@
-GitHub connector diagnostic
-OpenAI support case: 12082774
-Timestamp: 2026-08-02 16:58 America/Bogota
