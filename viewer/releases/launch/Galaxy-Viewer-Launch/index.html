@@ -60,9 +60,9 @@ try{
  await paint2();
  splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
  await splashComplete;
- await paint2();await sleep(120);await paint2();
- splash.remove();curtain.remove();
+ if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
  await paint2();
+ splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
 }catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e&&e.stack||e)}
 })();
