@@ -39,22 +39,26 @@ jobs:
           mkdir -p app/src/main/res/drawable
           cp "../../viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" app/src/main/assets/SpaceAge-GV-9A.otf
           test -s app/src/main/assets/SpaceAge-GV-9A.otf
-          # Use the repository trademark icon directly; do not redraw or crop it.
-          cp "../../viewer/artwork/icon.svg" app/src/main/res/drawable/gv_trademark_icon.svg
-          test -s app/src/main/res/drawable/gv_trademark_icon.svg
+          # 0046 launcher is a checked-in approved asset. Never redraw, crop, or regenerate it.
+          test -s app/src/main/res/drawable/gv_launcher_approved.jpg
+          test -s app/src/main/res/drawable/gv_launcher_foreground.xml
           echo '0046 adaptive Galaxy/reticle/Viewer launcher gate'
           echo '0046 ECO build retry gate'
 
       - name: Audit 0046 source before build
         run: |
           grep -q 'android.useAndroidX=true' gradle.properties
-          grep -q "versionCode 45" app/build.gradle
+          grep -q "versionCode 46" app/build.gradle
           grep -q "versionName '0046'" app/build.gradle
           grep -q 'android:icon="@mipmap/ic_launcher"' app/src/main/AndroidManifest.xml
           grep -q 'android:roundIcon="@mipmap/ic_launcher_round"' app/src/main/AndroidManifest.xml
           test -s app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
           test -s app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
           grep -q '@drawable/gv_launcher_foreground' app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          grep -q '@drawable/gv_launcher_approved' app/src/main/res/drawable/gv_launcher_foreground.xml
+          grep -q 'android:width="90dp"' app/src/main/res/drawable/gv_launcher_foreground.xml
+          grep -q 'launchProviderIcon' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          ! grep -q 'providerIconForUrl' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'Galaxy-Viewer-Launch/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'WebViewAssetLoader' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'private WebView top, web, bottom, viewerWeb;' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
