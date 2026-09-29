@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0009';
+const GV200001_BUILD='0010';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -367,22 +367,29 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 // ============================================================================
 window.aladin_cosmic_command_test=aladin;
 const gvCosmicReveal=(()=>{
-    let fired=false;
-    return ()=>{
-        if(fired)return;
-        fired=true;
-        const veil=document.createElement('canvas');
+    let prepared=false,fired=false,veil=null,ctx=null,order=null,cols=0,count=0,cell=5;
+    const prepare=()=>{
+        if(prepared)return true;
+        prepared=true;
+        veil=document.createElement('canvas');
         veil.id='gv-cosmic-reveal';
-        Object.assign(veil.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',zIndex:'98000',pointerEvents:'none',background:'transparent'});
+        Object.assign(veil.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',zIndex:'98000',pointerEvents:'none',background:'#000'});
         document.body.appendChild(veil);
         const dpr=window.devicePixelRatio||1,w=Math.max(1,Math.round(innerWidth*dpr)),h=Math.max(1,Math.round(innerHeight*dpr));
-        veil.width=w;veil.height=h;
-        const ctx=veil.getContext('2d',{alpha:true});
-        if(!ctx){veil.remove();return}
+        veil.width=w;veil.height=h;ctx=veil.getContext('2d',{alpha:true});
+        if(!ctx){veil.remove();veil=null;return false}
         ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-        const cell=5,cols=Math.ceil(w/cell),rows=Math.ceil(h/cell),count=cols*rows,order=new Uint32Array(count);
+        veil.style.background='transparent';
+        cols=Math.ceil(w/cell);const rows=Math.ceil(h/cell);count=cols*rows;order=new Uint32Array(count);
         for(let i=0;i<count;i++)order[i]=i;
         for(let i=count-1;i>0;i--){const j=(Math.random()*(i+1))|0,t=order[i];order[i]=order[j];order[j]=t}
+        return true;
+    };
+    const start=()=>{
+        if(fired)return;
+        fired=true;
+        if(!prepared&&!prepare())return;
+        if(!veil||!ctx)return;
         let cursor=0,startTime=0;
         const frame=now=>{
             if(!startTime)startTime=now;
@@ -391,8 +398,9 @@ const gvCosmicReveal=(()=>{
             if(elapsed<2000)requestAnimationFrame(frame);else veil.remove();
         };
         requestAnimationFrame(frame);
-        setTimeout(()=>veil.remove(),2400);
+        setTimeout(()=>veil?.remove(),2400);
     };
+    return {prepare,start};
 })();
 
 // ============================================================================
@@ -1260,7 +1268,8 @@ window.GalaxyViewerCore=Object.freeze({
     get navigationState(){return navigationRuntime.snapshot()}
 });
 
-window.GalaxyViewerStartCosmicReveal=gvCosmicReveal;
+window.GalaxyViewerPrepareCosmicReveal=gvCosmicReveal.prepare;
+window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
 console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
