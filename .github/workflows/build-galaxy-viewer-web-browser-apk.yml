@@ -44,6 +44,7 @@ jobs:
           test -s app/src/main/res/drawable/gv_target_launcher.png
           identify app/src/main/res/drawable/gv_target_launcher.png
           echo '0038 black launcher tile gate'
+          echo '0038 ECO build retry gate'
 
       - name: Audit 0038 source before build
         run: |
