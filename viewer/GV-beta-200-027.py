@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='GV-beta-200-027';
-const GV200001_BUILD='0003';
+const GV200001_BUILD='0004';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -366,33 +366,7 @@ if(typeof aladin.setFov==='function')aladin.setFov(HOME.fov);
 // ECO: GV200-001
 // ============================================================================
 window.aladin_cosmic_command_test=aladin;
-const gvCosmicReveal=(()=>{
-    const root=document.getElementById('aladin-cosmic-command-test');
-    if(!root)return ()=>{};
-    let veil=document.getElementById('gv-cosmic-reveal');
-    if(!veil){
-        veil=document.createElement('div');
-        veil.id='gv-cosmic-reveal';
-        Object.assign(veil.style,{position:'absolute',inset:'0',zIndex:'7400',pointerEvents:'none',overflow:'hidden',background:'radial-gradient(circle at 50% 50%,#061326 0%,#01050c 48%,#000 100%)',opacity:'1'});
-        root.appendChild(veil);
-    }
-    let fired=false;
-    return ()=>{
-        if(fired||!veil?.isConnected)return;
-        fired=true;
-        veil.style.transition='opacity .78s cubic-bezier(.2,.7,.2,1)';
-        const count=92;
-        for(let i=0;i<count;i++){
-            const p=document.createElement('i'),bright=i%10===0,size=bright?3.8:(1+Math.random()*1.8),delay=Math.random()*650;
-            Object.assign(p.style,{position:'absolute',left:(Math.random()*100)+'%',top:(Math.random()*100)+'%',width:size+'px',height:size+'px',borderRadius:'50%',background:bright?'#fff':'#dffaff',boxShadow:bright?'0 0 5px #fff,0 0 14px #79DFFF,0 0 26px rgba(121,223,255,.78)':'0 0 7px rgba(121,223,255,.96)',opacity:'0',transform:'scale(.12)',transition:'opacity .16s ease,transform .30s cubic-bezier(.2,.9,.2,1)'});
-            veil.appendChild(p);
-            setTimeout(()=>{p.style.opacity=bright?'1':String(.58+Math.random()*.42);p.style.transform=bright?'scale(1.9)':'scale(1)'},delay);
-            setTimeout(()=>{p.style.opacity='0';p.style.transform=bright?'scale(.3)':'scale(.7)'},delay+260+Math.random()*280);
-        }
-        setTimeout(()=>{veil.style.opacity='0';setTimeout(()=>veil.remove(),820)},900);
-    };
-})();
-
+const gvCosmicReveal=(()=>{const root=document.getElementById('aladin-cosmic-command-test');let fired=false;return ()=>{if(fired)return;fired=true;const veil=document.getElementById('gv-cosmic-reveal');if(veil)veil.remove();};})();
 
 // ============================================================================
 // SECTION 018 — GALAXY VIEWER MODULE LOAD
