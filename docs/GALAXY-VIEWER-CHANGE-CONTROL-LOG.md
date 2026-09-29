@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-221e853f8e51 — APK-0038-BUILD-REPAIR
+
+**Recorded:** 2026-09-28T21:52:03-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`221e853f8e514e7642b2571752220efb658ba567`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/221e853f8e514e7642b2571752220efb658ba567)  
+**Parent/baseline:** `9f778844eea2cf3622ef76861fb3f1b515339f63`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/9f778844eea2cf3622ef76861fb3f1b515339f63...221e853f8e514e7642b2571752220efb658ba567)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `APK-0038-BUILD-REPAIR`  
+**Requirements:** `REQ-001`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `.github/workflows/build-galaxy-viewer-web-browser-apk.yml`
+- Actual: `.github/workflows/build-galaxy-viewer-web-browser-apk.yml`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-web-browser-apk.yml`
+
+- Git status: `M`
+- SHA-256 before: `47dc95f5e2c38c10e36e3e14d6e96d02ff1a5a57b6fa28b702604e385dd2da26`
+- SHA-256 after: `62f59b2ffa88bff5c37f82ef549898fbe30495fbbe06f72b9327270ca09f8d1d`
+- Bytes: `5810` -> `5853`
+- Lines: `116` -> `117`
+- Characters: `5810` -> `5853`
+- Inserted lines: `1`
+- Deleted lines: `0`
+- Inserted characters: `43`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-6f6ae90b36d9 — ECO-GB-BUILD-PIPELINE-01
 
 **Recorded:** 2026-09-26T12:00:55-05:00  
