@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.4 APK
-# RC .4 trigger: AndroidX corrected
+name: Build Galaxy Viewer RC-V1.0.0.5 APK
+# RC .5 trigger: AndroidX corrected
 
 on:
   push:
@@ -71,8 +71,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10004
-              versionName 'RC-V1.0.0.4'
+              versionCode 10005
+              versionName 'RC-V1.0.0.5'
             }
           }
           EOF
@@ -349,7 +349,7 @@ jobs:
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.4<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.5<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
@@ -409,7 +409,7 @@ jobs:
           GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          sed -i 's/GalaxyViewerWebBrowser\/0049/GalaxyViewerWebBrowser\/RC-V1.0.0.4/g' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's/GalaxyViewerWebBrowser\/0049/GalaxyViewerWebBrowser\/RC-V1.0.0.5/g' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's#s.setAllowFileAccess(false); s.setAllowContentAccess(false);#s.setAllowFileAccess(true); s.setAllowContentAccess(true); s.setAllowFileAccessFromFileURLs(true); s.setAllowUniversalAccessFromFileURLs(true);#' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           python3 - <<'PY'
           from pathlib import Path
@@ -472,7 +472,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.4.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.5.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -482,7 +482,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.4.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.5.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -492,14 +492,14 @@ jobs:
           set -euo pipefail
           TAG=galaxy-viewer-rc-v1.0.0.4
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.4.apk Galaxy-Viewer-RC-V1.0.0.4.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.4' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.5.apk Galaxy-Viewer-RC-V1.0.0.5.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.5' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-RC-V1.0.0
           path: |
-            Galaxy-Viewer-RC-V1.0.0.4.apk
-            Galaxy-Viewer-RC-V1.0.0.4.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.5.apk
+            Galaxy-Viewer-RC-V1.0.0.5.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
