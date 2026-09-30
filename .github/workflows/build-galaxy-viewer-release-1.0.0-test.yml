@@ -333,9 +333,9 @@ jobs:
           #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
           #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
           #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #cometOrbit{position:absolute;left:50%;top:50%;width:21px;height:21px;margin-left:-10.5px;margin-top:-10.5px;opacity:0;pointer-events:none;z-index:3;transform-origin:50% 50%}
-          #cometOrbit.spin{opacity:1;animation:gv-loading-comet-orbit 3s linear infinite}
-          #cometOrbit i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin-left:-3px;margin-top:-3px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(-10.5px) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
+          #cometOrbit{position:absolute;left:50%;top:50%;width:0;height:0;--gv-orbit-radius:min(24vw,122px);opacity:1;pointer-events:none;z-index:3;animation:gv-loading-comet-orbit 3s linear infinite}
+          #cometOrbit.spin{opacity:1}
+          #cometOrbit i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
           #cometOrbit i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
           #cometOrbit i:nth-child(2){--gv-angle:-15deg;--gv-scale:.88;--gv-opacity:.84}
           #cometOrbit i:nth-child(3){--gv-angle:-30deg;--gv-scale:.76;--gv-opacity:.68}
@@ -367,11 +367,16 @@ jobs:
             }
             throw Error('RC FINAL READINESS TIMEOUT');
           }
-          async function trickleReveal(){
+          function makeRevealCover(){
             const canvas=document.createElement('canvas');canvas.id='reveal';document.body.appendChild(canvas);
-            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight,cell=5;
+            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight;
             canvas.width=Math.ceil(w*dpr);canvas.height=Math.ceil(h*dpr);canvas.style.display='block';
             const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+            return canvas;
+          }
+          async function trickleReveal(canvas){
+            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight,cell=5;
+            const ctx=canvas.getContext('2d');
             const cols=Math.ceil(w/cell),rows=Math.ceil(h/cell),cells=[];
             for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,k:y/rows+Math.random()*.42});
             cells.sort((a,b)=>a.k-b.k);
@@ -388,9 +393,7 @@ jobs:
             canvas.remove();trickleReveal.i=0;
           }
           const prepared=await prepare();
-          // Established choreography: startup art + comet covers full viewer initialization.
-          await mount(prepared);
-          await finalReady();
+          // Source-of-truth choreography: do not initialize the heavy viewer while the visible splash is animating.
           const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);
           let complete=false;
           addEventListener('message',async e=>{
@@ -401,15 +404,18 @@ jobs:
             }
             if(e.data?.type==='galaxy-splash-complete'&&!complete){
               complete=true;
+              const cover=makeRevealCover();
               try{
+                splash.remove();boot.style.display='none';
+                // The FINAL splash itself hard-holds the completed TWO TRILLION GALAXIES message for 2.000 s.
+                // Only after that completion do we assemble the viewer behind an opaque black cover.
+                await mount(prepared);
                 await finalReady();
-                const black=document.createElement('div');black.style.cssText='position:fixed;inset:0;background:#000;z-index:2147483646';document.body.appendChild(black);
-                splash.remove();
-                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-                black.remove();
-                await trickleReveal();
+                // Match beta's proven post-initialization dwell so late assets/UI can settle behind black.
+                await sleep(2000);
+                await trickleReveal(cover);
               }catch(err){
-                splash.remove();boot.style.display='none';error.style.display='block';
+                splash.remove();boot.style.display='none';cover.remove();error.style.display='block';
                 error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err);
               }
             }
@@ -442,7 +448,11 @@ jobs:
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
+          grep -q -- '--gv-orbit-radius:min(24vw,122px)' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await sleep(2000);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await trickleReveal(cover);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'messageTypeEnd:9796,messageHoldEnd:11796' "$ROOT/app/src/main/assets/splash/index.html"
           grep -q 'width:21px;height:21px;margin-left:-10.5px;margin-top:-10.5px' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
