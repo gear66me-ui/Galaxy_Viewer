@@ -415,7 +415,7 @@ jobs:
           python3 - <<'PY'
           import pathlib, re
           html = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html").read_text()
-          blocks = re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>', html, re.I)
+          blocks = re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>', html, re.I)
           if not blocks:
               raise SystemExit("NO INLINE LAUNCHER JAVASCRIPT FOUND")
           pathlib.Path("/tmp/galaxy-viewer-launcher-inline.js").write_text("\\n".join(blocks))
