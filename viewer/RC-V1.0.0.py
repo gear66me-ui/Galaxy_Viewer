@@ -1165,6 +1165,10 @@ function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!/^https:\/\//i.test(url))return;
     try{
+        if(window.GalaxyProviderPrewarm&&typeof window.GalaxyProviderPrewarm.prewarm==='function'){
+            window.GalaxyProviderPrewarm.prewarm(url);
+            return;
+        }
         const link=document.createElement('link');
         link.rel='prefetch';link.href=url;link.as='document';link.dataset.gvProviderPrewarm='1';
         document.head.appendChild(link);
