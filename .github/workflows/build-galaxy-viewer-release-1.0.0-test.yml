@@ -1,4 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0 APK
+name: "📦 APK DOWNLOAD — Galaxy Viewer RC-V1.0.0"
+run-name: "📦 APK DOWNLOAD ZIP — RC-V1.0.0 BUILD 0001"
 
 on:
   push:
@@ -494,7 +495,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0
+          name: APK-DOWNLOAD-Galaxy-Viewer-RC-V1.0.0-BUILD-0001
           path: |
             Galaxy-Viewer-RC-V1.0.0.apk
             Galaxy-Viewer-RC-V1.0.0.apk.sha256
