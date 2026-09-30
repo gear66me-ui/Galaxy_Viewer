@@ -1,6 +1,6 @@
 name: Deploy GitHub Pages
 
-# Publication refresh: force redeploy current beta branch after Build 0006 launcher recovery.
+# Publication refresh: force redeploy after public Pages / GitHub Actions enablement (2026-09-30).
 on:
   push:
     branches:
