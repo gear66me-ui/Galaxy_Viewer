@@ -513,6 +513,28 @@ jobs:
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
+          # Deterministic preflight: print the exact failed invariant instead of silent grep exit 1.
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets")
+          checks=[
+            ("startup target", 'id="target" src="galaxy-viewer-startup.png"' in (root/"index.html").read_text()),
+            ("appassets payload", "https://appassets.androidplatform.net/assets/viewer/" in (root/"rc-payload.js").read_text()),
+            ("no comet id", 'id="orbit"' not in (root/"index.html").read_text()),
+            ("no comet animation", "gv-loading-comet-orbit" not in (root/"index.html").read_text()),
+          ]
+          for name,ok in checks: print("PREFLIGHT",name,"OK" if ok else "FAIL")
+          bad=[]
+          for p in [root/"index.html",root/"rc-payload.js",*list((root/"viewer").rglob("*"))]:
+            if not p.is_file() or p.suffix.lower() not in {".js",".html",".css",".svg"}: continue
+            try:t=p.read_text()
+            except UnicodeDecodeError:continue
+            for needle in ["raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer","cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer","gear66me-ui.github.io/Galaxy_Viewer","file:///android_asset/"]:
+              if needle in t: bad.append((str(p.relative_to(root)),needle))
+          print("PREFLIGHT forbidden executable refs",bad)
+          if not all(ok for _,ok in checks) or bad: raise SystemExit("PREFLIGHT FAILED")
+          PY
+
           # BUILD 0014 launch composition: approved startup card only; comet/orbit deliberately removed.
           ! grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
           ! grep -q 'gv-loading-comet-orbit' "$ROOT/app/src/main/assets/index.html"
