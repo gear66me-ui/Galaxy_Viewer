@@ -24,8 +24,8 @@ sys.modules["IPython.display"]=ipd
 def execute_exact_build3():
     global captured
     captured=[]
-    src=subprocess.check_output(["git","-C",REPO,"show",f"{COMMIT}:{TARGET}"],text=True)
-    code=compile(src,f"{COMMIT}:{TARGET}","exec")
+    local=os.path.join(REPO,TARGET)\n    with open(local,"r",encoding="utf-8") as fh: src=fh.read()
+    code=compile(src,TARGET,"exec")
     ns={"__name__":"__main__","__file__":TARGET}
     exec(code,ns,ns)
     html="".join(x.data for x in captured if isinstance(x,HTML))
