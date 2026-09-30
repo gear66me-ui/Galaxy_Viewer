@@ -1,5 +1,5 @@
 name: Build Galaxy Viewer RC-V1.0.0.7 APK
-# RC .5 trigger: AndroidX corrected
+# BUILD 0003 stable trigger: 0049 browser isolation
 
 on:
   push:
