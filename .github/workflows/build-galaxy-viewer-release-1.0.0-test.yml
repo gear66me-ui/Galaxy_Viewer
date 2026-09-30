@@ -447,12 +447,25 @@ jobs:
           from pathlib import Path
           p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html")
           s=p.read_text()
-          marker="(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';"
-          start=s.index(marker)
-          script_start=s.rfind("<script>",0,start)+8
-          end=s.index("</script></body></html>",start)
-          replacement="(async()=>{try{const payload=window.__GV_RC_PAYLOAD__;if(!payload||!payload.html||!Array.isArray(payload.js))throw new Error('LOCAL RC PAYLOAD MISSING');document.getElementById('viewerRoot').innerHTML=payload.html;for(const code of payload.js){(0,eval)(code);}}catch(err){document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)}})();"
-          p.write_text(s[:script_start]+replacement+s[end:])
+          # Preserve the complete 0049 launch choreography. Replace only its private-repo bootstrap reads.
+          s=s.replace("</head>","<script src=\"rc-payload.js\"></script></head>",1)
+          s=s.replace("(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';","(async()=>{",1)
+          old=" const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));"
+          new=" const p={version:'RC-V1.0.0.10',build:'0010',viewer:'RC-V1.0.0.py'};"
+          if old not in s: raise SystemExit("0049 POINTER READ ANCHOR MISSING")
+          s=s.replace(old,new,1)
+          old=""" const src=await read(BASE+p.viewer+'?t='+Date.now());
+ const extract=(text,start,end)=>{const a=text.indexOf(start);if(a<0)return null;const from=a+start.length,b=text.indexOf(end,from);return b<0?null:text.slice(from,b)};
+ const html=extract(src,'display(HTML("""','"""))'),js=extract(src,'display(Javascript(r"""','"""))');
+ if(html==null||js==null)throw Error('VIEWER EXTRACTION FAILED html='+String(html!==null)+' js='+String(js!==null)+' bytes='+src.length);
+ document.body.insertAdjacentHTML('beforeend',html);const e=document.createElement('script');e.textContent=js;document.body.appendChild(e);"""
+          new=""" const payload=window.__GV_RC_PAYLOAD__;
+ if(!payload||!payload.html||!Array.isArray(payload.js)||!payload.js.length)throw Error('LOCAL RC PAYLOAD MISSING');
+ document.body.insertAdjacentHTML('beforeend',payload.html);
+ for(const code of payload.js){const e=document.createElement('script');e.textContent=code;document.body.appendChild(e);}"""
+          if old not in s: raise SystemExit("0049 VIEWER READ ANCHOR MISSING")
+          s=s.replace(old,new,1)
+          p.write_text(s)
           PY
           # Launch identity: approved app icon must be visible on the black background from first HTML frame.
           cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
