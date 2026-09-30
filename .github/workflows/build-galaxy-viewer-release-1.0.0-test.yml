@@ -475,7 +475,9 @@ jobs:
           old='<img id="target" src="../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg">'
           new='<img id="target" src="galaxy-viewer-startup.png">'
           if old not in s: raise SystemExit("STARTUP TARGET ANCHOR MISSING")
-          p.write_text(s.replace(old,new,1))
+          s=s.replace(old,new,1)
+          if 'id="target" src="galaxy-viewer-startup.png"' not in s: raise SystemExit("STARTUP TARGET REWRITE FAILED")
+          p.write_text(s)
           PY
           sed -i "s#../../splash/Galaxy-Viewer-Singularity-FINAL/index.html#splash/index.html#g" "$ROOT/app/src/main/assets/index.html"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
@@ -515,7 +517,7 @@ jobs:
           has("black Android splash",R/"res/values-v31/styles.xml",'android:windowSplashScreenBackground">#000000')
           exists("startup drawable",R/"res/drawable/galaxy_viewer_startup.png")
           exists("startup web asset",R/"assets/galaxy-viewer-startup.png")
-          has("startup image reference",R/"assets/index.html","galaxy-viewer-startup.png")
+          has("startup image reference",R/"assets/index.html",'id="target" src="galaxy-viewer-startup.png"')
           has("transparent Android splash icon",R/"res/values-v31/styles.xml",'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon')
           failed=[]
           for name,ok in checks:
