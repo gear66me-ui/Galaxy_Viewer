@@ -333,9 +333,9 @@ jobs:
           #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
           #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
           #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #cometOrbit{position:absolute;left:50%;top:50%;width:0;height:0;--gv-orbit-radius:29%;opacity:0;pointer-events:none;z-index:3}
+          #cometOrbit{position:absolute;left:50%;top:50%;width:26px;height:26px;margin-left:-13px;margin-top:-13px;opacity:0;pointer-events:none;z-index:3;transform-origin:50% 50%}
           #cometOrbit.spin{opacity:1;animation:gv-loading-comet-orbit 3s linear infinite}
-          #cometOrbit i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
+          #cometOrbit i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin-left:-3px;margin-top:-3px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(-9px) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
           #cometOrbit i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
           #cometOrbit i:nth-child(2){--gv-angle:-15deg;--gv-scale:.88;--gv-opacity:.84}
           #cometOrbit i:nth-child(3){--gv-angle:-30deg;--gv-scale:.76;--gv-opacity:.68}
@@ -443,6 +443,7 @@ jobs:
           grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'width:26px;height:26px;margin-left:-13px;margin-top:-13px' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
           grep -q 'cell=5' "$ROOT/app/src/main/assets/index.html"
