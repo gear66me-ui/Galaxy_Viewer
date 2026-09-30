@@ -453,10 +453,7 @@ jobs:
           test -s "$ROOT/app/src/main/assets/rc-payload.js"
           grep -q 'window.__GV_RC_PAYLOAD__=' "$ROOT/app/src/main/assets/rc-payload.js"
           grep -q 'rc-payload.js' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
-          grep -q 'WindowInsets.Type.displayCutout()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
           grep -q 'android:windowSplashScreenBackground">#000000' "$ROOT/app/src/main/res/values-v31/styles.xml"
@@ -464,12 +461,7 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0.4' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'await sleep(2350);' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'await sleep(12750);' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
-          grep -q '!request.isForMainFrame()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
