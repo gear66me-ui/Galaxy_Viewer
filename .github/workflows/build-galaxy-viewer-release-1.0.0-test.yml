@@ -434,8 +434,17 @@ jobs:
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
           sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
           # BUILD 0009: remove startup-card blue halo/glow only; preserve comet orbit unchanged.
-          sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
-          sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html")
+          s=p.read_text()
+          halo="background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)"
+          glow="filter:drop-shadow(0 0 8px rgba(69,231,255,.45))"
+          if halo not in s or glow not in s:
+              raise SystemExit("BUILD 0009 source glow signatures not found")
+          s=s.replace(halo,"background:transparent",1).replace(glow,"filter:none",1)
+          p.write_text(s)
+          PY
 
           # Nanoscopic gates: reject the regressions seen in .3.
           grep -q 'FULL BOOT BEHIND CURTAIN' "$ROOT/app/src/main/assets/index.html"
@@ -469,9 +478,14 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          grep -q '#halo{position:relative.*background:transparent}' "$ROOT/app/src/main/assets/index.html"
-          grep -q '#target{.*filter:none}' "$ROOT/app/src/main/assets/index.html"
-          ! grep -q 'radial-gradient(circle,rgba(7,45,110,.98)' "$ROOT/app/src/main/assets/index.html"
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html").read_text()
+          assert "background:transparent" in s, "BUILD 0009 transparent halo missing"
+          assert "filter:none" in s, "BUILD 0009 target glow still active"
+          assert "radial-gradient(circle,rgba(7,45,110,.98)" not in s, "BUILD 0009 blue halo survived"
+          assert "gv-loading-comet-orbit 3s linear infinite" in s, "BUILD 0009 comet orbit changed"
+          PY
           # BUILD 0009 launch composition gates: approved icon + comet orbit above it.
           grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
           grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
