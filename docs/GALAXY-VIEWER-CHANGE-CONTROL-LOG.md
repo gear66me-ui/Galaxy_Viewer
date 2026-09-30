@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-8559bf279f4a — GV-RC-10007-B0003-TRIGGER
+
+**Recorded:** 2026-09-30T10:53:12-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`8559bf279f4a285c51397fbceeff4e5ad89d9cd3`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/8559bf279f4a285c51397fbceeff4e5ad89d9cd3)  
+**Parent/baseline:** `be897788c10b932e4ec672d67cc807a81e392120`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/be897788c10b932e4ec672d67cc807a81e392120...8559bf279f4a285c51397fbceeff4e5ad89d9cd3)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `GV-RC-10007-B0003-TRIGGER`  
+**Requirements:** `trigger APK V1.0.0.7 BUILD 0003 from last successful workflow baseline after provider preload rollback`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+- Actual: `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+
+- Git status: `M`
+- SHA-256 before: `1cdae2546ced3d5a3f1d3180f7c63f387650667c1bf117714d6081ca3d546d5b`
+- SHA-256 after: `20eb97817061b3ac5eebec3082fc9aee81f9d86301069a21e52dca7394aa9314`
+- Bytes: `32773` -> `32789`
+- Lines: `506` -> `506`
+- Characters: `32773` -> `32789`
+- Inserted lines: `1`
+- Deleted lines: `1`
+- Inserted characters: `33`
+- Deleted characters: `17`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-1724f5be0a7c — GV-RC-10007-B0003
 
 **Recorded:** 2026-09-30T10:50:15-05:00  
