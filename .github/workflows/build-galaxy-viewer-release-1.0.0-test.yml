@@ -80,10 +80,10 @@ jobs:
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           EOF
 
-          # Frozen RC launcher source: galaxy-viewer-startup.png. Do not alter source artwork.
-          test -s viewer/artwork/galaxy-viewer-startup.png
-          cp viewer/artwork/galaxy-viewer-startup.png "$ROOT/app/src/main/res/drawable/galaxy-viewer-startup.png"
-          # Dedicated RC startup artwork. Launcher icon remains galaxy-viewer-startup.png.
+          # Frozen RC launcher source: app_icon_4.png. Do not alter source artwork.
+          test -s viewer/artwork/app_icon_4.png
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
+          # Dedicated RC startup artwork. Launcher icon remains app_icon_4.png.
           test -s viewer/artwork/startup/galaxy-viewer-startup.png
           cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/res/drawable/galaxy_viewer_startup.png"
           cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
@@ -106,7 +106,7 @@ jobs:
           cp "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
           for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
             density="${spec%%:*}"; px="${spec##*:}"; mkdir -p "$ROOT/app/src/main/res/mipmap-${density}"
-            convert viewer/artwork/galaxy-viewer-startup.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            convert viewer/artwork/app_icon_4.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
             cp "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
           done
           # Frozen FINAL splash package copied byte-for-byte from release.
@@ -425,14 +425,14 @@ jobs:
           git show "$GOLD:viewer/releases/launch/Galaxy-Viewer-Launch/index.html" > "$ROOT/app/src/main/assets/index.html"
           sed -i "s#Galaxy_Viewer/beta/viewer/#Galaxy_Viewer/release/viewer/#g" "$ROOT/app/src/main/assets/index.html"
           # Launch identity: approved app icon must be visible on the black background from first HTML frame.
-          cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
-          sed -i "s#../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg#galaxy-viewer-startup.png#g" "$ROOT/app/src/main/assets/index.html"
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/assets/app_icon_4.png"
+          sed -i "s#../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg#app_icon_4.png#g" "$ROOT/app/src/main/assets/index.html"
           sed -i "s#../../splash/Galaxy-Viewer-Singularity-FINAL/index.html#splash/index.html#g" "$ROOT/app/src/main/assets/index.html"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
           sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0009 ONLY: remove the blue startup halo and target drop-shadow.
+          # BUILD 0009: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
           sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
           sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
 
@@ -450,7 +450,7 @@ jobs:
           ! grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
           ! grep -q 'await mount(prepared)' "$ROOT/app/src/main/assets/index.html"
 
-          test -s "$ROOT/app/src/main/res/drawable/galaxy-viewer-startup.png"
+          test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           test -s "$ROOT/app/src/main/assets/splash/index.html"
           test -s "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
           test -s "$ROOT/app/src/main/assets/splash/Space-Age.otf"
@@ -464,15 +464,15 @@ jobs:
           grep -q 'android:windowSplashScreenBackground">#000000' "$ROOT/app/src/main/res/values-v31/styles.xml"
           test -s "$ROOT/app/src/main/res/drawable/galaxy_viewer_startup.png"
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
-          grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
-          test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
+          grep -q 'app_icon_4.png' "$ROOT/app/src/main/assets/index.html"
+          test -s "$ROOT/app/src/main/assets/app_icon_4.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           # BUILD 0009 launch composition gates: approved icon + comet orbit above it.
           grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
           grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
           grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'id="target" src="galaxy-viewer-startup.png"' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'id="target" src="app_icon_4.png"' "$ROOT/app/src/main/assets/index.html"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
