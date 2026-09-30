@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.13 APK
-# BUILD 0013 launch-icon restoration; preserve 0049 browser isolation
+name: Build Galaxy Viewer RC-V1.0.0.14 APK
+# BUILD 0014 launch-icon restoration; preserve 0049 browser isolation
 
 on:
   push:
@@ -71,8 +71,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10013
-              versionName 'RC-V1.0.0.13'
+              versionCode 10014
+              versionName 'RC-V1.0.0.14'
             }
           }
           EOF
@@ -114,7 +114,7 @@ jobs:
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/splash/Space-Age.otf"
 
-          # BUILD 0013 SELF-CONTAINED RUNTIME
+          # BUILD 0014 SELF-CONTAINED RUNTIME
           mkdir -p "$ROOT/app/src/main/assets/viewer"
           cp -a viewer/modules "$ROOT/app/src/main/assets/viewer/"
           cp -a viewer/vendor "$ROOT/app/src/main/assets/viewer/"
@@ -473,8 +473,8 @@ jobs:
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
-          sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0013: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
+          sed -i '/<span id="orbit"/,/<\/span>/d' "$ROOT/app/src/main/assets/index.html"
+          # BUILD 0014: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
           sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
           sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
 
@@ -513,8 +513,7 @@ jobs:
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0013 launch composition gates: approved icon + comet orbit above it.
+          # BUILD 0014 launch composition gates: approved icon + comet orbit above it.
           grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
           grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
           grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
@@ -535,7 +534,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.13-Build-0013.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -545,7 +544,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.13-Build-0013.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -555,14 +554,14 @@ jobs:
           set -euo pipefail
           TAG=galaxy-viewer-rc-v1.0.0.13
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.13-Build-0013.apk Galaxy-Viewer-RC-V1.0.0.13-Build-0013.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.13' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.14' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.13-Build-0013
+          name: Galaxy-Viewer-RC-V1.0.0.14-Build-0014
           path: |
-            Galaxy-Viewer-RC-V1.0.0.13-Build-0013.apk
-            Galaxy-Viewer-RC-V1.0.0.13-Build-0013.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk
+            Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
