@@ -349,7 +349,7 @@ jobs:
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.7<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.7<br>BUILD&nbsp;&nbsp;0003</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
@@ -421,43 +421,6 @@ jobs:
           p.write_text(s.replace(old,new))
           PY
 
-          # BUILD 0003: restore 0049 browser isolation; no provider page runs while Galaxy Viewer is visible.
-          # Foreground-only contingency comet is added to the provider viewport after explicit Website press.
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java")
-          s=p.read_text()
-          s=s.replace('private WebView top, web, bottom, viewerWeb;','private WebView top, web, bottom, viewerWeb, providerLoader;',1)
-          old='''    frame.addView(web,wp);
-    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1);'''
-          new='''    frame.addView(web,wp);
-    providerLoader=new WebView(this);
-    providerLoader.setBackgroundColor(Color.BLACK);
-    providerLoader.getSettings().setJavaScriptEnabled(false);
-    String loaderHtml="<html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}body{display:grid;place-items:center}.h{position:relative;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)}.o{position:absolute;left:50%;top:50%;width:0;height:0;animation:r 3s linear infinite}.o i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--a)) translateY(-60px) scale(var(--s));opacity:var(--p);box-shadow:0 0 6px rgba(98,216,255,.85)}.o i:first-child{background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}@keyframes r{to{transform:rotate(360deg)}}</style></head><body><div class=\"h\"><span class=\"o\"><i style=\"--a:0deg;--s:1;--p:1\"></i><i style=\"--a:-15deg;--s:.88;--p:.84\"></i><i style=\"--a:-30deg;--s:.76;--p:.68\"></i><i style=\"--a:-45deg;--s:.64;--p:.52\"></i><i style=\"--a:-60deg;--s:.52;--p:.38\"></i><i style=\"--a:-75deg;--s:.42;--p:.26\"></i><i style=\"--a:-90deg;--s:.32;--p:.16\"></i><i style=\"--a:-105deg;--s:.24;--p:.08\"></i></span></div></body></html>";
-    providerLoader.loadDataWithBaseURL(null,loaderHtml,"text/html","UTF-8",null);
-    providerLoader.setVisibility(View.GONE);
-    frame.addView(providerLoader,new FrameLayout.LayoutParams(-1,-1));
-    LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1);'''
-          if old not in s: raise SystemExit("provider frame anchor missing")
-          s=s.replace(old,new,1)
-          old='''      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }'''
-          new='''      @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){ if(browserMode&&providerLoader!=null)providerLoader.setVisibility(View.VISIBLE); }
-      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); if(providerLoader!=null)providerLoader.setVisibility(View.GONE); } }
-      @Override public void onReceivedError(WebView view,WebResourceRequest request,android.webkit.WebResourceError error){ if(request!=null&&request.isForMainFrame()&&browserMode&&providerLoader!=null)providerLoader.setVisibility(View.GONE); }'''
-          if old not in s: raise SystemExit("provider callback anchor missing")
-          s=s.replace(old,new,1)
-          old='''  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }'''
-          new='''  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(providerLoader!=null)providerLoader.setVisibility(View.VISIBLE); if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }'''
-          if old not in s: raise SystemExit("openProvider anchor missing")
-          s=s.replace(old,new,1)
-          old='''  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }'''
-          new='''  private void returnToViewer(){ browserMode=false; if(providerLoader!=null)providerLoader.setVisibility(View.GONE); if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }'''
-          if old not in s: raise SystemExit("returnToViewer anchor missing")
-          s=s.replace(old,new,1)
-          p.write_text(s)
-          PY
-
           # GOLD MASTER launch choreography: exact 0049 launch page; only beta->release source and local APK asset paths change.
           git show "$GOLD:viewer/releases/launch/Galaxy-Viewer-Launch/index.html" > "$ROOT/app/src/main/assets/index.html"
           sed -i "s#Galaxy_Viewer/beta/viewer/#Galaxy_Viewer/release/viewer/#g" "$ROOT/app/src/main/assets/index.html"
@@ -467,11 +430,6 @@ jobs:
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
           sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
-          sed -i 's/identityRemain=Math.max(0,3000-/identityRemain=Math.max(0,4000-/' "$ROOT/app/src/main/assets/index.html"
-          # Blend startup artwork into the halo: artwork behind glow, square edges masked away.
-          sed -i 's/#target{display:block;/#target{position:relative;z-index:1;display:block;/' "$ROOT/app/src/main/assets/index.html"
-          sed -i 's/filter:drop-shadow(0 0 8px rgba(69,231,255,.45))}/filter:drop-shadow(0 0 8px rgba(69,231,255,.45));-webkit-mask-image:radial-gradient(circle,#000 0 46%,rgba(0,0,0,.92) 56%,transparent 74%);mask-image:radial-gradient(circle,#000 0 46%,rgba(0,0,0,.92) 56%,transparent 74%)}/' "$ROOT/app/src/main/assets/index.html"
-          sed -i 's/#orbit{position:absolute;/#halo:after{content:"";position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;background:radial-gradient(circle,rgba(35,126,255,.10) 0%,rgba(12,82,190,.14) 34%,rgba(3,25,68,.24) 56%,rgba(0,0,0,0) 78%)}#orbit{position:absolute;/' "$ROOT/app/src/main/assets/index.html"
 
           # Nanoscopic gates: reject the regressions seen in .3.
           grep -q 'FULL BOOT BEHIND CURTAIN' "$ROOT/app/src/main/assets/index.html"
@@ -505,9 +463,6 @@ jobs:
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'identityRemain=Math.max(0,4000-' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'mask-image:radial-gradient' "$ROOT/app/src/main/assets/index.html"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
