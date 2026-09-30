@@ -281,15 +281,22 @@ jobs:
           #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
           #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
           #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #cometOrbit{position:absolute;left:50%;top:50%;width:43%;height:43%;transform:translate(-50%,-50%);border-radius:50%;opacity:0;pointer-events:none}
-          #cometOrbit.spin{opacity:1;animation:gvOrbit 1.15s linear infinite}
-          #comet{position:absolute;left:50%;top:-2.5%;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 7px #fff,0 0 13px #65dfff,0 0 20px #168dff}
-          #comet:after{content:"";position:absolute;right:5px;top:2px;width:30px;height:4px;border-radius:999px;background:linear-gradient(90deg,rgba(30,119,255,0),rgba(91,218,255,.7),#fff);transform-origin:right center;transform:rotate(-10deg)}
+          #cometOrbit{position:absolute;left:50%;top:50%;width:0;height:0;--gv-orbit-radius:29%;opacity:0;pointer-events:none;z-index:3}
+          #cometOrbit.spin{opacity:1;animation:gv-loading-comet-orbit 3s linear infinite}
+          #cometOrbit i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
+          #cometOrbit i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
+          #cometOrbit i:nth-child(2){--gv-angle:-15deg;--gv-scale:.88;--gv-opacity:.84}
+          #cometOrbit i:nth-child(3){--gv-angle:-30deg;--gv-scale:.76;--gv-opacity:.68}
+          #cometOrbit i:nth-child(4){--gv-angle:-45deg;--gv-scale:.64;--gv-opacity:.52}
+          #cometOrbit i:nth-child(5){--gv-angle:-60deg;--gv-scale:.52;--gv-opacity:.38}
+          #cometOrbit i:nth-child(6){--gv-angle:-75deg;--gv-scale:.42;--gv-opacity:.26}
+          #cometOrbit i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
+          #cometOrbit i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
           #bootMeta{margin-top:8px;font-size:13px;line-height:1.75;letter-spacing:1.5px;color:#9be5ff}
-          @keyframes gvOrbit{to{transform:translate(-50%,-50%) rotate(360deg)}}
+          @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><div id="cometOrbit"><span id="comet"></span></div></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script>(async()=>{'use strict';
           const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';
@@ -329,7 +336,7 @@ jobs:
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'gvOrbit' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
