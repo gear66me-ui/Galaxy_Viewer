@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.11 APK
-# BUILD 0011 launch-icon restoration; preserve 0049 browser isolation
+name: Build Galaxy Viewer RC-V1.0.0.12 APK
+# BUILD 0012 launch-icon restoration; preserve 0049 browser isolation
 
 on:
   push:
@@ -71,8 +71,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10011
-              versionName 'RC-V1.0.0.11'
+              versionCode 10012
+              versionName 'RC-V1.0.0.12'
             }
           }
           EOF
@@ -114,10 +114,12 @@ jobs:
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/splash/Space-Age.otf"
 
-          # BUILD 0011 SELF-CONTAINED RUNTIME
+          # BUILD 0012 SELF-CONTAINED RUNTIME
           mkdir -p "$ROOT/app/src/main/assets/viewer"
           cp -a viewer/modules "$ROOT/app/src/main/assets/viewer/"
           cp -a viewer/vendor "$ROOT/app/src/main/assets/viewer/"
+          mkdir -p "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2"
+          cp aladin-source-clone/src/css/aladin.css "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2/aladin.css"
           cp -a viewer/artwork "$ROOT/app/src/main/assets/viewer/"
           cp -a viewer/image-databases "$ROOT/app/src/main/assets/viewer/"
           python3 - <<'PY'
@@ -460,8 +462,8 @@ jobs:
           s=s.replace(src_line," const payload=window.__GV_RC_PAYLOAD__;",1)
           a=s.index(" const extract=(text,start,end)=>")
           b=s.index(" document.body.insertAdjacentHTML('beforeend',html);",a)
-          end=s.index(";",b)+1
-          local=" if(!payload||!payload.html||!Array.isArray(payload.js)||!payload.js.length)throw Error('LOCAL RC PAYLOAD MISSING');\\n document.body.insertAdjacentHTML('beforeend',payload.html);\\n for(const code of payload.js){const e=document.createElement('script');e.textContent=code;document.body.appendChild(e);}"
+          end=s.index(";",s.index("document.body.appendChild(e)",b))+1
+          local=" if(!payload||!payload.html||!Array.isArray(payload.js)||!payload.js.length)throw Error('LOCAL RC PAYLOAD MISSING');\n document.body.insertAdjacentHTML('beforeend',payload.html);\n for(const code of payload.js){const e=document.createElement('script');e.textContent=code;document.body.appendChild(e);}"
           s=s[:a]+local+s[end:]
           p.write_text(s)
           PY
@@ -473,7 +475,7 @@ jobs:
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
           sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0011: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
+          # BUILD 0012: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
           sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
           sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
 
@@ -498,6 +500,10 @@ jobs:
           grep -q 'Galaxy-Splash.png' "$ROOT/app/src/main/assets/splash/index.html"
           grep -q 'Space-Age.otf' "$ROOT/app/src/main/assets/splash/index.html"
           test -s "$ROOT/app/src/main/assets/rc-payload.js"
+          test -s "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2/aladin.js"
+          test -s "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2/aladin.css"
+          ! grep -Fq '\\n document.body.insertAdjacentHTML' "$ROOT/app/src/main/assets/index.html"
+          ! grep -Fq 'e.textContent=js' "$ROOT/app/src/main/assets/index.html"
           grep -q 'window.__GV_RC_PAYLOAD__=' "$ROOT/app/src/main/assets/rc-payload.js"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
@@ -509,7 +515,7 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0011 launch composition gates: approved icon + comet orbit above it.
+          # BUILD 0012 launch composition gates: approved icon + comet orbit above it.
           grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
           grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
           grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
@@ -526,7 +532,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.11-Build-0011.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.12-Build-0012.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -536,7 +542,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.11-Build-0011.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.12-Build-0012.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -546,14 +552,14 @@ jobs:
           set -euo pipefail
           TAG=galaxy-viewer-rc-v1.0.0.11
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.11-Build-0011.apk Galaxy-Viewer-RC-V1.0.0.11-Build-0011.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.11' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.12-Build-0012.apk Galaxy-Viewer-RC-V1.0.0.12-Build-0012.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.12' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.11-Build-0011
+          name: Galaxy-Viewer-RC-V1.0.0.12-Build-0012
           path: |
-            Galaxy-Viewer-RC-V1.0.0.11-Build-0011.apk
-            Galaxy-Viewer-RC-V1.0.0.11-Build-0011.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.12-Build-0012.apk
+            Galaxy-Viewer-RC-V1.0.0.12-Build-0012.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
