@@ -1162,18 +1162,9 @@ function validateDestination(destination){
 
 
 function gvPrewarmProviderWebsite(destination){
-    const url=String(destination?.sourceUrl||'').trim();
-    if(!/^https:\/\//i.test(url))return;
-    try{
-        if(window.GalaxyProviderPrewarm&&typeof window.GalaxyProviderPrewarm.prewarm==='function'){
-            window.GalaxyProviderPrewarm.prewarm(url);
-            return;
-        }
-        const link=document.createElement('link');
-        link.rel='prefetch';link.href=url;link.as='document';link.dataset.gvProviderPrewarm='1';
-        document.head.appendChild(link);
-        setTimeout(()=>link.remove(),15000);
-    }catch(error){console.warn('GV PROVIDER PREWARM FAILED',error)}
+    // BUILD 0003 performance rollback: provider websites must remain dormant
+    // while Galaxy Viewer is visible. Loading begins only after Website press.
+    return;
 }
 
 // ============================================================================
