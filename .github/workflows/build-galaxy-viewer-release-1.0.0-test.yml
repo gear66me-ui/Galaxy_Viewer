@@ -465,6 +465,11 @@ jobs:
           test -s "$ROOT/app/src/main/assets/app_icon_4.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
+          # BUILD 0008 launch composition gates: approved icon + comet orbit above it.
+          grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
+          grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'id="target" src="app_icon_4.png"' "$ROOT/app/src/main/assets/index.html"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
