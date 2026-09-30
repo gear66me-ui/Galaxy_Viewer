@@ -468,7 +468,15 @@ jobs:
           PY
           # Launch identity: approved app icon must be visible on the black background from first HTML frame.
           cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
-          sed -i "s#../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg#galaxy-viewer-startup.png#g" "$ROOT/app/src/main/assets/index.html"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html")
+          s=p.read_text()
+          old='<img id="target" src="../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg">'
+          new='<img id="target" src="galaxy-viewer-startup.png">'
+          if old not in s: raise SystemExit("STARTUP TARGET ANCHOR MISSING")
+          p.write_text(s.replace(old,new,1))
+          PY
           sed -i "s#../../splash/Galaxy-Viewer-Singularity-FINAL/index.html#splash/index.html#g" "$ROOT/app/src/main/assets/index.html"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
