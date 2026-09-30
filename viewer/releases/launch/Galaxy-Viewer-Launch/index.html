@@ -1,17 +1,16 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#000"><style>
-@font-face{font-family:GV;src:url('../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf') format('opentype');font-display:block}
+@font-face{font-family:GV;src:url('../../../artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf') format('opentype');font-display:block}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
 #curtain{position:fixed;inset:0;z-index:99000;display:grid;place-items:center;background:#000}
 #identity{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center}
 #halo{position:relative;width:min(78vw,420px);aspect-ratio:1;display:grid;place-items:center;background:transparent}
 #target{display:block;width:100%;height:100%;object-fit:contain;overflow:visible;filter:none}
-to{transform:rotate(360deg)}}
 #ver,#bld{font:400 clamp(15px,4vw,24px) GV,sans-serif;letter-spacing:.08em;color:#f8fdff;text-shadow:0 0 3px #fff,0 0 9px #075cff,0 0 18px #075cff}
 #ver{margin-top:18px}#bld{margin-top:20px}
 #splash{display:none;position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;z-index:99001}
 #error{display:none;position:fixed;inset:0;padding:28px;white-space:pre-wrap;color:#9be5ff;background:#000;font:12px monospace;z-index:99002}
 </style></head><body>
-<div id="curtain"><div id="identity"><div id="halo"><img id="target" src="../../../artwork/startup/galaxy-viewer-startup.png"></div><div id="ver">VERSION</div><div id="bld">BUILD</div></div></div>
+<div id="curtain"><div id="identity"><div id="halo"><img id="target" src="../../../artwork/app_icon_4.png"></div><div id="ver">VERSION</div><div id="bld">BUILD</div></div></div>
 <iframe id="splash"></iframe><div id="error"></div>
 <script>
 (async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';
