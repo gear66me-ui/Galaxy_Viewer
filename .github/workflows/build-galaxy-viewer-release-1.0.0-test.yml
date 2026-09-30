@@ -481,27 +481,41 @@ jobs:
           # Nanoscopic gates are evaluated below by the named deterministic preflight.
           # Avoid silent grep exits: every failed invariant must print its name.
 
-          test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
-          test -s "$ROOT/app/src/main/assets/splash/index.html"
-          test -s "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
-          test -s "$ROOT/app/src/main/assets/splash/Space-Age.otf"
-          grep -q 'Galaxy-Splash.png' "$ROOT/app/src/main/assets/splash/index.html"
-          grep -q 'Space-Age.otf' "$ROOT/app/src/main/assets/splash/index.html"
-          test -s "$ROOT/app/src/main/assets/rc-payload.js"
-          test -s "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2/aladin.js"
-          test -s "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2/aladin.css"
-          ! grep -Fq '\\n document.body.insertAdjacentHTML' "$ROOT/app/src/main/assets/index.html"
-          ! grep -Fq 'e.textContent=js' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'window.__GV_RC_PAYLOAD__=' "$ROOT/app/src/main/assets/rc-payload.js"
-          grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
-          grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
-          grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
-          grep -q 'android:windowSplashScreenBackground">#000000' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          test -s "$ROOT/app/src/main/res/drawable/galaxy_viewer_startup.png"
-          test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
-          grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
-          test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
-          grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
+          # Named structural checks: never allow set -e to hide the failing invariant.
+          python3 - <<'PY'
+          from pathlib import Path
+          R=Path("/tmp/galaxy-viewer-generic-v2/app/src/main")
+          checks=[]
+          def exists(name,p): checks.append((name,p.is_file() and p.stat().st_size>0))
+          def has(name,p,s): checks.append((name,p.is_file() and s in p.read_text()))
+          def lacks(name,p,s): checks.append((name,p.is_file() and s not in p.read_text()))
+          exists("launcher artwork",R/"res/drawable/app_icon_4.png")
+          exists("splash index",R/"assets/splash/index.html")
+          exists("splash poster",R/"assets/splash/Galaxy-Splash.png")
+          exists("splash font",R/"assets/splash/Space-Age.otf")
+          has("splash poster reference",R/"assets/splash/index.html","Galaxy-Splash.png")
+          has("splash font reference",R/"assets/splash/index.html","Space-Age.otf")
+          exists("RC payload",R/"assets/rc-payload.js")
+          exists("Aladin JS",R/"assets/viewer/vendor/aladin-lite/3.8.2/aladin.js")
+          exists("Aladin CSS",R/"assets/viewer/vendor/aladin-lite/3.8.2/aladin.css")
+          lacks("no literal malformed newline",R/"assets/index.html",r"\\n document.body.insertAdjacentHTML")
+          lacks("no stale js variable bootstrap",R/"assets/index.html","e.textContent=js")
+          has("payload global",R/"assets/rc-payload.js","window.__GV_RC_PAYLOAD__=")
+          has("portrait manifest",R/"AndroidManifest.xml",'android:screenOrientation="portrait"')
+          has("theme manifest",R/"AndroidManifest.xml",'android:theme="@style/GalaxyViewerTheme"')
+          has("black window",R/"res/values/styles.xml",'android:windowBackground">#000000')
+          has("black Android splash",R/"res/values-v31/styles.xml",'android:windowSplashScreenBackground">#000000')
+          exists("startup drawable",R/"res/drawable/galaxy_viewer_startup.png")
+          exists("startup web asset",R/"assets/galaxy-viewer-startup.png")
+          has("startup image reference",R/"assets/index.html","galaxy-viewer-startup.png")
+          has("transparent Android splash icon",R/"res/values-v31/styles.xml",'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon')
+          failed=[]
+          for name,ok in checks:
+              print(f"STRUCTURAL CHECK {name}: {'OK' if ok else 'FAIL'}",flush=True)
+              if not ok: failed.append(name)
+          if failed: raise SystemExit("STRUCTURAL CHECKS FAILED: "+", ".join(failed))
+          PY
+
           # Deterministic preflight: print the exact failed invariant instead of silent grep exit 1.
           python3 - <<'PY'
           from pathlib import Path
