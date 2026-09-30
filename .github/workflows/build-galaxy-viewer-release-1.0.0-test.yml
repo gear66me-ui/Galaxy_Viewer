@@ -356,26 +356,14 @@ jobs:
           #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
           #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
           #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #cometOrbit{position:absolute;left:50%;top:50%;width:0;height:0;--gv-orbit-radius:60px;opacity:0;pointer-events:none;z-index:3}
-          #cometOrbit.spin{opacity:1;animation:gv-loading-comet-orbit 3s linear infinite}
-          #cometOrbit i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
-          #cometOrbit i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
-          #cometOrbit i:nth-child(2){--gv-angle:-15deg;--gv-scale:.88;--gv-opacity:.84}
-          #cometOrbit i:nth-child(3){--gv-angle:-30deg;--gv-scale:.76;--gv-opacity:.68}
-          #cometOrbit i:nth-child(4){--gv-angle:-45deg;--gv-scale:.64;--gv-opacity:.52}
-          #cometOrbit i:nth-child(5){--gv-angle:-60deg;--gv-scale:.52;--gv-opacity:.38}
-          #cometOrbit i:nth-child(6){--gv-angle:-75deg;--gv-scale:.42;--gv-opacity:.26}
-          #cometOrbit i:nth-child(7){--gv-angle:-90deg;--gv-scale:.32;--gv-opacity:.16}
-          #cometOrbit i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
           #bootMeta{margin-top:8px;font-size:13px;line-height:1.75;letter-spacing:1.5px;color:#9be5ff}
-          @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.7<br>BUILD&nbsp;&nbsp;0003</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.7<br>BUILD&nbsp;&nbsp;0003</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
-          const boot=document.getElementById('boot'),cometOrbit=document.getElementById('cometOrbit'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const boot=document.getElementById('boot'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
           async function prepare(){const v=window.__GV_RC_PAYLOAD__;if(!v||typeof v.html!=='string'||!Array.isArray(v.js)||!v.js.length)throw Error('RC BUILD PAYLOAD MISSING');return v}
           async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}
           async function finalReady(){
@@ -482,8 +470,6 @@ jobs:
           sed -i "s#../../splash/Galaxy-Viewer-Singularity-FINAL/index.html#splash/index.html#g" "$ROOT/app/src/main/assets/index.html"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
-          sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
-          python3 -c 'from pathlib import Path; p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html"); s=p.read_text(); a=s.index("<span id=\\\"orbit\\\""); b=s.index("</span>",a)+7; p.write_text(s[:a]+s[b:])'
           # BUILD 0014: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
           sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
           sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
@@ -533,8 +519,6 @@ jobs:
           checks=[
             ("startup target", 'id="target" src="galaxy-viewer-startup.png"' in (root/"index.html").read_text()),
             ("appassets payload", "https://appassets.androidplatform.net/assets/viewer/" in (root/"rc-payload.js").read_text()),
-            ("no comet id", 'id="orbit"' not in (root/"index.html").read_text()),
-            ("no comet animation", "gv-loading-comet-orbit" not in (root/"index.html").read_text()),
           ]
           for name,ok in checks: print("PREFLIGHT",name,"OK" if ok else "FAIL")
           bad=[]
@@ -548,9 +532,6 @@ jobs:
           if not all(ok for _,ok in checks) or bad: raise SystemExit("PREFLIGHT FAILED")
           PY
 
-          # BUILD 0014 launch composition: approved startup card only; comet/orbit deliberately removed.
-          ! grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
-          ! grep -q 'gv-loading-comet-orbit' "$ROOT/app/src/main/assets/index.html"
           grep -q 'id="target" src="galaxy-viewer-startup.png"' "$ROOT/app/src/main/assets/index.html"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           ! grep -R -E 'raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer|cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer|gear66me-ui\.github\.io/Galaxy_Viewer' "$ROOT/app/src/main/assets/index.html" "$ROOT/app/src/main/assets/rc-payload.js" "$ROOT/app/src/main/assets/viewer" --include='*.js' --include='*.html' --include='*.css' --include='*.svg'
