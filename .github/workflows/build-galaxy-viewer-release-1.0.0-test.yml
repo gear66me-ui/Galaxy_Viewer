@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.8 APK
-# BUILD 0008 launch-icon restoration; preserve 0049 browser isolation
+name: Build Galaxy Viewer RC-V1.0.0.9 APK
+# BUILD 0009 launch-icon restoration; preserve 0049 browser isolation
 
 on:
   push:
@@ -71,8 +71,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10008
-              versionName 'RC-V1.0.0.8'
+              versionCode 10009
+              versionName 'RC-V1.0.0.9'
             }
           }
           EOF
@@ -432,6 +432,9 @@ jobs:
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
           sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
+          # BUILD 0009: remove startup-card blue halo/glow only; preserve comet orbit unchanged.
+          sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
+          sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
 
           # Nanoscopic gates: reject the regressions seen in .3.
           grep -q 'FULL BOOT BEHIND CURTAIN' "$ROOT/app/src/main/assets/index.html"
@@ -465,7 +468,10 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0008 launch composition gates: approved icon + comet orbit above it.
+          grep -q '#halo{position:relative.*background:transparent}' "$ROOT/app/src/main/assets/index.html"
+          grep -q '#target{.*filter:none}' "$ROOT/app/src/main/assets/index.html"
+          ! grep -q 'radial-gradient(circle,rgba(7,45,110,.98)' "$ROOT/app/src/main/assets/index.html"
+          # BUILD 0009 launch composition gates: approved icon + comet orbit above it.
           grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
           grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
           grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
@@ -480,7 +486,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.8-Build-0008.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.9-Build-0009.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -490,7 +496,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.8-Build-0008.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.9-Build-0009.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -498,16 +504,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.8
+          TAG=galaxy-viewer-rc-v1.0.0.9
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.8-Build-0008.apk Galaxy-Viewer-RC-V1.0.0.8-Build-0008.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.8' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.9-Build-0009.apk Galaxy-Viewer-RC-V1.0.0.9-Build-0009.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.9' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.8-Build-0008
+          name: Galaxy-Viewer-RC-V1.0.0.9-Build-0009
           path: |
-            Galaxy-Viewer-RC-V1.0.0.8-Build-0008.apk
-            Galaxy-Viewer-RC-V1.0.0.8-Build-0008.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.9-Build-0009.apk
+            Galaxy-Viewer-RC-V1.0.0.9-Build-0009.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
