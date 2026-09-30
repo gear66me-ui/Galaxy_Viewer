@@ -803,7 +803,7 @@ crossFadeInput.setAttribute('aria-label','CROSS FADE');
 Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',width:'39px',height:'131px',opacity:'.001',appearance:'none',WebkitAppearance:'none',pointerEvents:'none',touchAction:'none'});
 crossFadeControl.panel.appendChild(crossFadeInput);
 
-function directHdUrl(destination){return String(destination?.imageUrl??destination?.selectedImageUrl??destination?.hdUrl??'').trim()}
+function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
 function directHdOpacity(){return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
@@ -1017,8 +1017,8 @@ async function gvLoadGate2MImage(url){
 }
 async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(destination)){
     const record=await recordPromise;
-    const url=String(record.imageUrl||'').trim();
-    if(!url)throw new Error('GV JSON IMAGE URL MISSING');
+    const url=directHdUrl(destination);
+    if(!url)throw new Error('GV DESTINATION IMAGE URL MISSING');
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
