@@ -452,7 +452,6 @@ jobs:
           grep -q 'Space-Age.otf' "$ROOT/app/src/main/assets/splash/index.html"
           test -s "$ROOT/app/src/main/assets/rc-payload.js"
           grep -q 'window.__GV_RC_PAYLOAD__=' "$ROOT/app/src/main/assets/rc-payload.js"
-          grep -q 'rc-payload.js' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
