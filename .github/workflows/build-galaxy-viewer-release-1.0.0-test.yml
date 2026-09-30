@@ -1,4 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0 APK
+name: "📦 APK DOWNLOAD — Galaxy Viewer RC-V1.0.0"
+run-name: "📦 APK DOWNLOAD ZIP — RC-V1.0.0.1 BUILD 0001"
 
 on:
   push:
@@ -70,8 +71,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10000
-              versionName 'RC-V1.0.0'
+              versionCode 10001
+              versionName 'RC-V1.0.0.1'
             }
           }
           EOF
@@ -94,7 +95,7 @@ jobs:
           <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
           EOF
           cat > "$ROOT/app/src/main/res/drawable/gv_launcher_foreground.xml" <<'EOF'
-          <layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:gravity="center" android:width="46dp" android:height="46dp"><bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/></item></layer-list>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:gravity="center" android:width="66dp" android:height="66dp"><bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/></item></layer-list>
           EOF
           cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
           <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/gv_launcher_background"/><foreground android:drawable="@drawable/gv_launcher_foreground"/></adaptive-icon>
@@ -291,6 +292,8 @@ jobs:
                   return true;
                 }
                 @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                  // Preserve Aladin/embedded subframes; only user-facing main-frame web navigation is handed off.
+                  if (request != null && !request.isForMainFrame()) return false;
                   return launchGalaxyBrowser(request == null ? null : request.getUrl());
                 }
                 @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -301,17 +304,19 @@ jobs:
               web.addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads");
               setContentView(web);
               web.setOnApplyWindowInsetsListener((v, wi) -> {
-                Insets safe = wi.getInsets(WindowInsets.Type.displayCutout() | WindowInsets.Type.systemBars());
-                int densityPad = Math.round(4f * getResources().getDisplayMetrics().density);
-                int top = Math.max(0, safe.top) + densityPad;
-                int left = Math.max(0, safe.left) + densityPad;
-                int right = Math.max(0, safe.right) + densityPad;
-                int bottom = Math.max(0, safe.bottom) + densityPad;
-                String js = "document.documentElement.style.setProperty('--gv-safe-top','" + top + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-left','" + left + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-right','" + right + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-bottom','" + bottom + "px');"
-                  + "window.dispatchEvent(new CustomEvent('gv-safe-insets',{detail:{top:" + top + ",left:" + left + ",right:" + right + ",bottom:" + bottom + "}}));";
+                Insets cutout = wi.getInsets(WindowInsets.Type.displayCutout());
+                Insets bars = wi.getInsets(WindowInsets.Type.systemBars());
+                int top = Math.max(cutout.top, bars.top);
+                int left = Math.max(cutout.left, bars.left);
+                int right = Math.max(cutout.right, bars.right);
+                int bottom = Math.max(cutout.bottom, bars.bottom);
+                // CLEAR APERTURE: move the entire WebView below the physical camera/cutout island.
+                v.setPadding(left, top, right, bottom);
+                String js = "document.documentElement.style.setProperty('--gv-safe-top','0px');"
+                  + "document.documentElement.style.setProperty('--gv-safe-left','0px');"
+                  + "document.documentElement.style.setProperty('--gv-safe-right','0px');"
+                  + "document.documentElement.style.setProperty('--gv-safe-bottom','0px');"
+                  + "window.dispatchEvent(new CustomEvent('gv-safe-insets',{detail:{top:0,left:0,right:0,bottom:0,clearApertureTop:" + top + "}}));";
                 web.post(() -> web.evaluateJavascript(js, null));
                 return wi;
               });
@@ -331,8 +336,8 @@ jobs:
           #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
           #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
           #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #cometOrbit{position:absolute;left:50%;top:50%;width:0;height:0;--gv-orbit-radius:60px;opacity:0;pointer-events:none;z-index:3}
-          #cometOrbit.spin{opacity:1;animation:gv-loading-comet-orbit 3s linear infinite}
+          #cometOrbit{position:absolute;left:50%;top:calc(50% + 2.5px);width:0;height:0;--gv-orbit-radius:60px;opacity:1;pointer-events:none;z-index:3;animation:gv-loading-comet-orbit 3s linear infinite}
+          #cometOrbit.spin{opacity:1}
           #cometOrbit i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
           #cometOrbit i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
           #cometOrbit i:nth-child(2){--gv-angle:-15deg;--gv-scale:.88;--gv-opacity:.84}
@@ -346,30 +351,31 @@ jobs:
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.1<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
           const boot=document.getElementById('boot'),cometOrbit=document.getElementById('cometOrbit'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
           async function prepare(){const v=window.__GV_RC_PAYLOAD__;if(!v||typeof v.html!=='string'||!Array.isArray(v.js)||!v.js.length)throw Error('RC BUILD PAYLOAD MISSING');return v}
-          async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}
-          async function finalReady(){
-            const end=performance.now()+30000;
-            while(performance.now()<end){
-              const root=document.getElementById('aladin-cosmic-command-test');
-              if(root?.querySelector('canvas')){
-                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-                return;
-              }
-              await sleep(50);
-            }
-            throw Error('RC FINAL READINESS TIMEOUT');
+          function installCatalogImagePolicy(){const nativeFetch=window.fetch.bind(window);const hubbleCatalogPattern=/gv-hubble-galaxies-full-\\d+\\.json(?:[?#]|$)/i;window.fetch=(input,init)=>{const raw=typeof input==='string'?input:String(input?.url||'');if(!hubbleCatalogPattern.test(raw))return nativeFetch(input,init);return (async()=>{const response=await nativeFetch(input,init);if(!response.ok)return response;const payload=await response.clone().json();if(Array.isArray(payload?.entries)){payload.entries=payload.entries.map(entry=>{if(!entry||typeof entry!=='object')return entry;const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry})}const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})})()}}
+          function mountHtml(html){const t=document.createElement('template');t.innerHTML=html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');for(const a of [...n.attributes])x.setAttribute(a.name,a.value);x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}}
+          function installSafeApertureStyle(){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle)}
+          async function bootViewer(v){installCatalogImagePolicy();installSafeApertureStyle();mountHtml(v.html);for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}
+            const readiness=()=>{const root=document.getElementById('aladin-cosmic-command-test'),core=window.GalaxyViewerCore,runtime=window.GalaxyViewerRuntime,navState=runtime?.navigationState;return {root:!!root,core:!!core,runtime:!!runtime,aladin:!!core?.aladin,phase:navState?.phase??null,active:navState?.active??null}};
+            const ready=()=>{const s=readiness();return !!(s.root&&s.core&&s.runtime&&s.aladin&&s.phase==='READY'&&s.active===100)};
+            const deadline=Date.now()+60000;while(!ready()&&Date.now()<deadline)await sleep(100);
+            if(!ready())throw Error('RC VIEWER APP READINESS TIMEOUT '+JSON.stringify(readiness()));
           }
-          async function trickleReveal(){
+          function makeRevealCover(){
             const canvas=document.createElement('canvas');canvas.id='reveal';document.body.appendChild(canvas);
-            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight,cell=5;
+            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight;
             canvas.width=Math.ceil(w*dpr);canvas.height=Math.ceil(h*dpr);canvas.style.display='block';
             const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+            return canvas;
+          }
+          async function trickleReveal(canvas){
+            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight,cell=5;
+            const ctx=canvas.getContext('2d');
             const cols=Math.ceil(w/cell),rows=Math.ceil(h/cell),cells=[];
             for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,k:y/rows+Math.random()*.42});
             cells.sort((a,b)=>a.k-b.k);
@@ -386,38 +392,39 @@ jobs:
             canvas.remove();trickleReveal.i=0;
           }
           const prepared=await prepare();
-          // Established choreography: startup art + comet covers full viewer initialization.
-          await mount(prepared);
-          await finalReady();
+          // BETA BUILD 49 PROTOCOL: prepare Singularity and fully boot the real viewer in parallel behind the visible startup curtain.
           const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);
-          let complete=false;
-          addEventListener('message',async e=>{
-            if(e.source!==splash.contentWindow)return;
-            if(e.data?.type==='galaxy-splash-ready'){
-              splash.style.display='block';boot.style.display='none';
-              splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
-            }
-            if(e.data?.type==='galaxy-splash-complete'&&!complete){
-              complete=true;
-              try{
-                await finalReady();
-                const black=document.createElement('div');black.style.cssText='position:fixed;inset:0;background:#000;z-index:2147483646';document.body.appendChild(black);
-                splash.remove();
-                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-                black.remove();
-                await trickleReveal();
-              }catch(err){
-                splash.remove();boot.style.display='none';error.style.display='block';
-                error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err);
-              }
-            }
-          });
+          const splashReady=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH PREP TIMEOUT')),20000);const onMessage=e=>{if(e.source===splash.contentWindow&&e.data?.type==='galaxy-splash-ready'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};addEventListener('message',onMessage)});
+          const viewerReady=bootViewer(prepared);
+          await Promise.all([splashReady,viewerReady]);
+          const splashComplete=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH COMPLETION TIMEOUT')),18000);const onMessage=e=>{if(e.source===splash.contentWindow&&e.data?.type==='galaxy-splash-complete'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};addEventListener('message',onMessage)});
+          splash.style.display='block';boot.style.display='none';
+          await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+          splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
+          await splashComplete;
+          // Singularity FINAL has already hard-held the completed message for exactly 2.000 s.
+          // The live viewer is already running underneath; give it the approved 2.000 s post-splash settling period before the black trickle.
+          await sleep(2000);
+          const cover=makeRevealCover();
+          splash.remove();
+          await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+          await trickleReveal(cover);
           })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
+          # Parse the generated launcher JavaScript, not just grep it. Fail the build on any WebView-breaking syntax error.
+          python3 - <<'PY'
+          import pathlib, re
+          html = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html").read_text()
+          blocks = re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>', html, re.I)
+          if not blocks:
+              raise SystemExit("NO INLINE LAUNCHER JAVASCRIPT FOUND")
+          pathlib.Path("/tmp/galaxy-viewer-launcher-inline.js").write_text("\n".join(blocks))
+          print(f"Launcher JS extraction OK: inline_blocks={len(blocks)}")
+          PY
+          node --check /tmp/galaxy-viewer-launcher-inline.js
+
           test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
-          grep -q -- '--gv-orbit-radius:60px' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'android:width="46dp" android:height="46dp"' "$ROOT/app/src/main/res/drawable/gv_launcher_foreground.xml"
           test -s "$ROOT/app/src/main/assets/splash/index.html"
           test -s "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
           test -s "$ROOT/app/src/main/assets/splash/Space-Age.otf"
@@ -430,6 +437,8 @@ jobs:
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'WindowInsets.Type.displayCutout()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'v.setPadding(left, top, right, bottom);' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'CLEAR APERTURE' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q -- '--gv-safe-top' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
@@ -438,10 +447,17 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0.1' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
+          grep -q -- 'top:calc(50% + 2.5px)' "$ROOT/app/src/main/assets/index.html"
+          grep -q -- '--gv-orbit-radius:60px' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await sleep(2000);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await trickleReveal(cover);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'messageTypeEnd:9796,messageHoldEnd:11796' "$ROOT/app/src/main/assets/splash/index.html"
+          grep -q 'const viewerReady=bootViewer(prepared);' "$ROOT/app/src/main/assets/index.html"
+          grep -q "s.phase==='READY'&&s.active===100" "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await Promise.all(\[splashReady,viewerReady\]);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
           grep -q 'cell=5' "$ROOT/app/src/main/assets/index.html"
           grep -q 'com.gear66me.galaxyviewer.webbrowser.MainActivity' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
@@ -455,7 +471,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.1.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -465,7 +481,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.1.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -473,16 +489,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0
+          TAG=galaxy-viewer-rc-v1.0.0.1
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.apk Galaxy-Viewer-RC-V1.0.0.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.1.apk Galaxy-Viewer-RC-V1.0.0.1.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.1' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0
+          name: APK-DOWNLOAD-Galaxy-Viewer-RC-V1.0.0.1-BUILD-0001
           path: |
             Galaxy-Viewer-RC-V1.0.0.apk
-            Galaxy-Viewer-RC-V1.0.0.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.1.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
