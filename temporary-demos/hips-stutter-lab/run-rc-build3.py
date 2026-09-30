@@ -40,7 +40,7 @@ def execute_exact_build3():
     js="\n".join(x.data for x in captured if isinstance(x,Javascript))
     if not html or not js:
         raise RuntimeError(f"capture failed: HTML={len(html)} JS={len(js)}")
-    return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>GV RC Build 0003 HiPS Lab</title></head><body>{html}<script>{js}</script><script src="/temporary-demos/hips-stutter-lab/hips-lab.js?v=rc10007b0003"></script></body></html>"""
+    return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>GV RC Build 0003 HiPS Lab</title><style>/* LAB WRAPPER ONLY: reserve Chrome/Android bottom clearance; RC payload remains byte-identical */#aladin-cosmic-command-test{{height:calc(100dvh - 86px)!important;max-height:calc(100dvh - 86px)!important}}#gv-navigation-host{{bottom:92px!important;z-index:2147483000!important}}#hips-lab-panel{{bottom:154px!important;z-index:2147483646!important}}</style></head><body>{html}<script>{js}</script><script src="/temporary-demos/hips-stutter-lab/hips-lab.js?v=rc10007b0004"></script></body></html>"""
 
 class H(BaseHTTPRequestHandler):
     def send_bytes(self,b,ctype="text/html; charset=utf-8",status=200):
