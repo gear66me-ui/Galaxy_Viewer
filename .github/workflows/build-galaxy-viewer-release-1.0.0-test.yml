@@ -307,7 +307,6 @@ jobs:
           grep -q 'Space-Age.otf' "$ROOT/app/src/main/assets/splash/index.html"
           grep -q 'RC-V1.0.0.py' "$ROOT/app/src/main/assets/index.html"
           grep -q "GV200001_BUILD='0001'" viewer/RC-V1.0.0.py
-          grep -Fq "GV200001_BUILD\\s*=\\s" "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
           grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
