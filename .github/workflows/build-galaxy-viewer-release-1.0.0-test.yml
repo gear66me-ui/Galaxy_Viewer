@@ -110,6 +110,27 @@ jobs:
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/splash/Space-Age.otf"
 
+          # Extract and validate the frozen RC at BUILD TIME. The APK never parses Python.
+          python3 - <<'PY'
+          import json, re, pathlib
+          root = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets")
+          pointer = json.loads(pathlib.Path("viewer/gv-current-viewer.json").read_text())
+          expected = {"version":"RC-V1.0.0","viewer":"RC-V1.0.0.py","build":"0001"}
+          if pointer != expected:
+              raise SystemExit(f"RC POINTER MISMATCH: {pointer!r}")
+          src = pathlib.Path("viewer/RC-V1.0.0.py").read_text()
+          identity = re.search(r'^VIEWER_VERSION\s*=\s*["\']([^"\']+)["\']', src, re.M)
+          if not identity or identity.group(1) != pointer["version"]:
+              raise SystemExit("RC VIEWER IDENTITY MISMATCH")
+          html = re.search(r'display\s*\(\s*HTML\s*\(\s*(?:r)?"""([\s\S]*?)"""\s*\)\s*\)', src)
+          js = list(re.finditer(r'display\s*\(\s*Javascript\s*\(\s*(?:r)?"""([\s\S]*?)"""\s*\)\s*\)', src))
+          if not html or not js:
+              raise SystemExit(f"BUILD-TIME VIEWER EXTRACTION FAILED: html={bool(html)} javascript={len(js)}")
+          payload = "window.__GV_RC_PAYLOAD__=" + json.dumps({"html":html.group(1),"js":[m.group(1) for m in js]}, separators=(",",":")) + ";\n"
+          (root/"rc-payload.js").write_text(payload)
+          print(f"RC build-time extraction OK: html={len(html.group(1))} bytes js_blocks={len(js)}")
+          PY
+
           cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
           <resources>
             <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
@@ -298,12 +319,10 @@ jobs:
           </style></head><body>
           <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
+          <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
-          const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';
           const boot=document.getElementById('boot'),cometOrbit=document.getElementById('cometOrbit'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
-          const read=async u=>{const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return r.text()};
-          const extract=s=>{const h=s.match(/display\s*\(\s*HTML\s*\(\s*\"\"\"([\s\S]*?)\"\"\"\s*\)\s*\)/),j=[...s.matchAll(/display\s*\(\s*Javascript\s*\(\s*r?\"\"\"([\s\S]*?)\"\"\"\s*\)\s*\)/g)];if(!h||!j.length)throw Error('VIEWER EXTRACTION FAILED: html='+(h?1:0)+' javascript='+j.length);return[h[1],j.map(x=>x[1])]};
-          async function prepare(){const p=JSON.parse(await read(BASE+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0'||p.viewer!=='RC-V1.0.0.py'||p.build!=='0001')throw Error('RC POINTER MISMATCH');const src=await read(BASE+p.viewer);const declared=(src.match(/GV200001_BUILD\s*=\s*['"]([0-9]{4})['"]/i)||[])[1];if(declared&&declared!==String(p.build))throw Error('RC BUILD MISMATCH: runtime='+String(declared)+' pointer='+String(p.build));const [html,js]=extract(src);return{html,js}}
+          async function prepare(){const v=window.__GV_RC_PAYLOAD__;if(!v||typeof v.html!=='string'||!Array.isArray(v.js)||!v.js.length)throw Error('RC BUILD PAYLOAD MISSING');return v}
           async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}
           const prepared=prepare();
           await sleep(650); cometOrbit.classList.add('spin'); await sleep(2350);
@@ -319,9 +338,9 @@ jobs:
           test -s "$ROOT/app/src/main/assets/splash/Space-Age.otf"
           grep -q 'Galaxy-Splash.png' "$ROOT/app/src/main/assets/splash/index.html"
           grep -q 'Space-Age.otf' "$ROOT/app/src/main/assets/splash/index.html"
-          grep -q 'RC-V1.0.0.py' "$ROOT/app/src/main/assets/index.html"
-          grep -q "GV200001_BUILD='0001'" viewer/RC-V1.0.0.py
-          grep -q 'gv-current-viewer.json' "$ROOT/app/src/main/assets/index.html"
+          test -s "$ROOT/app/src/main/assets/rc-payload.js"
+          grep -q 'window.__GV_RC_PAYLOAD__=' "$ROOT/app/src/main/assets/rc-payload.js"
+          grep -q 'rc-payload.js' "$ROOT/app/src/main/assets/index.html"
           grep -q 'addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads")' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
