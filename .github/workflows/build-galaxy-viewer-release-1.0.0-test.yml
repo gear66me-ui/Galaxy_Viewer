@@ -301,17 +301,19 @@ jobs:
               web.addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads");
               setContentView(web);
               web.setOnApplyWindowInsetsListener((v, wi) -> {
-                Insets safe = wi.getInsets(WindowInsets.Type.displayCutout() | WindowInsets.Type.systemBars());
-                int densityPad = Math.round(4f * getResources().getDisplayMetrics().density);
-                int top = Math.max(0, safe.top) + densityPad;
-                int left = Math.max(0, safe.left) + densityPad;
-                int right = Math.max(0, safe.right) + densityPad;
-                int bottom = Math.max(0, safe.bottom) + densityPad;
-                String js = "document.documentElement.style.setProperty('--gv-safe-top','" + top + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-left','" + left + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-right','" + right + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-bottom','" + bottom + "px');"
-                  + "window.dispatchEvent(new CustomEvent('gv-safe-insets',{detail:{top:" + top + ",left:" + left + ",right:" + right + ",bottom:" + bottom + "}}));";
+                Insets cutout = wi.getInsets(WindowInsets.Type.displayCutout());
+                Insets bars = wi.getInsets(WindowInsets.Type.systemBars());
+                int top = Math.max(cutout.top, bars.top);
+                int left = Math.max(cutout.left, bars.left);
+                int right = Math.max(cutout.right, bars.right);
+                int bottom = Math.max(cutout.bottom, bars.bottom);
+                // CLEAR APERTURE: move the entire WebView below the physical camera/cutout island.
+                v.setPadding(left, top, right, bottom);
+                String js = "document.documentElement.style.setProperty('--gv-safe-top','0px');"
+                  + "document.documentElement.style.setProperty('--gv-safe-left','0px');"
+                  + "document.documentElement.style.setProperty('--gv-safe-right','0px');"
+                  + "document.documentElement.style.setProperty('--gv-safe-bottom','0px');"
+                  + "window.dispatchEvent(new CustomEvent('gv-safe-insets',{detail:{top:0,left:0,right:0,bottom:0,clearApertureTop:" + top + "}}));";
                 web.post(() -> web.evaluateJavascript(js, null));
                 return wi;
               });
@@ -428,6 +430,8 @@ jobs:
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'WindowInsets.Type.displayCutout()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'v.setPadding(left, top, right, bottom);' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'CLEAR APERTURE' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q -- '--gv-safe-top' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
