@@ -454,15 +454,8 @@ jobs:
           new=" const p={version:'RC-V1.0.0.10',build:'0010',viewer:'RC-V1.0.0.py'};"
           if old not in s: raise SystemExit("0049 POINTER READ ANCHOR MISSING")
           s=s.replace(old,new,1)
-          old=""" const src=await read(BASE+p.viewer+'?t='+Date.now());
- const extract=(text,start,end)=>{const a=text.indexOf(start);if(a<0)return null;const from=a+start.length,b=text.indexOf(end,from);return b<0?null:text.slice(from,b)};
- const html=extract(src,'display(HTML("""','"""))'),js=extract(src,'display(Javascript(r"""','"""))');
- if(html==null||js==null)throw Error('VIEWER EXTRACTION FAILED html='+String(html!==null)+' js='+String(js!==null)+' bytes='+src.length);
- document.body.insertAdjacentHTML('beforeend',html);const e=document.createElement('script');e.textContent=js;document.body.appendChild(e);"""
-          new=""" const payload=window.__GV_RC_PAYLOAD__;
- if(!payload||!payload.html||!Array.isArray(payload.js)||!payload.js.length)throw Error('LOCAL RC PAYLOAD MISSING');
- document.body.insertAdjacentHTML('beforeend',payload.html);
- for(const code of payload.js){const e=document.createElement('script');e.textContent=code;document.body.appendChild(e);}"""
+          old = " const src=await read(BASE+p.viewer+'?t='+Date.now());\\n const extract=(text,start,end)=>{const a=text.indexOf(start);if(a<0)return null;const from=a+start.length,b=text.indexOf(end,from);return b<0?null:text.slice(from,b)};\\n const html=extract(src,'display(HTML(\\\"\\\"\\\"','\\\"\\\"))'),js=extract(src,'display(Javascript(r\\\"\\\"\\\"','\\\"\\\"))');\\n if(html==null||js==null)throw Error('VIEWER EXTRACTION FAILED html='+String(html!==null)+' js='+String(js!==null)+' bytes='+src.length);\\n document.body.insertAdjacentHTML('beforeend',html);const e=document.createElement('script');e.textContent=js;document.body.appendChild(e);"
+          new = " const payload=window.__GV_RC_PAYLOAD__;\\n if(!payload||!payload.html||!Array.isArray(payload.js)||!payload.js.length)throw Error('LOCAL RC PAYLOAD MISSING');\\n document.body.insertAdjacentHTML('beforeend',payload.html);\\n for(const code of payload.js){const e=document.createElement('script');e.textContent=code;document.body.appendChild(e);}"
           if old not in s: raise SystemExit("0049 VIEWER READ ANCHOR MISSING")
           s=s.replace(old,new,1)
           p.write_text(s)
