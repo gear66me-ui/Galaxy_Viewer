@@ -138,7 +138,7 @@ jobs:
           import json, re, pathlib
           root = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets")
           pointer = json.loads(pathlib.Path("viewer/gv-current-viewer.json").read_text())
-          expected = {"version":"RC-V1.0.0","viewer":"RC-V1.0.0.py","build":"0003"}  # frozen release pointer; APK display identity is Build 0004
+          expected = {"version":"RC-V1.0.0","viewer":"RC-V1.0.0.py","build":"0003"}
           if pointer != expected:
               raise SystemExit(f"RC POINTER MISMATCH: {pointer!r}")
           src = pathlib.Path("viewer/RC-V1.0.0.py").read_text()
@@ -451,7 +451,7 @@ jobs:
           s=s.replace("</head>","<script src=\"rc-payload.js\"></script></head>",1)
           s=s.replace("(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';","(async()=>{",1)
           old=" const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));"
-          new=" const p={version:'RC-V1.0.0',build:'0004',viewer:'RC-V1.0.0.py'};"
+          new=" const p={version:'RC-V1.0.0',build:'0003',viewer:'RC-V1.0.0.py'};"
           if old not in s: raise SystemExit("0049 POINTER READ ANCHOR MISSING")
           s=s.replace(old,new,1)
           # Deterministic local bootstrap: replace the source-read statement only, then disable extraction block by boundaries.
