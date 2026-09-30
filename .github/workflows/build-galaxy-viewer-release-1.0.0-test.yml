@@ -17,6 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Build source stays frozen on release; workflow itself is the beta RC build recipe.
           ref: release
           fetch-depth: 0
 
