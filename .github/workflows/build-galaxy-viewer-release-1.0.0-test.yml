@@ -487,11 +487,21 @@ jobs:
           assert "gv-loading-comet-orbit 3s linear infinite" in s, "BUILD 0009 comet orbit changed"
           PY
           # BUILD 0009 launch composition gates: approved icon + comet orbit above it.
-          grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
-          grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'id="target" src="galaxy-viewer-startup.png"' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html").read_text()
+          checks={
+              "orbit element": 'id="orbit"',
+              "orbit positioning": '#orbit{position:absolute',
+              "orbit z-index": 'z-index:3',
+              "approved startup target": 'id="target" src="galaxy-viewer-startup.png"',
+          }
+          missing=[name for name,needle in checks.items() if needle not in s]
+          if missing:
+              raise SystemExit("BUILD 0009 composition gate missing: "+", ".join(missing))
+          print("BUILD 0009 composition gates PASS")
+          PY
+          grep -qi 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
