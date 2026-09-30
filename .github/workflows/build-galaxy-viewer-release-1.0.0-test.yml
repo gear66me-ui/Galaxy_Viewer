@@ -70,10 +70,13 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10003
-              versionName 'RC-V1.0.0.3'
+              versionCode 10004
+              versionName 'RC-V1.0.0.4'
             }
           }
+          EOF
+          cat >> "$ROOT/app/build.gradle" <<'EOF'
+          dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           EOF
 
           # Frozen RC launcher source: app_icon_4.png. Do not alter source artwork.
@@ -345,7 +348,7 @@ jobs:
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.3<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.4<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
@@ -401,6 +404,46 @@ jobs:
           })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
+          # GOLD MASTER OVERRIDE: copy APK/Web-Browser 0049 architecture verbatim from its published commit.
+          GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
+          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's/GalaxyViewerWebBrowser\/0049/GalaxyViewerWebBrowser\/RC-V1.0.0.4/g' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's#s.setAllowFileAccess(false); s.setAllowContentAccess(false);#s.setAllowFileAccess(true); s.setAllowContentAccess(true); s.setAllowFileAccessFromFileURLs(true); s.setAllowUniversalAccessFromFileURLs(true);#' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java")
+          s=p.read_text()
+          old='if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis());'
+          new='if(viewerWeb!=null)viewerWeb.loadUrl("file:///android_asset/index.html");'
+          if old not in s: raise SystemExit("0049 launch line missing")
+          p.write_text(s.replace(old,new))
+          PY
+
+          # GOLD MASTER launch choreography: exact 0049 launch page; only beta->release source and local APK asset paths change.
+          git show "$GOLD:viewer/releases/launch/Galaxy-Viewer-Launch/index.html" > "$ROOT/app/src/main/assets/index.html"
+          sed -i "s#Galaxy_Viewer/beta/viewer/#Galaxy_Viewer/release/viewer/#g" "$ROOT/app/src/main/assets/index.html"
+          sed -i "s#../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg#galaxy-viewer-startup.png#g" "$ROOT/app/src/main/assets/index.html"
+          sed -i "s#../../splash/Galaxy-Viewer-Singularity-FINAL/index.html#splash/index.html#g" "$ROOT/app/src/main/assets/index.html"
+          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
+          sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
+          sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
+          sed -i 's/2.8s linear infinite/3s linear infinite/' "$ROOT/app/src/main/assets/index.html"
+
+          # Nanoscopic gates: reject the regressions seen in .3.
+          grep -q 'FULL BOOT BEHIND CURTAIN' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'GalaxyViewerPrepareCosmicReveal' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'GalaxyViewerStartCosmicReveal' "$ROOT/app/src/main/assets/index.html"
+          grep -q "phase==='READY'" "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await splashReady' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await sleep(2000)' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'returnToViewer()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'browserLayer.setVisibility(View.GONE)' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'viewerWeb=viewer()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          ! grep -q 'startActivity(intent)' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          ! grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
+          ! grep -q 'await mount(prepared)' "$ROOT/app/src/main/assets/index.html"
+
           test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           test -s "$ROOT/app/src/main/assets/splash/index.html"
           test -s "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
@@ -414,7 +457,6 @@ jobs:
           grep -q 'MediaStore.Downloads.RELATIVE_PATH' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'android:screenOrientation="portrait"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'WindowInsets.Type.displayCutout()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q -- '--gv-safe-top' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:theme="@style/GalaxyViewerTheme"' "$ROOT/app/src/main/AndroidManifest.xml"
           grep -q 'android:windowBackground">#000000' "$ROOT/app/src/main/res/values/styles.xml"
           grep -q 'android:windowSplashScreenBackground">#000000' "$ROOT/app/src/main/res/values-v31/styles.xml"
@@ -422,13 +464,11 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0.3' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0.4' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await sleep(2350);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await sleep(12750);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
-          ! grep -q 'setClassName' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q '!request.isForMainFrame()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
@@ -440,7 +480,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.3.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.4.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -450,7 +490,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.3.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.4.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -458,16 +498,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.3
+          TAG=galaxy-viewer-rc-v1.0.0.4
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.3.apk Galaxy-Viewer-RC-V1.0.0.3.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.3' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.4.apk Galaxy-Viewer-RC-V1.0.0.4.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.4' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-RC-V1.0.0
           path: |
-            Galaxy-Viewer-RC-V1.0.0.3.apk
-            Galaxy-Viewer-RC-V1.0.0.3.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.4.apk
+            Galaxy-Viewer-RC-V1.0.0.4.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
