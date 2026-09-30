@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer RC-V1.0.0.6 APK
+name: Build Galaxy Viewer RC-V1.0.0.7 APK
 # RC .5 trigger: AndroidX corrected
 
 on:
@@ -71,8 +71,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10006
-              versionName 'RC-V1.0.0.6'
+              versionCode 10007
+              versionName 'RC-V1.0.0.7'
             }
           }
           EOF
@@ -119,7 +119,7 @@ jobs:
           import json, re, pathlib
           root = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets")
           pointer = json.loads(pathlib.Path("viewer/gv-current-viewer.json").read_text())
-          expected = {"version":"RC-V1.0.0","viewer":"RC-V1.0.0.py","build":"0002"}
+          expected = {"version":"RC-V1.0.0","viewer":"RC-V1.0.0.py","build":"0003"}
           if pointer != expected:
               raise SystemExit(f"RC POINTER MISMATCH: {pointer!r}")
           src = pathlib.Path("viewer/RC-V1.0.0.py").read_text()
@@ -349,7 +349,7 @@ jobs:
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.6<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.7<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
@@ -409,7 +409,7 @@ jobs:
           GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          sed -i 's/GalaxyViewerWebBrowser\/0049/GalaxyViewerWebBrowser\/RC-V1.0.0.6/g' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's/GalaxyViewerWebBrowser\/0049/GalaxyViewerWebBrowser\/RC-V1.0.0.7/g' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's#s.setAllowFileAccess(false); s.setAllowContentAccess(false);#s.setAllowFileAccess(true); s.setAllowContentAccess(true); s.setAllowFileAccessFromFileURLs(true); s.setAllowUniversalAccessFromFileURLs(true);#' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           python3 - <<'PY'
           from pathlib import Path
@@ -421,120 +421,40 @@ jobs:
           p.write_text(s.replace(old,new))
           PY
 
-          # BUILD 0002 provider warm path: load the real destination page in the hidden provider WebView after arrival.
+          # BUILD 0003: restore 0049 browser isolation; no provider page runs while Galaxy Viewer is visible.
+          # Foreground-only contingency comet is added to the provider viewport after explicit Website press.
           python3 - <<'PY'
           from pathlib import Path
           p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java")
           s=p.read_text()
-
-          s=s.replace(
-            'private WebView top, web, bottom, viewerWeb;',
-            'private WebView top, web, bottom, viewerWeb, providerLoader;'
-          )
-          s=s.replace(
-            'private boolean browserMode=false, clearProviderEntryHistory=false;',
-            'private boolean browserMode=false, clearProviderEntryHistory=false, providerReady=false;'
-          )
-          s=s.replace(
-            'private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";',
-            'private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedProviderUrl="";'
-          )
-
+          s=s.replace('private WebView top, web, bottom, viewerWeb;','private WebView top, web, bottom, viewerWeb, providerLoader;',1)
           old='''    frame.addView(web,wp);
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1);'''
           new='''    frame.addView(web,wp);
     providerLoader=new WebView(this);
     providerLoader.setBackgroundColor(Color.BLACK);
-    providerLoader.setVerticalScrollBarEnabled(false); providerLoader.setHorizontalScrollBarEnabled(false);
     providerLoader.getSettings().setJavaScriptEnabled(false);
-    String loaderHtml="<html><head><meta name=\\"viewport\\" content=\\"width=device-width,initial-scale=1\\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}body{display:grid;place-items:center}.h{position:relative;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)}.o{position:absolute;left:50%;top:50%;width:0;height:0;animation:r 3s linear infinite}.o i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--a)) translateY(-60px) scale(var(--s));opacity:var(--p);box-shadow:0 0 6px rgba(98,216,255,.85)}.o i:first-child{background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}@keyframes r{to{transform:rotate(360deg)}}</style></head><body><div class=\\"h\\"><span class=\\"o\\"><i style=\\"--a:0deg;--s:1;--p:1\\"></i><i style=\\"--a:-15deg;--s:.88;--p:.84\\"></i><i style=\\"--a:-30deg;--s:.76;--p:.68\\"></i><i style=\\"--a:-45deg;--s:.64;--p:.52\\"></i><i style=\\"--a:-60deg;--s:.52;--p:.38\\"></i><i style=\\"--a:-75deg;--s:.42;--p:.26\\"></i><i style=\\"--a:-90deg;--s:.32;--p:.16\\"></i><i style=\\"--a:-105deg;--s:.24;--p:.08\\"></i></span></div></body></html>";
+    String loaderHtml="<html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}body{display:grid;place-items:center}.h{position:relative;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)}.o{position:absolute;left:50%;top:50%;width:0;height:0;animation:r 3s linear infinite}.o i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--a)) translateY(-60px) scale(var(--s));opacity:var(--p);box-shadow:0 0 6px rgba(98,216,255,.85)}.o i:first-child{background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}@keyframes r{to{transform:rotate(360deg)}}</style></head><body><div class=\"h\"><span class=\"o\"><i style=\"--a:0deg;--s:1;--p:1\"></i><i style=\"--a:-15deg;--s:.88;--p:.84\"></i><i style=\"--a:-30deg;--s:.76;--p:.68\"></i><i style=\"--a:-45deg;--s:.64;--p:.52\"></i><i style=\"--a:-60deg;--s:.52;--p:.38\"></i><i style=\"--a:-75deg;--s:.42;--p:.26\"></i><i style=\"--a:-90deg;--s:.32;--p:.16\"></i><i style=\"--a:-105deg;--s:.24;--p:.08\"></i></span></div></body></html>";
     providerLoader.loadDataWithBaseURL(null,loaderHtml,"text/html","UTF-8",null);
     providerLoader.setVisibility(View.GONE);
     frame.addView(providerLoader,new FrameLayout.LayoutParams(-1,-1));
     LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(-1,0,1);'''
           if old not in s: raise SystemExit("provider frame anchor missing")
-          s=s.replace(old,new)
-
-          old='''    v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
-    v.setWebViewClient(new WebViewClient(){'''
-          new='''    v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
-    v.addJavascriptInterface(new ProviderWarmBridge(),"GalaxyProviderPrewarm");
-    v.setWebViewClient(new WebViewClient(){'''
-          if old not in s: raise SystemExit("viewer bridge anchor missing")
           s=s.replace(old,new,1)
-
-          old='''  private WebView provider(){
-    WebView v=new WebView(this);'''
-          new='''  public final class ProviderWarmBridge{
-    @JavascriptInterface public void prewarm(String url){
-      if(url==null||!url.startsWith("https://"))return;
-      runOnUiThread(()->{
-        if(web==null||browserMode)return;
-        if(url.equals(prewarmedProviderUrl)&&providerReady)return;
-        try{web.stopLoading();}catch(Exception ignored){}
-        prewarmedProviderUrl=url; providerHomeUrl=url; sourceUrl=url; providerReady=false;
-        web.loadUrl(url);
-      });
-    }
-  }
-  private void showProviderLoader(boolean show){ if(providerLoader!=null)providerLoader.setVisibility(show?View.VISIBLE:View.GONE); }
-
-  private WebView provider(){
-    WebView v=new WebView(this);'''
-          if old not in s: raise SystemExit("provider method anchor missing")
-          s=s.replace(old,new)
-
-          old='''      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }
-    }); return v;'''
-          new='''      @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){
-        providerReady=false; if(browserMode)showProviderLoader(true);
-      }
-      @Override public void onPageFinished(WebView view,String url){
-        providerReady=true; prewarmedProviderUrl=url;
-        if(browserMode){
-          if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; }
-          sourceUrl=url; syncShell(); showProviderLoader(false);
-        }
-      }
-      @Override public void onReceivedError(WebView view,WebResourceRequest request,android.webkit.WebResourceError error){
-        if(request!=null&&request.isForMainFrame()&&browserMode)showProviderLoader(false);
-      }
-    }); return v;'''
-          if old not in s: raise SystemExit("provider completion anchor missing")
-          s=s.replace(old,new)
-
-          old='''        web.loadUrl(sourceUrl);
-      });'''
-          new='''        if(!(providerReady && sourceUrl.equals(prewarmedProviderUrl))) web.loadUrl(sourceUrl);
-        else showProviderLoader(false);
-      });'''
-          if old not in s: raise SystemExit("fetchPointer provider load anchor missing")
-          s=s.replace(old,new)
-
+          old='''      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }'''
+          new='''      @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){ if(browserMode&&providerLoader!=null)providerLoader.setVisibility(View.VISIBLE); }
+      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); if(providerLoader!=null)providerLoader.setVisibility(View.GONE); } }
+      @Override public void onReceivedError(WebView view,WebResourceRequest request,android.webkit.WebResourceError error){ if(request!=null&&request.isForMainFrame()&&browserMode&&providerLoader!=null)providerLoader.setVisibility(View.GONE); }'''
+          if old not in s: raise SystemExit("provider callback anchor missing")
+          s=s.replace(old,new,1)
           old='''  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }'''
-          new='''  private void openProvider(String u,String icon){
-    browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon;
-    providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u;
-    boolean warm=providerReady && u!=null && u.equals(prewarmedProviderUrl);
-    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
-    showProviderLoader(!warm);
-    fetchPointer();
-    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(()->{
-      if(browserMode&&browserLayer!=null){
-        boolean readyNow=providerReady && u!=null && u.equals(prewarmedProviderUrl);
-        showProviderLoader(!readyNow);
-        browserLayer.setVisibility(View.VISIBLE);
-      }
-    },2000);
-  }'''
+          new='''  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(providerLoader!=null)providerLoader.setVisibility(View.VISIBLE); if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }'''
           if old not in s: raise SystemExit("openProvider anchor missing")
-          s=s.replace(old,new)
-
+          s=s.replace(old,new,1)
           old='''  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }'''
-          new='''  private void returnToViewer(){ browserMode=false; showProviderLoader(false); if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }'''
+          new='''  private void returnToViewer(){ browserMode=false; if(providerLoader!=null)providerLoader.setVisibility(View.GONE); if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }'''
           if old not in s: raise SystemExit("returnToViewer anchor missing")
-          s=s.replace(old,new)
-
+          s=s.replace(old,new,1)
           p.write_text(s)
           PY
 
@@ -585,10 +505,6 @@ jobs:
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'GalaxyProviderPrewarm' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'prewarmedProviderUrl' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'postDelayed' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q '},2000);' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           grep -q 'identityRemain=Math.max(0,4000-' "$ROOT/app/src/main/assets/index.html"
           grep -q 'mask-image:radial-gradient' "$ROOT/app/src/main/assets/index.html"
@@ -601,7 +517,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.6-Build-0002.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.7-Build-0003.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -611,7 +527,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.6-Build-0002.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.7-Build-0003.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -619,16 +535,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.6
+          TAG=galaxy-viewer-rc-v1.0.0.7
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.6-Build-0002.apk Galaxy-Viewer-RC-V1.0.0.6-Build-0002.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.6' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.7-Build-0003.apk Galaxy-Viewer-RC-V1.0.0.7-Build-0003.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.7' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.6-Build-0002
+          name: Galaxy-Viewer-RC-V1.0.0.7-Build-0003
           path: |
-            Galaxy-Viewer-RC-V1.0.0.6-Build-0002.apk
-            Galaxy-Viewer-RC-V1.0.0.6-Build-0002.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.7-Build-0003.apk
+            Galaxy-Viewer-RC-V1.0.0.7-Build-0003.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
