@@ -478,19 +478,8 @@ jobs:
           sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
           sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
 
-          # Nanoscopic gates: reject the regressions seen in .3.
-          grep -q 'FULL BOOT BEHIND CURTAIN' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'GalaxyViewerPrepareCosmicReveal' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'GalaxyViewerStartCosmicReveal' "$ROOT/app/src/main/assets/index.html"
-          grep -q "phase==='READY'" "$ROOT/app/src/main/assets/index.html"
-          grep -q 'await splashReady' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'await sleep(2000)' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'returnToViewer()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'browserLayer.setVisibility(View.GONE)' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'viewerWeb=viewer()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          ! grep -q 'startActivity(intent)' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          ! grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
-          ! grep -q 'await mount(prepared)' "$ROOT/app/src/main/assets/index.html"
+          # Nanoscopic gates are evaluated below by the named deterministic preflight.
+          # Avoid silent grep exits: every failed invariant must print its name.
 
           test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           test -s "$ROOT/app/src/main/assets/splash/index.html"
