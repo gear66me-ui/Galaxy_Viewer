@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10002
-              versionName 'RC-V1.0.0.2'
+              versionCode 10003
+              versionName 'RC-V1.0.0.3'
             }
           }
           EOF
@@ -282,8 +282,6 @@ jobs:
                       return false;
                     }
                     Intent intent = new Intent(Intent.ACTION_VIEW, handoff);
-                    intent.setClassName("com.gear66me.galaxyviewer.webbrowser",
-                      "com.gear66me.galaxyviewer.webbrowser.MainActivity");
                     startActivity(intent);
                   } catch (Throwable error) {
                     Toast.makeText(MainActivity.this, "Could not open Galaxy Viewer Web Browser", Toast.LENGTH_LONG).show();
@@ -291,6 +289,7 @@ jobs:
                   return true;
                 }
                 @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                  if (request != null && !request.isForMainFrame()) return false;
                   return launchGalaxyBrowser(request == null ? null : request.getUrl());
                 }
                 @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -346,7 +345,7 @@ jobs:
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
           #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.2<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.3<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
@@ -385,33 +384,20 @@ jobs:
             });
             canvas.remove();trickleReveal.i=0;
           }
+          // APK 0049 gold-master choreography: do not initialize the viewer under the splash.
           const prepared=await prepare();
-          // Established choreography: startup art + comet covers full viewer initialization.
+          await sleep(650);
+          await sleep(2350);
+          const splash=document.createElement('iframe');
+          splash.id='splash';
+          splash.style.display='block';
+          splash.src='splash/index.html?v=0030-'+Date.now();
+          document.body.appendChild(splash);
+          await sleep(12750);
+          splash.remove();
+          boot.remove();
           await mount(prepared);
           await finalReady();
-          const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);
-          let complete=false;
-          addEventListener('message',async e=>{
-            if(e.source!==splash.contentWindow)return;
-            if(e.data?.type==='galaxy-splash-ready'){
-              splash.style.display='block';boot.style.display='none';
-              splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
-            }
-            if(e.data?.type==='galaxy-splash-complete'&&!complete){
-              complete=true;
-              try{
-                await finalReady();
-                const black=document.createElement('div');black.style.cssText='position:fixed;inset:0;background:#000;z-index:2147483646';document.body.appendChild(black);
-                splash.remove();
-                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-                black.remove();
-                await trickleReveal();
-              }catch(err){
-                splash.remove();boot.style.display='none';error.style.display='block';
-                error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err);
-              }
-            }
-          });
           })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
@@ -436,13 +422,14 @@ jobs:
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0.2' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0.3' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await sleep(2350);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await sleep(12750);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'cell=5' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'com.gear66me.galaxyviewer.webbrowser.MainActivity' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          ! grep -q 'setClassName' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q '!request.isForMainFrame()' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
@@ -453,7 +440,7 @@ jobs:
         run: |
           set -euo pipefail
           APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.2.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.3.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
@@ -463,7 +450,7 @@ jobs:
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.2.apk.sha256
+          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.3.apk.sha256
 
       - name: Publish Release 1.0.0 test asset
         env:
@@ -471,16 +458,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.2
+          TAG=galaxy-viewer-rc-v1.0.0.3
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.2.apk Galaxy-Viewer-RC-V1.0.0.2.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.2' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.3.apk Galaxy-Viewer-RC-V1.0.0.3.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.3' --notes 'Release-candidate APK built only from the sanitized release branch.'
 
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-RC-V1.0.0
           path: |
-            Galaxy-Viewer-RC-V1.0.0.2.apk
-            Galaxy-Viewer-RC-V1.0.0.2.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.3.apk
+            Galaxy-Viewer-RC-V1.0.0.3.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
