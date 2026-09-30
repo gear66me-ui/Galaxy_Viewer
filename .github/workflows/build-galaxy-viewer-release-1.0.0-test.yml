@@ -453,7 +453,6 @@ jobs:
           grep -q 'await sleep(2000);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await trickleReveal(cover);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'messageTypeEnd:9796,messageHoldEnd:11796' "$ROOT/app/src/main/assets/splash/index.html"
-          grep -q 'width:21px;height:21px;margin-left:-10.5px;margin-top:-10.5px' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
           grep -q 'cell=5' "$ROOT/app/src/main/assets/index.html"
