@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-ac8f7b0ae8aa — GV-RC-10008-B0008-STARTUP-ASSET-FIX
+
+**Recorded:** 2026-09-30T11:20:05-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`ac8f7b0ae8aa03fb04d3f6328e8915f3aa8c1175`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/ac8f7b0ae8aa03fb04d3f6328e8915f3aa8c1175)  
+**Parent/baseline:** `e63bccfb93e15e405c7a6b7ff102eeb675b039ee`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/e63bccfb93e15e405c7a6b7ff102eeb675b039ee...ac8f7b0ae8aa03fb04d3f6328e8915f3aa8c1175)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `GV-RC-10008-B0008-STARTUP-ASSET-FIX`  
+**Requirements:** `launch-only correction; use viewer/artwork/startup/galaxy-viewer-startup.png; preserve comet halo version build and all navigation/runtime behavior`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+- Actual: `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+
+- Git status: `M`
+- SHA-256 before: `5425134228895144d94146ed24d0e8e3ddedcc266c7daf72b30d17abf8ba0d51`
+- SHA-256 after: `68c9e6f4218926491af7c807e7f0b3a39cfc0bf7b287fa7221e46299b288cf26`
+- Bytes: `33444` -> `33595`
+- Lines: `514` -> `514`
+- Characters: `33444` -> `33595`
+- Inserted lines: `11`
+- Deleted lines: `11`
+- Inserted characters: `254`
+- Deleted characters: `103`
+- Changed diff blocks: `6`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-ffaef1b90d7e — GV-RC-10008-B0008-COMET-GATE
 
 **Recorded:** 2026-09-30T11:02:09-05:00  
