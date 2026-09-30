@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.16 AAB
-# BUILD 0016: 0049 hosted architecture recovery as Android App Bundle. No bundled viewer runtime.
+name: Build Galaxy Viewer RC-V1.0.0.15 AAB
+# BUILD 0015: 0049 hosted architecture recovery as Android App Bundle. No bundled viewer runtime.
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ROOT=/tmp/galaxy-viewer-0016
+          ROOT=/tmp/galaxy-viewer-0015
           GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
           rm -rf "$ROOT"
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10016
-              versionName 'RC-V1.0.0.16'
+              versionCode 10015
+              versionName 'RC-V1.0.0.15'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
@@ -166,15 +166,15 @@ jobs:
           test ! -e "$ROOT/app/src/main/assets/index.html"
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
-      - name: Build AAB 0016
-        run: gradle --no-daemon -p /tmp/galaxy-viewer-0016 :app:bundleRelease
+      - name: Build AAB 0015
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:bundleRelease
 
-      - name: Verify AAB 0016
+      - name: Verify AAB 0015
         shell: bash
         run: |
           set -euo pipefail
-          AAB=/tmp/galaxy-viewer-0016/app/build/outputs/bundle/release/app-release.aab
-          OUT=Galaxy-Viewer-RC-V1.0.0.16-Build-0016.aab
+          AAB=/tmp/galaxy-viewer-0015/app/build/outputs/bundle/release/app-release.aab
+          OUT=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab
           test -s "$AAB"
           cp "$AAB" "$OUT"
           unzip -t "$OUT" | tee aab-rc-zip-test.txt
@@ -187,23 +187,23 @@ jobs:
           grep -q 'jar verified' aab-rc-signature.txt
           sha256sum "$OUT" | tee "$OUT.sha256"
 
-      - name: Publish AAB 0016
+      - name: Publish AAB 0015
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           TAG=galaxy-viewer-rc-v1.0.0.16
-          OUT=Galaxy-Viewer-RC-V1.0.0.16-Build-0016.aab
+          OUT=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.16 AAB' --notes 'Android App Bundle test: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
+          gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.15 AAB' --notes 'Android App Bundle test: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.16-Build-0016-AAB
+          name: Galaxy-Viewer-RC-V1.0.0.15-Build-0015-AAB
           path: |
-            Galaxy-Viewer-RC-V1.0.0.16-Build-0016.aab
-            Galaxy-Viewer-RC-V1.0.0.16-Build-0016.aab.sha256
+            Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab
+            Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab.sha256
             aab-rc-zip-test.txt
             aab-rc-contents.txt
             aab-rc-signature.txt
