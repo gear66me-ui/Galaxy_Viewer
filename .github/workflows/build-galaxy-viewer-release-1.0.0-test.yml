@@ -483,7 +483,7 @@ jobs:
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
           sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
           sed -i 's/--gv-orbit-radius:min(24vw,122px)/--gv-orbit-radius:60px/' "$ROOT/app/src/main/assets/index.html"
-          sed -i '/<span id="orbit"/,/<\/span>/d' "$ROOT/app/src/main/assets/index.html"
+          python3 -c 'from pathlib import Path; p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html"); s=p.read_text(); a=s.index("<span id=\\\"orbit\\\""); b=s.index("</span>",a)+7; p.write_text(s[:a]+s[b:])'
           # BUILD 0014: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
           sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
           sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
