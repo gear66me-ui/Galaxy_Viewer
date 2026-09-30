@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.14 APK
-# BUILD 0014 launch-icon restoration; preserve 0049 browser isolation
+name: Build Galaxy Viewer RC-V1.0.0.15 APK
+# BUILD 0015: 0049 hosted architecture recovery. No bundled viewer runtime.
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  build-generic-v2:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,6 @@ jobs:
           java-version: '17'
 
       - uses: android-actions/setup-android@v4
-
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
       - uses: gradle/actions/setup-gradle@v4
@@ -36,20 +35,20 @@ jobs:
       - name: Install launcher tools
         run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
-      - name: Generate Generic V2 Android shell
+      - name: Generate 0049 hosted shell
         shell: bash
         run: |
           set -euo pipefail
-          ROOT=/tmp/galaxy-viewer-generic-v2
+          ROOT=/tmp/galaxy-viewer-0015
+          GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
           rm -rf "$ROOT"
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
-          mkdir -p "$ROOT/app/src/main/assets/splash"
           mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
 
           cat > "$ROOT/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
-          rootProject.name='GalaxyViewerRC'
+          rootProject.name='GalaxyViewer'
           include ':app'
           EOF
 
@@ -71,21 +70,16 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 35
-              versionCode 10014
-              versionName 'RC-V1.0.0.14'
+              versionCode 10015
+              versionName 'RC-V1.0.0.15'
             }
           }
-          EOF
-          cat >> "$ROOT/app/build.gradle" <<'EOF'
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           EOF
 
-          # Frozen RC launcher source: app_icon_4.png. Do not alter source artwork.
+          # Android launcher artwork only. Galaxy Viewer itself stays hosted, exactly like 0049.
           test -s viewer/artwork/app_icon_4.png
           cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
-          # Dedicated RC startup artwork. Launcher icon remains app_icon_4.png.
-          test -s viewer/artwork/startup/galaxy-viewer-startup.png
-          cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/res/drawable/galaxy_viewer_startup.png"
           cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
           <?xml version="1.0" encoding="utf-8"?>
           <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
@@ -93,7 +87,6 @@ jobs:
             <size android:width="1dp" android:height="1dp"/>
           </shape>
           XML
-          cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           cat > "$ROOT/app/src/main/res/drawable/gv_launcher_background.xml" <<'EOF'
           <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
           EOF
@@ -109,59 +102,11 @@ jobs:
             convert viewer/artwork/app_icon_4.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
             cp "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
           done
-          # Frozen FINAL splash package copied byte-for-byte from release.
-          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html "$ROOT/app/src/main/assets/splash/index.html"
-          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
-          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/splash/Space-Age.otf"
-
-          # BUILD 0014 SELF-CONTAINED RUNTIME
-          mkdir -p "$ROOT/app/src/main/assets/viewer"
-          cp -a viewer/modules "$ROOT/app/src/main/assets/viewer/"
-          cp -a viewer/vendor "$ROOT/app/src/main/assets/viewer/"
-          mkdir -p "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2"
-          cp aladin-source-clone/src/css/aladin.css "$ROOT/app/src/main/assets/viewer/vendor/aladin-lite/3.8.2/aladin.css"
-          cp -a viewer/artwork "$ROOT/app/src/main/assets/viewer/"
-          cp -a viewer/image-databases "$ROOT/app/src/main/assets/viewer/"
-          python3 - <<'PY'
-          from pathlib import Path
-          base=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/viewer")
-          repl={"https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/":"https://appassets.androidplatform.net/assets/viewer/","https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/":"https://appassets.androidplatform.net/assets/viewer/","https://gear66me-ui.github.io/Galaxy_Viewer/viewer/":"https://appassets.androidplatform.net/assets/viewer/","https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/":"https://appassets.androidplatform.net/assets/"}
-          for p in base.rglob("*"):
-              if not p.is_file() or p.suffix.lower() not in {".js",".json",".html",".css",".svg",".txt"}: continue
-              try: t=p.read_text()
-              except UnicodeDecodeError: continue
-              n=t
-              for a,b in repl.items(): n=n.replace(a,b)
-              if n!=t: p.write_text(n)
-          PY
-
-          # Extract and validate the frozen RC at BUILD TIME. The APK never parses Python.
-          python3 - <<'PY'
-          import json, re, pathlib
-          root = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets")
-          pointer = json.loads(pathlib.Path("viewer/gv-current-viewer.json").read_text())
-          expected = {"version":"RC-V1.0.0","viewer":"RC-V1.0.0.py","build":"0003"}
-          if pointer != expected:
-              raise SystemExit(f"RC POINTER MISMATCH: {pointer!r}")
-          src = pathlib.Path("viewer/RC-V1.0.0.py").read_text()
-          for a,b in {"https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/":"https://appassets.androidplatform.net/assets/viewer/","https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/":"https://appassets.androidplatform.net/assets/viewer/","https://gear66me-ui.github.io/Galaxy_Viewer/viewer/":"https://appassets.androidplatform.net/assets/viewer/","https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/aladin-source-clone/src/css/aladin.css":"https://appassets.androidplatform.net/assets/viewer/vendor/aladin-lite/3.8.2/aladin.css","https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css":"https://appassets.androidplatform.net/assets/viewer/vendor/aladin-lite/3.8.2/aladin.css","https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/":"https://appassets.androidplatform.net/assets/"}.items(): src=src.replace(a,b)
-          identity = re.search(r'^VIEWER_VERSION\s*=\s*["\']([^"\']+)["\']', src, re.M)
-          if not identity or identity.group(1) != pointer["version"]:
-              raise SystemExit("RC VIEWER IDENTITY MISMATCH")
-          html = re.search(r'display\s*\(\s*HTML\s*\(\s*(?:r)?"""([\s\S]*?)"""\s*\)\s*\)', src)
-          js = list(re.finditer(r'display\s*\(\s*Javascript\s*\(\s*(?:r)?"""([\s\S]*?)"""\s*\)\s*\)', src))
-          if not html or not js:
-              raise SystemExit(f"BUILD-TIME VIEWER EXTRACTION FAILED: html={bool(html)} javascript={len(js)}")
-          payload = "window.__GV_RC_PAYLOAD__=" + json.dumps({"html":html.group(1),"js":[m.group(1) for m in js]}, separators=(",",":")) + ";\n"
-          (root/"rc-payload.js").write_text(payload)
-          print(f"RC build-time extraction OK: html={len(html.group(1))} bytes js_blocks={len(js)}")
-          PY
 
           cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
           <resources>
             <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
               <item name="android:windowBackground">#000000</item>
-              <item name="android:colorAccent">#000000</item>
               <item name="android:navigationBarColor">#000000</item>
               <item name="android:statusBarColor">#000000</item>
               <item name="android:windowLightStatusBar">false</item>
@@ -188,19 +133,13 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
             <uses-permission android:name="android.permission.INTERNET" />
-            <application
-              android:allowBackup="false"
-              android:hardwareAccelerated="true"
-              android:icon="@mipmap/ic_launcher"
-              android:roundIcon="@mipmap/ic_launcher_round"
-              android:label="Galaxy Viewer"
-              android:theme="@style/GalaxyViewerTheme"
+            <application android:allowBackup="false" android:hardwareAccelerated="true"
+              android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
+              android:label="Galaxy Viewer" android:theme="@style/GalaxyViewerTheme"
               android:usesCleartextTraffic="false">
-              <activity
-                android:name=".MainActivity"
+              <activity android:name=".MainActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize"
-                android:exported="true"
-                android:screenOrientation="portrait">
+                android:exported="true" android:screenOrientation="portrait">
                 <intent-filter>
                   <action android:name="android.intent.action.MAIN" />
                   <category android:name="android.intent.category.LAUNCHER" />
@@ -210,373 +149,59 @@ jobs:
           </manifest>
           EOF
 
-          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java" <<'EOF'
-          package com.gear66me.galaxyviewer;
-
-          import android.app.Activity;
-          import android.content.ContentValues;
-          import android.content.Intent;
-          import android.graphics.Color;
-          import android.net.Uri;
-          import android.os.Bundle;
-          import android.os.Environment;
-          import android.provider.MediaStore;
-          import android.view.View;
-          import android.view.WindowInsets;
-          import android.graphics.Insets;
-          import android.webkit.JavascriptInterface;
-          import android.webkit.WebChromeClient;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          import android.webkit.WebResourceRequest;
-          import android.widget.Toast;
-          import org.json.JSONObject;
-          import java.io.OutputStream;
-          import java.nio.charset.StandardCharsets;
-
-          public final class MainActivity extends Activity {
-            private WebView web;
-
-            private void emit(String type, String key, String value) {
-              if (web == null) return;
-              final String script = "window.dispatchEvent(new CustomEvent(" + JSONObject.quote(type) + ",{detail:{" + key + ":" + JSONObject.quote(value == null ? "" : value) + "}}));";
-              web.post(() -> web.evaluateJavascript(script, null));
-            }
-
-            public final class DownloadBridge {
-              @JavascriptInterface
-              public void saveJson(String requestedFilename, String json) {
-                String filename = requestedFilename == null ? "Galaxy-Viewer-Analytics.json" : requestedFilename;
-                filename = filename.replaceAll("[\\\\/:*?\"<>|\\r\\n]", "_");
-                if (!filename.toLowerCase().endsWith(".json")) filename += ".json";
-                final String finalFilename = filename;
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Downloading " + finalFilename, Toast.LENGTH_SHORT).show());
-                Uri uri = null;
-                try {
-                  ContentValues values = new ContentValues();
-                  values.put(MediaStore.Downloads.DISPLAY_NAME, finalFilename);
-                  values.put(MediaStore.Downloads.MIME_TYPE, "application/json");
-                  values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Galaxy Viewer");
-                  values.put(MediaStore.Downloads.IS_PENDING, 1);
-                  uri = getContentResolver().insert(MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), values);
-                  if (uri == null) throw new IllegalStateException("Android Downloads insert failed");
-                  try (OutputStream out = getContentResolver().openOutputStream(uri, "w")) {
-                    if (out == null) throw new IllegalStateException("Android Downloads output stream failed");
-                    out.write((json == null ? "{}" : json).getBytes(StandardCharsets.UTF_8));
-                    out.flush();
-                  }
-                  ContentValues done = new ContentValues();
-                  done.put(MediaStore.Downloads.IS_PENDING, 0);
-                  getContentResolver().update(uri, done, null, null);
-                  emit("gv-native-download-complete", "filename", finalFilename);
-                  runOnUiThread(() -> Toast.makeText(MainActivity.this, "Saved to Downloads/Galaxy Viewer/" + finalFilename, Toast.LENGTH_LONG).show());
-                } catch (Throwable error) {
-                  if (uri != null) {
-                    try { getContentResolver().delete(uri, null, null); } catch (Throwable ignored) {}
-                  }
-                  emit("gv-native-download-failed", "message", String.valueOf(error.getMessage()));
-                  runOnUiThread(() -> Toast.makeText(MainActivity.this, "Download failed", Toast.LENGTH_LONG).show());
-                }
-              }
-            }
-
-            @Override protected void onCreate(Bundle state) {
-              super.onCreate(state);
-              getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-              web=new WebView(this);
-              web.setBackgroundColor(Color.BLACK);
-              WebSettings s=web.getSettings();
-              s.setJavaScriptEnabled(true);
-              s.setDomStorageEnabled(true);
-              s.setAllowFileAccess(true);
-              s.setAllowContentAccess(true);
-              s.setAllowFileAccessFromFileURLs(true);
-              s.setAllowUniversalAccessFromFileURLs(true);
-              s.setMediaPlaybackRequiresUserGesture(false);
-              s.setCacheMode(WebSettings.LOAD_NO_CACHE);
-              web.setWebViewClient(new WebViewClient() {
-                private boolean launchGalaxyBrowser(Uri uri) {
-                  if (uri == null) return false;
-                  String scheme = uri.getScheme() == null ? "" : uri.getScheme();
-                  try {
-                    Uri handoff = uri;
-                    if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
-                      handoff = new Uri.Builder().scheme("galaxyviewerbrowser").authority("open")
-                        .appendQueryParameter("url", uri.toString()).build();
-                    } else if (!"galaxyviewerbrowser".equalsIgnoreCase(scheme)) {
-                      return false;
-                    }
-                    Intent intent = new Intent(Intent.ACTION_VIEW, handoff);
-                    startActivity(intent);
-                  } catch (Throwable error) {
-                    Toast.makeText(MainActivity.this, "Could not open Galaxy Viewer Web Browser", Toast.LENGTH_LONG).show();
-                  }
-                  return true;
-                }
-                @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                  if (request != null && !request.isForMainFrame()) return false;
-                  return launchGalaxyBrowser(request == null ? null : request.getUrl());
-                }
-                @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                  return launchGalaxyBrowser(url == null ? null : Uri.parse(url));
-                }
-              });
-              web.setWebChromeClient(new WebChromeClient());
-              web.addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads");
-              setContentView(web);
-              web.setOnApplyWindowInsetsListener((v, wi) -> {
-                Insets safe = wi.getInsets(WindowInsets.Type.displayCutout() | WindowInsets.Type.systemBars());
-                int densityPad = Math.round(4f * getResources().getDisplayMetrics().density);
-                int top = Math.max(0, safe.top) + densityPad;
-                int left = Math.max(0, safe.left) + densityPad;
-                int right = Math.max(0, safe.right) + densityPad;
-                int bottom = Math.max(0, safe.bottom) + densityPad;
-                String js = "document.documentElement.style.setProperty('--gv-safe-top','" + top + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-left','" + left + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-right','" + right + "px');"
-                  + "document.documentElement.style.setProperty('--gv-safe-bottom','" + bottom + "px');"
-                  + "window.dispatchEvent(new CustomEvent('gv-safe-insets',{detail:{top:" + top + ",left:" + left + ",right:" + right + ",bottom:" + bottom + "}}));";
-                web.post(() -> web.evaluateJavascript(js, null));
-                return wi;
-              });
-              web.loadUrl("file:///android_asset/index.html");
-            }
-
-            @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
-            @Override protected void onDestroy(){if(web!=null){web.removeJavascriptInterface("GalaxyViewerDownloads");web.destroy();web=null;}super.onDestroy();}
-          }
-          EOF
-
-          cat > "$ROOT/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>
-          @font-face{font-family:"Space Age";src:url("splash/Space-Age.otf") format("opentype");font-display:swap}
-          html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff}
-          #boot,#splash,#error{position:fixed;inset:0;width:100%;height:100%;box-sizing:border-box;background:#000;z-index:2147483647}
-          #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
-          #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
-          #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #bootMeta{margin-top:8px;font-size:13px;line-height:1.75;letter-spacing:1.5px;color:#9be5ff}
-          #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
-          </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0.7<br>BUILD&nbsp;&nbsp;0003</div></div>
-          <div id="error"></div>
-          <script src="rc-payload.js"></script>
-          <script>(async()=>{'use strict';
-          const boot=document.getElementById('boot'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
-          async function prepare(){const v=window.__GV_RC_PAYLOAD__;if(!v||typeof v.html!=='string'||!Array.isArray(v.js)||!v.js.length)throw Error('RC BUILD PAYLOAD MISSING');return v}
-          async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}
-          async function finalReady(){
-            const end=performance.now()+30000;
-            while(performance.now()<end){
-              const root=document.getElementById('aladin-cosmic-command-test');
-              if(root?.querySelector('canvas')){
-                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-                return;
-              }
-              await sleep(50);
-            }
-            throw Error('RC FINAL READINESS TIMEOUT');
-          }
-          async function trickleReveal(){
-            const canvas=document.createElement('canvas');canvas.id='reveal';document.body.appendChild(canvas);
-            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight,cell=5;
-            canvas.width=Math.ceil(w*dpr);canvas.height=Math.ceil(h*dpr);canvas.style.display='block';
-            const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-            const cols=Math.ceil(w/cell),rows=Math.ceil(h/cell),cells=[];
-            for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,k:y/rows+Math.random()*.42});
-            cells.sort((a,b)=>a.k-b.k);
-            const start=performance.now(),duration=2000,total=cells.length;
-            await new Promise(resolve=>{
-              const frame=now=>{
-                const p=Math.min(1,(now-start)/duration),target=Math.floor(total*p);
-                for(let i=trickleReveal.i||0;i<target;i++){const q=cells[i];ctx.clearRect(q.x*cell,q.y*cell,cell+.5,cell+.5)}
-                trickleReveal.i=target;
-                if(p<1)requestAnimationFrame(frame);else resolve();
-              };
-              requestAnimationFrame(frame);
-            });
-            canvas.remove();trickleReveal.i=0;
-          }
-          // APK 0049 gold-master choreography: do not initialize the viewer under the splash.
-          const prepared=await prepare();
-          await sleep(650);
-          await sleep(2350);
-          const splash=document.createElement('iframe');
-          splash.id='splash';
-          splash.style.display='block';
-          splash.src='splash/index.html?v=0030-'+Date.now();
-          document.body.appendChild(splash);
-          await sleep(12750);
-          splash.remove();
-          boot.remove();
-          await mount(prepared);
-          await finalReady();
-          })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
-          EOF
-
-          # GOLD MASTER OVERRIDE: copy APK/Web-Browser 0049 architecture verbatim from its published commit.
-          GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
+          # Exact known-good 0049 browser/viewer Activity. Only Java package namespace changes.
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          sed -i 's/GalaxyViewerWebBrowser\/0049/GalaxyViewerWebBrowser\/RC-V1.0.0.7/g' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java")
-          s=p.read_text()
-          old='if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis());'
-          new='if(viewerWeb!=null)viewerWeb.loadUrl("https://appassets.androidplatform.net/assets/index.html");'
-          if old not in s: raise SystemExit("0049 launch line missing")
-          p.write_text(s.replace(old,new))
-          PY
 
-          # GOLD MASTER launch choreography: exact 0049 launch page; only beta->release source and local APK asset paths change.
-          git show "$GOLD:viewer/releases/launch/Galaxy-Viewer-Launch/index.html" > "$ROOT/app/src/main/assets/index.html"
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html")
-          s=p.read_text()
-          # Preserve the complete 0049 launch choreography. Replace only its private-repo bootstrap reads.
-          s=s.replace("</head>","<script src=\"rc-payload.js\"></script></head>",1)
-          s=s.replace("(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/';","(async()=>{",1)
-          old=" const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));"
-          new=" const p={version:'RC-V1.0.0',build:'0003',viewer:'RC-V1.0.0.py'};"
-          if old not in s: raise SystemExit("0049 POINTER READ ANCHOR MISSING")
-          s=s.replace(old,new,1)
-          # Deterministic local bootstrap: replace the source-read statement only, then disable extraction block by boundaries.
-          src_line=" const src=await read(BASE+p.viewer+'?t='+Date.now());"
-          if src_line not in s: raise SystemExit("LOCAL BOOTSTRAP SOURCE LINE MISSING")
-          s=s.replace(src_line," const payload=window.__GV_RC_PAYLOAD__;",1)
-          a=s.index(" const extract=(text,start,end)=>")
-          b=s.index(" document.body.insertAdjacentHTML('beforeend',html);",a)
-          end=s.index(";",s.index("document.body.appendChild(e)",b))+1
-          local=" if(!payload||!payload.html||!Array.isArray(payload.js)||!payload.js.length)throw Error('LOCAL RC PAYLOAD MISSING');\n document.body.insertAdjacentHTML('beforeend',payload.html);\n for(const code of payload.js){const e=document.createElement('script');e.textContent=code;document.body.appendChild(e);}"
-          s=s[:a]+local+s[end:]
-          p.write_text(s)
-          PY
-          # Launch identity: approved app icon must be visible on the black background from first HTML frame.
-          cp viewer/artwork/startup/galaxy-viewer-startup.png "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html")
-          s=p.read_text()
-          old='<img id="target" src="../../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg">'
-          new='<img id="target" src="galaxy-viewer-startup.png">'
-          if old not in s: raise SystemExit("STARTUP TARGET ANCHOR MISSING")
-          s=s.replace(old,new,1)
-          if 'id="target" src="galaxy-viewer-startup.png"' not in s: raise SystemExit("STARTUP TARGET REWRITE FAILED")
-          p.write_text(s)
-          PY
-          sed -i "s#../../splash/Galaxy-Viewer-Singularity-FINAL/index.html#splash/index.html#g" "$ROOT/app/src/main/assets/index.html"
-          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$ROOT/app/src/main/assets/SpaceAge-GV-9A.otf"
-          sed -i "s#../../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf#SpaceAge-GV-9A.otf#g" "$ROOT/app/src/main/assets/index.html"
-          # BUILD 0014: presentation-only correction. Remove blue halo/drop-shadow; preserve the proven 0008 icon/comet/runtime path.
-          sed -i 's#background:radial-gradient(circle,rgba(7,45,110,.98) 0%,rgba(5,35,91,.84) 28%,rgba(3,25,68,.55) 47%,rgba(1,13,38,.24) 64%,rgba(0,0,0,0) 80%)#background:transparent#' "$ROOT/app/src/main/assets/index.html"
-          sed -i 's#filter:drop-shadow(0 0 8px rgba(69,231,255,.45))#filter:none#' "$ROOT/app/src/main/assets/index.html"
+          # Nanoscopic gates: prove this remains the hosted 0049 architecture.
+          MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'GalaxyViewerWebBrowser/0049' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
+          grep -q 'viewerWeb=viewer()' "$MAIN"
+          grep -q 'openProvider' "$MAIN"
+          grep -q 'returnToViewer' "$MAIN"
+          grep -q 'onCreateWindow' "$MAIN"
+          grep -q 'WebViewAssetLoader' "$MAIN"
+          test ! -e "$ROOT/app/src/main/assets/index.html"
+          test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
-          # Nanoscopic gates are evaluated below by the named deterministic preflight.
-          # Avoid silent grep exits: every failed invariant must print its name.
+      - name: Build APK 0015
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:assembleDebug
 
-          # Named structural checks: never allow set -e to hide the failing invariant.
-          python3 - <<'PY'
-          from pathlib import Path
-          R=Path("/tmp/galaxy-viewer-generic-v2/app/src/main")
-          checks=[]
-          def exists(name,p): checks.append((name,p.is_file() and p.stat().st_size>0))
-          def has(name,p,s): checks.append((name,p.is_file() and s in p.read_text()))
-          def lacks(name,p,s): checks.append((name,p.is_file() and s not in p.read_text()))
-          exists("launcher artwork",R/"res/drawable/app_icon_4.png")
-          exists("splash index",R/"assets/splash/index.html")
-          exists("splash poster",R/"assets/splash/Galaxy-Splash.png")
-          exists("splash font",R/"assets/splash/Space-Age.otf")
-          has("splash poster reference",R/"assets/splash/index.html","Galaxy-Splash.png")
-          has("splash font reference",R/"assets/splash/index.html","Space-Age.otf")
-          exists("RC payload",R/"assets/rc-payload.js")
-          exists("Aladin JS",R/"assets/viewer/vendor/aladin-lite/3.8.2/aladin.js")
-          exists("Aladin CSS",R/"assets/viewer/vendor/aladin-lite/3.8.2/aladin.css")
-          lacks("no literal malformed newline",R/"assets/index.html",r"\\n document.body.insertAdjacentHTML")
-          lacks("no stale js variable bootstrap",R/"assets/index.html","e.textContent=js")
-          has("payload global",R/"assets/rc-payload.js","window.__GV_RC_PAYLOAD__=")
-          has("portrait manifest",R/"AndroidManifest.xml",'android:screenOrientation="portrait"')
-          has("theme manifest",R/"AndroidManifest.xml",'android:theme="@style/GalaxyViewerTheme"')
-          has("black window",R/"res/values/styles.xml",'android:windowBackground">#000000')
-          has("black Android splash",R/"res/values-v31/styles.xml",'android:windowSplashScreenBackground">#000000')
-          exists("startup drawable",R/"res/drawable/galaxy_viewer_startup.png")
-          exists("startup web asset",R/"assets/galaxy-viewer-startup.png")
-          has("startup image reference",R/"assets/index.html",'id="target" src="galaxy-viewer-startup.png"')
-          has("transparent Android splash icon",R/"res/values-v31/styles.xml",'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon')
-          failed=[]
-          for name,ok in checks:
-              print(f"STRUCTURAL CHECK {name}: {'OK' if ok else 'FAIL'}",flush=True)
-              if not ok: failed.append(name)
-          if failed: raise SystemExit("STRUCTURAL CHECKS FAILED: "+", ".join(failed))
-          PY
-
-          # Deterministic preflight: print the exact failed invariant instead of silent grep exit 1.
-          python3 - <<'PY'
-          from pathlib import Path
-          root=Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets")
-          checks=[
-            ("startup target", 'id="target" src="galaxy-viewer-startup.png"' in (root/"index.html").read_text()),
-            ("appassets payload", "https://appassets.androidplatform.net/assets/viewer/" in (root/"rc-payload.js").read_text()),
-          ]
-          for name,ok in checks: print("PREFLIGHT",name,"OK" if ok else "FAIL")
-          bad=[]
-          for p in [root/"index.html",root/"rc-payload.js",*list((root/"viewer").rglob("*"))]:
-            if not p.is_file() or p.suffix.lower() not in {".js",".html",".css",".svg"}: continue
-            try:t=p.read_text()
-            except UnicodeDecodeError:continue
-            for needle in ["raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer","cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer","gear66me-ui.github.io/Galaxy_Viewer","file:///android_asset/"]:
-              if needle in t: bad.append((str(p.relative_to(root)),needle))
-          print("PREFLIGHT forbidden executable refs",bad)
-          if not all(ok for _,ok in checks) or bad: raise SystemExit("PREFLIGHT FAILED")
-          PY
-
-          grep -q 'id="target" src="galaxy-viewer-startup.png"' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          ! grep -R -E 'raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer|cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer|gear66me-ui\.github\.io/Galaxy_Viewer' "$ROOT/app/src/main/assets/index.html" "$ROOT/app/src/main/assets/rc-payload.js" "$ROOT/app/src/main/assets/viewer" --include='*.js' --include='*.html' --include='*.css' --include='*.svg'
-          ! grep -R -F 'file:///android_asset/' "$ROOT/app/src/main/assets/index.html" "$ROOT/app/src/main/assets/rc-payload.js" "$ROOT/app/src/main/assets/viewer" --include='*.js' --include='*.html' --include='*.css'
-          grep -q 'https://appassets.androidplatform.net/assets/viewer/' "$ROOT/app/src/main/assets/rc-payload.js"
-          grep -q 'WebViewAssetLoader' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'https://appassets.androidplatform.net/assets/index.html' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          ! grep -q 'setAllowUniversalAccessFromFileURLs(true)' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-
-      - name: Build Generic V2 APK
-        run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
-
-      - name: Verify Generic V2 APK
+      - name: Verify APK 0015
         shell: bash
         run: |
           set -euo pipefail
-          APK=/tmp/galaxy-viewer-generic-v2/app/build/outputs/apk/debug/app-debug.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk
+          APK=/tmp/galaxy-viewer-0015/app/build/outputs/apk/debug/app-debug.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
           test -s "$APK"
           cp "$APK" "$OUT"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$OUT" | tee apk-rc-badging.txt
           grep -q "package: name='com.gear66me.galaxyviewer'" apk-rc-badging.txt
           grep -q "application-label:'Galaxy Viewer'" apk-rc-badging.txt
-          unzip -p "$OUT" classes.dex >/dev/null
           unzip -t "$OUT" | tee apk-rc-zip-test.txt
           grep -q 'No errors detected' apk-rc-zip-test.txt
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-rc-signature.txt
-          sha256sum "$OUT" | tee Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk.sha256
+          sha256sum "$OUT" | tee "$OUT.sha256"
 
-      - name: Publish Release 1.0.0 test asset
+      - name: Publish APK 0015
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.13
+          TAG=galaxy-viewer-rc-v1.0.0.15
+          OUT=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk.sha256 --target release --title 'Galaxy Viewer RC-V1.0.0.14' --notes 'Release-candidate APK built only from the sanitized release branch.'
+          gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.15' --notes 'Launch-day recovery APK: known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.14-Build-0014
+          name: Galaxy-Viewer-RC-V1.0.0.15-Build-0015
           path: |
-            Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk
-            Galaxy-Viewer-RC-V1.0.0.14-Build-0014.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
+            Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk.sha256
             apk-rc-badging.txt
             apk-rc-signature.txt
             apk-rc-zip-test.txt
