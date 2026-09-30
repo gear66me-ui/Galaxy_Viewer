@@ -516,9 +516,16 @@ jobs:
     browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon;
     providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u;
     boolean warm=providerReady && u!=null && u.equals(prewarmedProviderUrl);
-    if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);
+    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
     showProviderLoader(!warm);
     fetchPointer();
+    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(()->{
+      if(browserMode&&browserLayer!=null){
+        boolean readyNow=providerReady && u!=null && u.equals(prewarmedProviderUrl);
+        showProviderLoader(!readyNow);
+        browserLayer.setVisibility(View.VISIBLE);
+      }
+    },2000);
   }'''
           if old not in s: raise SystemExit("openProvider anchor missing")
           s=s.replace(old,new)
@@ -580,6 +587,8 @@ jobs:
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'GalaxyProviderPrewarm' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'prewarmedProviderUrl' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'postDelayed' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q '},2000);' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           grep -q 'identityRemain=Math.max(0,4000-' "$ROOT/app/src/main/assets/index.html"
           grep -q 'mask-image:radial-gradient' "$ROOT/app/src/main/assets/index.html"
