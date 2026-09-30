@@ -513,10 +513,9 @@ jobs:
           grep -q 'galaxy-viewer-startup.png' "$ROOT/app/src/main/assets/index.html"
           test -s "$ROOT/app/src/main/assets/galaxy-viewer-startup.png"
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
-          # BUILD 0014 launch composition gates: approved icon + comet orbit above it.
-          grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
-          grep -q '#orbit{position:absolute' "$ROOT/app/src/main/assets/index.html"
-          grep -q 'z-index:3' "$ROOT/app/src/main/assets/index.html"
+          # BUILD 0014 launch composition: approved startup card only; comet/orbit deliberately removed.
+          ! grep -q 'id="orbit"' "$ROOT/app/src/main/assets/index.html"
+          ! grep -q 'gv-loading-comet-orbit' "$ROOT/app/src/main/assets/index.html"
           grep -q 'id="target" src="galaxy-viewer-startup.png"' "$ROOT/app/src/main/assets/index.html"
           grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           ! grep -R -E 'raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer|cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer|gear66me-ui\.github\.io/Galaxy_Viewer' "$ROOT/app/src/main/assets/index.html" "$ROOT/app/src/main/assets/rc-payload.js" "$ROOT/app/src/main/assets/viewer" --include='*.js' --include='*.html' --include='*.css' --include='*.svg'
