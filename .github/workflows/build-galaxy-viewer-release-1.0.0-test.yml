@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer RC-V1.0.0 APK
+name: Build Galaxy Viewer RC-V1.0.0.4 APK
 
 on:
   push:
