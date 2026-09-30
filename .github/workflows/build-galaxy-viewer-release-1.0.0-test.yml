@@ -335,7 +335,7 @@ jobs:
           #boot{display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Space Age",sans-serif;text-align:center}
           #bootArt{position:relative;width:min(78vw,420px);aspect-ratio:1/1;flex:0 0 auto}
           #bootIcon{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-          #cometOrbit{position:absolute;left:50%;top:50%;width:0;height:0;--gv-orbit-radius:50.5px;opacity:1;pointer-events:none;z-index:3;animation:gv-loading-comet-orbit 3s linear infinite}
+          #cometOrbit{position:absolute;left:50%;top:calc(50% + 2.5px);width:0;height:0;--gv-orbit-radius:60px;opacity:1;pointer-events:none;z-index:3;animation:gv-loading-comet-orbit 3s linear infinite}
           #cometOrbit.spin{opacity:1}
           #cometOrbit i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#62D8FF;transform:rotate(var(--gv-angle)) translateY(calc(-1 * var(--gv-orbit-radius))) scale(var(--gv-scale));opacity:var(--gv-opacity);box-shadow:0 0 6px rgba(98,216,255,.85)}
           #cometOrbit i:nth-child(1){--gv-angle:0deg;--gv-scale:1;--gv-opacity:1;background:#fff;box-shadow:0 0 5px 2px #fff,0 0 12px 4px #62D8FF}
@@ -356,7 +356,7 @@ jobs:
           <script>(async()=>{'use strict';
           const boot=document.getElementById('boot'),cometOrbit=document.getElementById('cometOrbit'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
           async function prepare(){const v=window.__GV_RC_PAYLOAD__;if(!v||typeof v.html!=='string'||!Array.isArray(v.js)||!v.js.length)throw Error('RC BUILD PAYLOAD MISSING');return v}
-          function installCatalogImagePolicy(){const nativeFetch=window.fetch.bind(window);const hubbleCatalogPattern=/gv-hubble-galaxies-full-\\d+\\.json(?:[?#]|$)/i;window.fetch=(input,init)=>{const raw=typeof input==='string'?input:String(input?.url||'');if(!hubbleCatalogPattern.test(raw))return nativeFetch(input,init);return (async()=>{const response=await nativeFetch(input,init);if(!response.ok)return response;const payload=await response.clone().json();if(Array.isArray(payload?.entries)){payload.entries=payload.entries.map(entry=>{if(!entry||typeof entry!=='object')return entry;const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];const screen=candidates.find(url=>/\\/archives\\/images\\/screen\\//i.test(url));return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry})}const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})})()}}
+          function installCatalogImagePolicy(){const nativeFetch=window.fetch.bind(window);const hubbleCatalogPattern=/gv-hubble-galaxies-full-\\d+\\.json(?:[?#]|$)/i;window.fetch=(input,init)=>{const raw=typeof input==='string'?input:String(input?.url||'');if(!hubbleCatalogPattern.test(raw))return nativeFetch(input,init);return (async()=>{const response=await nativeFetch(input,init);if(!response.ok)return response;const payload=await response.clone().json();if(Array.isArray(payload?.entries)){payload.entries=payload.entries.map(entry=>{if(!entry||typeof entry!=='object')return entry;const candidates=Array.isArray(entry.jpegCandidates)?entry.jpegCandidates.map(value=>String(value||'').trim()).filter(Boolean):[];const screen=candidates.find(url=>/\/archives\/images\/screen\//i.test(url));return screen?{...entry,selectedImageUrl:screen,githubImageUrl:''}:entry})}const headers=new Headers(response.headers);headers.delete('content-length');headers.delete('content-encoding');headers.set('content-type','application/json; charset=utf-8');return new Response(JSON.stringify(payload),{status:response.status,statusText:response.statusText,headers})})()}}
           function mountHtml(html){const t=document.createElement('template');t.innerHTML=html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');for(const a of [...n.attributes])x.setAttribute(a.name,a.value);x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}}
           function installSafeApertureStyle(){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle)}
           async function bootViewer(v){installCatalogImagePolicy();installSafeApertureStyle();mountHtml(v.html);for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}
@@ -411,6 +411,18 @@ jobs:
           })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
+          # Parse the generated launcher JavaScript, not just grep it. Fail the build on any WebView-breaking syntax error.
+          python3 - <<'PY'
+          import pathlib, re
+          html = pathlib.Path("/tmp/galaxy-viewer-generic-v2/app/src/main/assets/index.html").read_text()
+          blocks = re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>', html, re.I)
+          if not blocks:
+              raise SystemExit("NO INLINE LAUNCHER JAVASCRIPT FOUND")
+          pathlib.Path("/tmp/galaxy-viewer-launcher-inline.js").write_text("\\n".join(blocks))
+          print(f"Launcher JS extraction OK: inline_blocks={len(blocks)}")
+          PY
+          node --check /tmp/galaxy-viewer-launcher-inline.js
+
           test -s "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           test -s "$ROOT/app/src/main/assets/splash/index.html"
           test -s "$ROOT/app/src/main/assets/splash/Galaxy-Splash.png"
@@ -436,7 +448,8 @@ jobs:
           grep -q 'android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon' "$ROOT/app/src/main/res/values-v31/styles.xml"
           grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
-          grep -q -- '--gv-orbit-radius:50.5px' "$ROOT/app/src/main/assets/index.html"
+          grep -q -- 'top:calc(50% + 2.5px)' "$ROOT/app/src/main/assets/index.html"
+          grep -q -- '--gv-orbit-radius:60px' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await sleep(2000);' "$ROOT/app/src/main/assets/index.html"
           grep -q 'await trickleReveal(cover);' "$ROOT/app/src/main/assets/index.html"
