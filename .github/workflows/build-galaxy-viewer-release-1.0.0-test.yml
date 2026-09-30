@@ -189,6 +189,7 @@ jobs:
 
           import android.app.Activity;
           import android.content.ContentValues;
+          import android.content.Intent;
           import android.graphics.Color;
           import android.net.Uri;
           import android.os.Bundle;
@@ -202,6 +203,7 @@ jobs:
           import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
+          import android.webkit.WebResourceRequest;
           import android.widget.Toast;
           import org.json.JSONObject;
           import java.io.OutputStream;
@@ -267,7 +269,34 @@ jobs:
               s.setAllowUniversalAccessFromFileURLs(true);
               s.setMediaPlaybackRequiresUserGesture(false);
               s.setCacheMode(WebSettings.LOAD_NO_CACHE);
-              web.setWebViewClient(new WebViewClient());
+              web.setWebViewClient(new WebViewClient() {
+                private boolean launchGalaxyBrowser(Uri uri) {
+                  if (uri == null) return false;
+                  String scheme = uri.getScheme() == null ? "" : uri.getScheme();
+                  try {
+                    Uri handoff = uri;
+                    if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
+                      handoff = new Uri.Builder().scheme("galaxyviewerbrowser").authority("open")
+                        .appendQueryParameter("url", uri.toString()).build();
+                    } else if (!"galaxyviewerbrowser".equalsIgnoreCase(scheme)) {
+                      return false;
+                    }
+                    Intent intent = new Intent(Intent.ACTION_VIEW, handoff);
+                    intent.setClassName("com.gear66me.galaxyviewer.webbrowser",
+                      "com.gear66me.galaxyviewer.webbrowser.MainActivity");
+                    startActivity(intent);
+                  } catch (Throwable error) {
+                    Toast.makeText(MainActivity.this, "Could not open Galaxy Viewer Web Browser", Toast.LENGTH_LONG).show();
+                  }
+                  return true;
+                }
+                @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                  return launchGalaxyBrowser(request == null ? null : request.getUrl());
+                }
+                @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                  return launchGalaxyBrowser(url == null ? null : Uri.parse(url));
+                }
+              });
               web.setWebChromeClient(new WebChromeClient());
               web.addJavascriptInterface(new DownloadBridge(), "GalaxyViewerDownloads");
               setContentView(web);
@@ -315,20 +344,74 @@ jobs:
           #cometOrbit i:nth-child(8){--gv-angle:-105deg;--gv-scale:.24;--gv-opacity:.08}
           #bootMeta{margin-top:8px;font-size:13px;line-height:1.75;letter-spacing:1.5px;color:#9be5ff}
           @keyframes gv-loading-comet-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-          #splash{border:0;display:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
+          #splash{border:0;display:none}#reveal{position:fixed;inset:0;width:100%;height:100%;z-index:2147483647;background:#000;display:none;pointer-events:none}#error{display:none;padding:24px;color:#9BE5FF;white-space:pre-wrap;font:12px monospace}
           </style></head><body>
-          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
+          <div id="boot"><div id="bootArt"><img id="bootIcon" src="galaxy-viewer-startup.png" alt=""><span id="cometOrbit" class="spin" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div id="bootMeta">VERSION&nbsp;&nbsp;RC-V1.0.0<br>BUILD&nbsp;&nbsp;0001</div></div>
           <div id="error"></div>
           <script src="rc-payload.js"></script>
           <script>(async()=>{'use strict';
           const boot=document.getElementById('boot'),cometOrbit=document.getElementById('cometOrbit'),error=document.getElementById('error'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
           async function prepare(){const v=window.__GV_RC_PAYLOAD__;if(!v||typeof v.html!=='string'||!Array.isArray(v.js)||!v.js.length)throw Error('RC BUILD PAYLOAD MISSING');return v}
           async function mount(v){const safeStyle=document.createElement('style');safeStyle.textContent=':root{--gv-safe-top:4px;--gv-safe-left:4px;--gv-safe-right:4px;--gv-safe-bottom:4px}#gv-coordinate-overlay{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;left:max(var(--gv-safe-left),env(safe-area-inset-left))!important}.gv-hamburger-menu,.gv-hamburger-button,[data-gv-corner="top-right"]{top:max(var(--gv-safe-top),env(safe-area-inset-top))!important;right:max(var(--gv-safe-right),env(safe-area-inset-right))!important}';document.head.appendChild(safeStyle);const t=document.createElement('template');t.innerHTML=v.html;for(const n of [...t.content.childNodes]){if(n.nodeName==='SCRIPT'){const x=document.createElement('script');x.textContent=n.textContent;document.body.appendChild(x)}else document.body.appendChild(n)}for(const code of v.js){const x=document.createElement('script');x.textContent=code;document.body.appendChild(x)}const end=performance.now()+30000;while(performance.now()<end){if(document.querySelector('#aladin-cosmic-command-test canvas'))return;await sleep(100)}throw Error('RC VIEWER STARTUP TIMEOUT')}
-          const prepared=prepare();
-          await sleep(650); cometOrbit.classList.add('spin'); await sleep(2350);
+          async function finalReady(){
+            const end=performance.now()+30000;
+            while(performance.now()<end){
+              const root=document.getElementById('aladin-cosmic-command-test');
+              if(root?.querySelector('canvas')){
+                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+                return;
+              }
+              await sleep(50);
+            }
+            throw Error('RC FINAL READINESS TIMEOUT');
+          }
+          async function trickleReveal(){
+            const canvas=document.createElement('canvas');canvas.id='reveal';document.body.appendChild(canvas);
+            const dpr=Math.max(1,window.devicePixelRatio||1),w=innerWidth,h=innerHeight,cell=5;
+            canvas.width=Math.ceil(w*dpr);canvas.height=Math.ceil(h*dpr);canvas.style.display='block';
+            const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+            const cols=Math.ceil(w/cell),rows=Math.ceil(h/cell),cells=[];
+            for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)cells.push({x,y,k:y/rows+Math.random()*.42});
+            cells.sort((a,b)=>a.k-b.k);
+            const start=performance.now(),duration=2000,total=cells.length;
+            await new Promise(resolve=>{
+              const frame=now=>{
+                const p=Math.min(1,(now-start)/duration),target=Math.floor(total*p);
+                for(let i=trickleReveal.i||0;i<target;i++){const q=cells[i];ctx.clearRect(q.x*cell,q.y*cell,cell+.5,cell+.5)}
+                trickleReveal.i=target;
+                if(p<1)requestAnimationFrame(frame);else resolve();
+              };
+              requestAnimationFrame(frame);
+            });
+            canvas.remove();trickleReveal.i=0;
+          }
+          const prepared=await prepare();
+          // Established choreography: startup art + comet covers full viewer initialization.
+          await mount(prepared);
+          await finalReady();
           const splash=document.createElement('iframe');splash.id='splash';splash.src='splash/index.html?armed=1';document.body.appendChild(splash);
           let complete=false;
-          addEventListener('message',async e=>{if(e.source!==splash.contentWindow)return;if(e.data?.type==='galaxy-splash-ready'){splash.style.display='block';boot.style.display='none';splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*')}if(e.data?.type==='galaxy-splash-complete'&&!complete){complete=true;try{const v=await prepared;await mount(v);splash.remove()}catch(err){splash.remove();boot.style.display='none';error.style.display='block';error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err)}}});
+          addEventListener('message',async e=>{
+            if(e.source!==splash.contentWindow)return;
+            if(e.data?.type==='galaxy-splash-ready'){
+              splash.style.display='block';boot.style.display='none';
+              splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
+            }
+            if(e.data?.type==='galaxy-splash-complete'&&!complete){
+              complete=true;
+              try{
+                await finalReady();
+                const black=document.createElement('div');black.style.cssText='position:fixed;inset:0;background:#000;z-index:2147483646';document.body.appendChild(black);
+                splash.remove();
+                await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+                black.remove();
+                await trickleReveal();
+              }catch(err){
+                splash.remove();boot.style.display='none';error.style.display='block';
+                error.textContent='GALAXY VIEWER RC FAILED TO LOAD\\n\\n'+String(err?.stack||err);
+              }
+            }
+          });
           })().catch(err=>{document.getElementById('boot').style.display='none';const e=document.getElementById('error');e.style.display='block';e.textContent=String(err?.stack||err)});</script></body></html>
           EOF
 
@@ -356,6 +439,11 @@ jobs:
           grep -q 'VERSION&nbsp;&nbsp;RC-V1.0.0' "$ROOT/app/src/main/assets/index.html"
           grep -q 'BUILD&nbsp;&nbsp;0001' "$ROOT/app/src/main/assets/index.html"
           grep -q 'gv-loading-comet-orbit 3s linear infinite' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'await mount(prepared);' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'trickleReveal' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'cell=5' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'com.gear66me.galaxyviewer.webbrowser.MainActivity' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'galaxyviewerbrowser' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
       - name: Build Generic V2 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-generic-v2 :app:assembleDebug
