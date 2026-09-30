@@ -1,4 +1,5 @@
 name: Build Galaxy Viewer RC-V1.0.0.4 APK
+# RC .4 trigger: AndroidX corrected
 
 on:
   push:
