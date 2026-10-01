@@ -808,7 +808,7 @@ if(gvTripHud){
         userSelect:'none'
     });
     gvTripPointer.hidden=true;
-    gvTripHud.parentElement?.appendChild(gvTripPointer);
+    document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
 
 // ============================================================================
