@@ -61,9 +61,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
      ECO: GV200-001
      ======================================================================= -->
 <style>
-#gv-hamburger-host{position:absolute;inset:0;z-index:9000;pointer-events:none}
-#gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
-#gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
+#gv-hamburger-host{position:absolute;left:50%;top:0;width:390px;height:100%;transform:translateX(-50%);z-index:9000;pointer-events:none}
+#gv-coordinate-host{position:absolute;left:50%;top:12px;z-index:7210;width:290px;height:36px;transform:translateX(-145px);pointer-events:auto}
+#gv-target-host{position:absolute;left:50%;top:12px;z-index:7210;width:36px;height:36px;transform:translateX(147px);pointer-events:auto}
 #gv-navigation-host{position:absolute;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
 #gv-center-reticle img{display:block;width:32px;height:32px}
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0026';
+const GV200001_BUILD='0027';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
