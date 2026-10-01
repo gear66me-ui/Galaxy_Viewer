@@ -351,9 +351,9 @@ function gvFormatEarthDistance(destination){
     const v=Number(destination?.distanceMly??destination?.distance);
     if(!(v>0))return '';
     const unit=String(destination?.distanceUnit||destination?.distanceUnits||'').toUpperCase();
-    if(unit.includes('BLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} BLY TO EARTH`;
-    if(unit.includes('KLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} KLY TO EARTH`;
-    return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY TO EARTH`;
+    if(unit.includes('BLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} BLY`;
+    if(unit.includes('KLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} KLY`;
+    return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY`;
 }
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner'))return;
