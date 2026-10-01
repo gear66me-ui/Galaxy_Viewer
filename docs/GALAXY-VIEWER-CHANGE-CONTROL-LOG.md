@@ -60,6 +60,62 @@ The following existing ECOs predate the numbered-folder convention. Their conten
 ## GV-ECO-0007V
 - **Detailed ECO:** [Open GV-ECO-0007V](engineering-change-orders/GV-ECO-0007V.md)
 
+## AUTO-1894c41f4d33 — ECO-AAB15-SIGNING-20261001-01
+
+**Recorded:** 2026-09-30T21:04:27-05:00  
+**Repository:** `gear66me-ui/Galaxy_Viewer`  
+**Branch:** `beta`  
+**Source commit:** [`1894c41f4d33afb104901dbcb2db890fb1d6ba27`](https://github.com/gear66me-ui/Galaxy_Viewer/commit/1894c41f4d33afb104901dbcb2db890fb1d6ba27)  
+**Parent/baseline:** `8f53c307d60328e21ffcfa6b6791834cfb6bbfc0`  
+**Comparison:** [View exact diff](https://github.com/gear66me-ui/Galaxy_Viewer/compare/8f53c307d60328e21ffcfa6b6791834cfb6bbfc0...1894c41f4d33afb104901dbcb2db890fb1d6ba27)  
+**Author:** German Arciniegas  
+**Actor:** `gear66me-ui`  
+**ECO ID:** `ECO-AAB15-SIGNING-20261001-01`  
+**Requirements:** `REQ-001, REQ-002, REQ-003, REQ-004`  
+**Archive authorized:** `false`  
+**Declared changed paths:** `1`  
+**Actual changed paths:** `1`  
+**Unexpected changed paths:** `0`  
+**Forensic result:** **PASS**
+
+### Path reconciliation
+
+- Declared: `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+- Actual: `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+- Unexpected: `none`
+- Declared but absent: `none`
+
+### Complete changed-path accounting
+
+#### `.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml`
+
+- Git status: `M`
+- SHA-256 before: `be391c0f6fe0eb0c8b3c6779682f2c3b190c04a7c95f99f492f4832c78c038e3`
+- SHA-256 after: `72462b1ebe2c744274159c182d1a6faac39492780abd1c1a344ecb43334fc23b`
+- Bytes: `10397` -> `11179`
+- Lines: `210` -> `226`
+- Characters: `10397` -> `11179`
+- Inserted lines: `16`
+- Deleted lines: `0`
+- Inserted characters: `782`
+- Deleted characters: `0`
+- Changed diff blocks: `1`
+- Line arithmetic: **PASS**
+- Character arithmetic: **PASS**
+
+### Enforcement findings
+
+- **PASS:** No executable-policy violation detected.
+
+### Standing completion rule
+
+This automated PASS proves only the checks GitHub can perform.
+ChatGPT must still perform the requirement-to-hunk reconciliation and
+the applicable source/syntax/runtime/visual/live-site/device tests before
+calling the ECO complete.
+
+---
+
 ## AUTO-ac8f7b0ae8aa — GV-RC-10008-B0008-STARTUP-ASSET-FIX
 
 **Recorded:** 2026-09-30T11:20:05-05:00  
