@@ -757,6 +757,27 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
 });
+// GV028: keep the five-trip HUD high on short portrait phones, clear of the FOV readout.
+const gvTripHud=headsUpDisplay.root;
+if(gvTripHud){
+    gvTripHud.style.top='78px';
+    gvTripHud.style.overflow='visible';
+    const gvTripLabel=document.createElement('div');
+    gvTripLabel.textContent='TRIP';
+    Object.assign(gvTripLabel.style,{
+        position:'absolute',
+        left:'0',
+        top:'-14px',
+        width:'48px',
+        textAlign:'center',
+        color:'#DDF8FF',
+        font:'400 8px/1 "GV Space Age",Arial,sans-serif',
+        letterSpacing:'1px',
+        textShadow:'0 0 5px rgba(88,191,255,.65)',
+        pointerEvents:'none'
+    });
+    gvTripHud.prepend(gvTripLabel);
+}
 
 // ============================================================================
 // SECTION 033A — DIRECT ARRIVAL HD OVERLAY / VIGNETTE LAB
