@@ -40,7 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           ROOT=/tmp/galaxy-viewer-0023
-          GOLD=671da0b33dfb1dac160e3dfbe36a5b4eac1565b0
+          GOLD=3ed845899e4c00815a5f9727a631877f83dfbda4
           rm -rf "$ROOT"
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
           mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
