@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0016 — Earth bearing screen-space authority; registered JPEG centering retained
+# BUILD 0017 — Earth bearing single camera authority; registered JPEG centering retained
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0016';
+const GV200001_BUILD='0017';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -326,24 +326,18 @@ function gvInstallEarthBearingPointer(){
     reticle.appendChild(rotor);
 }
 let gvEarthPointerActive=false;
-let gvEarthPointerRa=HOME.ra,gvEarthPointerDec=HOME.dec;
 function gvSetEarthPointerPosition(ra,dec,activate=false){
-    const r=Number(ra),d=Number(dec);
-    if(Number.isFinite(r)&&Number.isFinite(d)){gvEarthPointerRa=r;gvEarthPointerDec=d}
+    // Compatibility hook for existing travel calls. Camera position is authoritative;
+    // Earth bearing no longer stores a second RA/Dec copy that can drift across trips.
     if(activate)gvEarthPointerActive=true;
 }
 function gvEarthScreenBearing(){
     try{
         if(!gvEarthPointerActive)return null;
-        let ra=gvEarthPointerRa,dec=gvEarthPointerDec;
-        try{
-            const p=aladin.getRaDec?.(),r=Number(Array.isArray(p)?p[0]:p?.ra),d=Number(Array.isArray(p)?p[1]:p?.dec);
-            if(Number.isFinite(r)&&Number.isFinite(d)){ra=r;dec=d}
-        }catch(_){}
+        const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
+        if(!Number.isFinite(ra)||!Number.isFinite(dec))return null;
         const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
-        // Great-circle bearing is measured clockwise from celestial north.
-        // Convert that celestial bearing into screen space exactly once using
-        // the same authoritative camera rotation that drives the compass.
+        // Single authority: live Aladin camera center plus authoritative camera rotation.
         const celestialBearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
         const screenBearing=celestialBearing-gvAuthoritativeRotation;
         return ((screenBearing%360)+360)%360;
