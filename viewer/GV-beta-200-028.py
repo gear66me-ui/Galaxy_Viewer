@@ -807,7 +807,7 @@ if(gvTripHud){
         pointerEvents:'none',
         userSelect:'none'
     });
-    gvTripPointer.hidden=true;
+    gvTripPointer.style.visibility='hidden';
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
 
@@ -1345,7 +1345,7 @@ async function navigateRandom(){
     navigationInFlight=true;
     {
         const p=document.getElementById('gv-trip-pointer');
-        if(p){p.hidden=false;p.classList.add('gv-traveling')}
+        if(p){p.style.visibility='visible';p.classList.add('gv-traveling')}
     }
     galaxyNavigator.setBusy(true);
     galaxyNavigator.setTraveling?.(true);
@@ -1366,7 +1366,7 @@ async function navigateRandom(){
         navigationInFlight=false;
         {
             const p=document.getElementById('gv-trip-pointer');
-            if(p){p.classList.remove('gv-traveling');p.hidden=true}
+            if(p){p.classList.remove('gv-traveling');p.style.visibility='hidden'}
         }
         galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
