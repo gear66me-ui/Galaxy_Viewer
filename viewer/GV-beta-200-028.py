@@ -319,9 +319,9 @@ function gvInstallEarthBearingPointer(){
     const rotor=document.createElement('div');
     rotor.id='gv-earth-bearing-rotor';
     rotor.setAttribute('aria-hidden','true');
-    Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'2'});
+    Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
     const tick=document.createElement('i');
-    Object.assign(tick.style,{position:'absolute',left:'50%',top:'-7px',width:'0',height:'0',transform:'translateX(-50%)',borderLeft:'5px solid transparent',borderRight:'5px solid transparent',borderBottom:'9px solid #FFD84A',filter:'drop-shadow(0 0 4px rgba(255,216,74,.9))'});
+    Object.assign(tick.style,{position:'absolute',left:'50%',top:'-12px',width:'0',height:'0',transform:'translateX(-50%)',borderLeft:'7px solid transparent',borderRight:'7px solid transparent',borderBottom:'12px solid #FFD84A',filter:'drop-shadow(0 0 3px #000) drop-shadow(0 0 6px rgba(255,216,74,1))'});
     rotor.appendChild(tick);
     reticle.appendChild(rotor);
 }
@@ -1134,32 +1134,26 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
-        const translateSeconds=3.0,rotationSeconds=1.25,zoomSeconds=6.0,durationSeconds=translateSeconds+rotationSeconds+zoomSeconds;
+        const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
+        const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
         const translateStarted=performance.now();let lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
                 const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
                 doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
                 if(sample!==lastSample){
-                    const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u);
+                    const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
                     gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
+                    gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);
                     lastSample=sample;
                 }
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        if(registeredPromise){
-            const registered=await registeredPromise,center=registered?.imageCenter;
-            ra1=Number(center?.[0]);dec1=Number(center?.[1]);finalFov=Number(registered?.finalFov);targetRotation=Number(registered?.rotation);
-            if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV FIRST TRIP REGISTERED STATE INVALID');
-            gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
-            let rotationStart=0;try{rotationStart=Number(aladin.getRotation?.()??aladin.view?.rotation??startRotation)||startRotation}catch(_){rotationStart=startRotation}
-            const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-rotationStart),rotationStarted=performance.now();lastSample=-1;
-            await new Promise((resolve,reject)=>{const frame=now=>{try{const elapsed=Math.min(rotationSeconds*1000,now-rotationStarted),u=gvFlightNavigationSmootherstep(elapsed/(rotationSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);if(sample!==lastSample){const rotation=rotationStart+rotationDelta*u;gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);lastSample=sample}if(elapsed<rotationSeconds*1000){requestAnimationFrame(frame);return}resolve()}catch(error){reject(error)}};requestAnimationFrame(frame)});
-            gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
-            try{await onZoomInStart?.(registered)}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
-        }else{try{await onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}
+        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
+        gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+        try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
@@ -1169,8 +1163,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
-        gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+        gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);
         doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
@@ -1243,7 +1236,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:installWhenReady});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
