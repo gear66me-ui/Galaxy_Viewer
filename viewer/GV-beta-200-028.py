@@ -321,7 +321,7 @@ function gvInstallEarthBearingPointer(){
     rotor.setAttribute('aria-hidden','true');
     Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
     const tick=document.createElement('i');
-    Object.assign(tick.style,{position:'absolute',left:'50%',top:'0px',width:'0',height:'0',transform:'translate(-50%,-2px)',borderLeft:'7px solid transparent',borderRight:'7px solid transparent',borderTop:'12px solid #FFD84A',filter:'drop-shadow(0 0 3px #000) drop-shadow(0 0 6px rgba(255,216,74,1))'});
+    Object.assign(tick.style,{position:'absolute',left:'50%',top:'-1px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'5px solid transparent',borderRight:'5px solid transparent',borderBottom:'9px solid #FFD84A',filter:'drop-shadow(0 0 2px #000) drop-shadow(0 0 4px rgba(255,216,74,.95))'});
     rotor.appendChild(tick);
     reticle.appendChild(rotor);
 }
