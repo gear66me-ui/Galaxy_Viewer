@@ -13,7 +13,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <div id="curtain"><div id="identity"><div id="halo"><img id="target" src="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/startup/galaxy-viewer-startup.png"></div><div id="ver">VERSION</div><div id="bld">BUILD</div></div></div>
 <iframe id="splash"></iframe><div id="error"></div>
 <script>
-(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/434b15b7bb0dffbbf8462a8699946d94eb11ac3d/viewer/';
+(async()=>{const BASE='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/b4719e98948bca3dc32648769d9a4c4142a62c68/viewer/';
 const read=async u=>{
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
  try{const r=await fetch(u,{cache:'no-store',signal:controller.signal});if(!r.ok)throw Error('HTTP '+r.status+' '+u);return await r.text()}
