@@ -35,7 +35,7 @@ jobs:
       - name: Install launcher tools
         run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
-      - name: Generate 0049 hosted shell
+      - name: Generate 0055 hosted shell with native prerender
         shell: bash
         run: |
           set -euo pipefail
@@ -77,7 +77,7 @@ jobs:
           dependencies { implementation 'androidx.webkit:webkit:1.14.0' }
           EOF
 
-          # Android launcher artwork only. Galaxy Viewer itself stays hosted, exactly like 0049.
+          # Android launcher artwork only. Galaxy Viewer itself stays hosted; native shell is Browser 0055.
           test -s viewer/artwork/app_icon_4.png
           cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
