@@ -786,11 +786,11 @@ if(gvTripHud){
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
 
-    // GV028 active-trip cycle: compositor-only horizontal triple chevron.
-    // Animation changes transform/opacity only; no JS timer, RAF, canvas, or layout mutation.
+    // GV028 active-trip cycle: three stationary chevrons, 333 ms sequential pulse.
+    // No translation/motion: only opacity changes, matching the established website-icon cadence.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='@keyframes gv028-trip-cycle{0%{transform:translateX(-5px);opacity:.18}35%{opacity:1}72%{transform:translateX(4px);opacity:1}100%{transform:translateX(7px);opacity:0}}#gv-trip-pointer.gv-traveling{visibility:visible;animation:gv028-trip-cycle .9s ease-out infinite;will-change:transform,opacity}';
+    gvTripPointerStyle.textContent='@keyframes gv028-trip-pulse-1{0%,32.9%{opacity:1}33%,99.9%{opacity:.18}}@keyframes gv028-trip-pulse-2{0%,32.9%{opacity:.18}33%,65.9%{opacity:1}66%,99.9%{opacity:.18}}@keyframes gv028-trip-pulse-3{0%,65.9%{opacity:.18}66%,99.9%{opacity:1}}#gv-trip-pointer.gv-traveling span:nth-child(1){animation:gv028-trip-pulse-1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling span:nth-child(2){animation:gv028-trip-pulse-2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling span:nth-child(3){animation:gv028-trip-pulse-3 999ms steps(1,end) infinite}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
@@ -800,15 +800,14 @@ if(gvTripHud){
         right:'60px',
         top:'82px',
         zIndex:'7212',
-        display:'flex',
+        display:'none',
         alignItems:'center',
-        gap:'0px',
-        width:'18px',
+        gap:'1px',
+        width:'20px',
         height:'12px',
         visibility:'hidden',
         pointerEvents:'none',
-        userSelect:'none',
-        filter:'drop-shadow(0 0 3px rgba(120,255,171,.95))'
+        userSelect:'none'
     });
     for(let i=0;i<3;i++){
         const tooth=document.createElement('span');
@@ -820,7 +819,8 @@ if(gvTripHud){
             borderTop:'2px solid #78FFAB',
             borderRight:'2px solid #78FFAB',
             transform:'rotate(45deg)',
-            opacity:String(.45+i*.275)
+            opacity:'.18',
+            filter:'drop-shadow(0 0 2px rgba(120,255,171,.9))'
         });
         gvTripPointer.appendChild(tooth);
     }
@@ -833,13 +833,6 @@ function gvSetTripCycle(active){
     p.style.visibility=on?'visible':'hidden';
     p.style.display=on?'flex':'none';
     p.classList.toggle('gv-traveling',on);
-    if(on){
-        p.style.animation='none';
-        void p.offsetWidth;
-        p.style.animation='gv028-trip-cycle .9s ease-out infinite';
-    }else{
-        p.style.animation='none';
-    }
 }
 
 // ============================================================================
