@@ -1,0 +1,224 @@
+name: Build Galaxy Viewer - D Development APK
+# BUILD DEV 0001: 0049 hosted architecture recovery as Android App Bundle. No bundled viewer runtime.
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-dev.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Install launcher tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+
+      - name: Generate 0049 hosted shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=/tmp/galaxy-viewer-dev
+          GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev"
+          mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
+
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewer'
+          include ':app'
+          EOF
+
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
+
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.gear66me.galaxyviewer.dev'
+            compileSdk 36
+            defaultConfig {
+              applicationId 'com.gear66me.galaxyviewer.dev'
+              minSdk 29
+              targetSdk 36
+              versionCode 1
+              versionName 'DEV-1.0.0.1'
+            }
+          }
+          dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
+          EOF
+
+          # Android launcher artwork only. Galaxy Viewer itself stays hosted, exactly like 0049.
+          test -s viewer/artwork/app_icon_4.png
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
+          cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <solid android:color="#00000000"/>
+            <size android:width="1dp" android:height="1dp"/>
+          </shape>
+          XML
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_background.xml" <<'EOF'
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
+          EOF
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_foreground.xml" <<'EOF'
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:gravity="center" android:width="66dp" android:height="66dp"><bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/></item></layer-list>
+          EOF
+          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/gv_launcher_background"/><foreground android:drawable="@drawable/gv_launcher_foreground"/></adaptive-icon>
+          EOF
+          cp "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+          for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            density="${spec%%:*}"; px="${spec##*:}"; mkdir -p "$ROOT/app/src/main/res/mipmap-${density}"
+            convert viewer/artwork/app_icon_4.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            cp "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
+          done
+
+          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+          cat > "$ROOT/app/src/main/res/values-v31/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:windowSplashScreenBackground">#000000</item>
+              <item name="android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon</item>
+              <item name="android:windowSplashScreenAnimationDuration">0</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application android:allowBackup="false" android:hardwareAccelerated="true"
+              android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
+              android:label="Galaxy Viewer - D" android:theme="@style/GalaxyViewerTheme"
+              android:usesCleartextTraffic="false">
+              <activity android:name=".MainActivity"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:exported="true" android:screenOrientation="portrait">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          # Exact known-good 0049 browser/viewer Activity. Only Java package namespace changes.
+          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/dev/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
+          sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer.dev;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
+
+          # Nanoscopic gates: prove this remains the hosted 0049 architecture.
+          MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
+          grep -q 'GalaxyViewerWebBrowser/0049' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/apk-confirmed-splash.html?dev=' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
+          grep -q 'viewerWeb=viewer()' "$MAIN"
+          grep -q 'openProvider' "$MAIN"
+          grep -q 'returnToViewer' "$MAIN"
+          grep -q 'onCreateWindow' "$MAIN"
+          grep -q 'WebViewAssetLoader' "$MAIN"
+          test ! -e "$ROOT/app/src/main/assets/index.html"
+          test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
+
+      - name: Build DEV APK 0001
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-dev :app:assembleRelease
+
+      - name: Sign DEV APK 0001
+        shell: bash
+        env:
+          GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
+          GV_UPLOAD_STORE_PASSWORD: ${{ secrets.GALAXY_VIEWER_UPLOAD_PASSWORD }}
+        run: |
+          set -euo pipefail
+          AAB=/tmp/galaxy-viewer-dev/app/build/outputs/bundle/release/app-release.aab
+          KEYSTORE=/tmp/galaxy-viewer-upload.jks
+          test -n "$GV_UPLOAD_KEYSTORE_BASE64"
+          test -n "$GV_UPLOAD_STORE_PASSWORD"
+          printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          test -s "$AAB"
+          jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
+
+          APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
+          APK=Galaxy-Viewer-D-DEV-0001.apk
+          test -s "$APK_UNSIGNED"
+          "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
+          test -s "$APK"
+
+      - name: Verify DEV APK 0001
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=Galaxy-Viewer-D-DEV-0001.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
+          sha256sum "$APK" | tee "$APK.sha256"
+
+          AAB=/tmp/galaxy-viewer-dev/app/build/outputs/bundle/release/app-release.aab
+          OUT=Galaxy-Viewer-D-DEV-0001.aab
+          test -s "$AAB"
+          cp "$AAB" "$OUT"
+          unzip -t "$OUT" | tee aab-rc-zip-test.txt
+          grep -q 'No errors detected' aab-rc-zip-test.txt
+          unzip -l "$OUT" | tee aab-rc-contents.txt
+          grep -q 'base/manifest/AndroidManifest.xml' aab-rc-contents.txt
+          grep -q 'base/dex/classes.dex' aab-rc-contents.txt
+          grep -q 'base/res/' aab-rc-contents.txt
+          jarsigner -verify -verbose -certs "$OUT" | tee aab-rc-signature.txt
+          grep -q 'jar verified' aab-rc-signature.txt
+          sha256sum "$OUT" | tee "$OUT.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-D-DEV-0001
+          path: |
+            Galaxy-Viewer-D-DEV-0001.apk
+            Galaxy-Viewer-D-DEV-0001.apk.sha256
+          retention-days: 30
