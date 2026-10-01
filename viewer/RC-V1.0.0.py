@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0004';
+const GV200001_BUILD='0005';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -269,18 +269,9 @@ function createCenterReticle(root){
     return reticle;
 }
 
+let gvAuthoritativeRotation=HOME.rotation;
 function readCelestialNorthBearing(aladin,root){
-    try{
-        const publicRotation=Number(aladin.getRotation?.());
-        const viewRotation=Number(aladin.view?.rotation);
-        const liveRotation=Number.isFinite(viewRotation)?viewRotation:publicRotation;
-        if(Number.isFinite(liveRotation)){
-            return ((-liveRotation%360)+360)%360;
-        }
-    }catch(error){
-        console.warn('GALAXY VIEWER NORTH ROTATION WARNING',error);
-    }
-    return 0;
+    return ((-gvAuthoritativeRotation%360)+360)%360;
 }
 
 const compassRoot=document.getElementById('aladin-cosmic-command-test');
@@ -494,7 +485,7 @@ function gvDoeBeginRun(meta){
     const run={schema:'gv-flight-doe-0001',build:GV200001_BUILD,rateHz:gvDoeRate,startedAt:gvDoeNow(),meta:{...meta},browserRaf:[],aladinRedraw:[],commands:[]};
     gvDoeActiveRun=run;return run;
 }
-function gvDoeCommand(type,args){if(gvDoeActiveRun)gvDoeActiveRun.commands.push({t:gvDoeNow()-gvDoeActiveRun.startedAt,type,args})}
+function gvDoeCommand(type,args){if(type==='setRotation'){const rotation=Number(args?.[0]);if(Number.isFinite(rotation))gvAuthoritativeRotation=rotation}if(gvDoeActiveRun)gvDoeActiveRun.commands.push({t:gvDoeNow()-gvDoeActiveRun.startedAt,type,args})}
 function gvDoeFinishRun(run){
     if(gvDoeActiveRun===run)gvDoeActiveRun=null;
     run.endedAt=gvDoeNow();run.durationMs=run.endedAt-run.startedAt;
