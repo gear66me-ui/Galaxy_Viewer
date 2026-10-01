@@ -1316,18 +1316,10 @@ function validateDestination(destination){
 
 
 function gvPrewarmProviderWebsite(destination){
-    const url=String(destination?.sourceUrl||'').trim();
-    if(!/^https:\/\//i.test(url))return;
-    try{
-        const prewarm='galaxyviewerbrowser://open?mode=prewarm&url='+encodeURIComponent(url);
-        const frame=document.createElement('iframe');
-        frame.setAttribute('aria-hidden','true');
-        frame.style.cssText='position:fixed;width:1px;height:1px;left:-9999px;top:-9999px;border:0;opacity:0;pointer-events:none';
-        frame.src=prewarm;
-        document.body.appendChild(frame);
-        setTimeout(()=>frame.remove(),1500);
-        console.info('GV PROVIDER PREWARM REQUESTED',{url});
-    }catch(error){console.warn('GV PROVIDER PREWARM FAILED',error)}
+    // EMERGENCY ROLLBACK: never navigate to an external app during arrival.
+    // Browser prewarming must not use a custom-scheme iframe because Android
+    // treats that as an app launch/navigation.
+    return;
 }
 
 let gvFirstDestinationPreload=null;
