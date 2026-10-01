@@ -42,7 +42,7 @@ jobs:
           ROOT=/tmp/galaxy-viewer-dev
           GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
           rm -rf "$ROOT"
-          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab"
           mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
 
           cat > "$ROOT/settings.gradle" <<'EOF'
@@ -64,10 +64,10 @@ jobs:
           cat > "$ROOT/app/build.gradle" <<'EOF'
           plugins { id 'com.android.application' }
           android {
-            namespace 'com.gear66me.galaxyviewer.dev'
+            namespace 'com.gear66me.galaxyviewer.lab'
             compileSdk 36
             defaultConfig {
-              applicationId 'com.gear66me.galaxyviewer.dev'
+              applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
               versionCode 1
@@ -135,7 +135,7 @@ jobs:
             <uses-permission android:name="android.permission.INTERNET" />
             <application android:allowBackup="false" android:hardwareAccelerated="true"
               android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
-              android:label="Galaxy Viewer - D" android:theme="@style/GalaxyViewerTheme"
+              android:label="Galaxy Viewer LAB" android:theme="@style/GalaxyViewerTheme"
               android:usesCleartextTraffic="false">
               <activity android:name=".MainActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize"
@@ -150,11 +150,11 @@ jobs:
           EOF
 
           # Exact known-good 0049 browser/viewer Activity. Only Java package namespace changes.
-          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
-          sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer.dev;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
+          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
+          sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer.lab;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
           # Nanoscopic gates: prove this remains the hosted 0049 architecture.
-          MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
+          MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
           grep -q 'GalaxyViewerWebBrowser/0049' "$MAIN"
           # DEV launch URL is patched below; validate the historical shell before patching.
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
@@ -185,7 +185,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-D-DEV-0001.apk
+          APK=Galaxy-Viewer-LAB-0002.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -195,7 +195,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-D-DEV-0001.apk
+          APK=Galaxy-Viewer-LAB-0002.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -203,8 +203,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-D-DEV-0001
+          name: Galaxy-Viewer-LAB-0002
           path: |
-            Galaxy-Viewer-D-DEV-0001.apk
-            Galaxy-Viewer-D-DEV-0001.apk.sha256
+            Galaxy-Viewer-LAB-0002.apk
+            Galaxy-Viewer-LAB-0002.apk.sha256
           retention-days: 30
