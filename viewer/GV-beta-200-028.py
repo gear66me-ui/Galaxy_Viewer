@@ -786,32 +786,43 @@ if(gvTripHud){
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
 
-    // GV028 active-trip cycle: exact animation sequence copied from
-    // destination-presentation 0017 .gvdp-web-vector / gvdpWebVector.
-    // Geometry only is rotated horizontal and reduced for the TRIP HUD.
+    // GV028 trip cue: stationary three-chevron chase.
+    // Exact 333 ms phases: [1,0,0] -> [.66,1,0] -> [.33,.66,1] -> repeat.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='#gv-trip-pointer .gv028-trip-vector{position:absolute;top:50%;width:7px;height:7px;border-right:2px solid #DDF8FF;border-bottom:2px solid #DDF8FF;transform:translateY(-50%) rotate(-45deg);opacity:.12;filter:drop-shadow(0 0 3px #58BFFF);animation:gv028TripWebVector 1.65s ease-in-out infinite}#gv-trip-pointer .gv028-trip-vector:nth-child(1){left:0;animation-delay:0s}#gv-trip-pointer .gv028-trip-vector:nth-child(2){left:6px;animation-delay:.22s}#gv-trip-pointer .gv028-trip-vector:nth-child(3){left:12px;animation-delay:.44s}@keyframes gv028TripWebVector{0%,15%,100%{opacity:.10;filter:drop-shadow(0 0 1px rgba(88,191,255,.22))}28%{opacity:1;filter:drop-shadow(0 0 3px #DDF8FF) drop-shadow(0 0 7px #58BFFF)}48%{opacity:.42;filter:drop-shadow(0 0 4px #58BFFF)}68%{opacity:.10}}';
+    gvTripPointerStyle.textContent='#gv-trip-pointer .gv-trip-chevron{opacity:0}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(1){animation:gv028TripChevron1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(2){animation:gv028TripChevron2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(3){animation:gv028TripChevron3 999ms steps(1,end) infinite}@keyframes gv028TripChevron1{0%,33.32%{opacity:1}33.33%,66.65%{opacity:.66}66.66%,100%{opacity:.33}}@keyframes gv028TripChevron2{0%,33.32%{opacity:0}33.33%,66.65%{opacity:1}66.66%,100%{opacity:.66}}@keyframes gv028TripChevron3{0%,66.65%{opacity:0}66.66%,100%{opacity:1}}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
     gvTripPointer.setAttribute('aria-hidden','true');
     Object.assign(gvTripPointer.style,{
         position:'absolute',
-        right:'60px',
+        right:'61px',
         top:'82px',
         zIndex:'7212',
         display:'none',
-        width:'21px',
+        alignItems:'center',
+        gap:'1px',
+        width:'17px',
         height:'12px',
         visibility:'hidden',
         pointerEvents:'none',
         userSelect:'none'
     });
     for(let i=0;i<3;i++){
-        const vector=document.createElement('i');
-        vector.className='gv028-trip-vector';
-        gvTripPointer.appendChild(vector);
+        const tooth=document.createElement('span');
+        tooth.className='gv-trip-chevron';
+        Object.assign(tooth.style,{
+            display:'block',
+            width:'5px',
+            height:'5px',
+            boxSizing:'border-box',
+            borderTop:'2px solid #78FFAB',
+            borderRight:'2px solid #78FFAB',
+            transform:'rotate(45deg)',
+            filter:'drop-shadow(0 0 2px rgba(120,255,171,.90))'
+        });
+        gvTripPointer.appendChild(tooth);
     }
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
