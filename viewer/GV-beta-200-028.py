@@ -764,7 +764,7 @@ if(gvTripHud){
     // The HUD module stylesheet owns top:128px. Override that class rule explicitly.
     const gvTripGeometry=document.createElement('style');
     gvTripGeometry.id='gv028-trip-geometry';
-    gvTripGeometry.textContent='.gv-heads-up-display{top:78px!important}.gv-hud-row{min-height:18px!important;padding:1px 2px!important}';
+    gvTripGeometry.textContent='.gv-heads-up-display{top:78px!important}';
     document.head.appendChild(gvTripGeometry);
     const gvTripLabel=document.createElement('div');
     gvTripLabel.id='gv-trip-label';
