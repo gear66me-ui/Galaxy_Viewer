@@ -52,7 +52,7 @@ display(HTML("""
      ======================================================================= -->
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-#aladin-cosmic-command-test{position:relative;width:100%;height:100vh;overflow:hidden;background:#000}
+#aladin-cosmic-command-test{position:relative;width:100%;height:100dvh;max-height:100%;overflow:hidden;background:#000;padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
 #aladin-cosmic-command-test .aladin-logo-container,#aladin-cosmic-command-test .aladin-logo{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
 
@@ -64,7 +64,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-hamburger-host{position:absolute;inset:0;z-index:9000;pointer-events:none}
 #gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
-#gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
+#gv-navigation-host{position:absolute;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
 #gv-center-reticle img{display:block;width:32px;height:32px}
 </style>
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0007';
+const GV200001_BUILD='0008';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -311,6 +311,82 @@ window.addEventListener(
 );
 
 // ============================================================================
+// SECTION 041B — EARTH BEARING POINTER / ARRIVAL DISTANCE
+// ECO: GV200-028 BUILD 0001
+// ============================================================================
+function gvInstallEarthBearingPointer(){
+    if(document.getElementById('gv-earth-bearing-rotor'))return;
+    const rotor=document.createElement('div');
+    rotor.id='gv-earth-bearing-rotor';
+    rotor.setAttribute('aria-hidden','true');
+    Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
+    const tick=document.createElement('i');
+    Object.assign(tick.style,{position:'absolute',left:'50%',top:'15.47px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'5.625px solid transparent',borderRight:'5.625px solid transparent',borderBottom:'9.954px solid #FFD84A',filter:'drop-shadow(0 0 1px #000) drop-shadow(0 0 2px rgba(255,216,74,.95))',zIndex:'20'});
+    rotor.appendChild(tick);
+    reticle.appendChild(rotor);
+}
+let gvEarthPointerActive=false;
+let gvEarthPointerRa=HOME.ra,gvEarthPointerDec=HOME.dec;
+function gvSetEarthPointerPosition(ra,dec,activate=false){
+    const r=Number(ra),d=Number(dec);
+    if(Number.isFinite(r)&&Number.isFinite(d)){gvEarthPointerRa=r;gvEarthPointerDec=d}
+    if(activate)gvEarthPointerActive=true;
+}
+function gvEarthScreenBearing(){
+    try{
+        if(!gvEarthPointerActive)return null;
+        let ra=gvEarthPointerRa,dec=gvEarthPointerDec;
+        try{
+            const p=aladin.getRaDec?.(),r=Number(Array.isArray(p)?p[0]:p?.ra),d=Number(Array.isArray(p)?p[1]:p?.dec);
+            if(Number.isFinite(r)&&Number.isFinite(d)){ra=r;dec=d;gvEarthPointerRa=r;gvEarthPointerDec=d}
+        }catch(_){}
+        const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
+        // Initial great-circle bearing from the current sky position back to HOME.
+        // atan2 gives bearing clockwise from celestial north. The compass image itself
+        // is already rotated by -cameraRotation, so the Earth rotor needs only this
+        // relative bearing; adding north rotation here double-rotated it.
+        const bearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
+        return ((bearing%360)+360)%360;
+    }catch(_){return null}
+}
+function gvUpdateEarthBearingPointer(){
+    const rotor=document.getElementById('gv-earth-bearing-rotor');if(!rotor)return;
+    const a=gvEarthScreenBearing();
+    rotor.style.display=Number.isFinite(a)?'block':'none';
+    rotor.style.opacity=Number.isFinite(a)?'1':'0';
+    if(Number.isFinite(a))rotor.style.transform=`rotate(${a}deg)`;
+}
+gvInstallEarthBearingPointer();
+const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,40);
+window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
+
+function gvFormatEarthDistance(destination){
+    // Runtime catalog distance is Earth-relative MLY, matching destinationPresentation.distance().
+    const v=Number(destination?.distanceMly??destination?.distance);
+    if(!(v>0))return '';
+    if(v>=1000)return `${(v/1000).toLocaleString('en-US',{maximumFractionDigits:2})} BLY`;
+    if(v>=1)return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY`;
+    return `${(v*1000).toLocaleString('en-US',{maximumFractionDigits:v<0.01?2:1})} KLY`;
+}
+function gvInstallEarthDistanceBanner(){
+    if(document.getElementById('gv-earth-distance-banner'))return;
+    const style=document.createElement('style');style.textContent=`
+#gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:max-content;max-width:calc(100vw - 24px);min-width:0;min-height:0;padding:3px 5px;border:1px solid #58BFFF;border-radius:5px;background:transparent;box-shadow:0 0 5px rgba(88,191,255,.48);font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
+#gv-earth-distance-banner .gv-earth-distance-icon{display:inline-block;font:11px/1 system-ui,sans-serif;letter-spacing:0;filter:drop-shadow(0 0 2px rgba(88,191,255,.55))}
+#gv-earth-distance-banner.gv-visible{opacity:1;visibility:visible}
+#gv-earth-distance-banner .gv-earth-distance-tick{display:inline-block;margin-left:7px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid #FFD84A;filter:drop-shadow(0 0 4px rgba(255,216,74,.9));vertical-align:-1px}`;document.head.appendChild(style);
+    const b=document.createElement('div');b.id='gv-earth-distance-banner';document.body.appendChild(b);
+}
+function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible')}
+function gvShowEarthDistance(destination){
+    gvInstallEarthDistanceBanner();const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);if(!b||!text)return;
+    b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
+    const card=document.querySelector('.gvdp-card');const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`};place();requestAnimationFrame(place);
+    b.classList.add('gv-visible');
+}
+gvInstallEarthDistanceBanner();
+
+// ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
 // ECO: GV200-001
 // ============================================================================
@@ -443,6 +519,7 @@ const galaxyNavigator=window.GalaxyNavigator.mount(earlyNavigationHost,{
 // References acquired at immediate Navigator mount.
 galaxyNavigator.setEnabled({back:false,random:false,forward:false});
 galaxyNavigator.setBusy(true);
+galaxyNavigator.setStart?.(true);
 
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
@@ -681,6 +758,112 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
 });
+// GV028: move the existing five-row HUD as one untouched unit and add TRIP as a sibling.
+// The HUD's render() owns its children, so the label must never be inserted inside the HUD.
+const gvTripHud=headsUpDisplay.root;
+if(gvTripHud){
+    // The HUD module stylesheet owns top:128px. Override that class rule explicitly.
+    const gvTripGeometry=document.createElement('style');
+    gvTripGeometry.id='gv028-trip-geometry';
+    gvTripGeometry.textContent='.gv-heads-up-display{top:78px!important}.gv-hud-row{min-height:16px!important}';
+    document.head.appendChild(gvTripGeometry);
+    const gvTripLabel=document.createElement('div');
+    gvTripLabel.id='gv-trip-label';
+    gvTripLabel.textContent='TRIP';
+    Object.assign(gvTripLabel.style,{
+        position:'absolute',
+        right:'8px',
+        top:'65px',
+        zIndex:'7211',
+        width:'48px',
+        textAlign:'center',
+        color:'#DDF8FF',
+        font:'400 8px/8px "GV Space Age",Arial,sans-serif',
+        letterSpacing:'1px',
+        textShadow:'0 0 5px rgba(88,191,255,.65)',
+        pointerEvents:'none',
+        userSelect:'none'
+    });
+    gvTripHud.parentElement?.appendChild(gvTripLabel);
+
+    // GV028 trip cue — copied from the established HD/archive chevron visual language.
+    // Original colors/glow/stroke proportions preserved; only uniformly scaled and laid out horizontally.
+    const gvTripPointerStyle=document.createElement('style');
+    gvTripPointerStyle.id='gv028-trip-pointer-style';
+    gvTripPointerStyle.textContent='@keyframes gv028HdChevron1{0%,33.32%{opacity:1}33.33%,66.65%{opacity:.66}66.66%,100%{opacity:.33}}@keyframes gv028HdChevron2{0%,33.32%{opacity:0}33.33%,66.65%{opacity:1}66.66%,100%{opacity:.66}}@keyframes gv028HdChevron3{0%,66.65%{opacity:0}66.66%,100%{opacity:1}}#gv-trip-pointer .gv-trip-chevron{opacity:0}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(1){animation:gv028HdChevron1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(2){animation:gv028HdChevron2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(3){animation:gv028HdChevron3 999ms steps(1,end) infinite}';
+    document.head.appendChild(gvTripPointerStyle);
+    const gvTripPointer=document.createElement('div');
+    gvTripPointer.id='gv-trip-pointer';
+    gvTripPointer.setAttribute('aria-hidden','true');
+    Object.assign(gvTripPointer.style,{
+        position:'absolute',
+        right:'61px',
+        top:'81px',
+        zIndex:'7212',
+        display:'none',
+        alignItems:'center',
+        gap:'0px',
+        width:'18px',
+        height:'12px',
+        visibility:'hidden',
+        pointerEvents:'none',
+        userSelect:'none'
+    });
+    for(let i=0;i<3;i++){
+        const tooth=document.createElement('span');
+        tooth.className='gv-trip-chevron';
+        Object.assign(tooth.style,{
+            position:'relative',
+            display:'block',
+            width:'6px',
+            height:'6px',
+            boxSizing:'border-box'
+        });
+        const outer=document.createElement('i');
+        const inner=document.createElement('b');
+        Object.assign(outer.style,{
+            position:'absolute',
+            left:'50%',
+            top:'50%',
+            width:'5.1px',
+            height:'5.1px',
+            borderStyle:'solid',
+            borderLeft:'0',
+            borderBottom:'0',
+            borderWidth:'1.8px',
+            borderColor:'#7CCBFF',
+            boxSizing:'border-box',
+            filter:'drop-shadow(0 0 1.2px rgba(88,191,255,.90))',
+            transform:'translate(-38%,-50%) rotate(45deg)'
+        });
+        Object.assign(inner.style,{
+            position:'absolute',
+            left:'50%',
+            top:'50%',
+            width:'3.9px',
+            height:'3.9px',
+            borderStyle:'solid',
+            borderLeft:'0',
+            borderBottom:'0',
+            borderWidth:'1.2px',
+            borderColor:'#DFFBFF',
+            boxSizing:'border-box',
+            filter:'drop-shadow(0 0 .9px rgba(98,216,255,.80))',
+            transform:'translate(-34%,-50%) rotate(45deg)'
+        });
+        tooth.append(outer,inner);
+        gvTripPointer.appendChild(tooth);
+    }
+    document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
+}
+function gvSetTripCycle(active){
+    const p=document.getElementById('gv-trip-pointer');
+    if(!p)return;
+    const on=Boolean(active);
+    p.style.visibility=on?'visible':'hidden';
+    p.style.display=on?'flex':'none';
+    p.classList.toggle('gv-traveling',on);
+}
 
 // ============================================================================
 // SECTION 033A — DIRECT ARRIVAL HD OVERLAY / VIGNETTE LAB
@@ -1071,32 +1254,36 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
-        const translateSeconds=3.0,rotationSeconds=1.25,zoomSeconds=6.0,durationSeconds=translateSeconds+rotationSeconds+zoomSeconds;
+        if(registeredPromise){
+            try{
+                const registered=await registeredPromise;
+                const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);
+                if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){
+                    ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation;
+                }
+            }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
+        }
+        const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
+        const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
         const translateStarted=performance.now();let lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
                 const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
                 doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
                 if(sample!==lastSample){
-                    const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u);
+                    const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
+                    if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
                     gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
+                    gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);
                     lastSample=sample;
                 }
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        if(registeredPromise){
-            const registered=await registeredPromise,center=registered?.imageCenter;
-            ra1=Number(center?.[0]);dec1=Number(center?.[1]);finalFov=Number(registered?.finalFov);targetRotation=Number(registered?.rotation);
-            if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV FIRST TRIP REGISTERED STATE INVALID');
-            gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
-            let rotationStart=0;try{rotationStart=Number(aladin.getRotation?.()??aladin.view?.rotation??startRotation)||startRotation}catch(_){rotationStart=startRotation}
-            const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-rotationStart),rotationStarted=performance.now();lastSample=-1;
-            await new Promise((resolve,reject)=>{const frame=now=>{try{const elapsed=Math.min(rotationSeconds*1000,now-rotationStarted),u=gvFlightNavigationSmootherstep(elapsed/(rotationSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);if(sample!==lastSample){const rotation=rotationStart+rotationDelta*u;gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);lastSample=sample}if(elapsed<rotationSeconds*1000){requestAnimationFrame(frame);return}resolve()}catch(error){reject(error)}};requestAnimationFrame(frame)});
-            gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
-            try{await onZoomInStart?.(registered)}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
-        }else{try{await onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}}
+        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
+        gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+        try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
@@ -1106,8 +1293,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
-        gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+        gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);
         doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
@@ -1167,23 +1353,39 @@ function gvPrewarmProviderWebsite(destination){
     return;
 }
 
+let gvFirstDestinationPreload=null;
+function gvStartFirstDestinationPreload(){
+    if(gvFirstDestinationPreload)return gvFirstDestinationPreload;
+    const destination=activeRoute[0];
+    if(!destination)return Promise.reject(new Error('GV FIRST DESTINATION MISSING'));
+    const started=performance.now();
+    gvFirstDestinationPreload=gvPrepareDirectHd(destination).then(prepared=>{
+        console.info('GV FIRST DESTINATION PREPARED',{ms:Math.round(performance.now()-started),name:destination?.name||destination?.objectName||''});
+        return {destination,prepared};
+    }).catch(error=>{gvFirstDestinationPreload=null;throw error});
+    return gvFirstDestinationPreload;
+}
+// IMPORTANT: start only after the AVM/HD preparation functions and their let/const dependencies are initialized.
+const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
+
 // ============================================================================
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
 // ============================================================================
-async function showDestination(destination,{firstTrip=false}={}){
-    const v=validateDestination(destination),preparedPromise=gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
+async function showDestination(destination,{firstTrip=false,preloadedPrepared=null}={}){
+    gvHideEarthDistance();
+    const v=validateDestination(destination),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
     activeDestination=v.destination;destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:installWhenReady});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
-        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvPrewarmProviderWebsite(v.destination);return v.destination;
+        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);gvPrewarmProviderWebsite(v.destination);return v.destination;
     }
     let prepared=null;
     preparedPromise.then(value=>{prepared=value;headsUpDisplay.markReady?.(v.destination)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
@@ -1192,7 +1394,7 @@ async function showDestination(destination,{firstTrip=false}={}){
     await travelPromise;if(activeDestination!==v.destination)return v.destination;
     prepared=prepared||await preparedPromise;
     if(!installed)await installWhenReady(prepared);else await displayReady;
-    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvPrewarmProviderWebsite(v.destination);return v.destination;
+    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);gvPrewarmProviderWebsite(v.destination);return v.destination;
 }
 
 // ============================================================================
@@ -1204,19 +1406,25 @@ async function navigateRandom(){
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
+    gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
     try{
         const destination=await navigationRuntime.nextDestination();
+        let preloadedPrepared=null;
+        if(routeIndex===0&&gvFirstDestinationPreload){
+            gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
+        }
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
         history.push(destination);
         historyIndex=history.length-1;
         const firstTrip=routeIndex===0;
         routeIndex++;
-        await showDestination(destination,{firstTrip});
+        await showDestination(destination,{firstTrip,preloadedPrepared});
     }finally{
         navigationInFlight=false;
+        gvSetTripCycle(false);
         galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
@@ -1230,8 +1438,8 @@ async function navigateRandom(){
 // ============================================================================
 async function navigateBack(){
     if(navigationInFlight||historyIndex<=0)return;
-    navigationInFlight=true;galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
-    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
+    navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
+    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
 
 
@@ -1241,8 +1449,8 @@ async function navigateBack(){
 // ============================================================================
 async function navigateForward(){
     if(navigationInFlight||historyIndex>=history.length-1)return;
-    navigationInFlight=true;galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
-    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
+    navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
+    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
 
 function updateNavigationAvailability(){
