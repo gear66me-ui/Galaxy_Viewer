@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0023 — resync Earth pointer after HD/browser return; live rotation and position feed retained
+# BUILD 0024 — authoritative Back-to-Sky Earth pointer lifecycle recovery
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0023';
+const GV200001_BUILD='0024';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -357,18 +357,14 @@ gvInstallEarthBearingPointer();
 const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,40);
 function gvResyncEarthPointerFromAladin(){
     try{
+        if(!document.getElementById('gv-earth-bearing-rotor'))gvInstallEarthBearingPointer();
         const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
         if(Number.isFinite(ra)&&Number.isFinite(dec))gvSetEarthPointerPosition(ra,dec,true);
         const rotation=Number(aladin.getRotation?.()??aladin.view?.rotation);
-        if(Number.isFinite(rotation))gvAuthoritativeRotation=rotation;
+        if(Number.isFinite(rotation)){gvAuthoritativeRotation=rotation;setNorthMarker(-rotation)}
         gvUpdateEarthBearingPointer();
-    }catch(_){}
+    }catch(error){console.error('GV EARTH POINTER RESYNC FAILED',error)}
 }
-document.addEventListener('click',event=>{
-    if(event.target?.closest?.('.gvdp-back'))setTimeout(gvResyncEarthPointerFromAladin,220);
-},true);
-window.addEventListener('focus',()=>requestAnimationFrame(gvResyncEarthPointerFromAladin));
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestAnimationFrame(gvResyncEarthPointerFromAladin)});
 window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
 
 function gvFormatEarthDistance(destination){
@@ -764,7 +760,7 @@ const randomGalaxyBridge=Object.freeze({
 });
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
 const travelPresentation=window.GalaxyRandomTravelPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
-const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
+const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'),{onBackToSky:()=>requestAnimationFrame(gvResyncEarthPointerFromAladin)});
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
