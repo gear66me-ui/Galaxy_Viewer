@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0008 — frozen dependency set; native provider browser integration
+# BUILD 0013 — hosted HTTPS provider warm-up experiment; no native launch on arrival
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -1319,9 +1319,19 @@ function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!url.startsWith('https://'))return;
     try{
-        if(window.GVNative&&typeof window.GVNative.prewarm==='function'){
-            window.GVNative.prewarm(url);
+        const origin=new URL(url).origin;
+        for(const rel of ['dns-prefetch','preconnect']){
+            const selector='link[data-gv-provider-warm="'+rel+'"][href="'+CSS.escape(origin)+'"]';
+            if(!document.querySelector(selector)){
+                const link=document.createElement('link');
+                link.rel=rel;link.href=origin;link.dataset.gvProviderWarm=rel;
+                if(rel==='preconnect')link.crossOrigin='anonymous';
+                document.head.appendChild(link);
+            }
         }
+        fetch(url,{method:'GET',mode:'no-cors',credentials:'include',cache:'force-cache',redirect:'follow'})
+            .then(()=>console.info('GV PROVIDER HTTPS WARM READY',origin))
+            .catch(error=>console.info('GV PROVIDER HTTPS WARM BEST-EFFORT',origin,String(error?.message||error||'')));
     }catch(error){console.warn('GV PROVIDER PREWARM SKIPPED',error)}
 }
 
