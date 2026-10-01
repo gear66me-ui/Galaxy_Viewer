@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0017 — Earth bearing single camera authority; registered JPEG centering retained
+# BUILD 0018 — persistent Earth bearing across all navigation; registered JPEG centering retained
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0017';
+const GV200001_BUILD='0018';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -326,28 +326,29 @@ function gvInstallEarthBearingPointer(){
     reticle.appendChild(rotor);
 }
 let gvEarthPointerActive=false;
+let gvEarthLastValidBearing=null;
 function gvSetEarthPointerPosition(ra,dec,activate=false){
-    // Compatibility hook for existing travel calls. Camera position is authoritative;
-    // Earth bearing no longer stores a second RA/Dec copy that can drift across trips.
+    // Compatibility hook only. Live Aladin camera state is the position authority.
     if(activate)gvEarthPointerActive=true;
 }
 function gvEarthScreenBearing(){
     try{
         if(!gvEarthPointerActive)return null;
         const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
-        if(!Number.isFinite(ra)||!Number.isFinite(dec))return null;
+        if(!Number.isFinite(ra)||!Number.isFinite(dec))return gvEarthLastValidBearing;
         const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
-        // Single authority: live Aladin camera center plus authoritative camera rotation.
         const celestialBearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
-        const screenBearing=celestialBearing-gvAuthoritativeRotation;
-        return ((screenBearing%360)+360)%360;
-    }catch(_){return null}
+        const screenBearing=((celestialBearing-gvAuthoritativeRotation)%360+360)%360;
+        if(Number.isFinite(screenBearing))gvEarthLastValidBearing=screenBearing;
+        return gvEarthLastValidBearing;
+    }catch(_){return gvEarthLastValidBearing}
 }
 function gvUpdateEarthBearingPointer(){
     const rotor=document.getElementById('gv-earth-bearing-rotor');if(!rotor)return;
     const a=gvEarthScreenBearing();
-    rotor.style.display=Number.isFinite(a)?'block':'none';
-    rotor.style.opacity=Number.isFinite(a)?'1':'0';
+    if(!gvEarthPointerActive){rotor.style.display='none';rotor.style.opacity='0';return}
+    rotor.style.display='block';
+    rotor.style.opacity='1';
     if(Number.isFinite(a))rotor.style.transform=`rotate(${a}deg)`;
 }
 gvInstallEarthBearingPointer();
@@ -1354,6 +1355,8 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // ============================================================================
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null}={}){
     gvHideEarthDistance();
+    gvEarthPointerActive=true;
+    gvUpdateEarthBearingPointer();
     const v=validateDestination(destination),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
     activeDestination=v.destination;gvPrewarmProviderWebsite(v.destination);destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
