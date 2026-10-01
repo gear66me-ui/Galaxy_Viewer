@@ -786,28 +786,44 @@ if(gvTripHud){
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
 
-    // GV028 active-trip pointer: independent overlay; never changes HUD row geometry.
+    // GV028 active-trip cycle: compositor-only horizontal triple chevron.
+    // Animation changes transform/opacity only; no JS timer, RAF, canvas, or layout mutation.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='@keyframes gv028-trip-pointer-blink{0%,49%{opacity:1;text-shadow:0 0 3px #D9FFE9,0 0 7px #78FFAB,0 0 12px #38E69A;filter:drop-shadow(0 0 3px #78FFAB) drop-shadow(0 0 8px #38E69A)}50%,100%{opacity:0;text-shadow:none;filter:none}}#gv-trip-pointer.gv-traveling{animation:gv028-trip-pointer-blink 1.2s steps(1,end) infinite}';
+    gvTripPointerStyle.textContent='@keyframes gv028-trip-cycle{0%{transform:translateX(-5px);opacity:.18}35%{opacity:1}72%{transform:translateX(4px);opacity:1}100%{transform:translateX(7px);opacity:0}}#gv-trip-pointer.gv-traveling{visibility:visible;animation:gv028-trip-cycle .9s ease-out infinite;will-change:transform,opacity}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
-    gvTripPointer.textContent='▶';
+    gvTripPointer.setAttribute('aria-hidden','true');
     Object.assign(gvTripPointer.style,{
         position:'absolute',
-        right:'59px',
-        top:'83px',
+        right:'60px',
+        top:'82px',
         zIndex:'7212',
-        color:'#38E69A',
-        font:'700 12px/16px Arial,sans-serif',
-        width:'14px',
-        height:'16px',
-        textAlign:'center',
+        display:'flex',
+        alignItems:'center',
+        gap:'0px',
+        width:'18px',
+        height:'12px',
+        visibility:'hidden',
         pointerEvents:'none',
-        userSelect:'none'
+        userSelect:'none',
+        filter:'drop-shadow(0 0 3px rgba(120,255,171,.95))'
     });
-    gvTripPointer.style.visibility='hidden';
+    for(let i=0;i<3;i++){
+        const tooth=document.createElement('span');
+        Object.assign(tooth.style,{
+            display:'block',
+            width:'6px',
+            height:'6px',
+            boxSizing:'border-box',
+            borderTop:'2px solid #78FFAB',
+            borderRight:'2px solid #78FFAB',
+            transform:'rotate(45deg)',
+            opacity:String(.45+i*.275)
+        });
+        gvTripPointer.appendChild(tooth);
+    }
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
 
@@ -1345,7 +1361,7 @@ async function navigateRandom(){
     navigationInFlight=true;
     {
         const p=document.getElementById('gv-trip-pointer');
-        if(p){p.style.visibility='visible';p.classList.add('gv-traveling')}
+        if(p){p.classList.add('gv-traveling')}
     }
     galaxyNavigator.setBusy(true);
     galaxyNavigator.setTraveling?.(true);
