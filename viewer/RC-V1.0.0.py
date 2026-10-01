@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0019 — persistent Earth bearing with single celestial rotation; registered JPEG centering retained
+# BUILD 0020 — restore original Earth bearing screen-north transform; registered JPEG centering retained
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0019';
+const GV200001_BUILD='0020';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -338,7 +338,10 @@ function gvEarthScreenBearing(){
         if(!Number.isFinite(ra)||!Number.isFinite(dec))return gvEarthLastValidBearing;
         const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
         const celestialBearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
-        const screenBearing=((celestialBearing%360)+360)%360;
+        // Restore the original working screen-space transform: celestial bearing is
+        // relative to celestial north, so rotate it by the live on-screen north bearing.
+        const northBearing=readCelestialNorthBearing(aladin,compassRoot);
+        const screenBearing=((northBearing+celestialBearing)%360+360)%360;
         if(Number.isFinite(screenBearing))gvEarthLastValidBearing=screenBearing;
         return gvEarthLastValidBearing;
     }catch(_){return gvEarthLastValidBearing}
