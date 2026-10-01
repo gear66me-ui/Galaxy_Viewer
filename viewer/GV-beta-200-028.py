@@ -789,7 +789,7 @@ if(gvTripHud){
     // GV028 active-trip pointer: independent overlay; never changes HUD row geometry.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='@keyframes gv028-trip-pointer-blink{0%,49%{opacity:1;filter:drop-shadow(0 0 2px #78FFAB) drop-shadow(0 0 5px #38E69A)}50%,100%{opacity:0;filter:none}}#gv-trip-pointer.gv-traveling{animation:gv028-trip-pointer-blink 1.2s steps(1,end) infinite}';
+    gvTripPointerStyle.textContent='@keyframes gv028-trip-pointer-blink{0%,49%{opacity:1;text-shadow:0 0 3px #D9FFE9,0 0 7px #78FFAB,0 0 12px #38E69A;filter:drop-shadow(0 0 3px #78FFAB) drop-shadow(0 0 8px #38E69A)}50%,100%{opacity:0;text-shadow:none;filter:none}}#gv-trip-pointer.gv-traveling{animation:gv028-trip-pointer-blink 1.2s steps(1,end) infinite}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
@@ -800,9 +800,9 @@ if(gvTripHud){
         top:'83px',
         zIndex:'7212',
         color:'#38E69A',
-        font:'400 6px/10px Arial,sans-serif',
-        width:'7px',
-        height:'10px',
+        font:'700 12px/16px Arial,sans-serif',
+        width:'14px',
+        height:'16px',
         textAlign:'center',
         pointerEvents:'none',
         userSelect:'none'
