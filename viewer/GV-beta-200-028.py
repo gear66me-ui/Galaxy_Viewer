@@ -348,17 +348,17 @@ const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,40);
 window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
 
 function gvFormatEarthDistance(destination){
-    const m=Number(destination?.distanceMly??destination?.distance);
-    if(!(m>0))return '';
-    const label=String(destination?.distanceUnit||destination?.distanceUnits||'').toUpperCase();
-    if(label.includes('BLY'))return `${m.toLocaleString('en-US',{maximumFractionDigits:2})} BLY TO EARTH`;
-    if(label.includes('KLY'))return `${m.toLocaleString('en-US',{maximumFractionDigits:2})} KLY TO EARTH`;
-    return `${m.toLocaleString('en-US',{maximumFractionDigits:m<10?1:0})} MLY TO EARTH`;
+    const v=Number(destination?.distanceMly??destination?.distance);
+    if(!(v>0))return '';
+    const unit=String(destination?.distanceUnit||destination?.distanceUnits||'').toUpperCase();
+    if(unit.includes('BLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} BLY TO EARTH`;
+    if(unit.includes('KLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} KLY TO EARTH`;
+    return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY TO EARTH`;
 }
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner'))return;
     const style=document.createElement('style');style.textContent=`
-#gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;width:auto;max-width:33vw;min-width:0;min-height:0;padding:2px 3px;border:0;border-radius:0;background:transparent;box-shadow:none;font:400 7px/1 "GV Space Age",sans-serif;letter-spacing:.08px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.9);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
+#gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;width:auto;max-width:33vw;min-width:0;min-height:0;padding:2px 4px;border:0;border-radius:0;background:transparent;box-shadow:none;font:400 8px/1 "GV Space Age",sans-serif;letter-spacing:.12px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 4px rgba(255,216,74,.75);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
 #gv-earth-distance-banner.gv-visible{opacity:1;visibility:visible}
 #gv-earth-distance-banner .gv-earth-distance-tick{display:inline-block;margin-left:7px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid #FFD84A;filter:drop-shadow(0 0 4px rgba(255,216,74,.9));vertical-align:-1px}`;document.head.appendChild(style);
     const b=document.createElement('div');b.id='gv-earth-distance-banner';document.body.appendChild(b);
