@@ -325,14 +325,22 @@ function gvInstallEarthBearingPointer(){
     rotor.appendChild(tick);
     reticle.appendChild(rotor);
 }
+let gvEarthPointerActive=false;
+let gvEarthPointerRa=HOME.ra,gvEarthPointerDec=HOME.dec;
+function gvSetEarthPointerPosition(ra,dec,activate=false){
+    const r=Number(ra),d=Number(dec);
+    if(Number.isFinite(r)&&Number.isFinite(d)){gvEarthPointerRa=r;gvEarthPointerDec=d}
+    if(activate)gvEarthPointerActive=true;
+}
 function gvEarthScreenBearing(){
     try{
-        const p=aladin.getRaDec?.();
-        const ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
-        if(!Number.isFinite(ra)||!Number.isFinite(dec))return null;
-        const r=Math.PI/180,p1=dec*r,p2=Number(HOME.dec)*r,dl=(Number(HOME.ra)-ra)*r;
-        const separation=Math.acos(Math.max(-1,Math.min(1,Math.sin(p1)*Math.sin(p2)+Math.cos(p1)*Math.cos(p2)*Math.cos(dl))));
-        if(separation<1e-7)return null;
+        if(!gvEarthPointerActive)return null;
+        let ra=gvEarthPointerRa,dec=gvEarthPointerDec;
+        try{
+            const p=aladin.getRaDec?.(),r=Number(Array.isArray(p)?p[0]:p?.ra),d=Number(Array.isArray(p)?p[1]:p?.dec);
+            if(Number.isFinite(r)&&Number.isFinite(d)){ra=r;dec=d;gvEarthPointerRa=r;gvEarthPointerDec=d}
+        }catch(_){}
+        const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
         const bearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
         return ((readCelestialNorthBearing(aladin,compassRoot)+bearing)%360+360)%360;
     }catch(_){return null}
@@ -340,6 +348,7 @@ function gvEarthScreenBearing(){
 function gvUpdateEarthBearingPointer(){
     const rotor=document.getElementById('gv-earth-bearing-rotor');if(!rotor)return;
     const a=gvEarthScreenBearing();
+    rotor.style.display=Number.isFinite(a)?'block':'none';
     rotor.style.opacity=Number.isFinite(a)?'1':'0';
     if(Number.isFinite(a))rotor.style.transform=`rotate(${a}deg)`;
 }
@@ -1144,6 +1153,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                 doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
                 if(sample!==lastSample){
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
+                    if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
                     gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
                     gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);
                     lastSample=sample;
@@ -1151,7 +1161,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);
+        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
         gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
         try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
