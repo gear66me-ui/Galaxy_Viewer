@@ -19,6 +19,10 @@ import android.webkit.WebViewClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
+import androidx.webkit.PrerenderOperationCallback;
+import androidx.webkit.PrerenderException;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import org.json.JSONObject;
@@ -34,7 +38,7 @@ public final class MainActivity extends Activity {
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
-  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";
+  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="";
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -60,9 +64,9 @@ public final class MainActivity extends Activity {
     root.addView(browserLayer,new FrameLayout.LayoutParams(-1,-1));
     setContentView(root);
 
-    launchGalaxyViewer();
     String launchUrl=launchSourceUrl(getIntent());
-    if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); }
+    if(launchUrl!=null&&launchPrewarm(getIntent())){ prewarmProvider(launchUrl); moveTaskToBack(true); }
+    else { launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); } }
   }
 
   private WebView viewer(){
@@ -70,7 +74,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0054");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0055");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -109,7 +113,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0054");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0055");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
@@ -156,6 +160,20 @@ public final class MainActivity extends Activity {
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
+  private boolean launchPrewarm(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); return d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())&&"prewarm".equalsIgnoreCase(d.getQueryParameter("mode")); }catch(Exception ignored){} return false; }
+  private void prewarmProvider(String u){
+    if(u==null||!u.startsWith("https://")||u.equals(prewarmedUrl))return;
+    prewarmedUrl=u;
+    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
+    try{
+      if(WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){
+        WebViewCompat.prerenderUrlAsync(web,u,null,getMainExecutor(),new PrerenderOperationCallback(){
+          @Override public void onPrerenderActivated(){}
+          @Override public void onError(PrerenderException e){ if(u.equals(prewarmedUrl))web.loadUrl(u); }
+        });
+      }else web.loadUrl(u);
+    }catch(Exception e){ web.loadUrl(u); }
+  }
   private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
   private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }
@@ -176,7 +194,7 @@ public final class MainActivity extends Activity {
     launchGalaxyViewer();
   }
   private String launchSourceUrl(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String u=d.getQueryParameter("url"); if(u!=null&&(u.startsWith("https://")||u.startsWith("http://")))return u; } }catch(Exception ignored){} return null; }
-  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ openProvider(u,launchProviderIcon(intent)); } }
+  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ if(launchPrewarm(intent)){prewarmProvider(u);moveTaskToBack(true);}else openProvider(u,launchProviderIcon(intent)); } }
   private JSONObject getJson(String u)throws Exception{
     HttpURLConnection c=(HttpURLConnection)new URL(u).openConnection(); c.setUseCaches(false);
     c.setRequestProperty("Cache-Control","no-cache, no-store, max-age=0"); c.setRequestProperty("Pragma","no-cache");
