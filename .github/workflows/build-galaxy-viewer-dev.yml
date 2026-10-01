@@ -179,15 +179,11 @@ jobs:
           GV_UPLOAD_STORE_PASSWORD: ${{ secrets.GALAXY_VIEWER_UPLOAD_PASSWORD }}
         run: |
           set -euo pipefail
-          AAB=/tmp/galaxy-viewer-dev/app/build/outputs/bundle/release/app-release.aab
           KEYSTORE=/tmp/galaxy-viewer-upload.jks
           test -n "$GV_UPLOAD_KEYSTORE_BASE64"
           test -n "$GV_UPLOAD_STORE_PASSWORD"
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
-          test -s "$AAB"
-          jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
-
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
           APK=Galaxy-Viewer-D-DEV-0001.apk
           test -s "$APK_UNSIGNED"
@@ -204,19 +200,6 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
 
-          AAB=/tmp/galaxy-viewer-dev/app/build/outputs/bundle/release/app-release.aab
-          OUT=Galaxy-Viewer-D-DEV-0001.aab
-          test -s "$AAB"
-          cp "$AAB" "$OUT"
-          unzip -t "$OUT" | tee aab-rc-zip-test.txt
-          grep -q 'No errors detected' aab-rc-zip-test.txt
-          unzip -l "$OUT" | tee aab-rc-contents.txt
-          grep -q 'base/manifest/AndroidManifest.xml' aab-rc-contents.txt
-          grep -q 'base/dex/classes.dex' aab-rc-contents.txt
-          grep -q 'base/res/' aab-rc-contents.txt
-          jarsigner -verify -verbose -certs "$OUT" | tee aab-rc-signature.txt
-          grep -q 'jar verified' aab-rc-signature.txt
-          sha256sum "$OUT" | tee "$OUT.sha256"
 
       - uses: actions/upload-artifact@v4
         with:
