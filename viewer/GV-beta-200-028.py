@@ -52,7 +52,7 @@ display(HTML("""
      ======================================================================= -->
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-#aladin-cosmic-command-test{position:relative;width:100%;height:100vh;overflow:hidden;background:#000}
+#aladin-cosmic-command-test{position:relative;width:100%;height:100dvh;max-height:100%;overflow:hidden;background:#000;padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
 #aladin-cosmic-command-test .aladin-logo-container,#aladin-cosmic-command-test .aladin-logo{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
 
@@ -64,7 +64,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 #gv-hamburger-host{position:absolute;inset:0;z-index:9000;pointer-events:none}
 #gv-coordinate-host{position:absolute;left:50px;top:12px;z-index:7210;width:290px;height:36px;pointer-events:auto}
 #gv-target-host{position:absolute;left:342px;top:12px;z-index:7210;width:36px;height:36px;pointer-events:auto}
-#gv-navigation-host{position:absolute;left:50%;bottom:12px;z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
+#gv-navigation-host{position:absolute;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:7300;display:flex;gap:5px;width:min(430px,calc(100vw - 20px));transform:translateX(-50%);pointer-events:auto}
 #gv-center-reticle{position:absolute;left:50%;top:50%;z-index:7301;width:270px;height:270px;transform:translate(-50%,-50%);pointer-events:none;user-select:none;-webkit-user-select:none}
 #gv-center-reticle img{display:block;width:32px;height:32px}
 </style>
