@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0024 — authoritative Back-to-Sky Earth pointer lifecycle recovery
+# BUILD 0025 — native browser resume + Back-to-Sky Earth pointer lifecycle recovery
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0024';
+const GV200001_BUILD='0025';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -365,6 +365,7 @@ function gvResyncEarthPointerFromAladin(){
         gvUpdateEarthBearingPointer();
     }catch(error){console.error('GV EARTH POINTER RESYNC FAILED',error)}
 }
+window.addEventListener('gv-native-viewer-resumed',()=>requestAnimationFrame(gvResyncEarthPointerFromAladin));
 window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
 
 function gvFormatEarthDistance(destination){
