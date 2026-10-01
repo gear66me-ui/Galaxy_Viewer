@@ -321,7 +321,7 @@ function gvInstallEarthBearingPointer(){
     rotor.setAttribute('aria-hidden','true');
     Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
     const tick=document.createElement('i');
-    Object.assign(tick.style,{position:'absolute',left:'50%',top:'-18px',width:'0',height:'0',transform:'translateX(-50%)',borderLeft:'8px solid transparent',borderRight:'8px solid transparent',borderBottom:'14px solid #FFD84A',filter:'drop-shadow(0 0 3px #000) drop-shadow(0 0 6px rgba(255,216,74,1))'});
+    Object.assign(tick.style,{position:'absolute',left:'50%',top:'0px',width:'0',height:'0',transform:'translate(-50%,-2px)',borderLeft:'7px solid transparent',borderRight:'7px solid transparent',borderTop:'12px solid #FFD84A',filter:'drop-shadow(0 0 3px #000) drop-shadow(0 0 6px rgba(255,216,74,1))'});
     rotor.appendChild(tick);
     reticle.appendChild(rotor);
 }
@@ -691,8 +691,6 @@ if(runtimeState.phase!=='READY')throw new Error(`NAVIGATION NOT READY: ${runtime
 if(runtimeState.active!==100)throw new Error(`NAVIGATION ACTIVE INVALID: ${runtimeState.active}`);
 if(runtimeState.reserve!==30)throw new Error(`NAVIGATION RESERVE INVALID: ${runtimeState.reserve}`);
 if(runtimeState.excluded!==130)throw new Error(`NAVIGATION EXCLUSION INVALID: ${runtimeState.excluded}`);
-// Preload FUTURE[0] behind the startup/reveal presentation so the first press does not pay AVM fetch/decode cost.
-const gvFirstDestinationPreloadKick=Promise.resolve().then(()=>gvStartFirstDestinationPreload()).catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
 galaxyNavigator.setBusy(false);
 galaxyNavigator.setEnabled({back:false,random:true,forward:false});
 galaxyNavigator.setStart?.(true);
@@ -1237,6 +1235,8 @@ function gvStartFirstDestinationPreload(){
     }).catch(error=>{gvFirstDestinationPreload=null;throw error});
     return gvFirstDestinationPreload;
 }
+// IMPORTANT: start only after the AVM/HD preparation functions and their let/const dependencies are initialized.
+const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
 
 // ============================================================================
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
@@ -1244,7 +1244,7 @@ function gvStartFirstDestinationPreload(){
 // ============================================================================
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null}={}){
     gvHideEarthDistance();
-    const v=validateDestination(destination),preparedPromise=preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
+    const v=validateDestination(destination),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
     activeDestination=v.destination;destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false,displayReady=Promise.resolve(false);
@@ -1283,10 +1283,7 @@ async function navigateRandom(){
         const destination=await navigationRuntime.nextDestination();
         let preloadedPrepared=null;
         if(routeIndex===0&&gvFirstDestinationPreload){
-            try{
-                const warm=await gvFirstDestinationPreload;
-                if(warm?.destination===destination)preloadedPrepared=warm.prepared;
-            }catch(error){console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error)}
+            gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
         }
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
         history.push(destination);
