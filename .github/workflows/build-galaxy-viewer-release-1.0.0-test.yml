@@ -26,7 +26,7 @@ jobs:
           java-version: '17'
 
       - uses: android-actions/setup-android@v4
-      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -65,11 +65,11 @@ jobs:
           plugins { id 'com.android.application' }
           android {
             namespace 'com.gear66me.galaxyviewer'
-            compileSdk 35
+            compileSdk 36
             defaultConfig {
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
-              targetSdk 35
+              targetSdk 36
               versionCode 10015
               versionName 'RC-V1.0.0.15'
             }
@@ -166,8 +166,8 @@ jobs:
           test ! -e "$ROOT/app/src/main/assets/index.html"
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
-      - name: Build AAB 0015
-        run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:bundleRelease
+      - name: Build APK + AAB 0015
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:assembleRelease :app:bundleRelease
 
       - name: Sign AAB 0015
         shell: bash
@@ -185,10 +185,22 @@ jobs:
           test -s "$AAB"
           jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
 
-      - name: Verify AAB 0015
+          APK_UNSIGNED=/tmp/galaxy-viewer-0015/app/build/outputs/apk/release/app-release-unsigned.apk
+          APK=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
+          test -s "$APK_UNSIGNED"
+          "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
+          test -s "$APK"
+
+      - name: Verify APK + AAB 0015
         shell: bash
         run: |
           set -euo pipefail
+          APK=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
+          sha256sum "$APK" | tee "$APK.sha256"
+
           AAB=/tmp/galaxy-viewer-0015/app/build/outputs/bundle/release/app-release.aab
           OUT=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab
           test -s "$AAB"
@@ -212,14 +224,18 @@ jobs:
           TAG=galaxy-viewer-rc-v1.0.0.16
           OUT=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.15 AAB' --notes 'Android App Bundle test: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
+          APK=Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
+          gh release create "$TAG" "$APK" "$APK.sha256" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.15 APK + AAB' --notes 'API 36 release artifacts: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
 
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-RC-V1.0.0.15-Build-0015-AAB
           path: |
+            Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk
+            Galaxy-Viewer-RC-V1.0.0.15-Build-0015.apk.sha256
             Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab
             Galaxy-Viewer-RC-V1.0.0.15-Build-0015.aab.sha256
+            apk-rc-signature.txt
             aab-rc-zip-test.txt
             aab-rc-contents.txt
             aab-rc-signature.txt
