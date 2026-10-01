@@ -46,6 +46,7 @@ public final class MainActivity extends Activity {
 
     FrameLayout root=new FrameLayout(this); root.setBackgroundColor(Color.BLACK);
     viewerWeb=viewer();
+    viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative");
     root.addView(viewerWeb,new FrameLayout.LayoutParams(-1,-1));
 
     browserLayer=new LinearLayout(this); browserLayer.setOrientation(LinearLayout.VERTICAL); browserLayer.setBackgroundColor(Color.BLACK); browserLayer.setPadding(0,dp(12),0,dp(12));
@@ -156,7 +157,7 @@ public final class MainActivity extends Activity {
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
         bottom.loadUrl(bh+(bh.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
-        web.loadUrl(sourceUrl);
+        if(!(sourceUrl.equals(prewarmedUrl)&&sourceUrl.equals(web.getUrl()))) web.loadUrl(sourceUrl);
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
@@ -205,6 +206,9 @@ public final class MainActivity extends Activity {
   private void syncShell(){
     if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+","+(web.canGoBack()?"true":"false")+","+(web.canGoForward()?"true":"false")+")";
     top.loadUrl(js);
+  }
+  public final class ViewerBridge{
+    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}
   }
   public final class Bridge{
     @JavascriptInterface public void back(){runOnUiThread(()->{restoreProviderHome();});}
