@@ -341,8 +341,12 @@ function gvEarthScreenBearing(){
             if(Number.isFinite(r)&&Number.isFinite(d)){ra=r;dec=d;gvEarthPointerRa=r;gvEarthPointerDec=d}
         }catch(_){}
         const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
+        // Initial great-circle bearing from the current sky position back to HOME.
+        // atan2 gives bearing clockwise from celestial north. The compass image itself
+        // is already rotated by -cameraRotation, so the Earth rotor needs only this
+        // relative bearing; adding north rotation here double-rotated it.
         const bearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
-        return ((readCelestialNorthBearing(aladin,compassRoot)+bearing)%360+360)%360;
+        return ((bearing%360)+360)%360;
     }catch(_){return null}
 }
 function gvUpdateEarthBearingPointer(){
