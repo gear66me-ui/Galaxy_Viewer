@@ -757,26 +757,29 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
 });
-// GV028: keep the five-trip HUD high on short portrait phones, clear of the FOV readout.
+// GV028: move the existing five-row HUD as one untouched unit and add TRIP as a sibling.
+// The HUD's render() owns its children, so the label must never be inserted inside the HUD.
 const gvTripHud=headsUpDisplay.root;
 if(gvTripHud){
-    gvTripHud.style.top='78px';
-    gvTripHud.style.overflow='visible';
+    gvTripHud.style.top='88px';
     const gvTripLabel=document.createElement('div');
+    gvTripLabel.id='gv-trip-label';
     gvTripLabel.textContent='TRIP';
     Object.assign(gvTripLabel.style,{
         position:'absolute',
-        left:'0',
-        top:'-14px',
+        right:'8px',
+        top:'70px',
+        zIndex:'7211',
         width:'48px',
         textAlign:'center',
         color:'#DDF8FF',
         font:'400 8px/1 "GV Space Age",Arial,sans-serif',
         letterSpacing:'1px',
         textShadow:'0 0 5px rgba(88,191,255,.65)',
-        pointerEvents:'none'
+        pointerEvents:'none',
+        userSelect:'none'
     });
-    gvTripHud.prepend(gvTripLabel);
+    gvTripHud.parentElement?.appendChild(gvTripLabel);
 }
 
 // ============================================================================
