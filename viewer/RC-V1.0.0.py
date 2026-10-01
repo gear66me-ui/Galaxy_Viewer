@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0014 — native provider-WebView prerender handoff during travel; hosted warm fallback
+# BUILD 0015 — authoritative registered JPEG center commit before destination presentation
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0014';
+const GV200001_BUILD='0015';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1380,6 +1380,11 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     await travelPromise;if(activeDestination!==v.destination)return v.destination;
     prepared=prepared||await preparedPromise;
     if(!installed)await installWhenReady(prepared);else await displayReady;
+    const registeredCenter=prepared?.imageCenter,registeredRa=Number(registeredCenter?.[0]),registeredDec=Number(registeredCenter?.[1]),registeredFov=Number(prepared?.finalFov),registeredRotation=Number(prepared?.rotation);
+    if(Number.isFinite(registeredRa)&&Number.isFinite(registeredDec)&&Number.isFinite(registeredFov)&&registeredFov>0&&Number.isFinite(registeredRotation)){
+        gvDoeCommand('gotoRaDec',[registeredRa,registeredDec]);aladin.gotoRaDec(registeredRa,registeredDec);coordinate?.update(registeredRa,registeredDec);
+        gvDoeCommand('setFov',[registeredFov]);aladin.setFov(registeredFov);gvDoeCommand('setRotation',[registeredRotation]);aladin.setRotation(registeredRotation);
+    }
     travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
 }
 
