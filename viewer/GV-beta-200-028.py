@@ -519,6 +519,7 @@ const galaxyNavigator=window.GalaxyNavigator.mount(earlyNavigationHost,{
 // References acquired at immediate Navigator mount.
 galaxyNavigator.setEnabled({back:false,random:false,forward:false});
 galaxyNavigator.setBusy(true);
+galaxyNavigator.setStart?.(true);
 
 const gvVersionReadout=document.createElement('div');
 gvVersionReadout.id='gv-version-readout';
@@ -784,6 +785,30 @@ if(gvTripHud){
         userSelect:'none'
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
+
+    // GV028 active-trip pointer: independent overlay; never changes HUD row geometry.
+    const gvTripPointerStyle=document.createElement('style');
+    gvTripPointerStyle.id='gv028-trip-pointer-style';
+    gvTripPointerStyle.textContent='@keyframes gv028-trip-pointer-blink{0%,49%{opacity:1;filter:drop-shadow(0 0 2px #78FFAB) drop-shadow(0 0 5px #38E69A)}50%,100%{opacity:0;filter:none}}#gv-trip-pointer.gv-traveling{display:block;animation:gv028-trip-pointer-blink 1.2s steps(1,end) infinite}';
+    document.head.appendChild(gvTripPointerStyle);
+    const gvTripPointer=document.createElement('div');
+    gvTripPointer.id='gv-trip-pointer';
+    gvTripPointer.textContent='▶';
+    Object.assign(gvTripPointer.style,{
+        position:'absolute',
+        right:'59px',
+        top:'83px',
+        zIndex:'7212',
+        display:'none',
+        color:'#38E69A',
+        font:'400 6px/10px Arial,sans-serif',
+        width:'7px',
+        height:'10px',
+        textAlign:'center',
+        pointerEvents:'none',
+        userSelect:'none'
+    });
+    gvTripHud.parentElement?.appendChild(gvTripPointer);
 }
 
 // ============================================================================
@@ -1318,6 +1343,7 @@ async function navigateRandom(){
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
+    document.getElementById('gv-trip-pointer')?.classList.add('gv-traveling');
     galaxyNavigator.setBusy(true);
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
@@ -1335,6 +1361,7 @@ async function navigateRandom(){
         await showDestination(destination,{firstTrip,preloadedPrepared});
     }finally{
         navigationInFlight=false;
+        document.getElementById('gv-trip-pointer')?.classList.remove('gv-traveling');
         galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
