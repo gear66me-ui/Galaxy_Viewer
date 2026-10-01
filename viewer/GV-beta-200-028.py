@@ -826,6 +826,21 @@ if(gvTripHud){
     }
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
+function gvSetTripCycle(active){
+    const p=document.getElementById('gv-trip-pointer');
+    if(!p)return;
+    const on=Boolean(active);
+    p.style.visibility=on?'visible':'hidden';
+    p.style.display=on?'flex':'none';
+    p.classList.toggle('gv-traveling',on);
+    if(on){
+        p.style.animation='none';
+        void p.offsetWidth;
+        p.style.animation='gv028-trip-cycle .9s ease-out infinite';
+    }else{
+        p.style.animation='none';
+    }
+}
 
 // ============================================================================
 // SECTION 033A — DIRECT ARRIVAL HD OVERLAY / VIGNETTE LAB
@@ -1216,6 +1231,15 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
+        if(registeredPromise){
+            try{
+                const registered=await registeredPromise;
+                const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);
+                if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){
+                    ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation;
+                }
+            }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
+        }
         const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
         const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
@@ -1334,7 +1358,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
@@ -1359,10 +1383,7 @@ async function navigateRandom(){
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
-    {
-        const p=document.getElementById('gv-trip-pointer');
-        if(p){p.classList.add('gv-traveling')}
-    }
+    gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
@@ -1380,10 +1401,7 @@ async function navigateRandom(){
         await showDestination(destination,{firstTrip,preloadedPrepared});
     }finally{
         navigationInFlight=false;
-        {
-            const p=document.getElementById('gv-trip-pointer');
-            if(p){p.classList.remove('gv-traveling');p.style.visibility='hidden'}
-        }
+        gvSetTripCycle(false);
         galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
         updateNavigationAvailability();
@@ -1397,8 +1415,8 @@ async function navigateRandom(){
 // ============================================================================
 async function navigateBack(){
     if(navigationInFlight||historyIndex<=0)return;
-    navigationInFlight=true;galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
-    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
+    navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
+    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
 
 
@@ -1408,8 +1426,8 @@ async function navigateBack(){
 // ============================================================================
 async function navigateForward(){
     if(navigationInFlight||historyIndex>=history.length-1)return;
-    navigationInFlight=true;galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
-    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
+    navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
+    try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
 
 function updateNavigationAvailability(){
