@@ -169,6 +169,22 @@ jobs:
       - name: Build AAB 0015
         run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:bundleRelease
 
+      - name: Sign AAB 0015
+        shell: bash
+        env:
+          GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
+          GV_UPLOAD_STORE_PASSWORD: ${{ secrets.GALAXY_VIEWER_UPLOAD_PASSWORD }}
+        run: |
+          set -euo pipefail
+          AAB=/tmp/galaxy-viewer-0015/app/build/outputs/bundle/release/app-release.aab
+          KEYSTORE=/tmp/galaxy-viewer-upload.jks
+          test -n "$GV_UPLOAD_KEYSTORE_BASE64"
+          test -n "$GV_UPLOAD_STORE_PASSWORD"
+          printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          test -s "$AAB"
+          jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
+
       - name: Verify AAB 0015
         shell: bash
         run: |
