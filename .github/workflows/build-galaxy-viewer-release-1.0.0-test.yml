@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer RC-V1.0.0.23 Native Prerender Test
-# BUILD 0023: Browser 0056 native provider-WebView prerender test. Hosted viewer remains pointer-driven.
+name: Build Galaxy Viewer RC-V1.0.0.25 Native Browser Resume Test
+# BUILD 0025: Browser 0057 provider background-render cover + viewer resume signal. Hosted viewer remains pointer-driven.
 
 on:
   push:
@@ -35,12 +35,12 @@ jobs:
       - name: Install launcher tools
         run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
-      - name: Generate 0056 hosted shell with native prerender
+      - name: Generate 0057 hosted shell with native prerender and resume signal
         shell: bash
         run: |
           set -euo pipefail
-          ROOT=/tmp/galaxy-viewer-0023
-          GOLD=3ed845899e4c00815a5f9727a631877f83dfbda4
+          ROOT=/tmp/galaxy-viewer-0025
+          GOLD=8081fda85c7216fe4cbd580fc2a26f765cde64d1
           rm -rf "$ROOT"
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
           mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
@@ -70,14 +70,14 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 36
-              versionCode 10023
-              versionName 'RC-V1.0.0.23'
+              versionCode 10025
+              versionName 'RC-V1.0.0.25'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.14.0' }
           EOF
 
-          # Android launcher artwork only. Galaxy Viewer itself stays hosted; native shell is Browser 0056.
+          # Android launcher artwork only. Galaxy Viewer itself stays hosted; native shell is Browser 0057.
           test -s viewer/artwork/app_icon_4.png
           cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
@@ -149,14 +149,14 @@ jobs:
           </manifest>
           EOF
 
-          # Audited Browser 0056 Activity with in-process GVNative provider prerender bridge. Only Java package namespace changes.
+          # Audited Browser 0057 Activity with in-process GVNative provider prerender bridge. Only Java package namespace changes.
           git fetch origin beta --no-tags
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
-          # Nanoscopic gates: prove hosted architecture plus Browser 0056 native prerender bridge.
+          # Nanoscopic gates: prove hosted architecture plus Browser 0057 native prerender bridge.
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
-          grep -q 'GalaxyViewerWebBrowser/0056' "$MAIN"
+          grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
           grep -q 'WebViewCompat.prerenderUrlAsync(web,u' "$MAIN"
           grep -q 'PRERENDER_WITH_URL' "$MAIN"
@@ -170,17 +170,17 @@ jobs:
           test ! -e "$ROOT/app/src/main/assets/index.html"
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
-      - name: Build APK + AAB 0023
-        run: gradle --no-daemon -p /tmp/galaxy-viewer-0023 :app:assembleRelease :app:bundleRelease
+      - name: Build APK + AAB 0025
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-0025 :app:assembleRelease :app:bundleRelease
 
-      - name: Sign AAB 0023
+      - name: Sign AAB 0025
         shell: bash
         env:
           GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
           GV_UPLOAD_STORE_PASSWORD: ${{ secrets.GALAXY_VIEWER_UPLOAD_PASSWORD }}
         run: |
           set -euo pipefail
-          AAB=/tmp/galaxy-viewer-0023/app/build/outputs/bundle/release/app-release.aab
+          AAB=/tmp/galaxy-viewer-0025/app/build/outputs/bundle/release/app-release.aab
           KEYSTORE=/tmp/galaxy-viewer-upload.jks
           test -n "$GV_UPLOAD_KEYSTORE_BASE64"
           test -n "$GV_UPLOAD_STORE_PASSWORD"
@@ -189,24 +189,24 @@ jobs:
           test -s "$AAB"
           jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
 
-          APK_UNSIGNED=/tmp/galaxy-viewer-0023/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-RC-V1.0.0.23-Build-0023.apk
+          APK_UNSIGNED=/tmp/galaxy-viewer-0025/app/build/outputs/apk/release/app-release-unsigned.apk
+          APK=Galaxy-Viewer-RC-V1.0.0.25-Build-0025.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
           test -s "$APK"
 
-      - name: Verify APK + AAB 0023
+      - name: Verify APK + AAB 0025
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-RC-V1.0.0.23-Build-0023.apk
+          APK=Galaxy-Viewer-RC-V1.0.0.25-Build-0025.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
 
-          AAB=/tmp/galaxy-viewer-0023/app/build/outputs/bundle/release/app-release.aab
-          OUT=Galaxy-Viewer-RC-V1.0.0.23-Build-0023.aab
+          AAB=/tmp/galaxy-viewer-0025/app/build/outputs/bundle/release/app-release.aab
+          OUT=Galaxy-Viewer-RC-V1.0.0.25-Build-0025.aab
           test -s "$AAB"
           cp "$AAB" "$OUT"
           unzip -t "$OUT" | tee aab-rc-zip-test.txt
@@ -219,26 +219,26 @@ jobs:
           grep -q 'jar verified' aab-rc-signature.txt
           sha256sum "$OUT" | tee "$OUT.sha256"
 
-      - name: Publish test artifacts 0023
+      - name: Publish test artifacts 0025
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           TAG=galaxy-viewer-rc-v1.0.0.16-prerender-test
-          OUT=Galaxy-Viewer-RC-V1.0.0.23-Build-0023.aab
+          OUT=Galaxy-Viewer-RC-V1.0.0.25-Build-0025.aab
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          APK=Galaxy-Viewer-RC-V1.0.0.23-Build-0023.apk
-          gh release create "$TAG" "$APK" "$APK.sha256" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.23 Native Prerender Test' --notes 'API 36 test artifacts: Browser 0056 native provider-WebView prerender bridge; hosted runtime RC-V1.0.0 Build 0023. Not published to Play Console.'
+          APK=Galaxy-Viewer-RC-V1.0.0.25-Build-0025.apk
+          gh release create "$TAG" "$APK" "$APK.sha256" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer RC-V1.0.0.25 Native Prerender Test' --notes 'API 36 test artifacts: Browser 0057 native provider-WebView prerender bridge; hosted runtime RC-V1.0.0 Build 0025. Not published to Play Console.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-RC-V1.0.0.23-Build-0023-Prerender-Test
+          name: Galaxy-Viewer-RC-V1.0.0.25-Build-0025-Prerender-Test
           path: |
-            Galaxy-Viewer-RC-V1.0.0.23-Build-0023.apk
-            Galaxy-Viewer-RC-V1.0.0.23-Build-0023.apk.sha256
-            Galaxy-Viewer-RC-V1.0.0.23-Build-0023.aab
-            Galaxy-Viewer-RC-V1.0.0.23-Build-0023.aab.sha256
+            Galaxy-Viewer-RC-V1.0.0.25-Build-0025.apk
+            Galaxy-Viewer-RC-V1.0.0.25-Build-0025.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.25-Build-0025.aab
+            Galaxy-Viewer-RC-V1.0.0.25-Build-0025.aab.sha256
             apk-rc-signature.txt
             aab-rc-zip-test.txt
             aab-rc-contents.txt
