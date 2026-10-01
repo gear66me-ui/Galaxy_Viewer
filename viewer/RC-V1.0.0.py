@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0020 — restore original Earth bearing screen-north transform; registered JPEG centering retained
+# BUILD 0021 — restore authoritative Earth pointer position feed across all travel; registered JPEG centering retained
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0020';
+const GV200001_BUILD='0021';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -326,22 +326,21 @@ function gvInstallEarthBearingPointer(){
     reticle.appendChild(rotor);
 }
 let gvEarthPointerActive=false;
+let gvEarthPointerRa=HOME.ra,gvEarthPointerDec=HOME.dec;
 let gvEarthLastValidBearing=null;
 function gvSetEarthPointerPosition(ra,dec,activate=false){
-    // Compatibility hook only. Live Aladin camera state is the position authority.
+    const r=Number(ra),d=Number(dec);
+    if(Number.isFinite(r)&&Number.isFinite(d)){gvEarthPointerRa=r;gvEarthPointerDec=d}
     if(activate)gvEarthPointerActive=true;
 }
 function gvEarthScreenBearing(){
     try{
         if(!gvEarthPointerActive)return null;
-        const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
+        const ra=gvEarthPointerRa,dec=gvEarthPointerDec;
         if(!Number.isFinite(ra)||!Number.isFinite(dec))return gvEarthLastValidBearing;
         const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
         const celestialBearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
-        // Restore the original working screen-space transform: celestial bearing is
-        // relative to celestial north, so rotate it by the live on-screen north bearing.
-        const northBearing=readCelestialNorthBearing(aladin,compassRoot);
-        const screenBearing=((northBearing+celestialBearing)%360+360)%360;
+        const screenBearing=((celestialBearing%360)+360)%360;
         if(Number.isFinite(screenBearing))gvEarthLastValidBearing=screenBearing;
         return gvEarthLastValidBearing;
     }catch(_){return gvEarthLastValidBearing}
@@ -1273,12 +1272,12 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:60,startRotation,targetRotation});
                 gvDoeCommand('setFov',[state.fov]);aladin.setFov(state.fov);
-                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
-                else if(state.translation>=1&&!destinationCenterApplied){gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
+                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
+                else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
                 gvDoeCommand('setRotation',[state.rotation]);aladin.setRotation(state.rotation);lastSample=sample;
             }
             if(t<1){requestAnimationFrame(frame);return}
-            if(!destinationCenterApplied){gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
+            if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
             gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);resolve(prepared);
         }catch(error){reject(error)}};requestAnimationFrame(frame);
     });
