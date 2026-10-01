@@ -150,7 +150,7 @@ jobs:
           EOF
 
           # Exact known-good 0049 browser/viewer Activity. Only Java package namespace changes.
-          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/dev/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
+          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer.dev;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
 
           # Nanoscopic gates: prove this remains the hosted 0049 architecture.
