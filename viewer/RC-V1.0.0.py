@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0003';
+const GV200001_BUILD='0004';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -271,9 +271,11 @@ function createCenterReticle(root){
 
 function readCelestialNorthBearing(aladin,root){
     try{
-        const liveRotation=Number(aladin.getRotation?.());
+        const publicRotation=Number(aladin.getRotation?.());
+        const viewRotation=Number(aladin.view?.rotation);
+        const liveRotation=Number.isFinite(viewRotation)?viewRotation:publicRotation;
         if(Number.isFinite(liveRotation)){
-            return ((liveRotation%360)+360)%360;
+            return ((-liveRotation%360)+360)%360;
         }
     }catch(error){
         console.warn('GALAXY VIEWER NORTH ROTATION WARNING',error);
