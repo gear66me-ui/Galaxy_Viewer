@@ -150,6 +150,7 @@ jobs:
           EOF
 
           # Audited Browser 0055 Activity with in-process GVNative provider prerender bridge. Only Java package namespace changes.
+          git fetch origin beta --no-tags
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
