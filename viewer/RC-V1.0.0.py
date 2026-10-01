@@ -1316,10 +1316,13 @@ function validateDestination(destination){
 
 
 function gvPrewarmProviderWebsite(destination){
-    // EMERGENCY ROLLBACK: never navigate to an external app during arrival.
-    // Browser prewarming must not use a custom-scheme iframe because Android
-    // treats that as an app launch/navigation.
-    return;
+    const url=String(destination?.sourceUrl||'').trim();
+    if(!url.startsWith('https://'))return;
+    try{
+        if(window.GVNative&&typeof window.GVNative.prewarm==='function'){
+            window.GVNative.prewarm(url);
+        }
+    }catch(error){console.warn('GV PROVIDER PREWARM SKIPPED',error)}
 }
 
 let gvFirstDestinationPreload=null;
