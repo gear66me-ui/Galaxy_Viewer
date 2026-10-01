@@ -786,11 +786,12 @@ if(gvTripHud){
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
 
-    // GV028 trip cue — copied from the established HD/archive chevron visual language.
-    // Original colors/glow/stroke proportions preserved; only uniformly scaled and laid out horizontally.
+    // GV028 TRIP cue — exact UHD provider-prompt sequence adapted horizontally.
+    // Same directional cascade: first -> second -> third -> destination flash -> reset.
+    // Same approved cyan/white double-chevron visual; only uniformly scaled and rotated horizontal.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='@keyframes gv028HdChevron1{0%,33.32%{opacity:1}33.33%,66.65%{opacity:.66}66.66%,100%{opacity:.33}}@keyframes gv028HdChevron2{0%,33.32%{opacity:0}33.33%,66.65%{opacity:1}66.66%,100%{opacity:.66}}@keyframes gv028HdChevron3{0%,66.65%{opacity:0}66.66%,100%{opacity:1}}#gv-trip-pointer .gv-trip-chevron{opacity:0}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(1){animation:gv028HdChevron1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(2){animation:gv028HdChevron2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(3){animation:gv028HdChevron3 999ms steps(1,end) infinite}';
+    gvTripPointerStyle.textContent='#gv-trip-pointer .gv-trip-chevron{opacity:0}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(1){animation:gv028TripChevron1 1332ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(2){animation:gv028TripChevron2 1332ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(3){animation:gv028TripChevron3 1332ms steps(1,end) infinite}.gv-heads-up-display.gv-trip-destination-cycle .gv-hud-row[data-state="current"]{animation:gv028TripDestination 1332ms steps(1,end) infinite}@keyframes gv028TripChevron1{0%,24.99%{opacity:1}25%,49.99%{opacity:.42}50%,100%{opacity:0}}@keyframes gv028TripChevron2{0%,24.99%{opacity:0}25%,49.99%{opacity:1}50%,74.99%{opacity:.42}75%,100%{opacity:0}}@keyframes gv028TripChevron3{0%,49.99%{opacity:0}50%,74.99%{opacity:1}75%,100%{opacity:0}}@keyframes gv028TripDestination{0%,74.99%{filter:none}75%,99.99%{filter:brightness(1.45) drop-shadow(0 0 4px rgba(221,248,255,.92)) drop-shadow(0 0 8px rgba(88,191,255,.82))}100%{filter:none}}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
@@ -812,45 +813,11 @@ if(gvTripHud){
     for(let i=0;i<3;i++){
         const tooth=document.createElement('span');
         tooth.className='gv-trip-chevron';
-        Object.assign(tooth.style,{
-            position:'relative',
-            display:'block',
-            width:'6px',
-            height:'6px',
-            boxSizing:'border-box'
-        });
+        Object.assign(tooth.style,{position:'relative',display:'block',width:'6px',height:'6px',boxSizing:'border-box'});
         const outer=document.createElement('i');
         const inner=document.createElement('b');
-        Object.assign(outer.style,{
-            position:'absolute',
-            left:'50%',
-            top:'50%',
-            width:'5.1px',
-            height:'5.1px',
-            borderStyle:'solid',
-            borderLeft:'0',
-            borderBottom:'0',
-            borderWidth:'1.8px',
-            borderColor:'#7CCBFF',
-            boxSizing:'border-box',
-            filter:'drop-shadow(0 0 1.2px rgba(88,191,255,.90))',
-            transform:'translate(-38%,-50%) rotate(45deg)'
-        });
-        Object.assign(inner.style,{
-            position:'absolute',
-            left:'50%',
-            top:'50%',
-            width:'3.9px',
-            height:'3.9px',
-            borderStyle:'solid',
-            borderLeft:'0',
-            borderBottom:'0',
-            borderWidth:'1.2px',
-            borderColor:'#DFFBFF',
-            boxSizing:'border-box',
-            filter:'drop-shadow(0 0 .9px rgba(98,216,255,.80))',
-            transform:'translate(-34%,-50%) rotate(45deg)'
-        });
+        Object.assign(outer.style,{position:'absolute',left:'50%',top:'50%',width:'5.1px',height:'5.1px',borderStyle:'solid',borderLeft:'0',borderBottom:'0',borderWidth:'1.8px',borderColor:'#7CCBFF',boxSizing:'border-box',filter:'drop-shadow(0 0 1.2px rgba(88,191,255,.90))',transform:'translate(-38%,-50%) rotate(45deg)'});
+        Object.assign(inner.style,{position:'absolute',left:'50%',top:'50%',width:'3.9px',height:'3.9px',borderStyle:'solid',borderLeft:'0',borderBottom:'0',borderWidth:'1.2px',borderColor:'#DFFBFF',boxSizing:'border-box',filter:'drop-shadow(0 0 .9px rgba(98,216,255,.80))',transform:'translate(-34%,-50%) rotate(45deg)'});
         tooth.append(outer,inner);
         gvTripPointer.appendChild(tooth);
     }
@@ -863,6 +830,7 @@ function gvSetTripCycle(active){
     p.style.visibility=on?'visible':'hidden';
     p.style.display=on?'flex':'none';
     p.classList.toggle('gv-traveling',on);
+    document.querySelector('.gv-heads-up-display')?.classList.toggle('gv-trip-destination-cycle',on);
 }
 
 // ============================================================================
