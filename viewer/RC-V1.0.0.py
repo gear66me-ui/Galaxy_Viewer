@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0015 — authoritative registered JPEG center commit before destination presentation
+# BUILD 0016 — Earth bearing screen-space authority; registered JPEG centering retained
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0015';
+const GV200001_BUILD='0016';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -338,15 +338,15 @@ function gvEarthScreenBearing(){
         let ra=gvEarthPointerRa,dec=gvEarthPointerDec;
         try{
             const p=aladin.getRaDec?.(),r=Number(Array.isArray(p)?p[0]:p?.ra),d=Number(Array.isArray(p)?p[1]:p?.dec);
-            if(Number.isFinite(r)&&Number.isFinite(d)){ra=r;dec=d;gvEarthPointerRa=r;gvEarthPointerDec=d}
+            if(Number.isFinite(r)&&Number.isFinite(d)){ra=r;dec=d}
         }catch(_){}
         const rad=Math.PI/180,p1=dec*rad,p2=Number(HOME.dec)*rad,dl=(Number(HOME.ra)-ra)*rad;
-        // Initial great-circle bearing from the current sky position back to HOME.
-        // atan2 gives bearing clockwise from celestial north. The compass image itself
-        // is already rotated by -cameraRotation, so the Earth rotor needs only this
-        // relative bearing; adding north rotation here double-rotated it.
-        const bearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
-        return ((bearing%360)+360)%360;
+        // Great-circle bearing is measured clockwise from celestial north.
+        // Convert that celestial bearing into screen space exactly once using
+        // the same authoritative camera rotation that drives the compass.
+        const celestialBearing=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI;
+        const screenBearing=celestialBearing-gvAuthoritativeRotation;
+        return ((screenBearing%360)+360)%360;
     }catch(_){return null}
 }
 function gvUpdateEarthBearingPointer(){
