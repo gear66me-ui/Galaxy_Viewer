@@ -321,7 +321,7 @@ function gvInstallEarthBearingPointer(){
     rotor.setAttribute('aria-hidden','true');
     Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
     const tick=document.createElement('i');
-    Object.assign(tick.style,{position:'absolute',left:'50%',top:'4px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderBottom:'7px solid #FFD84A',filter:'drop-shadow(0 0 1px #000) drop-shadow(0 0 3px rgba(255,216,74,.95))',zIndex:'20'});
+    Object.assign(tick.style,{position:'absolute',left:'50%',top:'8px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'3px solid transparent',borderRight:'3px solid transparent',borderBottom:'5px solid #FFD84A',filter:'drop-shadow(0 0 1px #000) drop-shadow(0 0 2px rgba(255,216,74,.95))',zIndex:'20'});
     rotor.appendChild(tick);
     reticle.appendChild(rotor);
 }
@@ -354,7 +354,7 @@ function gvUpdateEarthBearingPointer(){
     const a=gvEarthScreenBearing();
     rotor.style.display=Number.isFinite(a)?'block':'none';
     rotor.style.opacity=Number.isFinite(a)?'1':'0';
-    if(Number.isFinite(a))rotor.style.transform=`rotate(${a}deg)`;
+    if(Number.isFinite(a))rotor.style.transform=`rotate(${(a+180)%360}deg)`;
 }
 gvInstallEarthBearingPointer();
 const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,40);
