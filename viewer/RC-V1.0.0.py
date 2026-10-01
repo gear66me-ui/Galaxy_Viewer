@@ -365,7 +365,24 @@ function gvResyncEarthPointerFromAladin(){
         gvUpdateEarthBearingPointer();
     }catch(error){console.error('GV EARTH POINTER RESYNC FAILED',error)}
 }
-window.addEventListener('gv-native-viewer-resumed',()=>requestAnimationFrame(gvResyncEarthPointerFromAladin));
+function gvRecoverViewerAfterNativeReturn(){
+    requestAnimationFrame(()=>{
+        try{
+            gvResyncEarthPointerFromAladin();
+            if(typeof navigationInFlight!=='undefined'&&navigationInFlight){
+                navigationInFlight=false;
+                gvSetTripCycle(false);
+                galaxyNavigator?.setTraveling?.(false);
+                galaxyNavigator?.setBusy?.(false);
+                updateNavigationAvailability?.();
+            }
+        }catch(error){console.error('GV VIEWER RETURN RECOVERY FAILED',error)}
+    });
+}
+window.addEventListener('gv-native-viewer-resumed',gvRecoverViewerAfterNativeReturn);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')gvRecoverViewerAfterNativeReturn()});
+window.addEventListener('focus',gvRecoverViewerAfterNativeReturn);
+window.addEventListener('pageshow',gvRecoverViewerAfterNativeReturn);
 window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
 
 function gvFormatEarthDistance(destination){
