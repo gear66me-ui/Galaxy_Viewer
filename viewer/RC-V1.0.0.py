@@ -347,6 +347,12 @@ function gvEarthScreenBearing(){
 }
 function gvUpdateEarthBearingPointer(){
     const rotor=document.getElementById('gv-earth-bearing-rotor');if(!rotor)return;
+    try{
+        const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
+        if(Number.isFinite(ra)&&Number.isFinite(dec)){gvEarthPointerRa=ra;gvEarthPointerDec=dec}
+        const liveRotation=Number(aladin.getRotation?.()??aladin.view?.rotation);
+        if(Number.isFinite(liveRotation))gvAuthoritativeRotation=liveRotation;
+    }catch(_){}
     const a=gvEarthScreenBearing();
     if(!gvEarthPointerActive){rotor.style.display='none';rotor.style.opacity='0';return}
     rotor.style.display='block';
