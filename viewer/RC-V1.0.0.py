@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0010';
+const GV200001_BUILD='0011';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1316,9 +1316,18 @@ function validateDestination(destination){
 
 
 function gvPrewarmProviderWebsite(destination){
-    // BUILD 0003 performance rollback: provider websites must remain dormant
-    // while Galaxy Viewer is visible. Loading begins only after Website press.
-    return;
+    const url=String(destination?.sourceUrl||'').trim();
+    if(!/^https:\/\//i.test(url))return;
+    try{
+        const prewarm='galaxyviewerbrowser://open?mode=prewarm&url='+encodeURIComponent(url);
+        const frame=document.createElement('iframe');
+        frame.setAttribute('aria-hidden','true');
+        frame.style.cssText='position:fixed;width:1px;height:1px;left:-9999px;top:-9999px;border:0;opacity:0;pointer-events:none';
+        frame.src=prewarm;
+        document.body.appendChild(frame);
+        setTimeout(()=>frame.remove(),1500);
+        console.info('GV PROVIDER PREWARM REQUESTED',{url});
+    }catch(error){console.warn('GV PROVIDER PREWARM FAILED',error)}
 }
 
 let gvFirstDestinationPreload=null;
