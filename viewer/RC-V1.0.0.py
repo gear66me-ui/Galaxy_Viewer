@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0028';
+const GV200001_BUILD='0029';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -304,11 +304,6 @@ const updateDirectionalReticle=()=>{
 
 const directionalReticleTimer=setInterval(updateDirectionalReticle,40);
 updateDirectionalReticle();
-window.addEventListener(
-    'beforeunload',
-    ()=>clearInterval(directionalReticleTimer),
-    {once:true}
-);
 
 // ============================================================================
 // SECTION 041B — EARTH BEARING POINTER / ARRIVAL DISTANCE
@@ -389,7 +384,6 @@ window.addEventListener('gv-native-viewer-resumed',gvRecoverViewerAfterNativeRet
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')gvRecoverViewerAfterNativeReturn()});
 window.addEventListener('focus',gvRecoverViewerAfterNativeReturn);
 window.addEventListener('pageshow',gvRecoverViewerAfterNativeReturn);
-window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
 
 function gvFormatEarthDistance(destination){
     // Runtime catalog distance is Earth-relative MLY, matching destinationPresentation.distance().
