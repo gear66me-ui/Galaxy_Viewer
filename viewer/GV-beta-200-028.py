@@ -786,11 +786,12 @@ if(gvTripHud){
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
 
-    // GV028 active-trip cycle: three stationary chevrons, 333 ms sequential pulse.
-    // No translation/motion: only opacity changes, matching the established website-icon cadence.
+    // GV028 active-trip cycle: exact animation sequence copied from
+    // destination-presentation 0017 .gvdp-web-vector / gvdpWebVector.
+    // Geometry only is rotated horizontal and reduced for the TRIP HUD.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='@keyframes gv028-trip-pulse-1{0%,32.9%{opacity:1}33%,99.9%{opacity:.18}}@keyframes gv028-trip-pulse-2{0%,32.9%{opacity:.18}33%,65.9%{opacity:1}66%,99.9%{opacity:.18}}@keyframes gv028-trip-pulse-3{0%,65.9%{opacity:.18}66%,99.9%{opacity:1}}#gv-trip-pointer.gv-traveling span:nth-child(1){animation:gv028-trip-pulse-1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling span:nth-child(2){animation:gv028-trip-pulse-2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling span:nth-child(3){animation:gv028-trip-pulse-3 999ms steps(1,end) infinite}';
+    gvTripPointerStyle.textContent='#gv-trip-pointer .gv028-trip-vector{position:absolute;top:50%;width:7px;height:7px;border-right:2px solid #DDF8FF;border-bottom:2px solid #DDF8FF;transform:translateY(-50%) rotate(-45deg);opacity:.12;filter:drop-shadow(0 0 3px #58BFFF);animation:gv028TripWebVector 1.65s ease-in-out infinite}#gv-trip-pointer .gv028-trip-vector:nth-child(1){left:0;animation-delay:0s}#gv-trip-pointer .gv028-trip-vector:nth-child(2){left:6px;animation-delay:.22s}#gv-trip-pointer .gv028-trip-vector:nth-child(3){left:12px;animation-delay:.44s}@keyframes gv028TripWebVector{0%,15%,100%{opacity:.10;filter:drop-shadow(0 0 1px rgba(88,191,255,.22))}28%{opacity:1;filter:drop-shadow(0 0 3px #DDF8FF) drop-shadow(0 0 7px #58BFFF)}48%{opacity:.42;filter:drop-shadow(0 0 4px #58BFFF)}68%{opacity:.10}}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
@@ -801,28 +802,16 @@ if(gvTripHud){
         top:'82px',
         zIndex:'7212',
         display:'none',
-        alignItems:'center',
-        gap:'1px',
-        width:'20px',
+        width:'21px',
         height:'12px',
         visibility:'hidden',
         pointerEvents:'none',
         userSelect:'none'
     });
     for(let i=0;i<3;i++){
-        const tooth=document.createElement('span');
-        Object.assign(tooth.style,{
-            display:'block',
-            width:'6px',
-            height:'6px',
-            boxSizing:'border-box',
-            borderTop:'2px solid #78FFAB',
-            borderRight:'2px solid #78FFAB',
-            transform:'rotate(45deg)',
-            opacity:'.18',
-            filter:'drop-shadow(0 0 2px rgba(120,255,171,.9))'
-        });
-        gvTripPointer.appendChild(tooth);
+        const vector=document.createElement('i');
+        vector.className='gv028-trip-vector';
+        gvTripPointer.appendChild(vector);
     }
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
