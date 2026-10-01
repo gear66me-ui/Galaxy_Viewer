@@ -358,7 +358,8 @@ function gvFormatEarthDistance(destination){
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner'))return;
     const style=document.createElement('style');style.textContent=`
-#gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;width:auto;max-width:33vw;min-width:0;min-height:0;padding:2px 4px;border:0;border-radius:0;background:transparent;box-shadow:none;font:400 8px/1 "GV Space Age",sans-serif;letter-spacing:.12px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 4px rgba(255,216,74,.75);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
+#gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:max-content;max-width:calc(100vw - 24px);min-width:0;min-height:0;padding:3px 5px;border:1px solid #58BFFF;border-radius:5px;background:transparent;box-shadow:0 0 5px rgba(88,191,255,.48);font:400 8px/1 "GV Space Age",sans-serif;letter-spacing:.08px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
+#gv-earth-distance-banner .gv-earth-distance-icon{display:inline-block;font:11px/1 system-ui,sans-serif;letter-spacing:0;filter:drop-shadow(0 0 2px rgba(88,191,255,.55))}
 #gv-earth-distance-banner.gv-visible{opacity:1;visibility:visible}
 #gv-earth-distance-banner .gv-earth-distance-tick{display:inline-block;margin-left:7px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid #FFD84A;filter:drop-shadow(0 0 4px rgba(255,216,74,.9));vertical-align:-1px}`;document.head.appendChild(style);
     const b=document.createElement('div');b.id='gv-earth-distance-banner';document.body.appendChild(b);
@@ -366,7 +367,7 @@ function gvInstallEarthDistanceBanner(){
 function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible')}
 function gvShowEarthDistance(destination){
     gvInstallEarthDistanceBanner();const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);if(!b||!text)return;
-    b.innerHTML=`${text}<span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
+    b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
     const card=document.querySelector('.gvdp-card');const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`};place();requestAnimationFrame(place);
     b.classList.add('gv-visible');
 }
