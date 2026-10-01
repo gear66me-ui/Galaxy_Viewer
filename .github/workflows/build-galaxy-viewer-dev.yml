@@ -156,6 +156,9 @@ jobs:
           # Nanoscopic gates: prove this remains the hosted 0049 architecture.
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/dev/MainActivity.java"
           grep -q 'GalaxyViewerWebBrowser/0049' "$MAIN"
+          # DEV launch URL is patched below; validate the historical shell before patching.
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
+          sed -i 's#https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=#https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/apk-confirmed-splash.html?dev=#g' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/apk-confirmed-splash.html?dev=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'viewerWeb=viewer()' "$MAIN"
