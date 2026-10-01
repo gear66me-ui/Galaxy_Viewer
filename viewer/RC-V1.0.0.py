@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0027';
+const GV200001_BUILD='0028';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1409,8 +1409,8 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     if(!installed)await installWhenReady(prepared);else await displayReady;
     const registeredCenter=prepared?.imageCenter,registeredRa=Number(registeredCenter?.[0]),registeredDec=Number(registeredCenter?.[1]),registeredFov=Number(prepared?.finalFov),registeredRotation=Number(prepared?.rotation);
     if(Number.isFinite(registeredRa)&&Number.isFinite(registeredDec)&&Number.isFinite(registeredFov)&&registeredFov>0&&Number.isFinite(registeredRotation)){
-        gvDoeCommand('gotoRaDec',[registeredRa,registeredDec]);aladin.gotoRaDec(registeredRa,registeredDec);coordinate?.update(registeredRa,registeredDec);
-        gvDoeCommand('setFov',[registeredFov]);aladin.setFov(registeredFov);gvDoeCommand('setRotation',[registeredRotation]);aladin.setRotation(registeredRotation);
+        gvDoeCommand('gotoRaDec',[registeredRa,registeredDec]);aladin.gotoRaDec(registeredRa,registeredDec);coordinate?.update(registeredRa,registeredDec);gvSetEarthPointerPosition(registeredRa,registeredDec,true);
+        gvDoeCommand('setFov',[registeredFov]);aladin.setFov(registeredFov);gvDoeCommand('setRotation',[registeredRotation]);aladin.setRotation(registeredRotation);gvUpdateEarthBearingPointer();
     }
     travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
 }
