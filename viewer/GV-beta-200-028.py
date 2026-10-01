@@ -321,7 +321,7 @@ function gvInstallEarthBearingPointer(){
     rotor.setAttribute('aria-hidden','true');
     Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
     const tick=document.createElement('i');
-    Object.assign(tick.style,{position:'absolute',left:'50%',top:'10px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'5.6px solid transparent',borderRight:'5.6px solid transparent',borderBottom:'9.8px solid #FFD84A',filter:'drop-shadow(0 0 1px #000) drop-shadow(0 0 2px rgba(255,216,74,.95))',zIndex:'20'});
+    Object.assign(tick.style,{position:'absolute',left:'50%',top:'15.47px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'5.625px solid transparent',borderRight:'5.625px solid transparent',borderBottom:'9.954px solid #FFD84A',filter:'drop-shadow(0 0 1px #000) drop-shadow(0 0 2px rgba(255,216,74,.95))',zIndex:'20'});
     rotor.appendChild(tick);
     reticle.appendChild(rotor);
 }
@@ -361,12 +361,12 @@ const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,40);
 window.addEventListener('beforeunload',()=>clearInterval(gvEarthBearingTimer),{once:true});
 
 function gvFormatEarthDistance(destination){
+    // Runtime catalog distance is Earth-relative MLY, matching destinationPresentation.distance().
     const v=Number(destination?.distanceMly??destination?.distance);
     if(!(v>0))return '';
-    const unit=String(destination?.distanceUnit||destination?.distanceUnits||'').toUpperCase();
-    if(unit.includes('BLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} BLY`;
-    if(unit.includes('KLY'))return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} KLY`;
-    return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY`;
+    if(v>=1000)return `${(v/1000).toLocaleString('en-US',{maximumFractionDigits:2})} BLY`;
+    if(v>=1)return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY`;
+    return `${(v*1000).toLocaleString('en-US',{maximumFractionDigits:v<0.01?2:1})} KLY`;
 }
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner'))return;
