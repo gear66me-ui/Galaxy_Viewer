@@ -786,11 +786,11 @@ if(gvTripHud){
     });
     gvTripHud.parentElement?.appendChild(gvTripLabel);
 
-    // GV028 trip cue: stationary three-chevron chase.
-    // Exact 333 ms phases: [1,0,0] -> [.66,1,0] -> [.33,.66,1] -> repeat.
+    // GV028 trip cue — copied from the established HD/archive chevron visual language.
+    // Original colors/glow/stroke proportions preserved; only uniformly scaled and laid out horizontally.
     const gvTripPointerStyle=document.createElement('style');
     gvTripPointerStyle.id='gv028-trip-pointer-style';
-    gvTripPointerStyle.textContent='#gv-trip-pointer .gv-trip-chevron{opacity:0}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(1){animation:gv028TripChevron1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(2){animation:gv028TripChevron2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(3){animation:gv028TripChevron3 999ms steps(1,end) infinite}@keyframes gv028TripChevron1{0%,33.32%{opacity:1}33.33%,66.65%{opacity:.66}66.66%,100%{opacity:.33}}@keyframes gv028TripChevron2{0%,33.32%{opacity:0}33.33%,66.65%{opacity:1}66.66%,100%{opacity:.66}}@keyframes gv028TripChevron3{0%,66.65%{opacity:0}66.66%,100%{opacity:1}}';
+    gvTripPointerStyle.textContent='@keyframes gv028HdChevron1{0%,33.32%{opacity:1}33.33%,66.65%{opacity:.66}66.66%,100%{opacity:.33}}@keyframes gv028HdChevron2{0%,33.32%{opacity:0}33.33%,66.65%{opacity:1}66.66%,100%{opacity:.66}}@keyframes gv028HdChevron3{0%,66.65%{opacity:0}66.66%,100%{opacity:1}}#gv-trip-pointer .gv-trip-chevron{opacity:0}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(1){animation:gv028HdChevron1 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(2){animation:gv028HdChevron2 999ms steps(1,end) infinite}#gv-trip-pointer.gv-traveling .gv-trip-chevron:nth-child(3){animation:gv028HdChevron3 999ms steps(1,end) infinite}';
     document.head.appendChild(gvTripPointerStyle);
     const gvTripPointer=document.createElement('div');
     gvTripPointer.id='gv-trip-pointer';
@@ -798,12 +798,12 @@ if(gvTripHud){
     Object.assign(gvTripPointer.style,{
         position:'absolute',
         right:'61px',
-        top:'82px',
+        top:'81px',
         zIndex:'7212',
         display:'none',
         alignItems:'center',
-        gap:'1px',
-        width:'17px',
+        gap:'0px',
+        width:'18px',
         height:'12px',
         visibility:'hidden',
         pointerEvents:'none',
@@ -813,15 +813,45 @@ if(gvTripHud){
         const tooth=document.createElement('span');
         tooth.className='gv-trip-chevron';
         Object.assign(tooth.style,{
+            position:'relative',
             display:'block',
-            width:'5px',
-            height:'5px',
-            boxSizing:'border-box',
-            borderTop:'2px solid #78FFAB',
-            borderRight:'2px solid #78FFAB',
-            transform:'rotate(45deg)',
-            filter:'drop-shadow(0 0 2px rgba(120,255,171,.90))'
+            width:'6px',
+            height:'6px',
+            boxSizing:'border-box'
         });
+        const outer=document.createElement('i');
+        const inner=document.createElement('b');
+        Object.assign(outer.style,{
+            position:'absolute',
+            left:'50%',
+            top:'50%',
+            width:'5.1px',
+            height:'5.1px',
+            borderStyle:'solid',
+            borderLeft:'0',
+            borderBottom:'0',
+            borderWidth:'1.8px',
+            borderColor:'#7CCBFF',
+            boxSizing:'border-box',
+            filter:'drop-shadow(0 0 1.2px rgba(88,191,255,.90))',
+            transform:'translate(-38%,-50%) rotate(45deg)'
+        });
+        Object.assign(inner.style,{
+            position:'absolute',
+            left:'50%',
+            top:'50%',
+            width:'3.9px',
+            height:'3.9px',
+            borderStyle:'solid',
+            borderLeft:'0',
+            borderBottom:'0',
+            borderWidth:'1.2px',
+            borderColor:'#DFFBFF',
+            boxSizing:'border-box',
+            filter:'drop-shadow(0 0 .9px rgba(98,216,255,.80))',
+            transform:'translate(-34%,-50%) rotate(45deg)'
+        });
+        tooth.append(outer,inner);
         gvTripPointer.appendChild(tooth);
     }
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
