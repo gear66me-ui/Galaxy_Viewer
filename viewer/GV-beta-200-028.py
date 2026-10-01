@@ -761,19 +761,23 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
 // The HUD's render() owns its children, so the label must never be inserted inside the HUD.
 const gvTripHud=headsUpDisplay.root;
 if(gvTripHud){
-    gvTripHud.style.top='52px';
+    // The HUD module stylesheet owns top:128px. Override that class rule explicitly.
+    const gvTripGeometry=document.createElement('style');
+    gvTripGeometry.id='gv028-trip-geometry';
+    gvTripGeometry.textContent='.gv-heads-up-display{top:78px!important}.gv-hud-row{min-height:18px!important;padding:1px 2px!important}';
+    document.head.appendChild(gvTripGeometry);
     const gvTripLabel=document.createElement('div');
     gvTripLabel.id='gv-trip-label';
     gvTripLabel.textContent='TRIP';
     Object.assign(gvTripLabel.style,{
         position:'absolute',
         right:'8px',
-        top:'41px',
+        top:'65px',
         zIndex:'7211',
         width:'48px',
         textAlign:'center',
         color:'#DDF8FF',
-        font:'400 8px/1 "GV Space Age",Arial,sans-serif',
+        font:'400 8px/8px "GV Space Age",Arial,sans-serif',
         letterSpacing:'1px',
         textShadow:'0 0 5px rgba(88,191,255,.65)',
         pointerEvents:'none',
