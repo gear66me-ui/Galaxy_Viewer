@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0044';
+const GV200001_BUILD='0045';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-BOM05714b2c06e2-DPdc5c1046027d`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -979,8 +979,10 @@ async function gvRuntimeAvmRecord(destination){
     const catalog=await gvLoadAvmRuntimeCatalog();
     const url=directHdUrl(destination).toLowerCase();
     const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
-    const record=catalog.byId.get(id)||catalog.byUrl.get(url);
-    if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(id||url));
+    const record=catalog.byUrl.get(url)||catalog.byId.get(id);
+    if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(url||id));
+    const recordUrl=String(record?.imageUrl||'').trim().toLowerCase();
+    if(url&&recordUrl!==url)throw new Error('GV AVM RUNTIME IMAGE MISMATCH: destination='+url+' record='+recordUrl);
     return record;
 }
 function gvSyntheticWcsFromRuntimeRecord(record,width,height){
@@ -1283,7 +1285,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-    return {destination,record,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
+    return {destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
@@ -1479,7 +1481,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
-        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
+        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
     }
     let prepared=null;
     preparedPromise.then(value=>{prepared=value;headsUpDisplay.markReady?.(v.destination)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
@@ -1493,7 +1495,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvDoeCommand('gotoRaDec',[registeredRa,registeredDec]);aladin.gotoRaDec(registeredRa,registeredDec);coordinate?.update(registeredRa,registeredDec);gvSetEarthPointerPosition(registeredRa,registeredDec,true);
         gvDoeCommand('setFov',[registeredFov]);aladin.setFov(registeredFov);gvDoeCommand('setRotation',[registeredRotation]);aladin.setRotation(registeredRotation);gvUpdateEarthBearingPointer();
     }
-    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.record?.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
+    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
 }
 
 // ============================================================================
