@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0045';
+const GV200001_BUILD='0046';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-BOM05714b2c06e2-DPdc5c1046027d`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -382,8 +382,17 @@ function gvResyncEarthPointerFromAladin(){
     }catch(error){console.error('GV EARTH POINTER RESYNC FAILED',error)}
 }
 function gvRecoverViewerAfterNativeReturn(){
+    const redraw=()=>{
+        try{
+            window.dispatchEvent(new Event('resize'));
+            if(typeof aladin.resize==='function')aladin.resize();
+            else if(typeof aladin.requestRedraw==='function')aladin.requestRedraw();
+            else if(typeof aladin.redraw==='function')aladin.redraw();
+        }catch(error){console.error('GV ALADIN RESUME REDRAW FAILED',error)}
+    };
     requestAnimationFrame(()=>{
         try{
+            redraw();
             gvResyncEarthPointerFromAladin();
             if(typeof navigationInFlight!=='undefined'&&navigationInFlight){
                 navigationInFlight=false;
@@ -392,6 +401,7 @@ function gvRecoverViewerAfterNativeReturn(){
                 galaxyNavigator?.setBusy?.(false);
                 updateNavigationAvailability?.();
             }
+            setTimeout(redraw,400);
         }catch(error){console.error('GV VIEWER RETURN RECOVERY FAILED',error)}
     });
 }
