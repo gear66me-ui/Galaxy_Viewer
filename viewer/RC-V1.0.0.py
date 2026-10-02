@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0034';
+const GV200001_BUILD='0035';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -453,7 +453,7 @@ function gvUpdateLivePhysicalScale(){
         gvLiveScaleValueLy=gvChooseLiveScaleValue(lyPerPx);widthPx=gvLiveScaleValueLy/lyPerPx;
     }
     line.style.width=`${Math.max(4,widthPx)}px`;label.textContent=gvFormatLiveScale(gvLiveScaleValueLy);
-    const br=b.getBoundingClientRect();s.style.bottom=`${Math.max(0,innerHeight-br.top+4)}px`;s.classList.add('gv-visible');
+    const br=b.getBoundingClientRect();s.style.bottom=`${Math.max(0,innerHeight-br.top+8)}px`;s.classList.add('gv-visible');
 }
 function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null}
 function gvShowEarthDistance(destination){
