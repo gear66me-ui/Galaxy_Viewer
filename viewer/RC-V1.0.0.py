@@ -922,6 +922,19 @@ const DIRECT_HD_LAYER='GV_DIRECT_HD_0056';
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
+const GV_VIGNETTE_EXCEPTIONS=Object.freeze({
+    potw1947a:Object.freeze({mode:'edge-only',edgeBlend:0.10,decay:1.25})
+});
+function gvVignetteException(destination,record){
+    const values=[
+        record?.archiveId,record?.id,record?.imageUrl,record?.selectedImageUrl,record?.sourceUrl,
+        destination?.archiveId,destination?.id,destination?.imageUrl,destination?.selectedImageUrl,destination?.sourceUrl
+    ].map(value=>String(value||'').toLowerCase());
+    for(const [key,config] of Object.entries(GV_VIGNETTE_EXCEPTIONS)){
+        if(values.some(value=>value===key||value.includes(key)))return config;
+    }
+    return null;
+}
 let directHdOverlay=null;
 let directHdDestination=null;
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
@@ -1198,7 +1211,7 @@ function releaseZoom(){
 for(const ev of ['pointerdown','pointermove'])zoomControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
 for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.hit.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
 
-async function gvLoadGate2MImage(url){
+async function gvLoadGate2MImage(url,destination=null,record=null){
     if(typeof createImageBitmap!=='function')throw new Error('createImageBitmap unavailable');
     const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0037'];
     let last='';
@@ -1214,8 +1227,22 @@ async function gvLoadGate2MImage(url){
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(bitmap,0,0,w,h);
+                const exception=gvVignetteException(destination,record);
                 const p=VIGNETTE,cx=w/2,cy=h/2,actualAspect=Math.max(w/h,h/w),highAspect=actualAspect>1.3;
-                if(highAspect){
+                if(exception?.mode==='edge-only'){
+                    const imageData=ctx.getImageData(0,0,w,h),d=imageData.data;
+                    const edgePixels=Math.max(1,Math.min(w,h)*Number(exception.edgeBlend||0));
+                    const decay=Math.max(.1,Number(exception.decay||1));
+                    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+                        const i=(yy*w+xx)*4,edgePx=Math.min(xx,yy,w-1-xx,h-1-yy);
+                        const t=Math.max(0,Math.min(1,edgePx/edgePixels));
+                        const smooth=t*t*(3-2*t);
+                        const expTail=(1-Math.exp(-decay*t))/(1-Math.exp(-decay));
+                        const alpha=.72*smooth+.28*expTail;
+                        d[i+3]=Math.round(d[i+3]*Math.max(0,Math.min(1,alpha)));
+                    }
+                    ctx.putImageData(imageData,0,0);
+                }else if(highAspect){
                     const imageData=ctx.getImageData(0,0,w,h),d=imageData.data,dia=1.31,rx=w*.5*dia,ry=h*.5*dia;
                     const core=0.68,blend=0.24,decay=1.75;
                     for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
@@ -1252,7 +1279,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
-    const raster=await gvLoadGate2MImage(url);
+    const raster=await gvLoadGate2MImage(url,destination,record);
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
