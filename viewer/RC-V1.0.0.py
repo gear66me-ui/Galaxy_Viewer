@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0030';
+const GV200001_BUILD='0031';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -197,6 +197,21 @@ const aladin=A.aladin('#aladin-cosmic-command-test',{
     showCatalog:false,
     showCooGrid:false
 });
+
+// Galaxy Viewer owns the sky interaction surface. Aladin Lite 3.8.2 starts an
+// independent 800 ms one-finger long-touch timer whose callback calls
+// contextMenu._show() directly, even when showContextMenu is false.
+// Disable that presentation path without intercepting touchstart/touchmove,
+// so normal pan, pinch-zoom and rotation remain under Aladin control.
+if(aladin.contextMenu){
+    try{aladin.contextMenu._hide?.()}catch(_){}
+    aladin.contextMenu._show=()=>{};
+}
+const gvSkyRoot=document.getElementById('aladin-cosmic-command-test');
+gvSkyRoot?.addEventListener('contextmenu',event=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+},{capture:true});
 
 
 // ============================================================================
