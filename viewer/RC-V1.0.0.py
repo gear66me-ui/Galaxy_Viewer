@@ -399,17 +399,56 @@ function gvInstallEarthDistanceBanner(){
 #gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:max-content;max-width:calc(100vw - 24px);min-width:0;min-height:0;padding:3px 5px;border:1px solid #58BFFF;border-radius:5px;background:transparent;box-shadow:0 0 5px rgba(88,191,255,.48);font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
 #gv-earth-distance-banner .gv-earth-distance-icon{display:inline-block;font:11px/1 system-ui,sans-serif;letter-spacing:0;filter:drop-shadow(0 0 2px rgba(88,191,255,.55))}
 #gv-earth-distance-banner.gv-visible{opacity:1;visibility:visible}
-#gv-earth-distance-banner .gv-earth-distance-tick{display:inline-block;margin-left:7px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid #FFD84A;filter:drop-shadow(0 0 4px rgba(255,216,74,.9));vertical-align:-1px}`;document.head.appendChild(style);
+#gv-earth-distance-banner .gv-earth-distance-tick{display:inline-block;margin-left:7px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid #FFD84A;filter:drop-shadow(0 0 4px rgba(255,216,74,.9));vertical-align:-1px}
+#gv-live-physical-scale{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear;font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1px;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);white-space:nowrap}
+#gv-live-physical-scale.gv-visible{opacity:1;visibility:visible}
+#gv-live-physical-scale .gv-live-scale-label{margin-bottom:4px}
+#gv-live-physical-scale .gv-live-scale-line{position:relative;height:1px;background:#FFD84A;box-shadow:0 0 4px rgba(255,216,74,.9);min-width:4px}
+#gv-live-physical-scale .gv-live-scale-line::before,#gv-live-physical-scale .gv-live-scale-line::after{content:"";position:absolute;top:50%;width:1px;height:9px;background:#FFD84A;box-shadow:0 0 4px rgba(255,216,74,.9);transform:translateY(-50%)}
+#gv-live-physical-scale .gv-live-scale-line::before{left:0}
+#gv-live-physical-scale .gv-live-scale-line::after{right:0}`;document.head.appendChild(style);
     const b=document.createElement('div');b.id='gv-earth-distance-banner';document.body.appendChild(b);
+    const s=document.createElement('div');s.id='gv-live-physical-scale';s.innerHTML='<span class="gv-live-scale-label"></span><span class="gv-live-scale-line"></span>';document.body.appendChild(s);
 }
-function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible')}
+let gvLiveScaleValueLy=null;
+const gvLiveScaleNominalPx=25*96/25.4;
+function gvFormatLiveScale(ly){
+    if(!(ly>0))return '';
+    if(ly>=1e9)return `${(ly/1e9).toLocaleString('en-US',{maximumFractionDigits:2})} BLY`;
+    if(ly>=1e6)return `${(ly/1e6).toLocaleString('en-US',{maximumFractionDigits:2})} MLY`;
+    if(ly>=1e3)return `${(ly/1e3).toLocaleString('en-US',{maximumFractionDigits:2})} KLY`;
+    return `${ly.toLocaleString('en-US',{maximumFractionDigits:2})} LY`;
+}
+function gvChooseLiveScaleValue(lyPerPx){
+    const targetLy=lyPerPx*gvLiveScaleNominalPx;if(!(targetLy>0))return null;
+    const exponent=Math.floor(Math.log10(targetLy)),candidates=[];
+    for(let e=exponent-2;e<=exponent+2;e++)for(const m of [1,2,5])candidates.push(m*Math.pow(10,e));
+    candidates.sort((a,b)=>Math.abs(a/lyPerPx-gvLiveScaleNominalPx)-Math.abs(b/lyPerPx-gvLiveScaleNominalPx));
+    return candidates[0]||null;
+}
+function gvUpdateLivePhysicalScale(){
+    const s=document.getElementById('gv-live-physical-scale'),line=s?.querySelector('.gv-live-scale-line'),label=s?.querySelector('.gv-live-scale-label'),b=document.getElementById('gv-earth-distance-banner');
+    if(!s||!line||!label||!b||!b.classList.contains('gv-visible')||!activeDestination){s?.classList.remove('gv-visible');return}
+    const distanceMly=Number(activeDestination?.distanceMly??activeDestination?.distance),rawFov=aladin.getFov?.(),fovX=Number(Array.isArray(rawFov)?rawFov[0]:rawFov),viewportWidth=Number(document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth);
+    if(!(distanceMly>0)||!(fovX>0)||!(viewportWidth>0)){s.classList.remove('gv-visible');return}
+    const physicalWidthLy=2*distanceMly*1e6*Math.tan(fovX*Math.PI/360),lyPerPx=physicalWidthLy/viewportWidth;
+    if(!(lyPerPx>0)||!Number.isFinite(lyPerPx)){s.classList.remove('gv-visible');return}
+    let widthPx=gvLiveScaleValueLy>0?gvLiveScaleValueLy/lyPerPx:0;
+    if(!(gvLiveScaleValueLy>0)||widthPx<gvLiveScaleNominalPx*.5||widthPx>gvLiveScaleNominalPx*2){
+        gvLiveScaleValueLy=gvChooseLiveScaleValue(lyPerPx);widthPx=gvLiveScaleValueLy/lyPerPx;
+    }
+    line.style.width=`${Math.max(4,widthPx)}px`;label.textContent=gvFormatLiveScale(gvLiveScaleValueLy);
+    const br=b.getBoundingClientRect();s.style.bottom=`${Math.max(0,innerHeight-br.top+4)}px`;s.classList.add('gv-visible');
+}
+function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null}
 function gvShowEarthDistance(destination){
     gvInstallEarthDistanceBanner();const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);if(!b||!text)return;
     b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
-    const card=document.querySelector('.gvdp-card');const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`};place();requestAnimationFrame(place);
-    b.classList.add('gv-visible');
+    const card=document.querySelector('.gvdp-card');const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};place();requestAnimationFrame(place);
+    b.classList.add('gv-visible');gvLiveScaleValueLy=null;gvUpdateLivePhysicalScale();
 }
 gvInstallEarthDistanceBanner();
+setInterval(gvUpdateLivePhysicalScale,80);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
