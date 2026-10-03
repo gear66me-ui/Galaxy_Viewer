@@ -180,17 +180,15 @@ jobs:
           s=s.replace(old,new,1)
 
           # Provider handoff fix: Browser 0057 must not hide the browser layer for 4 seconds.
-          old='''    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);
-    if(web!=null&&!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);
-    fetchPointer();
-    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000);
-'''
+          old=("    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);\n"
+               "    if(web!=null&&!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);\n"
+               "    fetchPointer();\n"
+               "    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000);\n")
           assert old in s
-          new='''    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}
-    if(web!=null){web.requestFocus();if(!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);}
-    fetchPointer();
-    immersive();
-'''
+          new=("    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}\n"
+               "    if(web!=null){web.requestFocus();if(!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);}\n"
+               "    fetchPointer();\n"
+               "    immersive();\n")
           s=s.replace(old,new,1)
           p.write_text(s)
           PY
