@@ -1,0 +1,262 @@
+name: TEMP Spitzer expansion candidate harvest
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-spitzer-expansion-harvest.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install requests
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Harvest AstroPix Spitzer candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+          mkdir -p viewer/image-databases/Spitzer/rebuild
+
+          python - <<'PY'
+          from pathlib import Path
+          import requests, json, re
+
+          FEED="https://www.astropix.org/link/913?format=json"
+
+          reviewed=set("""
+ssc2009-03a1
+ssc2009-03b2
+ssc2005-20a3
+ssc2024-02a
+ssc2024-02b
+ssc2004-19a2
+ssc2019-11a
+ssc2019-11b
+ssc2019-15a
+ssc2019-15b
+ssc2019-15c
+ssc2019-15d
+sig05-019b
+ssc2005-11a2
+ssc2005-11a3
+ssc2012-06a
+ssc2004-12a1
+ssc2004-12a2
+ssc2010-02a1
+ssc2012-01b
+ssc2006-11a1
+ssc2006-11b1
+ssc2006-17a1
+ssc2006-17b1
+ssc2009-15a2
+ssc2004-14a2
+ssc2004-14a3
+ssc2005-19a2
+ssc2023-01b
+ssc2013-07a1
+ssc2013-07a2
+ssc2013-07a3
+ssc2018-05a
+ssc2019-03a
+ssc2019-03c
+ssc2006-09a1
+ssc2021-06b
+ssc2004-09a1
+sig09-004
+ssc2009-08b1
+ssc2004-07b1
+ssc2009-06a1
+sig05-006a
+ssc2006-08a1
+ssc2008-12b
+ssc2008-14a
+sig12-008
+ssc2023-04
+sig05-016
+sig11-017
+ssc2009-14a1
+sig05-013
+sig09-006
+sig05-014
+ssc2023-02
+ssc2017-14a1
+ssc2019-13a
+sig08-008
+sig05-017
+sig05-011
+sig05-015
+sig06-003
+sig06-005
+sig06-010
+sig06-024
+sig09-003
+ssc2003-06d5
+""".split())
+
+          s=requests.Session()
+          s.headers.update({"User-Agent":"GalaxyViewer-Spitzer-Expansion/1.0"})
+          r=s.get(FEED,timeout=120)
+          r.raise_for_status()
+          allrows=r.json()
+          if not isinstance(allrows,list) or len(allrows)<600:
+              raise SystemExit(f"Unexpected AstroPix feed length: {len(allrows) if isinstance(allrows,list) else type(allrows)}")
+
+          def full_wcs(x):
+              return all([
+                  x.get("wcs_coordinate_frame"),
+                  isinstance(x.get("wcs_reference_value"),list) and len(x["wcs_reference_value"])==2,
+                  isinstance(x.get("wcs_reference_dimension"),list) and len(x["wcs_reference_dimension"])==2,
+                  isinstance(x.get("wcs_reference_pixel"),list) and len(x["wcs_reference_pixel"])==2,
+                  isinstance(x.get("wcs_scale"),list) and len(x["wcs_scale"])==2,
+                  x.get("wcs_rotation") not in (None,""),
+                  x.get("wcs_projection"),
+                  x.get("resource_url"),
+                  int(x.get("image_width") or 0)>0,
+                  int(x.get("image_height") or 0)>0,
+              ])
+
+          def galaxyish(x):
+              subjects=[str(v).strip() for v in (x.get("subject") or [])]
+              if any(v.startswith("C.5.") or v=="C.5" for v in subjects):
+                  return True
+              text=" ".join([
+                  str(x.get("title") or ""),
+                  str(x.get("headline") or ""),
+                  " ".join(map(str,x.get("object_name") or []))
+              ]).lower()
+              galaxy_terms=(" galaxy","galaxies","messier ","ngc ","arp ","ugc ","magellanic cloud")
+              return any(t in (" "+text) for t in galaxy_terms)
+
+          def is_artworkish(x):
+              t=str(x.get("image_type") or "").lower()
+              title=str(x.get("title") or "").lower()
+              bad=("artwork","illustration","chart","diagram","model","annotated")
+              return t!="observation" or any(b in title for b in bad)
+
+          def score(x):
+              facilities=[str(v).strip().lower() for v in (x.get("telescope_facility") or [])]
+              pure=1 if facilities and all(v=="spitzer" for v in facilities) else 0
+              tif=1 if re.search(r"\.tiff?(?:\?|$)",str(x.get("resource_url") or ""),re.I) else 0
+              full=1 if str(x.get("wcs_quality") or "").lower()=="full" else 0
+              area=int(x.get("image_width") or 0)*int(x.get("image_height") or 0)
+              modern=1 if str(x.get("reference_url") or "").startswith("https://www.spitzer.caltech.edu/") else 0
+              return (pure,full,tif,modern,area)
+
+          candidates=[]
+          for x in allrows:
+              aid=str(x.get("image_id") or "").strip()
+              if not aid or aid in reviewed:
+                  continue
+              if str(x.get("publisher_id") or "").lower()!="spitzer":
+                  continue
+              if is_artworkish(x) or not galaxyish(x) or not full_wcs(x):
+                  continue
+              facilities=[str(v) for v in (x.get("telescope_facility") or [])]
+              rec={
+                  "archiveId":aid,
+                  "title":x.get("title"),
+                  "objectNames":x.get("object_name") or [],
+                  "subject":x.get("subject") or [],
+                  "releaseDate":x.get("image_release_date"),
+                  "credit":x.get("image_credit"),
+                  "referenceUrl":x.get("reference_url"),
+                  "resourceUrl":x.get("resource_url"),
+                  "resourceId":x.get("resource_id"),
+                  "imageWidth":int(x.get("image_width") or 0),
+                  "imageHeight":int(x.get("image_height") or 0),
+                  "coordinateFrame":x.get("wcs_coordinate_frame"),
+                  "equinox":x.get("wcs_equinox"),
+                  "referenceValue":[float(v) for v in x["wcs_reference_value"]],
+                  "referenceDimension":[float(v) for v in x["wcs_reference_dimension"]],
+                  "referencePixel":[float(v) for v in x["wcs_reference_pixel"]],
+                  "scale":[float(v) for v in x["wcs_scale"]],
+                  "rotation":float(x["wcs_rotation"]),
+                  "projection":x.get("wcs_projection"),
+                  "wcsQuality":x.get("wcs_quality"),
+                  "wcsNotes":x.get("wcs_notes"),
+                  "telescopeFacility":facilities,
+                  "instruments":x.get("telescope_instrument") or [],
+                  "spectralBand":x.get("spectral_band") or [],
+                  "spectralWavelength":x.get("spectral_wavelength") or [],
+                  "astropixId":x.get("astropix_id"),
+                  "astropixPage":f"https://www.astropix.org/image/spitzer/{aid}",
+                  "pureSpitzer":bool(facilities) and all(str(v).strip().lower()=="spitzer" for v in facilities),
+                  "originalTiff":bool(re.search(r"\.tiff?(?:\?|$)",str(x.get("resource_url") or ""),re.I))
+              }
+              candidates.append((score(x),rec))
+
+          candidates.sort(key=lambda z:z[0],reverse=True)
+          rows=[r for _,r in candidates]
+
+          summary={
+              "astroPixSpitzerFeedCount":len(allrows),
+              "reviewedExcluded":len(reviewed),
+              "newCompleteGalaxyCandidates":len(rows),
+              "pureSpitzer":sum(r["pureSpitzer"] for r in rows),
+              "originalTiff":sum(r["originalTiff"] for r in rows),
+              "goalAdditional":54,
+              "goalReached":len(rows)>=54
+          }
+
+          out={
+              "schema":"gv-spitzer-expansion-candidates-0001",
+              "purpose":"New Spitzer galaxy candidates harvested from the full AstroPix Spitzer feed; no live Galaxy Viewer runtime geometry reused.",
+              "sourceFeed":FEED,
+              "selection":{
+                  "excludePreviouslyReviewedIds":67,
+                  "imageType":"Observation only",
+                  "galaxyCriterion":"AVM galaxy subject C.5.* or galaxy-like object/title terms",
+                  "wcsCriterion":"complete image-native WCS plus original/source resource URL",
+                  "ranking":"pure Spitzer facility, Full WCS quality, TIFF source, current Spitzer reference URL, pixel area"
+              },
+              "summary":summary,
+              "records":rows
+          }
+
+          outpath=Path("viewer/image-databases/Spitzer/rebuild/gv-spitzer-expansion-candidates-0001.json")
+          outpath.write_text(json.dumps(out,indent=2)+"\n",encoding="utf-8")
+
+          top=rows[:100]
+          topout={
+              "schema":"gv-spitzer-expansion-top-0100-0001",
+              "source":"gv-spitzer-expansion-candidates-0001.json",
+              "summary":{
+                  "records":len(top),
+                  "pureSpitzer":sum(r["pureSpitzer"] for r in top),
+                  "originalTiff":sum(r["originalTiff"] for r in top)
+              },
+              "records":top
+          }
+          Path("viewer/image-databases/Spitzer/rebuild/gv-spitzer-expansion-top-0100-0001.json").write_text(json.dumps(topout,indent=2)+"\n",encoding="utf-8")
+
+          print("SUMMARY",json.dumps(summary,sort_keys=True),flush=True)
+          print("TOP20")
+          for r in rows[:20]:
+              print(r["archiveId"],"|",r["title"],"| pure",r["pureSpitzer"],"|",r["imageWidth"],"x",r["imageHeight"],"|",r["resourceUrl"],flush=True)
+          PY
+
+      - name: Commit candidate catalogs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Spitzer/rebuild/gv-spitzer-expansion-candidates-0001.json                   viewer/image-databases/Spitzer/rebuild/gv-spitzer-expansion-top-0100-0001.json
+          git diff --cached --stat
+          git commit -m "Spitzer: harvest new full-WCS galaxy expansion candidates"
+          git push origin HEAD:beta
