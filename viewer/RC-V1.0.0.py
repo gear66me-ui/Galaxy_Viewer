@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0025 — native browser resume + Back-to-Sky Earth pointer lifecycle recovery
+# BUILD 0048 — provider website prewarm starts only after landing
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0047';
+const GV200001_BUILD='0048';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-BOM05714b2c06e2-DPdc5c1046027d`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1481,7 +1481,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvEarthPointerActive=true;
     gvUpdateEarthBearingPointer();
     const v=validateDestination(destination),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
-    activeDestination=v.destination;gvPrewarmProviderWebsite(v.destination);destinationPresentation.depart();
+    activeDestination=v.destination;destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
@@ -1491,7 +1491,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
-        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
+        travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);gvPrewarmProviderWebsite(v.destination);return v.destination;
     }
     let prepared=null;
     preparedPromise.then(value=>{prepared=value;headsUpDisplay.markReady?.(v.destination)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
@@ -1505,7 +1505,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvDoeCommand('gotoRaDec',[registeredRa,registeredDec]);aladin.gotoRaDec(registeredRa,registeredDec);coordinate?.update(registeredRa,registeredDec);gvSetEarthPointerPosition(registeredRa,registeredDec,true);
         gvDoeCommand('setFov',[registeredFov]);aladin.setFov(registeredFov);gvDoeCommand('setRotation',[registeredRotation]);aladin.setRotation(registeredRotation);gvUpdateEarthBearingPointer();
     }
-    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);return v.destination;
+    travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);gvPrewarmProviderWebsite(v.destination);return v.destination;
 }
 
 // ============================================================================
