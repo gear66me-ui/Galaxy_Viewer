@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer - D Development APK
-# BUILD DEV 0001: 0049 hosted architecture recovery as Android App Bundle. No bundled viewer runtime.
+name: Build Galaxy Viewer DEV 0057 Tablet Test APK
+# DEV 0057: current Browser 0057 hosted architecture + tablet resize/back fixes. Side-by-side package; production untouched.
 
 on:
   push:
@@ -35,12 +35,12 @@ jobs:
       - name: Install launcher tools
         run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
-      - name: Generate 0049 hosted shell
+      - name: Generate current 0057 hosted shell + tablet fixes
         shell: bash
         run: |
           set -euo pipefail
           ROOT=/tmp/galaxy-viewer-dev
-          GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
+          GOLD=e180f2d651a94f7e64497e07d8bc732c459ff276
           rm -rf "$ROOT"
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab"
           mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
@@ -70,14 +70,14 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 1
-              versionName 'DEV-1.0.0.1'
+              versionCode 57
+              versionName 'DEV-0057-TABLET-1'
             }
           }
-          dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
+          dependencies { implementation 'androidx.webkit:webkit:1.14.0' }
           EOF
 
-          # Android launcher artwork only. Galaxy Viewer itself stays hosted, exactly like 0049.
+          # Android launcher artwork only. Galaxy Viewer stays hosted and follows the current launch/pointers.
           test -s viewer/artwork/app_icon_4.png
           cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
           cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
@@ -135,10 +135,10 @@ jobs:
             <uses-permission android:name="android.permission.INTERNET" />
             <application android:allowBackup="false" android:hardwareAccelerated="true"
               android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
-              android:label="Galaxy Viewer LAB" android:theme="@style/GalaxyViewerTheme"
+              android:label="Galaxy Viewer DEV 57" android:theme="@style/GalaxyViewerTheme"
               android:usesCleartextTraffic="false">
               <activity android:name=".MainActivity"
-                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
                 android:exported="true" android:screenOrientation="portrait">
                 <intent-filter>
                   <action android:name="android.intent.action.MAIN" />
@@ -149,18 +149,44 @@ jobs:
           </manifest>
           EOF
 
-          # Exact known-good 0049 browser/viewer Activity. Only Java package namespace changes.
+          # Freeze the current Browser 0057 source for this DEV experiment.
+          git fetch origin beta --no-tags
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer.lab;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # Nanoscopic gates: prove this remains the hosted 0049 architecture.
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
-          grep -q 'GalaxyViewerWebBrowser/0049' "$MAIN"
-          # DEV launch URL is patched below; validate the historical shell before patching.
+
+          # Tablet fix 1: keep the Activity/WebViews alive across freeform-window resize.
+          python - "$MAIN" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text()
+          needle="import android.content.Intent;\n"
+          assert needle in s
+          s=s.replace(needle, needle+"import android.content.res.Configuration;\n", 1)
+          old='  @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}\n'
+          assert old in s
+          new=old+'  @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);immersive();if(top!=null)top.post(this::fitTopShell);}\n'
+          s=s.replace(old,new,1)
+
+          # Tablet fix 2: Android Back must not cold-launch Galaxy Viewer.
+          old='  @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}\n'
+          assert old in s
+          new='  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n'
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+
+          # Nanoscopic gates: exact 0057 architecture + only the intended native behavior changes.
+          grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
+          grep -q 'addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
+          grep -q 'WebViewCompat.prerenderUrlAsync(web,u' "$MAIN"
+          grep -q 'PRERENDER_WITH_URL' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
-          sed -i 's#https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=#https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/apk-confirmed-splash.html?dev=#g' "$MAIN"
-          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/launch/friends-family-0049-direct/apk-confirmed-splash.html?dev=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
+          grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
+          grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
           grep -q 'viewerWeb=viewer()' "$MAIN"
           grep -q 'openProvider' "$MAIN"
           grep -q 'returnToViewer' "$MAIN"
@@ -169,10 +195,10 @@ jobs:
           test ! -e "$ROOT/app/src/main/assets/index.html"
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
-      - name: Build DEV APK 0001
+      - name: Build DEV 0057 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-dev :app:assembleRelease
 
-      - name: Sign DEV APK 0001
+      - name: Sign DEV 0057 APK
         shell: bash
         env:
           GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
@@ -185,17 +211,17 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-LAB-0002.apk
+          APK=Galaxy-Viewer-DEV-0057-TABLET-0001.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
           test -s "$APK"
 
-      - name: Verify DEV APK 0001
+      - name: Verify DEV 0057 APK
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-LAB-0002.apk
+          APK=Galaxy-Viewer-DEV-0057-TABLET-0001.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -203,8 +229,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-LAB-0002
+          name: Galaxy-Viewer-DEV-0057-TABLET-0001
           path: |
-            Galaxy-Viewer-LAB-0002.apk
-            Galaxy-Viewer-LAB-0002.apk.sha256
+            Galaxy-Viewer-DEV-0057-TABLET-0001.apk
+            Galaxy-Viewer-DEV-0057-TABLET-0001.apk.sha256
           retention-days: 30
