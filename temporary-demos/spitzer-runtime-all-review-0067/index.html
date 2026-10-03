@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,user-scalable=no">
+<title>Spitzer Runtime All 67 Review</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:monospace}
+#aladin{position:absolute;inset:0}
+#panel{position:absolute;z-index:100;left:8px;right:8px;bottom:8px;padding:8px;background:rgba(0,0,0,.84);border:1px solid #55dfff;border-radius:7px}
+#status{color:#6ff;font-weight:bold;margin-bottom:5px}
+#meta{font-size:11px;line-height:1.25;margin-top:5px;max-height:64px;overflow:auto;white-space:pre-wrap}
+.row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+button{font-size:15px;padding:5px 10px} input{width:120px}
+</style>
+</head>
+<body>
+<div id="aladin"></div>
+<div id="panel">
+  <div id="status">FETCHING LIVE SPITZER RUNTIME...</div>
+  <div class="row">
+    <button id="prev">BACK</button>
+    <button id="next">NEXT</button>
+    <button id="blink">BLINK</button>
+    <span>OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="pct">55%</span>
+  </div>
+  <div id="meta"></div>
+</div>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>
+<script>
+const RUNTIME_URL="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json";
+let deck=[],index=0,aladin=null,overlay=null,objectUrl=null,blinkOff=false,loadToken=0;
+const statusEl=document.getElementById("status"),metaEl=document.getElementById("meta"),opacityEl=document.getElementById("opacity"),pctEl=document.getElementById("pct");
+
+function gvSyntheticWcsFromRuntimeRecord(record,width,height){
+  const ra=Number(record?.ra),dec=Number(record?.dec);
+  const fovX=Number(record?.fovXDegrees??record?.fovDegrees),fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+  const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
+  if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error("GV JSON WCS CENTER INVALID");
+  if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error("GV JSON WCS FOV INVALID");
+  if(!Number.isFinite(rotation))throw new Error("GV JSON WCS ROTATION INVALID");
+  if(!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0)throw new Error("GV JSON WCS DIMENSION INVALID");
+  const sx=fovX/width,sy=fovY/height,t=rotation*Math.PI/180,c=Math.cos(t),s=Math.sin(t);
+  const rp=record?.referencePixel,rd=record?.referenceDimension;
+  const r1=Number(rp?.[0]),r2=Number(rp?.[1]),rw=Number(rd?.[0]),rh=Number(rd?.[1]);
+  const crpix1=Number.isFinite(r1)&&Number.isFinite(rw)&&rw>0?r1*(width/rw):(width+1)/2;
+  const crpix2=Number.isFinite(r2)&&Number.isFinite(rh)&&rh>0?r2*(height/rh):(height+1)/2;
+  return {NAXIS:2,CTYPE1:"RA---TAN",CTYPE2:"DEC--TAN",EQUINOX:2000,LONPOLE:180,LATPOLE:dec,CUNIT1:"deg",CUNIT2:"deg",
+    CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,
+    CD1_1:-sx*c,CD1_2:-sy*s,CD2_1:-sx*s,CD2_2:sy*c,NAXIS1:width,NAXIS2:height};
+}
+function gvTanPixelToWorld(wcs,x,y){
+  const d2r=Math.PI/180,r2d=180/Math.PI,dx=Number(x)-Number(wcs.CRPIX1),dy=Number(y)-Number(wcs.CRPIX2);
+  const xi=(Number(wcs.CD1_1)*dx+Number(wcs.CD1_2)*dy)*d2r,eta=(Number(wcs.CD2_1)*dx+Number(wcs.CD2_2)*dy)*d2r;
+  const ra0=Number(wcs.CRVAL1)*d2r,dec0=Number(wcs.CRVAL2)*d2r,denom=Math.cos(dec0)-eta*Math.sin(dec0);
+  let ra=ra0+Math.atan2(xi,denom);
+  const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));
+  ra=((ra*r2d)%360+360)%360; return [ra,dec*r2d];
+}
+async function loadDirect(url){
+  const response=await fetch(url,{mode:"cors",credentials:"omit",cache:"no-store",redirect:"follow"});
+  if(!response.ok)throw new Error("DIRECT IMAGE HTTP "+response.status);
+  const blob=await response.blob(); if(!blob||blob.size<=0)throw new Error("EMPTY DIRECT IMAGE");
+  const bitmap=await createImageBitmap(blob); const width=bitmap.width,height=bitmap.height; bitmap.close?.();
+  return {blob,width,height};
+}
+async function showRecord(n){
+  if(!deck.length)return;
+  index=(n+deck.length)%deck.length; const record=deck[index],token=++loadToken;
+  const auth=record.authority==="PRECOMPUTED_IMAGE_AVM"?"AVM":"FALLBACK";
+  statusEl.textContent=`LOADING SPITZER ${index+1}/${deck.length} • ${auth} • ${record.archiveId}`;
+  blinkOff=false;
+  try{
+    if(overlay){try{aladin.removeImageLayer?.("SPITZER_RUNTIME_REVIEW")}catch(_){} overlay=null}
+    if(objectUrl){try{URL.revokeObjectURL(objectUrl)}catch(_){} objectUrl=null}
+    const raster=await loadDirect(record.imageUrl); if(token!==loadToken)return;
+    const wcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
+    const center=gvTanPixelToWorld(wcs,(raster.width+1)/2,(raster.height+1)/2);
+    objectUrl=URL.createObjectURL(raster.blob);
+    aladin.gotoRaDec(center[0],center[1]);
+    aladin.setFov(Math.max(Number(record.fovXDegrees??record.fovDegrees),Number(record.fovYDegrees??record.fovDegrees)));
+    aladin.setRotation(Number(record.aladinRotation??record.spatialRotationDeg??0));
+    overlay=A.image(objectUrl,{name:"SPITZER_RUNTIME_REVIEW",imgFormat:"jpeg",wcs,opacity:Number(opacityEl.value)/100,
+      successCallback:()=>{if(token===loadToken)statusEl.textContent=`SPITZER ${index+1}/${deck.length} • ${auth} • ${record.archiveId} • ${record.name}`},
+      errorCallback:e=>{if(token===loadToken){statusEl.textContent=`IMAGE ERROR • ${record.archiveId}`;metaEl.textContent=String(e)}}});
+    aladin.setOverlayImageLayer(overlay,"SPITZER_RUNTIME_REVIEW");
+    metaEl.textContent=`authority: ${record.authority}
+image: ${record.imageUrl}
+raster: ${raster.width} × ${raster.height}
+RA/DEC: ${record.ra}, ${record.dec}
+FOV X/Y: ${record.fovXDegrees} / ${record.fovYDegrees}
+rotation: ${record.aladinRotation??record.spatialRotationDeg}
+refPixel: ${JSON.stringify(record.referencePixel)} refDimension: ${JSON.stringify(record.referenceDimension)} scale: ${JSON.stringify(record.scale)}`;
+  }catch(error){
+    if(token!==loadToken)return;
+    statusEl.textContent=`DIRECT LOAD FAILED ${index+1}/${deck.length} • ${record.archiveId}`;
+    metaEl.textContent=String(error?.stack||error);
+  }
+}
+async function boot(){
+  const runtime=await fetch(RUNTIME_URL+"?fresh="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("RUNTIME HTTP "+r.status);return r.json()});
+  deck=(runtime.records||[]).filter(r=>String(r.providerKey||"").toLowerCase()==="spitzer");
+  if(deck.length!==67)throw new Error("EXPECTED 67 SPITZER RECORDS; GOT "+deck.length);
+  const first=deck[0];
+  aladin=A.aladin("#aladin",{survey:"P/DSS2/color",target:`${first.ra} ${first.dec}`,fov:Math.max(first.fovXDegrees??first.fovDegrees,first.fovYDegrees??first.fovDegrees)*1.15,
+    projection:"TAN",cooFrame:"ICRSd",showReticle:true,showCooGrid:true,showCooGridControl:true,showZoomControl:true,showLayersControl:false});
+  await showRecord(0);
+}
+document.getElementById("prev").onclick=()=>showRecord(index-1);
+document.getElementById("next").onclick=()=>showRecord(index+1);
+document.getElementById("blink").onclick=()=>{if(!overlay)return;blinkOff=!blinkOff;overlay.setOpacity(blinkOff?0:Number(opacityEl.value)/100)};
+opacityEl.oninput=()=>{pctEl.textContent=opacityEl.value+"%";if(overlay&&!blinkOff)overlay.setOpacity(Number(opacityEl.value)/100)};
+A.init.then(boot).catch(error=>{statusEl.textContent="BOOT ERROR";metaEl.textContent=String(error?.stack||error)});
+</script>
+</body>
+</html>
