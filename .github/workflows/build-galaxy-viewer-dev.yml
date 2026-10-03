@@ -304,7 +304,7 @@ jobs:
             warmRequestedUrl=u; warmCommittedUrl=""; warmProviderIcon=""; warmReady=false; warmLoading=true;
             if(warmWeb!=null){warmWeb.setAlpha(0f);warmWeb.loadUrl(u);}
           }
-'''
+          '''
           s=s[:start]+replacement+s[end:]
 
           # Pointer/config fetch now refreshes browser chrome only.
@@ -326,7 +326,7 @@ jobs:
               });
             }catch(Exception e){ runOnUiThread(()->top.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
           }
-'''
+          '''
           s=s[:start]+replacement+s[end:]
 
           # Atomic handoff policy:
