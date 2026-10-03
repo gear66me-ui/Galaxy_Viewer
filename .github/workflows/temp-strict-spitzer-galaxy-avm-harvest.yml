@@ -1,0 +1,139 @@
+name: TEMP strict AstroPix Spitzer galaxy AVM harvest
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-strict-spitzer-galaxy-avm-harvest.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Strict galaxy-only API harvest
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+          mkdir -p viewer/image-databases/Spitzer/rebuild
+
+          python - <<'PY'
+          from pathlib import Path
+          import json, urllib.request, datetime
+
+          API="https://www.astropix.org/link/913?format=json"
+          src=Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json")
+          out=Path("viewer/image-databases/Spitzer/rebuild/gv-spitzer-astropix-strict-galaxy-candidates-0001.json")
+
+          existing=json.loads(src.read_text(encoding="utf-8"))
+          existing_ids={str(x.get("archiveId")) for x in existing["entries"]}
+
+          req=urllib.request.Request(API,headers={"User-Agent":"GalaxyViewer-Spitzer-Galaxy-Harvest/1.0"})
+          with urllib.request.urlopen(req,timeout=180) as r:
+              feed=json.load(r)
+
+          def complete_wcs(x):
+              return (
+                  x.get("wcs_coordinate_frame")
+                  and isinstance(x.get("wcs_reference_value"),list) and len(x["wcs_reference_value"])==2
+                  and isinstance(x.get("wcs_reference_dimension"),list) and len(x["wcs_reference_dimension"])==2
+                  and isinstance(x.get("wcs_reference_pixel"),list) and len(x["wcs_reference_pixel"])==2
+                  and isinstance(x.get("wcs_scale"),list) and len(x["wcs_scale"])==2
+                  and x.get("wcs_rotation") not in (None,"")
+                  and x.get("wcs_projection")
+              )
+
+          rows=[]
+          for x in feed:
+              aid=str(x.get("image_id") or "").strip()
+              subjects=[str(s).strip() for s in (x.get("subject") or [])]
+              facilities=[str(v).lower() for v in (x.get("telescope_facility") or [])]
+              if not aid or aid in existing_ids: continue
+              if str(x.get("publisher_id") or "").lower()!="spitzer": continue
+              if str(x.get("image_type") or "").lower()!="observation": continue
+              if "spitzer" not in facilities: continue
+              if not any(s.startswith("C.5.") for s in subjects): continue
+              if not complete_wcs(x): continue
+              resource=str(x.get("resource_url") or "").strip()
+              if not resource: continue
+
+              w=int(x.get("image_width") or 0); h=int(x.get("image_height") or 0)
+              rows.append({
+                  "archiveId":aid,
+                  "title":x.get("title"),
+                  "objectNames":x.get("object_name") or [],
+                  "subject":subjects,
+                  "imageType":x.get("image_type"),
+                  "imageQuality":x.get("image_quality"),
+                  "credit":x.get("image_credit"),
+                  "releaseDate":x.get("image_release_date"),
+                  "referenceUrl":x.get("reference_url"),
+                  "resourceUrl":resource,
+                  "publisherId":x.get("publisher_id"),
+                  "facilities":x.get("telescope_facility") or [],
+                  "instruments":x.get("telescope_instrument") or [],
+                  "bands":x.get("spectral_band") or [],
+                  "wcs":{
+                      "coordinateFrame":x.get("wcs_coordinate_frame"),
+                      "equinox":x.get("wcs_equinox"),
+                      "referenceValue":[float(v) for v in x["wcs_reference_value"]],
+                      "referenceDimension":[float(v) for v in x["wcs_reference_dimension"]],
+                      "referencePixel":[float(v) for v in x["wcs_reference_pixel"]],
+                      "scale":[float(v) for v in x["wcs_scale"]],
+                      "rotation":float(x["wcs_rotation"]),
+                      "projection":x.get("wcs_projection"),
+                      "quality":x.get("wcs_quality")
+                  },
+                  "imageWidth":w,
+                  "imageHeight":h,
+                  "pixelCount":w*h,
+                  "astropixId":x.get("astropix_id"),
+                  "metadataVersion":x.get("metadata_version"),
+                  "lastUpdated":x.get("last_updated")
+              })
+
+          rows.sort(key=lambda x:(x["wcs"]["quality"]=="Full",x["pixelCount"],str(x["releaseDate"] or "")),reverse=True)
+
+          result={
+              "schema":"gv-spitzer-astropix-strict-galaxy-candidates-0001",
+              "generatedAt":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "api":API,
+              "apiReturned":len(feed),
+              "existingSpitzerIdsExcluded":len(existing_ids),
+              "strictGalaxyRule":"AVM subject code starts with C.5. (Galaxy hierarchy)",
+              "candidateCount":len(rows),
+              "targetAdditionalNeeded":54,
+              "enoughFor100Total":len(rows)>=54,
+              "candidates":rows
+          }
+          out.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8")
+          print("API_RETURNED",len(feed))
+          print("EXISTING_EXCLUDED",len(existing_ids))
+          print("STRICT_NEW_GALAXY_CANDIDATES",len(rows))
+          print("ENOUGH_FOR_100_TOTAL",len(rows)>=54)
+          for r in rows[:40]:
+              print(r["archiveId"],r["imageWidth"],r["imageHeight"],r["wcs"]["quality"],r["title"])
+          PY
+
+      - name: Commit strict candidate catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Spitzer/rebuild/gv-spitzer-astropix-strict-galaxy-candidates-0001.json
+          git diff --cached --stat
+          git commit -m "Spitzer: harvest strict AstroPix galaxy AVM candidates"
+          git push origin HEAD:beta
