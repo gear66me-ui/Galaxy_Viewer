@@ -7,8 +7,8 @@ Policy: allowlist only. Production-controlled runtime code, data, artwork, fonts
 ## 1. Production entry chain
 
 - `viewer/releases/launch/Galaxy-Viewer-Launch/index.html` — hosted launcher.
-- `viewer/gv-current-viewer.json` — selects `RC-V1.0.0.py`, build **0052**.
-- `viewer/RC-V1.0.0.py` — main runtime, 1,608 physical lines / 103,130 characters in the audited release file.
+- `viewer/gv-current-viewer.json` — selects `RC-V1.0.0.py`, build **0053**.
+- `viewer/RC-V1.0.0.py` — main runtime, 1,692 physical lines / 106,324 characters in the audited release file.
 - `viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/` — frozen final splash package.
 
 The launcher reads the release pointer and release viewer directly from `raw.githubusercontent.com/.../Galaxy_Viewer/release/viewer/`.
