@@ -1,0 +1,219 @@
+name: TEMP apply Spitzer curation 46 keep 21 delete
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-apply-spitzer-curation-46-21.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Apply exact curated keep/delete set
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          KEEP = [
+          "ssc2024-02a","ssc2024-02b","ssc2019-15a","ssc2019-15b","ssc2019-15c","sig05-019b",
+          "ssc2004-12a1","ssc2010-02a1","ssc2006-11a1","ssc2006-11b1","ssc2006-17a1","ssc2006-17b1",
+          "ssc2009-15a2","ssc2004-14a2","ssc2004-14a3","ssc2023-01b","ssc2013-07a1","ssc2013-07a2",
+          "ssc2013-07a3","ssc2019-03a","ssc2006-09a1","ssc2021-06b","ssc2004-09a1","sig09-004",
+          "ssc2004-07b1","ssc2009-06a1","sig05-006a","ssc2006-08a1","ssc2008-14a","sig12-008",
+          "ssc2023-04","sig05-016","sig11-017","ssc2009-14a1","sig05-013","sig05-014","ssc2023-02",
+          "ssc2019-13a","sig05-017","sig05-011","sig05-015","sig06-003","sig06-010","sig06-024",
+          "sig09-003","ssc2003-06d5"
+          ]
+
+          DELETE = [
+          "ssc2009-03a1","ssc2009-03b2","ssc2005-20a3","ssc2004-19a2","ssc2019-11a","ssc2019-11b",
+          "ssc2019-15d","ssc2005-11a2","ssc2005-11a3","ssc2012-06a","ssc2004-12a2","ssc2012-01b",
+          "ssc2005-19a2","ssc2018-05a","ssc2019-03c","ssc2009-08b1","ssc2008-12b","sig09-006",
+          "ssc2017-14a1","sig08-008","sig06-005"
+          ]
+
+          source_path=Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json")
+          runtime_path=Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json")
+          viewer_path=Path("viewer/GV-beta-200-027.py")
+
+          def replace_once(text, old, new, label):
+              n=text.count(old)
+              if n != 1:
+                  raise SystemExit(f"{label}: expected one match, found {n}")
+              return text.replace(old,new,1)
+
+          def object_bounds(text, marker_pos):
+              start=text.rfind("{",0,marker_pos)
+              if start < 0: raise SystemExit("object start not found")
+              depth=0; in_str=False; esc=False
+              for i in range(start,len(text)):
+                  ch=text[i]
+                  if in_str:
+                      if esc: esc=False
+                      elif ch=="\\": esc=True
+                      elif ch=='"': in_str=False
+                      continue
+                  if ch=='"': in_str=True
+                  elif ch=="{": depth+=1
+                  elif ch=="}":
+                      depth-=1
+                      if depth==0: return start,i+1
+              raise SystemExit("object end not found")
+
+          def remove_object(text, archive_id, provider=None):
+              marker=f'"archiveId": "{archive_id}"'
+              poss=[m.start() for m in re.finditer(re.escape(marker),text)]
+              matches=[]
+              for p in poss:
+                  a,b=object_bounds(text,p)
+                  blk=text[a:b]
+                  if provider is None or f'"providerKey": "{provider}"' in blk:
+                      matches.append((a,b))
+              if len(matches)!=1:
+                  raise SystemExit(f"{archive_id}: expected one matching object, found {len(matches)}")
+              a,b=matches[0]
+              j=b
+              while j<len(text) and text[j] in " \t": j+=1
+              if j<len(text) and text[j]==",":
+                  j+=1
+                  if j<len(text) and text[j]=="\r": j+=1
+                  if j<len(text) and text[j]=="\n": j+=1
+                  return text[:a]+text[j:]
+              i=a-1
+              while i>=0 and text[i] in " \t\r\n": i-=1
+              if i>=0 and text[i]==",":
+                  return text[:i]+text[b:]
+              raise SystemExit(f"{archive_id}: array comma not found")
+
+          # Validate source universe BEFORE mutating.
+          source_text=source_path.read_text(encoding="utf-8")
+          source_json=json.loads(source_text)
+          source_ids=[x["archiveId"] for x in source_json["entries"]]
+          if set(source_ids) != set(KEEP+DELETE) or len(source_ids)!=67:
+              raise SystemExit("SOURCE UNIVERSE DOES NOT MATCH CURATION FILE")
+
+          # Delete 21 source records.
+          for aid in DELETE:
+              source_text=remove_object(source_text,aid)
+
+          source_text=replace_once(source_text,'"categoryEntryCount": 67','"categoryEntryCount": 46',"source categoryEntryCount")
+          source_text=replace_once(source_text,'"metadataRecordCount": 67','"metadataRecordCount": 46',"source metadataRecordCount")
+          source_path.write_text(source_text,encoding="utf-8")
+
+          source_json=json.loads(source_text)
+          if [x["archiveId"] for x in source_json["entries"]] != [x for x in source_ids if x in KEEP]:
+              raise SystemExit("SOURCE SURVIVOR ORDER CHANGED")
+          if len(source_json["entries"])!=46:
+              raise SystemExit("SOURCE SURVIVOR COUNT INVALID")
+          source_index={x["archiveId"]:i for i,x in enumerate(source_json["entries"])}
+
+          # Validate runtime universe BEFORE mutating.
+          runtime_text=runtime_path.read_text(encoding="utf-8")
+          runtime_json=json.loads(runtime_text)
+          runtime_sp=[x for x in runtime_json["records"] if x.get("providerKey")=="spitzer"]
+          runtime_ids=[x["archiveId"] for x in runtime_sp]
+          if set(runtime_ids) != set(KEEP+DELETE) or len(runtime_ids)!=67:
+              raise SystemExit("RUNTIME UNIVERSE DOES NOT MATCH CURATION FILE")
+
+          # Delete 21 runtime records.
+          for aid in DELETE:
+              runtime_text=remove_object(runtime_text,aid,"spitzer")
+
+          # Repair Spitzer summary 67 -> 46, 27 -> 26, 40 -> 20.
+          p=runtime_text.find('    "spitzer": {')
+          q=runtime_text.find('    "chandra": {',p)
+          if p<0 or q<0: raise SystemExit("SPITZER SUMMARY BLOCK NOT FOUND")
+          sb=runtime_text[p:q]
+          sb=replace_once(sb,'"total": 67','"total": 46',"Spitzer total")
+          sb=replace_once(sb,'"imageAvm": 27','"imageAvm": 26',"Spitzer imageAvm")
+          sb=replace_once(sb,'"catalogFallback": 40','"catalogFallback": 20',"Spitzer fallback")
+          runtime_text=runtime_text[:p]+sb+runtime_text[q:]
+
+          runtime_text=replace_once(runtime_text,'"recordCount": 1869','"recordCount": 1848',"runtime recordCount")
+
+          # Re-index all surviving Spitzer records against the 46-record source catalog.
+          parsed=json.loads(runtime_text)
+          survivors=[x for x in parsed["records"] if x.get("providerKey")=="spitzer"]
+          if len(survivors)!=46:
+              raise SystemExit(f"EXPECTED 46 RUNTIME SPITZER SURVIVORS; GOT {len(survivors)}")
+
+          reindexed=0
+          for rec in survivors:
+              aid=rec["archiveId"]
+              expected=source_index[aid]
+              current=int(rec["sourceIndex"])
+              if current==expected:
+                  continue
+              marker=f'"archiveId": "{aid}"'
+              p=runtime_text.find(marker)
+              if p<0: raise SystemExit(f"RUNTIME MARKER MISSING: {aid}")
+              a,b=object_bounds(runtime_text,p)
+              blk=runtime_text[a:b]
+              old=f'"sourceIndex": {current}'
+              new=f'"sourceIndex": {expected}'
+              if blk.count(old)!=1:
+                  raise SystemExit(f"{aid}: sourceIndex text mismatch")
+              blk=blk.replace(old,new,1)
+              runtime_text=runtime_text[:a]+blk+runtime_text[b:]
+              reindexed+=1
+
+          runtime_path.write_text(runtime_text,encoding="utf-8")
+
+          # Repair current viewer runtime record-count gate.
+          viewer_text=viewer_path.read_text(encoding="utf-8")
+          old="records.length!==1869)throw new Error('GV AVM RUNTIME CATALOG INVALID')"
+          new="records.length!==1848)throw new Error('GV AVM RUNTIME CATALOG INVALID')"
+          viewer_text=replace_once(viewer_text,old,new,"viewer runtime count gate")
+          viewer_path.write_text(viewer_text,encoding="utf-8")
+
+          # Final semantic validation.
+          sj=json.loads(source_path.read_text(encoding="utf-8"))
+          rj=json.loads(runtime_path.read_text(encoding="utf-8"))
+          final_source=[x["archiveId"] for x in sj["entries"]]
+          final_runtime=[x["archiveId"] for x in rj["records"] if x.get("providerKey")=="spitzer"]
+
+          assert final_source==KEEP
+          assert final_runtime==KEEP
+          assert sj["categoryEntryCount"]==46
+          assert sj["metadataRecordCount"]==46
+          assert len(rj["records"])==1848
+          assert rj["recordCount"]==1848
+          assert rj["summary"]["spitzer"]=={"total":46,"imageAvm":26,"catalogFallback":20,"failed":0}
+          for rec in (x for x in rj["records"] if x.get("providerKey")=="spitzer"):
+              assert rec["sourceIndex"]==source_index[rec["archiveId"]]
+          assert not any(x in final_source for x in DELETE)
+          assert not any(x in final_runtime for x in DELETE)
+
+          print("CURATION APPLIED")
+          print("KEEP",len(KEEP))
+          print("DELETE",len(DELETE))
+          print("SPITZER SUMMARY",rj["summary"]["spitzer"])
+          print("GLOBAL RUNTIME",rj["recordCount"])
+          print("REINDEXED",reindexed)
+          PY
+
+      - name: Commit curated Spitzer set
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json             viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json             viewer/GV-beta-200-027.py
+          git diff --cached --stat
+          git commit -m "Spitzer: apply 46 keep / 21 delete curation"
+          git push origin HEAD:beta
