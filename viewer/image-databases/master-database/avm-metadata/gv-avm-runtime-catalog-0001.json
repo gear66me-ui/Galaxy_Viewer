@@ -58044,22 +58044,31 @@
       "name": "Bode's Galaxy",
       "sourceCatalog": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
       "sourceIndex": 8,
-      "imageUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6672/medium/ssc2019-15a.jpg?1603784767=",
-      "authority": "PRECOMPUTED_CATALOG_FALLBACK",
-      "ra": 148.88832700000006,
-      "dec": 69.06534699999999,
-      "fovDegrees": 0.45413833333333337,
-      "fovXDegrees": 0.45413833333333337,
-      "fovYDegrees": 0.45413833333333337,
+      "imageUrl": "https://astropix.org/archive/spitzer/ssc2019-15a/spitzer_ssc2019-15a_320.jpg",
+      "authority": "PRECOMPUTED_IMAGE_AVM",
+      "ra": 148.8873235,
+      "dec": 69.0646392,
+      "fovDegrees": 0.39995904,
+      "fovXDegrees": 0.39995904,
+      "fovYDegrees": 0.3999590016,
       "fovPolicy": "X",
-      "spatialRotationDeg": 157,
-      "aladinRotation": 157,
-      "referencePixel": null,
-      "referenceDimension": null,
-      "scale": null,
+      "spatialRotationDeg": -30.02,
+      "aladinRotation": -30.02,
+      "referencePixel": [
+        1921,
+        1921
+      ],
+      "referenceDimension": [
+        3840,
+        3840
+      ],
+      "scale": [
+        -0.000104156,
+        0.00010415599
+      ],
       "cdMatrix": null,
-      "projection": null,
-      "coordinateFrame": null
+      "projection": "TAN",
+      "coordinateFrame": "ICRS"
     },
     {
       "providerKey": "spitzer",
