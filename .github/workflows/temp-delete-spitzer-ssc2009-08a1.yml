@@ -1,0 +1,199 @@
+name: TEMP delete Spitzer ssc2009-08a1
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-delete-spitzer-ssc2009-08a1.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Surgical delete and count repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          sid="ssc2009-08a1"
+          source_path=Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json")
+          runtime_path=Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json")
+          viewer_path=Path("viewer/GV-beta-200-027.py")
+
+          def replace_once(text, old, new, label):
+              n=text.count(old)
+              if n != 1:
+                  raise SystemExit(f"{label}: expected one match, found {n}")
+              return text.replace(old,new,1)
+
+          def object_bounds(text, marker_pos):
+              start=text.rfind("{",0,marker_pos)
+              if start < 0:
+                  raise SystemExit("object start not found")
+              depth=0
+              in_str=False
+              esc=False
+              end=None
+              for i in range(start,len(text)):
+                  ch=text[i]
+                  if in_str:
+                      if esc: esc=False
+                      elif ch=="\\": esc=True
+                      elif ch=='"': in_str=False
+                      continue
+                  if ch=='"':
+                      in_str=True
+                  elif ch=="{":
+                      depth+=1
+                  elif ch=="}":
+                      depth-=1
+                      if depth==0:
+                          end=i+1
+                          break
+              if end is None:
+                  raise SystemExit("object end not found")
+              return start,end
+
+          def remove_json_object_by_archive_id(text, archive_id, provider=None):
+              marker=f'"archiveId": "{archive_id}"'
+              positions=[m.start() for m in re.finditer(re.escape(marker),text)]
+              matches=[]
+              for p in positions:
+                  a,b=object_bounds(text,p)
+                  block=text[a:b]
+                  if provider is None or f'"providerKey": "{provider}"' in block:
+                      matches.append((a,b,block))
+              if len(matches)!=1:
+                  raise SystemExit(f"{archive_id}: expected one matching object, found {len(matches)}")
+              a,b,block=matches[0]
+              j=b
+              while j<len(text) and text[j] in " \t": j+=1
+              if j<len(text) and text[j]==",":
+                  j+=1
+                  if j<len(text) and text[j]=="\r": j+=1
+                  if j<len(text) and text[j]=="\n": j+=1
+                  return text[:a]+text[j:],block
+              i=a-1
+              while i>=0 and text[i] in " \t\r\n": i-=1
+              if i>=0 and text[i]==",":
+                  return text[:i]+text[b:],block
+              raise SystemExit("array comma not found")
+
+          # Source catalog: remove exact current record and repair authoritative current counts.
+          s=source_path.read_text(encoding="utf-8")
+          s,removed_source=remove_json_object_by_archive_id(s,sid)
+          s=replace_once(s,'"categoryEntryCount": 68','"categoryEntryCount": 67',"source categoryEntryCount")
+          s=replace_once(s,'"metadataRecordCount": 68','"metadataRecordCount": 67',"source metadataRecordCount")
+          source_path.write_text(s,encoding="utf-8")
+
+          sj=json.loads(s)
+          if len(sj["entries"])!=67:
+              raise SystemExit(f"source entries !=67: {len(sj['entries'])}")
+          if any(x.get("archiveId")==sid for x in sj["entries"]):
+              raise SystemExit("source target still present")
+          source_index={str(x.get("archiveId")):i for i,x in enumerate(sj["entries"])}
+
+          # Runtime: remove exact Spitzer record.
+          r=runtime_path.read_text(encoding="utf-8")
+          r,removed_runtime=remove_json_object_by_archive_id(r,sid,"spitzer")
+
+          # Repair runtime summary and global recordCount.
+          sp0=r.find('    "spitzer": {')
+          sp1=r.find('    "chandra": {',sp0)
+          if sp0<0 or sp1<0: raise SystemExit("Spitzer summary block not found")
+          sb=r[sp0:sp1]
+          sb=replace_once(sb,'"total": 68','"total": 67',"runtime Spitzer total")
+          sb=replace_once(sb,'"imageAvm": 28','"imageAvm": 27',"runtime Spitzer imageAvm")
+          # catalogFallback stays 40
+          r=r[:sp0]+sb+r[sp1:]
+          r=replace_once(r,'"recordCount": 1870','"recordCount": 1869',"runtime recordCount")
+
+          # Re-index every remaining Spitzer runtime record against the now-67 source catalog.
+          parsed=json.loads(r)
+          sp_records=[x for x in parsed["records"] if x.get("providerKey")=="spitzer"]
+          if len(sp_records)!=67:
+              raise SystemExit(f"runtime Spitzer count !=67: {len(sp_records)}")
+
+          changed_indices=0
+          for rec in sp_records:
+              aid=str(rec.get("archiveId"))
+              expected=source_index.get(aid)
+              if expected is None:
+                  raise SystemExit(f"runtime Spitzer ID missing from source: {aid}")
+              current=int(rec.get("sourceIndex"))
+              if current==expected:
+                  continue
+              marker=f'"archiveId": "{aid}"'
+              p=r.find(marker)
+              if p<0: raise SystemExit(f"runtime text marker missing: {aid}")
+              a,b=object_bounds(r,p)
+              block=r[a:b]
+              old=f'"sourceIndex": {current}'
+              new=f'"sourceIndex": {expected}'
+              if block.count(old)!=1:
+                  raise SystemExit(f"{aid}: sourceIndex text mismatch")
+              block=block.replace(old,new,1)
+              r=r[:a]+block+r[b:]
+              changed_indices+=1
+
+          runtime_path.write_text(r,encoding="utf-8")
+
+          # Current viewer gate must match the new runtime length.
+          v=viewer_path.read_text(encoding="utf-8")
+          pattern=r"records\.length!==\d+\)throw new Error\('GV AVM RUNTIME CATALOG INVALID'\)"
+          repl="records.length!==1869)throw new Error('GV AVM RUNTIME CATALOG INVALID')"
+          v2,n=re.subn(pattern,repl,v,count=1)
+          if n!=1:
+              raise SystemExit(f"viewer runtime gate: expected one match, found {n}")
+          viewer_path.write_text(v2,encoding="utf-8")
+
+          # Final semantic assertions.
+          sj=json.loads(source_path.read_text(encoding="utf-8"))
+          rj=json.loads(runtime_path.read_text(encoding="utf-8"))
+          assert len(sj["entries"])==67
+          assert sj["categoryEntryCount"]==67
+          assert sj["metadataRecordCount"]==67
+          assert not any(x.get("archiveId")==sid for x in sj["entries"])
+          assert len(rj["records"])==1869
+          assert rj["recordCount"]==1869
+          assert rj["summary"]["spitzer"]=={"total":67,"imageAvm":27,"catalogFallback":40,"failed":0}
+          assert not any(x.get("providerKey")=="spitzer" and x.get("archiveId")==sid for x in rj["records"])
+          source_index={str(x.get("archiveId")):i for i,x in enumerate(sj["entries"])}
+          for rec in (x for x in rj["records"] if x.get("providerKey")=="spitzer"):
+              assert rec["sourceIndex"]==source_index[rec["archiveId"]]
+          cart=next(x for x in rj["records"] if x.get("providerKey")=="spitzer" and x.get("archiveId")=="sig06-005")
+          assert cart["authority"]=="PRECOMPUTED_IMAGE_AVM"
+          assert cart["aladinRotation"]==-90.3
+
+          print("DELETED",sid)
+          print("SOURCE COUNT",len(sj["entries"]))
+          print("RUNTIME COUNT",len(rj["records"]))
+          print("SPITZER SUMMARY",rj["summary"]["spitzer"])
+          print("REINDEXED SPITZER RECORDS",changed_indices)
+          print("CARTWHEEL UNCHANGED",cart["archiveId"],cart["aladinRotation"],cart["imageUrl"])
+          PY
+
+      - name: Commit deletion
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json             viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json             viewer/GV-beta-200-027.py
+          git diff --cached --stat
+          git commit -m "Spitzer: remove ssc2009-08a1 from live catalog"
+          git push origin HEAD:beta
