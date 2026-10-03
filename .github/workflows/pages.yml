@@ -1,6 +1,6 @@
 name: Deploy GitHub Pages
 
-# Publication refresh: force redeploy after public Pages / GitHub Actions enablement (2026-09-30).
+# Production Pages runner. The workflow executes from beta because the github-pages environment currently permits beta, but it publishes the release branch exclusively.
 on:
   push:
     branches:
@@ -34,7 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: beta
+          ref: release
           fetch-depth: 1
 
       - name: Configure Pages
