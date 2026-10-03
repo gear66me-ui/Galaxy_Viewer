@@ -1,7 +1,7 @@
 {
   "schema": "gv-avm-runtime-catalog-0001",
-  "sourceBranch": "beta",
-  "sourceMasterCatalog": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json",
+  "sourceBranch": "release",
+  "sourceMasterCatalog": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json",
   "fovPolicy": "X",
   "contract": {
     "fovDegrees": "fovXDegrees",
