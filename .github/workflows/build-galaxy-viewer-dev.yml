@@ -71,7 +71,7 @@ jobs:
               minSdk 29
               targetSdk 36
               versionCode 57
-              versionName 'DEV-0057-TABLET-1'
+              versionName 'DEV-0057-TABLET-2'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.14.0' }
@@ -178,6 +178,20 @@ jobs:
           assert old in s
           new='  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n'
           s=s.replace(old,new,1)
+
+          # Provider handoff fix: Browser 0057 must not hide the browser layer for 4 seconds.
+          old='''    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);
+    if(web!=null&&!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);
+    fetchPointer();
+    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000);
+'''
+          assert old in s
+          new='''    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}
+    if(web!=null){web.requestFocus();if(!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);}
+    fetchPointer();
+    immersive();
+'''
+          s=s.replace(old,new,1)
           p.write_text(s)
           PY
 
@@ -192,6 +206,8 @@ jobs:
           grep -q 'import android.os.Handler;' "$MAIN"
           grep -q 'import android.os.Looper;' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
+          grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
+          ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
           grep -q 'viewerWeb=viewer()' "$MAIN"
           grep -q 'openProvider' "$MAIN"
           grep -q 'returnToViewer' "$MAIN"
@@ -216,7 +232,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-TABLET-0001.apk
+          APK=Galaxy-Viewer-DEV-0057-TABLET-0002.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -234,7 +250,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-TABLET-0001
+          name: Galaxy-Viewer-DEV-0057-TABLET-0002
           path: |
             Galaxy-Viewer-DEV-0057-TABLET-0001.apk
             Galaxy-Viewer-DEV-0057-TABLET-0001.apk.sha256
