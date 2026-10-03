@@ -165,6 +165,9 @@ jobs:
           needle="import android.content.Intent;\n"
           assert needle in s
           s=s.replace(needle, needle+"import android.content.res.Configuration;\n", 1)
+          needle="import android.os.Message;\n"
+          assert needle in s
+          s=s.replace(needle, needle+"import android.os.Handler;\nimport android.os.Looper;\n", 1)
           old='  @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}\n'
           assert old in s
           new=old+'  @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);immersive();if(top!=null)top.post(this::fitTopShell);}\n'
@@ -186,6 +189,8 @@ jobs:
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
+          grep -q 'import android.os.Handler;' "$MAIN"
+          grep -q 'import android.os.Looper;' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
           grep -q 'viewerWeb=viewer()' "$MAIN"
           grep -q 'openProvider' "$MAIN"
