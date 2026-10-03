@@ -2,9 +2,9 @@
   "schema": "gv-spitzer-expansion-top-0100-0001",
   "source": "gv-spitzer-expansion-candidates-0001.json",
   "summary": {
-    "records": 59,
-    "pureSpitzer": 39,
-    "originalTiff": 59
+    "records": 58,
+    "pureSpitzer": 38,
+    "originalTiff": 58
   },
   "records": [
     {
@@ -2418,77 +2418,6 @@
       ],
       "astropixId": 23510,
       "astropixPage": "https://www.astropix.org/image/spitzer/sig05-021",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2009-08a1",
-      "title": "M33: Infrared View of a Close Neighbor",
-      "objectNames": [
-        "Triangulum Galaxy",
-        "Messier 33",
-        "M33",
-        "NGC 598"
-      ],
-      "subject": [
-        "C.5.1.1.",
-        "C.5.3.1."
-      ],
-      "releaseDate": "2009-04-03",
-      "credit": "NASA / JPL-Caltech / J. Hinz (Univ. of Arizona)",
-      "referenceUrl": "http://spitzer-app3.ipac.caltech.edu/images/2016-ssc2009-08a1-M33-Infrared-View-of-a-Close-Neighbor",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0000/9893/ssc2009-08a1.tif",
-      "resourceId": "ssc2009-08a1.tif",
-      "imageWidth": 4300,
-      "imageHeight": 2800,
-      "coordinateFrame": "FK5",
-      "equinox": "J2000",
-      "referenceValue": [
-        23.478836491889933,
-        30.65352710150256
-      ],
-      "referenceDimension": [
-        2800.0,
-        4300.0
-      ],
-      "referencePixel": [
-        2150.0,
-        1400.0
-      ],
-      "scale": [
-        -0.0003400314232781575,
-        0.0003400314232781575
-      ],
-      "rotation": 75.2,
-      "projection": "TAN",
-      "wcsQuality": "Position",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23508,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2009-08a1",
       "pureSpitzer": true,
       "originalTiff": true
     },
