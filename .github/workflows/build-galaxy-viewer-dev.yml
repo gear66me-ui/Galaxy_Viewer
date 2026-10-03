@@ -240,7 +240,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-TABLET-0001.apk
+          APK=Galaxy-Viewer-DEV-0057-TABLET-0002.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -250,6 +250,6 @@ jobs:
         with:
           name: Galaxy-Viewer-DEV-0057-TABLET-0002
           path: |
-            Galaxy-Viewer-DEV-0057-TABLET-0001.apk
-            Galaxy-Viewer-DEV-0057-TABLET-0001.apk.sha256
+            Galaxy-Viewer-DEV-0057-TABLET-0002.apk
+            Galaxy-Viewer-DEV-0057-TABLET-0002.apk.sha256
           retention-days: 30
