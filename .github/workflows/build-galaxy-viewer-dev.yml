@@ -303,7 +303,7 @@ jobs:
           grep -q 'prewarmLoading=true;prewarmFailed=false' "$MAIN"
           grep -q 'onPageCommitVisible(WebView view,String url)' "$MAIN"
           grep -q 'request.isForMainFrame()' "$MAIN"
-          grep -q 'if(web!=null)web.loadUrl(u);' "$MAIN"
+          grep -q 'if(web!=null){web.stopLoading();web.loadUrl(u);}' "$MAIN"
           grep -q '@JavascriptInterface public void prewarm(String url)' "$MAIN"
           ! grep -q 'launchPrewarm' "$MAIN"
           ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
