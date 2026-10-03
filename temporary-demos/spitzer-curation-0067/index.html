@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,user-scalable=no">
+<title>Spitzer 67 Curation</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070b;color:#eafaff;font-family:system-ui,Arial,sans-serif}
+#app{height:100%;display:flex;flex-direction:column}
+#top{padding:8px 10px;background:#091321;border-bottom:1px solid #1c7ca8}
+#title{font-weight:800;color:#8eeaff;font-size:16px}
+#sub{font:12px monospace;color:#a9c7d5;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#imageWrap{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;background:#000}
+#img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+#err{display:none;position:absolute;inset:0;align-items:center;justify-content:center;padding:24px;text-align:center;color:#ff9d9d;background:#140608;font:14px monospace}
+#badge{position:absolute;top:8px;left:8px;padding:5px 8px;border-radius:6px;background:#000c;border:1px solid #58d8ff;font:12px monospace;color:#bdf4ff}
+#decision{position:absolute;top:8px;right:8px;padding:5px 8px;border-radius:6px;background:#000c;border:1px solid #aaa;font:12px monospace}
+#bottom{padding:8px;background:#091321;border-top:1px solid #1c7ca8}
+#meta{font:12px monospace;line-height:1.25;height:48px;overflow:auto;margin-bottom:8px;color:#c8e8f5}
+.row{display:flex;gap:7px}
+button{flex:1;min-height:52px;border:0;border-radius:9px;font-weight:900;font-size:18px}
+#keep{background:#0a7b45;color:white}
+#delete{background:#a32222;color:white}
+#prev,#next{flex:.55;background:#17304b;color:white}
+#export{margin-top:7px;width:100%;background:#175d89;color:#fff;min-height:42px;font-size:15px}
+#reset{margin-top:7px;width:100%;background:#3a3a3a;color:#ddd;min-height:36px;font-size:13px}
+#progressOuter{height:5px;background:#1c2730;margin-top:7px;border-radius:99px;overflow:hidden}
+#progress{height:100%;width:0;background:#69dbff}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <div id="title">SPITZER CURATION — KEEP / DELETE</div>
+    <div id="sub">Loading live Spitzer source catalog from GitHub…</div>
+  </div>
+  <div id="imageWrap">
+    <img id="img" alt="Spitzer image">
+    <div id="err"></div>
+    <div id="badge"></div>
+    <div id="decision">UNDECIDED</div>
+  </div>
+  <div id="bottom">
+    <div id="meta"></div>
+    <div class="row">
+      <button id="prev">◀</button>
+      <button id="keep">KEEP</button>
+      <button id="delete">DELETE</button>
+      <button id="next">▶</button>
+    </div>
+    <button id="export">DOWNLOAD JSON DECISIONS</button>
+    <button id="reset">CLEAR ALL DECISIONS</button>
+    <div id="progressOuter"><div id="progress"></div></div>
+  </div>
+</div>
+<script>
+const CATALOG_URL="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json";
+const STORAGE_KEY="gv_spitzer_curation_0067_v1";
+let entries=[],index=0,decisions={};
+
+const $=id=>document.getElementById(id);
+const img=$("img"),err=$("err"),badge=$("badge"),decisionEl=$("decision"),meta=$("meta"),sub=$("sub"),progress=$("progress");
+
+function loadSaved(){
+  try{decisions=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")||{}}catch(_){decisions={}}
+}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(decisions))}
+function counts(){
+  const vals=Object.values(decisions);
+  return {
+    keep:vals.filter(x=>x?.decision==="KEEP").length,
+    del:vals.filter(x=>x?.decision==="DELETE").length,
+    decided:vals.filter(x=>x?.decision==="KEEP"||x?.decision==="DELETE").length
+  }
+}
+function imageUrl(e){
+  return String(e.githubImageUrl||e.selectedImageUrl||(Array.isArray(e.jpegCandidates)?e.jpegCandidates[0]:"")||"").trim();
+}
+function setDecisionVisual(v){
+  decisionEl.textContent=v||"UNDECIDED";
+  decisionEl.style.borderColor=v==="KEEP"?"#28df88":v==="DELETE"?"#ff6565":"#aaa";
+  decisionEl.style.color=v==="KEEP"?"#9fffd1":v==="DELETE"?"#ffaaaa":"#ddd";
+}
+function render(){
+  if(!entries.length)return;
+  index=(index+entries.length)%entries.length;
+  const e=entries[index],u=imageUrl(e),d=decisions[e.archiveId]?.decision||null,c=counts();
+  badge.textContent=`${index+1}/${entries.length} • KEEP ${c.keep} • DELETE ${c.del} • LEFT ${entries.length-c.decided}`;
+  setDecisionVisual(d);
+  sub.textContent=`${e.archiveId} • ${e.name||e.displayName||""}`;
+  meta.textContent=
+`archiveId: ${e.archiveId}
+name: ${e.name||e.displayName||""}
+designation: ${e.designation||""}
+source: ${e.sourceUrl||""}
+image: ${u}`;
+  err.style.display="none";
+  img.style.display="block";
+  img.onload=()=>{err.style.display="none";img.style.display="block"};
+  img.onerror=()=>{
+    img.style.display="none";
+    err.style.display="flex";
+    err.textContent="IMAGE FAILED TO LOAD\n\n"+u+"\n\nYou can still KEEP or DELETE this record.";
+  };
+  img.src="/image?url="+encodeURIComponent(u)+"&t="+Date.now();
+  progress.style.width=((c.decided/entries.length)*100).toFixed(2)+"%";
+}
+function decide(value){
+  const e=entries[index];
+  decisions[e.archiveId]={
+    archiveId:e.archiveId,
+    name:e.name||e.displayName||null,
+    designation:e.designation||null,
+    decision:value,
+    sourceUrl:e.sourceUrl||null,
+    imageUrl:imageUrl(e),
+    reviewedAt:new Date().toISOString()
+  };
+  save();
+  render();
+  if(index<entries.length-1){index++;render()}
+}
+function exportJson(){
+  const c=counts();
+  const ordered=entries.map(e=>{
+    const saved=decisions[e.archiveId];
+    return saved||{
+      archiveId:e.archiveId,
+      name:e.name||e.displayName||null,
+      designation:e.designation||null,
+      decision:"UNDECIDED",
+      sourceUrl:e.sourceUrl||null,
+      imageUrl:imageUrl(e),
+      reviewedAt:null
+    };
+  });
+  const out={
+    schema:"gv-spitzer-curation-decisions-0001",
+    generatedAt:new Date().toISOString(),
+    catalogUrl:CATALOG_URL,
+    sourceRecordCount:entries.length,
+    summary:{keep:c.keep,delete:c.del,undecided:entries.length-c.decided},
+    keepArchiveIds:ordered.filter(x=>x.decision==="KEEP").map(x=>x.archiveId),
+    deleteArchiveIds:ordered.filter(x=>x.decision==="DELETE").map(x=>x.archiveId),
+    undecidedArchiveIds:ordered.filter(x=>x.decision==="UNDECIDED").map(x=>x.archiveId),
+    decisions:ordered
+  };
+  const blob=new Blob([JSON.stringify(out,null,2)+"\n"],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="gv-spitzer-curation-decisions-0001.json";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+$("keep").onclick=()=>decide("KEEP");
+$("delete").onclick=()=>decide("DELETE");
+$("prev").onclick=()=>{index--;render()};
+$("next").onclick=()=>{index++;render()};
+$("export").onclick=exportJson;
+$("reset").onclick=()=>{
+  if(confirm("Clear every KEEP/DELETE decision?")){
+    decisions={};save();render();
+  }
+};
+(async()=>{
+  loadSaved();
+  const data=await fetch(CATALOG_URL+"?fresh="+Date.now(),{cache:"no-store"}).then(r=>{
+    if(!r.ok)throw new Error("CATALOG HTTP "+r.status);
+    return r.json();
+  });
+  entries=Array.isArray(data.entries)?data.entries:[];
+  if(entries.length!==67)throw new Error("EXPECTED 67 SPITZER RECORDS; GOT "+entries.length);
+  render();
+})().catch(e=>{
+  sub.textContent="BOOT ERROR";
+  err.style.display="flex";err.textContent=String(e?.stack||e);
+});
+</script>
+</body>
+</html>
