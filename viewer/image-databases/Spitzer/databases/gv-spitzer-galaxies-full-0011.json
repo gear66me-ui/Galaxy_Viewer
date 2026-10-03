@@ -738,12 +738,12 @@
       "sourceUrl": "https://www.spitzer.caltech.edu/image/ssc2019-15a-galaxy-m81-in-infrared-revisited",
       "esaPublicationJpeg": null,
       "jpegCandidates": [
-        "https://www.spitzer.caltech.edu/system/avm_images/binaries/6672/medium/ssc2019-15a.jpg?1603784767="
+        "https://astropix.org/archive/spitzer/ssc2019-15a/spitzer_ssc2019-15a_320.jpg"
       ],
       "license": "Spitzer/JPL image-use policy",
       "licenseUrl": "https://www.spitzer.caltech.edu/page/image-use-policy",
       "imageStatus": "curator_keep_galaxy_target_resolved_0008",
-      "selectedImageUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6672/medium/ssc2019-15a.jpg?1603784767=",
+      "selectedImageUrl": "https://astropix.org/archive/spitzer/ssc2019-15a/spitzer_ssc2019-15a_320.jpg",
       "assetName": null,
       "bytes": null,
       "sha256": null,
@@ -781,7 +781,7 @@
         "S4G/CS4G and/or Hubble 0018 cross-check"
       ],
       "displayName": "Bode's Galaxy",
-      "astroPixSourceUrl": null,
+      "astroPixSourceUrl": "https://www.astropix.org/image/spitzer/ssc2019-15a",
       "curationDecision": "KEEP",
       "curationSource": "spitzer-curator-v14-static-545-2026-08-24T03-35-11-464Z.json",
       "curationGroup": "M81 — Bode's Galaxy",
