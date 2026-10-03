@@ -719,7 +719,7 @@ async function gvLoadAvmRuntimeCatalog(){
             .then(response=>{if(!response.ok)throw new Error('GV AVM RUNTIME CATALOG HTTP '+response.status);return response.json()})
             .then(payload=>{
                 const records=Array.isArray(payload)?payload:payload?.records;
-                if(!Array.isArray(records)||records.length!==1869)throw new Error('GV AVM RUNTIME CATALOG INVALID');
+                if(!Array.isArray(records)||records.length!==1848)throw new Error('GV AVM RUNTIME CATALOG INVALID');
                 const byUrl=new Map(),byId=new Map();
                 for(const record of records){
                     const url=String(record?.imageUrl||'').trim().toLowerCase();
