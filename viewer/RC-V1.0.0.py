@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0051';
+const GV200001_BUILD='0052';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-BOM05714b2c06e2-DPdc5c1046027d`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1507,9 +1507,6 @@ function gvPrewarmProviderWebsite(destination){
                 document.head.appendChild(link);
             }
         }
-        fetch(url,{method:'GET',mode:'no-cors',credentials:'include',cache:'force-cache',redirect:'follow'})
-            .then(()=>console.info('GV PROVIDER HTTPS WARM READY',origin))
-            .catch(error=>console.info('GV PROVIDER HTTPS WARM BEST-EFFORT',origin,String(error?.message||error||'')));
     }catch(error){console.warn('GV PROVIDER PREWARM SKIPPED',error)}
 }
 
