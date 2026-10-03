@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0053 — registered image-center authority; original 17-second choreography preserved
+# BUILD 0054 — audited registered image-center authority; choreography unchanged
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
