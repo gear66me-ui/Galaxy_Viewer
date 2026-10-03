@@ -1,0 +1,185 @@
+name: TEMP Spitzer M81 15b validated AVM injection
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-spitzer-m81-15b-avm-inject.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Create validated 3840 image
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+          mkdir -p viewer/image-databases/Spitzer/AVM-Catalog
+          TIFF=/tmp/ssc2019-15b.tif
+          OUT=viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15b-avm.jpg
+
+          curl -fL --retry 3 --retry-delay 2             'https://www.spitzer.caltech.edu/system/avm_images/binaries/6675/original/ssc2019-15b.tif?1603785953='             -o "$TIFF"
+
+          python - <<'PY'
+          from PIL import Image
+          src="/tmp/ssc2019-15b.tif"
+          dst="viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15b-avm.jpg"
+          im=Image.open(src)
+          if im.size != (3840,3840):
+              raise SystemExit(f"Unexpected TIFF dimensions: {im.size}")
+          if im.mode not in ("RGB","L"):
+              im=im.convert("RGB")
+          im.save(dst,"JPEG",quality=95,subsampling=0,optimize=True)
+          chk=Image.open(dst)
+          if chk.size != (3840,3840):
+              raise SystemExit(f"Unexpected JPEG dimensions: {chk.size}")
+          print("CREATED",dst,chk.size)
+          PY
+
+          sha256sum "$OUT"
+          ls -lh "$OUT"
+
+      - name: Surgically patch source and runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          source_path=Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json")
+          runtime_path=Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json")
+          raw="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15b-avm.jpg"
+
+          def record_block(text, archive_id, provider=None):
+              marker=f'      "archiveId": "{archive_id}"'
+              p=text.find(marker)
+              if p < 0:
+                  raise SystemExit(f"{archive_id} not found")
+              start=text.rfind("    {",0,p)
+              end=text.find("    {",p+len(marker))
+              if end < 0:
+                  end=text.find("  ]",p)
+              block=text[start:end]
+              if provider and f'"providerKey": "{provider}"' not in block:
+                  raise SystemExit(f"{archive_id} provider mismatch")
+              return start,end,block
+
+          def once(s,a,b,label):
+              n=s.count(a)
+              if n != 1:
+                  raise SystemExit(f"{label}: expected 1 match, found {n}")
+              return s.replace(a,b,1)
+
+          # Source: only this record.
+          s=source_path.read_text(encoding="utf-8")
+          a,b,blk=record_block(s,"ssc2019-15b")
+          old="https://www.spitzer.caltech.edu/system/avm_images/binaries/6675/medium/ssc2019-15b.jpg?1603785953="
+          if blk.count(old) != 2:
+              raise SystemExit(f"source URL expected twice, found {blk.count(old)}")
+          blk=blk.replace(old,raw)
+          blk=once(blk,'      "assetName": null,','      "assetName": "ssc2019-15b-avm.jpg",',"assetName")
+          blk=once(blk,'      "githubImageUrl": null,',f'      "githubImageUrl": "{raw}",',"githubImageUrl")
+          blk=once(blk,'      "astroPixSourceUrl": null,','      "astroPixSourceUrl": "https://www.astropix.org/image/spitzer/ssc2019-15b",',"astroPixSourceUrl")
+          s=s[:a]+blk+s[b:]
+          source_path.write_text(s,encoding="utf-8")
+
+          # Runtime: replace exactly one 15b record with validated WCS.
+          r=runtime_path.read_text(encoding="utf-8")
+          a,b,blk=record_block(r,"ssc2019-15b","spitzer")
+          new='''    {
+              "providerKey": "spitzer",
+              "archiveId": "ssc2019-15b",
+              "name": "Bode's Galaxy",
+              "sourceCatalog": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+              "sourceIndex": 9,
+              "imageUrl": "RAWURL",
+              "authority": "PRECOMPUTED_IMAGE_AVM",
+              "ra": 148.8873235,
+              "dec": 69.0646392,
+              "fovDegrees": 0.39995904,
+              "fovXDegrees": 0.39995904,
+              "fovYDegrees": 0.3999590016,
+              "fovPolicy": "X",
+              "spatialRotationDeg": -30.02,
+              "aladinRotation": -30.02,
+              "referencePixel": [
+                1921,
+                1921
+              ],
+              "referenceDimension": [
+                3840,
+                3840
+              ],
+              "scale": [
+                -0.000104156,
+                0.00010415599
+              ],
+              "cdMatrix": null,
+              "projection": "TAN",
+              "coordinateFrame": "ICRS"
+            },
+          '''.replace("RAWURL",raw)
+          r=r[:a]+new+r[b:]
+
+          # Summary: 26/42 -> 27/41, only inside Spitzer summary block.
+          p=r.find('    "spitzer": {')
+          q=r.find('    "chandra": {',p)
+          sb=r[p:q]
+          sb=once(sb,'      "imageAvm": 26,','      "imageAvm": 27,',"imageAvm summary")
+          sb=once(sb,'      "catalogFallback": 42,','      "catalogFallback": 41,',"fallback summary")
+          r=r[:p]+sb+r[q:]
+          runtime_path.write_text(r,encoding="utf-8")
+
+          # Parse/assert final semantics.
+          sj=json.loads(source_path.read_text(encoding="utf-8"))
+          se=next(x for x in sj["entries"] if x.get("archiveId")=="ssc2019-15b")
+          rj=json.loads(runtime_path.read_text(encoding="utf-8"))
+          re=next(x for x in rj["records"] if x.get("providerKey")=="spitzer" and x.get("archiveId")=="ssc2019-15b")
+          assert se["selectedImageUrl"]==raw
+          assert se["githubImageUrl"]==raw
+          assert se["assetName"]=="ssc2019-15b-avm.jpg"
+          assert re["imageUrl"]==raw
+          assert re["authority"]=="PRECOMPUTED_IMAGE_AVM"
+          assert re["ra"]==148.8873235 and re["dec"]==69.0646392
+          assert re["fovXDegrees"]==0.39995904 and re["fovYDegrees"]==0.3999590016
+          assert re["spatialRotationDeg"]==-30.02
+          assert re["referencePixel"]==[1921,1921]
+          assert re["referenceDimension"]==[3840,3840]
+          assert re["scale"]==[-0.000104156,0.00010415599]
+          assert re["projection"]=="TAN" and re["coordinateFrame"]=="ICRS"
+          assert rj["summary"]["spitzer"]=={"total":68,"imageAvm":27,"catalogFallback":41,"failed":0}
+          print("15B SOURCE",se["selectedImageUrl"])
+          print("15B RUNTIME",json.dumps(re,indent=2))
+          print("SPITZER SUMMARY",rj["summary"]["spitzer"])
+          PY
+
+      - name: Commit 15b injection
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15b-avm.jpg             viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json             viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json
+          git diff --cached --stat
+          git diff --cached --             viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json             viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json
+          git commit -m "Spitzer: inject validated 3840px AVM asset for ssc2019-15b"
+          git push origin HEAD:beta
