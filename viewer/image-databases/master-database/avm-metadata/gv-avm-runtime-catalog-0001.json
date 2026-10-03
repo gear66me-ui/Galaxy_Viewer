@@ -34,9 +34,9 @@
       "failed": 0
     },
     "spitzer": {
-      "total": 69,
+      "total": 68,
       "imageAvm": 25,
-      "catalogFallback": 44,
+      "catalogFallback": 43,
       "failed": 0
     },
     "chandra": {
@@ -46,7 +46,7 @@
       "failed": 0
     }
   },
-  "recordCount": 1871,
+  "recordCount": 1870,
   "failureCount": 0,
   "records": [
     {
@@ -59563,33 +59563,10 @@
     },
     {
       "providerKey": "spitzer",
-      "archiveId": "sig07-015",
-      "name": "NGC 5044",
-      "sourceCatalog": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
-      "sourceIndex": 66,
-      "imageUrl": "https://astropix.org/archive/spitzer/sig07-015/spitzer_sig07-015_320.jpg",
-      "authority": "PRECOMPUTED_CATALOG_FALLBACK",
-      "ra": 198.84980999999993,
-      "dec": -16.38534400000001,
-      "fovDegrees": 0.16083333333333333,
-      "fovXDegrees": 0.16083333333333333,
-      "fovYDegrees": 0.16083333333333333,
-      "fovPolicy": "X",
-      "spatialRotationDeg": 42.660000000000025,
-      "aladinRotation": 42.660000000000025,
-      "referencePixel": null,
-      "referenceDimension": null,
-      "scale": null,
-      "cdMatrix": null,
-      "projection": null,
-      "coordinateFrame": null
-    },
-    {
-      "providerKey": "spitzer",
       "archiveId": "sig09-003",
       "name": "Triangulum Galaxy",
       "sourceCatalog": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
-      "sourceIndex": 67,
+      "sourceIndex": 66,
       "imageUrl": "https://astropix.org/archive/spitzer/sig09-003/spitzer_sig09-003_320.jpg",
       "authority": "PRECOMPUTED_IMAGE_AVM",
       "ra": 23.485679,
@@ -59621,7 +59598,7 @@
       "archiveId": "ssc2003-06d5",
       "name": "Bode's Galaxy",
       "sourceCatalog": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
-      "sourceIndex": 68,
+      "sourceIndex": 67,
       "imageUrl": "https://astropix.org/archive/spitzer/ssc2003-06d5/spitzer_ssc2003-06d5_320.jpg",
       "authority": "PRECOMPUTED_IMAGE_AVM",
       "ra": 148.891519342434,
