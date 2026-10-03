@@ -1,0 +1,164 @@
+name: TEMP Spitzer AstroPix API galaxy discovery
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-spitzer-astropix-api-galaxy-discovery.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout beta
+        uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - name: Fetch AstroPix Spitzer JSON feed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+          mkdir -p viewer/image-databases/Spitzer/rebuild
+          curl -fL --retry 4 --retry-delay 2             'https://www.astropix.org/link/913?format=json'             -o /tmp/astropix-spitzer-all.json
+          python - <<'PY'
+          import json
+          p='/tmp/astropix-spitzer-all.json'
+          data=json.load(open(p,encoding='utf-8'))
+          print('ASTROPIX RECORDS',len(data))
+          if len(data) < 600:
+              raise SystemExit(f'Unexpected AstroPix Spitzer feed size: {len(data)}')
+          PY
+
+      - name: Build strict new-galaxy candidate catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          ap=json.load(open('/tmp/astropix-spitzer-all.json',encoding='utf-8'))
+          current=json.loads(Path('viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json').read_text(encoding='utf-8'))
+          current_ids={str(x.get('archiveId','')).lower() for x in current['entries']}
+
+          def complete_wcs(r):
+              return (
+                  r.get('wcs_coordinate_frame') and
+                  isinstance(r.get('wcs_reference_value'),list) and len(r['wcs_reference_value'])==2 and
+                  isinstance(r.get('wcs_reference_dimension'),list) and len(r['wcs_reference_dimension'])==2 and
+                  isinstance(r.get('wcs_reference_pixel'),list) and len(r['wcs_reference_pixel'])==2 and
+                  isinstance(r.get('wcs_scale'),list) and len(r['wcs_scale'])==2 and
+                  r.get('wcs_rotation') not in (None,'') and
+                  r.get('wcs_projection') and
+                  r.get('resource_url')
+              )
+
+          def galaxy_subject(r):
+              # AstroPix AVM taxonomy: C.5.* entries are galaxies/extragalactic systems.
+              subs=r.get('subject') or []
+              return any(str(s).startswith('C.5.') for s in subs)
+
+          def original_tiff(r):
+              u=str(r.get('resource_url') or '')
+              return bool(re.search(r'\.tiff?(?:\?|$)',u,re.I))
+
+          strict=[]
+          all_new_galaxy_obs=[]
+          for r in ap:
+              aid=str(r.get('image_id') or '').strip()
+              if not aid or aid.lower() in current_ids:
+                  continue
+              if str(r.get('image_type') or '').strip().lower() != 'observation':
+                  continue
+              if not galaxy_subject(r):
+                  continue
+
+              row={
+                  'archiveId':aid,
+                  'title':r.get('title'),
+                  'objectNames':r.get('object_name') or [],
+                  'subject':r.get('subject') or [],
+                  'imageType':r.get('image_type'),
+                  'imageQuality':r.get('image_quality'),
+                  'releaseDate':r.get('image_release_date'),
+                  'credit':r.get('image_credit'),
+                  'referenceUrl':r.get('reference_url'),
+                  'resourceUrl':r.get('resource_url'),
+                  'astroPixUrl':f'https://www.astropix.org/image/spitzer/{aid}',
+                  'coordinateFrame':r.get('wcs_coordinate_frame'),
+                  'equinox':r.get('wcs_equinox'),
+                  'referenceValue':r.get('wcs_reference_value'),
+                  'referenceDimension':r.get('wcs_reference_dimension'),
+                  'referencePixel':r.get('wcs_reference_pixel'),
+                  'scale':r.get('wcs_scale'),
+                  'rotation':r.get('wcs_rotation'),
+                  'projection':r.get('wcs_projection'),
+                  'wcsQuality':r.get('wcs_quality'),
+                  'imageWidth':r.get('image_width'),
+                  'imageHeight':r.get('image_height'),
+                  'astropixId':r.get('astropix_id'),
+                  'completeImageNativeWcs':bool(complete_wcs(r)),
+                  'originalTiff':bool(original_tiff(r))
+              }
+              all_new_galaxy_obs.append(row)
+              if row['completeImageNativeWcs'] and row['originalTiff']:
+                  strict.append(row)
+
+          # Prefer good/full metadata and recent/high-res images first, but retain all strict candidates.
+          def score(x):
+              return (
+                  1 if str(x.get('wcsQuality') or '').lower()=='full' else 0,
+                  1 if str(x.get('imageQuality') or '').lower()=='good' else 0,
+                  int(x.get('imageWidth') or 0)*int(x.get('imageHeight') or 0),
+                  str(x.get('releaseDate') or '')
+              )
+          strict.sort(key=score,reverse=True)
+          all_new_galaxy_obs.sort(key=lambda x:(x['completeImageNativeWcs'],x['originalTiff'],score(x)),reverse=True)
+
+          out={
+              'schema':'gv-spitzer-astropix-api-galaxy-candidates-0001',
+              'sourceApi':'https://www.astropix.org/link/913?format=json',
+              'sourceProvider':'Spitzer Space Telescope / Spitzer Science Center',
+              'sourceApiRecordCount':len(ap),
+              'existingCatalogRecordCount':len(current_ids),
+              'filter':{
+                  'excludeExistingArchiveIds':True,
+                  'imageType':'Observation',
+                  'subjectPrefix':'C.5.',
+                  'strictAdmission':'complete image-native WCS + original/source TIFF'
+              },
+              'summary':{
+                  'newGalaxyObservations':len(all_new_galaxy_obs),
+                  'strictCompleteOriginalTiffCandidates':len(strict),
+                  'targetAdditionalRecords':54,
+                  'enoughForTarget':len(strict)>=54
+              },
+              'strictCandidates':strict,
+              'allNewGalaxyObservations':all_new_galaxy_obs
+          }
+          path=Path('viewer/image-databases/Spitzer/rebuild/gv-spitzer-astropix-api-galaxy-candidates-0001.json')
+          path.write_text(json.dumps(out,indent=2)+'\n',encoding='utf-8')
+
+          print('NEW GALAXY OBSERVATIONS',len(all_new_galaxy_obs))
+          print('STRICT COMPLETE TIFF CANDIDATES',len(strict))
+          print('ENOUGH FOR +54',len(strict)>=54)
+          for i,x in enumerate(strict[:80],1):
+              print(f"{i:03d} {x['archiveId']} | {x['title']} | {x['referenceDimension']} | {x['wcsQuality']} | {x['resourceUrl']}")
+          PY
+
+      - name: Commit discovery catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Spitzer/rebuild/gv-spitzer-astropix-api-galaxy-candidates-0001.json
+          git diff --cached --stat
+          git commit -m "Spitzer: add AstroPix API galaxy candidate discovery"
+          git push origin HEAD:beta
