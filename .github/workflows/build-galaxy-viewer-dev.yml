@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.12 A/B APK
+name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Landing Prewarm APK
 # DEV 0057: current Browser 0057 hosted architecture + tablet resize/back fixes. Side-by-side package; production untouched.
 
 on:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 58
-              versionName 'DEV-0057-WEBKIT112-1'
+              versionCode 59
+              versionName 'DEV-0057-WEBKIT112-2'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
@@ -156,9 +156,9 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV A/B: preserve Browser 0057 fast provider handoff, but restore the
-          # known-smooth AndroidX WebKit 1.12.1 foundation and remove the unused
-          # speculative-prerender bridge/API that requires newer AndroidX.
+          # DEV 0004: preserve 0003's WebKit 1.12.1 + fast handoff, but restore
+          # only the GVNative landing-time prewarm bridge. No WebViewCompat prerender,
+          # no launch-time prewarm, no travel-time traffic, and no 4-second cover.
           python - "$MAIN" <<'PY'
           from pathlib import Path
           import sys
@@ -183,25 +183,21 @@ jobs:
               assert line in s
               s=s.replace(line,'',1)
 
-          # Remove the unused GVNative bridge from the viewer WebView.
-          bridge='    viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative");\n'
-          assert bridge in s
-          s=s.replace(bridge,'',1)
-
-          # Remove prewarm-only state.
-          old='  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="";\n'
-          assert old in s
-          s=s.replace(old,'  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\n',1)
-
           # Launch behavior: normal hosted viewer + provider deep-link, no prerender mode.
           old='    if(launchUrl!=null&&launchPrewarm(getIntent())){ prewarmProvider(launchUrl); moveTaskToBack(true); }\n    else { launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); } }\n'
           assert old in s
           s=s.replace(old,'    launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); }\n',1)
 
-          # Remove launchPrewarm() + prewarmProvider() methods as one exact block.
+          # Remove launch-time prewarm mode, but retain a simple landing-time native prewarm.
           start=s.index('  private boolean launchPrewarm(Intent intent){')
           end=s.index('  private String launchProviderIcon(Intent intent){',start)
-          s=s[:start]+s[end:]
+          replacement=('  private void prewarmProvider(String u){\n'
+                       '    if(u==null||!u.startsWith("https://")||u.equals(prewarmedUrl))return;\n'
+                       '    prewarmedUrl=u;\n'
+                       '    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n'
+                       '    if(web!=null)web.loadUrl(u);\n'
+                       '  }\n')
+          s=s[:start]+replacement+s[end:]
 
           # Browser 0057 fast provider handoff: visible immediately, no 4-second cover.
           old=("    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);\n"
@@ -210,7 +206,7 @@ jobs:
                "    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000);\n")
           assert old in s
           new=("    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}\n"
-               "    if(web!=null){web.requestFocus();web.loadUrl(u);}\n"
+               "    if(web!=null){web.requestFocus();if(!u.equals(prewarmedUrl))web.loadUrl(u);}\n"
                "    fetchPointer();\n"
                "    immersive();\n")
           s=s.replace(old,new,1)
@@ -220,11 +216,6 @@ jobs:
           assert old in s
           s=s.replace(old,'  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null)openProvider(u,launchProviderIcon(intent)); }\n',1)
 
-          # Remove ViewerBridge class; retain provider-shell Bridge.
-          start=s.index('  public final class ViewerBridge{')
-          end=s.index('  public final class Bridge{',start)
-          s=s[:start]+s[end:]
-
           # Tablet fix 2: Android Back must not cold-launch Galaxy Viewer.
           old='  @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}\n'
           assert old in s
@@ -233,27 +224,28 @@ jobs:
           p.write_text(s)
           PY
 
-          # Nanoscopic gates: 0057 fast handoff + 1.12.1 foundation; no prerender bridge.
+          # Nanoscopic gates: 0057 fast handoff + 1.12.1 + landing-only native WebView prewarm.
           grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
           grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
-          grep -q 'web.requestFocus();web.loadUrl(u);' "$MAIN"
+          grep -q 'web.requestFocus();if(!u.equals(prewarmedUrl))web.loadUrl(u);' "$MAIN"
           grep -q 'viewerWeb=viewer()' "$MAIN"
           grep -q 'openProvider' "$MAIN"
           grep -q 'returnToViewer' "$MAIN"
           grep -q 'onCreateWindow' "$MAIN"
           grep -q 'WebViewAssetLoader' "$MAIN"
-          ! grep -q 'GVNative' "$MAIN"
+          grep -q 'viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
           ! grep -q 'WebViewCompat' "$MAIN"
           ! grep -q 'WebViewFeature' "$MAIN"
           ! grep -q 'PrerenderOperationCallback' "$MAIN"
           ! grep -q 'PrerenderException' "$MAIN"
-          ! grep -q 'prewarmProvider' "$MAIN"
+          grep -q 'private void prewarmProvider(String u)' "$MAIN"
+          grep -q 'if(web!=null)web.loadUrl(u);' "$MAIN"
+          grep -q '@JavascriptInterface public void prewarm(String url)' "$MAIN"
           ! grep -q 'launchPrewarm' "$MAIN"
-          ! grep -q 'prewarmedUrl' "$MAIN"
           ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
           grep -q "androidx.webkit:webkit:1.12.1" "$ROOT/app/build.gradle"
           test ! -e "$ROOT/app/src/main/assets/index.html"
@@ -275,7 +267,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0003.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -285,7 +277,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0003.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -293,8 +285,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0003
+          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0004
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0003.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0003.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk.sha256
           retention-days: 30
