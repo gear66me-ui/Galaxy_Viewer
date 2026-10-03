@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Prewarm State Repair APK
+name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Shell Sync Repair APK
 # DEV 0057: current Browser 0057 hosted architecture + tablet resize/back fixes. Side-by-side package; production untouched.
 
 on:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 62
-              versionName 'APK-0007-DEV-0057-WEBKIT112-5'
+              versionCode 63
+              versionName 'APK-0008-DEV-0057-WEBKIT112-6'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
@@ -156,8 +156,8 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0007: preserve 0006 exactly; repair provider prewarm state only.
-          # Requested/loading/ready/failed are tracked separately so a requested URL is never mistaken for a ready page.
+          # DEV 0008: preserve 0007 exactly; repair top-shell URL/status synchronization only.
+          # When the hosted top shell reloads after a prewarmed provider is already ready, immediately repopulate its browser state.
           python - "$MAIN" <<'PY'
           from pathlib import Path
           import sys
@@ -186,6 +186,13 @@ jobs:
           ]:
               assert line in s
               s=s.replace(line,'',1)
+
+          # APK 0008 only: if the hosted top shell finishes after the provider already loaded,
+          # immediately repopulate URL/provider state instead of leaving its default LOADING… text.
+          old='          fitTopShell();\n        }\n      }\n    }); return v;\n'
+          assert old in s
+          new='          fitTopShell();\n          if(browserMode)syncShell();\n        }\n      }\n    }); return v;\n'
+          s=s.replace(old,new,1)
 
           # Track prewarm request separately from actual committed/ready content.
           old='  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="";\n'
@@ -272,6 +279,7 @@ jobs:
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
+          grep -q 'if(browserMode)syncShell();' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
           grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
           grep -q 'boolean currentReady=u.equals(prewarmReadyUrl)' "$MAIN"
@@ -323,7 +331,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0007.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0008.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -333,7 +341,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0007.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0008.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -341,8 +349,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0007
+          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0008
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0007.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0007.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0008.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0008.apk.sha256
           retention-days: 30
