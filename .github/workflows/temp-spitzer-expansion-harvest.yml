@@ -64,15 +64,7 @@ jobs:
 
           def galaxyish(x):
               subjects=[str(v).strip() for v in (x.get("subject") or [])]
-              if any(v.startswith("C.5.") or v=="C.5" for v in subjects):
-                  return True
-              text=" ".join([
-                  str(x.get("title") or ""),
-                  str(x.get("headline") or ""),
-                  " ".join(map(str,x.get("object_name") or []))
-              ]).lower()
-              galaxy_terms=(" galaxy","galaxies","messier ","ngc ","arp ","ugc ","magellanic cloud")
-              return any(t in (" "+text) for t in galaxy_terms)
+              return any(v.startswith("C.5.") or v=="C.5" for v in subjects)
 
           def is_artworkish(x):
               t=str(x.get("image_type") or "").lower()
