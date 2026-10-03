@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0050 — opaque Earth-distance banner + 20% larger FOV readout
+# BUILD 0053 — registered image-center authority; original 17-second choreography preserved
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -1085,6 +1085,20 @@ function gvTanPixelToWorld(wcs,x,y){
     ra=((ra*r2d)%360+360)%360;
     return [ra,dec*r2d];
 }
+function gvRegisteredTravelStateFromRecord(record){
+    const ra=Number(record?.ra),dec=Number(record?.dec);
+    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
+    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
+    if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0||!Number.isFinite(rotation))throw new Error('GV REGISTERED TRAVEL METADATA INVALID');
+    let imageCenter=[ra,dec];
+    const dims=record?.referenceDimension,width=Number(dims?.[0]),height=Number(dims?.[1]);
+    if(Number.isFinite(width)&&width>0&&Number.isFinite(height)&&height>0){
+        const wcs=gvSyntheticWcsFromRuntimeRecord(record,width,height);
+        imageCenter=gvTanPixelToWorld(wcs,(width+1)/2,(height+1)/2);
+    }
+    return {imageCenter,finalFov:Math.max(fovX,fovY)*1.0,rotation};
+}
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
     panel.id=id;
@@ -1533,14 +1547,14 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvHideEarthDistance();
     gvEarthPointerActive=true;
     gvUpdateEarthBearingPointer();
-    const v=validateDestination(destination),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination),sourceDestination=activeDestination;
+    const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination),registeredTravelPromise=recordPromise.then(gvRegisteredTravelStateFromRecord),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,recordPromise)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination,recordPromise),sourceDestination=activeDestination;
     activeDestination=v.destination;destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false,displayReady=Promise.resolve(false);
     const installWhenReady=prepared=>{if(activeDestination===v.destination&&!installed){displayReady=gvInstallPreparedHd(prepared);installed=true}return displayReady};
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:preparedPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:registeredTravelPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
         const prepared=await preparedPromise;headsUpDisplay.markReady?.(v.destination);await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         if(!installed)await installWhenReady(prepared);else await displayReady;
@@ -1549,15 +1563,10 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     let prepared=null;
     preparedPromise.then(value=>{prepared=value;headsUpDisplay.markReady?.(v.destination)}).catch(error=>console.error('GV DIRECT HD PREPARE FAILED',error));
     const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,registeredPromise:preparedPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
+    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,registeredPromise:registeredTravelPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
     await travelPromise;if(activeDestination!==v.destination)return v.destination;
     prepared=prepared||await preparedPromise;
     if(!installed)await installWhenReady(prepared);else await displayReady;
-    const registeredCenter=prepared?.imageCenter,registeredRa=Number(registeredCenter?.[0]),registeredDec=Number(registeredCenter?.[1]),registeredFov=Number(prepared?.finalFov),registeredRotation=Number(prepared?.rotation);
-    if(Number.isFinite(registeredRa)&&Number.isFinite(registeredDec)&&Number.isFinite(registeredFov)&&registeredFov>0&&Number.isFinite(registeredRotation)){
-        gvDoeCommand('gotoRaDec',[registeredRa,registeredDec]);aladin.gotoRaDec(registeredRa,registeredDec);coordinate?.update(registeredRa,registeredDec);gvSetEarthPointerPosition(registeredRa,registeredDec,true);
-        gvDoeCommand('setFov',[registeredFov]);aladin.setFov(registeredFov);gvDoeCommand('setRotation',[registeredRotation]);aladin.setRotation(registeredRotation);gvUpdateEarthBearingPointer();
-    }
     travelPresentation.end();destinationPresentation.arrive(v.destination,{imageUrl:String(prepared.imageUrl||directHdUrl(v.destination)).trim()});headsUpDisplay.render();gvShowEarthDistance(v.destination);gvPrewarmProviderWebsite(v.destination);return v.destination;
 }
 
