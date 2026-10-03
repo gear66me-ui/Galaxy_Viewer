@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.12 APK 0012 NO PREWARM
-# DEV 0057: APK 0012 diagnostic = proven APK 0012 single-WebView architecture with native provider prewarm disabled. Production untouched.
+name: Build Galaxy Viewer DEV 0057 WebKit 1.13 APK 0013 OFFICIAL PRERENDER
+# DEV 0057: APK 0013 diagnostic = proven APK 0013 single-WebView architecture with native provider prewarm disabled. Production untouched.
 
 on:
   push:
@@ -70,11 +70,11 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 67
-              versionName 'APK-0012-DEV-0057-WEBKIT112-NOPREWARM'
+              versionCode 68
+              versionName 'APK-0013-DEV-0057-WEBKIT113-PRERENDER'
             }
           }
-          dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
+          dependencies { implementation 'androidx.webkit:webkit:1.13.0' }
           EOF
 
           # Android launcher artwork only. Galaxy Viewer stays hosted and follows the current launch/pointers.
@@ -156,7 +156,7 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0012: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
+          # DEV 0013: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
           # When the hosted top shell reloads after a prewarmed provider is already ready, immediately repopulate its browser state.
           python - "$MAIN" <<'PY'
           from pathlib import Path
@@ -187,7 +187,7 @@ jobs:
               assert line in s
               s=s.replace(line,'',1)
 
-          # APK 0012 / proven 0008: if the hosted top shell finishes after the provider already loaded,
+          # APK 0013 / proven 0008: if the hosted top shell finishes after the provider already loaded,
           # immediately repopulate URL/provider state instead of leaving its default LOADING… text.
           old='          fitTopShell();\n        }\n      }\n    }); return v;\n'
           assert old in s
@@ -266,11 +266,81 @@ jobs:
           assert old in s
           s=s.replace(old,'  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n',1)
 
-          # Diagnostic APK 0012: disable native provider-page prewarm completely.
+          # Diagnostic APK 0013: disable native provider-page prewarm completely.
           # Hosted GVNative.prewarm(url) calls remain harmless no-ops; provider pages load only on explicit WEB press.
           old='    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n'
           assert old in s
           s=s.replace(old,'    @JavascriptInterface public void prewarm(String url){}\n',1)
+
+          # APK 0013 Lucky 13 — official AndroidX WebKit 1.13 prerender.
+          # One provider WebView only. Prerender never navigates the visible WebView.
+          # Each new destination cancels the previous speculative render.
+          # Provider browser is revealed only after onPageCommitVisible confirms stale content is gone.
+
+          # Re-enable official prerender imports removed by the 1.12 baseline transform.
+          needle='import androidx.webkit.WebViewAssetLoader;\n'
+          assert needle in s
+          s=s.replace(needle,needle+'import androidx.webkit.WebViewCompat;\nimport androidx.webkit.WebViewFeature;\nimport androidx.webkit.PrerenderOperationCallback;\nimport androidx.webkit.PrerenderException;\n',1)
+          needle='import android.os.Message;\n'
+          assert needle in s
+          s=s.replace(needle,needle+'import android.os.CancellationSignal;\n',1)
+
+          # Add one cancellable prerender slot and a reveal gate.
+          old='  private boolean prewarmLoading=false, prewarmFailed=false;\n'
+          assert old in s
+          new=('  private boolean prewarmLoading=false, prewarmFailed=false;\n'
+               '  private CancellationSignal prerenderSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false;\n')
+          s=s.replace(old,new,1)
+
+          # Replace live hidden-navigation prewarm with official WebView speculative prerender.
+          start=s.index('  private void prewarmProvider(String u){')
+          end=s.index('  private String launchProviderIcon(Intent intent){',start)
+          assert start>=0 and end>start
+          replacement=('  private void prewarmProvider(String u){\n'
+                       '    if(u==null||!u.startsWith("https://")||web==null)return;\n'
+                       '    if(u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed)return;\n'
+                       '    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}\n'
+                       '    final int generation=++prerenderGeneration;\n'
+                       '    prewarmedUrl=u;prewarmReadyUrl="";prewarmCommittedUrl="";prewarmLoading=true;prewarmFailed=false;\n'
+                       '    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n'
+                       '    if(!WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){prewarmLoading=false;prewarmFailed=true;return;}\n'
+                       '    prerenderSignal=new CancellationSignal();\n'
+                       '    try{\n'
+                       '      WebViewCompat.prerenderUrlAsync(web,u,prerenderSignal,getMainExecutor(),new PrerenderOperationCallback(){\n'
+                       '        @Override public void onPrerenderActivated(){if(generation!=prerenderGeneration||!u.equals(prewarmedUrl))return;prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=u;prewarmCommittedUrl=u;}\n'
+                       '        @Override public void onError(PrerenderException e){if(generation!=prerenderGeneration||!u.equals(prewarmedUrl))return;prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";}\n'
+                       '      });\n'
+                       '    }catch(Exception e){if(generation==prerenderGeneration&&u.equals(prewarmedUrl)){prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";}}\n'
+                       '  }\n')
+          s=s[:start]+replacement+s[end:]
+
+          # Reveal only after the newly requested main document is committed visible.
+          old=('      @Override public void onPageCommitVisible(WebView view,String url){ if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} }\n'
+               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(prewarmLoading&&request!=null&&request.isForMainFrame()){prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";} }\n'
+               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n')
+          assert old in s
+          new=('      @Override public void onPageCommitVisible(WebView view,String url){ if(browserMode&&awaitingProviderCommit){awaitingProviderCommit=false;if(clearProviderEntryHistory){web.clearHistory();clearProviderEntryHistory=false;}if(url!=null&&!url.isEmpty())sourceUrl=url;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}syncShell();immersive();} }\n'
+               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(browserMode&&awaitingProviderCommit&&request!=null&&request.isForMainFrame()){awaitingProviderCommit=false;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}immersive();} }\n'
+               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(browserMode){ if(url!=null&&!url.isEmpty())sourceUrl=url; syncShell(); } }\n')
+          s=s.replace(old,new,1)
+
+          # Pressing WEB activates the exact prerendered URL. Keep Galaxy Viewer visible until commit.
+          old=("    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}\n"
+               "    if(web!=null){web.requestFocus();String current=web.getUrl();boolean currentReady=u.equals(prewarmReadyUrl)&&current!=null&&!current.isEmpty()&&!\"about:blank\".equals(current)&&(current.equals(prewarmCommittedUrl)||current.equals(u));boolean currentLoading=u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed&&current!=null&&!current.isEmpty()&&!\"about:blank\".equals(current);if(!(currentReady||currentLoading)){prewarmedUrl=u;prewarmReadyUrl=\"\";prewarmCommittedUrl=\"\";prewarmLoading=true;prewarmFailed=false;web.loadUrl(u);}}\n"
+               "    fetchPointer();\n"
+               "    immersive();\n")
+          assert old in s
+          new=("    awaitingProviderCommit=true;\n"
+               "    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n"
+               "    if(web!=null){web.requestFocus();web.loadUrl(u);}\n"
+               "    fetchPointer();\n"
+               "    immersive();\n")
+          s=s.replace(old,new,1)
+
+          # Restore hosted landing-time bridge to start official prerender.
+          old='    @JavascriptInterface public void prewarm(String url){}\n'
+          assert old in s
+          s=s.replace(old,'    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n',1)
 
           # Remove only the temporary red 57 TEST badge from the browser viewport.
           badge_start=s.index('    TextView test57=new TextView(this);')
@@ -280,36 +350,37 @@ jobs:
           p.write_text(s)
           PY
 
-          # Nanoscopic gates: APK 0012 preserves proven single-WebView handoff + WebKit 1.12.1 while native provider prewarm is disabled.
+          # Nanoscopic gates: APK 0013 uses one provider WebView + AndroidX WebKit 1.13 official prerender + commit-visible reveal.
           grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
           grep -q 'if(browserMode)syncShell();' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
+          grep -q 'awaitingProviderCommit=true;' "$MAIN"
           grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
-          grep -q 'boolean currentReady=u.equals(prewarmReadyUrl)' "$MAIN"
-          grep -q 'boolean currentLoading=u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed' "$MAIN"
+          grep -q 'prerenderSignal.cancel()' "$MAIN"
+          grep -q 'final int generation=++prerenderGeneration' "$MAIN"
           grep -q 'viewerWeb=viewer()' "$MAIN"
           grep -q 'openProvider' "$MAIN"
           grep -q 'returnToViewer' "$MAIN"
           grep -q 'onCreateWindow' "$MAIN"
           grep -q 'WebViewAssetLoader' "$MAIN"
           grep -q 'viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
-          ! grep -q 'WebViewCompat' "$MAIN"
-          ! grep -q 'WebViewFeature' "$MAIN"
-          ! grep -q 'PrerenderOperationCallback' "$MAIN"
-          ! grep -q 'PrerenderException' "$MAIN"
+          grep -q 'WebViewCompat.prerenderUrlAsync' "$MAIN"
+          grep -q 'WebViewFeature.PRERENDER_WITH_URL' "$MAIN"
+          grep -q 'PrerenderOperationCallback' "$MAIN"
+          grep -q 'PrerenderException' "$MAIN"
           grep -q 'private void prewarmProvider(String u)' "$MAIN"
           grep -q 'prewarmLoading=true;prewarmFailed=false' "$MAIN"
           grep -q 'onPageCommitVisible(WebView view,String url)' "$MAIN"
           grep -q 'request.isForMainFrame()' "$MAIN"
-          grep -q 'if(web!=null)web.loadUrl(u);' "$MAIN"
-          grep -q '@JavascriptInterface public void prewarm(String url){}' "$MAIN"
-          ! grep -q 'prewarm(String url){runOnUiThread(()->prewarmProvider(url));}' "$MAIN"
+          grep -q 'if(web!=null){web.requestFocus();web.loadUrl(u);}' "$MAIN"
+          grep -q '@JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}' "$MAIN"
+          grep -q 'onPrerenderActivated()' "$MAIN"
           ! grep -q 'launchPrewarm' "$MAIN"
           ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
-          grep -q "androidx.webkit:webkit:1.12.1" "$ROOT/app/build.gradle"
+          grep -q "androidx.webkit:webkit:1.13.0" "$ROOT/app/build.gradle"
           grep -q 'import android.webkit.CookieManager;' "$MAIN"
           grep -q 'import android.webkit.WebResourceError;' "$MAIN"
           grep -q 'setAcceptCookie(true)' "$MAIN"
@@ -338,7 +409,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0012.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT113-0013.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -348,7 +419,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0012.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT113-0013.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -356,8 +427,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0012
+          name: Galaxy-Viewer-DEV-0057-WEBKIT113-0013
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0012.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0012.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT113-0013.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT113-0013.apk.sha256
           retention-days: 30
