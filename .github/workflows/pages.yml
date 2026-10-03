@@ -48,7 +48,7 @@ jobs:
           test -s viewer/Web-Browser/Web-Browser-0026/config.json
           test -s viewer/Web-Browser/Web-Browser-0026/top.html
           test -s viewer/Web-Browser/Web-Browser-0026/bottom.html
-          grep -q '"build": "0054"' viewer/gv-current-viewer.json
+          grep -q '"build": "0055"' viewer/gv-current-viewer.json
           grep -q '"viewer": "RC-V1.0.0.py"' viewer/gv-current-viewer.json
           grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
           grep -q '"sourceBranch": "release"' release-manifest.json
