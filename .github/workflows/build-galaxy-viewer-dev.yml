@@ -71,7 +71,7 @@ jobs:
               minSdk 29
               targetSdk 36
               versionCode 62
-              versionName 'DEV-0057-WEBKIT112-5'
+              versionName 'APK-0007-DEV-0057-WEBKIT112-5'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
