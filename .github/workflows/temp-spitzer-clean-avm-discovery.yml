@@ -1,0 +1,169 @@
+name: TEMP Spitzer clean AVM discovery
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - ".github/workflows/temp-spitzer-clean-avm-discovery.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: beta
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install discovery dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4
+
+      - name: Discover AstroPix image-native AVM metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin beta
+          mkdir -p viewer/image-databases/Spitzer/rebuild
+
+          python - <<'PY'
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+          import requests, json, re, time
+
+          src=Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json")
+          out=Path("viewer/image-databases/Spitzer/rebuild/gv-spitzer-avm-discovery-0001.json")
+          data=json.loads(src.read_text(encoding="utf-8"))
+          entries=data["entries"]
+
+          session=requests.Session()
+          session.headers.update({"User-Agent":"GalaxyViewer-Spitzer-AVM-Discovery/1.0"})
+
+          def nums(label,text,n=2):
+              m=re.search(re.escape(label)+r"\s+([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)",text,re.I)
+              if not m: return None
+              return [float(m.group(1)),float(m.group(2))]
+
+          def scalar(label,text):
+              m=re.search(re.escape(label)+r"\s+([-+0-9.eE]+)",text,re.I)
+              return float(m.group(1)) if m else None
+
+          def word(label,text):
+              m=re.search(re.escape(label)+r"\s+([A-Za-z0-9_-]+)",text,re.I)
+              return m.group(1) if m else None
+
+          rows=[]
+          for i,e in enumerate(entries,1):
+              aid=e["archiveId"]
+              page=f"https://www.astropix.org/image/spitzer/{aid}"
+              rec={
+                "archiveId":aid,
+                "name":e.get("name"),
+                "sourceIndex":i-1,
+                "astroPixUrl":page,
+                "httpStatus":None,
+                "status":"NOT_FOUND",
+                "resourceUrl":None,
+                "sourceAssetUrl":None,
+                "coordinateFrame":None,
+                "equinox":None,
+                "referenceValue":None,
+                "referenceDimension":None,
+                "referencePixel":None,
+                "scale":None,
+                "rotation":None,
+                "projection":None,
+                "quality":None,
+                "admissionReady":False
+              }
+              try:
+                  r=session.get(page,timeout=25,allow_redirects=True)
+                  rec["httpStatus"]=r.status_code
+                  if r.status_code!=200:
+                      rows.append(rec); print(i,aid,"HTTP",r.status_code,flush=True); continue
+                  soup=BeautifulSoup(r.text,"html.parser")
+                  text=soup.get_text("\n",strip=True)
+                  rec["coordinateFrame"]=word("Coordinate Frame",text)
+                  eq=word("Equinox",text)
+                  rec["equinox"]=eq
+                  rec["referenceValue"]=nums("Reference Value",text)
+                  rec["referenceDimension"]=nums("Reference Dimension",text)
+                  rec["referencePixel"]=nums("Reference Pixel",text)
+                  rec["scale"]=nums("Scale",text)
+                  rec["rotation"]=scalar("Rotation",text)
+                  rec["projection"]=word("Coordinate System Projection:",text)
+                  rec["quality"]=word("Quality",text)
+
+                  # Prefer a true original/source TIFF link from the page.
+                  hrefs=[]
+                  for a in soup.find_all("a",href=True):
+                      h=a["href"].strip()
+                      if h.startswith("//"): h="https:"+h
+                      elif h.startswith("/"): h="https://www.astropix.org"+h
+                      if re.search(r"\.tiff?(?:\?|$)",h,re.I) or "/original/" in h:
+                          hrefs.append(h)
+                  # Resource URL is also often emitted as plain text in the metadata.
+                  m=re.search(r"Resource URL\s+(https?://\S+)",text,re.I)
+                  if m:
+                      rec["resourceUrl"]=m.group(1).rstrip(".,)")
+                      if re.search(r"\.tiff?(?:\?|$)",rec["resourceUrl"],re.I) or "/original/" in rec["resourceUrl"]:
+                          hrefs.insert(0,rec["resourceUrl"])
+                  # de-dup preserving order
+                  seen=set(); hrefs=[x for x in hrefs if not (x in seen or seen.add(x))]
+                  rec["sourceAssetUrl"]=hrefs[0] if hrefs else None
+
+                  complete=all([
+                      rec["coordinateFrame"],
+                      rec["referenceValue"],
+                      rec["referenceDimension"],
+                      rec["referencePixel"],
+                      rec["scale"],
+                      rec["rotation"] is not None,
+                      rec["projection"],
+                      rec["sourceAssetUrl"]
+                  ])
+                  rec["admissionReady"]=bool(complete)
+                  rec["status"]="COMPLETE_IMAGE_AVM" if complete else "PARTIAL_IMAGE_AVM"
+                  print(i,aid,rec["status"],rec["referenceDimension"],rec["sourceAssetUrl"],flush=True)
+              except Exception as ex:
+                  rec["status"]="ERROR"
+                  rec["error"]=str(ex)
+                  print(i,aid,"ERROR",ex,flush=True)
+              rows.append(rec)
+              time.sleep(0.08)
+
+          summary={
+              "sourceRecords":len(rows),
+              "completeImageAvm":sum(r["status"]=="COMPLETE_IMAGE_AVM" for r in rows),
+              "partialImageAvm":sum(r["status"]=="PARTIAL_IMAGE_AVM" for r in rows),
+              "notFound":sum(r["status"]=="NOT_FOUND" for r in rows),
+              "errors":sum(r["status"]=="ERROR" for r in rows)
+          }
+          result={
+              "schema":"gv-spitzer-avm-discovery-0001",
+              "purpose":"Clean-room Spitzer image-native AVM discovery. No live runtime geometry imported.",
+              "sourceIds":"viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+              "admissionRule":"Record admitted only when AstroPix exposes complete image-native WCS/AVM plus an original/source asset URL.",
+              "summary":summary,
+              "records":rows
+          }
+          out.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8")
+          print("SUMMARY",json.dumps(summary),flush=True)
+          PY
+
+      - name: Commit discovery catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Spitzer/rebuild/gv-spitzer-avm-discovery-0001.json
+          git diff --cached --stat
+          git commit -m "Spitzer: add clean AVM discovery catalog"
+          git push origin HEAD:beta
