@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Landing Prewarm APK
+name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Clean Browser APK
 # DEV 0057: current Browser 0057 hosted architecture + tablet resize/back fixes. Side-by-side package; production untouched.
 
 on:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 59
-              versionName 'DEV-0057-WEBKIT112-2'
+              versionCode 60
+              versionName 'DEV-0057-WEBKIT112-3'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
@@ -156,9 +156,8 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0004: preserve 0003's WebKit 1.12.1 + fast handoff, but restore
-          # only the GVNative landing-time prewarm bridge. No WebViewCompat prerender,
-          # no launch-time prewarm, no travel-time traffic, and no 4-second cover.
+          # DEV 0005: preserve 0004 exactly; remove only the temporary 57 TEST badge.
+          # WebKit 1.12.1, landing-time GVNative prewarm, fast handoff, and timing stay unchanged.
           python - "$MAIN" <<'PY'
           from pathlib import Path
           import sys
@@ -221,6 +220,11 @@ jobs:
           assert old in s
           s=s.replace(old,'  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n',1)
 
+          # Remove only the temporary red 57 TEST badge from the browser viewport.
+          badge_start=s.index('    TextView test57=new TextView(this);')
+          badge_end=s.index('    LinearLayout.LayoutParams fp=',badge_start)
+          s=s[:badge_start]+s[badge_end:]
+
           p.write_text(s)
           PY
 
@@ -248,6 +252,8 @@ jobs:
           ! grep -q 'launchPrewarm' "$MAIN"
           ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
           grep -q "androidx.webkit:webkit:1.12.1" "$ROOT/app/build.gradle"
+          ! grep -q '57 TEST' "$MAIN"
+          ! grep -q 'test57' "$MAIN"
           test ! -e "$ROOT/app/src/main/assets/index.html"
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
@@ -267,7 +273,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -277,7 +283,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -285,8 +291,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0004
+          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0005
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0004.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk.sha256
           retention-days: 30
