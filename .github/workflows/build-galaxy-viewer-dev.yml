@@ -289,7 +289,8 @@ jobs:
           old='  private boolean prewarmLoading=false, prewarmFailed=false;\n'
           assert old in s
           new=('  private boolean prewarmLoading=false, prewarmFailed=false;\n'
-               '  private CancellationSignal prerenderSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false; private boolean providerNavigationArmed=false;\n'\n               '  private String providerRevealUrl=""; private int providerRevealGeneration=0; private long providerRevealNotBeforeMs=0L;\n')
+               '  private CancellationSignal prerenderSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false; private boolean providerNavigationArmed=false;\n'
+               '  private String providerRevealUrl=""; private int providerRevealGeneration=0; private long providerRevealNotBeforeMs=0L;\n')
           s=s.replace(old,new,1)
 
           # Replace live hidden-navigation prewarm with official WebView speculative prerender.
@@ -358,7 +359,12 @@ jobs:
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
           grep -q 'if(browserMode)syncShell();' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
-          grep -q 'providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L' "$MAIN"\n          grep -q 'providerRevealGeneration++' "$MAIN"\n          grep -q 'providerNavigationArmed=true' "$MAIN"\n          grep -q 'target.equals(committed)||providerNavigationArmed' "$MAIN"\n          grep -q 'web.stopLoading()' "$MAIN"\n          grep -q 'awaitingProviderCommit=true;' "$MAIN"
+          grep -q 'providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L' "$MAIN"
+          grep -q 'providerRevealGeneration++' "$MAIN"
+          grep -q 'providerNavigationArmed=true' "$MAIN"
+          grep -q 'target.equals(committed)||providerNavigationArmed' "$MAIN"
+          grep -q 'web.stopLoading()' "$MAIN"
+          grep -q 'awaitingProviderCommit=true;' "$MAIN"
           grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
           grep -q 'prerenderSignal.cancel()' "$MAIN"
           grep -q 'final int generation=++prerenderGeneration' "$MAIN"
