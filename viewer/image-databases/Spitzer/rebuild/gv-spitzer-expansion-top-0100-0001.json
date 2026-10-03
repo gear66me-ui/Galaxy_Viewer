@@ -2,217 +2,11 @@
   "schema": "gv-spitzer-expansion-top-0100-0001",
   "source": "gv-spitzer-expansion-candidates-0001.json",
   "summary": {
-    "records": 100,
-    "pureSpitzer": 100,
-    "originalTiff": 98
+    "records": 59,
+    "pureSpitzer": 39,
+    "originalTiff": 59
   },
   "records": [
-    {
-      "archiveId": "ssc2013-07b",
-      "title": "The Tortured Clouds of Eta Carinae",
-      "objectNames": [
-        "Carina Nebula",
-        "NGC 3372",
-        "Eta Carinae"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.3.1.6",
-        "B.3.3.1"
-      ],
-      "releaseDate": "2013-08-22",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "https://www.spitzer.caltech.edu/image/ssc2013-07b-the-tortured-clouds-of-eta-carinae",
-      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5642/original/ssc2013-07b.tif",
-      "resourceId": "ssc2013-07b.tif",
-      "imageWidth": 6400,
-      "imageHeight": 6400,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        161.2723525464,
-        -59.68486655
-      ],
-      "referenceDimension": [
-        6400.0,
-        6400.0
-      ],
-      "referencePixel": [
-        3200.0,
-        3200.0
-      ],
-      "scale": [
-        -0.0003333,
-        0.0003333
-      ],
-      "rotation": -27.8,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23647,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2013-07b",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig05-028a",
-      "title": "NGC 2264 in the Infrared",
-      "objectNames": [
-        "NGC 2264",
-        "Snowflake Cluster",
-        "Christmas Tree Cluster"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.3.6.4."
-      ],
-      "releaseDate": "2005-12-22",
-      "credit": "NASA/JPL-Caltech/P.S. Teixeira (Harvard-Smithsonian CfA)",
-      "referenceUrl": "https://www.spitzer.caltech.edu/image/sig05-028a-ngc-2264-in-the-infrared",
-      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2414/original/sig05-028a.tif",
-      "resourceId": "sig05-028a.tif",
-      "imageWidth": 2310,
-      "imageHeight": 3897,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        100.039047108,
-        9.31307719886
-      ],
-      "referenceDimension": [
-        2310.0,
-        3897.0
-      ],
-      "referencePixel": [
-        1896.12124634,
-        687.80169678
-      ],
-      "scale": [
-        -0.00023973598326419,
-        0.00023973598326419
-      ],
-      "rotation": -1.5531700399524,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23882,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig05-028a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2023-05",
-      "title": "Revisiting the Eagle Nebula",
-      "objectNames": [
-        "Eagle Nebula",
-        "M16",
-        "NGC 6611"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2023-08-25",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "https://www.spitzer.caltech.edu/image/ssc2023-05-revisiting-the-eagle-nebula",
-      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/27/original/EagleNeb.tif",
-      "resourceId": null,
-      "imageWidth": 2490,
-      "imageHeight": 2630,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        274.7616403,
-        -13.789481
-      ],
-      "referenceDimension": [
-        2490.0,
-        2630.0
-      ],
-      "referencePixel": [
-        1246.0,
-        1316.0
-      ],
-      "scale": [
-        -0.000333464,
-        0.000333464
-      ],
-      "rotation": 61.75,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "WCS retrieved using CXCs PinpointWCS",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 27468,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2023-05",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
     {
       "archiveId": "sig14-004b",
       "title": "M82 Galaxy with Supernova",
@@ -533,509 +327,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2018-14a",
-      "title": "The Cat's Paw Nebula MIPS & IRAC",
-      "objectNames": [
-        "Cat's Paw Nebula",
-        "Bear Claw Nebula",
-        "NGC 6334",
-        "Gum 64"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.4.1.1",
-        "B.4.2.1",
-        "B.4.2.3"
-      ],
-      "releaseDate": "2018-10-23",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6551-ssc2018-14a-The-Cat-s-Paw-Nebula-MIPS-IRAC",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/4753/ssc2018-14a.tif",
-      "resourceId": "ssc2018-14a.tif",
-      "imageWidth": 11402,
-      "imageHeight": 4215,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        259.821898093,
-        -36.065661915
-      ],
-      "referenceDimension": [
-        11402.0,
-        4215.0
-      ],
-      "referencePixel": [
-        6326.34863444462,
-        2425.56491357186
-      ],
-      "scale": [
-        -0.00016689871,
-        0.00016689871
-      ],
-      "rotation": 54.96147131878,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "World Coordinate System resolved using PinpointWCS 0.9.2 revision 218+ by the Chandra X-ray Center",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23822,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2018-14a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2018-14b",
-      "title": "The Cat's Paw Nebula IRAC",
-      "objectNames": [
-        "Cat's Paw Nebula",
-        "Bear Claw Nebula",
-        "NGC 6334",
-        "Gum 64"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.4.1.1",
-        "B.4.2.1",
-        "B.4.2.3"
-      ],
-      "releaseDate": "2018-10-23",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6554-ssc2018-14b-The-Cat-s-Paw-Nebula-IRAC",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/4768/ssc2018-14b.tif",
-      "resourceId": "ssc2018-14b.tif",
-      "imageWidth": 11402,
-      "imageHeight": 4215,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        259.821898093,
-        -36.065661915
-      ],
-      "referenceDimension": [
-        11402.0,
-        4215.0
-      ],
-      "referencePixel": [
-        6326.34863444462,
-        2425.56491357186
-      ],
-      "scale": [
-        -0.00016689871,
-        0.00016689871
-      ],
-      "rotation": 54.96147131878,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "World Coordinate System resolved using PinpointWCS 0.9.2 revision 218+ by the Chandra X-ray Center",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23514,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2018-14b",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2011-03a1",
-      "title": "An Extended Stellar Family",
-      "objectNames": [
-        "North America Nebula",
-        "NGC 7000",
-        "Pelican Nebula",
-        "IC 5070",
-        "IC 5067"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1.",
-        "B.4.2.3.",
-        "B.3.1.1."
-      ],
-      "releaseDate": "2011-02-10",
-      "credit": "NASA/JPL-Caltech/L. Rebull (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/3512-ssc2011-03a1-An-Extended-Stellar-Family",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/5862/ssc2011-03a1.tif",
-      "resourceId": "ssc2011-03a1.tif",
-      "imageWidth": 6800,
-      "imageHeight": 6800,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        313.89067291764445,
-        44.13081311993943
-      ],
-      "referenceDimension": [
-        6800.0,
-        6800.0
-      ],
-      "referencePixel": [
-        3400.0,
-        3400.0
-      ],
-      "scale": [
-        -0.000339,
-        0.000339
-      ],
-      "rotation": 356.389443656,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23876,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2011-03a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2011-03a2",
-      "title": "The Case of the Disappearing Continent",
-      "objectNames": [
-        "North America Nebula",
-        "NGC 7000",
-        "Pelican Nebula",
-        "IC 5070",
-        "IC 5067"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1.",
-        "B.4.2.3.",
-        "B.3.1.1."
-      ],
-      "releaseDate": "2011-02-10",
-      "credit": "NASA/JPL-Caltech/L. Rebull (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/3514-ssc2011-03a2-The-Case-of-the-Disappearing-Continent",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/5876/ssc2011-03a2.tif",
-      "resourceId": "ssc2011-03a2.tif",
-      "imageWidth": 6800,
-      "imageHeight": 6800,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        313.89067291764445,
-        44.13081311993943
-      ],
-      "referenceDimension": [
-        6800.0,
-        6800.0
-      ],
-      "referencePixel": [
-        3400.0,
-        3400.0
-      ],
-      "scale": [
-        -0.000339,
-        0.000339
-      ],
-      "rotation": 356.389443656,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23054,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2011-03a2",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig10-009a",
-      "title": "The Evolution of Star Formation around the M17 Nebula",
-      "objectNames": [
-        "Omega Nebula",
-        "Swan Nebula",
-        "Messier 17",
-        "M17",
-        "NGC 6618"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1.1.",
-        "B.4.2.3.",
-        "B.3.3.1."
-      ],
-      "releaseDate": "2010-07-07",
-      "credit": "NASA/JPL-Caltech/M. Povich (Penn State Univ.)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/3189-sig10-009a-The-Evolution-of-Star-Formation-around-the-M17-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0005/9418/sig10-009a.tif",
-      "resourceId": "sig10-009a.tif",
-      "imageWidth": 7600,
-      "imageHeight": 3700,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        275.1149281578692,
-        -16.08568609019589
-      ],
-      "referenceDimension": [
-        7600.0,
-        3700.0
-      ],
-      "referencePixel": [
-        2816.0,
-        1072.0
-      ],
-      "scale": [
-        -0.000333333,
-        0.000333333
-      ],
-      "rotation": 61.873238304,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23673,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig10-009a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2020-14a",
-      "title": "W51",
-      "objectNames": [
-        "W51"
-      ],
-      "subject": [
-        "B.4.1.2"
-      ],
-      "releaseDate": "2020-08-25",
-      "credit": "NASA/JPL-Caltech/GLIMPSE & MIPSGAL Teams",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6830-ssc2020-14a-W51",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0012/0620/ssc2020-14a.tif",
-      "resourceId": "ssc2020-14a.tif",
-      "imageWidth": 6000,
-      "imageHeight": 4000,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        289.85828803,
-        13.37756141
-      ],
-      "referenceDimension": [
-        6000.0,
-        4000.0
-      ],
-      "referencePixel": [
-        6729.6424384532,
-        2791.03788536947
-      ],
-      "scale": [
-        -0.00033329681,
-        0.00033329681
-      ],
-      "rotation": -297.95,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "World Coordinate System resolved using PinpointWCS 0.9.2 revision 218+ by the Chandra X-ray Center",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23986,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2020-14a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig14-031a",
-      "title": "The Flame Nebula",
-      "objectNames": [
-        "Flame Nebula",
-        "Horsehead Nebula",
-        "NGC 2024",
-        "Barnard 33"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1.",
-        "B.4.2.3."
-      ],
-      "releaseDate": "2014-12-19",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6025-sig14-031a-The-Flame-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/2785/sig14-031a.tif",
-      "resourceId": "sig14-031a.tif",
-      "imageWidth": 6250,
-      "imageHeight": 3800,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        85.4537274,
-        -1.8927751
-      ],
-      "referenceDimension": [
-        6250.0,
-        3800.0
-      ],
-      "referencePixel": [
-        3126.0,
-        1901.0
-      ],
-      "scale": [
-        -0.000240329,
-        0.00024032878
-      ],
-      "rotation": 89.98,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23683,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-031a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "ssc2005-20a1",
       "title": "Andromeda in the Infrared",
       "objectNames": [
@@ -1090,282 +381,6 @@
       ],
       "astropixId": 22957,
       "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-20a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2006-16b1",
-      "title": "The Sword of Orion in the Infrared",
-      "objectNames": [
-        "Orion Nebula",
-        "Messier 42",
-        "M42",
-        "NGC 1976"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2006-08-14",
-      "credit": "NASA/JPL-Caltech/T. Megeath (University of Toledo, Ohio)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1647-ssc2006-16b1-The-Sword-of-Orion-in-the-Infrared",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1850/ssc2006-16b1.tif",
-      "resourceId": "ssc2006-16b1.tif",
-      "imageWidth": 3220,
-      "imageHeight": 6000,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        83.81786190879494,
-        -6.014220208762096
-      ],
-      "referenceDimension": [
-        3220.0,
-        6000.0
-      ],
-      "referencePixel": [
-        1314.11547852,
-        459.24243164
-      ],
-      "scale": [
-        -0.00023968074797943,
-        0.00023968074797943
-      ],
-      "rotation": -0.0327671586216,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23863,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2006-16b1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2011-06a",
-      "title": "Stars Adorn Orion's Sword",
-      "objectNames": [
-        "Orion Nebula",
-        "Messier 42",
-        "M42",
-        "NGC 1976"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.3.",
-        "B.3.1.1."
-      ],
-      "releaseDate": "2011-05-26",
-      "credit": "NASA/JPL-Caltech/T. Megeath (University of Toledo, Ohio)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/3628-ssc2011-06a-Stars-Adorn-Orion-s-Sword",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/7958/ssc2011-06a.tif",
-      "resourceId": "ssc2011-06a.tif",
-      "imageWidth": 3220,
-      "imageHeight": 6000,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        83.81786190879494,
-        -6.014220208762096
-      ],
-      "referenceDimension": [
-        3220.0,
-        6000.0
-      ],
-      "referencePixel": [
-        1314.11547852,
-        459.24243164
-      ],
-      "scale": [
-        -0.00023968074797943,
-        0.00023968074797943
-      ],
-      "rotation": -0.0327671586216,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23766,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2011-06a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2006-16a1",
-      "title": "Orion in the Infrared",
-      "objectNames": [
-        "Orion Nebula",
-        "Messier 42",
-        "M42",
-        "NGC 1976"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2006-08-14",
-      "credit": "NASA/JPL-Caltech/T. Megeath (University of Toledo, Ohio)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1645-ssc2006-16a1-Orion-in-the-Infrared",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3068/ssc2006-16a1.tif",
-      "resourceId": "ssc2006-16a1.tif",
-      "imageWidth": 3220,
-      "imageHeight": 6000,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        83.81786190879494,
-        -6.014220208762096
-      ],
-      "referenceDimension": [
-        3220.0,
-        6000.0
-      ],
-      "referencePixel": [
-        1314.11547852,
-        459.24243164
-      ],
-      "scale": [
-        -0.00023968074797943,
-        0.00023968074797943
-      ],
-      "rotation": -0.0327671586216,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23267,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2006-16a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig07-016",
-      "title": "Spitzer Celebrates Fourth Anniversary with Celestial Fireworks",
-      "objectNames": [
-        "Helix Nebula",
-        "NGC 7293"
-      ],
-      "subject": [
-        "B.4.1.3"
-      ],
-      "releaseDate": "2007-08-24",
-      "credit": "NASA/JPL-Caltech/ J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2115-sig07-016-Spitzer-Celebrates-Fourth-Anniversary-with-Celestial-Fireworks",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5117/sig07-016.tif",
-      "resourceId": "sig07-016.tif",
-      "imageWidth": 4370,
-      "imageHeight": 4070,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        337.4188460662167,
-        -20.830476447606358
-      ],
-      "referenceDimension": [
-        4370.0,
-        4070.0
-      ],
-      "referencePixel": [
-        2185.0,
-        2035.0
-      ],
-      "scale": [
-        -0.00011095522486521935,
-        0.00011095522486521935
-      ],
-      "rotation": -64.8975679702,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23461,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig07-016",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -1512,665 +527,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "sig10-003",
-      "title": "Warm Mission Dreamy Stars of Orion",
-      "objectNames": [
-        "Orion Nebula",
-        "Messier 42",
-        "M42",
-        "NGC 1976"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2010-04-01",
-      "credit": "NASA/JPL-Caltech/J. Stauffer (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/3018-sig10-003-Warm-Mission-Dreamy-Stars-of-Orion",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0005/4646/sig10-003.tif",
-      "resourceId": "sig10-003.tif",
-      "imageWidth": 2171,
-      "imageHeight": 5085,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        83.8148566,
-        -5.2916855
-      ],
-      "referenceDimension": [
-        2171.0,
-        5085.0
-      ],
-      "referencePixel": [
-        1086.5,
-        2543.5
-      ],
-      "scale": [
-        0.00024032,
-        0.00024031977
-      ],
-      "rotation": -0.01,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "WCS retrieved using CXCs PinpointWCS",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 22988,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig10-003",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig14-009",
-      "title": "Coyote Head Nebula Does Not Approve",
-      "objectNames": [
-        "Coyote Head Nebula",
-        "IRAS 15541-5349"
-      ],
-      "subject": [
-        "B.4.1.2"
-      ],
-      "releaseDate": "2014-05-15",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5824-sig14-009-Coyote-Head-Nebula-Does-Not-Approve",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/9805/sig14-009.tif",
-      "resourceId": "sig14-009.tif",
-      "imageWidth": 3600,
-      "imageHeight": 3000,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        239.47885066555273,
-        -53.99907962043063
-      ],
-      "referenceDimension": [
-        1800.0,
-        1500.0
-      ],
-      "referencePixel": [
-        900.0,
-        750.0
-      ],
-      "scale": [
-        -0.00033333333333,
-        0.00033333333333
-      ],
-      "rotation": 40.32,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 22916,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-009",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2019-16a1",
-      "title": "Bubbles, Bubbles Everywhere!",
-      "objectNames": [],
-      "subject": [
-        "B.4.1.2"
-      ],
-      "releaseDate": "2019-09-30",
-      "credit": "NASA/JPL-Caltech/Milky Way Project",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6689-ssc2019-16a1-Bubbles-Bubbles-Everywhere-",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7494/ssc2019-16a1.tif",
-      "resourceId": "ssc2019-16a1.tif",
-      "imageWidth": 3250,
-      "imageHeight": 3250,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        279.0206099,
-        -7.4100765
-      ],
-      "referenceDimension": [
-        3250.0,
-        3250.0
-      ],
-      "referencePixel": [
-        1626.0,
-        1626.0
-      ],
-      "scale": [
-        -0.000333204,
-        0.00033320406
-      ],
-      "rotation": 62.64,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "WCS retrieved using CXCs PinpointWCS",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23376,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2019-16a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2006-01a1",
-      "title": "Infrared Helix",
-      "objectNames": [
-        "Helix Nebula",
-        "NGC 7293"
-      ],
-      "subject": [
-        "B.4.1.3."
-      ],
-      "releaseDate": "2006-01-09",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1533-ssc2006-01a1-Infrared-Helix",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2714/ssc2006-01a1.tif",
-      "resourceId": "ssc2006-01a1.tif",
-      "imageWidth": 2977,
-      "imageHeight": 3465,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        337.38867760190544,
-        -20.813012839639605
-      ],
-      "referenceDimension": [
-        2977.0,
-        3465.0
-      ],
-      "referencePixel": [
-        1490.0,
-        1730.0
-      ],
-      "scale": [
-        -0.00011112278134153,
-        0.00011112278134153
-      ],
-      "rotation": -61.0385630612,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23805,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2006-01a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig05-028b",
-      "title": "Spitzer/IRAC View of NGC 2264",
-      "objectNames": [
-        "NGC 2264",
-        "Snowflake Cluster",
-        "Christmas Tree Cluster"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.3.6.4."
-      ],
-      "releaseDate": "2005-12-22",
-      "credit": "NASA/JPL-Caltech/P.S. Teixeira (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2416-sig05-028b-Spitzer-IRAC-View-of-NGC-2264",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6586/sig05-028b.tif",
-      "resourceId": "sig05-028b.tif",
-      "imageWidth": 2310,
-      "imageHeight": 3897,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        100.039047108,
-        9.31307719886
-      ],
-      "referenceDimension": [
-        2310.0,
-        3897.0
-      ],
-      "referencePixel": [
-        1896.12124634,
-        687.80169678
-      ],
-      "scale": [
-        -0.00023973598326419,
-        0.00023973598326419
-      ],
-      "rotation": -1.5531700399524,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23750,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig05-028b",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig05-028c",
-      "title": "Spitzer/MIPS View of NGC 2264",
-      "objectNames": [
-        "NGC 2264",
-        "Snowflake Cluster",
-        "Christmas Tree Cluster"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.3.6.4."
-      ],
-      "releaseDate": "2005-12-22",
-      "credit": "NASA/JPL-Caltech/P.S. Teixeira (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2418-sig05-028c-Spitzer-MIPS-View-of-NGC-2264",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5674/sig05-028c.tif",
-      "resourceId": "sig05-028c.tif",
-      "imageWidth": 2310,
-      "imageHeight": 3897,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        100.039047108,
-        9.31307719886
-      ],
-      "referenceDimension": [
-        2310.0,
-        3897.0
-      ],
-      "referencePixel": [
-        1896.12124634,
-        687.80169678
-      ],
-      "scale": [
-        -0.00023973598326419,
-        0.00023973598326419
-      ],
-      "rotation": -1.5531700399524,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer"
-      ],
-      "instruments": [
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "24000"
-      ],
-      "astropixId": 23381,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig05-028c",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2005-02b4",
-      "title": "Spitzer/IRAC Image of the Trifid Nebula",
-      "objectNames": [
-        "Trifid Nebula",
-        "Messier 20",
-        "M20"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.3.1.1."
-      ],
-      "releaseDate": "2005-01-12",
-      "credit": "NASA/JPL-Caltech/J. Rho (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1380-ssc2005-02b4-Spitzer-IRAC-Image-of-the-Trifid-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6788/ssc2005-02b4.tif",
-      "resourceId": "ssc2005-02b4.tif",
-      "imageWidth": 2958,
-      "imageHeight": 2958,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        270.5992073555117,
-        -23.045844590055278
-      ],
-      "referenceDimension": [
-        2958.0,
-        2958.0
-      ],
-      "referencePixel": [
-        1479.0,
-        1479.0
-      ],
-      "scale": [
-        -8.34078103838206e-05,
-        8.34078103838206e-05
-      ],
-      "rotation": 1.92110545498,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23394,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-02b4",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2007-07a1",
-      "title": "The Seven Sisters (Pleiades) Pose for Spitzer  and for You!",
-      "objectNames": [
-        "Pleiades",
-        "Seven Sisters",
-        "M45",
-        "Messier 45"
-      ],
-      "subject": [
-        "B.3.6.4.1",
-        "B.4.2.2"
-      ],
-      "releaseDate": "2007-04-12",
-      "credit": "NASA/JPL-Caltech/J. Stauffer (SSC-Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1771-ssc2007-07a1-An-Infrared-Pleiades-Portrait",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0000/9750/ssc2007-07a1.tif",
-      "resourceId": "ssc2007-07a1.tif",
-      "imageWidth": 2855,
-      "imageHeight": 2855,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        56.73811172765586,
-        24.17058048200041
-      ],
-      "referenceDimension": [
-        2855.0,
-        2855.0
-      ],
-      "referencePixel": [
-        1427.5,
-        1427.5
-      ],
-      "scale": [
-        -0.00033899253746293086,
-        0.00033899253746293086
-      ],
-      "rotation": 101.756865555,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23631,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-07a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2007-07b1",
-      "title": "The Seven Sisters (Pleiades) Pose for Spitzer  and for You!",
-      "objectNames": [
-        "Pleiades",
-        "Seven Sisters",
-        "M45",
-        "Messier 45"
-      ],
-      "subject": [
-        "B.3.6.4.1",
-        "B.4.2.2"
-      ],
-      "releaseDate": "2007-04-12",
-      "credit": "NASA/JPL-Caltech/J. Stauffer (SSC-Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1768-ssc2007-07b1-An-Infrared-Pleiades-Portrait",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0762/ssc2007-07b1.tif",
-      "resourceId": "ssc2007-07b1.tif",
-      "imageWidth": 2855,
-      "imageHeight": 2855,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        56.73811172765586,
-        24.17058048200041
-      ],
-      "referenceDimension": [
-        2855.0,
-        2855.0
-      ],
-      "referencePixel": [
-        1427.5,
-        1427.5
-      ],
-      "scale": [
-        -0.00033899253746293086,
-        0.00033899253746293086
-      ],
-      "rotation": 101.756865555,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23400,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-07b1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig15-012",
-      "title": "Seeing Beyond the 'Monkey Head'",
-      "objectNames": [
-        "Monkey Head Nebula",
-        "NGC 2174"
-      ],
-      "subject": [
-        "B.4.1.2"
-      ],
-      "releaseDate": "2015-08-19",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6101-sig15-012-Seeing-Beyond-the-Monkey-Head-",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/5813/sig15-012.tif",
-      "resourceId": "sig15-012.tif",
-      "imageWidth": 3050,
-      "imageHeight": 2630,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        92.2776485,
-        20.5465084
-      ],
-      "referenceDimension": [
-        3050.0,
-        2630.0
-      ],
-      "referencePixel": [
-        1526.0,
-        1316.0
-      ],
-      "scale": [
-        -0.000166656,
-        0.00016665589
-      ],
-      "rotation": 90.18,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23730,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig15-012",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig13-004",
       "title": "Galactic Wheels within Wheels ",
       "objectNames": [
@@ -2309,211 +665,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "sig05-004a",
-      "title": "Crab Nebula Supernova Remnant (Spitzer/IRAC-MIPS Image)",
-      "objectNames": [
-        "Crab Nebula",
-        "Messier 1",
-        "M1",
-        "NGC 1952"
-      ],
-      "subject": [
-        "B.4.1.4."
-      ],
-      "releaseDate": "2005-06-11",
-      "credit": "NASA/JPL-Caltech/R. Gehrz (University of Minnesota)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2338-sig05-004a-Crab-Nebula-Supernova-Remnant-Spitzer-IRAC-MIPS-Image-",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4745/sig05-004a.tif",
-      "resourceId": "sig05-004a.tif",
-      "imageWidth": 2700,
-      "imageHeight": 2700,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        83.5991627865,
-        22.0652841412
-      ],
-      "referenceDimension": [
-        2700.0,
-        2700.0
-      ],
-      "referencePixel": [
-        1851.74807739,
-        2237.110237122
-      ],
-      "scale": [
-        -5.4454429540852e-05,
-        5.4454429540852e-05
-      ],
-      "rotation": 1.3278773198075,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23610,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig05-004a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig05-003a",
-      "title": "Crab Nebula Supernova Remnant (Spitzer/IRAC Image)",
-      "objectNames": [
-        "Crab Nebula",
-        "Messier 1",
-        "M1",
-        "NGC 1952"
-      ],
-      "subject": [
-        "B.4.1.4."
-      ],
-      "releaseDate": "2005-06-01",
-      "credit": "NASA/JPL-Caltech/R. Gehrz (University of Minnesota)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2334-sig05-003a-Crab-Nebula-Supernova-Remnant-Spitzer-IRAC-Image-",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5962/sig05-003a.tif",
-      "resourceId": "sig05-003a.tif",
-      "imageWidth": 2700,
-      "imageHeight": 2700,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        83.5991627865,
-        22.0652841412
-      ],
-      "referenceDimension": [
-        2700.0,
-        2700.0
-      ],
-      "referencePixel": [
-        1852.07870483,
-        2238.462005615
-      ],
-      "scale": [
-        -5.4509008380871e-05,
-        5.4509008380871e-05
-      ],
-      "rotation": 1.275969547776,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23506,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig05-003a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-06a1",
-      "title": "Spitzer IRAC view of Star Formation in the DR21 Region",
-      "objectNames": [
-        "DR21"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.3.",
-        "B.4.1.5."
-      ],
-      "releaseDate": "2004-04-13",
-      "credit": "NASA/JPL-Caltech/A. Marston (ESTEC/ESA) ",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1148-ssc2004-06a1-Spitzer-IRAC-view-of-Star-Formation-in-the-DR21-Region",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4039/ssc2004-06a1.tif",
-      "resourceId": "ssc2004-06a1.tif",
-      "imageWidth": 3652,
-      "imageHeight": 1936,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        309.59234776,
-        42.0688521218
-      ],
-      "referenceDimension": [
-        3652.0,
-        1936.0
-      ],
-      "referencePixel": [
-        808.131408691,
-        1104.333030701
-      ],
-      "scale": [
-        -0.00027956943679791,
-        0.00027956943679791
-      ],
-      "rotation": -101.01111033411,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23680,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-06a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig14-006a",
       "title": "The Magnified Traces of Early Galaxies",
       "objectNames": [
@@ -2569,214 +720,6 @@
       ],
       "astropixId": 23760,
       "astropixPage": "https://www.astropix.org/image/spitzer/sig14-006a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig11-008",
-      "title": "Making a Spectacle of Star Formation in Orion",
-      "objectNames": [
-        "Messier 78",
-        "M78",
-        "NGC 2064",
-        "NGC 2067",
-        "NGC 2068",
-        "NGC 2071"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.2.",
-        "B.3.1.1."
-      ],
-      "releaseDate": "2011-06-29",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/3658-sig11-008-Making-a-Spectacle-of-Star-Formation-in-Orion",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/8538/sig11-008.tif",
-      "resourceId": "sig11-008.tif",
-      "imageWidth": 3250,
-      "imageHeight": 2050,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        86.694781,
-        0.1754577
-      ],
-      "referenceDimension": [
-        3250.0,
-        2050.0
-      ],
-      "referencePixel": [
-        1626.0,
-        1026.0
-      ],
-      "scale": [
-        -0.000338768,
-        0.00033876802
-      ],
-      "rotation": 93.9,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23723,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig11-008",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig13-005",
-      "title": "Infrared Iris",
-      "objectNames": [
-        "Iris Nebula",
-        "NGC 7023"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.3.6.4"
-      ],
-      "releaseDate": "2013-05-24",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5584-sig13-005-Infrared-Iris",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/5385/sig13-005.tif",
-      "resourceId": "sig13-005.tif",
-      "imageWidth": 3437,
-      "imageHeight": 1933,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        315.3988042,
-        68.1701712
-      ],
-      "referenceDimension": [
-        3437.0,
-        1933.0
-      ],
-      "referencePixel": [
-        1719.5,
-        967.5
-      ],
-      "scale": [
-        0.00016617,
-        0.00016617044
-      ],
-      "rotation": 0.08,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23420,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig13-005",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2020-10a",
-      "title": "Spitzer California Nebula Mosaic",
-      "objectNames": [
-        "California Nebula",
-        "NGC 1499"
-      ],
-      "subject": [
-        "B.4.1.1",
-        "B.4.2.1"
-      ],
-      "releaseDate": "2020-04-17",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/6781-ssc2020-10a-Spitzer-California-Nebula-Mosaic",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/9506/ssc2020-10a.tif",
-      "resourceId": "ssc2020-10a.tif",
-      "imageWidth": 3317,
-      "imageHeight": 1902,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        60.221755,
-        36.343667
-      ],
-      "referenceDimension": [
-        3317.0,
-        1902.0
-      ],
-      "referencePixel": [
-        1659.0,
-        951.5
-      ],
-      "scale": [
-        -0.000166667,
-        0.000166667
-      ],
-      "rotation": 107.55607,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 23950,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2020-10a",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -2923,78 +866,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2008-21a1",
-      "title": "M17: Celestial Sea of Stars",
-      "objectNames": [
-        "Omega Nebula",
-        "Swan Nebula",
-        "Messier 17",
-        "M17",
-        "NGC 6618"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.3.3.1"
-      ],
-      "releaseDate": "2008-12-08",
-      "credit": "NASA/JPL-Caltech/M. Povich (Univ. of Wisconsin)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1972-ssc2008-21a1-M17-Celestial-Sea-of-Stars",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0000/9725/ssc2008-21b.tif",
-      "resourceId": "ssc2008-21b.tif",
-      "imageWidth": 2674,
-      "imageHeight": 2176,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        275.1149281578692,
-        -16.08568609019589
-      ],
-      "referenceDimension": [
-        2674.0,
-        2176.0
-      ],
-      "referencePixel": [
-        1337.0,
-        1088.0
-      ],
-      "scale": [
-        -0.00033331314743883904,
-        0.00033331314743883904
-      ],
-      "rotation": 61.873238304,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23422,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2008-21a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig10-025",
       "title": "Maffei 2: The Hidden Galaxy",
       "objectNames": [
@@ -3064,73 +935,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2005-24a1",
-      "title": "NGC 1333 in the Infrared",
-      "objectNames": [
-        "NGC 1333"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2005-11-15",
-      "credit": "NASA/JPL-Caltech/R. A. Gutermuth (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1523-ssc2005-24a1-NGC-1333-in-the-Infrared",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2635/ssc2005-24a1.tif",
-      "resourceId": "ssc2005-24a1.tif",
-      "imageWidth": 2100,
-      "imageHeight": 2705,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        52.4264542214,
-        31.3124539422
-      ],
-      "referenceDimension": [
-        2100.0,
-        2705.0
-      ],
-      "referencePixel": [
-        325.680088043,
-        1364.36962891
-      ],
-      "scale": [
-        -0.0002075769522998,
-        0.0002075769522998
-      ],
-      "rotation": 14.238764084273,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23712,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-24a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig06-018c",
       "title": "NASA's Spitzer Space Telescope View of M74",
       "objectNames": [
@@ -3193,142 +997,6 @@
       ],
       "astropixId": 23269,
       "astropixPage": "https://www.astropix.org/image/spitzer/sig06-018c",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2005-07a1",
-      "title": "Infrared Ring Nebula",
-      "objectNames": [
-        "Ring Nebula",
-        "Messier 57",
-        "M57",
-        "NGC 6720"
-      ],
-      "subject": [
-        "B.4.1.3."
-      ],
-      "releaseDate": "2005-02-11",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1403-ssc2005-07a1-Infrared-Ring-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3146/ssc2005-07a1.tif",
-      "resourceId": "ssc2005-07a1.tif",
-      "imageWidth": 2560,
-      "imageHeight": 2100,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        283.39518911459385,
-        33.02718638576497
-      ],
-      "referenceDimension": [
-        2560.0,
-        2100.0
-      ],
-      "referencePixel": [
-        1281.0,
-        1051.0
-      ],
-      "scale": [
-        -6.95888e-05,
-        6.95888e-05
-      ],
-      "rotation": 15.7,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23380,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-07a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig13-015",
-      "title": "Little Dumbbell Nebula",
-      "objectNames": [
-        "Little Dumbbell Nebula",
-        "Messier 76",
-        "M76",
-        "NGC 650"
-      ],
-      "subject": [
-        "B.4.1.3"
-      ],
-      "releaseDate": "2013-10-28",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5686-sig13-015-Little-Dumbbell-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/7189/sig13-015.tif",
-      "resourceId": "sig13-015.tif",
-      "imageWidth": 2310,
-      "imageHeight": 2310,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        25.581,
-        51.5767
-      ],
-      "referenceDimension": [
-        770.0,
-        770.0
-      ],
-      "referencePixel": [
-        385.5,
-        385.5
-      ],
-      "scale": [
-        -0.000111111,
-        0.000111111
-      ],
-      "rotation": -82.66864,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23602,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig13-015",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -3475,217 +1143,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2007-01a1",
-      "title": "Cosmic Epic Unfolds in Infrared: The Eagle Nebula",
-      "objectNames": [
-        "Eagle Nebula",
-        "Messier 16",
-        "M16",
-        "NGC 6611"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.3.1.1",
-        "B.4.2.1"
-      ],
-      "releaseDate": "2007-01-09",
-      "credit": "NASA/JPL-Caltech/N. Flagey (IAS/SSC & A. Noriega-Crespo (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1710-ssc2007-01a1-The-Infrared-Eagle-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2309/ssc2007-01a1.tif",
-      "resourceId": "ssc2007-01a1.tif",
-      "imageWidth": 2100,
-      "imageHeight": 2400,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        274.7018442127839,
-        -13.76869098805599
-      ],
-      "referenceDimension": [
-        2100.0,
-        2400.0
-      ],
-      "referencePixel": [
-        1050.0,
-        1200.0
-      ],
-      "scale": [
-        -0.00022200564764313769,
-        0.00022200564764313769
-      ],
-      "rotation": 91.652946773,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23849,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-01a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2007-01c1",
-      "title": "Infrared View of M16, the Eagle Nebula",
-      "objectNames": [
-        "Eagle Nebula",
-        "Messier 16",
-        "M16",
-        "NGC 6611"
-      ],
-      "subject": [
-        "B.3.1.1",
-        "B.4.1.2"
-      ],
-      "releaseDate": "2007-09-01",
-      "credit": "NASA/JPL-Caltech/N. Flagey (IAS/SSC) & A. Noriega-Crespo (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1734-ssc2007-01c1-Infrared-IRAC-View-of-the-Eagle-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1769/ssc2007-01c1.tif",
-      "resourceId": "ssc2007-01c1.tif",
-      "imageWidth": 2100,
-      "imageHeight": 2400,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        274.7018442127839,
-        -13.76869098805599
-      ],
-      "referenceDimension": [
-        2100.0,
-        2400.0
-      ],
-      "referencePixel": [
-        1050.0,
-        1200.0
-      ],
-      "scale": [
-        -0.00022200564764313769,
-        0.00022200564764313769
-      ],
-      "rotation": 91.652946773,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23585,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-01c1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2007-01c3",
-      "title": "The Eagle Nebula in Infrared",
-      "objectNames": [
-        "Eagle Nebula",
-        "Messier 16",
-        "M16",
-        "NGC 6611"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.3.1.1",
-        "B.3.1.8"
-      ],
-      "releaseDate": "2007-01-09",
-      "credit": "NASA/JPL-Caltech/N. Flagey (IAS/SSC) & A. Noriega-Crespo (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1738-ssc2007-01c3-Infrared-View-of-the-Eagle-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2988/ssc2007-01c3.tif",
-      "resourceId": "ssc2007-01c3.tif",
-      "imageWidth": 2100,
-      "imageHeight": 2400,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        274.7018442127839,
-        -13.76869098805599
-      ],
-      "referenceDimension": [
-        2100.0,
-        2400.0
-      ],
-      "referencePixel": [
-        1050.0,
-        1200.0
-      ],
-      "scale": [
-        -0.00022200564764313769,
-        0.00022200564764313769
-      ],
-      "rotation": 91.652946773,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "8000",
-        "24000",
-        "70000"
-      ],
-      "astropixId": 23437,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-01c3",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "ssc2012-06b",
       "title": "Sombrero Galaxy Not So Flat After All",
       "objectNames": [
@@ -3751,70 +1208,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "sig13-014",
-      "title": "Ghost of Jupiter Nebula",
-      "objectNames": [
-        "Ghost of Jupiter",
-        "NGC 3242"
-      ],
-      "subject": [
-        "B.4.1.3"
-      ],
-      "releaseDate": "2013-10-28",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5682-sig13-014-Ghost-of-Jupiter-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/7176/sig13-014.tif",
-      "resourceId": "sig13-014.tif",
-      "imageWidth": 2120,
-      "imageHeight": 2120,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        156.194796,
-        -18.644115
-      ],
-      "referenceDimension": [
-        530.0,
-        530.0
-      ],
-      "referencePixel": [
-        265.5,
-        265.5
-      ],
-      "scale": [
-        -0.000166667,
-        0.000166667
-      ],
-      "rotation": 65.48073,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 22970,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig13-014",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig06-025a",
       "title": "Spitzer View of Andromeda Galaxy ",
       "objectNames": [
@@ -3869,424 +1262,6 @@
       ],
       "astropixId": 23173,
       "astropixPage": "https://www.astropix.org/image/spitzer/sig06-025a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-04a4",
-      "title": "Spitzer/MIPS image of Star Formation in Henize 206",
-      "objectNames": [
-        "Henize 206"
-      ],
-      "subject": [
-        "C.4.1.2.",
-        "C.4.2.1."
-      ],
-      "releaseDate": "2004-03-08",
-      "credit": "NASA/JPL-Caltech/V. Gorjian(JPL)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1142-ssc2004-04a4-Spitzer-MIPS-image-of-Star-Formation-in-Henize-206",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5899/ssc2004-04a4.tif",
-      "resourceId": "ssc2004-04a4.tif",
-      "imageWidth": 2262,
-      "imageHeight": 1899,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        82.57055527447449,
-        -71.06447026280216
-      ],
-      "referenceDimension": [
-        2262.0,
-        1899.0
-      ],
-      "referencePixel": [
-        1131.0,
-        949.5
-      ],
-      "scale": [
-        -0.0001695301196705751,
-        0.0001695301196705751
-      ],
-      "rotation": 386.649351761803,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23601,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-04a4",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-04a1",
-      "title": "Star Formation in Henize 206",
-      "objectNames": [
-        "Henize 206"
-      ],
-      "subject": [
-        "C.4.1.2.",
-        "C.4.2.1."
-      ],
-      "releaseDate": "2004-03-08",
-      "credit": "NASA/JPL-Caltech/V. Gorjian(JPL)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1135-ssc2004-04a1-Star-Formation-in-Henize-206",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4882/ssc2004-04a1.tif",
-      "resourceId": "ssc2004-04a1.tif",
-      "imageWidth": 2262,
-      "imageHeight": 1899,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        82.57055527447449,
-        -71.06447026280216
-      ],
-      "referenceDimension": [
-        2262.0,
-        1899.0
-      ],
-      "referencePixel": [
-        1131.0,
-        949.5
-      ],
-      "scale": [
-        -0.0001695301196705751,
-        0.0001695301196705751
-      ],
-      "rotation": 386.649351761803,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23562,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-04a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-04a3",
-      "title": "Spitzer/IRAC image of Star Formation in Henize 206",
-      "objectNames": [
-        "Henize 206"
-      ],
-      "subject": [
-        "C.4.1.2.",
-        "C.4.2.1."
-      ],
-      "releaseDate": "2004-03-08",
-      "credit": "NASA/JPL-Caltech/V. Gorjian(JPL)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1139-ssc2004-04a3-Spitzer-IRAC-image-of-Star-Formation-in-Henize-206",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5975/ssc2004-04a3.tif",
-      "resourceId": "ssc2004-04a3.tif",
-      "imageWidth": 2262,
-      "imageHeight": 1899,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        82.57055527447449,
-        -71.06447026280216
-      ],
-      "referenceDimension": [
-        2262.0,
-        1899.0
-      ],
-      "referencePixel": [
-        1131.0,
-        949.5
-      ],
-      "scale": [
-        -0.0001695301196705751,
-        0.0001695301196705751
-      ],
-      "rotation": 386.649351761803,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23425,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-04a3",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-04a2",
-      "title": "Visible-light image of Henize 206 ",
-      "objectNames": [
-        "Henize 206"
-      ],
-      "subject": [
-        "C.4.2.1."
-      ],
-      "releaseDate": "2004-03-08",
-      "credit": "NOAO",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1137-ssc2004-04a2-Visible-light-image-of-Henize-206-",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5270/ssc2004-04a2.tif",
-      "resourceId": "ssc2004-04a2.tif",
-      "imageWidth": 2262,
-      "imageHeight": 1899,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        82.57055527447449,
-        -71.06447026280216
-      ],
-      "referenceDimension": [
-        2262.0,
-        1899.0
-      ],
-      "referencePixel": [
-        1131.0,
-        949.5
-      ],
-      "scale": [
-        -0.0001695301196705751,
-        0.0001695301196705751
-      ],
-      "rotation": 386.649351761803,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23373,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-04a2",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig11-011",
-      "title": "Weighing in on the Dumbbell Nebula",
-      "objectNames": [
-        "Dumbbell Nebula",
-        "Messier 27",
-        "M27",
-        "NGC 6853"
-      ],
-      "subject": [
-        "B.4.1.3"
-      ],
-      "releaseDate": "2011-08-10",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/4409-sig11-011-Weighing-in-on-the-Dumbbell-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0007/8189/sig11-011.tif",
-      "resourceId": "sig11-011.tif",
-      "imageWidth": 2800,
-      "imageHeight": 1400,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        299.90113271,
-        22.721297546
-      ],
-      "referenceDimension": [
-        2800.0,
-        1400.0
-      ],
-      "referencePixel": [
-        1400.0,
-        700.0
-      ],
-      "scale": [
-        -0.000111111,
-        0.000111111
-      ],
-      "rotation": -94.4153,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23456,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig11-011",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig14-012",
-      "title": "Warm Spitzer Sees 'Serpent' Star-Forming Cloud Spawning Stars",
-      "objectNames": [
-        "Serpens Cloud"
-      ],
-      "subject": [
-        "B.4.2.3",
-        "B.4.1.2",
-        "B.3.1.1"
-      ],
-      "releaseDate": "2014-05-28",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5850-sig14-012-Warm-Spitzer-Sees-Serpent-Star-Forming-Cloud-Spawning-Stars",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/0148/sig14-012.tif",
-      "resourceId": "sig14-012.tif",
-      "imageWidth": 2251,
-      "imageHeight": 1476,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        277.489156,
-        1.2338129
-      ],
-      "referenceDimension": [
-        2251.0,
-        1476.0
-      ],
-      "referencePixel": [
-        1126.5,
-        739.0
-      ],
-      "scale": [
-        -0.000169359,
-        0.0001693592
-      ],
-      "rotation": -87.07,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 23715,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-012",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -4362,543 +1337,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2004-01a1",
-      "title": "The Tarantula Nebula",
-      "objectNames": [
-        "Tarantula Nebula",
-        "30 Doradus",
-        "NGC 2070"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1."
-      ],
-      "releaseDate": "2004-01-13",
-      "credit": "NASA/JPL-Caltech/B. Brandl (Cornell & University of Leiden)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1119-ssc2004-01a1-The-Tarantula-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6267/ssc2004-01a1.tif",
-      "resourceId": "ssc2004-01a1.tif",
-      "imageWidth": 2200,
-      "imageHeight": 1448,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        84.57113147455512,
-        -69.13607914561663
-      ],
-      "referenceDimension": [
-        2200.0,
-        1448.0
-      ],
-      "referencePixel": [
-        1100.0,
-        724.0
-      ],
-      "scale": [
-        -0.00021383678222882137,
-        0.00021383678222882137
-      ],
-      "rotation": 402.9983974968547,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23449,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-01a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig06-016a",
-      "title": "Supernova Remnant 1E0102.2-7219 Revealed by NASA's Spitzer Space Telescope",
-      "objectNames": [
-        "E0102",
-        "E0102.2-7219",
-        "N76"
-      ],
-      "subject": [
-        "C.4.1.4.",
-        "C.4.1.2."
-      ],
-      "releaseDate": "2006-06-06",
-      "credit": "NASA/JPL-Caltech/S. Stanimirovic (UC Berkeley)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2269-sig06-016a-Supernova-Remnant-1E0102-2-7219-Revealed-by-NASA-s-Spitzer-Space-Telescope",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4605/sig06-016a.tif",
-      "resourceId": "sig06-016a.tif",
-      "imageWidth": 1778,
-      "imageHeight": 1778,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        15.9302777,
-        -72.0164023
-      ],
-      "referenceDimension": [
-        1778.0,
-        1778.0
-      ],
-      "referencePixel": [
-        890.0,
-        890.0
-      ],
-      "scale": [
-        0.00020399,
-        0.00020399
-      ],
-      "rotation": 0.9,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23747,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig06-016a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig09-001",
-      "title": "'Cat's Eye' Planetary Nebula",
-      "objectNames": [
-        "Cat's Eye Nebula",
-        "NGC 6543"
-      ],
-      "subject": [
-        "B.4.1.3"
-      ],
-      "releaseDate": "2009-03-12",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2056-sig09-001--Cat-s-Eye-Planetary-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3664/sig09-001.tif",
-      "resourceId": "sig09-001.tif",
-      "imageWidth": 1700,
-      "imageHeight": 1700,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        269.5546917,
-        66.666931
-      ],
-      "referenceDimension": [
-        1700.0,
-        1700.0
-      ],
-      "referencePixel": [
-        1250.0,
-        1250.0
-      ],
-      "scale": [
-        -8.333333e-05,
-        8.333333e-05
-      ],
-      "rotation": 0.0,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 22921,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig09-001",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig12-006b",
-      "title": "NGC 2392",
-      "objectNames": [
-        "NGC 2392"
-      ],
-      "subject": [
-        "B.4.1.3."
-      ],
-      "releaseDate": "2012-07-02",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5192-sig12-006b-NGC-2392",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/9592/sig12-006b.tif",
-      "resourceId": "sig12-006b.tif",
-      "imageWidth": 1600,
-      "imageHeight": 1600,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        112.2947025,
-        20.911874
-      ],
-      "referenceDimension": [
-        1600.0,
-        1600.0
-      ],
-      "referencePixel": [
-        801.0,
-        801.0
-      ],
-      "scale": [
-        -4.16592e-05,
-        4.1659179e-05
-      ],
-      "rotation": 79.2,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000"
-      ],
-      "astropixId": 23798,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig12-006b",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig11-012",
-      "title": "Into the Depths of the Lagoon Nebula",
-      "objectNames": [
-        "Lagoon Nebula",
-        "Messier 8",
-        "M8",
-        "NGC 6523"
-      ],
-      "subject": [
-        "B.4.1.2",
-        "B.4.2.1"
-      ],
-      "releaseDate": "2011-09-14",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/4757-sig11-012-Into-the-Depths-of-the-Lagoon-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/2828/sig11-012.tif",
-      "resourceId": "sig11-012.tif",
-      "imageWidth": 1757,
-      "imageHeight": 1417,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        270.92629672565334,
-        -24.37339360321821
-      ],
-      "referenceDimension": [
-        1757.0,
-        1417.0
-      ],
-      "referencePixel": [
-        878.5,
-        708.5
-      ],
-      "scale": [
-        -0.00033889,
-        0.00033889
-      ],
-      "rotation": 0.8,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23768,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig11-012",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2007-08a1",
-      "title": "Heart of the Rosette Nebula",
-      "objectNames": [
-        "Rosette Nebula",
-        "NGC 2244"
-      ],
-      "subject": [
-        "B.3.3.1",
-        "B.4.1.2",
-        "B.4.2.1.1",
-        "B.4.2.3"
-      ],
-      "releaseDate": "2007-04-18",
-      "credit": "NASA/JPL-Caltech/Z. Balog (Univ. of Arizona/Univ. of Szeged)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1785-ssc2007-08a1-Heart-of-the-Rosette-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0422/ssc2007-08a1.tif",
-      "resourceId": "ssc2007-08a1.tif",
-      "imageWidth": 1669,
-      "imageHeight": 1439,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        98.070284408029,
-        4.923627071174814
-      ],
-      "referenceDimension": [
-        1669.0,
-        1439.0
-      ],
-      "referencePixel": [
-        834.5,
-        719.5
-      ],
-      "scale": [
-        -0.00033888389301603227,
-        0.00033888389301603227
-      ],
-      "rotation": -85.7235316092,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "4500",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23732,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-08a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-08a1",
-      "title": "Star Formation in RCW 49",
-      "objectNames": [
-        "NGC 3247",
-        "RCW 49",
-        "Gum 29"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1.1."
-      ],
-      "releaseDate": "2004-05-27",
-      "credit": "NASA/JPL-Caltech/E. Churchwell (University of Wisconsin) ",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1168-ssc2004-08a1-Star-Formation-in-RCW-49",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4758/ssc2004-08a1.tif",
-      "resourceId": "ssc2004-08a1.tif",
-      "imageWidth": 1520,
-      "imageHeight": 1520,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        155.9884909,
-        -57.7524971
-      ],
-      "referenceDimension": [
-        1520.0,
-        1520.0
-      ],
-      "referencePixel": [
-        761.0,
-        761.0
-      ],
-      "scale": [
-        -0.00033299,
-        0.00033299
-      ],
-      "rotation": -32.40000000000001,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23616,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-08a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig08-018",
-      "title": "2-Channel RCW 49",
-      "objectNames": [
-        "NGC 3247",
-        "RCW 49",
-        "Gum 29"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.4.2.1.1."
-      ],
-      "releaseDate": "2008-12-24",
-      "credit": "NASA/JPL-Caltech/E. Churchwell (University of Wisconsin - Madison)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2058-sig08-018-2-Channel-RCW-49",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3900/sig08-018.tif",
-      "resourceId": "sig08-018.tif",
-      "imageWidth": 1520,
-      "imageHeight": 1520,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        155.9884909,
-        -57.7524971
-      ],
-      "referenceDimension": [
-        1520.0,
-        1520.0
-      ],
-      "referencePixel": [
-        761.0,
-        761.0
-      ],
-      "scale": [
-        -0.00033299,
-        0.00033299
-      ],
-      "rotation": -32.32,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 23494,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig08-018",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig11-001",
       "title": "Sunflower Galaxy Glows with Infrared Light",
       "objectNames": [
@@ -4969,126 +1407,6 @@
       ],
       "astropixId": 23848,
       "astropixPage": "https://www.astropix.org/image/spitzer/sig11-001",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig14-015a",
-      "title": "Spitzer Eyes the Bullet Cluster",
-      "objectNames": [
-        "Bullet Cluster"
-      ],
-      "subject": [
-        "D.5.5.3",
-        "D.6.2.1"
-      ],
-      "releaseDate": "2014-06-12",
-      "credit": null,
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5869-sig14-015a-Spitzer-Eyes-the-Bullet-Cluster",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/0432/sig14-015a.tif",
-      "resourceId": "sig14-015a.tif",
-      "imageWidth": 1500,
-      "imageHeight": 1500,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        104.691098,
-        -55.948784
-      ],
-      "referenceDimension": [
-        1500.0,
-        1500.0
-      ],
-      "referencePixel": [
-        403.22998142197,
-        805.39223816702
-      ],
-      "scale": [
-        -8.333032e-05,
-        8.333032e-05
-      ],
-      "rotation": -0.01013858975,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "World Coordinate System resolved using PinpointWCS 0.9.2 revision 218+ by the Chandra X-ray Center",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 23800,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-015a",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig14-015b",
-      "title": "Galaxy Cluster MACS 1149, Seen by Spitzer",
-      "objectNames": [
-        "MACS 1149"
-      ],
-      "subject": [
-        "D.5.5.3",
-        "D.6.2.1"
-      ],
-      "releaseDate": "2014-06-12",
-      "credit": null,
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5872-sig14-015b-Galaxy-Cluster-MACS-1149-Seen-by-Spitzer",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/0444/sig14-015b.tif",
-      "resourceId": "sig14-015b.tif",
-      "imageWidth": 1500,
-      "imageHeight": 1500,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        177.386201,
-        22.39952
-      ],
-      "referenceDimension": [
-        1500.0,
-        1500.0
-      ],
-      "referencePixel": [
-        897.18325786405,
-        660.14658561303
-      ],
-      "scale": [
-        -8.334462e-05,
-        8.334462e-05
-      ],
-      "rotation": -21.41253146024,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "World Coordinate System resolved using PinpointWCS 0.9.2 revision 218+ by the Chandra X-ray Center",
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 23323,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-015b",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -5223,145 +1541,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2005-02a3",
-      "title": "Spitzer/IRAC View of the Trifid Nebula",
-      "objectNames": [
-        "Trifid Nebula",
-        "Messier 20",
-        "M20"
-      ],
-      "subject": [
-        "B.4.1.2.",
-        "B.3.1.1."
-      ],
-      "releaseDate": "2005-01-12",
-      "credit": "NASA/JPL-Caltech/J. Rho (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1371-ssc2005-02a3-Spitzer-IRAC-View-of-the-Trifid-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4479/ssc2005-02a3.tif",
-      "resourceId": "ssc2005-02a3.tif",
-      "imageWidth": 1136,
-      "imageHeight": 1774,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        270.61867613142005,
-        -22.96670184334163
-      ],
-      "referenceDimension": [
-        1136.0,
-        1774.0
-      ],
-      "referencePixel": [
-        433.5,
-        706.0
-      ],
-      "scale": [
-        -0.0003335159174491281,
-        0.0003335159174491281
-      ],
-      "rotation": 1.96302790644,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23557,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-02a3",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-02a1",
-      "title": "Reflection Nebula NGC 7129",
-      "objectNames": [
-        "NGC 7129"
-      ],
-      "subject": [
-        "B.3.6.4.1.",
-        "B.4.1.2.",
-        "B.4.2.2."
-      ],
-      "releaseDate": "2004-02-12",
-      "credit": "NASA/JPL-Caltech/T. Megeath (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1129-ssc2004-02a1-Reflection-Nebula-NGC-7129",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5699/ssc2004-02a1.tif",
-      "resourceId": "ssc2004-02a1.tif",
-      "imageWidth": 1200,
-      "imageHeight": 1400,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        325.72396553892327,
-        66.11102525661272
-      ],
-      "referenceDimension": [
-        1200.0,
-        1400.0
-      ],
-      "referencePixel": [
-        600.0,
-        700.0
-      ],
-      "scale": [
-        -0.0001701697221906206,
-        0.0001701697221906206
-      ],
-      "rotation": 129.2516386826736,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23475,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-02a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "ssc2017-14a2",
       "title": "Flicker of A Neutron Star Merger in Infrared Light",
       "objectNames": [
@@ -5413,65 +1592,6 @@
       ],
       "astropixId": 23756,
       "astropixPage": "https://www.astropix.org/image/spitzer/ssc2017-14a2",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2009-15a3",
-      "title": "Planetary Nebula NGC 4361",
-      "objectNames": [
-        "NGC 4361"
-      ],
-      "subject": [
-        "B.4.1.3."
-      ],
-      "releaseDate": "2009-08-05",
-      "credit": "NASA/JPL-Caltech",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2710-ssc2009-15a3-Planetary-Nebula-NGC-4361",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0004/6999/ssc2009-15a3.tif",
-      "resourceId": "ssc2009-15a3.tif",
-      "imageWidth": 1216,
-      "imageHeight": 1216,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        186.12757414872183,
-        -18.78420041727468
-      ],
-      "referenceDimension": [
-        1216.0,
-        1216.0
-      ],
-      "referencePixel": [
-        608.0,
-        608.0
-      ],
-      "scale": [
-        -8.33335e-05,
-        8.33335e-05
-      ],
-      "rotation": -108.21118,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500"
-      ],
-      "astropixId": 23353,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2009-15a3",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -5728,277 +1848,6 @@
       ],
       "astropixId": 23403,
       "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-20a2",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2005-02a2",
-      "title": "Spitzer/IRAC+MIPS View of the Trifid Nebula",
-      "objectNames": [
-        "Trifid Nebula",
-        "Messier 20",
-        "M20"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2005-01-12",
-      "credit": "NASA/JPL-Caltech/J. Rho (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1369-ssc2005-02a2-Spitzer-IRAC-MIPS-View-of-the-Trifid-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3198/ssc2005-02a2.tif",
-      "resourceId": "ssc2005-02a2.tif",
-      "imageWidth": 867,
-      "imageHeight": 1412,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        270.61867613142005,
-        -22.96670184334163
-      ],
-      "referenceDimension": [
-        867.0,
-        1412.0
-      ],
-      "referencePixel": [
-        433.5,
-        706.0
-      ],
-      "scale": [
-        -0.0003335159174491281,
-        0.0003335159174491281
-      ],
-      "rotation": 1.96302790644,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000",
-        "24000"
-      ],
-      "astropixId": 23752,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-02a2",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2005-02a4",
-      "title": "Spitzer/MIPS View of the Trifid Nebula",
-      "objectNames": [
-        "Trifid Nebula",
-        "Messier 20",
-        "M20"
-      ],
-      "subject": [
-        "B.4.1.2."
-      ],
-      "releaseDate": "2005-01-12",
-      "credit": "NASA/JPL-Caltech/J. Rho (SSC/Caltech)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1373-ssc2005-02a4-Spitzer-MIPS-View-of-the-Trifid-Nebula",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4545/ssc2005-02a4.tif",
-      "resourceId": "ssc2005-02a4.tif",
-      "imageWidth": 867,
-      "imageHeight": 1412,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        270.61867613142005,
-        -22.96670184334163
-      ],
-      "referenceDimension": [
-        867.0,
-        1412.0
-      ],
-      "referencePixel": [
-        433.5,
-        706.0
-      ],
-      "scale": [
-        -0.0003335159174491281,
-        0.0003335159174491281
-      ],
-      "rotation": 1.96302790644,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": "FOV: 17.39 x 28.32 arcminutes; Ref coordinate: 18h2m1.06s -23d8m57.03s; \nderived from astrometry.net file ssc2005-02a2.fits",
-      "telescopeFacility": [
-        "Spitzer"
-      ],
-      "instruments": [
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "24000"
-      ],
-      "astropixId": 23468,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-02a4",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "sig14-013",
-      "title": "Dissecting Dust from Detonation of Dead Star",
-      "objectNames": [
-        "N103B",
-        "NGC 1850"
-      ],
-      "subject": [
-        "C.4.1.4",
-        "C.3.6.4"
-      ],
-      "releaseDate": "2014-06-04",
-      "credit": "NASA/JPL-Caltech/Goddard",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/5858-sig14-013-Dissecting-Dust-from-Detonation-of-Dead-Star",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/0257/sig14-013.tif",
-      "resourceId": "sig14-013.tif",
-      "imageWidth": 986,
-      "imageHeight": 1135,
-      "coordinateFrame": "ICRS",
-      "equinox": null,
-      "referenceValue": [
-        77.2455098,
-        -68.7309664
-      ],
-      "referenceDimension": [
-        986.0,
-        1135.0
-      ],
-      "referencePixel": [
-        494.0,
-        568.5
-      ],
-      "scale": [
-        -8.32806e-05,
-        8.3280562e-05
-      ],
-      "rotation": -1.6,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRS",
-        "MIPS"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "8000",
-        "16000",
-        "24000"
-      ],
-      "astropixId": 23842,
-      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-013",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
-      "archiveId": "ssc2004-13a1",
-      "title": "Spitzer View of Planetary Nebula NGC 246",
-      "objectNames": [
-        "Skull Nebula",
-        "NGC 246"
-      ],
-      "subject": [
-        "B.4.1.3."
-      ],
-      "releaseDate": "2004-08-08",
-      "credit": "NASA/JPL-Caltech/J. Hora (Harvard-Smithsonian CfA)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1264-ssc2004-13a1-Spitzer-View-of-Planetary-Nebula-NGC-246",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4276/ssc2004-13a1.tif",
-      "resourceId": "ssc2004-13a1.tif",
-      "imageWidth": 1018,
-      "imageHeight": 1018,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        11.766739137679277,
-        -11.870090058255451
-      ],
-      "referenceDimension": [
-        1018.0,
-        1018.0
-      ],
-      "referencePixel": [
-        509.0,
-        509.0
-      ],
-      "scale": [
-        -8.470677003512232e-05,
-        8.470677003512232e-05
-      ],
-      "rotation": 121.20594052022237,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 23657,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-13a1",
       "pureSpitzer": true,
       "originalTiff": true
     },
@@ -6508,73 +2357,6 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2004-16a1",
-      "title": "Spitzer Reveals a New Globular Cluster",
-      "objectNames": [
-        "GLIMPSE-C01"
-      ],
-      "subject": [
-        "B.3.6.4.2."
-      ],
-      "releaseDate": "2004-10-12",
-      "credit": "NASA/JPL-Caltech/H. Kobulnicky (Univ. of Wyoming) ",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/1304-ssc2004-16a1-Spitzer-Reveals-a-New-Globular-Cluster",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6434/ssc2004-16a1.tif",
-      "resourceId": "ssc2004-16a1.tif",
-      "imageWidth": 900,
-      "imageHeight": 900,
-      "coordinateFrame": "ICRS",
-      "equinox": "J2000",
-      "referenceValue": [
-        282.204444209,
-        -1.496731280934
-      ],
-      "referenceDimension": [
-        900.0,
-        900.0
-      ],
-      "referencePixel": [
-        451.0,
-        451.0
-      ],
-      "scale": [
-        -0.000111096,
-        0.000111096
-      ],
-      "rotation": 63.27,
-      "projection": "TAN",
-      "wcsQuality": "Full",
-      "wcsNotes": null,
-      "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
-      ],
-      "instruments": [
-        "IRAC",
-        "IRAC",
-        "IRAC",
-        "IRAC"
-      ],
-      "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
-        "Infrared"
-      ],
-      "spectralWavelength": [
-        "3600",
-        "4500",
-        "5800",
-        "8000"
-      ],
-      "astropixId": 22751,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-16a1",
-      "pureSpitzer": true,
-      "originalTiff": true
-    },
-    {
       "archiveId": "sig05-021",
       "title": "Dwarf Galaxies Forming in Tidal Tails",
       "objectNames": [
@@ -6640,50 +2422,48 @@
       "originalTiff": true
     },
     {
-      "archiveId": "ssc2010-02b",
-      "title": "Little Galaxy with a Tail",
+      "archiveId": "ssc2009-08a1",
+      "title": "M33: Infrared View of a Close Neighbor",
       "objectNames": [
-        "SMC",
-        "Small Magellanic Cloud",
-        "NGC 292"
+        "Triangulum Galaxy",
+        "Messier 33",
+        "M33",
+        "NGC 598"
       ],
       "subject": [
-        "B.5.1.2.",
-        "B.5.2.2.",
-        "B.4.1.2."
+        "C.5.1.1.",
+        "C.5.3.1."
       ],
-      "releaseDate": "2010-01-05",
-      "credit": "NASA/JPL-Caltech/K. Gordon (STScI)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2878-ssc2010-02b-Little-Galaxy-with-a-Tail",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0005/2593/ssc2010-02b.jpg",
-      "resourceId": "ssc2010-02b.jpg",
-      "imageWidth": 16800,
-      "imageHeight": 9900,
-      "coordinateFrame": "ICRS",
+      "releaseDate": "2009-04-03",
+      "credit": "NASA / JPL-Caltech / J. Hinz (Univ. of Arizona)",
+      "referenceUrl": "http://spitzer-app3.ipac.caltech.edu/images/2016-ssc2009-08a1-M33-Infrared-View-of-a-Close-Neighbor",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0000/9893/ssc2009-08a1.tif",
+      "resourceId": "ssc2009-08a1.tif",
+      "imageWidth": 4300,
+      "imageHeight": 2800,
+      "coordinateFrame": "FK5",
       "equinox": "J2000",
       "referenceValue": [
-        21.795745771647823,
-        -73.95882880362265
+        23.478836491889933,
+        30.65352710150256
       ],
       "referenceDimension": [
-        16800.0,
-        9900.0
+        2800.0,
+        4300.0
       ],
       "referencePixel": [
-        8360.1658151,
-        4889.71686055
+        2150.0,
+        1400.0
       ],
       "scale": [
-        -0.00055555555555,
-        0.00055555555555
+        -0.0003400314232781575,
+        0.0003400314232781575
       ],
-      "rotation": 148.37,
+      "rotation": 75.2,
       "projection": "TAN",
-      "wcsQuality": "Full",
+      "wcsQuality": "Position",
       "wcsNotes": null,
       "telescopeFacility": [
-        "Spitzer",
-        "Spitzer",
         "Spitzer",
         "Spitzer",
         "Spitzer",
@@ -6693,13 +2473,9 @@
         "IRAC",
         "IRAC",
         "IRAC",
-        "MIPS",
-        "MIPS",
         "MIPS"
       ],
       "spectralBand": [
-        "Infrared",
-        "Infrared",
         "Infrared",
         "Infrared",
         "Infrared",
@@ -6709,77 +2485,340 @@
         "3600",
         "4500",
         "8000",
-        "24000",
-        "70000",
-        "160000"
+        "24000"
       ],
-      "astropixId": 23838,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2010-02b",
+      "astropixId": 23508,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2009-08a1",
       "pureSpitzer": true,
-      "originalTiff": false
+      "originalTiff": true
     },
     {
-      "archiveId": "ssc2010-02c",
-      "title": "Dusty, Little Galaxy",
+      "archiveId": "sig06-018",
+      "title": "Supernova Dust Factory in M74",
       "objectNames": [
-        "SMC",
-        "Small Magellanic Cloud",
-        "NGC 292"
+        "Messier 74",
+        "M74",
+        "NGC 628",
+        "Supernova 2003gd"
       ],
       "subject": [
-        "B.5.1.2.",
-        "B.5.2.2.",
-        "B.4.1.2."
+        "C.5.1.1.",
+        "C.4.1.4.",
+        "C.3.1.8."
       ],
-      "releaseDate": "2010-01-05",
-      "credit": "NASA/JPL-Caltech/K. Gordon (STScI)",
-      "referenceUrl": "http://www.spitzer.caltech.edu/images/2881-ssc2010-02c-Dusty-Little-Galaxy",
-      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0005/2635/ssc2010-02c.jpg",
-      "resourceId": "ssc2010-02c.jpg",
-      "imageWidth": 11200,
-      "imageHeight": 6600,
+      "releaseDate": "2006-06-08",
+      "credit": "NASA/JPL-Caltech/B.E.K. Sugerman (STScI)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/2249-sig06-018-Supernova-Dust-Factory-in-M74",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6405/sig06-018.tif",
+      "resourceId": "sig06-018.tif",
+      "imageWidth": 3000,
+      "imageHeight": 2400,
       "coordinateFrame": "ICRS",
       "equinox": "J2000",
       "referenceValue": [
-        21.795745771647823,
-        -73.95882880362265
+        24.17411892647814,
+        15.783438481340163
       ],
       "referenceDimension": [
-        11200.0,
+        2325.0,
+        2329.0
+      ],
+      "referencePixel": [
+        1162.0,
+        1164.0
+      ],
+      "scale": [
+        -7.15493675624574e-05,
+        7.15493675624574e-05
+      ],
+      "rotation": 0.0,
+      "projection": "TAN",
+      "wcsQuality": "Position",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "IRAC",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "3600",
+        "4500",
+        "8000"
+      ],
+      "astropixId": 22519,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig06-018",
+      "pureSpitzer": true,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2017-14a",
+      "title": "Spitzer Sees Flicker of Neutron Star Collision",
+      "objectNames": [
+        "NGC 4993"
+      ],
+      "subject": [
+        "C.5.1.3"
+      ],
+      "releaseDate": "2017-10-16",
+      "credit": "NASA/JPL-Caltech",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/6418-ssc2017-14a-Spitzer-Sees-Flicker-of-Neutron-Star-Collision",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/2029/ssc2017-14a.tif",
+      "resourceId": "ssc2017-14a.tif",
+      "imageWidth": 3850,
+      "imageHeight": 1701,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        197.449881,
+        -23.382898
+      ],
+      "referenceDimension": [
+        2249.0,
+        933.0
+      ],
+      "referencePixel": [
+        1125.0,
+        466.0
+      ],
+      "scale": [
+        -0.000166667,
+        0.000166667
+      ],
+      "rotation": -106.15855,
+      "projection": "TAN",
+      "wcsQuality": "Position",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "3600",
+        "4500"
+      ],
+      "astropixId": 22942,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2017-14a",
+      "pureSpitzer": true,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig10-023a",
+      "title": "Shrouded Starburst in the Galaxy Merger II Zw 096",
+      "objectNames": [
+        "II Zw 096"
+      ],
+      "subject": [
+        "C.5.1.7.",
+        "C.5.1.1.",
+        "C.5.3.3.",
+        "C.5.5.1."
+      ],
+      "releaseDate": "2010-11-18",
+      "credit": "NASA/JPL-Caltech/STScI/H. Inami (SSC/Caltech)",
+      "referenceUrl": "https://www.spitzer.caltech.edu/image/sig10-023a-shrouded-starburst-in-the-galaxy-merger-ii-zw-096",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/3431/original/sig10-023a.tif",
+      "resourceId": "sig10-023a.tif",
+      "imageWidth": 1800,
+      "imageHeight": 1800,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        314.3511966,
+        17.1278513
+      ],
+      "referenceDimension": [
+        1800.0,
+        1800.0
+      ],
+      "referencePixel": [
+        880.0,
+        865.0
+      ],
+      "scale": [
+        1.38802e-05,
+        1.3880173e-05
+      ],
+      "rotation": 0.04,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Hubble",
+        "Hubble",
+        "Hubble",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "SBC",
+        "ACS",
+        "ACS",
+        "IRAC",
+        "IRAC",
+        "MIPS"
+      ],
+      "spectralBand": [
+        "Ultraviolet",
+        "Optical",
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "140",
+        "440",
+        "900",
+        "4500",
+        "8000",
+        "24000"
+      ],
+      "astropixId": 23603,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig10-023a",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2012-01a",
+      "title": "Dusty Space Cloud",
+      "objectNames": [
+        "Large Magellanic Cloud",
+        "LMC"
+      ],
+      "subject": [
+        "C.5.1.1.",
+        "C.5.1.2.",
+        "C.5.1.6."
+      ],
+      "releaseDate": "2012-01-10",
+      "credit": "ESA/NASA/JPL-Caltech/STScI",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/4872-ssc2012-01a-Dusty-Space-Cloud",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/4524/ssc2012-01a.tif",
+      "resourceId": "ssc2012-01a.tif",
+      "imageWidth": 15500,
+      "imageHeight": 15500,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        79.1191002862,
+        -68.23512079387
+      ],
+      "referenceDimension": [
+        15500.0,
+        15500.0
+      ],
+      "referencePixel": [
+        7750.0,
+        7750.0
+      ],
+      "scale": [
+        -0.0005555555555556,
+        0.0005555555555556
+      ],
+      "rotation": -0.0,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "Spitzer",
+        "Herschel",
+        "Herschel",
+        "Herschel"
+      ],
+      "instruments": [
+        "MIPS",
+        "MIPS",
+        "PACS",
+        "PACS",
+        "SPIRE"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "24000",
+        "70000",
+        "100000",
+        "160000",
+        "250000"
+      ],
+      "astropixId": 23879,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2012-01a",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2013-05d1",
+      "title": "Galaxies in Hiding",
+      "objectNames": [
+        "Perseus-Pisces supercluster"
+      ],
+      "subject": [
+        "C.5.5.4"
+      ],
+      "releaseDate": "2013-06-05",
+      "credit": "NASA/JPL-Caltech/University of Wisconsin",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/5602-ssc2013-05d1-Galaxies-in-Hiding",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/5504/ssc2013-05d1.tif",
+      "resourceId": "ssc2013-05d1.tif",
+      "imageWidth": 6600,
+      "imageHeight": 6600,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        72.5798376,
+        45.08884811
+      ],
+      "referenceDimension": [
+        6600.0,
         6600.0
       ],
       "referencePixel": [
-        5573.4,
-        3259.8
+        3300.5,
+        3300.5
       ],
       "scale": [
-        -0.00083333333332,
-        0.00083333333332
+        -0.000166666665,
+        0.000166666665
       ],
-      "rotation": 148.37,
-      "projection": "TAN",
+      "rotation": -50.227094,
+      "projection": "CAR",
       "wcsQuality": "Full",
       "wcsNotes": null,
       "telescopeFacility": [
         "Spitzer",
         "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer",
-        "Spitzer"
+        "WISE"
       ],
       "instruments": [
         "IRAC",
-        "IRAC",
-        "IRAC",
-        "MIPS",
-        "MIPS",
-        "MIPS"
+        "IRAC"
       ],
       "spectralBand": [
-        "Infrared",
-        "Infrared",
-        "Infrared",
         "Infrared",
         "Infrared",
         "Infrared"
@@ -6787,15 +2826,1174 @@
       "spectralWavelength": [
         "3600",
         "4500",
-        "8000",
-        "24000",
-        "70000",
-        "160000"
+        "12000"
       ],
-      "astropixId": 23874,
-      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2010-02c",
-      "pureSpitzer": true,
-      "originalTiff": false
+      "astropixId": 23640,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2013-05d1",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2007-10a1",
+      "title": "Dwarf Galaxies in the Coma Cluster",
+      "objectNames": [
+        "Coma Cluster"
+      ],
+      "subject": [
+        "C.5.1.4",
+        "C.5.2.1",
+        "C.5.2.2",
+        "C.5.5.3"
+      ],
+      "releaseDate": "2007-05-28",
+      "credit": "NASA/JPL-Caltech/L. Jenkins (GSFC)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/1803-ssc2007-10a1-Dwarf-Galaxies-in-the-Coma-Cluster",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0000/9803/ssc2007-10a1.tif",
+      "resourceId": "ssc2007-10a1.tif",
+      "imageWidth": 4097,
+      "imageHeight": 3557,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        195.139533711,
+        28.0991666926
+      ],
+      "referenceDimension": [
+        4097.0,
+        3557.0
+      ],
+      "referencePixel": [
+        1514.13848877,
+        2723.920608521
+      ],
+      "scale": [
+        -0.00016962648210151,
+        0.00016962648210151
+      ],
+      "rotation": -11.82050875922,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "SDSS",
+        "SDSS",
+        "SDSS",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "-",
+        "-",
+        "-",
+        "IRAC",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Optical",
+        "Optical",
+        "Optical",
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "550",
+        "700",
+        "900",
+        "3600",
+        "4500",
+        "8000"
+      ],
+      "astropixId": 23560,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2007-10a1",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2019-05a",
+      "title": "Spitzer Captures Messier 87 (EHT)",
+      "objectNames": [
+        "Messier 87",
+        "M87",
+        "NGC 4486",
+        "Virgo A",
+        "Virgo Cluster"
+      ],
+      "subject": [
+        "C.5.1.4",
+        "C.5.2.1",
+        "C.5.5.3",
+        "C.4.1.5",
+        "C.3.1.10"
+      ],
+      "releaseDate": "2019-04-25",
+      "credit": "NASA/JPL-Caltech/IPAC/Event Horizon Telescope Collaboration",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/6593-ssc2019-05a-Spitzer-Captures-Messier-87-EHT-",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/5499/ssc2019-05a.tif",
+      "resourceId": "ssc2019-05a.tif",
+      "imageWidth": 3580,
+      "imageHeight": 3580,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        187.6451366,
+        12.3653749
+      ],
+      "referenceDimension": [
+        3580.0,
+        3580.0
+      ],
+      "referencePixel": [
+        1791.0,
+        1791.0
+      ],
+      "scale": [
+        -8.33389e-05,
+        8.3338925e-05
+      ],
+      "rotation": -30.0,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "Spitzer",
+        "Spitzer",
+        "EHT"
+      ],
+      "instruments": [
+        "IRAC",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Radio"
+      ],
+      "spectralWavelength": [
+        "3600",
+        "4500",
+        "8000",
+        "1300000"
+      ],
+      "astropixId": 23597,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2019-05a",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig14-029a",
+      "title": "A Flood of Gas",
+      "objectNames": [
+        "NGC 3226",
+        "NGC 3227"
+      ],
+      "subject": [
+        "C.5.1.7",
+        "C.5.1.4",
+        "C.5.2.2"
+      ],
+      "releaseDate": "2014-12-05",
+      "credit": "NASA/CFHT/NRAO/JPL-Caltech/Duc/Cuillandre",
+      "referenceUrl": "http://spitzer-app3.ipac.caltech.edu/images/5995-sig14-029a-A-Flood-of-Gas",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/2376/sig14-029a.tif",
+      "resourceId": "sig14-029a.tif",
+      "imageWidth": 3615,
+      "imageHeight": 3500,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        155.86253,
+        19.89852
+      ],
+      "referenceDimension": [
+        3615.0,
+        3500.0
+      ],
+      "referencePixel": [
+        1753.6050550618,
+        1746.63414693372
+      ],
+      "scale": [
+        -0.00015585032,
+        0.00015585032
+      ],
+      "rotation": 0.09189627072,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "VLA",
+        "CFHT",
+        "CFHT"
+      ],
+      "instruments": [
+        "IRAC",
+        "-",
+        "MegaCam",
+        "MegaCam"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Radio",
+        "Optical",
+        "Optical"
+      ],
+      "spectralWavelength": [
+        "8000",
+        "210000000",
+        "700",
+        "550"
+      ],
+      "astropixId": 23713,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig14-029a",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig15-013",
+      "title": "A Giant Gathering of Galaxies",
+      "objectNames": [
+        "MOO J1142+1527"
+      ],
+      "subject": [
+        "C.5.5.3"
+      ],
+      "releaseDate": "2015-11-03",
+      "credit": "NASA/JPL-Caltech/Gemini/CARMA",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/6120-sig15-013-A-Giant-Gathering-of-Galaxies",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/6212/sig15-013.tif",
+      "resourceId": "sig15-013.tif",
+      "imageWidth": 3400,
+      "imageHeight": 3400,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        175.6932424,
+        15.4538685
+      ],
+      "referenceDimension": [
+        3400.0,
+        3400.0
+      ],
+      "referencePixel": [
+        1701.0,
+        1701.0
+      ],
+      "scale": [
+        -1.73382e-05,
+        1.733818e-05
+      ],
+      "rotation": -0.05,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "Gemini",
+        "Gemini",
+        "CARMA"
+      ],
+      "instruments": [
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared",
+        "Optical",
+        "Radio"
+      ],
+      "spectralWavelength": [
+        "3600",
+        "950",
+        "700",
+        "9670000000"
+      ],
+      "astropixId": 22969,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig15-013",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig12-005",
+      "title": "A Pinwheel Galaxy Rainbow",
+      "objectNames": [
+        "Pinwheel Galaxy",
+        "Messier 101",
+        "M101"
+      ],
+      "subject": [
+        "C.5.1.1.",
+        "C.5.3.1."
+      ],
+      "releaseDate": "2012-05-23",
+      "credit": "NASA, ESA, CXC, JPL, Caltech and STScI",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/5163-sig12-005-A-Pinwheel-Galaxy-Rainbow",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/9129/sig12-005.tif",
+      "resourceId": "sig12-005.tif",
+      "imageWidth": 2299,
+      "imageHeight": 2299,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        210.8015594,
+        54.348607
+      ],
+      "referenceDimension": [
+        2299.0,
+        2299.0
+      ],
+      "referencePixel": [
+        1150.5,
+        1150.5
+      ],
+      "scale": [
+        0.00016934,
+        0.00016933997
+      ],
+      "rotation": 0.05,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Chandra",
+        "GALEX",
+        "Hubble",
+        "Spitzer"
+      ],
+      "instruments": [
+        "ACIS",
+        "-",
+        "ACS",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "X-ray",
+        "Ultraviolet",
+        "Optical",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "0.8267",
+        "150",
+        "435",
+        "8000"
+      ],
+      "astropixId": 23656,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig12-005",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2005-11a1",
+      "title": "Spitzer and Hubble View of the Sombrero Galaxy",
+      "objectNames": [
+        "Sombrero Galaxy",
+        "Messier 104",
+        "M104",
+        "NGC 4594"
+      ],
+      "subject": [
+        "C.5.1.4.",
+        "C.5.1.3.",
+        "C.5.4.5.",
+        "C.5.1.5."
+      ],
+      "releaseDate": "2005-05-04",
+      "credit": "Infrared: NASA/JPL-Caltech/R. Kennicutt (University of Arizona) and the SINGS Team",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/1421-ssc2005-11a1-Spitzer-and-Hubble-View-of-the-Sombrero-Galaxy",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3015/ssc2005-11a1.tif",
+      "resourceId": "ssc2005-11a1.tif",
+      "imageWidth": 3000,
+      "imageHeight": 1681,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        189.941259706,
+        -11.5869704984
+      ],
+      "referenceDimension": [
+        3000.0,
+        1681.0
+      ],
+      "referencePixel": [
+        2587.89355469,
+        1425.447177887
+      ],
+      "scale": [
+        -5.3083114895765e-05,
+        5.3083114895765e-05
+      ],
+      "rotation": -5.0978925445378,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Hubble",
+        "Hubble",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "ACS",
+        "ACS",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Optical",
+        "Optical",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "435",
+        "555",
+        "3600",
+        "8000"
+      ],
+      "astropixId": 23641,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2005-11a1",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2015-03b",
+      "title": "What Feeds the Beast in a Galaxy Cluster?",
+      "objectNames": [
+        "SpARCS1049+56"
+      ],
+      "subject": [
+        "C.5.5.3",
+        "C.5.1.7"
+      ],
+      "releaseDate": "2015-09-10",
+      "credit": "NASA/ESA/STScI/JPL-Caltech/McGill",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/6115-ssc2015-03b-What-Feeds-the-Beast-in-a-Galaxy-Cluster-",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/6066/ssc2015-03b.tif",
+      "resourceId": "ssc2015-03b.tif",
+      "imageWidth": 2200,
+      "imageHeight": 2201,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        162.3447842,
+        56.6753895
+      ],
+      "referenceDimension": [
+        2200.0,
+        2201.0
+      ],
+      "referencePixel": [
+        1101.0,
+        1101.5
+      ],
+      "scale": [
+        -6.24869e-06,
+        6.2486901e-06
+      ],
+      "rotation": -0.02,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Hubble",
+        "Hubble",
+        "Spitzer"
+      ],
+      "instruments": [
+        "WFC3",
+        "WFC3",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "1050",
+        "1600",
+        "3600"
+      ],
+      "astropixId": 23405,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2015-03b",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2004-19a1",
+      "title": "Visible Light View of the Spiral Galaxy M51 (\"Whirlpool Galaxy\")",
+      "objectNames": [
+        "Whirlpool Galaxy",
+        "M51",
+        "Messier 51",
+        "NGC 5194",
+        "NGC 5195"
+      ],
+      "subject": [
+        "C.5.5.1.",
+        "C.5.1.1.",
+        "C.5.1.7."
+      ],
+      "releaseDate": "2004-11-05",
+      "credit": "NASA/JPL-Caltech/R. Kennicutt (Univ. of Arizona)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/1322-ssc2004-19a1-Visible-Light-View-of-the-Spiral-Galaxy-M51-Whirlpool-Galaxy-",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5143/ssc2004-19a1.tif",
+      "resourceId": "ssc2004-19a1.tif",
+      "imageWidth": 1551,
+      "imageHeight": 2142,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        202.4691265871508,
+        47.203606280587245
+      ],
+      "referenceDimension": [
+        1551.0,
+        2142.0
+      ],
+      "referencePixel": [
+        776.5,
+        1072.0
+      ],
+      "scale": [
+        -0.000105978,
+        0.000105978
+      ],
+      "rotation": 0.3,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "KPNO 2.1m",
+        "KPNO 2.1m",
+        "KPNO 2.1m",
+        "KPNO 2.1m"
+      ],
+      "instruments": [],
+      "spectralBand": [
+        "Optical",
+        "Optical",
+        "Optical",
+        "Optical"
+      ],
+      "spectralWavelength": [
+        "440",
+        "550",
+        "656",
+        "700"
+      ],
+      "astropixId": 23552,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-19a1",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig10-023b",
+      "title": "Hubble View of Galaxy Merger II Zw 096",
+      "objectNames": [
+        "II Zw 096"
+      ],
+      "subject": [
+        "C.5.1.7.",
+        "C.5.1.1.",
+        "C.5.3.3.",
+        "C.5.5.1."
+      ],
+      "releaseDate": "2010-11-18",
+      "credit": "NASA/JPL-Caltech/STScI/H. Inami (SSC/Caltech)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/3432-sig10-023b-Hubble-View-of-Galaxy-Merger-II-Zw-096",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/4419/sig10-023b.tif",
+      "resourceId": "sig10-023b.tif",
+      "imageWidth": 1800,
+      "imageHeight": 1800,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        314.3511966,
+        17.1278513
+      ],
+      "referenceDimension": [
+        1800.0,
+        1800.0
+      ],
+      "referencePixel": [
+        880.0,
+        865.0
+      ],
+      "scale": [
+        1.38802e-05,
+        1.3880173e-05
+      ],
+      "rotation": 0.04,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Hubble",
+        "Hubble",
+        "Hubble"
+      ],
+      "instruments": [
+        "SBC",
+        "ACS",
+        "ACS"
+      ],
+      "spectralBand": [
+        "Ultraviolet",
+        "Optical",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "140",
+        "440",
+        "900"
+      ],
+      "astropixId": 23415,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig10-023b",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig13-017a",
+      "title": "Two Galaxies Masquerading as One",
+      "objectNames": [
+        "UGC 10288"
+      ],
+      "subject": [
+        "C.5.1.1",
+        "C.5.4.3",
+        "C.5.3.2"
+      ],
+      "releaseDate": "2013-11-14",
+      "credit": "NASA/JPL-Caltech/NRAO",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/5705-sig13-017a-Two-Galaxies-Masquerading-as-One",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/7557/sig13-017a.tif",
+      "resourceId": "sig13-017a.tif",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "coordinateFrame": "ICRS",
+      "equinox": null,
+      "referenceValue": [
+        243.60333,
+        -0.20753
+      ],
+      "referenceDimension": [
+        2700.0,
+        2700.0
+      ],
+      "referencePixel": [
+        1350.5,
+        1350.5
+      ],
+      "scale": [
+        -0.000111111,
+        0.000111111
+      ],
+      "rotation": 0.0,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "Spitzer",
+        "Spitzer",
+        "VLA"
+      ],
+      "instruments": [
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Infrared",
+        "Infrared",
+        "Radio"
+      ],
+      "spectralWavelength": [
+        "3600",
+        "4500",
+        "73000000"
+      ],
+      "astropixId": 22977,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig13-017a",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2004-14a1",
+      "title": "Composite view of the Antennae Galaxies",
+      "objectNames": [
+        "Antennae Galaxies",
+        "NGC 4038",
+        "NGC 4039",
+        "Arp 244"
+      ],
+      "subject": [
+        "C.5.1.7."
+      ],
+      "releaseDate": "2004-09-07",
+      "credit": "NASA/JPL-Caltech/Z. Wang (Harvard-Smithsonian CfA) ",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/1268-ssc2004-14a1-Composite-view-of-the-Antennae-Galaxies",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5525/ssc2004-14a1.tif",
+      "resourceId": "ssc2004-14a1.tif",
+      "imageWidth": 1125,
+      "imageHeight": 1125,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        180.47148829353287,
+        -18.87698470152815
+      ],
+      "referenceDimension": [
+        1125.0,
+        1125.0
+      ],
+      "referencePixel": [
+        562.5,
+        562.5
+      ],
+      "scale": [
+        -6.422389796596829e-05,
+        6.422389796596829e-05
+      ],
+      "rotation": -4.462315922341702,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "KPNO",
+        "KPNO",
+        "Spitzer"
+      ],
+      "instruments": [
+        "-",
+        "-",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Optical",
+        "Optical",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "440",
+        "700",
+        "8000"
+      ],
+      "astropixId": 23827,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2004-14a1",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig11-005a",
+      "title": "Galactic Train Wreck",
+      "objectNames": [
+        "NGC 470",
+        "NGC 474",
+        "Arp 227"
+      ],
+      "subject": [
+        "C.5.1.7.",
+        "C.5.1.1.",
+        "C.5.1.3."
+      ],
+      "releaseDate": "2011-05-25",
+      "credit": "NASA/JPL-Caltech/L. Lanz (Harvard-Smithsonian CfA)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/3608-sig11-005a-Galactic-Train-Wreck",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/7709/sig11-005a.tif",
+      "resourceId": "sig11-005a.tif",
+      "imageWidth": 1060,
+      "imageHeight": 1060,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        19.9874586,
+        3.4123526
+      ],
+      "referenceDimension": [
+        1060.0,
+        1060.0
+      ],
+      "referencePixel": [
+        531.0,
+        531.0
+      ],
+      "scale": [
+        0.000166701,
+        0.00016670061
+      ],
+      "rotation": -64.89,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": "WCS retrieved using CXCs PinpointWCS",
+      "telescopeFacility": [
+        "GALEX",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "FUV",
+        "IRAC",
+        "IRAC",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Ultraviolet",
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "150",
+        "3600",
+        "4500",
+        "5800",
+        "8000"
+      ],
+      "astropixId": 23313,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig11-005a",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "ssc2003-06d2",
+      "title": "Visible-light view of  Messier 81",
+      "objectNames": [
+        "Bode's Galaxy",
+        "Messier 81",
+        "M81",
+        "NGC 3031",
+        "UGC 5318"
+      ],
+      "subject": [
+        "C.5.1.1."
+      ],
+      "releaseDate": "2003-12-18",
+      "credit": "N.A. Sharp (NOAO/AURA/NSF) ",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/1078-ssc2003-06d2-Visible-light-view-of-Messier-81",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4995/ssc2003-06d2.tif",
+      "resourceId": "ssc2003-06d2.tif",
+      "imageWidth": 1158,
+      "imageHeight": 878,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.891519342434,
+        69.06524617699486
+      ],
+      "referenceDimension": [
+        1158.0,
+        878.0
+      ],
+      "referencePixel": [
+        579.0,
+        439.0
+      ],
+      "scale": [
+        -0.00033889738260893987,
+        0.00033889738260893987
+      ],
+      "rotation": 268.7031668354956,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "NOAO",
+        "NOAO",
+        "NOAO"
+      ],
+      "instruments": [],
+      "spectralBand": [
+        "Optical",
+        "Optical",
+        "Optical"
+      ],
+      "spectralWavelength": [
+        "440",
+        "550",
+        "700"
+      ],
+      "astropixId": 23100,
+      "astropixPage": "https://www.astropix.org/image/spitzer/ssc2003-06d2",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig16-18",
+      "title": "'Pandora's Cluster' Seen by Spitzer",
+      "objectNames": [
+        "Abell 2744",
+        "Pandora's Cluster"
+      ],
+      "subject": [
+        "C.5.5.3"
+      ],
+      "releaseDate": "2016-09-28",
+      "credit": "NASA/JPL-Caltech",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/6249-sig16-18--Pandora-s-Cluster-Seen-by-Spitzer",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0010/8748/sig16-18.tif",
+      "resourceId": "sig16-18.tif",
+      "imageWidth": 1233,
+      "imageHeight": 693,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        3.5582158,
+        -30.3885567
+      ],
+      "referenceDimension": [
+        1233.0,
+        693.0
+      ],
+      "referencePixel": [
+        617.5,
+        347.5
+      ],
+      "scale": [
+        -0.000167002,
+        0.00016700241
+      ],
+      "rotation": -53.68,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": "WCS retrieved using CXCs PinpointWCS",
+      "telescopeFacility": [],
+      "instruments": [],
+      "spectralBand": [],
+      "spectralWavelength": [],
+      "astropixId": 22894,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig16-18",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig07-002",
+      "title": "Older Galaxy Pair Has Surprisingly Youthful Glow",
+      "objectNames": [
+        "Arp 82"
+      ],
+      "subject": [
+        "C.5.1.7",
+        "C.5.3.3",
+        "C.5.5.1."
+      ],
+      "releaseDate": "2007-01-10",
+      "credit": "NASA/JPL-Caltech/M. Hancock (E. Tenn. State Univ.)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/2177-sig07-002-Older-Galaxy-Pair-Has-Surprisingly-Youthful-Glow",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3288/sig07-002.tif",
+      "resourceId": "sig07-002.tif",
+      "imageWidth": 975,
+      "imageHeight": 700,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        122.80985480985528,
+        25.1812545921
+      ],
+      "referenceDimension": [
+        975.0,
+        700.0
+      ],
+      "referencePixel": [
+        427.357769012,
+        212.493232727
+      ],
+      "scale": [
+        -0.00014006006212555,
+        0.00014006006212555
+      ],
+      "rotation": -0.00459570523979,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "GALEX",
+        "GALEX",
+        "SARA",
+        "Spitzer"
+      ],
+      "instruments": [
+        "FUV",
+        "NUV",
+        "-",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Ultraviolet",
+        "Ultraviolet",
+        "Optical",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "150",
+        "230",
+        "700",
+        "8000"
+      ],
+      "astropixId": 23431,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig07-002",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig11-005b",
+      "title": "Galactic Train Wreck",
+      "objectNames": [
+        "NGC 3448",
+        "UGC 6012",
+        "Arp 205"
+      ],
+      "subject": [
+        "C.5.1.7.",
+        "C.5.1.6.",
+        "C.5.1.1."
+      ],
+      "releaseDate": "2011-05-25",
+      "credit": "NASA/JPL-Caltech/L. Lanz (Harvard-Smithsonian CfA)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/3609-sig11-005b-Galactic-Train-Wreck",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/7721/sig11-005b.tif",
+      "resourceId": "sig11-005b.tif",
+      "imageWidth": 600,
+      "imageHeight": 600,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        163.6393161,
+        54.3018181
+      ],
+      "referenceDimension": [
+        600.0,
+        600.0
+      ],
+      "referencePixel": [
+        301.0,
+        301.0
+      ],
+      "scale": [
+        0.00023986,
+        0.00023985962
+      ],
+      "rotation": 76.05,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": null,
+      "telescopeFacility": [
+        "GALEX",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "FUV",
+        "IRAC",
+        "IRAC",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Ultraviolet",
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "150",
+        "3600",
+        "4500",
+        "5800",
+        "8000"
+      ],
+      "astropixId": 23691,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig11-005b",
+      "pureSpitzer": false,
+      "originalTiff": true
+    },
+    {
+      "archiveId": "sig11-005c",
+      "title": "Galactic Train Wreck",
+      "objectNames": [
+        "NGC 935",
+        "IC 1801",
+        "Arp 276"
+      ],
+      "subject": [
+        "C.5.1.7.",
+        "C.5.1.1.",
+        "C.5.1.2."
+      ],
+      "releaseDate": "2011-05-25",
+      "credit": "NASA/JPL-Caltech/L. Lanz (Harvard-Smithsonian CfA)",
+      "referenceUrl": "http://www.spitzer.caltech.edu/images/3614-sig11-005c-Galactic-Train-Wreck",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0006/7733/sig11-005c.tif",
+      "resourceId": "sig11-005c.tif",
+      "imageWidth": 500,
+      "imageHeight": 500,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        37.0442243,
+        19.5929425
+      ],
+      "referenceDimension": [
+        500.0,
+        500.0
+      ],
+      "referencePixel": [
+        251.0,
+        251.0
+      ],
+      "scale": [
+        0.000166677,
+        0.00016667729
+      ],
+      "rotation": -72.46,
+      "projection": "TAN",
+      "wcsQuality": "Full",
+      "wcsNotes": "WCS retrieved using CXCs PinpointWCS",
+      "telescopeFacility": [
+        "GALEX",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer",
+        "Spitzer"
+      ],
+      "instruments": [
+        "FUV",
+        "IRAC",
+        "IRAC",
+        "IRAC",
+        "IRAC"
+      ],
+      "spectralBand": [
+        "Ultraviolet",
+        "Infrared",
+        "Infrared",
+        "Infrared",
+        "Infrared"
+      ],
+      "spectralWavelength": [
+        "150",
+        "3600",
+        "4500",
+        "5800",
+        "8000"
+      ],
+      "astropixId": 23626,
+      "astropixPage": "https://www.astropix.org/image/spitzer/sig11-005c",
+      "pureSpitzer": false,
+      "originalTiff": true
     }
   ]
 }
