@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,user-scalable=no">
+<title>Spitzer Expansion 58 Review</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:monospace}
+#aladin{position:absolute;inset:0}
+#panel{position:absolute;z-index:100;left:8px;right:8px;bottom:8px;padding:8px;background:rgba(0,0,0,.86);border:1px solid #55dfff;border-radius:8px}
+#status{color:#78efff;font-weight:bold;font-size:13px;margin-bottom:5px}
+#meta{font-size:10px;max-height:60px;overflow:auto;margin-top:5px;white-space:pre-wrap}
+.row{display:flex;gap:6px;align-items:center}
+button{border:0;border-radius:6px;color:#fff;font-weight:bold;font-size:14px;min-height:40px}
+#back,#next{background:#29425b;width:58px}
+#keep{background:#087b45;flex:1}
+#delete{background:#a31f27;flex:1}
+#blink{background:#66531b;width:68px}
+#export{margin-top:6px;width:100%;background:#17658c}
+#opacity{flex:1}
+#decision{float:right}
+</style>
+</head>
+<body>
+<div id="aladin"></div>
+<div id="panel">
+  <div id="status">LOADING NEW SPITZER CANDIDATES... <span id="decision"></span></div>
+  <div class="row">
+    <button id="back">BACK</button>
+    <button id="keep">KEEP</button>
+    <button id="delete">DELETE</button>
+    <button id="next">NEXT</button>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <button id="blink">BLINK</button>
+    <span>0%</span>
+    <input id="opacity" type="range" min="0" max="100" value="50">
+    <span id="pct">50%</span>
+  </div>
+  <div id="meta"></div>
+  <button id="export">DOWNLOAD JSON DECISIONS</button>
+</div>
+
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js"></script>
+<script>
+const CATALOG="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/Spitzer/rebuild/gv-spitzer-expansion-candidates-0001.json";
+const STORE="gv_spitzer_expansion_0058_v1";
+
+let deck=[],index=0,aladin=null,layer=null,imageObjectUrl=null,decisions={},blinkOff=false,loadToken=0;
+const status=document.getElementById("status"),meta=document.getElementById("meta"),opacity=document.getElementById("opacity"),pct=document.getElementById("pct"),decision=document.getElementById("decision");
+
+try{decisions=JSON.parse(localStorage.getItem(STORE)||"{}")}catch(_){decisions={}}
+function save(){localStorage.setItem(STORE,JSON.stringify(decisions))}
+function counts(){let keep=0,del=0;for(const v of Object.values(decisions)){if(v==="KEEP")keep++;if(v==="DELETE")del++}return {keep,del,undecided:deck.length-keep-del}}
+
+function previewUrls(r){
+  const id=encodeURIComponent(r.archiveId);
+  return [
+    "https://astropix.org/archive/spitzer/"+id+"/spitzer_"+id+"_1280.jpg",
+    "https://images.ipac.caltech.edu/spitzer/"+id+"/spitzer_"+id+"_1280.jpg",
+    "https://astropix.org/archive/spitzer/"+id+"/spitzer_"+id+"_1024.jpg"
+  ];
+}
+
+async function loadImage(r){
+  let last="";
+  for(const u of previewUrls(r)){
+    try{
+      const response=await fetch("/image?url="+encodeURIComponent(u),{cache:"no-store"});
+      if(!response.ok)throw new Error("HTTP "+response.status);
+      const blob=await response.blob();
+      const bitmap=await createImageBitmap(blob);
+      const out={blob,width:bitmap.width,height:bitmap.height,url:u};
+      bitmap.close?.();
+      return out;
+    }catch(e){last=String(e?.message||e)}
+  }
+  throw new Error("PREVIEW FAILED: "+last);
+}
+
+function exactAvmWcs(r,w,h){
+  const rw=Number(r.referenceDimension[0]),rh=Number(r.referenceDimension[1]);
+  const sx=w/rw,sy=h/rh;
+  const scaleX=Number(r.scale[0])*(rw/w);
+  const scaleY=Number(r.scale[1])*(rh/h);
+  const proj=String(r.projection||"TAN").toUpperCase();
+  let eq=2000;
+  const rawEq=String(r.equinox||"").replace(/[^0-9.]/g,"");
+  if(rawEq && Number.isFinite(Number(rawEq)))eq=Number(rawEq);
+  return {
+    NAXIS:2,NAXIS1:w,NAXIS2:h,
+    CTYPE1:"RA---"+proj,CTYPE2:"DEC--"+proj,
+    RADESYS:String(r.coordinateFrame||"ICRS"),
+    EQUINOX:eq,
+    CRVAL1:Number(r.referenceValue[0]),CRVAL2:Number(r.referenceValue[1]),
+    CRPIX1:Number(r.referencePixel[0])*sx,CRPIX2:Number(r.referencePixel[1])*sy,
+    CUNIT1:"deg",CUNIT2:"deg",
+    CDELT1:scaleX,CDELT2:scaleY,
+    CROTA2:Number(r.rotation)
+  };
+}
+
+async function show(n){
+  if(!deck.length)return;
+  index=(n+deck.length)%deck.length;
+  const token=++loadToken,r=deck[index],d=decisions[r.archiveId]||"UNDECIDED",c=counts();
+  blinkOff=false;
+  decision.textContent=d;
+  decision.style.color=d==="KEEP"?"#65ffaf":d==="DELETE"?"#ff7777":"#ddd";
+  status.firstChild.textContent="NEW SPITZER "+(index+1)+"/"+deck.length+" • "+r.archiveId+" ";
+  meta.textContent="KEEP "+c.keep+"  DELETE "+c.del+"  LEFT "+c.undecided+
+    "\n"+r.title+
+    "\n"+(r.objectNames||[]).join(" • ")+
+    "\n"+(r.pureSpitzer?"PURE SPITZER":"MULTI-FACILITY")+" • "+r.imageWidth+"×"+r.imageHeight+" • WCS "+(r.wcsQuality||"")+
+    "\nTIFF: "+r.resourceUrl;
+  if(layer){try{aladin.removeImageLayer?.("SPITZER-EXPANSION")}catch(_){} layer=null}
+  if(imageObjectUrl){try{URL.revokeObjectURL(imageObjectUrl)}catch(_){} imageObjectUrl=null}
+  try{
+    const im=await loadImage(r); if(token!==loadToken)return;
+    const wcs=exactAvmWcs(r,im.width,im.height);
+    imageObjectUrl=URL.createObjectURL(im.blob);
+    const fovX=Math.abs(Number(r.scale[0]))*Number(r.referenceDimension[0]);
+    const fovY=Math.abs(Number(r.scale[1]))*Number(r.referenceDimension[1]);
+    aladin.gotoRaDec(Number(r.referenceValue[0]),Number(r.referenceValue[1]));
+    aladin.setFov(Math.max(fovX,fovY)*1.15);
+    aladin.setRotation(0);
+    layer=A.image(imageObjectUrl,{name:"SPITZER-EXPANSION",imgFormat:"jpeg",wcs,opacity:Number(opacity.value)/100});
+    aladin.setOverlayImageLayer(layer,"SPITZER-EXPANSION");
+    meta.textContent+="\npreview: "+im.url+" • "+im.width+"×"+im.height;
+  }catch(e){meta.textContent+="\nLOAD ERROR: "+String(e?.stack||e)}
+}
+
+function choose(v){const r=deck[index];decisions[r.archiveId]=v;save();show(index+1)}
+document.getElementById("keep").onclick=()=>choose("KEEP");
+document.getElementById("delete").onclick=()=>choose("DELETE");
+document.getElementById("back").onclick=()=>show(index-1);
+document.getElementById("next").onclick=()=>show(index+1);
+opacity.oninput=()=>{pct.textContent=opacity.value+"%";if(layer&&!blinkOff)layer.setOpacity(Number(opacity.value)/100)};
+document.getElementById("blink").onclick=()=>{if(!layer)return;blinkOff=!blinkOff;layer.setOpacity(blinkOff?0:Number(opacity.value)/100)};
+document.getElementById("export").onclick=()=>{
+  const rows=deck.map(r=>({archiveId:r.archiveId,title:r.title,objectNames:r.objectNames,decision:decisions[r.archiveId]||"UNDECIDED",pureSpitzer:r.pureSpitzer,resourceUrl:r.resourceUrl,referenceValue:r.referenceValue,referenceDimension:r.referenceDimension,referencePixel:r.referencePixel,scale:r.scale,rotation:r.rotation,projection:r.projection,coordinateFrame:r.coordinateFrame}));
+  const c=counts();
+  const out={schema:"gv-spitzer-expansion-review-0058",generatedAt:new Date().toISOString(),total:deck.length,summary:c,keepArchiveIds:rows.filter(x=>x.decision==="KEEP").map(x=>x.archiveId),deleteArchiveIds:rows.filter(x=>x.decision==="DELETE").map(x=>x.archiveId),undecidedArchiveIds:rows.filter(x=>x.decision==="UNDECIDED").map(x=>x.archiveId),decisions:rows};
+  const blob=new Blob([JSON.stringify(out,null,2)+"\n"],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="gv-spitzer-expansion-review-0058.json";a.click();
+};
+
+async function boot(){
+  const data=await fetch(CATALOG+"?fresh="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("CATALOG HTTP "+r.status);return r.json()});
+  deck=data.records||[];
+  if(deck.length!==58)throw new Error("EXPECTED 58 NEW CANDIDATES; GOT "+deck.length);
+  const first=deck[0];
+  const fov=Math.max(Math.abs(first.scale[0])*first.referenceDimension[0],Math.abs(first.scale[1])*first.referenceDimension[1])*1.15;
+  aladin=A.aladin("#aladin",{survey:"P/DSS2/color",target:first.referenceValue[0]+" "+first.referenceValue[1],fov,projection:"TAN",cooFrame:"ICRSd",showReticle:true,showCooGrid:true,showCooGridControl:true,showZoomControl:true,showLayersControl:false});
+  show(0);
+}
+A.init.then(boot).catch(e=>{status.textContent="BOOT ERROR";meta.textContent=String(e?.stack||e)});
+</script>
+</body>
+</html>
