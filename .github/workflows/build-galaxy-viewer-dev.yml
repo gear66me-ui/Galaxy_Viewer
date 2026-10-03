@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Clean Browser APK
+name: Build Galaxy Viewer DEV 0057 WebKit 1.12 Persistent Cookies APK
 # DEV 0057: current Browser 0057 hosted architecture + tablet resize/back fixes. Side-by-side package; production untouched.
 
 on:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 60
-              versionName 'DEV-0057-WEBKIT112-3'
+              versionCode 61
+              versionName 'DEV-0057-WEBKIT112-4'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
@@ -156,8 +156,8 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0005: preserve 0004 exactly; remove only the temporary 57 TEST badge.
-          # WebKit 1.12.1, landing-time GVNative prewarm, fast handoff, and timing stay unchanged.
+          # DEV 0006: preserve 0005 exactly; add persistent provider cookie handling only.
+          # WebKit 1.12.1, landing-time GVNative prewarm, fast handoff, clean browser, and timing stay unchanged.
           python - "$MAIN" <<'PY'
           from pathlib import Path
           import sys
@@ -172,6 +172,11 @@ jobs:
           assert old in s
           s=s.replace(old,old+'  @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);immersive();if(top!=null)top.post(this::fitTopShell);}\n',1)
 
+          # Add Android CookieManager; all existing 0005 WebView behavior stays intact.
+          needle='import android.webkit.WebView;\n'
+          assert needle in s
+          s=s.replace(needle,needle+'import android.webkit.CookieManager;\n',1)
+
           # Remove 0057 speculative-prerender imports. WebViewAssetLoader stays.
           for line in [
               'import androidx.webkit.WebViewCompat;\n',
@@ -181,6 +186,29 @@ jobs:
           ]:
               assert line in s
               s=s.replace(line,'',1)
+
+          # Provider cookie persistence: accept first-party + third-party cookies in the provider WebView.
+          old='    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);\n    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);\n'
+          assert old in s
+          new='    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);\n    CookieManager.getInstance().setAcceptCookie(true); CookieManager.getInstance().setAcceptThirdPartyCookies(v,true);\n    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);\n'
+          s=s.replace(old,new,1)
+
+          # Popup WebViews must use the same cookie policy for consent/login flows.
+          old='        WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);\n'
+          assert old in s
+          new='        WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); CookieManager.getInstance().setAcceptThirdPartyCookies(popup,true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);\n'
+          s=s.replace(old,new,1)
+
+          # Flush cookie state after provider pages finish loading so consent survives app restarts.
+          old='      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n'
+          assert old in s
+          new='      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n'
+          s=s.replace(old,new,1)
+
+          # Flush once more when Galaxy Viewer leaves the foreground.
+          old='  @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}\n'
+          assert old in s
+          s=s.replace(old,old+'  @Override protected void onPause(){CookieManager.getInstance().flush();super.onPause();}\n',1)
 
           # Launch behavior: normal hosted viewer + provider deep-link, no prerender mode.
           old='    if(launchUrl!=null&&launchPrewarm(getIntent())){ prewarmProvider(launchUrl); moveTaskToBack(true); }\n    else { launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); } }\n'
@@ -252,6 +280,12 @@ jobs:
           ! grep -q 'launchPrewarm' "$MAIN"
           ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
           grep -q "androidx.webkit:webkit:1.12.1" "$ROOT/app/build.gradle"
+          grep -q 'import android.webkit.CookieManager;' "$MAIN"
+          grep -q 'setAcceptCookie(true)' "$MAIN"
+          grep -q 'setAcceptThirdPartyCookies(v,true)' "$MAIN"
+          grep -q 'setAcceptThirdPartyCookies(popup,true)' "$MAIN"
+          grep -q 'CookieManager.getInstance().flush();' "$MAIN"
+          grep -q '@Override protected void onPause(){CookieManager.getInstance().flush();super.onPause();}' "$MAIN"
           ! grep -q '57 TEST' "$MAIN"
           ! grep -q 'test57' "$MAIN"
           test ! -e "$ROOT/app/src/main/assets/index.html"
@@ -273,7 +307,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0006.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -283,7 +317,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0006.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -291,8 +325,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0005
+          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0006
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0005.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0006.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0006.apk.sha256
           retention-days: 30
