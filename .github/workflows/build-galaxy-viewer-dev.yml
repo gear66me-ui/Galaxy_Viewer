@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.12 APK 0010 Proven Handoff
-# DEV 0057: APK 0010 restores the proven APK 0008 provider handoff exactly; only build identity changes. Side-by-side package; production untouched.
+name: Build Galaxy Viewer DEV 0057 WebKit 1.12 APK 0011 Double Buffer
+# DEV 0057: APK 0011 double-buffers provider WebViews so a new galaxy preloads off-screen and atomically replaces the old site. Side-by-side package; production untouched.
 
 on:
   push:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 65
-              versionName 'APK-0010-DEV-0057-WEBKIT112-8'
+              versionCode 66
+              versionName 'APK-0011-DEV-0057-WEBKIT112-9'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
@@ -156,7 +156,7 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0010: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
+          # DEV 0011: double-buffered provider handoff; old provider remains visible until the staged provider commits.
           # When the hosted top shell reloads after a prewarmed provider is already ready, immediately repopulate its browser state.
           python - "$MAIN" <<'PY'
           from pathlib import Path
@@ -164,7 +164,7 @@ jobs:
           p=Path(sys.argv[1])
           s=p.read_text()
 
-          # Tablet fix 1: keep the Activity/WebViews alive across freeform-window resize.
+          # Tablet lifetime / resize support.
           needle="import android.content.Intent;\n"
           assert needle in s
           s=s.replace(needle, needle+"import android.content.res.Configuration;\n", 1)
@@ -172,12 +172,12 @@ jobs:
           assert old in s
           s=s.replace(old,old+'  @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);immersive();if(top!=null)top.post(this::fitTopShell);}\n',1)
 
-          # Add Android CookieManager; all existing 0005 WebView behavior stays intact.
+          # Cookie persistence + provider load error callback.
           needle='import android.webkit.WebView;\n'
           assert needle in s
           s=s.replace(needle,needle+'import android.webkit.CookieManager;\nimport android.webkit.WebResourceError;\n',1)
 
-          # Remove 0057 speculative-prerender imports. WebViewAssetLoader stays.
+          # APK 0011 uses ordinary WebView loading into a hidden staging card, not speculative-prerender APIs.
           for line in [
               'import androidx.webkit.WebViewCompat;\n',
               'import androidx.webkit.WebViewFeature;\n',
@@ -187,129 +187,214 @@ jobs:
               assert line in s
               s=s.replace(line,'',1)
 
-          # APK 0010 / proven 0008: if the hosted top shell finishes after the provider already loaded,
-          # immediately repopulate URL/provider state instead of leaving its default LOADING… text.
+          # Resync hosted browser chrome whenever its top shell reloads.
           old='          fitTopShell();\n        }\n      }\n    }); return v;\n'
           assert old in s
           new='          fitTopShell();\n          if(browserMode)syncShell();\n        }\n      }\n    }); return v;\n'
           s=s.replace(old,new,1)
 
-          # Track prewarm request separately from actual committed/ready content.
+          # Two provider cards: web = currently visible provider, warmWeb = hidden next provider.
+          old='  private WebView top, web, bottom, viewerWeb;\n'
+          assert old in s
+          s=s.replace(old,'  private WebView top, web, warmWeb, bottom, viewerWeb;\n',1)
+
           old='  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="";\n'
           assert old in s
-          new='  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", prewarmCommittedUrl="";\n  private boolean prewarmLoading=false, prewarmFailed=false;\n'
+          new=('  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\n'
+               '  private String warmRequestedUrl="", warmCommittedUrl="", warmProviderIcon="";\n'
+               '  private boolean warmLoading=false, warmReady=false;\n')
           s=s.replace(old,new,1)
 
-          # Provider cookie persistence: accept first-party + third-party cookies in the provider WebView.
+          # Create both provider cards. The warm card is always underneath/transparent until promoted.
+          old='    top=shell(); web=provider(); bottom=shell();\n'
+          assert old in s
+          s=s.replace(old,'    top=shell(); web=provider(); warmWeb=provider(); bottom=shell();\n',1)
+
+          old=('    web.setBackgroundColor(Color.TRANSPARENT);\n'
+               '    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));\n'
+               '    GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);\n'
+               '    frame.addView(web,wp);\n')
+          assert old in s
+          new=('    web.setBackgroundColor(Color.TRANSPARENT); warmWeb.setBackgroundColor(Color.TRANSPARENT);\n'
+               '    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));\n'
+               '    FrameLayout.LayoutParams wwp=new FrameLayout.LayoutParams(-1,-1); wwp.setMargins(dp(2),dp(2),dp(2),dp(2));\n'
+               '    GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);\n'
+               '    GradientDrawable warmClip=new GradientDrawable(); warmClip.setColor(Color.TRANSPARENT); warmClip.setCornerRadius(dp(8)); warmWeb.setBackground(warmClip); warmWeb.setOutlineProvider(ViewOutlineProvider.BACKGROUND); warmWeb.setClipToOutline(true);\n'
+               '    warmWeb.setAlpha(0f); frame.addView(warmWeb,wwp); frame.addView(web,wp);\n')
+          s=s.replace(old,new,1)
+
+          # Remove only the temporary red 57 TEST badge.
+          badge_start=s.index('    TextView test57=new TextView(this);')
+          badge_end=s.index('    LinearLayout.LayoutParams fp=',badge_start)
+          assert badge_start>=0 and badge_end>badge_start
+          s=s[:badge_start]+s[badge_end:]
+
+          # Provider cookie persistence applies to both provider cards.
           old='    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);\n    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);\n'
           assert old in s
           new='    WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);\n    CookieManager.getInstance().setAcceptCookie(true); CookieManager.getInstance().setAcceptThirdPartyCookies(v,true);\n    s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);\n'
           s=s.replace(old,new,1)
 
-          # Popup WebViews must use the same cookie policy for consent/login flows.
           old='        WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);\n'
           assert old in s
           new='        WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); CookieManager.getInstance().setAcceptThirdPartyCookies(popup,true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);\n'
           s=s.replace(old,new,1)
 
-          # Provider readiness is recorded only after the main document commits/finishes.
+          # Provider callbacks distinguish the visible card from the hidden staging card.
           old='      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n'
           assert old in s
-          new=('      @Override public void onPageCommitVisible(WebView view,String url){ if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} }\n'
-               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(prewarmLoading&&request!=null&&request.isForMainFrame()){prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";} }\n'
-               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n')
+          new=('      @Override public void onPageCommitVisible(WebView view,String url){ if(view==warmWeb)markWarmReady(view,url); }\n'
+               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(view==warmWeb&&warmLoading&&request!=null&&request.isForMainFrame()){warmLoading=false;warmReady=false;warmCommittedUrl="";} }\n'
+               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(view==warmWeb)markWarmReady(view,url); if(view==web&&browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n')
           s=s.replace(old,new,1)
 
-          # Flush once more when Galaxy Viewer leaves the foreground.
+          # Flush cookies when leaving foreground.
           old='  @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}\n'
           assert old in s
           s=s.replace(old,old+'  @Override protected void onPause(){CookieManager.getInstance().flush();super.onPause();}\n',1)
 
-          # Launch behavior: normal hosted viewer + provider deep-link, no prerender mode.
+          # Normal app launch only; landing-time provider warming comes from GVNative.prewarm().
           old='    if(launchUrl!=null&&launchPrewarm(getIntent())){ prewarmProvider(launchUrl); moveTaskToBack(true); }\n    else { launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); } }\n'
           assert old in s
           s=s.replace(old,'    launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); }\n',1)
 
-          # Remove launch-time prewarm mode; landing-time prewarm has explicit lifecycle state.
+          # Replace the old single-WebView prewarm with a true two-card staging system.
           start=s.index('  private boolean launchPrewarm(Intent intent){')
           end=s.index('  private String launchProviderIcon(Intent intent){',start)
-          replacement=('  private void prewarmProvider(String u){\n'
-                       '    if(u==null||!u.startsWith("https://"))return;\n'
-                       '    String current=web==null?null:web.getUrl();\n'
-                       '    boolean currentReady=u.equals(prewarmReadyUrl)&&current!=null&&!current.isEmpty()&&!"about:blank".equals(current)&&(current.equals(prewarmCommittedUrl)||current.equals(u));\n'
-                       '    if(u.equals(prewarmedUrl)&&!prewarmFailed&&(prewarmLoading||currentReady))return;\n'
-                       '    prewarmedUrl=u;prewarmReadyUrl="";prewarmCommittedUrl="";prewarmLoading=true;prewarmFailed=false;\n'
-                       '    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n'
-                       '    if(web!=null)web.loadUrl(u);\n'
-                       '  }\n')
+          assert start>=0 and end>start
+          replacement=r'''  private boolean validProviderPage(WebView v){
+            if(v==null)return false; String u=v.getUrl(); return u!=null&&!u.isEmpty()&&!"about:blank".equals(u);
+          }
+          private void showBrowserLayer(){
+            if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}
+            if(web!=null){web.setAlpha(1f);web.bringToFront();web.requestFocus();}
+            immersive();
+          }
+          private void markWarmReady(WebView view,String url){
+            if(view!=warmWeb||!warmLoading||url==null||url.isEmpty()||"about:blank".equals(url))return;
+            String current=view.getUrl();
+            if(current==null||!url.equals(current))return;
+            warmCommittedUrl=url; warmLoading=false; warmReady=true;
+            if(browserMode&&!pendingProviderUrl.isEmpty()&&pendingProviderUrl.equals(warmRequestedUrl)){
+              activateWarmProvider();
+            }
+          }
+          private void activateWarmProvider(){
+            if(!warmReady||warmWeb==null)return;
+            WebView oldVisible=web;
+            web=warmWeb;
+            warmWeb=oldVisible;
+            web.setAlpha(1f); web.bringToFront();
+            warmWeb.setAlpha(0f);
+            sourceUrl=warmCommittedUrl.isEmpty()?warmRequestedUrl:warmCommittedUrl;
+            providerHomeUrl=warmRequestedUrl;
+            providerIcon=warmProviderIcon;
+            pendingProviderUrl=""; pendingProviderIcon="";
+            warmRequestedUrl=""; warmCommittedUrl=""; warmProviderIcon="";
+            warmLoading=false; warmReady=false;
+            clearProviderEntryHistory=true;
+            try{web.clearHistory();}catch(Exception ignored){}
+            clearProviderEntryHistory=false;
+            syncShell();
+            if(browserMode)showBrowserLayer();
+          }
+          private void prewarmProvider(String u){
+            if(u==null||!u.startsWith("https://"))return;
+            if(u.equals(warmRequestedUrl)&&(warmLoading||warmReady))return;
+            warmRequestedUrl=u; warmCommittedUrl=""; warmProviderIcon=""; warmReady=false; warmLoading=true;
+            if(warmWeb!=null){warmWeb.setAlpha(0f);warmWeb.loadUrl(u);}
+          }
+'''
           s=s[:start]+replacement+s[end:]
 
-          # Browser 0057 fast provider handoff: visible immediately, no 4-second cover.
+          # Pointer/config fetch now refreshes browser chrome only.
+          # It must never inject Browser-0026's default Spitzer source into either provider card.
+          start=s.index('  private void fetchPointer(){')
+          end=s.index('  private boolean validProviderPage(WebView v){',start)
+          assert start>=0 and end>start
+          replacement=r'''  private void fetchPointer(){
+            new Thread(()->{try{
+              long t=System.currentTimeMillis();
+              JSONObject p=getJson(POINTER+"?gv="+t);
+              String config=p.getString("config");
+              JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
+              String th=c.getString("topShell"), bh=c.getString("bottomShell");
+              runOnUiThread(()->{
+                top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
+                bottom.loadUrl(bh+(bh.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
+                if(browserMode)syncShell();
+              });
+            }catch(Exception e){ runOnUiThread(()->top.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
+          }
+'''
+          s=s[:start]+replacement+s[end:]
+
+          # Atomic handoff policy:
+          # - if the staged target is ready, swap immediately;
+          # - if it is still loading, show the previous provider rather than black;
+          # - if this is the first provider and no old page exists, keep the viewer visible until staging commits.
           old=("    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);\n"
                "    if(web!=null&&!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);\n"
                "    fetchPointer();\n"
                "    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000);\n")
           assert old in s
-          new=("    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}\n"
-               "    if(web!=null){web.requestFocus();String current=web.getUrl();boolean currentReady=u.equals(prewarmReadyUrl)&&current!=null&&!current.isEmpty()&&!\"about:blank\".equals(current)&&(current.equals(prewarmCommittedUrl)||current.equals(u));boolean currentLoading=u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed&&current!=null&&!current.isEmpty()&&!\"about:blank\".equals(current);if(!(currentReady||currentLoading)){prewarmedUrl=u;prewarmReadyUrl=\"\";prewarmCommittedUrl=\"\";prewarmLoading=true;prewarmFailed=false;web.loadUrl(u);}}\n"
+          new=("    pendingProviderUrl=u; pendingProviderIcon=icon==null?\"\":icon;\n"
+               "    if(!u.equals(warmRequestedUrl)){prewarmProvider(u);}\n"
+               "    warmProviderIcon=pendingProviderIcon;\n"
                "    fetchPointer();\n"
-               "    immersive();\n")
+               "    if(u.equals(warmRequestedUrl)&&warmReady){activateWarmProvider();}\n"
+               "    else if(validProviderPage(web)){showBrowserLayer();}\n"
+               "    else if(browserLayer!=null){browserLayer.setVisibility(View.GONE);}\n")
           s=s.replace(old,new,1)
 
-          # New intents open directly; no prerender branch.
+          # openProvider must not overwrite the visible page metadata before the staged page is promoted.
+          old='    browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u;\n'
+          assert old in s
+          s=s.replace(old,'    browserMode=true; clearProviderEntryHistory=false;\n',1)
+
+          # New intents open directly; no launch-time prerender mode.
           old='  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null){ if(launchPrewarm(intent)){prewarmProvider(u);moveTaskToBack(true);}else openProvider(u,launchProviderIcon(intent)); } }\n'
           assert old in s
           s=s.replace(old,'  @Override protected void onNewIntent(Intent intent){ super.onNewIntent(intent); setIntent(intent); String u=launchSourceUrl(intent); if(u!=null)openProvider(u,launchProviderIcon(intent)); }\n',1)
 
-          # Tablet fix 2: Android Back must not cold-launch Galaxy Viewer.
+          # Android Back returns to the already-running viewer; it never cold-launches it.
           old='  @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}\n'
           assert old in s
           s=s.replace(old,'  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n',1)
 
-          # Remove only the temporary red 57 TEST badge from the browser viewport.
-          badge_start=s.index('    TextView test57=new TextView(this);')
-          badge_end=s.index('    LinearLayout.LayoutParams fp=',badge_start)
-          s=s[:badge_start]+s[badge_end:]
-
           p.write_text(s)
           PY
 
-          # Nanoscopic gates: APK 0010 restores proven 0008 fast handoff + 1.12.1 + landing-only native WebView prewarm.
+          # Nanoscopic gates: APK 0011 double-buffered handoff + 1.12.1 + landing-only native WebView prewarm.
           grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
-          grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
+          grep -q 'private WebView top, web, warmWeb, bottom, viewerWeb;' "$MAIN"
+          grep -q 'warmWeb=provider()' "$MAIN"
+          grep -q 'private void markWarmReady(WebView view,String url)' "$MAIN"
+          grep -q 'private void activateWarmProvider()' "$MAIN"
+          grep -q 'private void prewarmProvider(String u)' "$MAIN"
+          grep -q 'if(u.equals(warmRequestedUrl)&&warmReady){activateWarmProvider();}' "$MAIN"
+          grep -q 'else if(validProviderPage(web)){showBrowserLayer();}' "$MAIN"
+          grep -q 'warmWeb.setAlpha(0f)' "$MAIN"
+          grep -q 'web=warmWeb' "$MAIN"
+          grep -q 'warmWeb=oldVisible' "$MAIN"
+          grep -q 'view==warmWeb' "$MAIN"
+          grep -q 'if(view==web&&browserMode)' "$MAIN"
+          grep -q 'viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
+          grep -q '@JavascriptInterface public void prewarm(String url)' "$MAIN"
           grep -q 'if(browserMode)syncShell();' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
-          grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
-          grep -q 'boolean currentReady=u.equals(prewarmReadyUrl)' "$MAIN"
-          grep -q 'boolean currentLoading=u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed' "$MAIN"
-          grep -q 'viewerWeb=viewer()' "$MAIN"
-          grep -q 'openProvider' "$MAIN"
-          grep -q 'returnToViewer' "$MAIN"
-          grep -q 'onCreateWindow' "$MAIN"
-          grep -q 'WebViewAssetLoader' "$MAIN"
-          grep -q 'viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
-          ! grep -q 'WebViewCompat' "$MAIN"
-          ! grep -q 'WebViewFeature' "$MAIN"
-          ! grep -q 'PrerenderOperationCallback' "$MAIN"
-          ! grep -q 'PrerenderException' "$MAIN"
-          grep -q 'private void prewarmProvider(String u)' "$MAIN"
-          grep -q 'prewarmLoading=true;prewarmFailed=false' "$MAIN"
-          grep -q 'onPageCommitVisible(WebView view,String url)' "$MAIN"
-          grep -q 'request.isForMainFrame()' "$MAIN"
-          grep -q 'if(web!=null)web.loadUrl(u);' "$MAIN"
-          grep -q '@JavascriptInterface public void prewarm(String url)' "$MAIN"
-          ! grep -q 'launchPrewarm' "$MAIN"
-          ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
-          grep -q "androidx.webkit:webkit:1.12.1" "$ROOT/app/build.gradle"
-          grep -q 'import android.webkit.CookieManager;' "$MAIN"
-          grep -q 'import android.webkit.WebResourceError;' "$MAIN"
-          grep -q 'setAcceptCookie(true)' "$MAIN"
-          grep -q 'setAcceptThirdPartyCookies(v,true)' "$MAIN"
-          grep -q 'setAcceptThirdPartyCookies(popup,true)' "$MAIN"
+          grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
           grep -q 'CookieManager.getInstance().flush();' "$MAIN"
-          grep -q '@Override protected void onPause(){CookieManager.getInstance().flush();super.onPause();}' "$MAIN"
+          grep -q 'setAcceptThirdPartyCookies(v,true)' "$MAIN"
+          grep -q "androidx.webkit:webkit:1.12.1" "$ROOT/app/build.gradle"
+          ! grep -q 'launchPrewarm' "$MAIN"
+          ! grep -q 'WebViewCompat' "$MAIN"
+          ! grep -q 'PrerenderOperationCallback' "$MAIN"
+          ! grep -q 'prewarmedUrl' "$MAIN"
+          ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null)' "$MAIN"
+          ! grep -q 'if(web.getUrl()==null||web.getUrl().isEmpty()||"about:blank".equals(web.getUrl())) web.loadUrl(sourceUrl);' "$MAIN"
           ! grep -q '57 TEST' "$MAIN"
           ! grep -q 'test57' "$MAIN"
           test ! -e "$ROOT/app/src/main/assets/index.html"
@@ -331,7 +416,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0010.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0011.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -341,7 +426,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0010.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT112-0011.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -349,8 +434,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0010
+          name: Galaxy-Viewer-DEV-0057-WEBKIT112-0011
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0010.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT112-0010.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0011.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT112-0011.apk.sha256
           retention-days: 30
