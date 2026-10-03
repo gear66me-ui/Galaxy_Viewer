@@ -1,11 +1,11 @@
 {
   "release": "RC-V1.0.0",
-  "sourceBranch": "beta",
-  "sourceCommit": "7b7bc1e850434857d187a2391aa82a4a61ce75c3",
-  "build": "0001",
-  "policy": "allowlist-only; no production runtime dependency may point to beta",
+  "sourceBranch": "release",
+  "sourceCommit": "d4a3941768dae3fb29e558c026ac90c859ec35e5",
+  "build": "0050",
+  "policy": "allowlist-only; production runtime dependencies are contained in or explicitly sourced from release; no runtime dependency may point to another repository branch",
   "runtime": [
-    "viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js",
+    "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0005.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
@@ -145,5 +145,22 @@
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html",
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png",
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
-  ]
+  ],
+  "launcher": [
+    "viewer/releases/launch/Galaxy-Viewer-Launch/index.html"
+  ],
+  "webBrowser": [
+    "viewer/Web-Browser/web-browser-current.json",
+    "viewer/Web-Browser/Web-Browser-0026/config.json",
+    "viewer/Web-Browser/Web-Browser-0026/top.html",
+    "viewer/Web-Browser/Web-Browser-0026/bottom.html"
+  ],
+  "nativeContract": {
+    "testedApk": "APK-0008",
+    "androidPackage": "com.gear66me.galaxyviewer.lab",
+    "productionPackageTarget": "com.gear66me.galaxyviewer",
+    "androidxWebkit": "1.12.1",
+    "embeddedViewerPayload": false,
+    "embeddedBrowserPayload": false
+  }
 }
