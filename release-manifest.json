@@ -1,7 +1,7 @@
 {
   "release": "RC-V1.0.0",
   "sourceBranch": "release",
-  "sourceCommit": "e570bb3a9a075c4ddc4f1ba7301860ae6d5f00f5",
+  "sourceCommit": "64573207031a01a64b0b646c09819a7d0272ba5e",
   "build": "0053",
   "policy": "allowlist-only; production runtime dependencies are contained in or explicitly sourced from release; no runtime dependency may point to another repository branch",
   "runtime": [
