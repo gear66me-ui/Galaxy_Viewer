@@ -1,0 +1,2075 @@
+{
+  "schema": "gv-spitzer-avm-discovery-0001",
+  "purpose": "Clean-room Spitzer image-native AVM discovery. No live runtime geometry imported.",
+  "sourceIds": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+  "admissionRule": "Record admitted only when AstroPix exposes complete image-native WCS/AVM plus an original/source asset URL.",
+  "summary": {
+    "sourceRecords": 67,
+    "completeImageAvm": 58,
+    "partialImageAvm": 5,
+    "notFound": 4,
+    "errors": 0
+  },
+  "records": [
+    {
+      "archiveId": "ssc2009-03a1",
+      "name": "Pinwheel Galaxy",
+      "sourceIndex": 0,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2009-03a1",
+      "httpStatus": 200,
+      "status": "PARTIAL_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0927/ssc2009-03a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0927/ssc2009-03a1.tif",
+      "coordinateFrame": "Equinox",
+      "equinox": "Reference",
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": "Quality",
+      "quality": "Good",
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2009-03b2",
+      "name": "Pinwheel Galaxy",
+      "sourceIndex": 1,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2009-03b2",
+      "httpStatus": 500,
+      "status": "NOT_FOUND",
+      "resourceUrl": null,
+      "sourceAssetUrl": null,
+      "coordinateFrame": null,
+      "equinox": null,
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": null,
+      "quality": null,
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2005-20a3",
+      "name": "Andromeda Galaxy",
+      "sourceIndex": 2,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2005-20a3",
+      "httpStatus": 500,
+      "status": "NOT_FOUND",
+      "resourceUrl": null,
+      "sourceAssetUrl": null,
+      "coordinateFrame": null,
+      "equinox": null,
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": null,
+      "quality": null,
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2024-02a",
+      "name": "Andromeda Galaxy",
+      "sourceIndex": 3,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2024-02a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/30/original/M31_IRAC-MIPS.tif",
+      "sourceAssetUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/30/original/M31_IRAC-MIPS.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        10.684685,
+        41.26904
+      ],
+      "referenceDimension": [
+        16151.0,
+        6971.0
+      ],
+      "referencePixel": [
+        8239.26,
+        2657.89
+      ],
+      "scale": [
+        -0.000239631,
+        0.000239631
+      ],
+      "rotation": 49.84,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2024-02b",
+      "name": "Andromeda Galaxy",
+      "sourceIndex": 4,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2024-02b",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/31/original/M31_Dust.tif",
+      "sourceAssetUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/31/original/M31_Dust.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        10.684685,
+        41.26904
+      ],
+      "referenceDimension": [
+        16151.0,
+        6971.0
+      ],
+      "referencePixel": [
+        8239.26,
+        2657.89
+      ],
+      "scale": [
+        -0.000239631,
+        0.000239631
+      ],
+      "rotation": 49.84,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2004-19a2",
+      "name": "Whirlpool Galaxy",
+      "sourceIndex": 5,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-19a2",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4681/ssc2004-19a2.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4681/ssc2004-19a2.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        202.4691265871508,
+        47.203606280587245
+      ],
+      "referenceDimension": [
+        1551.0,
+        2142.0
+      ],
+      "referencePixel": [
+        776.5,
+        1072.0
+      ],
+      "scale": [
+        -0.000105978,
+        0.000105978
+      ],
+      "rotation": 0.3,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-11a",
+      "name": "Whirlpool Galaxy",
+      "sourceIndex": 6,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-11a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/6437/ssc2019-11a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/6437/ssc2019-11a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        202.4706835,
+        47.2089107
+      ],
+      "referenceDimension": [
+        2000.0,
+        3100.0
+      ],
+      "referencePixel": [
+        1001.0,
+        1551.0
+      ],
+      "scale": [
+        -8.53832e-05,
+        8.5383245e-05
+      ],
+      "rotation": -0.41,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-11b",
+      "name": "Whirlpool Galaxy",
+      "sourceIndex": 7,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-11b",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/6489/ssc2019-11b.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/6489/ssc2019-11b.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        202.4706835,
+        47.2089107
+      ],
+      "referenceDimension": [
+        2000.0,
+        3100.0
+      ],
+      "referencePixel": [
+        1001.0,
+        1551.0
+      ],
+      "scale": [
+        -8.53832e-05,
+        8.5383245e-05
+      ],
+      "rotation": -0.41,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-15a",
+      "name": "Bode's Galaxy",
+      "sourceIndex": 8,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-15a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7143/ssc2019-15a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7143/ssc2019-15a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.8873235,
+        69.0646392
+      ],
+      "referenceDimension": [
+        3840.0,
+        3840.0
+      ],
+      "referencePixel": [
+        1921.0,
+        1921.0
+      ],
+      "scale": [
+        -0.000104156,
+        0.00010415599
+      ],
+      "rotation": -30.02,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-15b",
+      "name": "Bode's Galaxy",
+      "sourceIndex": 9,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-15b",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7156/ssc2019-15b.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7156/ssc2019-15b.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.8873235,
+        69.0646392
+      ],
+      "referenceDimension": [
+        3840.0,
+        3840.0
+      ],
+      "referencePixel": [
+        1921.0,
+        1921.0
+      ],
+      "scale": [
+        -0.000104156,
+        0.00010415599
+      ],
+      "rotation": -30.02,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-15c",
+      "name": "Bode's Galaxy",
+      "sourceIndex": 10,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-15c",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7169/ssc2019-15c.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7169/ssc2019-15c.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.8873235,
+        69.0646392
+      ],
+      "referenceDimension": [
+        3840.0,
+        3840.0
+      ],
+      "referencePixel": [
+        1921.0,
+        1921.0
+      ],
+      "scale": [
+        -0.000104156,
+        0.00010415599
+      ],
+      "rotation": -30.02,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-15d",
+      "name": "Bode's Galaxy",
+      "sourceIndex": 11,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-15d",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7182/ssc2019-15d.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/7182/ssc2019-15d.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.8873235,
+        69.0646392
+      ],
+      "referenceDimension": [
+        3840.0,
+        3840.0
+      ],
+      "referencePixel": [
+        1921.0,
+        1921.0
+      ],
+      "scale": [
+        -0.000104156,
+        0.00010415599
+      ],
+      "rotation": -30.02,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-019b",
+      "name": "Tadpole Galaxy",
+      "sourceIndex": 12,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-019b",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6484/sig05-019b.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6484/sig05-019b.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        241.538422982,
+        55.4693978528
+      ],
+      "referenceDimension": [
+        561.0,
+        561.0
+      ],
+      "referencePixel": [
+        472.68371582,
+        446.216424942
+      ],
+      "scale": [
+        -0.00016676038359346,
+        0.00016676038359346
+      ],
+      "rotation": -44.108980238983,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2005-11a2",
+      "name": "Sombrero Galaxy",
+      "sourceIndex": 13,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2005-11a2",
+      "httpStatus": 500,
+      "status": "NOT_FOUND",
+      "resourceUrl": null,
+      "sourceAssetUrl": null,
+      "coordinateFrame": null,
+      "equinox": null,
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": null,
+      "quality": null,
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2005-11a3",
+      "name": "Sombrero Galaxy",
+      "sourceIndex": 14,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2005-11a3",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1821/ssc2005-11a3.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1821/ssc2005-11a3.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        189.941259706,
+        -11.5869704984
+      ],
+      "referenceDimension": [
+        3000.0,
+        1681.0
+      ],
+      "referencePixel": [
+        2587.89355469,
+        1425.447177887
+      ],
+      "scale": [
+        -5.3083114895765e-05,
+        5.3083114895765e-05
+      ],
+      "rotation": -5.0978925445378,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2012-06a",
+      "name": "Sombrero Galaxy",
+      "sourceIndex": 15,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2012-06a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/8577/ssc2012-06a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/8577/ssc2012-06a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        189.9980372,
+        -11.6228372
+      ],
+      "referenceDimension": [
+        1970.0,
+        2400.0
+      ],
+      "referencePixel": [
+        986.0,
+        1201.0
+      ],
+      "scale": [
+        0.000104102,
+        0.00010410203
+      ],
+      "rotation": -22.33,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2004-12a1",
+      "name": "NGC 7331",
+      "sourceIndex": 16,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-12a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4618/ssc2004-12a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4618/ssc2004-12a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        339.284825313,
+        34.4843871516
+      ],
+      "referenceDimension": [
+        1239.0,
+        805.0
+      ],
+      "referencePixel": [
+        236.567970276,
+        329.386547089
+      ],
+      "scale": [
+        -0.00016946215848181,
+        0.00016946215848181
+      ],
+      "rotation": 101.08156796962,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2004-12a2",
+      "name": "NGC 7331",
+      "sourceIndex": 17,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-12a2",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5169/ssc2004-12a2.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5169/ssc2004-12a2.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        339.284825313,
+        34.4843871516
+      ],
+      "referenceDimension": [
+        1239.0,
+        805.0
+      ],
+      "referencePixel": [
+        236.567970276,
+        329.386547089
+      ],
+      "scale": [
+        -0.00016946215848181,
+        0.00016946215848181
+      ],
+      "rotation": 101.08156796962,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2010-02a1",
+      "name": "Small Magellanic Cloud",
+      "sourceIndex": 18,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2010-02a1",
+      "httpStatus": 200,
+      "status": "PARTIAL_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0005/2557/ssc2010-02a1.jpg",
+      "sourceAssetUrl": null,
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        15.948117957484952,
+        -72.81919685675842
+      ],
+      "referenceDimension": [
+        7801.0,
+        7021.0
+      ],
+      "referencePixel": [
+        3901.0,
+        3511.0
+      ],
+      "scale": [
+        -0.00055495350911,
+        0.00055495350911
+      ],
+      "rotation": 158.642368838,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2012-01b",
+      "name": "Small Magellanic Cloud",
+      "sourceIndex": 19,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2012-01b",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/4509/ssc2012-01b.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/4509/ssc2012-01b.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        22.19452277935,
+        -72.58534463794
+      ],
+      "referenceDimension": [
+        10000.0,
+        5000.0
+      ],
+      "referencePixel": [
+        5028.0,
+        3454.0
+      ],
+      "scale": [
+        -0.0008333333333333,
+        0.0008333333333333
+      ],
+      "rotation": -12.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2006-11a1",
+      "name": "NGC 2207 and IC 2163",
+      "sourceIndex": 20,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2006-11a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1496/ssc2006-11a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1496/ssc2006-11a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        94.0880793393,
+        -21.3544901254
+      ],
+      "referenceDimension": [
+        1010.0,
+        1010.0
+      ],
+      "referencePixel": [
+        466.518630981,
+        238.415206909
+      ],
+      "scale": [
+        -8.3005768392424e-05,
+        8.3005768392424e-05
+      ],
+      "rotation": -148.66332014709,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2006-11b1",
+      "name": "NGC 2207 and IC 2163",
+      "sourceIndex": 21,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2006-11b1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2662/ssc2006-11b1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2662/ssc2006-11b1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        94.1045896,
+        -21.3765757
+      ],
+      "referenceDimension": [
+        2905.0,
+        1486.0
+      ],
+      "referencePixel": [
+        1453.5,
+        744.0
+      ],
+      "scale": [
+        -2.78057e-05,
+        2.78057e-05
+      ],
+      "rotation": -190.7,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2006-17a1",
+      "name": "Large Magellanic Cloud",
+      "sourceIndex": 22,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2006-17a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2843/ssc2006-17a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2843/ssc2006-17a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        79.69050890264927,
+        -68.67825503717084
+      ],
+      "referenceDimension": [
+        13250.0,
+        13250.0
+      ],
+      "referencePixel": [
+        6625.0,
+        6625.0
+      ],
+      "scale": [
+        -0.00055412185026,
+        0.00055412185026
+      ],
+      "rotation": -26.9519489374,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2006-17b1",
+      "name": "Large Magellanic Cloud",
+      "sourceIndex": 23,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2006-17b1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2029/ssc2006-17b1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/2029/ssc2006-17b1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        79.69050890264927,
+        -68.67825503717084
+      ],
+      "referenceDimension": [
+        13250.0,
+        13250.0
+      ],
+      "referencePixel": [
+        6625.0,
+        6625.0
+      ],
+      "scale": [
+        -0.00055412185026,
+        0.00055412185026
+      ],
+      "rotation": -26.9519489374,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2009-15a2",
+      "name": "NGC 4145",
+      "sourceIndex": 24,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2009-15a2",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0004/6963/ssc2009-15a2.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0004/6963/ssc2009-15a2.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        182.50564588192321,
+        39.884258607403424
+      ],
+      "referenceDimension": [
+        1064.0,
+        1064.0
+      ],
+      "referencePixel": [
+        532.0,
+        532.0
+      ],
+      "scale": [
+        -0.000166667,
+        0.000166667
+      ],
+      "rotation": -119.9193,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2004-14a2",
+      "name": "Antennae Galaxies",
+      "sourceIndex": 25,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-14a2",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4162/ssc2004-14a2.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4162/ssc2004-14a2.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        180.47148829353287,
+        -18.87698470152815
+      ],
+      "referenceDimension": [
+        1125.0,
+        1125.0
+      ],
+      "referencePixel": [
+        562.5,
+        562.5
+      ],
+      "scale": [
+        -6.422389796596829e-05,
+        6.422389796596829e-05
+      ],
+      "rotation": -4.462315922341702,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2004-14a3",
+      "name": "Antennae Galaxies",
+      "sourceIndex": 26,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-14a3",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3551/ssc2004-14a3.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3551/ssc2004-14a3.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        180.47148829353287,
+        -18.87698470152815
+      ],
+      "referenceDimension": [
+        1239.0,
+        805.0
+      ],
+      "referencePixel": [
+        562.5,
+        562.5
+      ],
+      "scale": [
+        -6.422389796596829e-05,
+        6.422389796596829e-05
+      ],
+      "rotation": -4.462315922341702,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2005-19a2",
+      "name": "HUDF-JD2",
+      "sourceIndex": 27,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2005-19a2",
+      "httpStatus": 500,
+      "status": "NOT_FOUND",
+      "resourceUrl": null,
+      "sourceAssetUrl": null,
+      "coordinateFrame": null,
+      "equinox": null,
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": null,
+      "quality": null,
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2023-01b",
+      "name": "Phantom Galaxy",
+      "sourceIndex": 28,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2023-01b",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/23/original/ssc2023-01b.tif",
+      "sourceAssetUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/23/original/ssc2023-01b.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        24.1739767,
+        15.7838602
+      ],
+      "referenceDimension": [
+        1850.0,
+        1850.0
+      ],
+      "referencePixel": [
+        926.0,
+        926.0
+      ],
+      "scale": [
+        -0.000104317,
+        0.00010431737
+      ],
+      "rotation": 20.9,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2013-07a1",
+      "name": "Sculptor Galaxy",
+      "sourceIndex": 29,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2013-07a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/6225/ssc2013-07a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/6225/ssc2013-07a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        11.8925589,
+        -25.2995642
+      ],
+      "referenceDimension": [
+        3200.0,
+        2700.0
+      ],
+      "referencePixel": [
+        1601.0,
+        1351.0
+      ],
+      "scale": [
+        0.000180108,
+        0.00018010829
+      ],
+      "rotation": 37.19,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2013-07a2",
+      "name": "Sculptor Galaxy",
+      "sourceIndex": 30,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2013-07a2",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/6238/ssc2013-07a2.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/6238/ssc2013-07a2.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        11.8925589,
+        -25.2995642
+      ],
+      "referenceDimension": [
+        3200.0,
+        2700.0
+      ],
+      "referencePixel": [
+        1601.0,
+        1351.0
+      ],
+      "scale": [
+        0.000180108,
+        0.00018010829
+      ],
+      "rotation": 37.19,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2013-07a3",
+      "name": "Sculptor Galaxy",
+      "sourceIndex": 31,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2013-07a3",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/6251/ssc2013-07a3.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0009/6251/ssc2013-07a3.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        11.8925589,
+        -25.2995642
+      ],
+      "referenceDimension": [
+        3200.0,
+        2700.0
+      ],
+      "referencePixel": [
+        1601.0,
+        1351.0
+      ],
+      "scale": [
+        0.000180108,
+        0.00018010829
+      ],
+      "rotation": 37.19,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2018-05a",
+      "name": "Penguin and Egg",
+      "sourceIndex": 32,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2018-05a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/3386/ssc2018-05a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/3386/ssc2018-05a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        144.430218241,
+        2.76364457164
+      ],
+      "referenceDimension": [
+        3368.0,
+        4426.0
+      ],
+      "referencePixel": [
+        1627.19211954,
+        2225.81169658
+      ],
+      "scale": [
+        -1.100459e-05,
+        1.100459e-05
+      ],
+      "rotation": 15.02854249673,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-03a",
+      "name": "Arp 86",
+      "sourceIndex": 33,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-03a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/5136/ssc2019-03a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/5136/ssc2019-03a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        356.7659,
+        29.4734
+      ],
+      "referenceDimension": [
+        1200.0,
+        1200.0
+      ],
+      "referencePixel": [
+        733.06463001818,
+        709.09970911051
+      ],
+      "scale": [
+        -6.49662e-05,
+        6.49662e-05
+      ],
+      "rotation": 108.69391631448,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-03c",
+      "name": "Arp 302",
+      "sourceIndex": 34,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-03c",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/5232/ssc2019-03c.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/5232/ssc2019-03c.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        224.251623,
+        24.61892
+      ],
+      "referenceDimension": [
+        1200.0,
+        1200.0
+      ],
+      "referencePixel": [
+        530.5486899524,
+        672.81718915749
+      ],
+      "scale": [
+        -5.384862e-05,
+        5.384862e-05
+      ],
+      "rotation": 53.92184552091,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2006-09a1",
+      "name": "Cigar Galaxy",
+      "sourceIndex": 35,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2006-09a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1718/ssc2006-09a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1718/ssc2006-09a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.96646951238017,
+        69.68083934094595
+      ],
+      "referenceDimension": [
+        1484.0,
+        1484.0
+      ],
+      "referencePixel": [
+        742.0,
+        742.0
+      ],
+      "scale": [
+        -0.00014140063540159966,
+        0.00014140063540159966
+      ],
+      "rotation": 57.2989092465,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2021-06b",
+      "name": "Mayall's Object",
+      "sourceIndex": 36,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2021-06b",
+      "httpStatus": 200,
+      "status": "PARTIAL_IMAGE_AVM",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/11/original/Arp148.tif",
+      "sourceAssetUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/11/original/Arp148.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        165.9720505,
+        40.8502446
+      ],
+      "referenceDimension": [
+        1780.0,
+        1001.0
+      ],
+      "referencePixel": [
+        891.0,
+        501.5
+      ],
+      "scale": [
+        -1.36806e-05,
+        1.3680649e-05
+      ],
+      "rotation": null,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2004-09a1",
+      "name": "Centaurus A",
+      "sourceIndex": 37,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-09a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4363/ssc2004-09a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4363/ssc2004-09a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        201.36134800478658,
+        -43.01853197960254
+      ],
+      "referenceDimension": [
+        1627.0,
+        1227.0
+      ],
+      "referencePixel": [
+        813.5,
+        613.5
+      ],
+      "scale": [
+        -0.00023963630211714662,
+        0.00023963630211714662
+      ],
+      "rotation": 361.0519794168134,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig09-004",
+      "name": "Triangulum Galaxy",
+      "sourceIndex": 38,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig09-004",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5386/sig09-004.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5386/sig09-004.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        23.485679,
+        30.667077
+      ],
+      "referenceDimension": [
+        2228.0,
+        3462.0
+      ],
+      "referencePixel": [
+        1114.0,
+        1731.0
+      ],
+      "scale": [
+        -0.000416666666666667,
+        0.000416666666666667
+      ],
+      "rotation": 0.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2009-08b1",
+      "name": "Triangulum Galaxy",
+      "sourceIndex": 39,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2009-08b1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0605/ssc2009-08b1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0605/ssc2009-08b1.tif",
+      "coordinateFrame": "FK5",
+      "equinox": "J2000",
+      "referenceValue": [
+        23.478836491889933,
+        30.65352710150256
+      ],
+      "referenceDimension": [
+        2800.0,
+        4300.0
+      ],
+      "referencePixel": [
+        2150.0,
+        1400.0
+      ],
+      "scale": [
+        -0.0003400314232781575,
+        0.0003400314232781575
+      ],
+      "rotation": 75.2,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2004-07b1",
+      "name": "NGC 300",
+      "sourceIndex": 40,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2004-07b1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5799/ssc2004-07b1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5799/ssc2004-07b1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        13.71774650887749,
+        -37.68314078426157
+      ],
+      "referenceDimension": [
+        708.0,
+        570.0
+      ],
+      "referencePixel": [
+        354.0,
+        285.0
+      ],
+      "scale": [
+        -0.00033865160901918337,
+        0.00033865160901918337
+      ],
+      "rotation": 319.55225575583086,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2009-06a1",
+      "name": "NGC 6240",
+      "sourceIndex": 41,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2009-06a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0252/ssc2009-06a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0252/ssc2009-06a1.tif",
+      "coordinateFrame": "FK5",
+      "equinox": "J2000",
+      "referenceValue": [
+        253.24887267,
+        2.40106323936
+      ],
+      "referenceDimension": [
+        3921.0,
+        3805.0
+      ],
+      "referencePixel": [
+        1960.5,
+        1902.5
+      ],
+      "scale": [
+        -1.39027e-05,
+        1.39027e-05
+      ],
+      "rotation": 74.65,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-006a",
+      "name": "Arp 107",
+      "sourceIndex": 42,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-006a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5650/sig05-006a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5650/sig05-006a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        163.0698306,
+        30.0619295
+      ],
+      "referenceDimension": [
+        363.0,
+        363.0
+      ],
+      "referencePixel": [
+        185.0,
+        173.5
+      ],
+      "scale": [
+        0.000160761,
+        0.000160761
+      ],
+      "rotation": 0.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2006-08a1",
+      "name": "Stephan's Quintet",
+      "sourceIndex": 43,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2006-08a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1942/ssc2006-08a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1942/ssc2006-08a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        339.0044257,
+        33.9666247
+      ],
+      "referenceDimension": [
+        1000.0,
+        1000.0
+      ],
+      "referencePixel": [
+        498.0,
+        490.0
+      ],
+      "scale": [
+        7.33514e-05,
+        7.33514e-05
+      ],
+      "rotation": 0.1,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2008-12b",
+      "name": "Zw II 96",
+      "sourceIndex": 44,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2008-12b",
+      "httpStatus": 200,
+      "status": "PARTIAL_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0852/ssc2008-12b.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/0852/ssc2008-12b.tif",
+      "coordinateFrame": "Equinox",
+      "equinox": "Reference",
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": "Quality",
+      "quality": "Good",
+      "admissionReady": false
+    },
+    {
+      "archiveId": "ssc2008-14a",
+      "name": "Pinwheel Galaxy",
+      "sourceIndex": 45,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2008-14a",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1211/ssc2008-14a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/1211/ssc2008-14a.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        210.801114,
+        54.348594
+      ],
+      "referenceDimension": [
+        2766.0,
+        2766.0
+      ],
+      "referencePixel": [
+        1383.0,
+        1383.0
+      ],
+      "scale": [
+        -0.000169444,
+        0.000169444
+      ],
+      "rotation": 35.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig12-008",
+      "name": "Messier 100",
+      "sourceIndex": 46,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig12-008",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/9993/sig12-008.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/9993/sig12-008.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        185.72903,
+        15.8223239
+      ],
+      "referenceDimension": [
+        1016.0,
+        1016.0
+      ],
+      "referencePixel": [
+        509.0,
+        509.0
+      ],
+      "scale": [
+        0.00020847,
+        0.00020846997
+      ],
+      "rotation": -30.48,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2023-04",
+      "name": "Messier 61",
+      "sourceIndex": 47,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2023-04",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/original/ssc2023-04.tif",
+      "sourceAssetUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/original/ssc2023-04.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        185.4788666,
+        4.473843
+      ],
+      "referenceDimension": [
+        1570.0,
+        1570.0
+      ],
+      "referencePixel": [
+        786.0,
+        786.0
+      ],
+      "scale": [
+        -8.34746e-05,
+        8.3474561e-05
+      ],
+      "rotation": -24.95,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-016",
+      "name": "Messier 66",
+      "sourceIndex": 48,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-016",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4125/sig05-016.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4125/sig05-016.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        170.074604576,
+        13.0000414367
+      ],
+      "referenceDimension": [
+        812.0,
+        812.0
+      ],
+      "referencePixel": [
+        331.064855576,
+        383.729011536
+      ],
+      "scale": [
+        -0.00020810035144692,
+        0.00020810035144692
+      ],
+      "rotation": 62.649086621018,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig11-017",
+      "name": "Southern Pinwheel Galaxy",
+      "sourceIndex": 49,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig11-017",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/3965/sig11-017.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0008/3965/sig11-017.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        204.2521783,
+        -29.8660905
+      ],
+      "referenceDimension": [
+        1800.0,
+        1800.0
+      ],
+      "referencePixel": [
+        901.0,
+        901.0
+      ],
+      "scale": [
+        -0.000208374,
+        0.00020837411
+      ],
+      "rotation": -24.97,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2009-14a1",
+      "name": "NGC 1097",
+      "sourceIndex": 50,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2009-14a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0004/2404/ssc2009-14a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0004/2404/ssc2009-14a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        41.57865850065575,
+        -30.273806791362663
+      ],
+      "referenceDimension": [
+        2056.0,
+        2056.0
+      ],
+      "referencePixel": [
+        1028.0,
+        1028.0
+      ],
+      "scale": [
+        -0.00010416666667,
+        0.00010416666667
+      ],
+      "rotation": 115.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-013",
+      "name": "Spanish Dancer Galaxy",
+      "sourceIndex": 51,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-013",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6827/sig05-013.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6827/sig05-013.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        65.0696476555,
+        -54.9319798442
+      ],
+      "referenceDimension": [
+        974.0,
+        974.0
+      ],
+      "referencePixel": [
+        616.293197632,
+        627.844654083
+      ],
+      "scale": [
+        -0.00020867095017611,
+        0.00020867095017611
+      ],
+      "rotation": -124.20503238561,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig09-006",
+      "name": "NGC 2841",
+      "sourceIndex": 52,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig09-006",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3701/sig09-006.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3701/sig09-006.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        140.51048411132737,
+        50.977446607403415
+      ],
+      "referenceDimension": [
+        1750.0,
+        940.0
+      ],
+      "referencePixel": [
+        875.0,
+        470.0
+      ],
+      "scale": [
+        -0.00010403,
+        0.00010403
+      ],
+      "rotation": -50.98,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-014",
+      "name": "NGC 2976",
+      "sourceIndex": 53,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-014",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6726/sig05-014.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6726/sig05-014.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        146.927954972,
+        67.9152809851
+      ],
+      "referenceDimension": [
+        632.0,
+        632.0
+      ],
+      "referencePixel": [
+        496.604721069,
+        213.81060791
+      ],
+      "scale": [
+        -0.0002086207593514,
+        0.0002086207593514
+      ],
+      "rotation": 148.64105852723,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2023-02",
+      "name": "Needle Galaxy",
+      "sourceIndex": 54,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2023-02",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/original/NGC4565_Spitzer.tif",
+      "sourceAssetUrl": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/original/NGC4565_Spitzer.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "2000",
+      "referenceValue": [
+        189.099833,
+        25.983678
+      ],
+      "referenceDimension": [
+        2134.0,
+        1200.0
+      ],
+      "referencePixel": [
+        998.90193396293,
+        620.82265679765
+      ],
+      "scale": [
+        -0.00016673983,
+        0.00016673983
+      ],
+      "rotation": -33.74823167045,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2017-14a1",
+      "name": "NGC 4993",
+      "sourceIndex": 55,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2017-14a1",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/2081/ssc2017-14a1.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/2081/ssc2017-14a1.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        197.449881,
+        -23.382898
+      ],
+      "referenceDimension": [
+        1250.0,
+        1250.0
+      ],
+      "referencePixel": [
+        603.5,
+        636.5
+      ],
+      "scale": [
+        -4.166675e-05,
+        4.166675e-05
+      ],
+      "rotation": 0.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2019-13a",
+      "name": "Spindle Galaxy",
+      "sourceIndex": 56,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2019-13a",
+      "httpStatus": 200,
+      "status": "PARTIAL_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/6818/ssc2019-13a.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0011/6818/ssc2019-13a.tif",
+      "coordinateFrame": "Equinox",
+      "equinox": "Reference",
+      "referenceValue": null,
+      "referenceDimension": null,
+      "referencePixel": null,
+      "scale": null,
+      "rotation": null,
+      "projection": "Quality",
+      "quality": "Good",
+      "admissionReady": false
+    },
+    {
+      "archiveId": "sig08-008",
+      "name": "Fireworks Galaxy",
+      "sourceIndex": 57,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig08-008",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4301/sig08-008.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4301/sig08-008.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        308.71792558912324,
+        60.154339214321304
+      ],
+      "referenceDimension": [
+        954.0,
+        1423.0
+      ],
+      "referencePixel": [
+        477.0,
+        711.5
+      ],
+      "scale": [
+        -0.00020811071391397163,
+        0.00020811071391397163
+      ],
+      "rotation": 394.91294996,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-017",
+      "name": "NGC 7793",
+      "sourceIndex": 58,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-017",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3501/sig05-017.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3501/sig05-017.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        359.437714616,
+        -32.6868311765
+      ],
+      "referenceDimension": [
+        990.0,
+        990.0
+      ],
+      "referencePixel": [
+        220.051364899,
+        870.036046982
+      ],
+      "scale": [
+        -0.00020908552099377,
+        0.00020908552099377
+      ],
+      "rotation": -152.64294901139,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-011",
+      "name": "NGC 4725",
+      "sourceIndex": 59,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-011",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4238/sig05-011.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4238/sig05-011.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        192.577159836,
+        25.4242051767
+      ],
+      "referenceDimension": [
+        975.0,
+        975.0
+      ],
+      "referencePixel": [
+        872.332778931,
+        401.034820557
+      ],
+      "scale": [
+        -0.00020838890432075,
+        0.00020838890432075
+      ],
+      "rotation": 55.194424054314,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig05-015",
+      "name": "Messier 95",
+      "sourceIndex": 60,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig05-015",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5501/sig05-015.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5501/sig05-015.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        160.933973224,
+        11.6803291224
+      ],
+      "referenceDimension": [
+        730.0,
+        730.0
+      ],
+      "referencePixel": [
+        155.152486801,
+        167.818572998
+      ],
+      "scale": [
+        -0.00020799030240873,
+        0.00020799030240873
+      ],
+      "rotation": -114.37345557261,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig06-003",
+      "name": "Messier 58",
+      "sourceIndex": 61,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig06-003",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3965/sig06-003.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/3965/sig06-003.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        189.397455972,
+        11.8485014446
+      ],
+      "referenceDimension": [
+        706.0,
+        869.0
+      ],
+      "referencePixel": [
+        395.249542236,
+        224.99899292
+      ],
+      "scale": [
+        -0.00020839686982107,
+        0.00020839686982107
+      ],
+      "rotation": -120.23828958441,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig06-005",
+      "name": "Cartwheel Galaxy",
+      "sourceIndex": 62,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig06-005",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4630/sig06-005.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/4630/sig06-005.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        9.4222393,
+        -33.7115111
+      ],
+      "referenceDimension": [
+        1500.0,
+        1500.0
+      ],
+      "referencePixel": [
+        751.0,
+        751.0
+      ],
+      "scale": [
+        2.76817e-05,
+        -2.76817e-05
+      ],
+      "rotation": -90.3,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig06-010",
+      "name": "Cigar Galaxy",
+      "sourceIndex": 63,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig06-010",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5761/sig06-010.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5761/sig06-010.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "Reference",
+      "referenceValue": [
+        149.11051168,
+        69.7053749827
+      ],
+      "referenceDimension": [
+        4299.0,
+        3490.0
+      ],
+      "referencePixel": [
+        922.146820068,
+        1153.85690308
+      ],
+      "scale": [
+        -4.1635027032331e-05,
+        4.1635027032331e-05
+      ],
+      "rotation": 49.936065630295,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig06-024",
+      "name": "Andromeda Galaxy",
+      "sourceIndex": 64,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig06-024",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6686/sig06-024.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/6686/sig06-024.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        10.687168887017261,
+        41.27243920621815
+      ],
+      "referenceDimension": [
+        7430.0,
+        2410.0
+      ],
+      "referencePixel": [
+        3715.0,
+        1205.0
+      ],
+      "scale": [
+        -0.0003462186003123588,
+        0.0003462186003123588
+      ],
+      "rotation": 53.0381859266,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "sig09-003",
+      "name": "Triangulum Galaxy",
+      "sourceIndex": 65,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/sig09-003",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5348/sig09-003.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5348/sig09-003.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        23.485679,
+        30.667077
+      ],
+      "referenceDimension": [
+        2228.0,
+        3462.0
+      ],
+      "referencePixel": [
+        1114.0,
+        1731.0
+      ],
+      "scale": [
+        -0.000416666666666667,
+        0.000416666666666667
+      ],
+      "rotation": 0.0,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    },
+    {
+      "archiveId": "ssc2003-06d5",
+      "name": "Bode's Galaxy",
+      "sourceIndex": 66,
+      "astroPixUrl": "https://www.astropix.org/image/spitzer/ssc2003-06d5",
+      "httpStatus": 200,
+      "status": "COMPLETE_IMAGE_AVM",
+      "resourceUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5080/ssc2003-06d5.tif",
+      "sourceAssetUrl": "http://www.spitzer.caltech.edu/uploaded_files/images/0001/5080/ssc2003-06d5.tif",
+      "coordinateFrame": "ICRS",
+      "equinox": "J2000",
+      "referenceValue": [
+        148.891519342434,
+        69.06524617699486
+      ],
+      "referenceDimension": [
+        1158.0,
+        878.0
+      ],
+      "referencePixel": [
+        579.0,
+        439.0
+      ],
+      "scale": [
+        -0.00033889738260893987,
+        0.00033889738260893987
+      ],
+      "rotation": 268.7031668354956,
+      "projection": "TAN",
+      "quality": "Good",
+      "admissionReady": true
+    }
+  ]
+}
