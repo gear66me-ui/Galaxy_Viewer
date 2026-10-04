@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0058 — cosmic-age catalog semantics and COSMIC AGE presentation
+# BUILD 0059 — preserve current-galaxy provider preload on Back to Sky; full cancel on sky navigation; cosmic-age semantics preserved
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,9 +85,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0058';
+const GV200001_BUILD='0059';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -105,7 +105,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hud/gv-heads-up-display-0001.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a0750906d88ebfdad6da7ab71363359a1636c6fb/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@c746089f96dca9eaa3deb5e2b87043554aa27050/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
 });
 
 
@@ -1503,13 +1503,16 @@ function validateDestination(destination){
 }
 
 
-function gvCancelProviderHandoff(){
+function gvCancelProviderAll(){
     try{
-        if(window.GVNative&&typeof window.GVNative.cancelProvider==='function'){
+        if(window.GVNative&&typeof window.GVNative.cancelProviderAll==='function'){
+            window.GVNative.cancelProviderAll();
+            console.info('GV PROVIDER WORK FULLY CANCELLED BEFORE SKY NAVIGATION');
+        }else if(window.GVNative&&typeof window.GVNative.cancelProvider==='function'){
             window.GVNative.cancelProvider();
-            console.info('GV PROVIDER HANDOFF CANCELLED BEFORE SKY NAVIGATION');
+            console.info('GV PROVIDER WORK CANCELLED THROUGH LEGACY BRIDGE BEFORE SKY NAVIGATION');
         }
-    }catch(error){console.warn('GV PROVIDER CANCEL SKIPPED',error)}
+    }catch(error){console.warn('GV PROVIDER FULL CANCEL SKIPPED',error)}
 }
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
@@ -1584,7 +1587,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
 // ============================================================================
 async function navigateRandom(){
     if(navigationInFlight)return;
-    gvCancelProviderHandoff();
+    gvCancelProviderAll();
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
@@ -1620,7 +1623,7 @@ async function navigateRandom(){
 // ============================================================================
 async function navigateBack(){
     if(navigationInFlight||historyIndex<=0)return;
-    gvCancelProviderHandoff();
+    gvCancelProviderAll();
     navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
     try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
@@ -1632,7 +1635,7 @@ async function navigateBack(){
 // ============================================================================
 async function navigateForward(){
     if(navigationInFlight||historyIndex>=history.length-1)return;
-    gvCancelProviderHandoff();
+    gvCancelProviderAll();
     navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
     try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
