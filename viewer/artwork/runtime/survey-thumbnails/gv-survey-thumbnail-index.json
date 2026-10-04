@@ -1,6 +1,6 @@
 {
   "version": "0001",
-  "generatedAt": "2026-10-04T23:07:26.784612Z",
+  "generatedAt": "2026-10-04T23:09:31.279889Z",
   "generator": "tools/survey_thumbnails/build_survey_thumbnails.py",
   "format": "webp",
   "canvasPixels": 192,
@@ -15,8 +15,8 @@
       "catalogName": "hubble",
       "catalogPath": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
       "records": 1104,
-      "generated": 328,
-      "reused": 776,
+      "generated": 0,
+      "reused": 1104,
       "failed": 0
     },
     "JWST": {
@@ -47,8 +47,8 @@
       "catalogName": "spitzer",
       "catalogPath": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
       "records": 46,
-      "generated": 46,
-      "reused": 0,
+      "generated": 0,
+      "reused": 46,
       "failed": 0
     },
     "NOIRLAB": {
@@ -3239,7 +3239,7 @@
       "name": "IRAS 09200-5805",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1000-opo9738c11-5153d47fa1.webp",
       "bytes": 1838,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c11.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1001": {
       "provider": "HUBBLE",
@@ -3250,7 +3250,7 @@
       "name": "IRAS 13501-6616",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1001-opo9738c14-a1445cb6cd.webp",
       "bytes": 2506,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c14.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1002": {
       "provider": "HUBBLE",
@@ -3261,7 +3261,7 @@
       "name": "IRAS 15134-4527",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1002-opo9738c15-8a98ec2712.webp",
       "bytes": 2980,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c15.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1003": {
       "provider": "HUBBLE",
@@ -3272,7 +3272,7 @@
       "name": "IRAS 19204+0124",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1003-opo9738c19-6029fc4206.webp",
       "bytes": 1052,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c19.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1004": {
       "provider": "HUBBLE",
@@ -3283,7 +3283,7 @@
       "name": "IRAS 23234+4215",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1004-opo9738c20-d4fc46613a.webp",
       "bytes": 2960,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c20.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1005": {
       "provider": "HUBBLE",
@@ -3294,7 +3294,7 @@
       "name": "IRAS 23234+4215",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1005-opo9738c21-6a66f41212.webp",
       "bytes": 2598,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c21.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1006": {
       "provider": "HUBBLE",
@@ -3305,7 +3305,7 @@
       "name": "IRAS 10223-1823",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1006-opo9738c3-a8ae3c227e.webp",
       "bytes": 3036,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c3.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1007": {
       "provider": "HUBBLE",
@@ -3316,7 +3316,7 @@
       "name": "IRAS 13478-5057",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1007-opo9738c4-436f0399f0.webp",
       "bytes": 4494,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738c4.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1008": {
       "provider": "HUBBLE",
@@ -3327,7 +3327,7 @@
       "name": "Blinking Planetary",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1008-opo9738d-99b0b391d9.webp",
       "bytes": 2130,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1009": {
       "provider": "HUBBLE",
@@ -3338,7 +3338,7 @@
       "name": "IRAS 11478-5654",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1009-opo9738e-0ade34475f.webp",
       "bytes": 2192,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|101": {
       "provider": "HUBBLE",
@@ -3360,7 +3360,7 @@
       "name": "IRAS 21014-1133",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1010-opo9738g-b1cc6187f1.webp",
       "bytes": 2162,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9738g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1011": {
       "provider": "HUBBLE",
@@ -3371,7 +3371,7 @@
       "name": "Large Magellanic Cloud",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1011-opo9808g-01232e45d6.webp",
       "bytes": 7098,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9808g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1012": {
       "provider": "HUBBLE",
@@ -3382,7 +3382,7 @@
       "name": "NGC 7027",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1012-opo9811d-f7463e4f61.webp",
       "bytes": 1944,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9811d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1013": {
       "provider": "HUBBLE",
@@ -3393,7 +3393,7 @@
       "name": "NGC 7027",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1013-opo9811e-ffaa95624e.webp",
       "bytes": 2454,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9811e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1014": {
       "provider": "HUBBLE",
@@ -3404,7 +3404,7 @@
       "name": "IRAS 19411-1416",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1014-opo9811h-4e3adb8a42.webp",
       "bytes": 2252,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9811h.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1015": {
       "provider": "HUBBLE",
@@ -3415,7 +3415,7 @@
       "name": "IRAS 11478-5654",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1015-opo9811i-4391f82ea2.webp",
       "bytes": 2352,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9811i.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1016": {
       "provider": "HUBBLE",
@@ -3426,7 +3426,7 @@
       "name": "IRAS 16423+2353",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1016-opo9836f-9537caa90d.webp",
       "bytes": 1414,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9836f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1017": {
       "provider": "HUBBLE",
@@ -3437,7 +3437,7 @@
       "name": "NGC 3132",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1017-opo9839a-132947257e.webp",
       "bytes": 1880,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9839a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1018": {
       "provider": "HUBBLE",
@@ -3448,7 +3448,7 @@
       "name": "HDF-S",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1018-opo9841b-78dfa19abc.webp",
       "bytes": 3078,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9841b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1019": {
       "provider": "HUBBLE",
@@ -3459,7 +3459,7 @@
       "name": "NGC 3603",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1019-opo9920a-032856145a.webp",
       "bytes": 5162,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9920a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|102": {
       "provider": "HUBBLE",
@@ -3481,7 +3481,7 @@
       "name": "NGC 2261",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1020-opo9935c-0fde57060d.webp",
       "bytes": 1470,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9935c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1021": {
       "provider": "HUBBLE",
@@ -3492,7 +3492,7 @@
       "name": "NGC 2346",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1021-opo9935d-65b6bb9c31.webp",
       "bytes": 1624,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9935d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1022": {
       "provider": "HUBBLE",
@@ -3503,7 +3503,7 @@
       "name": "NGC 2440",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1022-opo9935e-fe49cf90a9.webp",
       "bytes": 2798,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9935e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1023": {
       "provider": "HUBBLE",
@@ -3514,7 +3514,7 @@
       "name": "Stars",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1023-pillarsofcreation-composite-857099b213.webp",
       "bytes": 9344,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/pillarsofcreation_composite.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1024": {
       "provider": "HUBBLE",
@@ -3525,7 +3525,7 @@
       "name": "NGC 6543",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1024-potm2602b-280df64481.webp",
       "bytes": 2580,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potm2602b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1025": {
       "provider": "HUBBLE",
@@ -3536,7 +3536,7 @@
       "name": "IC 4634",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1025-potw1003a-7cec1d6584.webp",
       "bytes": 1220,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1003a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1026": {
       "provider": "HUBBLE",
@@ -3547,7 +3547,7 @@
       "name": "IRAS 05437+2502",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1026-potw1008a-319022e239.webp",
       "bytes": 2128,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1008a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1027": {
       "provider": "HUBBLE",
@@ -3558,7 +3558,7 @@
       "name": "NGC 6326",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1027-potw1010a-5e04503798.webp",
       "bytes": 2610,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1010a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1028": {
       "provider": "HUBBLE",
@@ -3569,7 +3569,7 @@
       "name": "IRAS 19475+3119",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1028-potw1012a-b564dbc490.webp",
       "bytes": 820,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1012a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1029": {
       "provider": "HUBBLE",
@@ -3580,7 +3580,7 @@
       "name": "NGC 3918",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1029-potw1015a-3393c23464.webp",
       "bytes": 2670,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1015a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|103": {
       "provider": "HUBBLE",
@@ -3602,7 +3602,7 @@
       "name": "Messier 33",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1030-potw1019a-81575f3f9a.webp",
       "bytes": 6650,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1019a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1031": {
       "provider": "HUBBLE",
@@ -3613,7 +3613,7 @@
       "name": "NGC 6741",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1031-potw1022a-d88fc662f6.webp",
       "bytes": 1282,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1022a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1032": {
       "provider": "HUBBLE",
@@ -3624,7 +3624,7 @@
       "name": "NGC 6210",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1032-potw1026a-29859dbe19.webp",
       "bytes": 1666,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1026a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1033": {
       "provider": "HUBBLE",
@@ -3635,7 +3635,7 @@
       "name": "Messier 16",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1033-potw1033a-5bf0df2228.webp",
       "bytes": 5202,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1033a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1034": {
       "provider": "HUBBLE",
@@ -3646,7 +3646,7 @@
       "name": "NGC 6572",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1034-potw1034a-0637927f7f.webp",
       "bytes": 842,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1034a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1035": {
       "provider": "HUBBLE",
@@ -3657,7 +3657,7 @@
       "name": "NGC 6886",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1035-potw1102a-6c4c52493f.webp",
       "bytes": 688,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1102a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1036": {
       "provider": "HUBBLE",
@@ -3668,7 +3668,7 @@
       "name": "Palomar 1",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1036-potw1104a-763c20a3c6.webp",
       "bytes": 3114,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1104a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1037": {
       "provider": "HUBBLE",
@@ -3679,7 +3679,7 @@
       "name": "NGC 2174",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1037-potw1106a-3e9402be15.webp",
       "bytes": 4998,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1106a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1038": {
       "provider": "HUBBLE",
@@ -3690,7 +3690,7 @@
       "name": "Messier 43",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1038-potw1109a-d32a1137b4.webp",
       "bytes": 3310,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1109a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1039": {
       "provider": "HUBBLE",
@@ -3701,7 +3701,7 @@
       "name": "PK 166-06 1",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1039-potw1110a-499f9a76b7.webp",
       "bytes": 1344,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1110a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|104": {
       "provider": "HUBBLE",
@@ -3723,7 +3723,7 @@
       "name": "NGC 5882",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1040-potw1114a-3c734415e4.webp",
       "bytes": 1442,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1114a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1041": {
       "provider": "HUBBLE",
@@ -3734,7 +3734,7 @@
       "name": "Lagoon Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1041-potw1120a-509a32e240.webp",
       "bytes": 2684,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1120a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1042": {
       "provider": "HUBBLE",
@@ -3745,7 +3745,7 @@
       "name": "IRAS 22036+5306",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1042-potw1124a-e3d699508e.webp",
       "bytes": 966,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1124a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1043": {
       "provider": "HUBBLE",
@@ -3756,7 +3756,7 @@
       "name": "Carina Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1043-potw1127a-f600f91d53.webp",
       "bytes": 2458,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1127a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1044": {
       "provider": "HUBBLE",
@@ -3767,7 +3767,7 @@
       "name": "Extended Groth Strip",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1044-potw1141a-11a992abd5.webp",
       "bytes": 1980,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1141a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1045": {
       "provider": "HUBBLE",
@@ -3778,7 +3778,7 @@
       "name": "SN 1987A",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1045-potw1142a-41c8adbb0a.webp",
       "bytes": 4262,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1142a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1046": {
       "provider": "HUBBLE",
@@ -3789,7 +3789,7 @@
       "name": "LRG 3-757",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1046-potw1151a-1d0b096b25.webp",
       "bytes": 1754,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1151a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1047": {
       "provider": "HUBBLE",
@@ -3800,7 +3800,7 @@
       "name": "NGC 6881",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1047-potw1211a-b156e77dd2.webp",
       "bytes": 1040,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1211a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1048": {
       "provider": "HUBBLE",
@@ -3811,7 +3811,7 @@
       "name": "NGC 2040",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1048-potw1216a-65cfe4c830.webp",
       "bytes": 10100,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1216a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1049": {
       "provider": "HUBBLE",
@@ -3822,7 +3822,7 @@
       "name": "NGC 7026",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1049-potw1222a-25194a9d9d.webp",
       "bytes": 4154,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1222a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|105": {
       "provider": "HUBBLE",
@@ -3844,7 +3844,7 @@
       "name": "Hen 3-1475",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1050-potw1241a-252a4d82d7.webp",
       "bytes": 3238,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1241a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1051": {
       "provider": "HUBBLE",
@@ -3855,7 +3855,7 @@
       "name": "NGC 7354",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1051-potw1250a-152224b200.webp",
       "bytes": 3444,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1250a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1052": {
       "provider": "HUBBLE",
@@ -3866,7 +3866,7 @@
       "name": "2MASX J09442693+0429569",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1052-potw1304a-0bef80a134.webp",
       "bytes": 710,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1304a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1053": {
       "provider": "HUBBLE",
@@ -3877,7 +3877,7 @@
       "name": "Abell S1077",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1053-potw1319a-f3dabaa2da.webp",
       "bytes": 4408,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1319a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1054": {
       "provider": "HUBBLE",
@@ -3888,7 +3888,7 @@
       "name": "IC 289",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1054-potw1327a-666872a635.webp",
       "bytes": 1834,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1327a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1055": {
       "provider": "HUBBLE",
@@ -3899,7 +3899,7 @@
       "name": "ESO 489-56",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1055-potw1332a-73563bde37.webp",
       "bytes": 1926,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1332a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1056": {
       "provider": "HUBBLE",
@@ -3910,7 +3910,7 @@
       "name": "2MASS J03032308-1539079",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1056-potw1349a-10afd5241b.webp",
       "bytes": 770,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1349a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1057": {
       "provider": "HUBBLE",
@@ -3921,7 +3921,7 @@
       "name": "Cha I",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1057-potw1405a-bade82c7e6.webp",
       "bytes": 900,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1405a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1058": {
       "provider": "HUBBLE",
@@ -3932,7 +3932,7 @@
       "name": "NGC 5793",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1058-potw1411a-59311ce46d.webp",
       "bytes": 690,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1411a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1059": {
       "provider": "HUBBLE",
@@ -3943,7 +3943,7 @@
       "name": "NGC 1501",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1059-potw1444a-40f0460e1e.webp",
       "bytes": 4660,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1444a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|106": {
       "provider": "HUBBLE",
@@ -3965,7 +3965,7 @@
       "name": "SDSSCGB 8842.3",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1060-potw1506a-3e87e95d28.webp",
       "bytes": 2568,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1506a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1061": {
       "provider": "HUBBLE",
@@ -3976,7 +3976,7 @@
       "name": "M 84",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1061-potw1522a-a9266c957a.webp",
       "bytes": 848,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1522a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1062": {
       "provider": "HUBBLE",
@@ -3987,7 +3987,7 @@
       "name": "NGC 6153",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1062-potw1525a-9f838faf74.webp",
       "bytes": 4032,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1525a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1063": {
       "provider": "HUBBLE",
@@ -3998,7 +3998,7 @@
       "name": "NGC 6565",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1063-potw1530a-40dd36b1ec.webp",
       "bytes": 3450,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1530a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1064": {
       "provider": "HUBBLE",
@@ -4009,7 +4009,7 @@
       "name": "Little Gem Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1064-potw1531a-a70503ecf7.webp",
       "bytes": 3570,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1531a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1065": {
       "provider": "HUBBLE",
@@ -4020,7 +4020,7 @@
       "name": "2MASX J16270254+4328340",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1065-potw1547a-94b29b5fe4.webp",
       "bytes": 2360,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1547a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1066": {
       "provider": "HUBBLE",
@@ -4031,7 +4031,7 @@
       "name": "HH 34",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1066-potw1551a-15d30e68a2.webp",
       "bytes": 1308,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1551a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1067": {
       "provider": "HUBBLE",
@@ -4042,7 +4042,7 @@
       "name": "MACS J0717.5+3745",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1067-potw1611a-8dbf0aff34.webp",
       "bytes": 7090,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1611a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1068": {
       "provider": "HUBBLE",
@@ -4053,7 +4053,7 @@
       "name": "MACS J0416.1-2403",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1068-potw1612a-09c1cce4c8.webp",
       "bytes": 7122,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1612a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1069": {
       "provider": "HUBBLE",
@@ -4064,7 +4064,7 @@
       "name": "LHA 120-N 159",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1069-potw1636a-ea6010e24a.webp",
       "bytes": 4870,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1636a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|107": {
       "provider": "HUBBLE",
@@ -4086,7 +4086,7 @@
       "name": "PGC 83677",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1070-potw1637a-04954e1a1e.webp",
       "bytes": 1290,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1637a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1071": {
       "provider": "HUBBLE",
@@ -4097,7 +4097,7 @@
       "name": "IC 3583",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1071-potw1648a-7749ff2492.webp",
       "bytes": 1534,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1648a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1072": {
       "provider": "HUBBLE",
@@ -4108,7 +4108,7 @@
       "name": "IRAS 16399-0937",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1072-potw1652a-d64b44a789.webp",
       "bytes": 1000,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1652a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1073": {
       "provider": "HUBBLE",
@@ -4119,7 +4119,7 @@
       "name": "RX J1347.51145",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1073-potw1708a-2ec4a4fb23.webp",
       "bytes": 5526,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1708a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1074": {
       "provider": "HUBBLE",
@@ -4130,7 +4130,7 @@
       "name": "ESO 486-21",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1074-potw1725a-de87767084.webp",
       "bytes": 900,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1725a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1075": {
       "provider": "HUBBLE",
@@ -4141,7 +4141,7 @@
       "name": "NGC 5559",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1075-potw1736a-e651198829.webp",
       "bytes": 1286,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1736a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1076": {
       "provider": "HUBBLE",
@@ -4152,7 +4152,7 @@
       "name": "ESO 580-49",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1076-potw1749a-6590b854d5.webp",
       "bytes": 1466,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1749a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1077": {
       "provider": "HUBBLE",
@@ -4163,7 +4163,7 @@
       "name": "RCS2 J2327",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1077-potw1752b-6655a58896.webp",
       "bytes": 3516,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1752b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1078": {
       "provider": "HUBBLE",
@@ -4174,7 +4174,7 @@
       "name": "ACT-CL J0102-4915",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1078-potw1802a-579816d2be.webp",
       "bytes": 2820,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1802a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1079": {
       "provider": "HUBBLE",
@@ -4185,7 +4185,7 @@
       "name": "SDSS J1354+1327",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1079-potw1803a-0c69e3d668.webp",
       "bytes": 1040,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1803a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|108": {
       "provider": "HUBBLE",
@@ -4207,7 +4207,7 @@
       "name": "RXC J0949.8+1707",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1080-potw1825a-3ac2061766.webp",
       "bytes": 2906,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1825a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1081": {
       "provider": "HUBBLE",
@@ -4218,7 +4218,7 @@
       "name": "NGC 2022",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1081-potw1932a-1c58b7b10d.webp",
       "bytes": 1500,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1932a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1082": {
       "provider": "HUBBLE",
@@ -4229,7 +4229,7 @@
       "name": "NGC 2371",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1082-potw1933a-ee524b82fd.webp",
       "bytes": 2276,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1933a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1083": {
       "provider": "HUBBLE",
@@ -4240,7 +4240,7 @@
       "name": "NGC 5307",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1083-potw1934a-42ef289d50.webp",
       "bytes": 1368,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw1934a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1084": {
       "provider": "HUBBLE",
@@ -4251,7 +4251,7 @@
       "name": "J025027.7+600849",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1084-potw2028a-ebd317e72b.webp",
       "bytes": 3736,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2028a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1085": {
       "provider": "HUBBLE",
@@ -4262,7 +4262,7 @@
       "name": "GAL-CLUS-022058s",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1085-potw2050a-d5f0c2bf7e.webp",
       "bytes": 1918,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2050a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1086": {
       "provider": "HUBBLE",
@@ -4273,7 +4273,7 @@
       "name": "ESO 455-10",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1086-potw2104a-2a7be2f8c9.webp",
       "bytes": 8700,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2104a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1087": {
       "provider": "HUBBLE",
@@ -4284,7 +4284,7 @@
       "name": "NGC 2313",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1087-potw2119a-2162b69866.webp",
       "bytes": 1706,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2119a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1088": {
       "provider": "HUBBLE",
@@ -4295,7 +4295,7 @@
       "name": "NGC 5921",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1088-potw2214a-52bb591285.webp",
       "bytes": 2642,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2214a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1089": {
       "provider": "HUBBLE",
@@ -4306,7 +4306,7 @@
       "name": "NGC 4548",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1089-potw2215a-bf1a96bf70.webp",
       "bytes": 2592,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2215a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|109": {
       "provider": "HUBBLE",
@@ -4328,7 +4328,7 @@
       "name": "VV689",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1090-potw2216a-84bb1d9d54.webp",
       "bytes": 996,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2216a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1091": {
       "provider": "HUBBLE",
@@ -4339,7 +4339,7 @@
       "name": "VV689",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1091-potw2216b-9eeb6a5d9e.webp",
       "bytes": 1204,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2216b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1092": {
       "provider": "HUBBLE",
@@ -4350,7 +4350,7 @@
       "name": "AM 0417-391",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1092-potw2247a-358193663a.webp",
       "bytes": 1600,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2247a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1093": {
       "provider": "HUBBLE",
@@ -4361,7 +4361,7 @@
       "name": "DEM L 190",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1093-potw2248a-fef0f805a3.webp",
       "bytes": 7620,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2248a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1094": {
       "provider": "HUBBLE",
@@ -4372,7 +4372,7 @@
       "name": "NGC 5486",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1094-potw2310b-1a28c70497.webp",
       "bytes": 1826,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2310b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1095": {
       "provider": "HUBBLE",
@@ -4383,7 +4383,7 @@
       "name": "HerS J020941.1+001557",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1095-potw2401a-17f41c7249.webp",
       "bytes": 3782,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2401a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1096": {
       "provider": "HUBBLE",
@@ -4394,7 +4394,7 @@
       "name": "Colouring what human eyes can’t see",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1096-potw2407a-8efbebbc43.webp",
       "bytes": 5660,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2407a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1097": {
       "provider": "HUBBLE",
@@ -4405,7 +4405,7 @@
       "name": "RCW 7",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1097-potw2425a-3639021535.webp",
       "bytes": 4820,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2425a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1098": {
       "provider": "HUBBLE",
@@ -4416,7 +4416,7 @@
       "name": "Large Magellanic Cloud",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1098-potw2503a-082cf3aea8.webp",
       "bytes": 3522,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2503a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1099": {
       "provider": "HUBBLE",
@@ -4427,7 +4427,7 @@
       "name": "Tarantula Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1099-potw2506a-97926a3bf9.webp",
       "bytes": 7374,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2506a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|11": {
       "provider": "HUBBLE",
@@ -4460,7 +4460,7 @@
       "name": "PN K 4-55",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1100-potw2514a-791929ce45.webp",
       "bytes": 1572,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2514a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1101": {
       "provider": "HUBBLE",
@@ -4471,7 +4471,7 @@
       "name": "Capturing candyfloss clouds",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1101-potw2519a-4a47db1616.webp",
       "bytes": 8812,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2519a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1102": {
       "provider": "HUBBLE",
@@ -4482,7 +4482,7 @@
       "name": "A sea monster and a Tarantula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1102-potw2531a-9221f84e42.webp",
       "bytes": 4856,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2531a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|1103": {
       "provider": "HUBBLE",
@@ -4493,7 +4493,7 @@
       "name": "LMC N44C",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/1103-potw2536a-33360fca16.webp",
       "bytes": 2990,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/potw2536a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|111": {
       "provider": "HUBBLE",
@@ -12611,7 +12611,7 @@
       "name": "Crab Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0776-ann0820-a34137fa24.webp",
       "bytes": 9450,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann0820.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|777": {
       "provider": "HUBBLE",
@@ -12622,7 +12622,7 @@
       "name": "NGC 2818",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0777-ann0901a-815d2d057d.webp",
       "bytes": 1966,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann0901a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|778": {
       "provider": "HUBBLE",
@@ -12633,7 +12633,7 @@
       "name": "NGC 2623",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0778-ann0910a-a563cc614f.webp",
       "bytes": 1018,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann0910a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|779": {
       "provider": "HUBBLE",
@@ -12644,7 +12644,7 @@
       "name": "Sagittarius",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0779-ann0912a-ddac37bbbc.webp",
       "bytes": 2932,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann0912a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|78": {
       "provider": "HUBBLE",
@@ -12666,7 +12666,7 @@
       "name": "CL J1449+0856",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0780-ann1105a-ea42e9af94.webp",
       "bytes": 2376,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann1105a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|781": {
       "provider": "HUBBLE",
@@ -12677,7 +12677,7 @@
       "name": "HUBBLEcast",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0781-ann1409a-73455017e9.webp",
       "bytes": 1628,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann1409a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|782": {
       "provider": "HUBBLE",
@@ -12688,7 +12688,7 @@
       "name": "NGC 3344",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0782-ann1802a-e3b26bd121.webp",
       "bytes": 2808,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ann1802a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|783": {
       "provider": "HUBBLE",
@@ -12699,7 +12699,7 @@
       "name": "Markarian 1018",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0783-eso1631a-113a6a89d4.webp",
       "bytes": 1266,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/eso1631a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|784": {
       "provider": "HUBBLE",
@@ -12710,7 +12710,7 @@
       "name": "NGC 6537",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0784-heic0109a-2ef66cc3c0.webp",
       "bytes": 2528,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0109a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|785": {
       "provider": "HUBBLE",
@@ -12721,7 +12721,7 @@
       "name": "Abell 2218",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0785-heic0113c-3a7ef2c3b1.webp",
       "bytes": 2760,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0113c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|786": {
       "provider": "HUBBLE",
@@ -12732,7 +12732,7 @@
       "name": "IRAS F23251+2318",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0786-heic0205a-14d9016601.webp",
       "bytes": 1212,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0205a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|787": {
       "provider": "HUBBLE",
@@ -12743,7 +12743,7 @@
       "name": "Cone Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0787-heic0206c-5779ccbda1.webp",
       "bytes": 1908,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0206c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|788": {
       "provider": "HUBBLE",
@@ -12754,7 +12754,7 @@
       "name": "Cone Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0788-heic0206f-90c5157f96.webp",
       "bytes": 2596,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0206f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|789": {
       "provider": "HUBBLE",
@@ -12765,7 +12765,7 @@
       "name": "Messier 17",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0789-heic0206g-8fc10844fb.webp",
       "bytes": 4776,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0206g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|79": {
       "provider": "HUBBLE",
@@ -12787,7 +12787,7 @@
       "name": "Helix Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0790-heic0307a-b76f571711.webp",
       "bytes": 2206,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0307a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|791": {
       "provider": "HUBBLE",
@@ -12798,7 +12798,7 @@
       "name": "CL0024+1654",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0791-heic0309c-1fe581e595.webp",
       "bytes": 7158,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0309c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|792": {
       "provider": "HUBBLE",
@@ -12809,7 +12809,7 @@
       "name": "RDCS1252.9-2927",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0792-heic0313b-debdbe50f0.webp",
       "bytes": 2936,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0313b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|793": {
       "provider": "HUBBLE",
@@ -12820,7 +12820,7 @@
       "name": "IRAS 07015-0346",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0793-heic0405a-cf17a071a5.webp",
       "bytes": 5842,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0405a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|794": {
       "provider": "HUBBLE",
@@ -12831,7 +12831,7 @@
       "name": "Hubble Ultra Deep Field",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0794-heic0406d-90c47b309d.webp",
       "bytes": 3386,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0406d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|795": {
       "provider": "HUBBLE",
@@ -12842,7 +12842,7 @@
       "name": "Hubble Ultra Deep Field",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0795-heic0406e-a7b5d83e00.webp",
       "bytes": 3184,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0406e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|796": {
       "provider": "HUBBLE",
@@ -12853,7 +12853,7 @@
       "name": "Bug Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0796-heic0407a-c77faafe8e.webp",
       "bytes": 3798,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0407a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|797": {
       "provider": "HUBBLE",
@@ -12864,7 +12864,7 @@
       "name": "Bug Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0797-heic0407b-9f23f1431f.webp",
       "bytes": 4194,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0407b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|798": {
       "provider": "HUBBLE",
@@ -12875,7 +12875,7 @@
       "name": "HD 44179",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0798-heic0408a-d6d0ced0de.webp",
       "bytes": 1040,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0408a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|799": {
       "provider": "HUBBLE",
@@ -12886,7 +12886,7 @@
       "name": "Cat's Eye Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0799-heic0414a-fe536adf1d.webp",
       "bytes": 1858,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0414a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|8": {
       "provider": "HUBBLE",
@@ -12919,7 +12919,7 @@
       "name": "Cat's Eye Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0800-heic0414b-ce20e35638.webp",
       "bytes": 4252,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0414b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|801": {
       "provider": "HUBBLE",
@@ -12930,7 +12930,7 @@
       "name": "NGC 346",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0801-heic0502a-54a45efead.webp",
       "bytes": 8156,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0502a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|802": {
       "provider": "HUBBLE",
@@ -12941,7 +12941,7 @@
       "name": "Eagle Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0802-heic0506b-3dff5553a6.webp",
       "bytes": 2768,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0506b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|803": {
       "provider": "HUBBLE",
@@ -12952,7 +12952,7 @@
       "name": "Hubble Ultra Deep Field",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0803-heic0513c-56066f31f4.webp",
       "bytes": 3284,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0513c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|804": {
       "provider": "HUBBLE",
@@ -12963,7 +12963,7 @@
       "name": "Hubble Ultra Deep Field",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0804-heic0513d-46b04c5ef4.webp",
       "bytes": 4694,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0513d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|805": {
       "provider": "HUBBLE",
@@ -12974,7 +12974,7 @@
       "name": "Crab Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0805-heic0515a-ebbab92330.webp",
       "bytes": 9344,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0515a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|806": {
       "provider": "HUBBLE",
@@ -12985,7 +12985,7 @@
       "name": "Messier 42",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0806-heic0601a-8216625c43.webp",
       "bytes": 3818,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0601a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|807": {
       "provider": "HUBBLE",
@@ -12996,7 +12996,7 @@
       "name": "NGC 6397",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0807-heic0608d-71a2dd377b.webp",
       "bytes": 5204,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0608d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|808": {
       "provider": "HUBBLE",
@@ -13007,7 +13007,7 @@
       "name": "Pismis 24",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0808-heic0619a-b15c1b37fd.webp",
       "bytes": 3676,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0619a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|809": {
       "provider": "HUBBLE",
@@ -13018,7 +13018,7 @@
       "name": "Cl Pismis 24",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0809-heic0619e-ac35c2c12c.webp",
       "bytes": 4866,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0619e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|81": {
       "provider": "HUBBLE",
@@ -13040,7 +13040,7 @@
       "name": "N90",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0810-heic0702a-4cd993bad4.webp",
       "bytes": 6658,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0702a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|811": {
       "provider": "HUBBLE",
@@ -13051,7 +13051,7 @@
       "name": "NGC 2440",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0811-heic0703a-7d692e75c1.webp",
       "bytes": 5308,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0703a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|812": {
       "provider": "HUBBLE",
@@ -13062,7 +13062,7 @@
       "name": "Carina Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0812-heic0707g-998c0b1ad5.webp",
       "bytes": 3914,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0707g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|813": {
       "provider": "HUBBLE",
@@ -13073,7 +13073,7 @@
       "name": "ZwCl0024+1652",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0813-heic0709b-0364c72a10.webp",
       "bytes": 7354,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0709b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|814": {
       "provider": "HUBBLE",
@@ -13084,7 +13084,7 @@
       "name": "Cygnus Loop",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0814-heic0712a-6fd1cec61b.webp",
       "bytes": 3718,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0712a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|815": {
       "provider": "HUBBLE",
@@ -13095,7 +13095,7 @@
       "name": "Cygnus Loop",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0815-heic0712b-69fc3fd074.webp",
       "bytes": 2310,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0712b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|816": {
       "provider": "HUBBLE",
@@ -13106,7 +13106,7 @@
       "name": "Cygnus Loop",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0816-heic0712c-bdf26e0f5a.webp",
       "bytes": 2332,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0712c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|817": {
       "provider": "HUBBLE",
@@ -13117,7 +13117,7 @@
       "name": "HD 189733b",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0817-heic0720b-27173218c9.webp",
       "bytes": 6970,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0720b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|818": {
       "provider": "HUBBLE",
@@ -13128,7 +13128,7 @@
       "name": "Holmberg IX",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0818-heic0801b-e6ffd3f0d7.webp",
       "bytes": 2536,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0801b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|819": {
       "provider": "HUBBLE",
@@ -13139,7 +13139,7 @@
       "name": "COSMOS FIELD",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0819-heic0806d-073779c52a.webp",
       "bytes": 3066,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0806d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|82": {
       "provider": "HUBBLE",
@@ -13161,7 +13161,7 @@
       "name": "Arp 302",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0820-heic0810af-060fc93a78.webp",
       "bytes": 1530,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810af.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|821": {
       "provider": "HUBBLE",
@@ -13172,7 +13172,7 @@
       "name": "NGC 6670",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0821-heic0810ah-b5fd458f63.webp",
       "bytes": 1316,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ah.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|822": {
       "provider": "HUBBLE",
@@ -13183,7 +13183,7 @@
       "name": "NGC 6240",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0822-heic0810ai-567bd23c08.webp",
       "bytes": 1784,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ai.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|823": {
       "provider": "HUBBLE",
@@ -13194,7 +13194,7 @@
       "name": "ESO 593-8",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0823-heic0810aj-176a8f31d6.webp",
       "bytes": 3506,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810aj.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|824": {
       "provider": "HUBBLE",
@@ -13205,7 +13205,7 @@
       "name": "UGC 8335",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0824-heic0810al-4c8c68b264.webp",
       "bytes": 1456,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810al.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|825": {
       "provider": "HUBBLE",
@@ -13216,7 +13216,7 @@
       "name": "NGC 6786",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0825-heic0810am-544f7b6437.webp",
       "bytes": 1514,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810am.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|826": {
       "provider": "HUBBLE",
@@ -13227,7 +13227,7 @@
       "name": "NGC 17",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0826-heic0810an-824be956e7.webp",
       "bytes": 1144,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810an.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|827": {
       "provider": "HUBBLE",
@@ -13238,7 +13238,7 @@
       "name": "ESO 77-14",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0827-heic0810ao-7f465e217e.webp",
       "bytes": 1102,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ao.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|828": {
       "provider": "HUBBLE",
@@ -13249,7 +13249,7 @@
       "name": "Arp 299",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0828-heic0810as-e896219231.webp",
       "bytes": 1348,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810as.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|829": {
       "provider": "HUBBLE",
@@ -13260,7 +13260,7 @@
       "name": "Arp 240",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0829-heic0810at-5a0367965b.webp",
       "bytes": 1480,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810at.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|83": {
       "provider": "HUBBLE",
@@ -13282,7 +13282,7 @@
       "name": "Arp 193",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0830-heic0810au-7de0873b06.webp",
       "bytes": 1308,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810au.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|831": {
       "provider": "HUBBLE",
@@ -13293,7 +13293,7 @@
       "name": "Markarian 273",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0831-heic0810av-82cd25ebe2.webp",
       "bytes": 1452,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810av.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|832": {
       "provider": "HUBBLE",
@@ -13304,7 +13304,7 @@
       "name": "NGC 1614",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0832-heic0810ax-cf448aebd3.webp",
       "bytes": 986,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ax.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|833": {
       "provider": "HUBBLE",
@@ -13315,7 +13315,7 @@
       "name": "NGC 6090",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0833-heic0810ay-cf683e19d9.webp",
       "bytes": 1336,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ay.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|834": {
       "provider": "HUBBLE",
@@ -13326,7 +13326,7 @@
       "name": "IC 5298",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0834-heic0810az-db342e5e61.webp",
       "bytes": 1408,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810az.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|835": {
       "provider": "HUBBLE",
@@ -13337,7 +13337,7 @@
       "name": "MRK 231",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0835-heic0810ba-3dda9688fa.webp",
       "bytes": 900,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ba.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|836": {
       "provider": "HUBBLE",
@@ -13348,7 +13348,7 @@
       "name": "IC 1623",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0836-heic0810bb-e20dd06e03.webp",
       "bytes": 1266,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bb.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|837": {
       "provider": "HUBBLE",
@@ -13359,7 +13359,7 @@
       "name": "ESO 239-2",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0837-heic0810bc-a1f3cc6c02.webp",
       "bytes": 1342,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bc.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|838": {
       "provider": "HUBBLE",
@@ -13370,7 +13370,7 @@
       "name": "2MASX J09133888-1019196",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0838-heic0810be-a99d8a76a1.webp",
       "bytes": 1414,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810be.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|839": {
       "provider": "HUBBLE",
@@ -13381,7 +13381,7 @@
       "name": "CGCG436-030",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0839-heic0810bg-17bf9fdeac.webp",
       "bytes": 1292,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bg.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|84": {
       "provider": "HUBBLE",
@@ -13403,7 +13403,7 @@
       "name": "ESO 148-2",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0840-heic0810bh-a5eb75cdfa.webp",
       "bytes": 1366,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bh.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|841": {
       "provider": "HUBBLE",
@@ -13414,7 +13414,7 @@
       "name": "ESO 507-70",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0841-heic0810bi-c22ab1d93f.webp",
       "bytes": 1156,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bi.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|842": {
       "provider": "HUBBLE",
@@ -13425,7 +13425,7 @@
       "name": "IC 2545",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0842-heic0810bj-e23044f453.webp",
       "bytes": 1796,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bj.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|843": {
       "provider": "HUBBLE",
@@ -13436,7 +13436,7 @@
       "name": "IRAS 20550+1656",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0843-heic0810bk-cc23c375d2.webp",
       "bytes": 2098,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bk.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|844": {
       "provider": "HUBBLE",
@@ -13447,7 +13447,7 @@
       "name": "LEDA 17588",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0844-heic0810bl-0ff613c47a.webp",
       "bytes": 1856,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bl.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|845": {
       "provider": "HUBBLE",
@@ -13458,7 +13458,7 @@
       "name": "LEDA 3183",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0845-heic0810bm-be7dfba7f9.webp",
       "bytes": 1774,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bm.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|846": {
       "provider": "HUBBLE",
@@ -13469,7 +13469,7 @@
       "name": "NGC 5256",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0846-heic0810bn-dd64f12f46.webp",
       "bytes": 1226,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bn.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|847": {
       "provider": "HUBBLE",
@@ -13480,7 +13480,7 @@
       "name": "NGC 5331",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0847-heic0810bo-3148e58579.webp",
       "bytes": 1242,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bo.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|848": {
       "provider": "HUBBLE",
@@ -13491,7 +13491,7 @@
       "name": "Arp 182",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0848-heic0810bp-c101076c2e.webp",
       "bytes": 1316,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bp.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|849": {
       "provider": "HUBBLE",
@@ -13502,7 +13502,7 @@
       "name": "Arp 55",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0849-heic0810bq-d408ffdd18.webp",
       "bytes": 1104,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bq.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|85": {
       "provider": "HUBBLE",
@@ -13524,7 +13524,7 @@
       "name": "UGC 5101",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0850-heic0810br-c45b33c7be.webp",
       "bytes": 1128,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810br.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|851": {
       "provider": "HUBBLE",
@@ -13535,7 +13535,7 @@
       "name": "MCG+01-33-036",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0851-heic0810bs-45e91957de.webp",
       "bytes": 1066,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bs.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|852": {
       "provider": "HUBBLE",
@@ -13546,7 +13546,7 @@
       "name": "Markarian 848",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0852-heic0810bw-97d59e1ed4.webp",
       "bytes": 1186,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bw.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|853": {
       "provider": "HUBBLE",
@@ -13557,7 +13557,7 @@
       "name": "ESO 69-6",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0853-heic0810bz-4a70a5377b.webp",
       "bytes": 4074,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810bz.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|854": {
       "provider": "HUBBLE",
@@ -13568,7 +13568,7 @@
       "name": "IC 4687",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0854-heic0810ca-b8bc49f3aa.webp",
       "bytes": 2520,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ca.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|855": {
       "provider": "HUBBLE",
@@ -13579,7 +13579,7 @@
       "name": "IRAS 20351+2521",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0855-heic0810cb-0f7f3154b5.webp",
       "bytes": 3176,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810cb.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|856": {
       "provider": "HUBBLE",
@@ -13590,7 +13590,7 @@
       "name": "ESO 255-7",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0856-heic0810cc-f9451501fc.webp",
       "bytes": 930,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810cc.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|857": {
       "provider": "HUBBLE",
@@ -13601,7 +13601,7 @@
       "name": "Arp 298",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0857-heic0810cd-3afacd8649.webp",
       "bytes": 1558,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810cd.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|858": {
       "provider": "HUBBLE",
@@ -13612,7 +13612,7 @@
       "name": "IC 2810",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0858-heic0810ce-7a22c3a548.webp",
       "bytes": 1010,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ce.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|859": {
       "provider": "HUBBLE",
@@ -13623,7 +13623,7 @@
       "name": "IRAS 21101+5810",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0859-heic0810cf-0419b2910b.webp",
       "bytes": 3340,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810cf.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|86": {
       "provider": "HUBBLE",
@@ -13645,7 +13645,7 @@
       "name": "AM 0702-601",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0860-heic0810cg-b9f123e9c0.webp",
       "bytes": 1444,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810cg.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|861": {
       "provider": "HUBBLE",
@@ -13656,7 +13656,7 @@
       "name": "IRAS 10566+2448",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0861-heic0810ch-2757685d52.webp",
       "bytes": 1084,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ch.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|862": {
       "provider": "HUBBLE",
@@ -13667,7 +13667,7 @@
       "name": "NGC 695",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0862-heic0810ci-8250e785c8.webp",
       "bytes": 1248,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ci.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|863": {
       "provider": "HUBBLE",
@@ -13678,7 +13678,7 @@
       "name": "ESO 286-19",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0863-heic0810cj-fd1f4925de.webp",
       "bytes": 1206,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810cj.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|864": {
       "provider": "HUBBLE",
@@ -13689,7 +13689,7 @@
       "name": "ESO 550-IG025",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0864-heic0810ck-f11fa31257.webp",
       "bytes": 1234,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0810ck.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|865": {
       "provider": "HUBBLE",
@@ -13700,7 +13700,7 @@
       "name": "Abell 1656",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0865-heic0813b-7928bc480c.webp",
       "bytes": 1184,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0813b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|866": {
       "provider": "HUBBLE",
@@ -13711,7 +13711,7 @@
       "name": "Abell 1656",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0866-heic0813c-4db4f99092.webp",
       "bytes": 1112,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0813c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|867": {
       "provider": "HUBBLE",
@@ -13722,7 +13722,7 @@
       "name": "Abell 1656",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0867-heic0813d-0167750ada.webp",
       "bytes": 1022,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0813d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|868": {
       "provider": "HUBBLE",
@@ -13733,7 +13733,7 @@
       "name": "J0025.4-1222",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0868-heic0818a-8ce3cd2a7c.webp",
       "bytes": 4790,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0818a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|869": {
       "provider": "HUBBLE",
@@ -13744,7 +13744,7 @@
       "name": "Bug Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0869-heic0910h-5165f5f891.webp",
       "bytes": 4042,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0910h.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|87": {
       "provider": "HUBBLE",
@@ -13766,7 +13766,7 @@
       "name": "Markarian 817",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0870-heic0910n-47125149fb.webp",
       "bytes": 656,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0910n.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|871": {
       "provider": "HUBBLE",
@@ -13777,7 +13777,7 @@
       "name": "NGC 4755",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0871-heic0913a-610fb6f31a.webp",
       "bytes": 2378,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0913a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|872": {
       "provider": "HUBBLE",
@@ -13788,7 +13788,7 @@
       "name": "NGC 4755",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0872-heic0913b-3260e32753.webp",
       "bytes": 6050,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic0913b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|873": {
       "provider": "HUBBLE",
@@ -13799,7 +13799,7 @@
       "name": "NGC 3603",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0873-heic1009c-e5fbb601e9.webp",
       "bytes": 10430,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1009c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|874": {
       "provider": "HUBBLE",
@@ -13810,7 +13810,7 @@
       "name": "NGC 2467",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0874-heic1012a-aa370b4041.webp",
       "bytes": 5748,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1012a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|875": {
       "provider": "HUBBLE",
@@ -13821,7 +13821,7 @@
       "name": "SNR B0509-67.5",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0875-heic1018a-e644d1966e.webp",
       "bytes": 5458,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1018a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|876": {
       "provider": "HUBBLE",
@@ -13832,7 +13832,7 @@
       "name": "30 Doradus",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0876-heic1105a-d4f4e26215.webp",
       "bytes": 9318,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1105a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|877": {
       "provider": "HUBBLE",
@@ -13843,7 +13843,7 @@
       "name": "Abell 2744",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0877-heic1111a-3d70c0c6d8.webp",
       "bytes": 6190,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1111a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|878": {
       "provider": "HUBBLE",
@@ -13854,7 +13854,7 @@
       "name": "Andromeda Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0878-heic1112f-1ba14bd9c5.webp",
       "bytes": 1042,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1112f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|879": {
       "provider": "HUBBLE",
@@ -13865,7 +13865,7 @@
       "name": "Holmberg II",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0879-heic1114a-ca8e006d20.webp",
       "bytes": 6618,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1114a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|88": {
       "provider": "HUBBLE",
@@ -13887,7 +13887,7 @@
       "name": "30 Doradus",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0880-heic1206a-5400984d31.webp",
       "bytes": 7254,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1206a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|881": {
       "provider": "HUBBLE",
@@ -13898,7 +13898,7 @@
       "name": "Fornax Cluster",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0881-heic1214a-fef9aabf15.webp",
       "bytes": 6496,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1214a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|882": {
       "provider": "HUBBLE",
@@ -13909,7 +13909,7 @@
       "name": "MCS J0647.7+7015",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0882-heic1217c-32549d4647.webp",
       "bytes": 4404,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1217c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|883": {
       "provider": "HUBBLE",
@@ -13920,7 +13920,7 @@
       "name": "Hubble Ultra Deep Field",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0883-heic1219b-417c5c0434.webp",
       "bytes": 8766,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1219b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|884": {
       "provider": "HUBBLE",
@@ -13931,7 +13931,7 @@
       "name": "NGC 5189",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0884-heic1220a-110eefc172.webp",
       "bytes": 7494,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1220a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|885": {
       "provider": "HUBBLE",
@@ -13942,7 +13942,7 @@
       "name": "LHA 120-N 11",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0885-heic1301a-9528e0e503.webp",
       "bytes": 5810,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1301a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|886": {
       "provider": "HUBBLE",
@@ -13953,7 +13953,7 @@
       "name": "Abell 68",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0886-heic1304a-e1eda928f2.webp",
       "bytes": 4192,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1304a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|887": {
       "provider": "HUBBLE",
@@ -13964,7 +13964,7 @@
       "name": "M 57",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0887-heic1310a-760831ed48.webp",
       "bytes": 2666,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1310a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|888": {
       "provider": "HUBBLE",
@@ -13975,7 +13975,7 @@
       "name": "M 57",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0888-heic1310b-0e5f3bef63.webp",
       "bytes": 2416,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1310b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|889": {
       "provider": "HUBBLE",
@@ -13986,7 +13986,7 @@
       "name": "PGC 6240",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0889-heic1318a-72b83ba5de.webp",
       "bytes": 1954,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1318a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|89": {
       "provider": "HUBBLE",
@@ -14008,7 +14008,7 @@
       "name": "RS Puppis",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0890-heic1323a-d05536c4b2.webp",
       "bytes": 6092,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1323a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|891": {
       "provider": "HUBBLE",
@@ -14019,7 +14019,7 @@
       "name": "Abell 2744",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0891-heic1401a-38e36243bc.webp",
       "bytes": 4834,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1401a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|892": {
       "provider": "HUBBLE",
@@ -14030,7 +14030,7 @@
       "name": "NGC 2174",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0892-heic1406a-cfddf2c535.webp",
       "bytes": 8162,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1406a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|893": {
       "provider": "HUBBLE",
@@ -14041,7 +14041,7 @@
       "name": "[HGO2008]SDSS J1531+3414",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0893-heic1414a-a341afd066.webp",
       "bytes": 2430,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1414a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|894": {
       "provider": "HUBBLE",
@@ -14052,7 +14052,7 @@
       "name": "Eagle Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0894-heic1501a-682fdfe338.webp",
       "bytes": 4816,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1501a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|895": {
       "provider": "HUBBLE",
@@ -14063,7 +14063,7 @@
       "name": "Eagle Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0895-heic1501b-c60f6afe27.webp",
       "bytes": 15494,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1501b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|896": {
       "provider": "HUBBLE",
@@ -14074,7 +14074,7 @@
       "name": "Eagle Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0896-heic1501e-d0914f51ae.webp",
       "bytes": 3796,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1501e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|897": {
       "provider": "HUBBLE",
@@ -14085,7 +14085,7 @@
       "name": "Andromeda Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0897-heic1502b-5726370ce9.webp",
       "bytes": 1028,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1502b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|898": {
       "provider": "HUBBLE",
@@ -14096,7 +14096,7 @@
       "name": "Abell 370",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0898-heic1506b-c1724edd65.webp",
       "bytes": 4414,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1506b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|899": {
       "provider": "HUBBLE",
@@ -14107,7 +14107,7 @@
       "name": "Abell 2744",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0899-heic1506c-1777b85fa4.webp",
       "bytes": 6006,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1506c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|9": {
       "provider": "HUBBLE",
@@ -14140,7 +14140,7 @@
       "name": "MACS J0152.5-2852",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0900-heic1506d-7fd0d13013.webp",
       "bytes": 3184,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1506d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|901": {
       "provider": "HUBBLE",
@@ -14151,7 +14151,7 @@
       "name": "MACS J0416.1-2403",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0901-heic1506e-61e8916a7b.webp",
       "bytes": 6926,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1506e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|902": {
       "provider": "HUBBLE",
@@ -14162,7 +14162,7 @@
       "name": "MACS J0717.5+3745",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0902-heic1506f-01cbebf40a.webp",
       "bytes": 5616,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1506f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|903": {
       "provider": "HUBBLE",
@@ -14173,7 +14173,7 @@
       "name": "ZwCl 1358+62",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0903-heic1506g-3778619a33.webp",
       "bytes": 4182,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1506g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|904": {
       "provider": "HUBBLE",
@@ -14184,7 +14184,7 @@
       "name": "2MASX J14302986+1339117",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0904-heic1507b-e6490dc62c.webp",
       "bytes": 882,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|905": {
       "provider": "HUBBLE",
@@ -14195,7 +14195,7 @@
       "name": "NGC 5972",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0905-heic1507c-88f4a8b363.webp",
       "bytes": 942,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|906": {
       "provider": "HUBBLE",
@@ -14206,7 +14206,7 @@
       "name": "2MASX J15100402+0740370",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0906-heic1507d-7685d3a9c6.webp",
       "bytes": 894,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|907": {
       "provider": "HUBBLE",
@@ -14217,7 +14217,7 @@
       "name": "UGC 7342",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0907-heic1507e-387d7dd369.webp",
       "bytes": 2122,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|908": {
       "provider": "HUBBLE",
@@ -14228,7 +14228,7 @@
       "name": "Mrk 1498",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0908-heic1507g-d91fe38af4.webp",
       "bytes": 660,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|909": {
       "provider": "HUBBLE",
@@ -14239,7 +14239,7 @@
       "name": "UGC 11185",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0909-heic1507h-fe0233bc4d.webp",
       "bytes": 1096,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507h.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|91": {
       "provider": "HUBBLE",
@@ -14261,7 +14261,7 @@
       "name": "2MASX J22014163+1151237",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0910-heic1507i-71397f8c71.webp",
       "bytes": 1096,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1507i.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|911": {
       "provider": "HUBBLE",
@@ -14272,7 +14272,7 @@
       "name": "Herschel 36",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0911-heic1517b-940430a54f.webp",
       "bytes": 6474,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1517b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|912": {
       "provider": "HUBBLE",
@@ -14283,7 +14283,7 @@
       "name": "SpARCS1049+56",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0912-heic1519a-df80020e85.webp",
       "bytes": 5782,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1519a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|913": {
       "provider": "HUBBLE",
@@ -14294,7 +14294,7 @@
       "name": "SpARCS1049+56",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0913-heic1519c-3f48f6e5b9.webp",
       "bytes": 1584,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1519c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|914": {
       "provider": "HUBBLE",
@@ -14305,7 +14305,7 @@
       "name": "Cygnus Loop",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0914-heic1520a-ed3e71e293.webp",
       "bytes": 6052,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1520a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|915": {
       "provider": "HUBBLE",
@@ -14316,7 +14316,7 @@
       "name": "Trumpler 14",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0915-heic1601a-5de7334ca5.webp",
       "bytes": 7066,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1601a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|916": {
       "provider": "HUBBLE",
@@ -14327,7 +14327,7 @@
       "name": "Bubble Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0916-heic1608a-dcf885d354.webp",
       "bytes": 2568,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1608a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|917": {
       "provider": "HUBBLE",
@@ -14338,7 +14338,7 @@
       "name": "NGC 248",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0917-heic1623a-f2cc8c891a.webp",
       "bytes": 12384,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1623a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|918": {
       "provider": "HUBBLE",
@@ -14349,7 +14349,7 @@
       "name": "CLASS B1608+656",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0918-heic1702c-f84d88e734.webp",
       "bytes": 1716,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1702c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|919": {
       "provider": "HUBBLE",
@@ -14360,7 +14360,7 @@
       "name": "2MASX J11315154-1231587",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0919-heic1702d-3f874a485f.webp",
       "bytes": 1934,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1702d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|92": {
       "provider": "HUBBLE",
@@ -14382,7 +14382,7 @@
       "name": "HE0435-1223",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0920-heic1702e-282f3da93c.webp",
       "bytes": 2140,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1702e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|921": {
       "provider": "HUBBLE",
@@ -14393,7 +14393,7 @@
       "name": "SNR 0509-68.7",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0921-heic1707a-b9ed9b4953.webp",
       "bytes": 14206,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1707a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|922": {
       "provider": "HUBBLE",
@@ -14404,7 +14404,7 @@
       "name": "NGC 4298",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0922-heic1709c-50a7ec1317.webp",
       "bytes": 1162,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1709c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|923": {
       "provider": "HUBBLE",
@@ -14415,7 +14415,7 @@
       "name": "NGC 1052-DF2",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0923-heic1806a-0e23c8507d.webp",
       "bytes": 1288,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1806a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|924": {
       "provider": "HUBBLE",
@@ -14426,7 +14426,7 @@
       "name": "IC 63",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0924-heic1818a-15fe85a715.webp",
       "bytes": 4280,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic1818a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|925": {
       "provider": "HUBBLE",
@@ -14437,7 +14437,7 @@
       "name": "Large Magellanic Cloud",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0925-heic2004a-7907d315a5.webp",
       "bytes": 9286,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2004a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|926": {
       "provider": "HUBBLE",
@@ -14448,7 +14448,7 @@
       "name": "NGC 2014",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0926-heic2007a-998a2ab675.webp",
       "bytes": 3754,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2007a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|927": {
       "provider": "HUBBLE",
@@ -14459,7 +14459,7 @@
       "name": "Butterfly Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0927-heic2011b-084b867802.webp",
       "bytes": 10698,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2011b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|928": {
       "provider": "HUBBLE",
@@ -14470,7 +14470,7 @@
       "name": "NGC 7027",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0928-heic2011c-c91b4e831b.webp",
       "bytes": 2066,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2011c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|929": {
       "provider": "HUBBLE",
@@ -14481,7 +14481,7 @@
       "name": "NGC 2525",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0929-heic2018a-cef79b0200.webp",
       "bytes": 2386,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2018a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|93": {
       "provider": "HUBBLE",
@@ -14503,7 +14503,7 @@
       "name": "1E 0102.2-7219",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0930-heic2102a-cc68ab8f3b.webp",
       "bytes": 3212,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2102a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|931": {
       "provider": "HUBBLE",
@@ -14514,7 +14514,7 @@
       "name": "AG Carinae",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0931-heic2105a-28f6f8899e.webp",
       "bytes": 1628,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2105a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|932": {
       "provider": "HUBBLE",
@@ -14525,7 +14525,7 @@
       "name": "NGC 1333",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0932-heic2304a-f413014c77.webp",
       "bytes": 2026,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2304a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|933": {
       "provider": "HUBBLE",
@@ -14536,7 +14536,7 @@
       "name": "M76",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0933-heic2408a-d584d3d8e1.webp",
       "bytes": 2128,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2408a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|934": {
       "provider": "HUBBLE",
@@ -14547,7 +14547,7 @@
       "name": "NGC 2899",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0934-heic2505d-9cedaf268e.webp",
       "bytes": 3424,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2505d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|935": {
       "provider": "HUBBLE",
@@ -14558,7 +14558,7 @@
       "name": "Rosette Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0935-heic2505f-d38ffe42ab.webp",
       "bytes": 4958,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2505f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|936": {
       "provider": "HUBBLE",
@@ -14569,7 +14569,7 @@
       "name": "Trifid Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0936-heic2608a-56513e93f7.webp",
       "bytes": 3682,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic2608a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|937": {
       "provider": "HUBBLE",
@@ -14580,7 +14580,7 @@
       "name": "NGC 2392",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0937-heic9910a-acb9d10175.webp",
       "bytes": 2630,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/heic9910a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|938": {
       "provider": "HUBBLE",
@@ -14591,7 +14591,7 @@
       "name": "NGC 602",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0938-ngc602-363d5ed8c5.webp",
       "bytes": 8720,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/ngc602.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|939": {
       "provider": "HUBBLE",
@@ -14602,7 +14602,7 @@
       "name": "Bubble Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0939-opo0004a-f866caffd6.webp",
       "bytes": 3002,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0004a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|94": {
       "provider": "HUBBLE",
@@ -14624,7 +14624,7 @@
       "name": "Carina Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0940-opo0006a-f561e5fcbe.webp",
       "bytes": 3668,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0006a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|941": {
       "provider": "HUBBLE",
@@ -14635,7 +14635,7 @@
       "name": "NGC 1999",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0941-opo0010a-b51e7d883a.webp",
       "bytes": 1748,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0010a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|942": {
       "provider": "HUBBLE",
@@ -14646,7 +14646,7 @@
       "name": "NGC 6751",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0942-opo0012a-4b6eab7126.webp",
       "bytes": 4034,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0012a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|943": {
       "provider": "HUBBLE",
@@ -14657,7 +14657,7 @@
       "name": "Crab Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0943-opo0015a-5edb6897d4.webp",
       "bytes": 9320,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0015a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|944": {
       "provider": "HUBBLE",
@@ -14668,7 +14668,7 @@
       "name": "IC 418",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0944-opo0028a-2323096663.webp",
       "bytes": 1984,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0028a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|945": {
       "provider": "HUBBLE",
@@ -14679,7 +14679,7 @@
       "name": "N 81",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0945-opo0030a-433eb17743.webp",
       "bytes": 1202,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0030a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|946": {
       "provider": "HUBBLE",
@@ -14690,7 +14690,7 @@
       "name": "NGC 2237",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0946-opo0118c-ff39d96830.webp",
       "bytes": 10490,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0118c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|947": {
       "provider": "HUBBLE",
@@ -14701,7 +14701,7 @@
       "name": "Barnard's Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0947-opo0139a-65dd596e8f.webp",
       "bytes": 5688,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0139a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|948": {
       "provider": "HUBBLE",
@@ -14712,7 +14712,7 @@
       "name": "LL Orionis",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0948-opo0205a-6cafb750b9.webp",
       "bytes": 1818,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0205a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|949": {
       "provider": "HUBBLE",
@@ -14723,7 +14723,7 @@
       "name": "IC 4406",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0949-opo0214a-1e25f543bb.webp",
       "bytes": 1206,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0214a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|95": {
       "provider": "HUBBLE",
@@ -14745,7 +14745,7 @@
       "name": "Cassiopeia A",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0950-opo0215a-b34c9c00b7.webp",
       "bytes": 5442,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0215a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|951": {
       "provider": "HUBBLE",
@@ -14756,7 +14756,7 @@
       "name": "Cassiopeia A",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0951-opo0215e-490864848c.webp",
       "bytes": 7336,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0215e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|952": {
       "provider": "HUBBLE",
@@ -14767,7 +14767,7 @@
       "name": "Cassiopeia A",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0952-opo0215f-1d391a4438.webp",
       "bytes": 6196,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0215f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|953": {
       "provider": "HUBBLE",
@@ -14778,7 +14778,7 @@
       "name": "Cassiopeia A",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0953-opo0215g-5b8ed8be52.webp",
       "bytes": 4034,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0215g.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|954": {
       "provider": "HUBBLE",
@@ -14789,7 +14789,7 @@
       "name": "NGC 6369",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0954-opo0225a-73b6f36dae.webp",
       "bytes": 3360,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0225a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|955": {
       "provider": "HUBBLE",
@@ -14800,7 +14800,7 @@
       "name": "IRAS 17262-2343",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0955-opo0225b-853f052f51.webp",
       "bytes": 5434,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0225b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|956": {
       "provider": "HUBBLE",
@@ -14811,7 +14811,7 @@
       "name": "Abell 1689",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0956-opo0301c-da0d7c581d.webp",
       "bytes": 6054,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0301c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|957": {
       "provider": "HUBBLE",
@@ -14822,7 +14822,7 @@
       "name": "Radio Galaxy 0313-192",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0957-opo0304a-d1c1fab55b.webp",
       "bytes": 3354,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0304a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|958": {
       "provider": "HUBBLE",
@@ -14833,7 +14833,7 @@
       "name": "Dumbbell Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0958-opo0306a-8eef4c90cb.webp",
       "bytes": 2308,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0306a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|959": {
       "provider": "HUBBLE",
@@ -14844,7 +14844,7 @@
       "name": "Dumbbell Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0959-opo0306b-38a2b508fb.webp",
       "bytes": 2936,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0306b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|96": {
       "provider": "HUBBLE",
@@ -14866,7 +14866,7 @@
       "name": "Caldwell 24",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0960-opo0314a-fd73f6723b.webp",
       "bytes": 2502,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0314a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|961": {
       "provider": "HUBBLE",
@@ -14877,7 +14877,7 @@
       "name": "DEM L 190",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0961-opo0320a-f188f2357a.webp",
       "bytes": 8804,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0320a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|962": {
       "provider": "HUBBLE",
@@ -14888,7 +14888,7 @@
       "name": "Galaxies",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0962-opo0324h-f561290306.webp",
       "bytes": 3210,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0324h.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|963": {
       "provider": "HUBBLE",
@@ -14899,7 +14899,7 @@
       "name": "Carina Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0963-opo0331c-0e1e5a1f01.webp",
       "bytes": 4300,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0331c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|964": {
       "provider": "HUBBLE",
@@ -14910,7 +14910,7 @@
       "name": "Galaxies",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0964-opo0421a-7b15440993.webp",
       "bytes": 2738,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0421a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|965": {
       "provider": "HUBBLE",
@@ -14921,7 +14921,7 @@
       "name": "Kepler's SN",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0965-opo0429h-6e7b903d0c.webp",
       "bytes": 1980,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0429h.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|966": {
       "provider": "HUBBLE",
@@ -14932,7 +14932,7 @@
       "name": "Kepler's SN",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0966-opo0429j-41cbe60bff.webp",
       "bytes": 9664,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0429j.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|967": {
       "provider": "HUBBLE",
@@ -14943,7 +14943,7 @@
       "name": "Helix Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0967-opo0432d-9f8cd85146.webp",
       "bytes": 2570,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0432d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|968": {
       "provider": "HUBBLE",
@@ -14954,7 +14954,7 @@
       "name": "bok globules",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0968-opo0613b-e82f45c9cc.webp",
       "bytes": 3416,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0613b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|969": {
       "provider": "HUBBLE",
@@ -14965,7 +14965,7 @@
       "name": "NGC 5315",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0969-opo0733c-29bad6fc6e.webp",
       "bytes": 1434,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0733c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|97": {
       "provider": "HUBBLE",
@@ -14987,7 +14987,7 @@
       "name": "IC 4593",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0970-opo0733d-d9decbd1a9.webp",
       "bytes": 1248,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0733d.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|971": {
       "provider": "HUBBLE",
@@ -14998,7 +14998,7 @@
       "name": "NGC 5307",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0971-opo0733e-85a42d2423.webp",
       "bytes": 1560,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0733e.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|972": {
       "provider": "HUBBLE",
@@ -15009,7 +15009,7 @@
       "name": "3C 321",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0972-opo0737a-fbf6525670.webp",
       "bytes": 1104,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0737a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|973": {
       "provider": "HUBBLE",
@@ -15020,7 +15020,7 @@
       "name": "NGC 6397",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0973-opo0742c-0298875ecc.webp",
       "bytes": 11344,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0742c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|974": {
       "provider": "HUBBLE",
@@ -15031,7 +15031,7 @@
       "name": "NGC 2371",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0974-opo0813a-d693e92f0e.webp",
       "bytes": 1346,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0813a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|975": {
       "provider": "HUBBLE",
@@ -15042,7 +15042,7 @@
       "name": "SN 1006",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0975-opo0822a-ff536d2db1.webp",
       "bytes": 3568,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0822a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|976": {
       "provider": "HUBBLE",
@@ -15053,7 +15053,7 @@
       "name": "NGC 6791",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0976-opo0825c-74d22a4b1d.webp",
       "bytes": 6814,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0825c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|977": {
       "provider": "HUBBLE",
@@ -15064,7 +15064,7 @@
       "name": "Carina Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0977-opo0834a-58d15a21e2.webp",
       "bytes": 2578,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0834a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|978": {
       "provider": "HUBBLE",
@@ -15075,7 +15075,7 @@
       "name": "30 Doradus",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0978-opo0932a-564a2bf5c2.webp",
       "bytes": 12110,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0932a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|979": {
       "provider": "HUBBLE",
@@ -15086,7 +15086,7 @@
       "name": "30 Doradus",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0979-opo0932f-c3c55ed24f.webp",
       "bytes": 11554,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo0932f.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|98": {
       "provider": "HUBBLE",
@@ -15108,7 +15108,7 @@
       "name": "HCG 31",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0980-opo1008a-38a8c63246.webp",
       "bytes": 1690,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1008a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|981": {
       "provider": "HUBBLE",
@@ -15119,7 +15119,7 @@
       "name": "NGC 3603",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0981-opo1022a-9ac7480c0e.webp",
       "bytes": 8846,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1022a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|982": {
       "provider": "HUBBLE",
@@ -15130,7 +15130,7 @@
       "name": "Abell 1689",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0982-opo1037a-c265121cd6.webp",
       "bytes": 5256,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1037a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|983": {
       "provider": "HUBBLE",
@@ -15141,7 +15141,7 @@
       "name": "RCS2 032727-132623",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0983-opo1208b-a5eb9d9fd0.webp",
       "bytes": 3042,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1208b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|984": {
       "provider": "HUBBLE",
@@ -15152,7 +15152,7 @@
       "name": "Abell 520",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0984-opo1210a-9aab7f1c31.webp",
       "bytes": 4298,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1210a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|985": {
       "provider": "HUBBLE",
@@ -15163,7 +15163,7 @@
       "name": "Abell 520",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0985-opo1210c-f0407128b5.webp",
       "bytes": 4298,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1210c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|986": {
       "provider": "HUBBLE",
@@ -15174,7 +15174,7 @@
       "name": "30 Dor",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0986-opo1235b-d5cdc7b8fb.webp",
       "bytes": 12532,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1235b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|987": {
       "provider": "HUBBLE",
@@ -15185,7 +15185,7 @@
       "name": "Markarian 231",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0987-opo1531b-0778da196c.webp",
       "bytes": 1020,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1531b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|988": {
       "provider": "HUBBLE",
@@ -15196,7 +15196,7 @@
       "name": "Abell 370",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0988-opo1733a-7bbd4effcf.webp",
       "bytes": 5664,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo1733a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|989": {
       "provider": "HUBBLE",
@@ -15207,7 +15207,7 @@
       "name": "M 42",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0989-opo9229a-0c3b4fd9a5.webp",
       "bytes": 4298,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9229a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|99": {
       "provider": "HUBBLE",
@@ -15229,7 +15229,7 @@
       "name": "M 42",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0990-opo9229b-5e49eb5192.webp",
       "bytes": 2728,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9229b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|991": {
       "provider": "HUBBLE",
@@ -15240,7 +15240,7 @@
       "name": "Blue Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0991-opo9305a-a38546ba7d.webp",
       "bytes": 3532,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9305a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|992": {
       "provider": "HUBBLE",
@@ -15251,7 +15251,7 @@
       "name": "IRAS 12204+1605",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0992-opo9402c-cf97fe3386.webp",
       "bytes": 6562,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9402c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|993": {
       "provider": "HUBBLE",
@@ -15262,7 +15262,7 @@
       "name": "Cat's Eye Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0993-opo9501a-465b64b834.webp",
       "bytes": 2096,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9501a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|994": {
       "provider": "HUBBLE",
@@ -15273,7 +15273,7 @@
       "name": "Cat's Eye Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0994-opo9501c-c121bc282a.webp",
       "bytes": 2834,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9501c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|995": {
       "provider": "HUBBLE",
@@ -15284,7 +15284,7 @@
       "name": "Eagle Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0995-opo9544b-7fe932f356.webp",
       "bytes": 3158,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9544b.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|996": {
       "provider": "HUBBLE",
@@ -15295,7 +15295,7 @@
       "name": "Messier 42",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0996-opo9545a-70825e3801.webp",
       "bytes": 3184,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9545a.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|997": {
       "provider": "HUBBLE",
@@ -15306,7 +15306,7 @@
       "name": "Messier 42",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0997-opo9545a1-7b206b8f07.webp",
       "bytes": 1980,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9545a1.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|998": {
       "provider": "HUBBLE",
@@ -15317,7 +15317,7 @@
       "name": "Messier 33",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0998-opo9627c-96ca9f8829.webp",
       "bytes": 4146,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9627c.jpg"
+      "source": ""
     },
     "HUBBLE|hubble|999": {
       "provider": "HUBBLE",
@@ -15328,7 +15328,7 @@
       "name": "Lagoon Nebula",
       "path": "viewer/artwork/runtime/survey-thumbnails/hubble/0999-opo9638b-7ac6110b5f.webp",
       "bytes": 3996,
-      "source": "https://cdn.esahubble.org/archives/images/thumb300y/opo9638b.jpg"
+      "source": ""
     },
     "JWST|jwst|0": {
       "provider": "JWST",
@@ -19893,7 +19893,7 @@
       "name": "Andromeda Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0000-ssc2024-02a-f67341126f.webp",
       "bytes": 1174,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/30/medium/M31_IRAC-MIPS.jpg?1715280207="
+      "source": ""
     },
     "SPITZER|spitzer|1": {
       "provider": "SPITZER",
@@ -19904,7 +19904,7 @@
       "name": "Andromeda Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0001-ssc2024-02b-8dec8562d5.webp",
       "bytes": 958,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/31/medium/M31_Dust.jpg?1715280347="
+      "source": ""
     },
     "SPITZER|spitzer|10": {
       "provider": "SPITZER",
@@ -19915,7 +19915,7 @@
       "name": "Large Magellanic Cloud",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0010-ssc2006-17a1-70ca657486.webp",
       "bytes": 4826,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2006-17a1/spitzer_ssc2006-17a1_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|11": {
       "provider": "SPITZER",
@@ -19926,7 +19926,7 @@
       "name": "Large Magellanic Cloud",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0011-ssc2006-17b1-24e1972ff8.webp",
       "bytes": 5542,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2006-17b1/spitzer_ssc2006-17b1_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|12": {
       "provider": "SPITZER",
@@ -19937,7 +19937,7 @@
       "name": "NGC 4145",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0012-ssc2009-15a2-016c1058b1.webp",
       "bytes": 6632,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2009-15a2/spitzer_ssc2009-15a2_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|13": {
       "provider": "SPITZER",
@@ -19948,7 +19948,7 @@
       "name": "Antennae Galaxies",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0013-ssc2004-14a2-6a4c192830.webp",
       "bytes": 2642,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1270/medium/ssc2004-14a2.jpg?1603795285="
+      "source": ""
     },
     "SPITZER|spitzer|14": {
       "provider": "SPITZER",
@@ -19959,7 +19959,7 @@
       "name": "Antennae Galaxies",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0014-ssc2004-14a3-e1b0689243.webp",
       "bytes": 1630,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1272/medium/ssc2004-14a3.jpg?1603800289="
+      "source": ""
     },
     "SPITZER|spitzer|15": {
       "provider": "SPITZER",
@@ -19970,7 +19970,7 @@
       "name": "Phantom Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0015-ssc2023-01b-f8aa0f6cc3.webp",
       "bytes": 5546,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/23/medium/ssc2023-01b.jpg?1682397323="
+      "source": ""
     },
     "SPITZER|spitzer|16": {
       "provider": "SPITZER",
@@ -19981,7 +19981,7 @@
       "name": "Sculptor Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0016-ssc2013-07a1-a6f7d93782.webp",
       "bytes": 1326,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5631/medium/ssc2013-07a1.jpg?1603781776="
+      "source": ""
     },
     "SPITZER|spitzer|17": {
       "provider": "SPITZER",
@@ -19992,7 +19992,7 @@
       "name": "Sculptor Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0017-ssc2013-07a2-48a3a04a12.webp",
       "bytes": 922,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5635/medium/ssc2013-07a2.jpg?1603792580="
+      "source": ""
     },
     "SPITZER|spitzer|18": {
       "provider": "SPITZER",
@@ -20003,7 +20003,7 @@
       "name": "Sculptor Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0018-ssc2013-07a3-eaddbe93ad.webp",
       "bytes": 724,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5638/medium/ssc2013-07a3.jpg?1603784711="
+      "source": ""
     },
     "SPITZER|spitzer|19": {
       "provider": "SPITZER",
@@ -20014,7 +20014,7 @@
       "name": "Arp 86",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0019-ssc2019-03a-718eb81c6f.webp",
       "bytes": 2588,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6566/medium/ssc2019-03a.jpg?1603784560="
+      "source": ""
     },
     "SPITZER|spitzer|2": {
       "provider": "SPITZER",
@@ -20025,7 +20025,7 @@
       "name": "Bode's Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0002-ssc2019-15a-46a9999842.webp",
       "bytes": 3470,
-      "source": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15a-avm.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|20": {
       "provider": "SPITZER",
@@ -20036,7 +20036,7 @@
       "name": "Cigar Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0020-ssc2006-09a1-ccc6290f79.webp",
       "bytes": 3330,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2006-09a1/spitzer_ssc2006-09a1_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|21": {
       "provider": "SPITZER",
@@ -20047,7 +20047,7 @@
       "name": "Mayall's Object",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0021-ssc2021-06b-ff7326f1d7.webp",
       "bytes": 902,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/11/medium/Arp148.jpg?1628119805="
+      "source": ""
     },
     "SPITZER|spitzer|22": {
       "provider": "SPITZER",
@@ -20058,7 +20058,7 @@
       "name": "Centaurus A",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0022-ssc2004-09a1-cffdcddee8.webp",
       "bytes": 1324,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1192/medium/ssc2004-09a1.jpg?1603790019="
+      "source": ""
     },
     "SPITZER|spitzer|23": {
       "provider": "SPITZER",
@@ -20069,7 +20069,7 @@
       "name": "Triangulum Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0023-sig09-004-24536962be.webp",
       "bytes": 3110,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2046/medium/sig09-004.jpg?1603797296="
+      "source": ""
     },
     "SPITZER|spitzer|24": {
       "provider": "SPITZER",
@@ -20080,7 +20080,7 @@
       "name": "NGC 300",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0024-ssc2004-07b1-660110b5b7.webp",
       "bytes": 4544,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1164/medium/ssc2004-07b1.jpg?1603795593="
+      "source": ""
     },
     "SPITZER|spitzer|25": {
       "provider": "SPITZER",
@@ -20091,7 +20091,7 @@
       "name": "NGC 6240",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0025-ssc2009-06a1-6be1e61c7b.webp",
       "bytes": 1846,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2009/medium/ssc2009-06a1.jpg?1603792754="
+      "source": ""
     },
     "SPITZER|spitzer|26": {
       "provider": "SPITZER",
@@ -20102,7 +20102,7 @@
       "name": "Arp 107",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0026-sig05-006a-ab9be2d966.webp",
       "bytes": 3768,
-      "source": "https://www.astropix.org/archive/spitzer/sig05-006a/spitzer_sig05-006a_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|27": {
       "provider": "SPITZER",
@@ -20113,7 +20113,7 @@
       "name": "Stephan's Quintet",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0027-ssc2006-08a1-d679317909.webp",
       "bytes": 4264,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2006-08a1/spitzer_ssc2006-08a1_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|28": {
       "provider": "SPITZER",
@@ -20124,7 +20124,7 @@
       "name": "Pinwheel Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0028-ssc2008-14a-173fd9bab8.webp",
       "bytes": 4426,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2008-14a/spitzer_ssc2008-14a_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|29": {
       "provider": "SPITZER",
@@ -20135,7 +20135,7 @@
       "name": "Messier 100",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0029-sig12-008-401a3a052e.webp",
       "bytes": 4282,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/5212/medium/sig12-008.jpg?1603783459="
+      "source": ""
     },
     "SPITZER|spitzer|3": {
       "provider": "SPITZER",
@@ -20146,7 +20146,7 @@
       "name": "Bode's Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0003-ssc2019-15b-ca7d71b39d.webp",
       "bytes": 3588,
-      "source": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15b-avm.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|30": {
       "provider": "SPITZER",
@@ -20157,7 +20157,7 @@
       "name": "Messier 61",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0030-ssc2023-04-f16baf70fb.webp",
       "bytes": 4958,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/26/medium/ssc2023-04.jpg?1692853407="
+      "source": ""
     },
     "SPITZER|spitzer|31": {
       "provider": "SPITZER",
@@ -20168,7 +20168,7 @@
       "name": "Messier 66",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0031-sig05-016-d6c5be64b6.webp",
       "bytes": 1962,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2367/medium/sig05-016.jpg?1603792048="
+      "source": ""
     },
     "SPITZER|spitzer|32": {
       "provider": "SPITZER",
@@ -20179,7 +20179,7 @@
       "name": "Southern Pinwheel Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0032-sig11-017-0f242a6cae.webp",
       "bytes": 3996,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/4829/medium/sig11-017.jpg?1603784960="
+      "source": ""
     },
     "SPITZER|spitzer|33": {
       "provider": "SPITZER",
@@ -20190,7 +20190,7 @@
       "name": "NGC 1097",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0033-ssc2009-14a1-98e9c2997d.webp",
       "bytes": 5310,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2685/medium/ssc2009-14a1.jpg?1603798667="
+      "source": ""
     },
     "SPITZER|spitzer|34": {
       "provider": "SPITZER",
@@ -20201,7 +20201,7 @@
       "name": "Spanish Dancer Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0034-sig05-013-e57722f1f0.webp",
       "bytes": 3654,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2361/medium/sig05-013.jpg?1603795897="
+      "source": ""
     },
     "SPITZER|spitzer|35": {
       "provider": "SPITZER",
@@ -20212,7 +20212,7 @@
       "name": "NGC 2976",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0035-sig05-014-72721dde0c.webp",
       "bytes": 4176,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2363/medium/sig05-014.jpg?1603796159="
+      "source": ""
     },
     "SPITZER|spitzer|36": {
       "provider": "SPITZER",
@@ -20223,7 +20223,7 @@
       "name": "Needle Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0036-ssc2023-02-1166a923f8.webp",
       "bytes": 1230,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/24/medium/NGC4565_Spitzer.jpg?1692853659="
+      "source": ""
     },
     "SPITZER|spitzer|37": {
       "provider": "SPITZER",
@@ -20234,7 +20234,7 @@
       "name": "Spindle Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0037-ssc2019-13a-6ecea3e16c.webp",
       "bytes": 1582,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/6651/medium/ssc2019-13a.jpg?1603799022="
+      "source": ""
     },
     "SPITZER|spitzer|38": {
       "provider": "SPITZER",
@@ -20245,7 +20245,7 @@
       "name": "NGC 7793",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0038-sig05-017-5d5ba47465.webp",
       "bytes": 4716,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2371/medium/sig05-017.jpg?1603796761="
+      "source": ""
     },
     "SPITZER|spitzer|39": {
       "provider": "SPITZER",
@@ -20256,7 +20256,7 @@
       "name": "NGC 4725",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0039-sig05-011-8ca2f4fbb4.webp",
       "bytes": 4312,
-      "source": "https://www.astropix.org/archive/spitzer/sig05-011/spitzer_sig05-011_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|4": {
       "provider": "SPITZER",
@@ -20267,7 +20267,7 @@
       "name": "Bode's Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0004-ssc2019-15c-6faabdd39e.webp",
       "bytes": 2746,
-      "source": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/Spitzer/AVM-Catalog/ssc2019-15c-avm.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|40": {
       "provider": "SPITZER",
@@ -20278,7 +20278,7 @@
       "name": "Messier 95",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0040-sig05-015-4bdd46f1b5.webp",
       "bytes": 3764,
-      "source": "https://www.astropix.org/archive/spitzer/sig05-015/spitzer_sig05-015_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|41": {
       "provider": "SPITZER",
@@ -20289,7 +20289,7 @@
       "name": "Messier 58",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0041-sig06-003-4614813c0a.webp",
       "bytes": 1880,
-      "source": "https://www.astropix.org/archive/spitzer/sig06-003/spitzer_sig06-003_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|42": {
       "provider": "SPITZER",
@@ -20300,7 +20300,7 @@
       "name": "Cigar Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0042-sig06-010-58325cfe3b.webp",
       "bytes": 1866,
-      "source": "https://www.astropix.org/archive/spitzer/sig06-010/spitzer_sig06-010_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|43": {
       "provider": "SPITZER",
@@ -20311,7 +20311,7 @@
       "name": "Andromeda Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0043-sig06-024-3bdf02cad6.webp",
       "bytes": 2330,
-      "source": "https://www.astropix.org/archive/spitzer/sig06-024/spitzer_sig06-024_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|44": {
       "provider": "SPITZER",
@@ -20322,7 +20322,7 @@
       "name": "Triangulum Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0044-sig09-003-b6f1adc2ce.webp",
       "bytes": 2880,
-      "source": "https://www.astropix.org/archive/spitzer/sig09-003/spitzer_sig09-003_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|45": {
       "provider": "SPITZER",
@@ -20333,7 +20333,7 @@
       "name": "Bode's Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0045-ssc2003-06d5-d7a76d95e5.webp",
       "bytes": 1506,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2003-06d5/spitzer_ssc2003-06d5_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|5": {
       "provider": "SPITZER",
@@ -20344,7 +20344,7 @@
       "name": "Tadpole Galaxy",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0005-sig05-019b-7731380f01.webp",
       "bytes": 4924,
-      "source": "https://www.astropix.org/archive/spitzer/sig05-019b/spitzer_sig05-019b_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|6": {
       "provider": "SPITZER",
@@ -20355,7 +20355,7 @@
       "name": "NGC 7331",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0006-ssc2004-12a1-d99b3ad408.webp",
       "bytes": 1626,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/1252/medium/ssc2004-12a1.jpg?1603800445="
+      "source": ""
     },
     "SPITZER|spitzer|7": {
       "provider": "SPITZER",
@@ -20366,7 +20366,7 @@
       "name": "Small Magellanic Cloud",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0007-ssc2010-02a1-d495f0bcdb.webp",
       "bytes": 4664,
-      "source": "https://www.spitzer.caltech.edu/system/avm_images/binaries/2875/medium/ssc2010-02a1.jpg?1603804680="
+      "source": ""
     },
     "SPITZER|spitzer|8": {
       "provider": "SPITZER",
@@ -20377,7 +20377,7 @@
       "name": "NGC 2207 and IC 2163",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0008-ssc2006-11a1-aacdc670ad.webp",
       "bytes": 4064,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2006-11a1/spitzer_ssc2006-11a1_320.jpg"
+      "source": ""
     },
     "SPITZER|spitzer|9": {
       "provider": "SPITZER",
@@ -20388,384 +20388,9 @@
       "name": "NGC 2207 and IC 2163",
       "path": "viewer/artwork/runtime/survey-thumbnails/spitzer/0009-ssc2006-11b1-44ac900ca8.webp",
       "bytes": 2448,
-      "source": "https://www.astropix.org/archive/spitzer/ssc2006-11b1/spitzer_ssc2006-11b1_320.jpg"
+      "source": ""
     }
   },
   "failures": [],
-  "pruned": [
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0972-opo0737a-416857c503.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0978-opo0932a-bcfb75a067.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0876-heic1105a-02068fae02.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0958-opo0306a-55d72a7f29.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0875-heic1018a-1cabbaef08.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1090-potw2216a-dacba80c83.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0865-heic0813b-aa20565c7f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0999-opo9638b-958baac6d1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0944-opo0028a-8178fe01d3.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0995-opo9544b-2f26adeda8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0943-opo0015a-12ca7f9da0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0914-heic1520a-e03aea663e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0878-heic1112f-f34b921461.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1082-potw1933a-53c5c53d72.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1056-potw1349a-4d09ef4610.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1021-opo9935d-9e831e121f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1011-opo9808g-f333b8137b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1053-potw1319a-93bd17a3ff.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1036-potw1104a-ab477dceb4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0798-heic0408a-8a490c5a62.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0870-heic0910n-1c93ac02b9.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1103-potw2536a-57be061ea8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0871-heic0913a-cbcc237c04.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0869-heic0910h-3330244cf4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0867-heic0813d-88e0f47add.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0859-heic0810cf-2d49a8f217.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1080-potw1825a-01a1bc9a3d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1062-potw1525a-bd419eca28.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0997-opo9545a1-c10f848e8e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0862-heic0810ci-2cd267abb4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1017-opo9839a-dd75b625fb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1074-potw1725a-b39bdc331b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0992-opo9402c-f4a56d2e4c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0874-heic1012a-78b7a0cd19.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1041-potw1120a-4e6f2a6bbc.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1073-potw1708a-696cf6761b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0840-heic0810bh-70b3cbdda4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0861-heic0810ch-eeb598ee7a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0783-eso1631a-a858f12b5e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0848-heic0810bp-33c13b5dcb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0857-heic0810cd-34eaf4e486.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0936-heic2608a-1cd04454ed.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0819-heic0806d-e694c8f5e7.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1042-potw1124a-a03577aa96.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0950-opo0215a-f9c97b8b0b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1005-opo9738c21-2fb083484d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0920-heic1702e-7ef7d3c78a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0984-opo1210a-cfe03e28f6.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0917-heic1623a-8107c5ce10.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0898-heic1506b-922637f6db.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0988-opo1733a-b721d41059.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0835-heic0810ba-628cd1cf69.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0996-opo9545a-ebf360b62c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1015-opo9811i-ba4c46265a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1081-potw1932a-f0ecc55630.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0847-heic0810bo-9fce4241f7.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1057-potw1405a-64034a00ab.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0891-heic1401a-5018e72a05.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0970-opo0733d-4773ac84eb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0977-opo0834a-4531ec64dd.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0933-heic2408a-fe43a7a570.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0998-opo9627c-d79b761634.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1037-potw1106a-f99a030e18.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1069-potw1636a-d0f61ca24b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0925-heic2004a-b62b2456a5.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1055-potw1332a-e103d1813a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1016-opo9836f-d67cedb510.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0959-opo0306b-c6caed1848.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0822-heic0810ai-7cfe3644a7.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1000-opo9738c11-25c97267d5.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0928-heic2011c-a6d77af9b1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0855-heic0810cb-affc1f476f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1059-potw1444a-b1a52a0d0c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0790-heic0307a-0c969a1e20.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1024-potm2602b-0df6f08b22.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0831-heic0810av-1bc00d20c9.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0962-opo0324h-25cc49dddf.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1100-potw2514a-bd4e576001.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0821-heic0810ah-fc5fd71205.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0799-heic0414a-05dfa462a8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0872-heic0913b-deff39f4bc.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0954-opo0225a-9a4c6bd6f7.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0907-heic1507e-8cdedbf9d9.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0930-heic2102a-cda8c67b20.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1079-potw1803a-6433778b97.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0942-opo0012a-5ff88a66b6.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0913-heic1519c-17e6b5ad94.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0885-heic1301a-26457a09c8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0779-ann0912a-c14dd47126.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1008-opo9738d-d8a960e290.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1102-potw2531a-05e819eb2e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0964-opo0421a-7cae007f43.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0792-heic0313b-3b3b42dc03.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0826-heic0810an-8814cd69da.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0808-heic0619a-9144d51937.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0948-opo0205a-f10686db5e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0781-ann1409a-1bf234e159.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0815-heic0712b-adc4ee4526.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0909-heic1507h-315a700080.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0919-heic1702d-3e54d40839.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0924-heic1818a-673b1ee6ea.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0776-ann0820-1d9e462429.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0845-heic0810bm-509a69c001.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0803-heic0513c-ac30714243.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0890-heic1323a-1b0352abaf.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1054-potw1327a-bb6655f38e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1012-opo9811d-2d6adeb16d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0829-heic0810at-3a870448a2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1033-potw1033a-8447e14ef2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0830-heic0810au-264212db26.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1064-potw1531a-99b7f5bd27.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0937-heic9910a-aa0ae86eac.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0856-heic0810cc-9844ea2007.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0880-heic1206a-13ef878974.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1028-potw1012a-4d4f4bd731.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1032-potw1026a-329f52d008.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0816-heic0712c-ec3fe7f690.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0905-heic1507c-2d945eb37e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0838-heic0810be-7cbe3db4b9.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0951-opo0215e-47b83926bf.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0789-heic0206g-8f0b76354f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0788-heic0206f-6cf5d68acf.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1072-potw1652a-72a51df2f5.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0809-heic0619e-fb641de843.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1047-potw1211a-aded43dc2d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0918-heic1702c-02f1197933.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0957-opo0304a-bce8a9941e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0974-opo0813a-d3359b57f1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0923-heic1806a-022a583caf.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1014-opo9811h-00fd41eb6a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1065-potw1547a-f04e18e66b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0963-opo0331c-94ca19f9f8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0900-heic1506d-0cadbe09d0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0879-heic1114a-2ec621a31e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0782-ann1802a-016498b05e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1050-potw1241a-9588a8e0ea.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0973-opo0742c-a68e67f0a3.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1003-opo9738c19-be637a3868.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1058-potw1411a-04d1ec6334.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1060-potw1506a-541a2fd88c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0844-heic0810bl-d2f6c94060.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1043-potw1127a-b7c12057e8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0940-opo0006a-c5a3ff1651.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0921-heic1707a-50991e865d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0949-opo0214a-a65b54b336.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1002-opo9738c15-137d5b2891.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1067-potw1611a-ff0983d508.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0893-heic1414a-1aed3e3314.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1078-potw1802a-31c6de47ad.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1035-potw1102a-cecfdb8279.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0897-heic1502b-5118b88c6e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1031-potw1022a-f4a9b3ee6a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0820-heic0810af-e8a0e16594.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1018-opo9841b-2a12380936.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0824-heic0810al-44efb240ff.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0990-opo9229b-d3fb0560cf.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1101-potw2519a-c742837b94.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0811-heic0703a-26131d438e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0902-heic1506f-74dfb3364b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0818-heic0801b-89001f6e9b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0967-opo0432d-b71987ccb4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0787-heic0206c-f5522a1f03.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0939-opo0004a-7fb4fef1cb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0812-heic0707g-0edcfd3ae0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1097-potw2425a-fef5b771da.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1051-potw1250a-b48fa96d6a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0852-heic0810bw-7bf0be41c8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0985-opo1210c-d457b6d418.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1027-potw1010a-c985d98894.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0839-heic0810bg-4b645bb173.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0797-heic0407b-49632b0644.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0786-heic0205a-a572093dd5.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0956-opo0301c-8d3cd27b48.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1001-opo9738c14-d44dd24b5e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1076-potw1749a-603aff27f1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1068-potw1612a-a7399379fd.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1077-potw1752b-660d0c44da.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1088-potw2214a-ff67deb5a5.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1066-potw1551a-13a1e87d88.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0842-heic0810bj-a06386e3ac.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0896-heic1501e-3bbc3ad86b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0994-opo9501c-26a771643a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0804-heic0513d-1e8d14cac2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1040-potw1114a-df7561a305.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0941-opo0010a-5f6e8a012c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0946-opo0118c-2e149b6920.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0929-heic2018a-f520658f26.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0980-opo1008a-24a940ccd0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0794-heic0406d-e03dc93b87.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0836-heic0810bb-6771b7c33c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0981-opo1022a-9b6a3a5293.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1006-opo9738c3-ad799a186b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1087-potw2119a-6c8906ba0f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0873-heic1009c-3d0021ee34.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0832-heic0810ax-9b4dcf4b62.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0986-opo1235b-2ef3122daa.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0858-heic0810ce-237709d20d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0908-heic1507g-7a485bbe8d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0834-heic0810az-3f3617490d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0945-opo0030a-768b49921b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0800-heic0414b-799e9a6eb2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0922-heic1709c-8ff444ce1e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0947-opo0139a-7fcacc6990.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0912-heic1519a-19bc8d229d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1013-opo9811e-26a467dcc4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0904-heic1507b-f52d6eac5d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0894-heic1501a-fb275466c7.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0935-heic2505f-eacc696571.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0931-heic2105a-55e8ceede1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0868-heic0818a-56092d170a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0841-heic0810bi-0662393211.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1020-opo9935c-934e8d41be.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0860-heic0810cg-57ed35b4aa.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1039-potw1110a-22054d9373.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0810-heic0702a-5c600edbe3.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0953-opo0215g-a8548935ca.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0854-heic0810ca-c4463e68cc.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1094-potw2310b-7a47d36935.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0901-heic1506e-4528100c99.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0911-heic1517b-273dba8040.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1044-potw1141a-d06fda90f8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0887-heic1310a-be4456bdfb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1086-potw2104a-9d5a77f438.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1070-potw1637a-9f381f8b5e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0780-ann1105a-e8d4ebd6a6.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1093-potw2248a-b1999a87aa.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1038-potw1109a-f420e15ed1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1023-pillarsofcreation-composite-d54690f10c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0850-heic0810br-f03288e4c3.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0807-heic0608d-6ed14a4631.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0899-heic1506c-aa9940c581.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1026-potw1008a-9c9463792b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0926-heic2007a-936666725a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0976-opo0825c-46fddf0d5b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0864-heic0810ck-4a1ac3bb96.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0989-opo9229a-b209ba042b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0961-opo0320a-370b39c2d8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0866-heic0813c-dee529d1bb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0910-heic1507i-a309f5f6d2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0863-heic0810cj-18c243ae82.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1083-potw1934a-656179ff8d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0785-heic0113c-3def88fd1b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1095-potw2401a-4bdb6a59af.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1019-opo9920a-2d7957089e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1091-potw2216b-a1a1132e06.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0955-opo0225b-551aed2349.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0801-heic0502a-5428717fa6.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1009-opo9738e-79fb64cbf4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1085-potw2050a-c5245fc67b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0991-opo9305a-0861bc31dc.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1098-potw2503a-f13563da23.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1092-potw2247a-10409fb663.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1049-potw1222a-6af096f035.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0843-heic0810bk-d98c885932.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1084-potw2028a-fa95a6444d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1007-opo9738c4-c94aaaec21.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0795-heic0406e-47dbfc211c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0837-heic0810bc-a9e062b081.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0833-heic0810ay-67c1ab2f71.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0802-heic0506b-8dfc8fc6b6.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1045-potw1142a-7304055e78.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1099-potw2506a-3f02a43e1d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0966-opo0429j-e2852c56a0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0915-heic1601a-46589962fe.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1096-potw2407a-57badb43c9.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0952-opo0215f-7f84199c0c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0806-heic0601a-b0f9a8fd18.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0825-heic0810am-a99771ef19.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0851-heic0810bs-eca8bd175e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0846-heic0810bn-bf3b1f4f7a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0983-opo1208b-41ef40ba84.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0778-ann0910a-9e00bb0153.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0813-heic0709b-6cc44a0127.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0927-heic2011b-99373318d0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0993-opo9501a-b6a08d7294.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1004-opo9738c20-b8cd012819.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0817-heic0720b-90cd45aa9a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0968-opo0613b-75f735d092.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0793-heic0405a-d80d07b620.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0892-heic1406a-60cc3018a4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0938-ngc602-5fb2d93c67.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0987-opo1531b-9047c462b9.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0883-heic1219b-5779fea85d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0979-opo0932f-c2eeb024aa.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1030-potw1019a-d9786ffba8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0805-heic0515a-6c75b34277.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1025-potw1003a-7599926682.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0853-heic0810bz-f263e76618.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1034-potw1034a-7a709e9538.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1063-potw1530a-131e2db9eb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1022-opo9935e-a28b369526.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0888-heic1310b-d6bfc1602a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0796-heic0407a-187b1f28ed.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0960-opo0314a-c984a1debb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0823-heic0810aj-f7fc375fc6.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1048-potw1216a-e73d6a828e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0881-heic1214a-ae61a86c1c.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0982-opo1037a-6c1fc6efad.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1061-potw1522a-c1868b690b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0971-opo0733e-e3f517997f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0903-heic1506g-e6a3e19c67.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0965-opo0429h-3be787d0c3.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0934-heic2505d-f4afeac226.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0828-heic0810as-34e55e5769.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0777-ann0901a-785f4fa500.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0877-heic1111a-471d3a8f9a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0916-heic1608a-dd8fa0a99f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0906-heic1507d-3088f2b317.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1029-potw1015a-e84b3b6a63.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0827-heic0810ao-ae32f769c4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0895-heic1501b-2d29ec52d0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0784-heic0109a-2cdf1c70b0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0889-heic1318a-6e3ac275a2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0969-opo0733c-947d52c59a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0814-heic0712a-aec472405f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0975-opo0822a-74cb3f1109.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0882-heic1217c-f187283071.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0886-heic1304a-d31c10d410.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0932-heic2304a-830bc6d3cb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1089-potw2215a-cc928f1794.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1046-potw1151a-f322bb4bfe.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1071-potw1648a-579c4d1ea7.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1075-potw1736a-8fdf7bf09a.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0791-heic0309c-0c68f86b04.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0884-heic1220a-9c5c7508de.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/0849-heic0810bq-bf24c18c36.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1010-opo9738g-1a5788afc2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/esahubble/1052-potw1304a-7b0369052f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0043-sig06-024-ee886d0e67.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0004-ssc2019-15c-3bfec1a5d8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0026-sig05-006a-66a7735523.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0021-ssc2021-06b-de2217db81.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0029-sig12-008-ceb4b21d75.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0044-sig09-003-a4f006946f.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0032-sig11-017-1dd266c801.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0016-ssc2013-07a1-51dd215276.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0007-ssc2010-02a1-0008b9ed30.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0036-ssc2023-02-214697671d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0031-sig05-016-343d82c669.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0022-ssc2004-09a1-f23d7e67a0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0018-ssc2013-07a3-ee8a12eb00.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0012-ssc2009-15a2-86e8af5dd8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0027-ssc2006-08a1-8ed041bfed.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0005-sig05-019b-b7ad136808.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0015-ssc2023-01b-d70570c285.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0030-ssc2023-04-b2a6c3e835.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0028-ssc2008-14a-dece9ae65d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0009-ssc2006-11b1-e3e47d34d0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0017-ssc2013-07a2-645efc63dc.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0013-ssc2004-14a2-a2b252e9a1.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0000-ssc2024-02a-dcfe625075.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0006-ssc2004-12a1-aba30bbaae.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0024-ssc2004-07b1-05e621a7ac.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0010-ssc2006-17a1-8ffd09ba72.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0033-ssc2009-14a1-fe0baa60e0.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0037-ssc2019-13a-72a171ff18.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0042-sig06-010-0778aef136.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0045-ssc2003-06d5-22e3817b4e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0039-sig05-011-0213d89afb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0003-ssc2019-15b-59bf112e64.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0038-sig05-017-2807c6d2f8.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0023-sig09-004-60c42ad1e4.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0025-ssc2009-06a1-41b2653dec.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0019-ssc2019-03a-35ec5a61b2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0008-ssc2006-11a1-4bf149167b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0002-ssc2019-15a-0e34c1842e.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0014-ssc2004-14a3-62a340f4bb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0001-ssc2024-02b-e777bf749d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0020-ssc2006-09a1-f60eae204b.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0011-ssc2006-17b1-e5fe436f90.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0035-sig05-014-37afadc2d2.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0040-sig05-015-be0677cb7d.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0034-sig05-013-b7aa92e6eb.webp",
-    "viewer/artwork/runtime/survey-thumbnails/spitzerspacetelescope/0041-sig06-003-55a8d5c719.webp"
-  ]
+  "pruned": []
 }
