@@ -42,7 +42,14 @@ User observation:
 
 ## Experiment: APK 0019 — Persistent provider load/reuse
 
-Status: build requested.
+Status: build successful.
+
+Build record:
+- Workflow run: `37213000341`
+- Artifact ID: `11307551343`
+- Workflow commit: `b63461051272e7d697e511667c6b2e15ced36b86`
+- APK SHA-256: `3bb6392b7fe931fca648dcb19f6d2eae3e000ddfc0db4d2817b73c44dd238ec5`
+- Verified embedded AndroidX WebKit version: `1.17.1`.
 
 Baseline rule: APK 0019 is APK 0018 plus provider-loading/cache instrumentation only. Do not remove Chandra fit-width or alter Galaxy Viewer travel/viewer behavior.
 
