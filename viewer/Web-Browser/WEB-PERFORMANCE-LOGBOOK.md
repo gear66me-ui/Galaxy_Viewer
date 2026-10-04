@@ -468,3 +468,20 @@ Correction:
 Commits:
 - viewer: `20f86c3a28c216e2f6380a1e1d59958d2b9853b0`
 - pointer: `c0dc1d16f2cf28447711e7bae43a8b297fa5ff97`
+
+
+## Build 0073 — per-provider Survey session memory
+
+Date: 2026-10-04.
+
+Survey cursor behavior:
+- Each provider now keeps an independent in-memory cursor for the current app session.
+- Cursor is written only after the selected image successfully arrives.
+- Switching away from a provider and later selecting it again automatically returns to its last successfully viewed record.
+- Example: JWST 25 → switch to Chandra → reselect JWST → automatically return to JWST 25; next press advances to JWST 26.
+- App restart intentionally resets all provider cursors.
+- Build 0072 projection choreography is preserved unchanged: launch MOL, delayed MOL→SIN at the 60° apex on the next outbound trip.
+
+Commits:
+- viewer: `d8701cb235d7516708c948655376553cfaace155`
+- pointer: `7d2387dce9288667983978d8388666f70672a057`
