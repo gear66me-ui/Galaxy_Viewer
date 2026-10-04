@@ -1,0 +1,175 @@
+name: Render Earth Pointer Final PNG
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/render-earth-pointer-final-20261004.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install renderer
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Render exact Earth pointer PNGs
+        shell: bash
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+          import math, os
+
+          OUTDIR = "temporary-demos/earth-pointer-final-0001"
+          os.makedirs(OUTDIR, exist_ok=True)
+
+          FONT_PATH = "viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf"
+
+          # Exact accepted geometry from Lab 0008 / user's screenshot.
+          SIZE = 270
+          C = 135.0
+          RING_R = 114.26
+          PTR_W = 11.25
+          PTR_D = 9.954
+          PTR_BASE_R = 118.76
+          PTR_TIP_R = 128.714
+
+          FONT_PX = 9.75
+          LETTER_GAP = 3.25
+          EARTH_RADIAL = 1.75
+          EARTH_OUTER_ZERO = 110.76
+          EARTH_OUTER_R = EARTH_OUTER_ZERO + EARTH_RADIAL   # 112.51
+          EARTH_CENTER_R = EARTH_OUTER_R - FONT_PX * 0.56
+          YELLOW = (255, 216, 74, 255)
+
+          SCALE = 8
+          W = H = SIZE * SCALE
+          CS = C * SCALE
+
+          font = ImageFont.truetype(FONT_PATH, round(FONT_PX * SCALE))
+
+          def compute_letters():
+              pitch = FONT_PX * 0.63 + LETTER_GAP
+              step = pitch / EARTH_CENTER_R
+              chars = list("EARTH")
+              start = -math.pi/2 - step*(len(chars)-1)/2
+              out = []
+              for i,ch in enumerate(chars):
+                  theta = start + i*step
+                  x = C + EARTH_CENTER_R*math.cos(theta)
+                  y = C + EARTH_CENTER_R*math.sin(theta)
+                  rot = theta + math.pi/2
+                  out.append((ch,x,y,rot))
+              return out
+
+          LETTERS = compute_letters()
+
+          def rot_point(x,y,angle):
+              ca,sa=math.cos(angle),math.sin(angle)
+              dx,dy=x-C,y-C
+              return C + dx*ca-dy*sa, C + dx*sa+dy*ca
+
+          def make_layer(bearing_deg):
+              base = Image.new("RGBA",(W,H),(0,0,0,0))
+
+              # Draw pointer at NORTH, then rotate as part of the rigid overlay.
+              pointer = Image.new("RGBA",(W,H),(0,0,0,0))
+              pd = ImageDraw.Draw(pointer)
+              half = PTR_W/2
+              pts = [
+                  ((C-half)*SCALE,(C-PTR_BASE_R)*SCALE),
+                  ((C+half)*SCALE,(C-PTR_BASE_R)*SCALE),
+                  (C*SCALE,(C-PTR_TIP_R)*SCALE),
+              ]
+              pd.polygon(pts, fill=YELLOW)
+
+              # Yellow pointer glow, matching the browser's subtle HUD bloom.
+              pa = pointer.getchannel("A")
+              pglow = Image.new("RGBA",(W,H),(255,216,74,0))
+              pglow.putalpha(pa.filter(ImageFilter.GaussianBlur(1.3*SCALE)))
+              base = Image.alpha_composite(base,pglow)
+              base = Image.alpha_composite(base,pointer)
+
+              # Draw each exact Space Age glyph at its mathematical NORTH position.
+              textlayer = Image.new("RGBA",(W,H),(0,0,0,0))
+              for ch,x,y,rot in LETTERS:
+                  # generous scratch tile; anchor by glyph center
+                  tile = Image.new("RGBA",(160*SCALE,160*SCALE),(0,0,0,0))
+                  td = ImageDraw.Draw(tile)
+                  bbox = td.textbbox((0,0),ch,font=font)
+                  tw,th=bbox[2]-bbox[0],bbox[3]-bbox[1]
+                  pos=((tile.width-tw)/2-bbox[0],(tile.height-th)/2-bbox[1])
+                  td.text(pos,ch,font=font,fill=YELLOW)
+
+                  # PIL positive degrees are CCW visually; browser SVG rotation is CW in y-down.
+                  # Match the browser math by negating the local glyph angle here.
+                  tile = tile.rotate(-math.degrees(rot), resample=Image.Resampling.BICUBIC, expand=False)
+
+                  px=int(round(x*SCALE-tile.width/2))
+                  py=int(round(y*SCALE-tile.height/2))
+                  textlayer.alpha_composite(tile,(px,py))
+
+              ta = textlayer.getchannel("A")
+              tglow = Image.new("RGBA",(W,H),(255,216,74,0))
+              tglow.putalpha(ta.filter(ImageFilter.GaussianBlur(1.0*SCALE)))
+              base = Image.alpha_composite(base,tglow)
+              base = Image.alpha_composite(base,textlayer)
+
+              if bearing_deg:
+                  # rigid rotation around the exact 135,135 center
+                  base = base.rotate(-bearing_deg, resample=Image.Resampling.BICUBIC, center=(CS,CS), expand=False)
+
+              # Downsample to exact runtime dimensions.
+              return base.resize((SIZE,SIZE),Image.Resampling.LANCZOS)
+
+          north = make_layer(0)
+          preview309 = make_layer(309)
+
+          north.save(os.path.join(OUTDIR,"earth-pointer-yellow-north-270.png"))
+          preview309.save(os.path.join(OUTDIR,"earth-pointer-yellow-bearing-309-270.png"))
+
+          # Tight crop of the 309° screenshot-matching orientation, useful for inspection.
+          alpha = preview309.getchannel("A")
+          bbox = alpha.getbbox()
+          if bbox:
+              pad=4
+              l,t,r,b=bbox
+              l=max(0,l-pad); t=max(0,t-pad); r=min(SIZE,r+pad); b=min(SIZE,b+pad)
+              preview309.crop((l,t,r,b)).save(os.path.join(OUTDIR,"earth-pointer-yellow-bearing-309-tight.png"))
+
+          print("Rendered:")
+          for name in sorted(os.listdir(OUTDIR)):
+              print(" ",name)
+          print("EARTH_OUTER_R",EARTH_OUTER_R)
+          print("EARTH_CENTER_R",EARTH_CENTER_R)
+          print("PTR_BASE_R",PTR_BASE_R)
+          print("PTR_TIP_R",PTR_TIP_R)
+          PY
+
+      - name: Commit PNGs
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add temporary-demos/earth-pointer-final-0001/*.png
+          if git diff --cached --quiet; then
+            echo "No PNG changes to commit"
+          else
+            git commit -m "Render final yellow Earth pointer PNG"
+            git push origin HEAD:release
+          fi
