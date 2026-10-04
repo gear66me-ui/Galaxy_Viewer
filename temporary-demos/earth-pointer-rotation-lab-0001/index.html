@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Galaxy Viewer — Compass / Earth Rotation Lab 0001</title>
+<style>
+@font-face{font-family:SpaceAge;src:url('../../viewer/artwork/Fonts/Space%20Age/space%20age.otf') format('opentype');font-display:swap}
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#03070c;color:#dff7ff;font-family:SpaceAge,Arial,sans-serif}
+body{padding:18px 14px 28px;background:
+radial-gradient(circle at 50% 30%,rgba(15,65,100,.24),transparent 45%),
+linear-gradient(#020509,#06101a)}
+.wrap{max-width:620px;margin:0 auto}
+h1{font-size:16px;letter-spacing:1.5px;text-align:center;margin:4px 0 6px;color:#8fe9ff}
+.note{text-align:center;font:12px/1.45 Arial,sans-serif;color:#9ab6c3;margin:0 0 14px}
+.stageShell{display:grid;place-items:center;padding:10px 0 14px}
+.stage{
+position:relative;width:min(84vw,360px);aspect-ratio:1/1;
+touch-action:none;user-select:none;-webkit-user-select:none;
+border-radius:50%;
+background:radial-gradient(circle,rgba(10,35,52,.24) 0 48%,rgba(0,0,0,.08) 65%,transparent 70%);
+}
+.rotor{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform;pointer-events:none}
+.rotor img{position:absolute;left:50%;top:50%;width:75%;height:75%;transform:translate(-50%,-50%);object-fit:contain;display:block}
+#compassRotor{opacity:.60}
+#earthRotor{opacity:1}
+#earthImg{width:75%;height:75%}
+.centerDot{position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);background:#fff;box-shadow:0 0 10px #57d8ff;pointer-events:none}
+.panel{border:1px solid #3187b8;border-radius:14px;padding:12px;background:linear-gradient(180deg,rgba(8,35,59,.92),rgba(4,18,31,.92));box-shadow:0 0 18px rgba(45,178,255,.16)}
+.activeRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+button{font-family:SpaceAge,Arial,sans-serif;border:1px solid #3ab8f3;border-radius:10px;background:#082a45;color:#aeeeff;padding:11px 8px;letter-spacing:.7px}
+button.active{background:#175276;color:#fff;box-shadow:0 0 12px rgba(66,207,255,.45)}
+.grid{display:grid;grid-template-columns:112px 1fr 54px;gap:9px 10px;align-items:center}
+label{font-size:11px;color:#94eaff}
+input[type=range]{width:100%;accent-color:#49d5ff}
+.val{font:12px Arial,sans-serif;text-align:right;color:#fff}
+.toggleRow{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0 10px;font:13px Arial,sans-serif}
+.toggleRow label{font:13px Arial,sans-serif;color:#d4e9f2}
+.footerBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.badge{text-align:center;font:10px Arial,sans-serif;color:#657f8d;margin-top:10px}
+#earthSource{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>COMPASS / EARTH ROTATION LAB</h1>
+<p class="note">Touch-drag directly on the circle. Choose which layer the gesture rotates. Both layers rotate around the exact same center.</p>
+
+<div class="stageShell">
+  <div class="stage" id="stage">
+    <div class="rotor" id="compassRotor">
+      <img alt="Galaxy Viewer compass" src="../../viewer/artwork/compass/compass.png">
+    </div>
+    <div class="rotor" id="earthRotor">
+      <img id="earthImg" alt="Earth pointer overlay">
+    </div>
+    <div class="centerDot"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="activeRow">
+    <button id="modeCompass" class="active">TOUCH ROTATES COMPASS</button>
+    <button id="modeEarth">TOUCH ROTATES EARTH</button>
+  </div>
+
+  <div class="grid">
+    <label>COMPASS °</label><input id="compassAngle" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="compassAngleV">0°</span>
+    <label>EARTH °</label><input id="earthAngle" type="range" min="-180" max="180" step="1" value="0"><span class="val" id="earthAngleV">0°</span>
+    <label>COMPASS OPACITY</label><input id="compassOpacity" type="range" min="0" max="1" step=".01" value=".60"><span class="val" id="compassOpacityV">60%</span>
+    <label>EARTH OPACITY</label><input id="earthOpacity" type="range" min="0" max="1" step=".01" value="1"><span class="val" id="earthOpacityV">100%</span>
+    <label>EARTH SCALE</label><input id="earthScale" type="range" min=".65" max="1.35" step=".01" value="1"><span class="val" id="earthScaleV">100%</span>
+  </div>
+
+  <div class="toggleRow">
+    <label><input id="showCompass" type="checkbox" checked> COMPASS</label>
+    <label><input id="showEarth" type="checkbox" checked> EARTH POINTER</label>
+    <label><input id="showCenter" type="checkbox"> CENTER DOT</label>
+  </div>
+
+  <div class="footerBtns">
+    <button id="zeroCompass">ZERO COMPASS</button>
+    <button id="zeroEarth">ZERO EARTH</button>
+  </div>
+  <div class="badge">LAB 0001 · COMPASS SOURCE: viewer/artwork/compass/compass.png · INNER RADIUS 650/1536 → 114.26 px @ 270</div>
+</div>
+</div>
+
+<script>
+const EARTH_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 270">
+  <defs>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <path id="earthArc" d="M 102 34 Q 135 18 168 34"/>
+  </defs>
+  <g filter="url(#glow)" fill="#ffd83d" stroke="#ffbf18" stroke-width="1">
+    <path d="M135 2 L124 23 L146 23 Z"/>
+  </g>
+  <text fill="#ffd83d" font-family="SpaceAge, sans-serif" font-size="11.5" letter-spacing="1.4" text-anchor="middle" filter="url(#glow)">
+    <textPath href="#earthArc" startOffset="50%">EARTH</textPath>
+  </text>
+</svg>`;
+document.getElementById('earthImg').src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(EARTH_SVG);
+
+const stage=document.getElementById('stage');
+const compassRotor=document.getElementById('compassRotor');
+const earthRotor=document.getElementById('earthRotor');
+const earthImg=document.getElementById('earthImg');
+const centerDot=document.querySelector('.centerDot');
+
+const ca=document.getElementById('compassAngle'), ea=document.getElementById('earthAngle');
+const co=document.getElementById('compassOpacity'), eo=document.getElementById('earthOpacity'), es=document.getElementById('earthScale');
+const cav=document.getElementById('compassAngleV'), eav=document.getElementById('earthAngleV');
+const cov=document.getElementById('compassOpacityV'), eov=document.getElementById('earthOpacityV'), esv=document.getElementById('earthScaleV');
+let mode='compass';
+
+function paint(){
+  compassRotor.style.transform='rotate('+ca.value+'deg)';
+  earthRotor.style.transform='rotate('+ea.value+'deg)';
+  compassRotor.style.opacity=co.value;
+  earthRotor.style.opacity=eo.value;
+  earthImg.style.transform='translate(-50%,-50%) scale('+es.value+')';
+  cav.textContent=ca.value+'°'; eav.textContent=ea.value+'°';
+  cov.textContent=Math.round(co.value*100)+'%'; eov.textContent=Math.round(eo.value*100)+'%'; esv.textContent=Math.round(es.value*100)+'%';
+}
+[ca,ea,co,eo,es].forEach(x=>x.addEventListener('input',paint));
+
+const mc=document.getElementById('modeCompass'), me=document.getElementById('modeEarth');
+function setMode(m){mode=m;mc.classList.toggle('active',m==='compass');me.classList.toggle('active',m==='earth')}
+mc.onclick=()=>setMode('compass'); me.onclick=()=>setMode('earth');
+
+document.getElementById('showCompass').onchange=e=>compassRotor.style.display=e.target.checked?'block':'none';
+document.getElementById('showEarth').onchange=e=>earthRotor.style.display=e.target.checked?'block':'none';
+document.getElementById('showCenter').onchange=e=>centerDot.style.display=e.target.checked?'block':'none';
+centerDot.style.display='none';
+document.getElementById('zeroCompass').onclick=()=>{ca.value=0;paint()};
+document.getElementById('zeroEarth').onclick=()=>{ea.value=0;paint()};
+
+let dragging=false,startPointerAngle=0,startLayerAngle=0,pointerId=null;
+function pointerAngle(ev){
+  const r=stage.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+  return Math.atan2(ev.clientY-cy,ev.clientX-cx)*180/Math.PI;
+}
+stage.addEventListener('pointerdown',ev=>{
+  dragging=true;pointerId=ev.pointerId;stage.setPointerCapture(pointerId);
+  startPointerAngle=pointerAngle(ev);
+  startLayerAngle=parseFloat(mode==='compass'?ca.value:ea.value);
+});
+stage.addEventListener('pointermove',ev=>{
+  if(!dragging||ev.pointerId!==pointerId)return;
+  let a=startLayerAngle+(pointerAngle(ev)-startPointerAngle);
+  while(a>180)a-=360; while(a<-180)a+=360;
+  const input=mode==='compass'?ca:ea;
+  input.value=Math.round(a);paint();
+});
+function end(ev){if(ev.pointerId===pointerId){dragging=false;pointerId=null}}
+stage.addEventListener('pointerup',end);stage.addEventListener('pointercancel',end);
+paint();
+</script>
+</body>
+</html>
