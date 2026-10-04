@@ -1,0 +1,79 @@
+name: Chandra WCS Feed Rescue
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-wcs-feed-rescue.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rescue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build feed rescue report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rescue
+          curl --fail --location --retry 3 --silent --show-error 'https://www.astropix.org/link/918?format=json' -o /tmp/rescue/feed.json
+          python3 - <<'PY'
+          import json,re
+          feed=json.load(open('/tmp/rescue/feed.json'))
+          byid={str(r.get('image_id')):r for r in feed if r.get('image_id') is not None}
+          ids=['901a','901b','901c','901e','901f','901i','901j','901l','901o','847','838f','838p','813','800','797','429','370']
+          manual={
+            'heart-2026':['IC 5146','Cocoon Nebula'],
+            'spring-w2':['Westerlund 2'],
+            'spring-ngc346':['NGC 346'],
+            'spring-catspaw':['NGC 6334',"Cat's Paw Nebula"],
+            'spring-pelican':['NGC 7000','Pelican Nebula'],
+            'spring-flame':['NGC 2024','Flame Nebula'],
+          }
+          def complete(r):
+              return len(r.get('wcs_reference_value') or [])>=2 and len(r.get('wcs_reference_dimension') or [])>=2 and len(r.get('wcs_reference_pixel') or [])>=2 and len(r.get('wcs_scale') or [])>=2 and r.get('wcs_rotation') not in (None,'') and bool(r.get('wcs_projection'))
+          def slim(r):
+              return {
+                'imageId':str(r.get('image_id')),
+                'name':(r.get('object_name') or [''])[0],
+                'quality':r.get('wcs_quality'),
+                'complete':complete(r),
+                'referenceValue':r.get('wcs_reference_value') or [],
+                'referenceDimension':r.get('wcs_reference_dimension') or [],
+                'referencePixel':r.get('wcs_reference_pixel') or [],
+                'scale':r.get('wcs_scale') or [],
+                'rotation':r.get('wcs_rotation'),
+                'projection':r.get('wcs_projection'),
+                'resourceUrl':r.get('resource_url'),
+                'referenceUrl':r.get('reference_url'),
+                'releaseDate':r.get('image_release_date')
+              }
+          out={'direct':[],'manual':{}}
+          for i in ids:
+              r=byid.get(i)
+              out['direct'].append(slim(r) if r else {'imageId':i,'missing':True})
+          def norm(s):return re.sub(r'[^a-z0-9]+','',str(s).lower())
+          for key,aliases in manual.items():
+              aa=[norm(x) for x in aliases]
+              matches=[]
+              for r in feed:
+                  names=[str(x) for x in (r.get('object_name') or [])]
+                  if not names:continue
+                  nn=[norm(n) for n in names]
+                  if any(a==n or a in n or n in a for a in aa for n in nn):
+                      matches.append(slim(r))
+              matches.sort(key=lambda x:(x['complete'],x.get('releaseDate') or ''),reverse=True)
+              out['manual'][key]=matches[:20]
+          json.dump(out,open('/tmp/rescue/feed-rescue.json','w'),indent=2)
+          print('DIRECT')
+          for x in out['direct']:print(x['imageId'],x.get('name'),x.get('quality'),'COMPLETE',x.get('complete'))
+          print('MANUAL')
+          for k,v in out['manual'].items():print(k,[(x['imageId'],x['name'],x['complete'],x['quality']) for x in v[:10]])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chandra-wcs-feed-rescue
+          path: /tmp/rescue/feed-rescue.json
