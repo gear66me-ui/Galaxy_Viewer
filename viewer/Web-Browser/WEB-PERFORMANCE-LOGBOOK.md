@@ -485,3 +485,27 @@ Survey cursor behavior:
 Commits:
 - viewer: `d8701cb235d7516708c948655376553cfaace155`
 - pointer: `7d2387dce9288667983978d8388666f70672a057`
+
+
+## Build 0074 — long-press Survey galaxy selector
+
+Date: 2026-10-04.
+
+Survey selector:
+- Center Survey control now cycles through provider/image count, PRESS FOR NEXT, and LONG PRESS TO SELECT.
+- Long press (620 ms) opens a centered catalog browser measuring 60vw × 60vh.
+- Rows are 40 px tall with 32 × 32 px rounded square thumbnail wells.
+- Thumbnail images are centered with object-fit: contain to preserve galaxy framing.
+- Thumbnails are lazy-loaded with IntersectionObserver near the visible scroll window only.
+- Each row shows sequential catalog number, best available galaxy/common name, and compact designation/constellation or image-type metadata.
+- Current record is highlighted and auto-scrolled to the center when the selector opens.
+- Tapping a row closes the selector and routes through the same Survey navigation path as normal sequential travel.
+- The center Survey control remains enabled on the last record so long press can still open the catalog.
+- Build 0073 per-provider session cursors remain authoritative and update only after successful arrival.
+- Projection choreography remains unchanged: launch MOL, delayed MOL→SIN at the agreed outbound 60° apex.
+- Browser remains 0031; no APK change.
+
+Commits:
+- navigator 003: `4730076cc3a7ed074929a08bd743b75703c8a704`
+- viewer: `506a86cabe94bf132150775aaf6f4107f2441a25`
+- pointer: `851b24d5c4e93f05f68cb1207de5064bd90476a4`
