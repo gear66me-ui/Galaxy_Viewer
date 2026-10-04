@@ -170,3 +170,30 @@ Build 0063 correction:
 Module commit: `8d9f784bf32812e9d8e1a89423778bd40f6d94b3`.
 Viewer commit: `752bdcea7c571f68b76350204d788025ccd0e5b3`.
 Pointer commit: `7febbb961bd4a8815701e55999c310b60a74d154`.
+
+
+## Hosted instrumentation revision — Build 0064
+
+Date: 2026-10-04.
+
+Purpose: preserve Build 0063 live APK19 WebView telemetry and refine the View-HD loading choreography.
+
+Verified Build 0063 baseline preserved:
+- View HD no longer removes the destination card's native telemetry target.
+- APK19 native `onProgressChanged` remains visible to the hosted View-HD status.
+- `onPageFinished` latches the ready state.
+- Short provider progress bar and separated ready LED remain below the WEB icon.
+- `DOWNLOADING` remains visible until ready; `READY ✓` remains latched until Back to Sky / destination departure.
+
+Build 0064 visual sequence:
+- Provider name begins the pulse.
+- `WEB` follows.
+- Three downward vectors pulse in sequence.
+- `DOWNLOADING` is the final beat of the 1.65 s cycle.
+- Once ready, the loading pulse is replaced by persistent `READY ✓`; no blinking ready state.
+
+APK19 native provider/cache behavior remains unchanged.
+
+Module commit: `de6641e8b0444e2b2115b83683f21380a0a132f4`.
+Viewer commit: `a3d6f9964e1a1393b4ca5bd14db869b495ebee82`.
+Pointer commit: `7420f6496298dce112af71d78ef845c99453460e`.
