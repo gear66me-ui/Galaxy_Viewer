@@ -571,3 +571,34 @@ Commits:
 - Navigator 005: `58857737cd05ca6377ac0edd331646b0ac0a30f3`
 - Viewer: `7d04f3545ca445a2aee5e98e7da253bffbab2744`
 - Pointer: `e8a6824cb2abbedfb89692900fce2a12a0d1f60b`
+
+
+## Build 0078 — armed Survey providers + explicit displayed state
+
+Date: 2026-10-04.
+
+Survey behavior:
+- Selecting Hubble/JWST/Chandra/ESO/NOIRLab/Spitzer now arms that provider without starting travel.
+- The remembered per-provider position remains the armed target; a never-visited provider arms record 1.
+- Armed center state: `GO TO PROVIDER N OF TOTAL` ↔ `PRESS TO VIEW`.
+- Pressing the center control while armed travels to that record.
+- Selecting a row from `SELECT GALAXY` travels directly to that selected record.
+- After successful arrival, center state becomes `DISPLAYING PROVIDER N OF TOTAL` ↔ `PRESS FOR NEXT`.
+- Per-provider cursor is still committed only after successful arrival.
+
+Presentation:
+- Gold `SELECT GALAXY` control remains fully opaque even while temporarily disabled during travel.
+- Survey selector body is now fully opaque.
+- Existing top placement 5 px below the coordinate box and hamburger indicator are preserved.
+- Existing thumbnail prewarm/cache behavior from Navigator 005 is preserved in Navigator 006.
+
+Projection:
+- Launch remains Mollweide / MOL.
+- First HOME → galaxy flight remains MOL.
+- First subsequent outbound trip switches MOL → SPHERICAL/SIN at the 60° apex.
+- No later automatic projection switch occurs.
+
+Commits:
+- Navigator 006: `30803ce207747022a5485f783c845af8bb7238a6`
+- Viewer: `9a8fc71336347e414345aaebc7b4f201ece6e777`
+- Pointer: `4823741bf8489f79613950c5d741cbcdf3b6dfbf`
