@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0057 — cancel stale provider handoff before sky navigation; choreography unchanged
+# BUILD 0058 — cosmic-age catalog semantics and COSMIC AGE presentation
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,9 +85,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0057';
+const GV200001_BUILD='0058';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-BOM05714b2c06e2-DPdc5c1046027d`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -105,7 +105,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hud/gv-heads-up-display-0001.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f70d599c02e83239935118e402372d014a60a8f8/viewer/modules/destination-presentation/gv-destination-presentation-0017.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a0750906d88ebfdad6da7ab71363359a1636c6fb/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
 });
 
 
@@ -652,7 +652,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='001'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 001 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0017'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0017 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0018'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0018 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
