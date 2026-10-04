@@ -34,8 +34,14 @@
 (async()=>{
 window.addEventListener('error',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.message||'Unknown JavaScript error')});
 window.addEventListener('unhandledrejection',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.reason?.message||e?.reason||'Unhandled promise rejection')});
-await A.init;
 const queue=__QUEUE_JSON__;
+var earlyProgress=document.getElementById('progress');
+var earlyTitle=document.getElementById('title');
+var earlyDiag=document.getElementById('diag');
+if(earlyProgress)earlyProgress.textContent='1 / '+queue.length+' · INITIALIZING ALADIN';
+if(earlyTitle)earlyTitle.textContent='INITIALIZING ALADIN 3.8.2…';
+if(earlyDiag)earlyDiag.textContent='Queue embedded: '+queue.length+' images. Starting Aladin/WebGL…';
+await Promise.race([A.init,new Promise(function(_,reject){setTimeout(function(){reject(new Error('ALADIN INIT TIMEOUT — WebGL2 did not initialize'));},12000);})]);
 const KEY='gv-chandra-registration-gate-0001';
 let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(_){}
 let idx=0,layer=null,currentFov=1;
