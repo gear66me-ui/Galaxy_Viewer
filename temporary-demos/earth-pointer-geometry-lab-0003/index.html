@@ -99,8 +99,8 @@ button{
 <body>
 <div class="wrap">
   <h1>EARTH POINTER GEOMETRY LAB</h1>
-  <p class="note">Drag anywhere on the compass to rotate the compass only. The yellow EARTH label stays fixed just inside the compass ring while the pointer points outward toward EARTH.</p>
-  <div class="spec">270 PX COMPASS · R=135 · EARTH OUTER TEXT CONTOUR R=133 · RELEASE POINTER 11.25 × 9.954</div>
+  <p class="note">Drag anywhere on the compass to rotate the compass only. EARTH is fully inside the visible ring; the same-size yellow pointer sits farther inward and points outward toward EARTH.</p>
+  <div class="spec">270 PX COMPASS · VISIBLE INNER RING R=114.26 · EARTH OUTER CONTOUR R=112.26 · RELEASE POINTER 11.25 × 9.954</div>
 
   <div class="stageShell">
     <div class="stage" id="stage">
@@ -130,7 +130,7 @@ button{
       <input id="fontSize" type="range" min="6" max="13" step=".25" value="11">
       <div class="value" id="fontSizeV">11.00</div>
 
-      <div class="labLabel">CIRCLE INSET PX</div>
+      <div class="labLabel">RING INSET PX</div>
       <input id="inset" type="range" min="0" max="8" step=".25" value="2">
       <div class="value" id="insetV">2.00</div>
 
@@ -150,7 +150,7 @@ button{
     <div class="toggles">
       <label><input id="showPointer" type="checkbox" checked> POINTER</label>
       <label><input id="showEarth" type="checkbox" checked> EARTH</label>
-      <label><input id="showGuide" type="checkbox"> R=133 GUIDE</label>
+      <label><input id="showGuide" type="checkbox"> EARTH CONTOUR GUIDE</label>
     </div>
 
     <div class="buttons">
@@ -169,6 +169,8 @@ const CURRENT_POINTER_WIDTH=11.25;
 const CURRENT_POINTER_DEPTH=9.954;
 const CURRENT_POINTER_TOP=15.47;
 const CURRENT_YELLOW='#FFD84A';
+const INNER_RING_RADIUS=114.26;
+const POINTER_TEXT_GAP=2.0;
 
 const stage=document.getElementById('stage');
 const compass=document.getElementById('compass');
@@ -196,20 +198,25 @@ function earthGeometry(){
   earthGroup.replaceChildren();
 
   const fontPx=Number(fs.value);
-  const circleInset=Number(inset.value);
+  const ringInset=Number(inset.value);
   const letterGap=Number(gap.value);
-  const outerContourRadius=C-circleInset;
 
-  // EARTH stays INSIDE the compass. Put each glyph center inward enough that
-  // its outward-facing/top edge follows the requested 133 px contour.
-  const glyphCenterRadius=outerContourRadius-(fontPx*0.58);
+  // The visible compass inner ring was measured from compass.png:
+  // 650 / 1536 of the source half-width => 114.26 px at 270 px.
+  // The OUTER/TOP edge of EARTH follows an inset circle inside that ring.
+  const outerContourRadius=INNER_RING_RADIUS-ringInset;
 
-  // Current release pointer envelope:
-  // 11.25px tangential width x 9.954px radial depth.
-  // At the LEFT edge, EARTH is inside the ring and the pointer must point
-  // OUTWARD (left) toward the EARTH label.
-  const apexX=C-(C-CURRENT_POINTER_TOP+CURRENT_POINTER_DEPTH);
-  const baseX=C-(C-CURRENT_POINTER_TOP);
+  // Text body extends radially INWARD from that contour.
+  const glyphCenterRadius=outerContourRadius-(fontPx*0.56);
+
+  // Keep the release triangle dimensions exactly, but position it inward
+  // so EARTH fits between its outward-facing apex and the visible ring.
+  // LEFT side order: CENTER -> BASE -> APEX -> EARTH -> INNER RING.
+  const textInnerRadius=outerContourRadius-fontPx;
+  const apexRadius=textInnerRadius-POINTER_TEXT_GAP;
+  const baseRadius=apexRadius-CURRENT_POINTER_DEPTH;
+  const apexX=C-apexRadius;
+  const baseX=C-baseRadius;
   const halfW=CURRENT_POINTER_WIDTH/2;
 
   if(showPointer.checked){
@@ -270,7 +277,7 @@ function earthGeometry(){
   earthSvg.style.opacity=eo.value;
 
   document.getElementById('fontSizeV').textContent=fontPx.toFixed(2);
-  document.getElementById('insetV').textContent=circleInset.toFixed(2);
+  document.getElementById('insetV').textContent=ringInset.toFixed(2);
   document.getElementById('letterGapV').textContent=letterGap.toFixed(2);
   document.getElementById('earthOpacityV').textContent=Math.round(Number(eo.value)*100)+'%';
 }
@@ -328,10 +335,10 @@ async function exportEarthPng(){
   ctx.clearRect(0,0,270,270);
 
   const fontPx=Number(fs.value);
-  const circleInset=Number(inset.value);
+  const ringInset=Number(inset.value);
   const letterGap=Number(gap.value);
-  const outerContourRadius=C-circleInset;
-  const glyphCenterRadius=outerContourRadius-(fontPx*0.58);
+  const outerContourRadius=INNER_RING_RADIUS-ringInset;
+  const glyphCenterRadius=outerContourRadius-(fontPx*0.56);
   const alpha=Number(eo.value);
 
   ctx.save();
@@ -341,8 +348,11 @@ async function exportEarthPng(){
   ctx.shadowBlur=2;
 
   if(showPointer.checked){
-    const apexX=C-(C-CURRENT_POINTER_TOP+CURRENT_POINTER_DEPTH);
-    const baseX=C-(C-CURRENT_POINTER_TOP);
+    const textInnerRadius=outerContourRadius-fontPx;
+    const apexRadius=textInnerRadius-POINTER_TEXT_GAP;
+    const baseRadius=apexRadius-CURRENT_POINTER_DEPTH;
+    const apexX=C-apexRadius;
+    const baseX=C-baseRadius;
     const halfW=CURRENT_POINTER_WIDTH/2;
     ctx.beginPath();
     ctx.moveTo(baseX,C-halfW);
