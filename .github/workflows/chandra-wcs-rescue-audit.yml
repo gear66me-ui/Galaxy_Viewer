@@ -1,0 +1,154 @@
+name: Chandra WCS Rescue Audit
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-wcs-rescue-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rescue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Install metadata inspector
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libimage-exiftool-perl
+
+      - name: Rescue Chandra AVM WCS
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chandra-wcs-rescue/files
+          curl --fail --location --retry 3 --silent --show-error 'https://www.astropix.org/link/918?format=json' -o /tmp/chandra-wcs-rescue/feed.json
+
+          python3 - <<'PY'
+          import json,re,urllib.request,urllib.error,subprocess,pathlib,os,html
+          root=pathlib.Path('/tmp/chandra-wcs-rescue')
+          feed=json.load(open(root/'feed.json'))
+          byid={str(r.get('image_id')):r for r in feed if r.get('image_id') is not None}
+
+          targets=[
+            ('901a','NGC 1672'),('901b','II Zw 096'),('901c','M33'),('901e','NGC 1569'),('901f','M90'),
+            ('901i','Arp 143'),('901j','NGC 4725'),('901l','NGC 660'),('901o','NGC 3938'),
+            ('847','Guitar Nebula'),('838f','The Eagle Nebula (M16)'),('838p','Hb 5 Nebula'),('813','SN1006'),
+            ('800','Crab Nebula'),('797',"Tycho's Supernova Remnant"),('429','RCW 86'),('370','Coronet Cluster')
+          ]
+          manual=[
+            ('heart-2026',['IC 5146','Cocoon Nebula']),
+            ('spring-w2',['Westerlund 2']),
+            ('spring-ngc346',['NGC 346']),
+            ('spring-catspaw',['NGC 6334',"Cat's Paw Nebula"]),
+            ('spring-pelican',['NGC 7000','Pelican Nebula']),
+            ('spring-flame',['NGC 2024','Flame Nebula']),
+          ]
+
+          def norm(s):
+              return re.sub(r'[^a-z0-9]+','',str(s).lower())
+
+          def vals(r):
+              return {
+                'referenceValue':r.get('wcs_reference_value') or [],
+                'referenceDimension':r.get('wcs_reference_dimension') or [],
+                'referencePixel':r.get('wcs_reference_pixel') or [],
+                'scale':r.get('wcs_scale') or [],
+                'rotation':r.get('wcs_rotation'),
+                'projection':r.get('wcs_projection'),
+              }
+
+          def complete_from_record(r):
+              v=vals(r)
+              return len(v['referenceValue'])>=2 and len(v['referenceDimension'])>=2 and len(v['referencePixel'])>=2 and len(v['scale'])>=2 and v['rotation'] not in (None,'') and bool(v['projection'])
+
+          def download(url,path):
+              req=urllib.request.Request(url,headers={'User-Agent':'GalaxyViewer-WCS-Rescue/1.0'})
+              with urllib.request.urlopen(req,timeout=60) as resp, open(path,'wb') as out:
+                  while True:
+                      b=resp.read(1024*1024)
+                      if not b: break
+                      out.write(b)
+
+          def exif_spatial(path):
+              p=subprocess.run(['exiftool','-j','-G1','-a','-s',str(path)],capture_output=True,text=True,timeout=60)
+              if p.returncode!=0:
+                  return {'error':p.stderr.strip()}
+              arr=json.loads(p.stdout or '[]')
+              if not arr:return {}
+              d=arr[0]
+              spatial={k:v for k,v in d.items() if 'Spatial' in k or 'WCS' in k or 'Reference' in k or 'Projection' in k or 'Rotation' in k}
+              return spatial
+
+          results=[]
+          for image_id,name in targets:
+              r=byid.get(image_id)
+              out={'key':image_id,'name':name,'feedFound':bool(r)}
+              if not r:
+                  results.append(out);continue
+              out.update({
+                'feedName':(r.get('object_name') or [''])[0],
+                'wcsQuality':r.get('wcs_quality'),
+                'feedWcs':vals(r),
+                'feedComplete':complete_from_record(r),
+                'resourceUrl':r.get('resource_url'),
+                'referenceUrl':r.get('reference_url'),
+              })
+              if not out['feedComplete'] and r.get('resource_url'):
+                  ext='.tif' if '.tif' in r['resource_url'].lower() else '.jpg'
+                  path=root/'files'/(re.sub(r'[^A-Za-z0-9_-]','_',image_id)+ext)
+                  try:
+                      download(r['resource_url'].replace('http://','https://'),path)
+                      out['downloadBytes']=path.stat().st_size
+                      out['exifSpatial']=exif_spatial(path)
+                  except Exception as e:
+                      out['downloadError']=repr(e)
+              results.append(out)
+
+          allnames=[]
+          for r in feed:
+              names=[str(x) for x in (r.get('object_name') or [])]
+              allnames.append((r,names))
+          for key,aliases in manual:
+              matches=[]
+              an=[norm(a) for a in aliases]
+              for r,names in allnames:
+                  if any(any(a==norm(n) or a in norm(n) or norm(n) in a for a in an) for n in names if n):
+                      matches.append({
+                        'imageId':str(r.get('image_id')),
+                        'names':names,
+                        'wcsQuality':r.get('wcs_quality'),
+                        'complete':complete_from_record(r),
+                        'wcs':vals(r),
+                        'resourceUrl':r.get('resource_url'),
+                        'referenceUrl':r.get('reference_url'),
+                        'releaseDate':r.get('image_release_date')
+                      })
+              matches.sort(key=lambda x:(x['complete'],x.get('releaseDate') or ''),reverse=True)
+              results.append({'key':key,'aliases':aliases,'aliasMatches':matches[:12]})
+
+          json.dump({'version':'0001','targets':23,'results':results},open(root/'rescue-report.json','w'),indent=2)
+
+          print('=== CHANDRA WCS RESCUE SUMMARY ===')
+          for x in results:
+              if 'aliasMatches' in x:
+                  print(x['key'],'ALIAS_MATCHES',len(x['aliasMatches']),[(m['imageId'],m['complete'],m['names'][:1]) for m in x['aliasMatches'][:5]])
+              else:
+                  spatial=x.get('exifSpatial') or {}
+                  print(x['key'],x['name'],'feedComplete=',x.get('feedComplete'),'quality=',x.get('wcsQuality'),'resource=',bool(x.get('resourceUrl')),'exifSpatialKeys=',list(spatial)[:20])
+          PY
+
+      - name: Upload rescue report
+        uses: actions/upload-artifact@v4
+        with:
+          name: chandra-wcs-rescue-report
+          path: /tmp/chandra-wcs-rescue/rescue-report.json
+          if-no-files-found: error
