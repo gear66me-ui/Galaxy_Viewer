@@ -365,3 +365,35 @@ Commits:
 - bottom shell: `8438aa69953448d98f2c1ec793c7bf0a6db30784`
 - config: `849bb11674cdb117821cb38674da7b5153d2d9bd`
 - pointer: `44bc5266088ac3799a7269f62187775fcaf3368e`
+
+
+## Browser 0030 / Build 0068 — eliminate ghost Back flash and add immediate Random press feedback
+
+Date: 2026-10-04.
+
+Browser 0030 diagnosis and fix:
+- Browser 0029 still used inline click handlers for Back/Forward. The tap used to open the browser could yield a synthesized click after the browser shell became visible, causing the Back tile to flash green on load.
+- Browser 0030 removes inline click navigation from Back/Forward and requires a fresh pointer-down inside the browser shell for touch/mouse navigation.
+- Synthesized touch clicks without a browser-shell pointer-down are ignored.
+- Back and Forward still flash their entire tile, border/glow, and arrow green for 520 ms on deliberate presses.
+- Back to Galaxy Viewer now flashes both the left arrow tile and the center BACK TO GALAXY VIEWER tile together for 520 ms before exit.
+- The Browser 0028/0029 double-requestAnimationFrame paint hold is preserved for return-to-viewer.
+- Config changes are revision/path substitutions only.
+
+Browser 0030 commits:
+- top shell: `a1c1031bdaa3c9547509fdfb47d1ce85adc33e7b`
+- bottom shell: `a1dfae49e8ada1663ab05037fcf8fe7fd87a0dde`
+- config: `d70aa426f33aa3e1e28888c74bf9b5e372c8248a`
+- pointer: `700c758af7c6eb3885441b49e0e3ce2f979fdb74`
+
+Build 0068:
+- Galaxy Navigator adds a dedicated `gvrg-press-green` immediate press state for RANDOM GALAXY.
+- RANDOM GALAXY turns green on pointer-down before navigation/preload work begins.
+- The immediate acknowledgment is held for 520 ms; existing START/TRAVELING green state remains unchanged.
+- Destination presentation remains pinned to Build 0067's simplified Back to Sky module.
+- APK 0021 is unchanged.
+
+Build 0068 commits:
+- navigator: `2f65a097503c8d613a58c8b77d968e8767463cbd`
+- viewer: `2de86b4ee929d79e267950001f12f880a0906e0b`
+- pointer: `e0d0d9f3d9f1e3e3a3247353342451997765f875`
