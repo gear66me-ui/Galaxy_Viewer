@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0075 — dedicated orange SELECT GALAXY control + cached windowed Survey thumbnails
+# BUILD 0076 — center SELECT GALAXY below coordinates; dropdown anchors behind it; prewarm Survey thumbnails
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -26,7 +26,7 @@ COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3dc30196478266f226f794bfe6803b440b7fa566/viewer/modules/target-simbad/gv-target-simbad-0006.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@51542261d8b587d457345141410cef53551af473/viewer/modules/galaxy-navigator/gv-galaxy-navigator-004.js"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@58857737cd05ca6377ac0edd331646b0ac0a30f3/viewer/modules/galaxy-navigator/gv-galaxy-navigator-005.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js"
 
 # ============================================================================
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0075';
+const GV200001_BUILD='0076';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -102,7 +102,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3dc30196478266f226f794bfe6803b440b7fa566/viewer/modules/target-simbad/gv-target-simbad-0006.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@51542261d8b587d457345141410cef53551af473/viewer/modules/galaxy-navigator/gv-galaxy-navigator-004.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@58857737cd05ca6377ac0edd331646b0ac0a30f3/viewer/modules/galaxy-navigator/gv-galaxy-navigator-005.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e4df35e6459ad83dc832b9b1c7e36d86b0927aaf/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
@@ -655,7 +655,7 @@ if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='000
 if(window.GalaxyViewerTargetSimbad?.version!=='0006')throw new Error('TARGET SURVEY 0006 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
-if(window.GalaxyNavigator?.VERSION!=='004'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 004 EXPORT MISSING');
+if(window.GalaxyNavigator?.VERSION!=='005'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 005 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
 if(window.GalaxyDestinationPresentation?.VERSION!=='0018'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0018 EXPORT MISSING');
@@ -932,37 +932,45 @@ const gvSurveySelectStyle=document.createElement('style');
 gvSurveySelectStyle.id='gv-survey-select-galaxy-style';
 gvSurveySelectStyle.textContent=`
 #gv-survey-select-galaxy{
-  appearance:none;-webkit-appearance:none;position:fixed;z-index:7362;display:none;align-items:center;justify-content:center;
-  height:32px;margin:0;padding:0 14px;overflow:hidden;border:1px solid #FFB45A;border-radius:10px;
+  appearance:none;-webkit-appearance:none;position:fixed;z-index:9802;display:none;align-items:center;justify-content:center;gap:10px;
+  height:32px;margin:0;padding:0 15px;overflow:hidden;border:1px solid #FFB45A;border-radius:10px;
   background:linear-gradient(180deg,#B96512 0%,#873700 17%,#481600 58%,#A84600 100%);
   color:#FFF0D0;
   box-shadow:inset 0 2px 2px rgba(255,236,198,.55),inset 0 -3px 5px rgba(45,10,0,.66),inset 0 0 10px rgba(255,140,35,.22),0 0 3px rgba(255,226,170,.92),0 0 9px rgba(255,137,28,.68),0 0 18px rgba(255,97,0,.28);
   font:400 10.5px/1 "GV Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;
   text-shadow:0 0 4px rgba(255,245,220,.95),0 0 10px rgba(255,153,55,.85);
-  pointer-events:auto;touch-action:manipulation;outline:none
+  pointer-events:auto;touch-action:manipulation;outline:none;transform:translateX(-50%)
 }
 #gv-survey-select-galaxy::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,203,122,.08) 26%,transparent 44%);pointer-events:none}
-#gv-survey-select-galaxy:active{transform:translateY(1px) scale(.992);filter:brightness(1.13)}
+#gv-survey-select-galaxy:active:not(:disabled){transform:translateX(-50%) translateY(1px) scale(.992);filter:brightness(1.13)}
+#gv-survey-select-galaxy:disabled{opacity:.58;filter:saturate(.72) brightness(.80)}
+.gv-survey-select-menu{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;gap:3px;width:15px;height:15px;flex:0 0 15px}
+.gv-survey-select-menu i{display:block;width:15px;height:2px;border-radius:2px;background:#FFF0D0;box-shadow:0 0 3px rgba(255,245,220,.95),0 0 6px rgba(255,153,55,.78)}
+.gv-survey-select-label{position:relative;z-index:1;white-space:nowrap}
 `;
 document.head.appendChild(gvSurveySelectStyle);
 const gvSurveySelectButton=document.createElement('button');
 gvSurveySelectButton.id='gv-survey-select-galaxy';
 gvSurveySelectButton.type='button';
-gvSurveySelectButton.textContent='SELECT GALAXY';
+gvSurveySelectButton.innerHTML='<span class="gv-survey-select-menu" aria-hidden="true"><i></i><i></i><i></i></span><span class="gv-survey-select-label">SELECT GALAXY</span>';
 gvSurveySelectButton.setAttribute('aria-label','SELECT GALAXY');
 document.body.appendChild(gvSurveySelectButton);
 function gvHideSurveySelectButton(){gvSurveySelectButton.style.display='none'}
 function gvSyncSurveySelectButton(){
-    const card=document.querySelector('.gvdp-card.gvdp-visible');
-    if(!gvSurveyMode||navigationInFlight||!card){gvHideSurveySelectButton();return}
-    const r=card.getBoundingClientRect();
+    const coord=document.getElementById('gv-coordinate-host');
+    if(!gvSurveyMode||!coord){gvHideSurveySelectButton();return}
+    const r=coord.getBoundingClientRect();
     if(!r.width||!r.height){gvHideSurveySelectButton();return}
-    gvSurveySelectButton.style.left=Math.round(r.left)+'px';
-    gvSurveySelectButton.style.top=Math.max(6,Math.round(r.top-38))+'px';
-    gvSurveySelectButton.style.width=Math.round(r.width*.48)+'px';
+    gvSurveySelectButton.style.left=Math.round(r.left+r.width/2)+'px';
+    gvSurveySelectButton.style.top=Math.round(r.bottom+5)+'px';
+    gvSurveySelectButton.style.width=Math.round(Math.min(210,Math.max(190,r.width*.68)))+'px';
+    gvSurveySelectButton.disabled=Boolean(navigationInFlight);
     gvSurveySelectButton.style.display='flex';
 }
-gvSurveySelectButton.addEventListener('click',()=>{if(gvSurveyMode&&!navigationInFlight)galaxyNavigator.openSurveySelector?.()});
+gvSurveySelectButton.addEventListener('click',()=>{
+    if(!gvSurveyMode||navigationInFlight)return;
+    galaxyNavigator.toggleSurveySelector?.(gvSurveySelectButton)
+});
 window.addEventListener('resize',()=>requestAnimationFrame(gvSyncSurveySelectButton),{passive:true});
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
@@ -977,7 +985,7 @@ const randomGalaxyBridge=Object.freeze({
 });
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
 const travelPresentation=window.GalaxyRandomTravelPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
-const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'),{onBackToSky:()=>{gvHideSurveySelectButton();requestAnimationFrame(gvResyncEarthPointerFromAladin)}});
+const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'),{onBackToSky:()=>requestAnimationFrame(()=>{gvResyncEarthPointerFromAladin();gvSyncSurveySelectButton()})});
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
@@ -1687,7 +1695,6 @@ async function gvSelectSurveyProvider(provider){
     if(!records?.length)return false;
     const remembered=gvSurveyCursors.get(key);
     const resumeIndex=Number.isInteger(remembered)&&remembered>=0&&remembered<records.length?remembered:0;
-    gvHideSurveySelectButton();
     const items=Object.freeze(records.map(record=>Object.freeze({
         name:String(record?.commonName||record?.name||record?.designation||'').trim(),
         designation:String(record?.designation||record?.name||'').trim(),
@@ -1696,6 +1703,7 @@ async function gvSelectSurveyProvider(provider){
         thumbnails:gvSurveyThumbnailCandidates(record)
     })));
     gvSurveyMode={provider:key,records,items,index:-1};
+    gvSyncSurveySelectButton();
     history.length=0;historyIndex=-1;
     target.setActiveProvider(key,{index:resumeIndex+1,total:records.length});
     galaxyNavigator.setSurvey?.({provider:key,current:resumeIndex+1,total:records.length,items});
@@ -1720,11 +1728,11 @@ async function gvNavigateSurveyIndex(nextIndex){
     if(!Number.isInteger(index)||index<0||index>=gvSurveyMode.records.length)return false;
     if(index===gvSurveyMode.index)return true;
     const destination=gvSurveyMode.records[index];
-    gvHideSurveySelectButton();
     gvCancelProviderAll();
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
+    gvSyncSurveySelectButton();
     gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
     gvSurveyMode.index=index;
@@ -1742,6 +1750,7 @@ async function gvNavigateSurveyIndex(nextIndex){
         return true;
     }finally{
         navigationInFlight=false;
+        gvSyncSurveySelectButton();
         gvSetTripCycle(false);
         galaxyNavigator.setTraveling?.(false);
         galaxyNavigator.setBusy(false);
