@@ -92,17 +92,178 @@ jobs:
             exit 1
           fi
 
-      - name: Verify standalone Chandra review
+      - name: Build standalone Chandra review
         if: ${{ steps.scope.outputs.review_only == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
-          test -s temporary-demos/chandra-avm-candidate-review-0002/index.html
+          REVIEW_DIR='temporary-demos/chandra-avm-candidate-review-0002'
+          FEED='/tmp/astropix-chandra-feed.json'
+          test -s "$REVIEW_DIR/index.html"
+          test -s temporary-demos/chandra-avm-candidate-review-0001/index.html
+          test -s viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json
+
           curl --fail --location --retry 3 --silent --show-error \
             'https://www.astropix.org/link/918?format=json' \
-            -o temporary-demos/chandra-avm-candidate-review-0002/astropix-chandra-feed.json
-          test -s temporary-demos/chandra-avm-candidate-review-0002/astropix-chandra-feed.json
-          echo "CHANDRA REVIEW 0002 DEPLOYMENT ISOLATED FROM RC VALIDATION"
+            -o "$FEED"
+          test -s "$FEED"
+
+          python3 - <<'PY'
+          import json,re,unicodedata,datetime,pathlib
+
+          review_dir=pathlib.Path('temporary-demos/chandra-avm-candidate-review-0002')
+          feed=json.load(open('/tmp/astropix-chandra-feed.json'))
+          live=json.load(open('viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json'))
+          review1=open('temporary-demos/chandra-avm-candidate-review-0001/index.html',encoding='utf-8').read()
+
+          def norm(s):
+              return re.sub(r'[^a-z0-9]+','',unicodedata.normalize('NFKD',str(s)).lower())
+
+          excluded=set()
+          for e in live.get('entries',[]):
+              for k in ('name','displayName','designation'):
+                  v=e.get(k)
+                  if not v:
+                      continue
+                  excluded.add(norm(v))
+                  for p in re.split(r'[\\/|,;]+',v):
+                      excluded.add(norm(p))
+
+          prior_ids=set()
+          for image_id,name in re.findall(r'id:"chandra-([^"]+)",name:"([^"]+)"',review1):
+              prior_ids.add(image_id)
+              excluded.add(norm(name))
+              for p in re.split(r'[·\\/|,;]+',name):
+                  excluded.add(norm(p))
+
+          # Common aliases for objects already represented by the release catalog.
+          for alias in (
+              'Whirlpool Galaxy','Whirlpool Galaxy (M51)','Andromeda Galaxy','Andromeda Galaxy (M31)',
+              'M87 Core','Centaurus A Jet','Antennae','NGC 4258 (M106)','NGC 5128',
+              'M82X-2','M31','M51','M82','M83','M84','M87','M101','M106','M77'
+          ):
+              excluded.add(norm(alias))
+
+          cluster_prefix=re.compile(r'^(abell|macs|zwcl|cl\\s|idcs|rdcs|act\\s|dlscl|ms\\s\\d|hcg\\s)',re.I)
+          neb_terms=('nebula','supernova remnant','snr ','star-forming region','star forming region',
+                     'stellar nursery','superbubble','star formation','pulsar wind')
+          point_name_terms=('galactic center','milky way','pulsar','supernova','snr','neutron star',
+                            'grb ','sgr ','cassiopeia a','tycho','kepler')
+
+          def valid(r):
+              return (
+                  r.get('image_type')=='Observation' and r.get('image_id')
+                  and (r.get('object_name') or [''])[0]
+                  and len(r.get('wcs_reference_value') or [])>=2
+              )
+
+          def titletext(r):
+              return ' '.join((str(r.get('title') or ''),str(r.get('headline') or ''))).lower()
+
+          def date_value(r):
+              try:
+                  return datetime.datetime.fromisoformat(str(r.get('image_release_date') or '1900-01-01')[:10]).timestamp()
+              except Exception:
+                  return 0
+
+          def score(r):
+              return (date_value(r), 1 if str(r.get('wcs_quality')).lower()=='full' else 0)
+
+          galaxies=[]
+          nebulae=[]
+          seen_ids=set()
+
+          for r in feed:
+              if not valid(r):
+                  continue
+              image_id=str(r['image_id'])
+              if image_id in prior_ids or image_id in seen_ids:
+                  continue
+              name=(r.get('object_name') or [''])[0].strip()
+              low=name.lower()
+              text=titletext(r)
+              if norm(name) in excluded:
+                  continue
+
+              # Nebulae and remnant structures.
+              if ('nebula' in low or any(term in text for term in neb_terms)) and 'galaxy cluster' not in text:
+                  nebulae.append(r)
+                  seen_ids.add(image_id)
+                  continue
+
+              # Galaxy candidates. Reject obvious cluster and stellar/point-source targets.
+              if cluster_prefix.match(low) or 'cluster' in low or 'galaxy cluster' in text or 'globular cluster' in text:
+                  continue
+              if any(term in low for term in point_name_terms):
+                  continue
+
+              explicit=('galaxy' in low or 'galaxy' in text or 'galaxies' in text
+                        or 'galactic merger' in text or 'galactic collision' in text)
+              galaxyish=(
+                  re.match(r'^(ngc|ic|ugc|arp|m\\s?\\d+|mrk|markarian|eso|circinus|stephan|3c\\s|4c\\+)',low)
+                  and any(term in text for term in ('black hole','merger','spiral','starburst','active galactic','galactic','collision'))
+              )
+              if explicit or galaxyish:
+                  if any(term in text for term in ('supernova remnant','nebula','pulsar')) and 'galaxy' not in low:
+                      continue
+                  galaxies.append(r)
+                  seen_ids.add(image_id)
+
+          galaxies=sorted(galaxies,key=score,reverse=True)
+          nebulae=sorted(nebulae,key=score,reverse=True)
+
+          chosen=[('galaxy',r) for r in galaxies[:45]]+[('nebula',r) for r in nebulae[:55]]
+          if len(chosen)<100:
+              raise SystemExit(f'Only {len(chosen)} qualifying AVM candidates; expected 100')
+
+          def slim(kind,r):
+              distance=(r.get('distance') or [None])[0]
+              return {
+                  'imageId':str(r.get('image_id')),
+                  'name':(r.get('object_name') or ['Chandra '+str(r.get('image_id'))])[0],
+                  'kind':kind,
+                  'wcsQuality':r.get('wcs_quality') or 'Position',
+                  'releaseDate':r.get('image_release_date'),
+                  'distanceLy':distance or r.get('distance_ly'),
+                  'wcsReferenceValue':r.get('wcs_reference_value') or [],
+                  'wcsReferenceDimension':r.get('wcs_reference_dimension') or [],
+                  'wcsReferencePixel':r.get('wcs_reference_pixel') or [],
+                  'wcsScale':r.get('wcs_scale') or [],
+                  'wcsRotation':r.get('wcs_rotation'),
+                  'wcsProjection':r.get('wcs_projection'),
+                  'telescopes':r.get('telescope_facility') or [],
+                  'headline':r.get('headline'),
+                  'title':r.get('title'),
+                  'sourceUrl':r.get('reference_url'),
+                  'resourceUrl':r.get('resource_url'),
+                  'astropixId':r.get('astropix_id')
+              }
+
+          candidates=[slim(kind,r) for kind,r in chosen]
+          html_path=review_dir/'index.html'
+          html=html_path.read_text(encoding='utf-8')
+          marker='__CANDIDATES_JSON__'
+          if marker not in html:
+              raise SystemExit('Chandra review template marker missing')
+          html=html.replace(marker,json.dumps(candidates,ensure_ascii=False,separators=(',',':')))
+          html_path.write_text(html,encoding='utf-8')
+          (review_dir/'selected-candidates.json').write_text(
+              json.dumps({'version':'0002-static','count':len(candidates),'candidates':candidates},indent=2,ensure_ascii=False),
+              encoding='utf-8'
+          )
+          print('CHANDRA REVIEW 0002 STATIC CANDIDATES',len(candidates))
+          print('GALAXIES',sum(1 for c in candidates if c['kind']=='galaxy'))
+          print('NEBULA_REMNANT',sum(1 for c in candidates if c['kind']=='nebula'))
+          print('FULL_WCS',sum(1 for c in candidates if c['wcsQuality']=='Full'))
+          PY
+
+          test -s "$REVIEW_DIR/selected-candidates.json"
+          grep -q 'const candidates=\[' "$REVIEW_DIR/index.html"
+          if grep -q '__CANDIDATES_JSON__' "$REVIEW_DIR/index.html"; then
+            echo "CANDIDATE EMBED FAILED"
+            exit 1
+          fi
+          echo "CHANDRA REVIEW 0002 STATIC PAGE READY"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
