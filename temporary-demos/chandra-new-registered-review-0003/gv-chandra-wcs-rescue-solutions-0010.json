@@ -1,0 +1,1183 @@
+{
+  "version": "0010-clean-final-review",
+  "source": "gv-chandra-wcs-rescue-solutions-0008.json",
+  "generatedAt": "2026-10-04T22:02:50.392Z",
+  "queueCount": 23,
+  "solutions": {
+    "370": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 2.8393775020968453,
+        "decOff": 0.6478194935031922,
+        "flipX": false,
+        "flipY": false,
+        "mode": "full"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 1024,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 285.497161505767,
+        "CRVAL2": -36.96293499844161,
+        "CRPIX1": 540.1550351515151,
+        "CRPIX2": 512.1551515151515,
+        "CD1_1": 0.00015895590497736468,
+        "CD2_1": -0.000635442935262489,
+        "CD1_2": 0.0006353271303534755,
+        "CD2_2": 0.00015908833758381034
+      },
+      "raster": {
+        "width": 1024,
+        "height": 1024
+      },
+      "savedAt": "2026-10-04T21:43:33.763Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:43:33.762Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:43:33.763Z"
+    },
+    "429": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -2.928289683203519,
+        "decOff": 1.1679299178553038,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 580,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 220.0812099427828,
+        "CRVAL2": -62.647201501369075,
+        "CRPIX1": 512.5,
+        "CRPIX2": 290.5,
+        "CD1_1": 0.000004640660533482432,
+        "CD2_1": -0.00006374360156485181,
+        "CD1_2": 0.00006374263909952279,
+        "CD2_2": 0.00000464651682541728
+      },
+      "raster": {
+        "width": 1024,
+        "height": 580
+      },
+      "savedAt": "2026-10-04T21:57:01.370Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:57:01.370Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:57:01.370Z"
+    },
+    "797": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.00010398124803321797,
+        "decOff": -0.0037809851804126993,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 769,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 6.320837307085727,
+        "CRVAL2": 64.14354809469144,
+        "CRPIX1": 512.5,
+        "CRPIX2": 385,
+        "CD1_1": 0.00006131214375698118,
+        "CD2_1": 0.0000647360664856933,
+        "CD1_2": -0.00006475712849216666,
+        "CD2_2": 0.00006129029942329111
+      },
+      "raster": {
+        "width": 1024,
+        "height": 769
+      },
+      "savedAt": "2026-10-04T21:56:49.583Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:56:49.582Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:56:49.583Z"
+    },
+    "800": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.4193785263468451,
+        "decOff": 1.5064087519725433,
+        "flipX": false,
+        "flipY": false,
+        "mode": "full"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 764,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 83.64083933765403,
+        "CRVAL2": 22.039506812532874,
+        "CRPIX1": 501.3246602749867,
+        "CRPIX2": 455.1129855202372,
+        "CD1_1": 0.00023819303164068046,
+        "CD2_1": -0.00002046582805451891,
+        "CD1_2": 0.000020449226978328162,
+        "CD2_2": 0.00023819628163547436
+      },
+      "raster": {
+        "width": 1024,
+        "height": 764
+      },
+      "registeredAt": "2026-10-04T21:42:58.517Z",
+      "verified": true,
+      "savedAt": "2026-10-04T21:42:58.518Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:42:58.518Z"
+    },
+    "813": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.0001665887359162371,
+        "decOff": -0.006057506855796646,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 1020,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 225.71200373164197,
+        "CRVAL2": -41.9236676584476,
+        "CRPIX1": 512.5,
+        "CRPIX2": 510.5,
+        "CD1_1": 0.00010814977499782832,
+        "CD2_1": 0.00010375293395682661,
+        "CD1_2": -0.00010372618282991171,
+        "CD2_2": 0.00010817579190728565
+      },
+      "raster": {
+        "width": 1024,
+        "height": 1020
+      },
+      "savedAt": "2026-10-04T21:56:10.125Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:56:10.124Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:56:10.125Z"
+    },
+    "847": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 1.1769938220717417,
+        "decOff": -1.0773024490472949,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 822,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 336.515639094754,
+        "CRVAL2": 65.57476440362699,
+        "CRPIX1": 512.5,
+        "CRPIX2": 411.5,
+        "CD1_1": 0.000019683319074453278,
+        "CD2_1": -0.00001706347135424835,
+        "CD1_2": 0.00001706401770439318,
+        "CD2_2": 0.000019684050328123704
+      },
+      "raster": {
+        "width": 1024,
+        "height": 822
+      },
+      "registeredAt": "2026-10-04T21:55:04.541Z",
+      "verified": true,
+      "savedAt": "2026-10-04T21:55:04.542Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:55:04.542Z"
+    },
+    "901c": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.4093365673109145,
+        "decOff": 0.818577107582712,
+        "flipX": false,
+        "flipY": false,
+        "mode": "full"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 859,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 23.46626431265156,
+        "CRVAL2": 30.67392072957082,
+        "CRPIX1": 512,
+        "CRPIX2": 429.5,
+        "CD1_1": -6.266849982928074e-8,
+        "CD2_1": -0.0011076187942308025,
+        "CD1_2": 0.0011076182579607557,
+        "CD2_2": -6.977575744926412e-7
+      },
+      "raster": {
+        "width": 1024,
+        "height": 859
+      },
+      "savedAt": "2026-10-04T21:42:06.680Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:42:06.677Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:42:06.679Z"
+    },
+    "901b": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -0.04122476699038293,
+        "decOff": -0.02691076040022722,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 753,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 314.3505310343663,
+        "CRVAL2": 17.127412598437775,
+        "CRPIX1": 512.5,
+        "CRPIX2": 377,
+        "CD1_1": -0.000006873075077998171,
+        "CD2_1": -0.000021751215393450708,
+        "CD1_2": 0.000021751122282540246,
+        "CD2_2": -0.000006873282711765683
+      },
+      "raster": {
+        "width": 1024,
+        "height": 753
+      },
+      "savedAt": "2026-10-04T21:47:05.212Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:47:05.211Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:47:05.212Z"
+    },
+    "901e": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.017597943675792645,
+        "decOff": 0.4157760982505465,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 687,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 67.70485675636873,
+        "CRVAL2": 64.85526293497084,
+        "CRPIX1": 512.5,
+        "CRPIX2": 344,
+        "CD1_1": -0.00005496440327902638,
+        "CD2_1": 0.000012881722317814593,
+        "CD1_2": -0.00001288470558965504,
+        "CD2_2": -0.000054962078891378497
+      },
+      "raster": {
+        "width": 1024,
+        "height": 687
+      },
+      "savedAt": "2026-10-04T21:48:44.597Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:48:44.596Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:48:44.597Z"
+    },
+    "901f": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.2728965748508663,
+        "decOff": 0.22686774071964066,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 913,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 189.2121710125011,
+        "CRVAL2": 13.167364462345327,
+        "CRPIX1": 512.5,
+        "CRPIX2": 457,
+        "CD1_1": -0.000007692890011234808,
+        "CD2_1": 0.0000622265202478367,
+        "CD1_2": -0.00006222633686643566,
+        "CD2_2": -0.000007693485028248404
+      },
+      "raster": {
+        "width": 1024,
+        "height": 913
+      },
+      "savedAt": "2026-10-04T21:48:57.726Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:48:57.725Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:48:57.726Z"
+    },
+    "901a": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.07603134801112973,
+        "decOff": 0.1530271235240832,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 728,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 71.42789498656651,
+        "CRVAL2": -59.24633843683016,
+        "CRPIX1": 512.5,
+        "CRPIX2": 364.5,
+        "CD1_1": -0.00006226413590038244,
+        "CD2_1": -0.000041868815870458323,
+        "CD1_2": 0.000041882149126693094,
+        "CD2_2": -0.00006225391661587309
+      },
+      "raster": {
+        "width": 1024,
+        "height": 728
+      },
+      "savedAt": "2026-10-04T21:45:20.277Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:45:20.276Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:45:20.277Z"
+    },
+    "901i": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -0.018787341375987678,
+        "decOff": -0.011229558543419671,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 666,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 116.72751362083066,
+        "CRVAL2": 39.023093396246495,
+        "CRPIX1": 512.5,
+        "CRPIX2": 333.5,
+        "CD1_1": 0.000021698884678647906,
+        "CD2_1": -0.00004997970757784742,
+        "CD1_2": 0.00004998090868438032,
+        "CD2_2": 0.000021698651901900234
+      },
+      "raster": {
+        "width": 1024,
+        "height": 666
+      },
+      "savedAt": "2026-10-04T21:49:12.211Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:49:12.210Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:49:12.211Z"
+    },
+    "901j": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -0.4421764616162925,
+        "decOff": 0.03571650514949454,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 778,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 192.60266828363095,
+        "CRVAL2": 25.501345275085825,
+        "CRPIX1": 512.5,
+        "CRPIX2": 389.5,
+        "CD1_1": 0.000020632321543090746,
+        "CD2_1": -0.0002132121239981899,
+        "CD1_2": 0.00021321560772324957,
+        "CD2_2": 0.00002061705901645894
+      },
+      "raster": {
+        "width": 1024,
+        "height": 778
+      },
+      "savedAt": "2026-10-04T21:49:37.337Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:49:37.336Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:49:37.337Z"
+    },
+    "901l": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 2.305855923014771,
+        "decOff": -2.445603419835649,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 800,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 25.761221221791367,
+        "CRVAL2": 13.64860105411385,
+        "CRPIX1": 512.5,
+        "CRPIX2": 400.5,
+        "CD1_1": -0.000014845701306433325,
+        "CD2_1": -0.00012423783057339933,
+        "CD1_2": 0.00012423700209072136,
+        "CD2_2": -0.000014849753341739103
+      },
+      "raster": {
+        "width": 1024,
+        "height": 800
+      },
+      "registeredAt": "2026-10-04T21:51:13.067Z",
+      "verified": true,
+      "savedAt": "2026-10-04T21:51:13.068Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:51:13.068Z"
+    },
+    "901o": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -0.2584144439109349,
+        "decOff": 0.010451308961734185,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 962,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 178.1998338012529,
+        "CRVAL2": 44.12095196626047,
+        "CRPIX1": 512.5,
+        "CRPIX2": 481.5,
+        "CD1_1": -0.00016878056427868126,
+        "CD2_1": 0.000021113698433055107,
+        "CD1_2": -0.0000211317700426142,
+        "CD2_2": -0.0001687749082418577
+      },
+      "raster": {
+        "width": 1024,
+        "height": 962
+      },
+      "savedAt": "2026-10-04T21:52:43.523Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:52:43.522Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:52:43.523Z"
+    },
+    "838p": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -5.444755512561218,
+        "decOff": -2.520057042211903,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 778,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 266.87980480047787,
+        "CRVAL2": 29.952471271518693,
+        "CRPIX1": 512.5,
+        "CRPIX2": 389.5,
+        "CD1_1": 0.00004438481867091674,
+        "CD2_1": 0.00004688871638407477,
+        "CD1_2": -0.000046891800226199956,
+        "CD2_2": 0.00004438161974317012
+      },
+      "raster": {
+        "width": 1024,
+        "height": 778
+      },
+      "savedAt": "2026-10-04T21:55:40.273Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:55:40.272Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:55:40.273Z"
+    },
+    "heart-2026": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": -0.3179076555024357,
+        "decOff": -1.025372907109272,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 864,
+        "NAXIS2": 871,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 328.36177459949533,
+        "CRVAL2": 47.25402434043707,
+        "CRPIX1": 432.5,
+        "CRPIX2": 436,
+        "CD1_1": 0.000023837739714748272,
+        "CD2_1": -0.00034247004119535517,
+        "CD1_2": 0.00034248488348170543,
+        "CD2_2": 0.00002374240838371122
+      },
+      "raster": {
+        "width": 864,
+        "height": 871
+      },
+      "savedAt": "2026-10-04T21:58:45.180Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:58:45.179Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:58:45.180Z"
+    },
+    "spring-w2": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.11201474988715318,
+        "decOff": -0.07309359126921322,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 864,
+        "NAXIS2": 879,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 155.9976647621741,
+        "CRVAL2": -57.74583489318782,
+        "CRPIX1": 432.5,
+        "CRPIX2": 440,
+        "CD1_1": 0.00001228467735058817,
+        "CD2_1": 0.000004376351120498612,
+        "CD1_2": -0.000004375993744269462,
+        "CD2_2": 0.000012284852521133872
+      },
+      "raster": {
+        "width": 864,
+        "height": 879
+      },
+      "savedAt": "2026-10-04T21:58:54.591Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:58:54.590Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:58:54.591Z"
+    },
+    "spring-ngc346": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.153629747933226,
+        "decOff": -1.069357607437098,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 864,
+        "NAXIS2": 648,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 14.779615010343127,
+        "CRVAL2": -72.19371151567951,
+        "CRPIX1": 432.5,
+        "CRPIX2": 324.5,
+        "CD1_1": 0.00011629209413851834,
+        "CD2_1": 0.0001282859976333839,
+        "CD1_2": -0.0001281681593825903,
+        "CD2_2": 0.00011641781235567805
+      },
+      "raster": {
+        "width": 864,
+        "height": 648
+      },
+      "savedAt": "2026-10-04T21:59:04.825Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T21:59:04.823Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:59:04.825Z"
+    },
+    "spring-catspaw": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 4.344228687834296,
+        "decOff": -5.648548915100378,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 864,
+        "NAXIS2": 949,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 260.13319061768766,
+        "CRVAL2": -36.04525359302945,
+        "CRPIX1": 432.5,
+        "CRPIX2": 475,
+        "CD1_1": 0.00032561393337072006,
+        "CD2_1": 0.00026394353789548574,
+        "CD1_2": -0.0002637670878089228,
+        "CD2_2": 0.00032576725492994285
+      },
+      "raster": {
+        "width": 864,
+        "height": 949
+      },
+      "savedAt": "2026-10-04T22:00:24.178Z",
+      "verified": true,
+      "registeredAt": "2026-10-04T22:00:24.177Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T22:00:24.178Z"
+    },
+    "spring-pelican": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 2.4162532370259435,
+        "decOff": -0.22308046794137226,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 864,
+        "NAXIS2": 641,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 312.75631638350944,
+        "CRVAL2": 44.34628199220098,
+        "CRPIX1": 432.5,
+        "CRPIX2": 321,
+        "CD1_1": -0.000014156798621876027,
+        "CD2_1": 0.0003703610412693337,
+        "CD1_2": -0.00037035222429803344,
+        "CD2_2": -0.000014264848706346811
+      },
+      "raster": {
+        "width": 864,
+        "height": 641
+      },
+      "registeredAt": "2026-10-04T22:01:23.681Z",
+      "verified": true,
+      "savedAt": "2026-10-04T22:01:23.682Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T22:01:23.682Z"
+    },
+    "838f": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.7496332224304451,
+        "decOff": -1.372625100240299,
+        "flipX": false,
+        "flipY": false,
+        "mode": "full"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 965,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 274.7135739840296,
+        "CRVAL2": -13.83010764055956,
+        "CRPIX1": 573.6524833949526,
+        "CRPIX2": 43.72693844065217,
+        "CD1_1": -0.00003421009435520163,
+        "CD2_1": 8.264602385033015e-7,
+        "CD1_2": -8.262212741151861e-7,
+        "CD2_2": -0.0000342101058017974
+      },
+      "raster": {
+        "width": 1024,
+        "height": 965
+      },
+      "registeredAt": "2026-10-04T21:42:19.559Z",
+      "verified": true,
+      "savedAt": "2026-10-04T21:42:19.560Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T21:42:19.560Z"
+    },
+    "spring-flame": {
+      "params": {
+        "rotation": 0,
+        "scalePct": 100,
+        "raOff": 0.3964873856217577,
+        "decOff": 2.4518939425176933,
+        "flipX": false,
+        "flipY": false,
+        "mode": "seed"
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 864,
+        "NAXIS2": 864,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 85.4495285197327,
+        "CRVAL2": -1.8837739898469272,
+        "CRPIX1": 432.5,
+        "CRPIX2": 432.5,
+        "CD1_1": 0.0002619755090587088,
+        "CD2_1": -0.000013471871408570202,
+        "CD1_2": 0.00001347364003483092,
+        "CD2_2": 0.00026197531159191987
+      },
+      "raster": {
+        "width": 864,
+        "height": 864
+      },
+      "registeredAt": "2026-10-04T22:02:45.080Z",
+      "verified": true,
+      "savedAt": "2026-10-04T22:02:45.082Z",
+      "finalReviewed": true,
+      "finalReviewedAt": "2026-10-04T22:02:45.082Z"
+    }
+  },
+  "queue": [
+    {
+      "key": "901c",
+      "imageId": "901c",
+      "name": "M33",
+      "mode": "full",
+      "publishedFovArcmin": 50,
+      "center": [
+        23.458333333333332,
+        30.660277777777775
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "838f",
+      "imageId": "838f",
+      "name": "The Eagle Nebula (M16)",
+      "mode": "full",
+      "publishedFovArcmin": null,
+      "center": [
+        274.70070833333335,
+        -13.807230555555556
+      ],
+      "image": "https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2024/25th/"
+    },
+    {
+      "key": "800",
+      "imageId": "800",
+      "name": "Crab Nebula",
+      "mode": "full",
+      "publishedFovArcmin": null,
+      "center": [
+        83.6333,
+        22.0144
+      ],
+      "image": "https://www.astropix.org/archive/chandra/800/chandra_800_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2023/crabx/"
+    },
+    {
+      "key": "370",
+      "imageId": "370",
+      "name": "Coronet Cluster",
+      "mode": "full",
+      "publishedFovArcmin": null,
+      "center": [
+        285.4379272,
+        -36.97373199
+      ],
+      "image": "https://www.astropix.org/archive/chandra/370/chandra_370_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2007/coronet/"
+    },
+    {
+      "key": "901a",
+      "imageId": "901a",
+      "name": "NGC 1672",
+      "mode": "seed",
+      "publishedFovArcmin": 4.4,
+      "center": [
+        71.42541666666666,
+        -59.24888888888889
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901a/chandra_901a_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901b",
+      "imageId": "901b",
+      "name": "II Zw 096",
+      "mode": "seed",
+      "publishedFovArcmin": 1.5,
+      "center": [
+        314.35125,
+        17.127861111111113
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901b/chandra_901b_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901e",
+      "imageId": "901e",
+      "name": "NGC 1569",
+      "mode": "seed",
+      "publishedFovArcmin": 8,
+      "center": [
+        67.70416666666667,
+        64.84833333333333
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901e/chandra_901e_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901f",
+      "imageId": "901f",
+      "name": "M90",
+      "mode": "seed",
+      "publishedFovArcmin": 2.8,
+      "center": [
+        189.2075,
+        13.163583333333333
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901f/chandra_901f_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901i",
+      "imageId": "901i",
+      "name": "Arp 143",
+      "mode": "seed",
+      "publishedFovArcmin": 3.3,
+      "center": [
+        116.72791666666667,
+        39.02328055555555
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901i/chandra_901i_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901j",
+      "imageId": "901j",
+      "name": "NGC 4725",
+      "mode": "seed",
+      "publishedFovArcmin": 12,
+      "center": [
+        192.61083333333335,
+        25.50075
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901j/chandra_901j_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901l",
+      "imageId": "901l",
+      "name": "NGC 660",
+      "mode": "seed",
+      "publishedFovArcmin": 9.3,
+      "center": [
+        25.721666666666668,
+        13.689361111111111
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901l/chandra_901l_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "901o",
+      "imageId": "901o",
+      "name": "NGC 3938",
+      "mode": "seed",
+      "publishedFovArcmin": 12,
+      "center": [
+        178.20583333333335,
+        44.120777777777775
+      ],
+      "image": "https://www.astropix.org/archive/chandra/901o/chandra_901o_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2026/galaxies/"
+    },
+    {
+      "key": "847",
+      "imageId": "847",
+      "name": "Guitar Nebula",
+      "mode": "seed",
+      "publishedFovArcmin": 2.6,
+      "center": [
+        336.46816666666666,
+        65.59271944444444
+      ],
+      "image": "https://www.astropix.org/archive/chandra/847/chandra_847_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2024/guitar/"
+    },
+    {
+      "key": "838p",
+      "imageId": "838p",
+      "name": "Hb 5 Nebula",
+      "mode": "seed",
+      "publishedFovArcmin": 1.04,
+      "center": [
+        266.9845833333333,
+        29.994472222222225
+      ],
+      "image": "https://www.astropix.org/archive/chandra/838p/chandra_838p_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2024/25th/"
+    },
+    {
+      "key": "813",
+      "imageId": "813",
+      "name": "SN1006",
+      "mode": "seed",
+      "publishedFovArcmin": 34,
+      "center": [
+        225.712,
+        -41.9235667
+      ],
+      "image": "https://www.astropix.org/archive/chandra/813/chandra_813_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2023/sn1006/"
+    },
+    {
+      "key": "797",
+      "imageId": "797",
+      "name": "Tycho's Supernova Remnant",
+      "mode": "seed",
+      "publishedFovArcmin": 16,
+      "center": [
+        6.320833333333334,
+        64.14361111111111
+      ],
+      "image": "https://www.astropix.org/archive/chandra/797/chandra_797_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2023/tycho/"
+    },
+    {
+      "key": "429",
+      "imageId": "429",
+      "name": "RCW 86",
+      "mode": "seed",
+      "publishedFovArcmin": 6,
+      "center": [
+        220.1875,
+        -62.666667
+      ],
+      "image": "https://www.astropix.org/archive/chandra/429/chandra_429_1024.jpg",
+      "sourceUrl": "http://chandra.harvard.edu/photo/2009/rcw86/"
+    },
+    {
+      "key": "heart-2026",
+      "imageId": "heart-2026",
+      "name": "Cocoon Nebula · IC 5146",
+      "mode": "seed",
+      "publishedFovArcmin": 23,
+      "center": [
+        328.3695833333333,
+        47.27111388888889
+      ],
+      "image": "https://www.chandra.harvard.edu/photo/2026/heart/heart.jpg",
+      "sourceUrl": "https://www.chandra.harvard.edu/photo/2026/heart/"
+    },
+    {
+      "key": "spring-w2",
+      "imageId": "spring-w2",
+      "name": "Westerlund 2",
+      "mode": "seed",
+      "publishedFovArcmin": 2.1,
+      "center": [
+        155.99416666666664,
+        -57.744616666666666
+      ],
+      "image": "https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg",
+      "sourceUrl": "https://chandra.harvard.edu/photo/2026/spring/"
+    },
+    {
+      "key": "spring-ngc346",
+      "imageId": "spring-ngc346",
+      "name": "NGC 346",
+      "mode": "seed",
+      "publishedFovArcmin": 3.8,
+      "center": [
+        14.771249999999998,
+        -72.17588888888889
+      ],
+      "image": "https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg",
+      "sourceUrl": "https://chandra.harvard.edu/photo/2026/spring/"
+    },
+    {
+      "key": "spring-catspaw",
+      "imageId": "spring-catspaw",
+      "name": "Cat's Paw Nebula · NGC 6334",
+      "mode": "seed",
+      "publishedFovArcmin": 72,
+      "center": [
+        260.04375,
+        -35.95111111111111
+      ],
+      "image": "https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg",
+      "sourceUrl": "https://chandra.harvard.edu/photo/2026/spring/"
+    },
+    {
+      "key": "spring-pelican",
+      "imageId": "spring-pelican",
+      "name": "Pelican Nebula · NGC 7000",
+      "mode": "seed",
+      "publishedFovArcmin": 19.3,
+      "center": [
+        312.69999999999993,
+        44.35
+      ],
+      "image": "https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg",
+      "sourceUrl": "https://chandra.harvard.edu/photo/2026/spring/"
+    },
+    {
+      "key": "spring-flame",
+      "imageId": "spring-flame",
+      "name": "Flame Nebula · NGC 2024",
+      "mode": "seed",
+      "publishedFovArcmin": 2.2,
+      "center": [
+        85.44291666666668,
+        -1.9246388888888888
+      ],
+      "image": "https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg",
+      "sourceUrl": "https://chandra.harvard.edu/photo/2026/spring/"
+    }
+  ]
+}
