@@ -105,7 +105,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hud/gv-heads-up-display-0001.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ff586dcb68e3f81394ed260b0c9b86898249cf34/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@2bb37eee30c8bc8d7e5ddf50e23ba78e919c0c96/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
 });
 
 
