@@ -26,7 +26,7 @@
       "sourceAgeConvertedFromDistance": 4,
       "sourceExplicitCosmic": 2,
       "sourceAgePreserved": 4,
-      "minCosmicAgeGyr": 0.0,
+      "minCosmicAgeGyr": 0,
       "maxCosmicAgeGyr": 13.46709
     },
     "JWST": {
@@ -46,7 +46,7 @@
       "sourceAgeConvertedFromDistance": 2,
       "sourceExplicitCosmic": 1,
       "sourceAgePreserved": 2,
-      "minCosmicAgeGyr": 0.0,
+      "minCosmicAgeGyr": 0,
       "maxCosmicAgeGyr": 13.466983947061877
     },
     "Chandra": {
@@ -88,9 +88,9 @@
       "before": {
         "distanceMly": 45406.38133,
         "distanceDisplay": "45406.4 million light-years",
-        "ageGyr": 12.847380947061877,
-        "ageDisplay": "EST. 12.85 GYR",
-        "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
+        "ageGyr": 0.619603,
+        "ageDisplay": "EST. 619.6 MYR",
+        "ageMethod": "lookback_from_NED_redshift_flat_lcdm_H0_70_Om_0.3",
         "sizeKly": [
           13012.977,
           13012.977
