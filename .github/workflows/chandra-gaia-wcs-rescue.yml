@@ -80,20 +80,26 @@ jobs:
               im=Image.open(path).convert('RGB')
               arr=np.asarray(im,dtype=np.float32)
               gray=.2126*arr[:,:,0]+.7152*arr[:,:,1]+.0722*arr[:,:,2]
-              # suppress broad nebulosity with local-ish median proxy via percentile clipping
-              mean,med,std=sigma_clipped_stats(gray,sigma=3.0,maxiters=5)
-              out=[]
-              for thr in (4.5,3.5,2.8):
-                  try:
-                      tbl=DAOStarFinder(fwhm=3.0,threshold=thr*max(std,1.0),exclude_border=True)(gray-med)
-                      if tbl is not None and len(tbl)>=8:
-                          # brightest compact sources first
-                          rows=sorted(tbl,key=lambda r:float(r['flux']),reverse=True)[:120]
-                          out=np.array([[float(r['xcentroid']),float(r['ycentroid'])] for r in rows],dtype=float)
-                          break
-                  except Exception:
-                      pass
-              return np.array(out), im.size
+              # Publication composites have strong diffuse structure.  Remove it
+              # with a broad Gaussian and find compact local maxima in the residual.
+              smooth=gaussian_filter(gray,6.0)
+              hp=gray-smooth
+              # robust positive contrast normalization
+              vals=hp[np.isfinite(hp)]
+              med=float(np.median(vals)); mad=float(np.median(np.abs(vals-med))) or 1.0
+              sig=1.4826*mad
+              mx=maximum_filter(hp,size=7,mode='nearest')
+              mask=(hp==mx)&(hp>(med+3.0*sig))
+              yy,xx=np.nonzero(mask)
+              keep=(xx>12)&(yy>12)&(xx<gray.shape[1]-12)&(yy<gray.shape[0]-12)
+              xx,yy=xx[keep],yy[keep]
+              if len(xx):
+                  score=hp[yy,xx]
+                  order=np.argsort(score)[::-1][:180]
+                  out=np.column_stack((xx[order].astype(float),yy[order].astype(float)))
+              else:
+                  out=np.empty((0,2),float)
+              return out, im.size
 
           def gaia(center,fov):
               c=SkyCoord(center[0]*u.deg,center[1]*u.deg,frame='icrs')
