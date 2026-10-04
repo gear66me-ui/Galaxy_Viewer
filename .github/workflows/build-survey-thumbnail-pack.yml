@@ -59,16 +59,44 @@ jobs:
               print(k, v)
           PY
 
-      - name: Commit thumbnail pack to release
+      - name: Commit thumbnail pack and immutable pointer
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add viewer/artwork/runtime/survey-thumbnails
           if git diff --cached --quiet; then
-            echo "No thumbnail changes"
+            echo "No thumbnail pack changes"
             exit 0
           fi
+
           git commit -m "Generate Survey Mode thumbnail pack [skip ci]"
-          git pull --rebase origin release
+          PACK_COMMIT="$(git rev-parse HEAD)"
+          export PACK_COMMIT
+
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          root=Path("viewer/artwork/runtime/survey-thumbnails")
+          index=json.loads((root/"gv-survey-thumbnail-index.json").read_text())
+          pointer={
+              "version":"0001",
+              "packCommit":os.environ["PACK_COMMIT"],
+              "indexPath":"viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-index.json",
+              "thumbnailCount":index["thumbnailCount"],
+              "recordCount":index["recordCount"],
+              "failedCount":index["failedCount"],
+              "totalThumbnailBytes":index["totalThumbnailBytes"],
+              "generatedAt":index["generatedAt"],
+          }
+          (root/"gv-survey-thumbnail-current.json").write_text(
+              json.dumps(pointer,indent=2)+"\n",encoding="utf-8"
+          )
+          print(json.dumps(pointer,indent=2))
+          PY
+
+          git add viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-current.json
+          git commit -m "Point to immutable Survey Mode thumbnail pack [skip ci]"
           git push origin HEAD:release
