@@ -509,3 +509,34 @@ Commits:
 - navigator 003: `4730076cc3a7ed074929a08bd743b75703c8a704`
 - viewer: `506a86cabe94bf132150775aaf6f4107f2441a25`
 - pointer: `851b24d5c4e93f05f68cb1207de5064bd90476a4`
+
+
+## Build 0075 — dedicated Survey selector control + optimized thumbnails
+
+Date: 2026-10-04.
+
+Survey UI:
+- Added a dedicated `SELECT GALAXY` button visible only while a Survey provider is active and a destination card is visible.
+- Button is 32 px high, Space Age, orange/amber enamel, left-aligned to the destination card and positioned 6 px above it.
+- Button width is 48% of the destination-card width.
+- Tap opens the centered 60% × 60% galaxy selector directly.
+- Center Survey controller returns to the two-message cycle: `PROVIDER N OF TOTAL` ↔ `PRESS FOR NEXT`, 1.2 s dwell.
+- Long-press instruction/gesture removed from the center controller.
+
+Thumbnail performance:
+- Selector keeps 40 px rows with centered 32 × 32 px rounded thumbnails.
+- Thumbnails load only for the visible scroll window plus a small look-ahead buffer.
+- Maximum four concurrent thumbnail decodes/downloads.
+- Thumbnail URL success/failure is cached for the session.
+- Known ESA Webb / ESA Hubble / ESO / NOIRLab screen-image URLs try archive thumbnail variants first and fall back to the original image URL.
+- Reopening or scrolling back through already loaded rows reuses browser/session cache.
+
+Preserved:
+- Per-provider Survey cursor memory from Build 0073.
+- Build 0072 projection choreography.
+- Target Survey 0006, HUD 0002, Destination 0018, Browser 0031, APK 0022.
+
+Commits:
+- Navigator 004: `51542261d8b587d457345141410cef53551af473`
+- Viewer: `f84cf79a6f4e2f9bfc6a435f4f3cf489da409ba4`
+- Pointer: `67dc5285bf574c3616fb3bf4b7ea0924b4740625`
