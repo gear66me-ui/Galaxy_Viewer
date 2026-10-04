@@ -1,0 +1,122 @@
+{
+  "schema": "galaxy-viewer-cosmic-age-repair-audit-v1",
+  "branch": "release",
+  "date": "2026-10-04",
+  "policy": {
+    "version": "0001",
+    "definition": "science.ageGyr is the estimated age of the Universe at the photon-emission epoch represented by the image, not stellar/object age and not lookback time.",
+    "cosmology": {
+      "model": "flat LCDM",
+      "H0_km_s_Mpc": 70,
+      "OmegaM": 0.3,
+      "OmegaLambda": 0.7,
+      "presentAgeGyr": 13.466983947061877
+    },
+    "equations": {
+      "fromLookback": "t_emit = t0 - t_lookback",
+      "flatLCDM": "t(z) = 2/[3 H0 sqrt(OmegaLambda)] * asinh(sqrt(OmegaLambda/OmegaM)/(1+z)^(3/2))"
+    },
+    "repairedAt": "2026-10-04"
+  },
+  "catalogs": {
+    "Hubble": {
+      "records": 1104,
+      "existingCosmic": 776,
+      "lookbackConverted": 322,
+      "sourceAgeConvertedFromDistance": 4,
+      "sourceExplicitCosmic": 2,
+      "sourceAgePreserved": 4,
+      "minCosmicAgeGyr": 0.0,
+      "maxCosmicAgeGyr": 13.46709
+    },
+    "JWST": {
+      "records": 47,
+      "existingCosmic": 0,
+      "lookbackConverted": 0,
+      "sourceAgeConvertedFromDistance": 47,
+      "sourceExplicitCosmic": 0,
+      "sourceAgePreserved": 47,
+      "minCosmicAgeGyr": 2.966983947061877,
+      "maxCosmicAgeGyr": 13.464983947061876
+    },
+    "ESO": {
+      "records": 232,
+      "existingCosmic": 0,
+      "lookbackConverted": 229,
+      "sourceAgeConvertedFromDistance": 2,
+      "sourceExplicitCosmic": 1,
+      "sourceAgePreserved": 2,
+      "minCosmicAgeGyr": 0.0,
+      "maxCosmicAgeGyr": 13.466983947061877
+    },
+    "Chandra": {
+      "records": 52,
+      "existingCosmic": 0,
+      "lookbackConverted": 52,
+      "sourceAgeConvertedFromDistance": 0,
+      "sourceExplicitCosmic": 0,
+      "sourceAgePreserved": 0,
+      "minCosmicAgeGyr": 4.979831947061877,
+      "maxCosmicAgeGyr": 13.464783947061877
+    },
+    "Spitzer": {
+      "records": 46,
+      "existingCosmic": 0,
+      "lookbackConverted": 46,
+      "sourceAgeConvertedFromDistance": 0,
+      "sourceExplicitCosmic": 0,
+      "sourceAgePreserved": 0,
+      "minCosmicAgeGyr": 13.001983947061877,
+      "maxCosmicAgeGyr": 13.466820947061876
+    },
+    "NOIRLab": {
+      "records": 367,
+      "existingCosmic": 0,
+      "lookbackConverted": 363,
+      "sourceAgeConvertedFromDistance": 4,
+      "sourceExplicitCosmic": 0,
+      "sourceAgePreserved": 4,
+      "minCosmicAgeGyr": 1.4675999470618777,
+      "maxCosmicAgeGyr": 13.466983947061877
+    }
+  },
+  "manualCorrections": [
+    {
+      "provider": "Hubble",
+      "archiveId": "heic1507d",
+      "designation": "2MASX J15100402+0740370",
+      "before": {
+        "distanceMly": 45406.38133,
+        "distanceDisplay": "45406.4 million light-years",
+        "ageGyr": 12.847380947061877,
+        "ageDisplay": "EST. 12.85 GYR",
+        "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
+        "sizeKly": [
+          13012.977,
+          13012.977
+        ],
+        "redshift": null
+      },
+      "after": {
+        "distanceMly": 642.5,
+        "distanceDisplay": "642.5 million light-years",
+        "redshift": 0.04584,
+        "lookbackTimeGyr": 0.6196027699199558,
+        "cosmicAgeGyr": 12.847381177141921,
+        "cosmicAgeDisplay": "EST. 12.85 GYR",
+        "sizeKly": [
+          172,
+          159
+        ]
+      }
+    }
+  ],
+  "totals": {
+    "records": 1848,
+    "existingCosmic": 776,
+    "lookbackConverted": 1012,
+    "sourceAgeConvertedFromDistance": 57,
+    "sourceExplicitCosmic": 3,
+    "finalCosmicAgeRecords": 1848
+  }
+}

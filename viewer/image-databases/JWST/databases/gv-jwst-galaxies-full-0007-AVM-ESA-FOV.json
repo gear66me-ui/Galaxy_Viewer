@@ -67,12 +67,12 @@
           21.031
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 10,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.436983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 10 GYR",
+        "ageDisplay": "EST. 13.44 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -80,7 +80,16 @@
         "distanceDisplay": "30 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 63.0 × 21.0 KLY"
+        "sizeDisplay": "EST. 63.0 × 21.0 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 10.0,
+          "ageDisplay": "EST. 10 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.03,
+        "lookbackTimeDisplay": "EST. 0.0300 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M104 / NGC 4594",
@@ -155,12 +164,12 @@
           317.185
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.176983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 8 GYR",
+        "ageDisplay": "EST. 13.18 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -168,7 +177,16 @@
         "distanceDisplay": "290 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 378.8 × 317.2 KLY"
+        "sizeDisplay": "EST. 378.8 × 317.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 8.0,
+          "ageDisplay": "EST. 8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.29,
+        "lookbackTimeDisplay": "EST. 0.2900 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "HCG 92 / NGC 7317-7319 + NGC 7320",
@@ -243,12 +261,12 @@
           314.159
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 5.5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 12.966983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 5.5 GYR",
+        "ageDisplay": "EST. 12.97 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -256,7 +274,16 @@
         "distanceDisplay": "500 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 296.7 × 314.2 KLY"
+        "sizeDisplay": "EST. 296.7 × 314.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 5.5,
+          "ageDisplay": "EST. 5.5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.5,
+        "lookbackTimeDisplay": "EST. 0.5000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "ESO 350-40 / PGC 2248",
@@ -331,12 +358,12 @@
           2.653
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 0.8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.454983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 0.8 GYR",
+        "ageDisplay": "EST. 13.45 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -344,7 +371,16 @@
         "distanceDisplay": "12 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 2.7 × 2.7 KLY"
+        "sizeDisplay": "EST. 2.7 × 2.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 0.8,
+          "ageDisplay": "EST. 0.8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.012,
+        "lookbackTimeDisplay": "EST. 0.0120 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M82 / NGC 3034",
@@ -419,12 +455,12 @@
           1.076
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.464983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 13.46 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -432,7 +468,16 @@
         "distanceDisplay": "2 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3.9 × 1.1 KLY"
+        "sizeDisplay": "EST. 3.9 × 1.1 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.002,
+        "lookbackTimeDisplay": "EST. 0.0020 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 6822 / Caldwell 57",
@@ -507,12 +552,12 @@
           51.196
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6.2,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.386983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6.2 GYR",
+        "ageDisplay": "EST. 13.39 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -520,7 +565,16 @@
         "distanceDisplay": "80 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 47.9 × 51.2 KLY"
+        "sizeDisplay": "EST. 47.9 × 51.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.2,
+          "ageDisplay": "EST. 6.2 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.08,
+        "lookbackTimeDisplay": "EST. 0.0800 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 1087",
@@ -595,12 +649,12 @@
           36.861
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7.8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.430983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7.8 GYR",
+        "ageDisplay": "EST. 13.43 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -608,7 +662,16 @@
         "distanceDisplay": "36 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 20.8 × 36.9 KLY"
+        "sizeDisplay": "EST. 20.8 × 36.9 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.8,
+          "ageDisplay": "EST. 7.8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.036,
+        "lookbackTimeDisplay": "EST. 0.0360 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 3627",
@@ -683,12 +746,12 @@
           15.149
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6.3,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.442983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6.3 GYR",
+        "ageDisplay": "EST. 13.44 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -696,7 +759,16 @@
         "distanceDisplay": "24 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 13.4 × 15.1 KLY"
+        "sizeDisplay": "EST. 13.4 × 15.1 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.3,
+          "ageDisplay": "EST. 6.3 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.024,
+        "lookbackTimeDisplay": "EST. 0.0240 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 7496",
@@ -771,12 +843,12 @@
           49.752
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.390983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 13.39 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -784,7 +856,16 @@
         "distanceDisplay": "76 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 45.3 × 49.8 KLY"
+        "sizeDisplay": "EST. 45.3 × 49.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.076,
+        "lookbackTimeDisplay": "EST. 0.0760 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2566",
@@ -859,12 +940,12 @@
           24.784
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6.5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.426983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6.5 GYR",
+        "ageDisplay": "EST. 13.43 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -872,7 +953,16 @@
         "distanceDisplay": "40 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 26.1 × 24.8 KLY"
+        "sizeDisplay": "EST. 26.1 × 24.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.5,
+          "ageDisplay": "EST. 6.5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.04,
+        "lookbackTimeDisplay": "EST. 0.0400 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2090",
@@ -947,12 +1037,12 @@
           8.796
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 4,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.454983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 4 GYR",
+        "ageDisplay": "EST. 13.45 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -960,7 +1050,16 @@
         "distanceDisplay": "12 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 19.8 × 8.8 KLY"
+        "sizeDisplay": "EST. 19.8 × 8.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 4.0,
+          "ageDisplay": "EST. 4 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.012,
+        "lookbackTimeDisplay": "EST. 0.0120 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 4449 / Caldwell 21",
@@ -1035,12 +1134,12 @@
           18.022
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 1,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.407983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 1 GYR",
+        "ageDisplay": "EST. 13.41 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1048,7 +1147,16 @@
         "distanceDisplay": "59 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 17.7 × 18.0 KLY"
+        "sizeDisplay": "EST. 17.7 × 18.0 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 1.0,
+          "ageDisplay": "EST. 1 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.059,
+        "lookbackTimeDisplay": "EST. 0.0590 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "I Zw 18",
@@ -1123,12 +1231,12 @@
           27.882
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.421983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 8 GYR",
+        "ageDisplay": "EST. 13.42 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1136,7 +1244,16 @@
         "distanceDisplay": "45 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 27.5 × 27.9 KLY"
+        "sizeDisplay": "EST. 27.5 × 27.9 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 8.0,
+          "ageDisplay": "EST. 8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.045,
+        "lookbackTimeDisplay": "EST. 0.0450 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M77 / NGC 1068",
@@ -1211,12 +1328,12 @@
           64.228
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 5.5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.346983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 5.5 GYR",
+        "ageDisplay": "EST. 13.35 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1224,7 +1341,16 @@
         "distanceDisplay": "120 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 76.8 × 64.2 KLY"
+        "sizeDisplay": "EST. 76.8 × 64.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 5.5,
+          "ageDisplay": "EST. 5.5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.12,
+        "lookbackTimeDisplay": "EST. 0.1200 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 3256",
@@ -1299,12 +1425,12 @@
           40.652
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.401983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 13.40 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1312,7 +1438,16 @@
         "distanceDisplay": "65 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 40.8 × 40.7 KLY"
+        "sizeDisplay": "EST. 40.8 × 40.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.065,
+        "lookbackTimeDisplay": "EST. 0.0650 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 5134",
@@ -1387,12 +1522,12 @@
           136.979
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.246983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 13.25 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1400,7 +1535,16 @@
         "distanceDisplay": "220 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 137.6 × 137.0 KLY"
+        "sizeDisplay": "EST. 137.6 × 137.0 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.22,
+        "lookbackTimeDisplay": "EST. 0.2200 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 7469",
@@ -1475,12 +1619,12 @@
           339.512
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.001983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 13.00 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1488,7 +1632,16 @@
         "distanceDisplay": "465 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 323.3 × 339.5 KLY"
+        "sizeDisplay": "EST. 323.3 × 339.5 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.465,
+        "lookbackTimeDisplay": "EST. 0.4650 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Arp 107",
@@ -1564,12 +1717,12 @@
           116.355
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.216983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 5 GYR",
+        "ageDisplay": "EST. 13.22 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1577,7 +1730,16 @@
         "distanceDisplay": "250 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 116.4 × 116.4 KLY"
+        "sizeDisplay": "EST. 116.4 × 116.4 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 5.0,
+          "ageDisplay": "EST. 5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.25,
+        "lookbackTimeDisplay": "EST. 0.2500 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Arp 220",
@@ -1652,12 +1814,12 @@
           170.707
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.140983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 13.14 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1665,7 +1827,16 @@
         "distanceDisplay": "326 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 208.6 × 170.7 KLY"
+        "sizeDisplay": "EST. 208.6 × 170.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.326,
+        "lookbackTimeDisplay": "EST. 0.3260 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Arp 142 / NGC 2936 + NGC 2937",
@@ -1740,12 +1911,12 @@
           22.907
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6.5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.431983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6.5 GYR",
+        "ageDisplay": "EST. 13.43 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1753,7 +1924,16 @@
         "distanceDisplay": "35 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 22.6 × 22.9 KLY"
+        "sizeDisplay": "EST. 22.6 × 22.9 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.5,
+          "ageDisplay": "EST. 6.5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.035,
+        "lookbackTimeDisplay": "EST. 0.0350 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 1559",
@@ -1828,12 +2008,12 @@
           446.101
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 12.416983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 12.42 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1841,7 +2021,16 @@
         "distanceDisplay": "1.05 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 662.9 × 446.1 KLY"
+        "sizeDisplay": "EST. 662.9 × 446.1 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 1.05,
+        "lookbackTimeDisplay": "EST. 1.0500 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "LEDA 2046648",
@@ -1916,12 +2105,12 @@
           610.865
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 7.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 5 GYR",
+        "ageDisplay": "EST. 7.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -1929,7 +2118,16 @@
         "distanceDisplay": "6 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 610.9 × 610.9 KLY"
+        "sizeDisplay": "EST. 610.9 × 610.9 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 5.0,
+          "ageDisplay": "EST. 5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 6.0,
+        "lookbackTimeDisplay": "EST. 6.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "RX J1131-1231",
@@ -2004,12 +2202,12 @@
           2009.746
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 8.766983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 8.77 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2017,7 +2215,16 @@
         "distanceDisplay": "4.7 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1640.6 × 2009.7 KLY"
+        "sizeDisplay": "EST. 1640.6 × 2009.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 4.7,
+        "lookbackTimeDisplay": "EST. 4.7000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SDSS J1226+2152",
@@ -2092,12 +2299,12 @@
           1675.516
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 10.266983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 10.27 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2105,7 +2312,16 @@
         "distanceDisplay": "3.2 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 2094.4 × 1675.5 KLY"
+        "sizeDisplay": "EST. 2094.4 × 1675.5 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 3.2,
+        "lookbackTimeDisplay": "EST. 3.2000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "RX J2129.6+0005",
@@ -2180,12 +2396,12 @@
           2513.274
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 4,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 7.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 4 GYR",
+        "ageDisplay": "EST. 7.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2193,7 +2409,16 @@
         "distanceDisplay": "6 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 4031.7 × 2513.3 KLY"
+        "sizeDisplay": "EST. 4031.7 × 2513.3 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 4.0,
+          "ageDisplay": "EST. 4 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 6.0,
+        "lookbackTimeDisplay": "EST. 6.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "DES J122648.50+214958.3",
@@ -2268,12 +2493,12 @@
           3839.724
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 9.066983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7 GYR",
+        "ageDisplay": "EST. 9.07 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2281,7 +2506,16 @@
         "distanceDisplay": "4.4 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3839.7 × 3839.7 KLY"
+        "sizeDisplay": "EST. 3839.7 × 3839.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.0,
+          "ageDisplay": "EST. 7 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 4.4,
+        "lookbackTimeDisplay": "EST. 4.4000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "MACS J0553.4-3342",
@@ -2356,12 +2590,12 @@
           2210.75
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7.5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 8.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 7.5 GYR",
+        "ageDisplay": "EST. 8.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2369,7 +2603,16 @@
         "distanceDisplay": "5 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3447.0 × 2210.8 KLY"
+        "sizeDisplay": "EST. 3447.0 × 2210.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.5,
+          "ageDisplay": "EST. 7.5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 5.0,
+        "lookbackTimeDisplay": "EST. 5.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "MACS J1149.5+2223",
@@ -2444,12 +2687,12 @@
           3665.191
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 8.966983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 8 GYR",
+        "ageDisplay": "EST. 8.97 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2457,7 +2700,16 @@
         "distanceDisplay": "4.5 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 4188.8 × 3665.2 KLY"
+        "sizeDisplay": "EST. 4188.8 × 3665.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 8.0,
+          "ageDisplay": "EST. 8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 4.5,
+        "lookbackTimeDisplay": "EST. 4.5000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Abell S1063 / RXC J2248.7-4431",
@@ -2532,12 +2784,12 @@
           11207.885
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 3,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 2.966983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 3 GYR",
+        "ageDisplay": "EST. 2.97 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2545,7 +2797,16 @@
         "distanceDisplay": "10.5 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 17898.7 × 11207.9 KLY"
+        "sizeDisplay": "EST. 17898.7 × 11207.9 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 3.0,
+          "ageDisplay": "EST. 3 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 10.5,
+        "lookbackTimeDisplay": "EST. 10.5000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "MRC 1138-262",
@@ -2620,12 +2881,12 @@
           3900.663
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 10.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 8 GYR",
+        "ageDisplay": "EST. 10.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2633,7 +2894,16 @@
         "distanceDisplay": "3 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 5131.3 × 3900.7 KLY"
+        "sizeDisplay": "EST. 5131.3 × 3900.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 8.0,
+          "ageDisplay": "EST. 8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 3.0,
+        "lookbackTimeDisplay": "EST. 3.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Abell 2744",
@@ -2708,12 +2978,12 @@
           10288.123
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 4,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 4.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 4 GYR",
+        "ageDisplay": "EST. 4.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2721,7 +2991,16 @@
         "distanceDisplay": "9 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 21231.2 × 10288.1 KLY"
+        "sizeDisplay": "EST. 21231.2 × 10288.1 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 4.0,
+          "ageDisplay": "EST. 4 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 9.0,
+        "lookbackTimeDisplay": "EST. 9.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "GOODS-North",
@@ -2796,12 +3075,12 @@
           5177.939
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 4,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 3.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 4 GYR",
+        "ageDisplay": "EST. 3.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2809,7 +3088,16 @@
         "distanceDisplay": "10 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 6137.6 × 5177.9 KLY"
+        "sizeDisplay": "EST. 6137.6 × 5177.9 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 4.0,
+          "ageDisplay": "EST. 4 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 10.0,
+        "lookbackTimeDisplay": "EST. 10.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "HUDF",
@@ -2884,12 +3172,12 @@
           349.066
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 7.466983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 7.47 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2897,7 +3185,16 @@
         "distanceDisplay": "6 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 349.1 × 349.1 KLY"
+        "sizeDisplay": "EST. 349.1 × 349.1 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 6.0,
+        "lookbackTimeDisplay": "EST. 6.0000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SMACS J0028.2-7537",
@@ -2972,12 +3269,12 @@
           18.365
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 9,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.455983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 9 GYR",
+        "ageDisplay": "EST. 13.46 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -2985,7 +3282,16 @@
         "distanceDisplay": "11 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 18.4 × 18.4 KLY"
+        "sizeDisplay": "EST. 18.4 × 18.4 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 9.0,
+          "ageDisplay": "EST. 9 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.011,
+        "lookbackTimeDisplay": "EST. 0.0110 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 5128 / Centaurus A",
@@ -3060,12 +3366,12 @@
           139.801
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.196983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 13.20 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3073,7 +3379,16 @@
         "distanceDisplay": "270 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 146.1 × 139.8 KLY"
+        "sizeDisplay": "EST. 146.1 × 139.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.27,
+        "lookbackTimeDisplay": "EST. 0.2700 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "IC 1623 / Arp 236",
@@ -3148,12 +3463,12 @@
           190.532
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 5,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 12.966983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 5 GYR",
+        "ageDisplay": "EST. 12.97 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3161,7 +3476,16 @@
         "distanceDisplay": "500 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 266.2 × 190.5 KLY"
+        "sizeDisplay": "EST. 266.2 × 190.5 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 5.0,
+          "ageDisplay": "EST. 5 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.5,
+        "lookbackTimeDisplay": "EST. 0.5000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "II Zw 96 / IRAS 20550+1656",
@@ -3236,12 +3560,12 @@
           2576.688
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 9.166983947061876,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 8 GYR",
+        "ageDisplay": "EST. 9.17 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3249,7 +3573,16 @@
         "distanceDisplay": "4.3 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 2776.8 × 2576.7 KLY"
+        "sizeDisplay": "EST. 2776.8 × 2576.7 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 8.0,
+          "ageDisplay": "EST. 8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 4.3,
+        "lookbackTimeDisplay": "EST. 4.3000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "MACS J0416.1-2403",
@@ -3324,12 +3657,12 @@
           3630.285
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 8,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 8.266983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 8 GYR",
+        "ageDisplay": "EST. 8.27 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3337,7 +3670,16 @@
         "distanceDisplay": "5.2 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3660.5 × 3630.3 KLY"
+        "sizeDisplay": "EST. 3660.5 × 3630.3 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 8.0,
+          "ageDisplay": "EST. 8 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 5.2,
+        "lookbackTimeDisplay": "EST. 5.2000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "MACS J1423.8+2404",
@@ -3412,12 +3754,12 @@
           2799.799
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 5.766983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 5.77 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3425,7 +3767,16 @@
         "distanceDisplay": "7.7 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 4009.3 × 2799.8 KLY"
+        "sizeDisplay": "EST. 4009.3 × 2799.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 7.7,
+        "lookbackTimeDisplay": "EST. 7.7000 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "SPT-CL J0615-5746",
@@ -3500,12 +3851,12 @@
           125.315
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.346983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 13.35 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3513,7 +3864,16 @@
         "distanceDisplay": "120 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 163.4 × 125.3 KLY"
+        "sizeDisplay": "EST. 163.4 × 125.3 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.12,
+        "lookbackTimeDisplay": "EST. 0.1200 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "IC 2163 / NGC 2207",
@@ -3588,12 +3948,12 @@
           17.279
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6.92,
-        "ageMethod": "PHANGS_MUSE_median_mass_weighted_age",
+        "ageGyr": 13.436983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
-        "ageEstimated": false,
-        "ageDisplay": "6.92 GYR",
+        "ageEstimated": true,
+        "ageDisplay": "EST. 13.44 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3601,7 +3961,16 @@
         "distanceDisplay": "30 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 16.2 × 17.3 KLY"
+        "sizeDisplay": "EST. 16.2 × 17.3 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.92,
+          "ageDisplay": "6.92 GYR",
+          "ageMethod": "PHANGS_MUSE_median_mass_weighted_age",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.03,
+        "lookbackTimeDisplay": "EST. 0.0300 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "IC 5332",
@@ -3676,12 +4045,12 @@
           11.81
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 5.6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.446983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 5.6 GYR",
+        "ageDisplay": "EST. 13.45 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3689,7 +4058,16 @@
         "distanceDisplay": "20 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 21.1 × 11.8 KLY"
+        "sizeDisplay": "EST. 21.1 × 11.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 5.6,
+          "ageDisplay": "EST. 5.6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.02,
+        "lookbackTimeDisplay": "EST. 0.0200 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 5068",
@@ -3764,12 +4142,12 @@
           19.175
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7.24,
-        "ageMethod": "PHANGS_MUSE_median_mass_weighted_age",
+        "ageGyr": 13.434983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
-        "ageEstimated": false,
-        "ageDisplay": "7.24 GYR",
+        "ageEstimated": true,
+        "ageDisplay": "EST. 13.43 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3777,7 +4155,16 @@
         "distanceDisplay": "32 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 30.5 × 19.2 KLY"
+        "sizeDisplay": "EST. 30.5 × 19.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.24,
+          "ageDisplay": "7.24 GYR",
+          "ageMethod": "PHANGS_MUSE_median_mass_weighted_age",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.032,
+        "lookbackTimeDisplay": "EST. 0.0320 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M74 / NGC 628",
@@ -3852,12 +4239,12 @@
           15.149
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6.3,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.442983947061878,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6.3 GYR",
+        "ageDisplay": "EST. 13.44 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3865,7 +4252,16 @@
         "distanceDisplay": "24 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 13.4 × 15.1 KLY"
+        "sizeDisplay": "EST. 13.4 × 15.1 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.3,
+          "ageDisplay": "EST. 6.3 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.024,
+        "lookbackTimeDisplay": "EST. 0.0240 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 7496",
@@ -3940,12 +4336,12 @@
           339.512
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.001983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 13.00 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -3953,7 +4349,16 @@
         "distanceDisplay": "465 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 323.3 × 339.5 KLY"
+        "sizeDisplay": "EST. 323.3 × 339.5 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.465,
+        "lookbackTimeDisplay": "EST. 0.4650 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Arp 107",
@@ -4028,12 +4433,12 @@
           19.175
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 7.24,
-        "ageMethod": "PHANGS_MUSE_median_mass_weighted_age",
+        "ageGyr": 13.434983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
-        "ageEstimated": false,
-        "ageDisplay": "7.24 GYR",
+        "ageEstimated": true,
+        "ageDisplay": "EST. 13.43 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -4041,7 +4446,16 @@
         "distanceDisplay": "32 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 30.5 × 19.2 KLY"
+        "sizeDisplay": "EST. 30.5 × 19.2 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 7.24,
+          "ageDisplay": "7.24 GYR",
+          "ageMethod": "PHANGS_MUSE_median_mass_weighted_age",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.032,
+        "lookbackTimeDisplay": "EST. 0.0320 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M74 / NGC 628",
@@ -4116,12 +4530,12 @@
           139.801
         ],
         "sizeMethod": "estimated_from_fov_and_published_distance",
-        "ageGyr": 6,
-        "ageMethod": "curated_representative_median_stellar_population_estimate",
+        "ageGyr": 13.196983947061877,
+        "ageMethod": "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 6 GYR",
+        "ageDisplay": "EST. 13.20 GYR",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -4129,7 +4543,16 @@
         "distanceDisplay": "270 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 146.1 × 139.8 KLY"
+        "sizeDisplay": "EST. 146.1 × 139.8 KLY",
+        "sourceAgeOriginal": {
+          "ageGyr": 6.0,
+          "ageDisplay": "EST. 6 GYR",
+          "ageMethod": "curated_representative_median_stellar_population_estimate",
+          "ageEvidence": null
+        },
+        "lookbackTimeGyr": 0.27,
+        "lookbackTimeDisplay": "EST. 0.2700 GYR",
+        "lookbackTimeMethod": "estimated_from_catalog_light_travel_distance_0001"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "IC 1623 / Arp 236",
@@ -4164,5 +4587,21 @@
       "imageFovFetchedAt": "2026-09-17T01:24:13.273942+00:00",
       "imageFovParseUnit": "arcminutes"
     }
-  ]
+  ],
+  "cosmicAgePolicy": {
+    "version": "0001",
+    "definition": "science.ageGyr is the estimated age of the Universe at the photon-emission epoch represented by the image, not stellar/object age and not lookback time.",
+    "cosmology": {
+      "model": "flat LCDM",
+      "H0_km_s_Mpc": 70,
+      "OmegaM": 0.3,
+      "OmegaLambda": 0.7,
+      "presentAgeGyr": 13.466983947061877
+    },
+    "equations": {
+      "fromLookback": "t_emit = t0 - t_lookback",
+      "flatLCDM": "t(z) = 2/[3 H0 sqrt(OmegaLambda)] * asinh(sqrt(OmegaLambda/OmegaM)/(1+z)^(3/2))"
+    },
+    "repairedAt": "2026-10-04"
+  }
 }

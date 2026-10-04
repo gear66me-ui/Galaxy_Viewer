@@ -1,5 +1,5 @@
 {
-  "version": "0004-ASTROPIX",
+  "version": "0005-COSMIC-AGE",
   "catalogs": {
     "hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
     "jwst": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
@@ -13,5 +13,22 @@
     "sessions": "viewer/image-databases/master-database/curation/sessions/",
     "selectedPreviews": "viewer/image-databases/master-database/curation/selected-previews/",
     "audits": "viewer/image-databases/master-database/curation/audits/"
-  }
+  },
+  "cosmicAgePolicy": {
+    "version": "0001",
+    "definition": "science.ageGyr is the estimated age of the Universe at the photon-emission epoch represented by the image, not stellar/object age and not lookback time.",
+    "cosmology": {
+      "model": "flat LCDM",
+      "H0_km_s_Mpc": 70,
+      "OmegaM": 0.3,
+      "OmegaLambda": 0.7,
+      "presentAgeGyr": 13.466983947061877
+    },
+    "equations": {
+      "fromLookback": "t_emit = t0 - t_lookback",
+      "flatLCDM": "t(z) = 2/[3 H0 sqrt(OmegaLambda)] * asinh(sqrt(OmegaLambda/OmegaM)/(1+z)^(3/2))"
+    },
+    "repairedAt": "2026-10-04"
+  },
+  "cosmicAgeAudit": "viewer/image-databases/master-database/curation/audits/2026-10-04-cosmic-age-repair-0001.json"
 }
