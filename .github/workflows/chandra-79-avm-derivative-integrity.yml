@@ -1,0 +1,105 @@
+name: Chandra 79 AVM Derivative Integrity Audit
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-79-avm-derivative-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit exact JPEG AVM against raster dimensions
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libimage-exiftool-perl >/dev/null
+          python3 -m pip install --quiet pillow requests
+          mkdir -p /tmp/chandra79
+          cat > /tmp/chandra79/audit.py <<'PY'
+          import json, math, pathlib, subprocess, requests, hashlib, io
+          from PIL import Image
+
+          ids=["901h","901k","901n","314","90","102","120","125","126","143","151","156","160","173","183","247","315","345","361","371","374","376","378","385","387","398","399","404","405","408","418","420","430","431","432","440","444","449","453","462","464","467","478","482","483","491","492","498","500","511","515","520","532","533","535","537","538","543","547","548","555","557","566","571","577","578","589","599","613","624","627","636","645","867","870","811c","584a","584b","432a"]
+          sess=requests.Session()
+          sess.headers['User-Agent']='Mozilla/5.0 GalaxyViewer/1.0'
+
+          def seq(v):
+              if isinstance(v,list): return [float(x) for x in v]
+              if isinstance(v,str):
+                  import re
+                  return [float(x) for x in re.findall(r'[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?',v)]
+              return []
+
+          def get(meta,suffix):
+              for k,v in meta.items():
+                  if k.lower().endswith(suffix.lower()): return v
+              return None
+
+          out={'version':'0001','recordCount':len(ids),'thresholdPct':2.0,'records':[]}
+          for n,id in enumerate(ids,1):
+              url=f'https://www.astropix.org/archive/chandra/{id}/chandra_{id}_1024.jpg'
+              rec={'id':id,'imageUrl':url}
+              try:
+                  r=sess.get(url,timeout=90); r.raise_for_status(); data=r.content
+                  im=Image.open(io.BytesIO(data)); im.load()
+                  w,h=im.size
+                  rec['actualDimension']=[w,h]
+                  rec['bytes']=len(data)
+                  rec['sha256']=hashlib.sha256(data).hexdigest()
+                  p=pathlib.Path('/tmp/chandra79')/f'{id}.jpg'; p.write_bytes(data)
+                  raw=subprocess.check_output(['exiftool','-j','-G1','-a','-u',str(p)],text=True,stderr=subprocess.STDOUT,timeout=60)
+                  md=json.loads(raw)[0]
+                  rd=seq(get(md,'SpatialReferenceDimension'))
+                  rp=seq(get(md,'SpatialReferencePixel'))
+                  rv=seq(get(md,'SpatialReferenceValue'))
+                  sc=seq(get(md,'SpatialScale'))
+                  rot=get(md,'SpatialRotation')
+                  qual=get(md,'SpatialQuality')
+                  rec['spatialQuality']=qual
+                  rec['referenceDimension']=rd[:2]
+                  rec['referencePixel']=rp[:2]
+                  rec['referenceValue']=rv[:2]
+                  rec['scale']=sc[:2]
+                  try: rec['rotation']=float(rot)
+                  except: rec['rotation']=None
+                  if len(rd)>=2 and rd[0]>0 and rd[1]>0:
+                      rx=w/rd[0]; ry=h/rd[1]
+                      diff=abs(rx-ry)/max((abs(rx)+abs(ry))/2,1e-12)*100
+                      rec['ratioX']=rx; rec['ratioY']=ry; rec['ratioMismatchPct']=diff
+                      rec['derivativeGeometryValid']=diff<=2.0
+                      if rec['derivativeGeometryValid']:
+                          ratio=(rx+ry)/2
+                          rec['uniformRatio']=ratio
+                          if len(rp)>=2: rec['rescaledReferencePixel']=[rp[0]*ratio,rp[1]*ratio]
+                          if len(sc)>=2: rec['rescaledScale']=[sc[0]/ratio,sc[1]/ratio]
+                      else:
+                          rec['rejectReason']='AVM ReferenceDimension and current JPEG are not proportional within 2%'
+                  else:
+                      rec['derivativeGeometryValid']=False
+                      rec['rejectReason']='Spatial.ReferenceDimension missing or invalid'
+              except Exception as e:
+                  rec['derivativeGeometryValid']=False
+                  rec['error']=str(e)
+              out['records'].append(rec)
+              print(n,'/',len(ids),id,rec.get('actualDimension'),rec.get('referenceDimension'),rec.get('ratioMismatchPct'),rec.get('derivativeGeometryValid'))
+
+          out['passCount']=sum(1 for r in out['records'] if r.get('derivativeGeometryValid'))
+          out['rejectCount']=len(out['records'])-out['passCount']
+          pathlib.Path('/tmp/chandra79/gv-chandra-79-avm-derivative-integrity-0001.json').write_text(json.dumps(out,indent=2))
+          print('PASS',out['passCount'],'REJECT',out['rejectCount'])
+          PY
+          python3 /tmp/chandra79/audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chandra-79-avm-derivative-integrity
+          path: /tmp/chandra79/gv-chandra-79-avm-derivative-integrity-0001.json
+          retention-days: 30
