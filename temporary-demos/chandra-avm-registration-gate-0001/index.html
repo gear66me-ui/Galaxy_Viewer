@@ -29,8 +29,9 @@
   <div class="row"><span id="progress">0 / 0</span><button id="fit">FIT IMAGE</button><button id="export">EXPORT GATE</button></div>
   <div id="diag">DSS2 base + AVM image overlay. PASS only when stars/structures register.</div>
 </div>
-<script type="module">
-import A from '../../aladin-source-clone/dist/aladin.js';
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
 window.addEventListener('error',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.message||'Unknown JavaScript error')});
 window.addEventListener('unhandledrejection',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.reason?.message||e?.reason||'Unhandled promise rejection')});
 await A.init;
@@ -83,5 +84,10 @@ function vote(v){const c=queue[idx];if(c.wcsQuality!=='Full'&&v==='pass'){decisi
 $('pass').onclick=()=>vote('pass');$('fail').onclick=()=>vote('fail');
 $('export').onclick=()=>{const out={version:'0001',generatedAt:new Date().toISOString(),count:queue.length,decisions,queue:queue.map(c=>({key:c.key,imageId:c.imageId,name:c.name,wcsQuality:c.wcsQuality,decision:decisions[c.key]||'unreviewed'}))};const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-registration-gate-0001.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 show(0);
+})().catch(function(e){
+ var t=document.getElementById("title"),d=document.getElementById("diag");
+ if(t)t.textContent="REGISTRATION LAB ERROR";
+ if(d)d.textContent="FATAL: "+((e&&e.message)?e.message:String(e));
+});
 </script>
 </body></html>
