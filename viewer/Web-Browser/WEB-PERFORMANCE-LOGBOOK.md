@@ -197,3 +197,24 @@ APK19 native provider/cache behavior remains unchanged.
 Module commit: `de6641e8b0444e2b2115b83683f21380a0a132f4`.
 Viewer commit: `a3d6f9964e1a1393b4ca5bd14db869b495ebee82`.
 Pointer commit: `7420f6496298dce112af71d78ef845c99453460e`.
+
+
+## Hosted instrumentation revision — Build 0065
+
+Date: 2026-10-04.
+
+Purpose: make provider status reflect ready-to-view usability rather than waiting only for the final native onPageFinished event.
+
+Changes:
+- Replaces `DOWNLOADING` with shorter `LOADING`.
+- Reduces status font to 4.4 px Space Age with tighter tracking so it stays inside the View-HD viewport.
+- Keeps the live progress bar tied to APK19 WebView `onProgressChanged`.
+- Defines ready-to-view as either native finished or native progress >= 90%.
+- At ready-to-view, the LED turns green and `READY ✓` latches.
+- The bar itself continues to show the actual native progress percentage; it is not forced to 100.
+- Existing Build 0064 pulse sequence is preserved, with `LOADING` as the final beat.
+- APK19 remains unchanged.
+
+Module commit: `d919817b976f157c4e44af4178c37041693b1c7c`.
+Viewer commit: `f09a118f8421de0a1f8c0bb927a0175caa4e36e0`.
+Pointer commit: `8b4a1a520cd6d7607b1de054741418d2ff9dc300`.
