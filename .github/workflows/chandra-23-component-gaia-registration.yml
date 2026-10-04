@@ -202,7 +202,8 @@ jobs:
                     if score<5: continue
                     med=float(np.median(dist[good]))
                     ratio=score/max(1,min(len(cat),len(img)))
-                    scale_error=abs(math.log(m.scale/expected))\n                    rank=(score,-med,-scale_error,ratio)
+                    scale_error=abs(math.log(m.scale/expected))
+                    rank=(score,-med,-scale_error,ratio)
                     if best is None or rank>best[0]:
                       best=(rank,mirror,m,score,med,ratio)
               if best is None:return None
