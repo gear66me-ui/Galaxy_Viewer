@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812">
+<title>Chandra AVM Recovery Review 0011</title>
+<link rel="stylesheet" href="../../viewer/vendor/aladin-lite/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 176px 0;background:#000}
+#top{position:absolute;z-index:30;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.badge,.name{padding:6px 9px;border:1px solid #2d7795;border-radius:7px;background:rgba(2,12,22,.80);font-weight:900}
+.badge{font:900 10px/1.15 monospace;color:#8ff7ff}.name{font:900 11px/1.15 system-ui;color:#fff;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#panel{position:absolute;z-index:40;left:0;right:0;bottom:0;height:176px;background:#020b13f5;border-top:1px solid #216882;padding:9px 10px}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.lab{width:64px;font-size:10px;color:#9bc0cf}.val{width:48px;text-align:right;font-size:10px}.row input[type=range]{flex:1}
+button{flex:1;min-height:38px;border-radius:8px;border:1px solid #28657e;background:#071a27;color:#e8fbff;font-weight:900}
+#progress{min-width:76px;text-align:center;font-size:10px;color:#8deaff;font-weight:900}
+#status{font:900 10px/1.25 monospace;color:#74ffad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#detail{font:10px/1.3 monospace;color:#afcbd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="aladin"></div>
+<div id="top"><div class="badge" id="badge">AVM</div><div class="name" id="name">Loading…</div></div>
+<div id="panel">
+  <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span class="val" id="opv">55%</span></div>
+  <div class="row"><button id="prev">◀ BACK</button><span id="progress">1 / 6</span><button id="next">NEXT ▶</button></div>
+  <div id="status">ALADIN WCS IMAGE LAYER · DSS2 UNDERLAY</div>
+  <div id="detail">No floating HTML image. Pan/zoom the sky to verify registration.</div>
+</div>
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+const $=id=>document.getElementById(id);
+const LAYER='GV_CHANDRA_AVM_RECOVERY_0011';
+
+const rows=[
+{
+ key:'901c',name:'M33',mode:'NATIVE JPEG AVM',
+ image:'https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg',
+ authority:'Exact AstroPix JPEG · embedded AVM'
+},
+{
+ key:'838f',name:'Eagle Nebula (M16)',mode:'NATIVE JPEG AVM',
+ image:'https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg',
+ authority:'Exact AstroPix JPEG · embedded AVM'
+},
+{
+ key:'800',name:'Crab Nebula',mode:'NATIVE JPEG AVM',
+ image:'https://www.astropix.org/archive/chandra/800/chandra_800_1024.jpg',
+ authority:'Exact AstroPix JPEG · embedded AVM'
+},
+{
+ key:'370',name:'Coronet Cluster',mode:'NATIVE JPEG AVM',
+ image:'https://www.astropix.org/archive/chandra/370/chandra_370_1024.jpg',
+ authority:'Exact AstroPix JPEG · embedded AVM'
+},
+{
+ key:'spring-w2',name:'Westerlund 2',mode:'TIFF FULL AVM → MATCHING JPEG',
+ image:'https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg',
+ authority:'Original Chandra TIFF · SpatialQuality=Full · PinpointWCS',
+ wcs:{
+  NAXIS:2,NAXIS1:864,NAXIS2:879,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',
+  CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,LONPOLE:180,
+  CRVAL1:156.02479731162,CRVAL2:-57.76353613526,
+  CRPIX1:441.228084954732,CRPIX2:439.97861766537574,
+  CD1_1:-0.00014204320983766933,CD1_2:-0.00001572491172264505,
+  CD2_1:-0.000021350500067907307,CD2_2:0.00010461660984025035
+ }
+},
+{
+ key:'spring-catspaw',name:"Cat's Paw Nebula · NGC 6334",mode:'TIFF FULL AVM → MATCHING JPEG',
+ image:'https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg',
+ authority:'Original Chandra TIFF · SpatialQuality=Full · PinpointWCS',
+ wcs:{
+  NAXIS:2,NAXIS1:864,NAXIS2:949,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',
+  CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,LONPOLE:180,
+  CRVAL1:260.17453923052,CRVAL2:-35.82670943167,
+  CRPIX1:434.2726182785746,CRPIX2:475.1514141927019,
+  CD1_1:0.000009531482812500001,CD1_2:0.00011061977171759748,
+  CD2_1:0.00011066157361111111,CD2_2:-0.00000952788233930453
+ }
+}
+];
+
+await A.init;
+const aladin=A.aladin('#aladin',{
+ survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',
+ showReticle:false,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,
+ showLayersControl:true,showCooGridControl:true,showProjectionControl:false
+});
+
+let idx=0,layer=null,token=0;
+
+function opacity(){
+ const v=Number($('opacity').value)/100;
+ $('opv').textContent=$('opacity').value+'%';
+ try{layer?.setOpacity?.(v)}catch(_){}
+ return v;
+}
+function removeLayer(){
+ try{aladin.removeImageLayer?.(LAYER)}catch(_){}
+ try{aladin.removeOverlayImageLayer?.(LAYER)}catch(_){}
+ layer=null;
+}
+function show(n){
+ const my=++token;
+ idx=(n+rows.length)%rows.length;
+ const r=rows[idx];
+ removeLayer();
+ $('name').textContent=r.name;
+ $('badge').textContent=r.mode;
+ $('progress').textContent=(idx+1)+' / '+rows.length;
+ $('status').textContent='LOADING REGISTERED IMAGE LAYER…';
+ $('detail').textContent=r.authority;
+
+ const opts={
+   name:LAYER,
+   imgFormat:'jpeg',
+   opacity:opacity(),
+   successCallback:(ra,dec,fov,img)=>{
+     if(my!==token)return;
+     layer=img;
+     aladin.gotoRaDec(ra,dec);
+     aladin.setFoV(Math.max(.0002,Number(fov)*1.15));
+     if(typeof aladin.setRotation==='function')aladin.setRotation(0);
+     $('status').textContent='REGISTERED · '+r.mode;
+     $('detail').textContent=r.authority+' · pan/zoom to check that it stays nailed to DSS2';
+   },
+   errorCallback:(e)=>{
+     if(my!==token)return;
+     $('status').textContent='ERROR LOADING AVM';
+     $('detail').textContent=String(e||'Unknown image/WCS error');
+   }
+ };
+ if(r.wcs)opts.wcs=r.wcs;
+ const img=A.image(r.image,opts);
+ layer=img;
+ aladin.setOverlayImageLayer(img,LAYER);
+}
+
+$('opacity').oninput=opacity;
+$('prev').onclick=()=>show(idx-1);
+$('next').onclick=()=>show(idx+1);
+show(0);
+})().catch(e=>{
+ document.getElementById('status').textContent='FATAL';
+ document.getElementById('detail').textContent=String(e?.message||e);
+});
+</script>
+</body>
+</html>
