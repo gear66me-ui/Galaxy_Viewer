@@ -176,7 +176,7 @@ jobs:
                           expect=width/(fov/60)
                           if not (expect/3 < sc < expect*3): continue
                           # transform all cat, nearest image residuals
-                          pred=model(src=np.column_stack(((-cat[:,0] if mirror else cat[:,0]),cat[:,1])))
+                          pred=model(np.column_stack(((-cat[:,0] if mirror else cat[:,0]),cat[:,1])))
                           # nearest neighbors
                           diff=pred[:,None,:]-img[None,:,:]
                           dist=np.sqrt(np.sum(diff*diff,axis=2))
