@@ -308,3 +308,38 @@ Build:
 - artifact ID: `11309496377`
 - APK SHA-256: `e4de3c3bcc6381d586be0d1ecbe1e9d2afeccea696ef50a5a9f7889136ff4344`
 - APK signature verification: v3 verified.
+
+
+## Build 0067 / Browser 0028 — restrained Back to Sky + visible browser return acknowledgment
+
+Date: 2026-10-04.
+
+Build 0067 hosted viewer UI:
+- Back to Sky is now a restrained enamel navigation control matching Random Galaxy geometry and typography.
+- Height: 42 px.
+- Border radius: 10 px.
+- Font: 15.5 px Space Age.
+- Added the same glass/enamel highlight vocabulary used by Random Galaxy.
+- Removed all Back-to-Sky spinning star/comet/fireball decorations.
+- Reduced button width to 68% and tightened the Galaxy Info panel.
+- Preserved the existing brief green press acknowledgment.
+- Preserved Build 0066 provider READY persistence and live telemetry behavior.
+
+Build 0067 module commit: `e4df35e6459ad83dc832b9b1c7e36d86b0927aaf`.
+Build 0067 viewer commit: `5167ac41a1cb284df1f1dc880417ff80b0801245`.
+Build 0067 pointer commit: `e3c62d659cb22e13aa34b8e96d7f72086c52bac9`.
+
+Browser 0028:
+- Exact 0027 top shell preserved byte-for-byte.
+- Exact 0027 bottom shell preserved except the return timing/paint logic.
+- The left Back-to-Galaxy-Viewer tile and arrow still use the existing green flash class.
+- Exit now waits for two `requestAnimationFrame` paint opportunities, then holds the green state for 520 ms before `GV.exit()`.
+- This prevents the native WebView layer from disappearing before the green acknowledgment is visibly painted.
+- Config changes are revision/path substitutions only.
+- APK 0021 is unchanged.
+
+Browser 0028 commits:
+- top clone: `59c30c96487fdf88fd3093d9ebad992abf51d839`
+- bottom timing fix: `deae1a1821c6f53e529cbda78bd35fd866a05cae`
+- config: `14896051e1b7a1c8b46b945b147d41c789c4d6eb`
+- current pointer: `b241691ed7ff1913910f47abff2d5d4579c7b3d8`
