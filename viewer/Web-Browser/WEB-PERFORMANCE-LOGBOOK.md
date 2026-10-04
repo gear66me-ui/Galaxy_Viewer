@@ -397,3 +397,29 @@ Build 0068 commits:
 - navigator: `2f65a097503c8d613a58c8b77d968e8767463cbd`
 - viewer: `2de86b4ee929d79e267950001f12f880a0906e0b`
 - pointer: `e0d0d9f3d9f1e3e3a3247353342451997765f875`
+
+
+## Browser 0031 — unified Back to Galaxy Viewer control
+
+Date: 2026-10-04.
+
+Root cause:
+- Browser 0030 still represented Back to Galaxy Viewer as two separate DOM controls: a left arrow tile and a center label tile.
+- The UI attempted to synchronize two independent green states, which did not reliably produce a visibly green long return button on-device.
+
+Browser 0031:
+- Replaces the split arrow + label controls with one actual long button containing both the arrow and BACK TO GALAXY VIEWER text.
+- One element owns the entire return visual state.
+- On deliberate pointer-down, the single button is forced green using both class styling and inline `!important` background/border/shadow/color overrides.
+- Forces layout, then gives two requestAnimationFrame paint opportunities.
+- Holds the visible green state for 560 ms before calling `GV.exit()`.
+- The arrow itself also changes to the same green state.
+- Browser top shell is byte-for-byte identical to Browser 0030.
+- Config differs from Browser 0030 only by revision/path substitutions.
+- Galaxy Viewer Build 0068 and APK 0021 are unchanged.
+
+Browser 0031 commits:
+- top shell: `969b0dba0f60d9c24a6915f66694b28e5a59e55d`
+- bottom shell: `d4d2037e7d417c6897022fe4ac25808d9d482a45`
+- config: `2fc53f47b3dc1b1285350ad5d7e1b77d4f024b1a`
+- pointer: `501274d9d982f6eafb577dc098e77764b4cd7066`
