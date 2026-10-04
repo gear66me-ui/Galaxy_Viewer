@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0071 — spherical startup + Survey counter controller; provider selection auto-launches first image
+# BUILD 0072 — restore Mollweide launch; first galaxy stays MOL; switch to spherical at 60° apex on next outbound travel
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0071';
+const GV200001_BUILD='0072';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -175,7 +175,7 @@ await A.init;
 // ============================================================================
 const aladin=A.aladin('#aladin-cosmic-command-test',{
     survey:'P/DSS2/color',
-    projection:'SIN',
+    projection:'MOL',
     fov:360,
     showReticle:false,
     showZoomControl:false,
@@ -783,7 +783,6 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
-try{hamburger.selectProjection?.('SPHERICAL')}catch(error){console.error('GV STARTUP SPHERICAL SYNC FAILED',error)}
 hamburger.root.addEventListener('gv-doe-rate-selected',event=>{
     const rate=Number(event.detail?.rate);
     if(GV_DOE_RATES.includes(rate))gvDoeRate=rate;
@@ -1668,7 +1667,7 @@ async function gvNavigateSurveyIndex(nextIndex){
     updateNavigationAvailability();
     try{
         const firstTrip=routeIndex===0;
-        const switchToSphericalAtApex=false;
+        const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
         await showDestination(destination,{firstTrip,switchToSphericalAtApex});
         return true;
@@ -1710,7 +1709,7 @@ async function navigateRandom(){
         history.push(destination);
         historyIndex=history.length-1;
         const firstTrip=routeIndex===0;
-        const switchToSphericalAtApex=false;
+        const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
         await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
     }finally{
