@@ -119,3 +119,24 @@ Changes:
 Module commit: `595348338fcd5a85d4999adf906d864b6e64a548`.
 Viewer commit: `5ea02942e26b513421f37aa0a6de181860957f32`.
 Pointer commit: `5d436ad94838d5d6c16cd6afe49cbea3f6960896`.
+
+
+## Hosted instrumentation revision — Build 0062
+
+Date: 2026-10-04.
+
+Reason: Build 0061 inspection confirmed the HD provider status markup was nested inside the 48 px WEB tile, contrary to the intended layout.
+
+Build 0062 changes:
+- Moves the HD provider status out of the WEB button into a separate status block below it.
+- Keeps breathing space between the WEB tile and the progress bar.
+- Keeps the progress bar and small ready LED visible on the UHD/View-HD port.
+- Latches progress/ready state in hosted UI so returning from the provider website restores the same full bar, green LED, and `READY ✓`.
+- `READY ✓` remains visible until Back to Sky or destination departure.
+- Back to Sky explicitly clears the latched provider status.
+- APK19 native provider/cache behavior is unchanged.
+- Destination-card hairline indicator remains faint and unchanged from Build 0061.
+
+Module commit: `cbcddc1e2f07aa6c3b199b4746200c80ecc8e07f`.
+Viewer commit: `6408c778215cf53b16831d49c5c323e3c8c15043`.
+Pointer commit: `3cfee8526ab7aaccdf958387564dd47e7e0dc0f6`.
