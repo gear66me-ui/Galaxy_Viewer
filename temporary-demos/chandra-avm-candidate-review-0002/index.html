@@ -67,13 +67,15 @@ let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')}catch
 let candidates=[],active='all';
 
 function classify(r){
- const subj=(r.subject||[]).join(' ').toLowerCase();
- const name=((r.object_name||[])[0]||'').toLowerCase();
- const text=subj+' '+name;
- const neb=/(nebula|supernova|remnant|planetary|pulsar wind|star.?forming|star formation|h ii|hii region)/i.test(text);
- if(neb)return 'nebula';
- if(/galaxy/i.test(subj))return 'galaxy';
- if(/\\bgalax(y|ies)\\b/i.test(name))return 'galaxy';
+ const subjects=(r.subject||[]).map(s=>String(s).replace(/\\.+$/,''));
+ const name=(r.object_name||[]).join(' ').toLowerCase();
+ const title=String(r.title||'').toLowerCase();
+ const headline=String(r.headline||'').toLowerCase();
+ const text=name+' '+title+' '+headline;
+ if(/nebula|supernova|remnant|\\bsnr\\b|pulsar wind|star.?forming|star formation|h ii|hii region/i.test(text))return 'nebula';
+ if(subjects.some(s=>s.startsWith('B.4')||s.startsWith('C.4')||['B.3.1.8','C.3.1.8','B.3.1.9.1'].includes(s)))return 'nebula';
+ if(/galax|andromeda|antennae|centaurus a|whirlpool|sombrero|\\bm31\\b|\\bm51\\b|\\bm81\\b|\\bm82\\b|\\bm83\\b|\\bm84\\b|\\bm87\\b|quasar|\\bagn\\b|seyfert/i.test(text))return 'galaxy';
+ if(subjects.some(s=>s.startsWith('C.5')||s.startsWith('D.5')))return 'galaxy';
  return null;
 }
 function goodImage(r){
@@ -90,7 +92,7 @@ function aliasesFromEntry(e){
  let a=[];['name','displayName','designation','title'].forEach(k=>{if(e&&e[k])a.push(...splitAliases(e[k]))});
  return a;
 }
-function imageUrl(r){return 'https://images.ipac.caltech.edu/chandra/'+encodeURIComponent(r.image_id)+'/chandra_'+encodeURIComponent(r.image_id)+'_1024.jpg'}
+function imageUrl(r){return 'https://www.astropix.org/archive/chandra/'+encodeURIComponent(r.image_id)+'/chandra_'+encodeURIComponent(r.image_id)+'_1024.jpg'}
 function astroUrl(r){return 'https://www.astropix.org/image/chandra/'+encodeURIComponent(r.image_id)}
 function fov(r){
  if(!Array.isArray(r.wcs_reference_dimension)||r.wcs_reference_dimension.length<2||!Array.isArray(r.wcs_scale)||r.wcs_scale.length<2)return '—';
@@ -172,7 +174,7 @@ async function init(){
    if(!lr.ok)throw new Error('Live Chandra catalog HTTP '+lr.status);
    const feed=await fr.json(),live=await lr.json();
    candidates=build(feed,live);
-   if(candidates.length<100)throw new Error('Only '+candidates.length+' qualifying new AVM candidates survived the filters.');
+   if(!candidates.length)throw new Error('No qualifying Chandra AVM candidates survived the filters.');
    document.getElementById('loading').classList.add('hidden');
    document.getElementById('countGal').textContent='GALAXIES '+candidates.filter(x=>x.kind==='galaxy').length;
    document.getElementById('countNeb').textContent='NEBULAE '+candidates.filter(x=>x.kind==='nebula').length;
