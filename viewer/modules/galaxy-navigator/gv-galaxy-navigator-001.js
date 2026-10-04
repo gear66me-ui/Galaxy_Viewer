@@ -35,7 +35,7 @@ function installStyle(){
 #gv-random-galaxy .gvrg-random-comet i:nth-child(1){--a:0deg;--s:1;--o:1;background:#FF4414;box-shadow:0 0 2px 1px #FF4414,0 0 5px 1px #FF8420}
 #gv-random-galaxy .gvrg-random-comet i:nth-child(2){--a:-15deg;--s:.88;--o:.84}#gv-random-galaxy .gvrg-random-comet i:nth-child(3){--a:-30deg;--s:.76;--o:.68}#gv-random-galaxy .gvrg-random-comet i:nth-child(4){--a:-45deg;--s:.64;--o:.52}#gv-random-galaxy .gvrg-random-comet i:nth-child(5){--a:-60deg;--s:.52;--o:.38}#gv-random-galaxy .gvrg-random-comet i:nth-child(6){--a:-75deg;--s:.42;--o:.26}#gv-random-galaxy .gvrg-random-comet i:nth-child(7){--a:-90deg;--s:.32;--o:.16}#gv-random-galaxy .gvrg-random-comet i:nth-child(8){--a:-105deg;--s:.24;--o:.08}
 #gv-random-galaxy.gvrg-random-busy .gvrg-random-comet{opacity:1;animation-play-state:running}
-#gv-random-galaxy.gvrg-random-traveling,#gv-random-galaxy.gvrg-random-start{background:linear-gradient(145deg,#062B1D 0%,#08783F 42%,#13B968 76%,#38E69A 100%) padding-box,linear-gradient(135deg,#38E69A 0%,#78FFAB 48%,#D9FFE9 100%) border-box;color:#DFFFF0;text-shadow:0 0 5px rgba(120,255,171,.9);box-shadow:inset 0 0 8px rgba(120,255,171,.22),0 0 12px rgba(56,230,154,.62)}
+#gv-random-galaxy.gvrg-random-traveling,#gv-random-galaxy.gvrg-random-start{background:linear-gradient(145deg,#062B1D 0%,#08783F 42%,#13B968 76%,#38E69A 100%) padding-box,linear-gradient(135deg,#38E69A 0%,#78FFAB 48%,#D9FFE9 100%) border-box;color:#DFFFF0;text-shadow:0 0 5px rgba(120,255,171,.9);box-shadow:inset 0 0 8px rgba(120,255,171,.22),0 0 12px rgba(56,230,154,.62)}#gv-random-galaxy.gvrg-press-green{border-color:#78FFAB!important;background:linear-gradient(145deg,#062B1D 0%,#08783F 42%,#13B968 76%,#38E69A 100%)!important;color:#DFFFF0!important;text-shadow:0 0 5px rgba(120,255,171,.95)!important;box-shadow:inset 0 0 8px rgba(120,255,171,.28),0 0 5px #78FFAB,0 0 14px rgba(56,230,154,.92)!important}
 #gv-random-galaxy .gvrg-random-comet-left{animation-delay:-1.4s}
 @keyframes gvrg-random-comet-orbit-0031{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 `;
@@ -50,7 +50,9 @@ function mount(host,handlers={}){
  '<button class="gv-galaxy-history" data-gv-nav="forward" type="button" aria-label="Forward"></button>';
  const back=host.querySelector('[data-gv-nav="back"]'),random=host.querySelector('[data-gv-nav="random"]'),forward=host.querySelector('[data-gv-nav="forward"]');
  back.addEventListener('click',()=>{if(!back.disabled)handlers.onBack?.()});
- random.addEventListener('click',()=>{if(!random.disabled)handlers.onRandom?.()});
+ let randomPressTimer=0;const flashRandom=()=>{if(random.disabled)return;random.classList.add('gvrg-press-green');clearTimeout(randomPressTimer);randomPressTimer=setTimeout(()=>random.classList.remove('gvrg-press-green'),520)};
+ random.addEventListener('pointerdown',()=>{flashRandom()});
+ random.addEventListener('click',()=>{if(!random.disabled){flashRandom();handlers.onRandom?.()}});
  forward.addEventListener('click',()=>{if(!forward.disabled)handlers.onForward?.()});
  return Object.freeze({VERSION,host,back,random,forward,
   setBusy(busy){random.classList.toggle('gvrg-random-busy',Boolean(busy));random.disabled=Boolean(busy)},
