@@ -37,10 +37,9 @@ button{min-height:32px;border-radius:8px;border:1px solid #28657e;background:#07
 <div id="panel">
  <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="val">55%</span></div>
  <div class="row"><span class="lab">SKY ROT</span><input id="skyRot" type="range" min="0" max="360" step="0.1" value="0"><span id="skyRotv" class="val">0.0°</span></div>
- <div class="row"><span class="lab">IMAGE ROT</span><input id="rot" type="range" min="0" max="360" step="0.1" value="0"><span id="rotv" class="val">0.0°</span></div>
- <div class="row"><button id="rotMinus" class="rotbtn">ROT −</button><button id="rotPlus" class="rotbtn">ROT +</button><span class="lab" style="width:auto">IMAGE SCALE</span><input id="scale" type="range" min="0" max="200" step="0.5" value="100"><span id="scalev" class="val">100%</span></div>
+
  <div class="row"><button id="raMinus" class="nudge">SKY RA −</button><button id="raPlus" class="nudge">SKY RA +</button><button id="decMinus" class="nudge">SKY DEC −</button><button id="decPlus" class="nudge">SKY DEC +</button><button id="step" class="flip">FINE</button></div>
- <div class="row"><button id="flipX" class="flip">FLIP X</button><button id="flipY" class="flip">FLIP Y</button><span id="softState" class="softNote">image fixed · move sky underneath</span></div>
+ <div class="row"><span id="softState" class="softNote">image fixed · move / pinch / rotate sky underneath</span></div>
  <div class="row"><button id="register" class="registerBtn">REGISTER COORDINATES</button><button id="save" class="save">SAVE + NEXT</button></div>
  <div class="row"><button id="prev" class="nav">◀ BACK</button><span id="progress">0 / 23</span><button id="next" class="nav">NEXT ▶</button><button id="export" class="export">EXPORT</button></div>
  <div id="guideLegend">ALADIN is injected with this object's real RA/Dec before the Chandra image appears. Pan/pinch/rotate the sky under the floating image, then REGISTER COORDINATES.</div>
@@ -89,7 +88,7 @@ function renderImage(){
  const a=c*s*fx,b=sn*s*fx,cc=-sn*s*fy,d=c*s*fy;
  const e=cx-a*(w/2)-cc*(h/2),f=cy-b*(w/2)-d*(h/2);
  const im=$('floatImage');im.style.transform='matrix('+[a,b,cc,d,e,f].join(',')+')';im.style.opacity=String(Number($('opacity').value)/100);im.style.display='block';
- $('softState').textContent='image fixed · rot '+imageRot.toFixed(1)+'° · scale '+(imageScale*100).toFixed(1)+'%';
+ $('softState').textContent='image fixed · SKY rot '+skyRot.toFixed(1)+'° · move / pinch / rotate Aladin';
  drawAxes();
 }
 function imagePointToScreen(x,y){
@@ -105,9 +104,7 @@ function drawAxes(){
  g+='<line x1="'+p0[0]+'" y1="'+p0[1]+'" x2="'+py[0]+'" y2="'+py[1]+'" stroke="#54ddff" stroke-width="3" marker-end="url(#mC)"/><text x="'+(py[0]+5)+'" y="'+(py[1]-5)+'" fill="#54ddff" font-size="12" font-weight="900">IMG +Y</text>';
  $('axisGuide').innerHTML=g
 }
-function setControls(){
- $('rot').value=((imageRot%360)+360)%360;$('rotv').textContent=Number($('rot').value).toFixed(1)+'°';$('scale').value=imageScale*100;$('scalev').textContent=(imageScale*100).toFixed(1)+'%';$('flipX').classList.toggle('active',flipX);$('flipY').classList.toggle('active',flipY);$('step').textContent=stepFine?'FINE':'COARSE'
-}
+function setControls(){$('step').textContent=stepFine?'FINE':'COARSE'}
 function waitForTarget(ra,dec,timeout=2500){
  return new Promise(resolve=>{const t0=Date.now();const timer=setInterval(()=>{let ok=false;try{const q=aladin.getRaDec();const dra=Math.abs(raDelta(Number(q[0]),ra)),dd=Math.abs(Number(q[1])-dec);ok=dra<.002&&dd<.002}catch(_){}if(ok||Date.now()-t0>timeout){clearInterval(timer);resolve(ok)}},60)})
 }
@@ -141,7 +138,7 @@ function registerCoordinates(){
 }
 async function show(n){
  idx=(n+queue.length)%queue.length;current=queue[idx];currentRaster=null;registeredWcs=null;$('floatImage').style.display='none';$('register').className='registerBtn';$('register').textContent='REGISTER COORDINATES';
- const p=state(current);imageRot=Number(p.rotation||0);imageScale=1;flipX=!!p.flipX;flipY=!!p.flipY;skyRot=Number(p.skyRotation||0);
+ const p=state(current);imageRot=0;imageScale=1;flipX=false;flipY=false;skyRot=Number(p.skyRotation||0);
  const injected=targetCenter(current);try{aladin.gotoRaDec(injected[0],injected[1]);setSkyRotation(skyRot);const seedFov=Math.max(.01,Number(current.publishedFovArcmin||5)/60)*1.18;aladin.setFoV(seedFov)}catch(_){}
  $('miniIndex').textContent=(idx+1)+'/'+queue.length;$('miniName').textContent=current.name;$('miniSaved').textContent=saved[current.key]?.verified?'✓':'';
  $('progress').textContent=(idx+1)+' / '+queue.length+' · VERIFIED '+Object.values(saved).filter(x=>x&&x.verified).length;$('diag').textContent='Loading Chandra image once…';
@@ -149,12 +146,8 @@ async function show(n){
 }
 $('opacity').oninput=()=>{$('opv').textContent=$('opacity').value+'%';renderImage()};
 $('skyRot').oninput=()=>{setSkyRotation($('skyRot').value);registeredWcs=null;$('register').className='registerBtn ready';$('register').textContent='REGISTER COORDINATES'};
-$('rot').oninput=()=>{imageRot=Number($('rot').value);$('rotv').textContent=imageRot.toFixed(1)+'°';registeredWcs=null;$('register').className='registerBtn ready';$('register').textContent='REGISTER COORDINATES';renderImage()};
-$('scale').oninput=()=>{imageScale=Math.max(.001,Number($('scale').value)/100);$('scalev').textContent=Number($('scale').value).toFixed(1)+'%';registeredWcs=null;$('register').className='registerBtn ready';$('register').textContent='REGISTER COORDINATES';renderImage()};
-$('rotMinus').onclick=()=>{imageRot=((imageRot-(stepFine?.2:2))%360+360)%360;setControls();renderImage()};$('rotPlus').onclick=()=>{imageRot=(imageRot+(stepFine?.2:2))%360;setControls();renderImage()};
 $('raMinus').onclick=()=>skyNudge('ra',-1);$('raPlus').onclick=()=>skyNudge('ra',1);$('decMinus').onclick=()=>skyNudge('dec',-1);$('decPlus').onclick=()=>skyNudge('dec',1);
 $('step').onclick=()=>{stepFine=!stepFine;$('step').textContent=stepFine?'FINE':'COARSE'};
-$('flipX').onclick=()=>{flipX=!flipX;setControls();renderImage()};$('flipY').onclick=()=>{flipY=!flipY;setControls();renderImage()};
 $('register').onclick=registerCoordinates;
 $('save').onclick=()=>{if(!registeredWcs)registerCoordinates();if(!saved[current.key]?.wcs)return;saved[current.key].verified=true;saved[current.key].savedAt=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(saved));show(idx+1)};
 $('prev').onclick=()=>show(idx-1);$('next').onclick=()=>show(idx+1);
