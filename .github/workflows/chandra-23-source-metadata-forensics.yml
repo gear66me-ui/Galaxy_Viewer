@@ -1,0 +1,163 @@
+name: Chandra 23 Source Metadata Forensics
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-23-source-metadata-forensics.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  forensic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download source assets and extract metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chandra23/assets /tmp/chandra23/out
+          curl --fail --location --retry 3 --silent --show-error             'https://www.astropix.org/link/918?format=json'             -o /tmp/chandra23/feed.json
+
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libimage-exiftool-perl >/dev/null
+
+          python3 - <<'PY'
+          import json, pathlib, subprocess, urllib.request, urllib.parse, re, os, ssl, hashlib
+
+          outdir=pathlib.Path('/tmp/chandra23/assets')
+          feed=json.load(open('/tmp/chandra23/feed.json'))
+          byid={str(r.get('image_id')):r for r in feed if r.get('image_id') is not None}
+
+          targets=[
+            ('901c','M33','https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg'),
+            ('838f','Eagle Nebula (M16)','https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg'),
+            ('800','Crab Nebula','https://www.astropix.org/archive/chandra/800/chandra_800_1024.jpg'),
+            ('370','Coronet Cluster','https://www.astropix.org/archive/chandra/370/chandra_370_1024.jpg'),
+            ('901a','NGC 1672','https://www.astropix.org/archive/chandra/901a/chandra_901a_1024.jpg'),
+            ('901b','II Zw 096','https://www.astropix.org/archive/chandra/901b/chandra_901b_1024.jpg'),
+            ('901e','NGC 1569','https://www.astropix.org/archive/chandra/901e/chandra_901e_1024.jpg'),
+            ('901f','M90','https://www.astropix.org/archive/chandra/901f/chandra_901f_1024.jpg'),
+            ('901i','Arp 143','https://www.astropix.org/archive/chandra/901i/chandra_901i_1024.jpg'),
+            ('901j','NGC 4725','https://www.astropix.org/archive/chandra/901j/chandra_901j_1024.jpg'),
+            ('901l','NGC 660','https://www.astropix.org/archive/chandra/901l/chandra_901l_1024.jpg'),
+            ('901o','NGC 3938','https://www.astropix.org/archive/chandra/901o/chandra_901o_1024.jpg'),
+            ('847','Guitar Nebula','https://www.astropix.org/archive/chandra/847/chandra_847_1024.jpg'),
+            ('838p','Hb 5 Nebula','https://www.astropix.org/archive/chandra/838p/chandra_838p_1024.jpg'),
+            ('813','SN 1006','https://www.astropix.org/archive/chandra/813/chandra_813_1024.jpg'),
+            ('797',"Tycho's Supernova Remnant",'https://www.astropix.org/archive/chandra/797/chandra_797_1024.jpg'),
+            ('429','RCW 86','https://www.astropix.org/archive/chandra/429/chandra_429_1024.jpg'),
+          ]
+
+          manual={
+            'heart-2026':('Cocoon Nebula · IC 5146',
+              ['https://chandra.harvard.edu/photo/2026/heart/heart.tif',
+               'https://chandra.harvard.edu/photo/2026/heart/heart.jpg']),
+            'spring-w2':('Westerlund 2',
+              ['https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.tif',
+               'https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg']),
+            'spring-ngc346':('NGC 346',
+              ['https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.tif',
+               'https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg']),
+            'spring-catspaw':("Cat's Paw Nebula · NGC 6334",
+              ['https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.tif',
+               'https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg']),
+            'spring-pelican':('Pelican Nebula',
+              ['https://chandra.harvard.edu/photo/2026/spring/spring_pelican.tif',
+               'https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg']),
+            'spring-flame':('Flame Nebula · NGC 2024',
+              ['https://chandra.harvard.edu/photo/2026/spring/spring_flame.tif',
+               'https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg']),
+          }
+
+          def dl(url, key, idx):
+              ext=pathlib.Path(urllib.parse.urlparse(url).path).suffix or '.bin'
+              p=outdir/f'{key}-{idx}{ext}'
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 GalaxyViewer/1.0'})
+              try:
+                  with urllib.request.urlopen(req,timeout=60,context=ssl.create_default_context()) as r:
+                      data=r.read()
+                  p.write_bytes(data)
+                  return p, None
+              except Exception as e:
+                  return None, str(e)
+
+          def exif(path):
+              try:
+                  raw=subprocess.check_output(['exiftool','-j','-G1','-a','-u',str(path)],text=True,stderr=subprocess.STDOUT,timeout=45)
+                  return json.loads(raw)[0]
+              except Exception as e:
+                  return {'_error':str(e)}
+
+          def select_keys(meta):
+              keep={}
+              needles=('Spatial','WCS','FITS','ImageWidth','ImageHeight','ExifImage','XMP','Orientation','Pixel','Scale','Rotation',
+                       'ObjectName','Subject','Title','Description','Creator','Source','Reference')
+              for k,v in meta.items():
+                  if any(n.lower() in k.lower() for n in needles):
+                      keep[k]=v
+              return keep
+
+          result={'version':'0001-source-forensics','targets':[]}
+
+          for key,name,jpg in targets:
+              rec=byid.get(key,{})
+              urls=[]
+              for u in [rec.get('resource_url'),jpg]:
+                  if u and u not in urls: urls.append(u)
+              item={'key':key,'name':name,'astropix':{
+                  'wcs_quality':rec.get('wcs_quality'),
+                  'wcs_reference_value':rec.get('wcs_reference_value') or [],
+                  'wcs_reference_dimension':rec.get('wcs_reference_dimension') or [],
+                  'wcs_reference_pixel':rec.get('wcs_reference_pixel') or [],
+                  'wcs_scale':rec.get('wcs_scale') or [],
+                  'wcs_rotation':rec.get('wcs_rotation'),
+                  'wcs_projection':rec.get('wcs_projection'),
+                  'resource_url':rec.get('resource_url'),
+                  'reference_url':rec.get('reference_url')
+              },'assets':[]}
+              for i,u in enumerate(urls):
+                  p,err=dl(u,key,i)
+                  if err:
+                      item['assets'].append({'url':u,'error':err}); continue
+                  meta=exif(p)
+                  item['assets'].append({
+                      'url':u,'file':p.name,'bytes':p.stat().st_size,
+                      'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                      'metadata':select_keys(meta)
+                  })
+              result['targets'].append(item)
+
+          for key,(name,urls) in manual.items():
+              item={'key':key,'name':name,'astropix':None,'assets':[]}
+              for i,u in enumerate(urls):
+                  p,err=dl(u,key,i)
+                  if err:
+                      item['assets'].append({'url':u,'error':err}); continue
+                  meta=exif(p)
+                  item['assets'].append({
+                      'url':u,'file':p.name,'bytes':p.stat().st_size,
+                      'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                      'metadata':select_keys(meta)
+                  })
+              result['targets'].append(item)
+
+          result['count']=len(result['targets'])
+          pathlib.Path('/tmp/chandra23/out/chandra-23-source-metadata-forensics-0001.json').write_text(
+              json.dumps(result,indent=2,ensure_ascii=False),encoding='utf-8')
+          print('TARGETS',len(result['targets']))
+          for x in result['targets']:
+              print(x['key'],[(a.get('file'),a.get('bytes'), 'ERR' if a.get('error') else 'OK') for a in x['assets']])
+          PY
+
+          test -s /tmp/chandra23/out/chandra-23-source-metadata-forensics-0001.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chandra-23-source-metadata-forensics
+          path: /tmp/chandra23/out/chandra-23-source-metadata-forensics-0001.json
+          retention-days: 30
