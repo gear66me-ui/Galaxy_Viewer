@@ -60,7 +60,7 @@ jobs:
             exit 0
           fi
 
-          if ! grep -Ev '^temporary-demos/chandra-avm-candidate-review-0001/' <<< "${files}" | grep -q .; then
+          if ! grep -Ev '^temporary-demos/chandra-avm-candidate-review-' <<< "${files}" | grep -q .; then
             echo "review_only=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -97,8 +97,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s temporary-demos/chandra-avm-candidate-review-0001/index.html
-          echo "CHANDRA REVIEW DEPLOYMENT ISOLATED FROM RC VALIDATION"
+          test -s temporary-demos/chandra-avm-candidate-review-0002/index.html
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://www.astropix.org/link/918?format=json' \
+            -o temporary-demos/chandra-avm-candidate-review-0002/astropix-chandra-feed.json
+          test -s temporary-demos/chandra-avm-candidate-review-0002/astropix-chandra-feed.json
+          echo "CHANDRA REVIEW 0002 DEPLOYMENT ISOLATED FROM RC VALIDATION"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
