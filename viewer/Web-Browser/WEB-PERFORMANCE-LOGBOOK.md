@@ -540,3 +540,34 @@ Commits:
 - Navigator 004: `51542261d8b587d457345141410cef53551af473`
 - Viewer: `f84cf79a6f4e2f9bfc6a435f4f3cf489da409ba4`
 - Pointer: `67dc5285bf574c3616fb3bf4b7ea0924b4740625`
+
+
+## Build 0076 — Survey control moves under coordinates + thumbnail prewarm
+
+Date: 2026-10-04.
+
+Survey control:
+- Orange `SELECT GALAXY` control moved from above the destination card to directly under the coordinate box.
+- Centered to the coordinate readout with a 5 px gap.
+- Added a three-line list/hamburger icon to the left of the Space Age label.
+- Control remains visible throughout Survey mode; during travel it stays visible but disabled.
+- Tapping toggles the selector.
+- Selector drops down from behind the button, remains 60% viewport width × 60% viewport height, and collapses after a galaxy is selected.
+
+Thumbnail performance:
+- Thumbnail loading now starts as soon as Survey state is armed instead of waiting for the selector to open.
+- Current record plus nearby records are prewarmed with bounded concurrency.
+- Visible selector rows are promoted ahead of background prewarm requests.
+- Loaded/failed thumbnail URL results and in-flight requests are de-duplicated for the session.
+- Scrolling continues to prewarm a small neighborhood around the visible window.
+- Existing archive thumbnail candidates remain preferred with full image URLs as fallback.
+
+Preserved:
+- Per-provider Survey cursor memory.
+- Mollweide launch / delayed spherical switch choreography.
+- Browser 0031 and APK 0022 unchanged.
+
+Commits:
+- Navigator 005: `58857737cd05ca6377ac0edd331646b0ac0a30f3`
+- Viewer: `7d04f3545ca445a2aee5e98e7da253bffbab2744`
+- Pointer: `e8a6824cb2abbedfb89692900fce2a12a0d1f60b`
