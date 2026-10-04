@@ -324,7 +324,7 @@ updateDirectionalReticle();
 // SECTION 041B — EARTH BEARING POINTER / ARRIVAL DISTANCE
 // ECO: GV200-028 BUILD 0001
 // ============================================================================
-const GV_EARTH_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/compass/gv-earth-pointer-yellow-final-270.png';
+const GV_EARTH_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png';
 function gvInstallEarthBearingPointer(){
     if(document.getElementById('gv-earth-bearing-rotor'))return;
     const rotor=document.createElement('div');
@@ -337,7 +337,7 @@ function gvInstallEarthBearingPointer(){
     pointer.alt='';
     pointer.width=270;
     pointer.height=270;
-    Object.assign(pointer.style,{position:'absolute',inset:'0',width:'270px',height:'270px',objectFit:'contain',pointerEvents:'none',userSelect:'none',WebkitUserDrag:'none',zIndex:'20'});
+    Object.assign(pointer.style,{position:'absolute',inset:'0',width:'270px',height:'270px',objectFit:'contain',opacity:'1',filter:'none',imageRendering:'auto',pointerEvents:'none',userSelect:'none',WebkitUserDrag:'none',zIndex:'20'});
     rotor.appendChild(pointer);
     reticle.appendChild(rotor);
 }
