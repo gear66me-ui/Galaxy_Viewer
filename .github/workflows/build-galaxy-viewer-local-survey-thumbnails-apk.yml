@@ -84,11 +84,11 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer'
               minSdk 29
               targetSdk 36
-              versionCode 10026
-              versionName 'RC-V1.0.0.26'
+              versionCode 10027
+              versionName 'RC-V1.0.0.27'
             }
           }
-          dependencies { implementation 'androidx.webkit:webkit:1.14.0' }
+          dependencies { implementation 'androidx.webkit:webkit:1.17.1' }
           EOF
 
           test -s viewer/artwork/app_icon_4.png
@@ -175,6 +175,113 @@ jobs:
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          # Restore the already-approved persistent provider load/reuse + native preload telemetry from APK 0019.
+          # Heavy provider work still begins only after the hosted viewer reports destination arrival.
+          # A WEB press never restarts the same in-flight/ready provider load; it reveals the persistent WebView.
+          python - "$MAIN" <<'PY19'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text()
+
+          def replace_between(start_marker,end_marker,replacement):
+              global s
+              start=s.index(start_marker)
+              end=s.index(end_marker,start)
+              assert start>=0 and end>start
+              s=s[:start]+replacement+s[end:]
+
+          state_needle='  private final android.os.Handler providerGateHandler=new android.os.Handler(android.os.Looper.getMainLooper()); private Runnable providerWatchdog=null;\n'
+          assert s.count(state_needle)==1
+          s=s.replace(state_needle,state_needle+
+              '  private int providerLoadProgress=0; private boolean providerLoadReady=false;\n',1)
+
+          helper=(
+              '  private void emitProviderWarmStatus(){\n'
+              '    if(viewerWeb==null)return;final int p=Math.max(0,Math.min(100,providerLoadProgress));final boolean ready=providerLoadReady,visible=prewarmedUrl!=null&&!prewarmedUrl.isEmpty();\n'
+              '    String js="(function(p,r,v){var e=document.getElementById(\\\'gv-provider-native-progress\\\'),i=document.querySelector(\\\'.gvdp-card.gvdp-visible .gvdp-icon\\\');if(!v||!i){if(e)e.remove();return;}if(!e){e=document.createElement(\\\'div\\\');e.id=\\\'gv-provider-native-progress\\\';e.innerHTML=\\\'<i></i><b></b>\\\';document.body.appendChild(e);}var q=i.getBoundingClientRect();e.style.cssText=\\\'position:fixed;pointer-events:none;z-index:9000;height:3px;background:rgba(0,20,12,.76);border-radius:2px;\\\';e.style.left=q.left+\\\'px\\\';e.style.top=(q.bottom+2)+\\\'px\\\';e.style.width=q.width+\\\'px\\\';var f=e.querySelector(\\\'i\\\'),d=e.querySelector(\\\'b\\\');f.style.cssText=\\\'position:absolute;left:0;top:0;height:100%;border-radius:2px;background:#55ff99;box-shadow:0 0 3px rgba(85,255,153,.8);\\\';f.style.width=Math.max(0,Math.min(100,p))+\\\'%\\\';d.style.cssText=\\\'position:absolute;right:-6px;top:-1px;width:4px;height:4px;border-radius:50%;\\\';d.style.background=r?\\\'#55ff99\\\':\\\'#173126\\\';d.style.boxShadow=r?\\\'0 0 4px #55ff99\\\':\\\'none\\\';})(\"+p+\",\"+(ready?\"true\":\"false\")+\",\"+(visible?\"true\":\"false\")+\");";\n'
+              '    try{viewerWeb.evaluateJavascript(js,null);}catch(Exception ignored){}\n'
+              '  }\n'
+          )
+          insert='  private void prewarmProvider(String u){'
+          assert s.count(insert)==1
+          s=s.replace(insert,helper+insert,1)
+
+          prewarm=(
+              '  private void prewarmProvider(String u){\n'
+              '    if(u==null||!u.startsWith("https://")||web==null)return;\n'
+              '    configureProviderViewport(u);\n'
+              '    if(u.equals(prewarmedUrl)&&!prewarmFailed&&(prewarmLoading||providerLoadReady)){emitProviderWarmStatus();return;}\n'
+              '    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}\n'
+              '    if(prefetchSignal!=null){try{prefetchSignal.cancel();}catch(Exception ignored){}prefetchSignal=null;}\n'
+              '    ++prerenderGeneration;prewarmedUrl=u;prewarmReadyUrl="";prewarmCommittedUrl="";prewarmLoading=true;prewarmFailed=false;providerLoadProgress=0;providerLoadReady=false;clearProviderEntryHistory=true;\n'
+              '    try{if(WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)){Profile profile=WebViewCompat.getProfile(web);if(WebViewFeature.isFeatureSupported(WebViewFeature.WARM_UP_RENDERER_PROCESS)){try{profile.warmUpRendererProcess();}catch(Exception ignored){}}if(WebViewFeature.isFeatureSupported(WebViewFeature.PRECONNECT)){try{profile.preconnect(u);}catch(Exception ignored){}}}}catch(Exception ignored){}\n'
+              '    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);\n'
+              '    emitProviderWarmStatus();\n'
+              '    web.loadUrl(u);\n'
+              '  }\n'
+          )
+          replace_between('  private void prewarmProvider(String u){','  private boolean providerRequestCurrent',prewarm)
+
+          chrome='    v.setWebChromeClient(new WebChromeClient(){\n'
+          assert s.count(chrome)==1
+          s=s.replace(chrome,chrome+
+              '      @Override public void onProgressChanged(WebView view,int newProgress){super.onProgressChanged(view,newProgress);if(prewarmedUrl!=null&&!prewarmedUrl.isEmpty()&&!prewarmFailed){providerLoadProgress=Math.max(providerLoadProgress,Math.max(0,Math.min(100,newProgress)));emitProviderWarmStatus();}}\n',1)
+
+          old_callbacks=(
+              '      @Override public void onPageCommitVisible(WebView view,String url){if(browserMode&&awaitingProviderCommit&&activeProviderNavigation==null)visualRevealProvider(providerRevealGeneration,providerTargetUrl);}\n'
+              '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){if(browserMode&&awaitingProviderCommit&&activeProviderNavigation==null&&request!=null&&request.isForMainFrame())retryProviderNavigation(providerRevealGeneration,providerTargetUrl);}\n'
+              '      @Override public void onPageFinished(WebView view,String url){CookieManager.getInstance().flush();if(browserMode&&!awaitingProviderCommit){if(url!=null&&!url.isEmpty())sourceUrl=url;syncShell();}}\n'
+          )
+          assert s.count(old_callbacks)==1
+          new_callbacks=(
+              '      @Override public void onPageCommitVisible(WebView view,String url){if(prewarmLoading&&url!=null&&!url.isEmpty())prewarmCommittedUrl=url;}\n'
+              '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){if(request!=null&&request.isForMainFrame()&&prewarmLoading){prewarmLoading=false;prewarmFailed=true;providerLoadReady=false;emitProviderWarmStatus();}}\n'
+              '      @Override public void onPageFinished(WebView view,String url){CookieManager.getInstance().flush();if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;providerLoadProgress=100;providerLoadReady=true;if(clearProviderEntryHistory){web.clearHistory();clearProviderEntryHistory=false;}emitProviderWarmStatus();}if(browserMode){if(url!=null&&!url.isEmpty())sourceUrl=url;syncShell();}}\n'
+          )
+          s=s.replace(old_callbacks,new_callbacks,1)
+
+          old_cfg='    if(web==null)return;boolean chandra=isChandraProvider(url);WebSettings settings=web.getSettings();settings.setUseWideViewPort(true);settings.setLoadWithOverviewMode(chandra);if(chandra)web.setInitialScale(0);\n'
+          assert s.count(old_cfg)==1
+          new_cfg='    if(web==null)return;boolean chandra=isChandraProvider(url);WebSettings settings=web.getSettings();settings.setUseWideViewPort(true);settings.setLoadWithOverviewMode(chandra);settings.setCacheMode(WebSettings.LOAD_DEFAULT);settings.setOffscreenPreRaster(true);if(chandra)web.setInitialScale(0);\n'
+          s=s.replace(old_cfg,new_cfg,1)
+
+          cancel=(
+              '  private void cancelProviderWork(){\n'
+              '    providerRevealGeneration++;prerenderGeneration++;awaitingProviderCommit=false;browserMode=false;activeProviderNavigation=null;providerTargetUrl="";providerRevealNotBeforeMs=0L;providerRetryUsed=false;\n'
+              '    if(providerWatchdog!=null){providerGateHandler.removeCallbacks(providerWatchdog);providerWatchdog=null;}\n'
+              '    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}\n'
+              '    if(prefetchSignal!=null){try{prefetchSignal.cancel();}catch(Exception ignored){}prefetchSignal=null;}\n'
+              '    prewarmLoading=false;prewarmFailed=false;prewarmedUrl="";prewarmReadyUrl="";prewarmCommittedUrl="";providerLoadProgress=0;providerLoadReady=false;\n'
+              '    pendingProviderUrl="";pendingProviderIcon="";clearProviderEntryHistory=false;\n'
+              '    if(web!=null){try{web.stopLoading();}catch(Exception ignored){}}\n'
+              '    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);emitProviderWarmStatus();\n'
+              '  }\n'
+          )
+          replace_between('  private void cancelProviderWork(){','  private boolean isChandraProvider',cancel)
+
+          open_provider=(
+              '  private void openProvider(String u,String icon){\n'
+              '    configureProviderViewport(u);\n'
+              '    browserMode=true;pendingProviderUrl=u;pendingProviderIcon=icon==null?"":icon;providerIcon=pendingProviderIcon;sourceUrl=u;providerHomeUrl=u;awaitingProviderCommit=false;activeProviderNavigation=null;\n'
+              '    if(providerWatchdog!=null){providerGateHandler.removeCallbacks(providerWatchdog);providerWatchdog=null;}\n'
+              '    boolean sameWarm=u!=null&&u.equals(prewarmedUrl)&&!prewarmFailed;\n'
+              '    if(!sameWarm)prewarmProvider(u);\n'
+              '    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}\n'
+              '    if(web!=null)web.requestFocus();\n'
+              '    syncShell();fetchPointer();immersive();\n'
+              '  }\n'
+          )
+          replace_between('  private void openProvider(String u,String icon){','  private void notifyViewerResumed(){',open_provider)
+
+          old_return='  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); notifyViewerResumed(); }\n'
+          assert s.count(old_return)==1
+          s=s.replace(old_return,'  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); notifyViewerResumed(); emitProviderWarmStatus(); }\n',1)
+
+          p.write_text(s)
+          PY19
+
+
           python - "$MAIN" <<'PY'
           from pathlib import Path
           import sys
@@ -239,6 +346,11 @@ jobs:
           grep -q 'addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
           grep -q 'WebViewCompat.prerenderUrlAsync(web,u' "$MAIN"
           grep -q 'X-Galaxy-Viewer-Thumbnail-Source' "$MAIN"
+          grep -q 'providerLoadProgress=100;providerLoadReady=true' "$MAIN"
+          grep -q 'gv-provider-native-progress' "$MAIN"
+          grep -q 'profile.preconnect(u)' "$MAIN"
+          grep -q 'settings.setOffscreenPreRaster(true)' "$MAIN"
+          grep -q 'boolean sameWarm=u!=null&&u.equals(prewarmedUrl)&&!prewarmFailed' "$MAIN"
           grep -q 'getAssets().open("survey-thumbnails/"+rel)' "$MAIN"
           grep -q 'localSurveyThumbnailOrAsset(request.getUrl())' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
@@ -257,7 +369,7 @@ jobs:
           set -euo pipefail
           KEYSTORE=/tmp/galaxy-viewer-upload.jks
           UNSIGNED=/tmp/galaxy-viewer-local-thumbs/app/build/outputs/apk/release/app-release-unsigned.apk
-          OUT=Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.27-Local-Survey-Thumbnails.apk
           test -n "$GV_UPLOAD_KEYSTORE_BASE64"
           test -n "$GV_UPLOAD_STORE_PASSWORD"
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
@@ -278,7 +390,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+          APK=Galaxy-Viewer-RC-V1.0.0.27-Local-Survey-Thumbnails.apk
           test -s "$APK"
           COUNT="$(unzip -l "$APK" | grep -E 'assets/survey-thumbnails/.+\.webp$' | wc -l | tr -d ' ')"
           test "$COUNT" = "1848"
@@ -286,7 +398,7 @@ jobs:
           unzip -l "$APK" | grep -q 'assets/survey-thumbnails/gv-survey-thumbnail-current.json'
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
           grep -q "package: name='com.gear66me.galaxyviewer'" apk-badging.txt
-          grep -q "versionCode='10026'" apk-badging.txt
+          grep -q "versionCode='10027'" apk-badging.txt
           echo "Verified APK-bundled thumbnails: $COUNT"
 
       - name: Publish direct-download APK
@@ -295,20 +407,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.26-local-survey-thumbnails
-          APK=Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+          TAG=galaxy-viewer-rc-v1.0.0.27-local-survey-thumbnails
+          APK=Galaxy-Viewer-RC-V1.0.0.27-Local-Survey-Thumbnails.apk
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" "$APK" "$APK.sha256" apk-badging.txt apk-signature.txt \
             --target release \
-            --title 'Galaxy Viewer RC-V1.0.0.26 — Local Survey Thumbnails' \
-            --notes 'Current hosted Galaxy Viewer runtime with the complete 1,848-image Survey thumbnail pack bundled inside the APK. No viewer/UI changes; Survey thumbnail requests are intercepted and served directly from APK assets.'
+            --title 'Galaxy Viewer RC-V1.0.0.27 — Local Survey Thumbnails' \
+            --notes 'Exact approved persistent provider-preload/runtime behavior restored, with the complete 1,848-image Survey thumbnail pack bundled inside the APK. No viewer/UI changes; only Survey thumbnail requests are intercepted and served directly from APK assets.'
 
       - uses: actions/upload-artifact@v4
         with:
           name: Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails
           path: |
-            Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
-            Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk.sha256
+            Galaxy-Viewer-RC-V1.0.0.27-Local-Survey-Thumbnails.apk
+            Galaxy-Viewer-RC-V1.0.0.27-Local-Survey-Thumbnails.apk.sha256
             apk-badging.txt
             apk-signature.txt
           retention-days: 30
