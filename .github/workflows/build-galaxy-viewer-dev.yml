@@ -375,7 +375,7 @@ jobs:
           assert old in s
           new=('  private CancellationSignal prerenderSignal=null, prefetchSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false;\n'
                '  private Navigation activeProviderNavigation=null; private String providerTargetUrl=""; private int providerRevealGeneration=0; private long providerRevealNotBeforeMs=0L; private boolean providerRetryUsed=false;\n'
-               '  private final Handler providerGateHandler=new Handler(Looper.getMainLooper()); private Runnable providerWatchdog=null;\n')
+               '  private final android.os.Handler providerGateHandler=new android.os.Handler(android.os.Looper.getMainLooper()); private Runnable providerWatchdog=null;\n')
           s=s.replace(old,new,1)
 
           start=s.index('  private void prewarmProvider(String u){')
