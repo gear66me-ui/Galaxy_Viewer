@@ -1,0 +1,74 @@
+name: Build Survey Thumbnail Pack
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/build-survey-thumbnail-pack.yml'
+      - 'tools/survey_thumbnails/**'
+      - 'viewer/image-databases/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: survey-thumbnail-pack-release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install thumbnail dependencies
+        run: python -m pip install --disable-pip-version-check pillow requests
+
+      - name: Generate Survey Mode thumbnails
+        run: |
+          python tools/survey_thumbnails/build_survey_thumbnails.py \
+            --size 192 \
+            --quality 76 \
+            --workers 12 \
+            --prune
+
+      - name: Show thumbnail summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-index.json")
+          d=json.loads(p.read_text())
+          print("records", d["recordCount"])
+          print("thumbnails", d["thumbnailCount"])
+          print("failed", d["failedCount"])
+          print("bytes", d["totalThumbnailBytes"])
+          for k,v in sorted(d["catalogs"].items()):
+              print(k, v)
+          PY
+
+      - name: Commit thumbnail pack to release
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/artwork/runtime/survey-thumbnails
+          if git diff --cached --quiet; then
+            echo "No thumbnail changes"
+            exit 0
+          fi
+          git commit -m "Generate Survey Mode thumbnail pack [skip ci]"
+          git pull --rebase origin release
+          git push origin HEAD:release
