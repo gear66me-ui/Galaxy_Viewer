@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0077 — place SELECT GALAXY and Survey dropdown below main hamburger menu
+# BUILD 0078 — provider selection arms without travel; direct selection travels; explicit GO TO / DISPLAYING Survey states
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -26,7 +26,7 @@ COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3dc30196478266f226f794bfe6803b440b7fa566/viewer/modules/target-simbad/gv-target-simbad-0006.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@bc42ad844c43d3e2b01c7e17fc708affeb3d18c6/viewer/modules/galaxy-navigator/gv-galaxy-navigator-005.js"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@30803ce207747022a5485f783c845af8bb7238a6/viewer/modules/galaxy-navigator/gv-galaxy-navigator-006.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js"
 
 # ============================================================================
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0077';
+const GV200001_BUILD='0078';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -102,7 +102,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3dc30196478266f226f794bfe6803b440b7fa566/viewer/modules/target-simbad/gv-target-simbad-0006.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@bc42ad844c43d3e2b01c7e17fc708affeb3d18c6/viewer/modules/galaxy-navigator/gv-galaxy-navigator-005.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@30803ce207747022a5485f783c845af8bb7238a6/viewer/modules/galaxy-navigator/gv-galaxy-navigator-006.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e4df35e6459ad83dc832b9b1c7e36d86b0927aaf/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'
@@ -655,7 +655,7 @@ if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='000
 if(window.GalaxyViewerTargetSimbad?.version!=='0006')throw new Error('TARGET SURVEY 0006 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
-if(window.GalaxyNavigator?.VERSION!=='005'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 005 EXPORT MISSING');
+if(window.GalaxyNavigator?.VERSION!=='006'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 006 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
 if(window.GalaxyDestinationPresentation?.VERSION!=='0018'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0018 EXPORT MISSING');
@@ -935,6 +935,7 @@ gvSurveySelectStyle.textContent=`
   appearance:none;-webkit-appearance:none;position:fixed;z-index:8902;display:none;align-items:center;justify-content:center;gap:10px;
   height:32px;margin:0;padding:0 15px;overflow:hidden;border:1px solid #FFB45A;border-radius:10px;
   background:linear-gradient(180deg,#B96512 0%,#873700 17%,#481600 58%,#A84600 100%);
+  opacity:1!important;
   color:#FFF0D0;
   box-shadow:inset 0 2px 2px rgba(255,236,198,.55),inset 0 -3px 5px rgba(45,10,0,.66),inset 0 0 10px rgba(255,140,35,.22),0 0 3px rgba(255,226,170,.92),0 0 9px rgba(255,137,28,.68),0 0 18px rgba(255,97,0,.28);
   font:400 10.5px/1 "GV Space Age",sans-serif;letter-spacing:.55px;text-transform:uppercase;
@@ -943,7 +944,7 @@ gvSurveySelectStyle.textContent=`
 }
 #gv-survey-select-galaxy::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,203,122,.08) 26%,transparent 44%);pointer-events:none}
 #gv-survey-select-galaxy:active:not(:disabled){transform:translateX(-50%) translateY(1px) scale(.992);filter:brightness(1.13)}
-#gv-survey-select-galaxy:disabled{opacity:.58;filter:saturate(.72) brightness(.80)}
+#gv-survey-select-galaxy:disabled{opacity:1!important;filter:saturate(.82) brightness(.88);cursor:default}
 .gv-survey-select-menu{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;gap:3px;width:15px;height:15px;flex:0 0 15px}
 .gv-survey-select-menu i{display:block;width:15px;height:2px;border-radius:2px;background:#FFF0D0;box-shadow:0 0 3px rgba(255,245,220,.95),0 0 6px rgba(255,153,55,.78)}
 .gv-survey-select-label{position:relative;z-index:1;white-space:nowrap}
@@ -1702,13 +1703,12 @@ async function gvSelectSurveyProvider(provider){
         imageType:String(record?.imageType||'').trim(),
         thumbnails:gvSurveyThumbnailCandidates(record)
     })));
-    gvSurveyMode={provider:key,records,items,index:-1};
+    gvSurveyMode={provider:key,records,items,index:-1,pendingIndex:resumeIndex};
     gvSyncSurveySelectButton();
     history.length=0;historyIndex=-1;
     target.setActiveProvider(key,{index:resumeIndex+1,total:records.length});
-    galaxyNavigator.setSurvey?.({provider:key,current:resumeIndex+1,total:records.length,items});
+    galaxyNavigator.setSurvey?.({provider:key,current:resumeIndex+1,total:records.length,items,displaying:false});
     updateNavigationAvailability();
-    await gvNavigateSurveyIndex(resumeIndex);
     return true;
 }
 function gvExitSurveyMode(){
@@ -1727,17 +1727,19 @@ async function gvNavigateSurveyIndex(nextIndex){
     const index=Number(nextIndex);
     if(!Number.isInteger(index)||index<0||index>=gvSurveyMode.records.length)return false;
     if(index===gvSurveyMode.index)return true;
+    const previousIndex=gvSurveyMode.index;
+    const previousPendingIndex=Number.isInteger(gvSurveyMode.pendingIndex)?gvSurveyMode.pendingIndex:Math.max(0,previousIndex);
     const destination=gvSurveyMode.records[index];
     gvCancelProviderAll();
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
+    gvSurveyMode.pendingIndex=index;
     gvSyncSurveySelectButton();
     gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
-    gvSurveyMode.index=index;
     target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
-    galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,current:index+1,total:gvSurveyMode.records.length});
+    galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:false});
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
     try{
@@ -1745,9 +1747,20 @@ async function gvNavigateSurveyIndex(nextIndex){
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
         await showDestination(destination,{firstTrip,switchToSphericalAtApex});
+        gvSurveyMode.index=index;
+        gvSurveyMode.pendingIndex=index;
         gvSurveyCursors.set(gvSurveyMode.provider,index);
+        target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
+        galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:true});
         requestAnimationFrame(()=>{gvSyncSurveySelectButton();setTimeout(gvSyncSurveySelectButton,180)});
         return true;
+    }catch(error){
+        gvSurveyMode.index=previousIndex;
+        gvSurveyMode.pendingIndex=previousPendingIndex;
+        const restoreIndex=previousIndex>=0?previousIndex:previousPendingIndex;
+        target.setActiveProvider(gvSurveyMode.provider,{index:restoreIndex+1,total:gvSurveyMode.records.length});
+        galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,current:restoreIndex+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:previousIndex>=0});
+        throw error;
     }finally{
         navigationInFlight=false;
         gvSyncSurveySelectButton();
@@ -1765,7 +1778,9 @@ async function gvNavigateSurveyIndex(nextIndex){
 // ============================================================================
 async function navigateRandom(){
     if(gvSurveyMode){
-        if(navigationInFlight||gvSurveyMode.index>=gvSurveyMode.records.length-1)return;
+        if(navigationInFlight)return;
+        if(gvSurveyMode.index<0)return gvNavigateSurveyIndex(Number.isInteger(gvSurveyMode.pendingIndex)?gvSurveyMode.pendingIndex:0);
+        if(gvSurveyMode.index>=gvSurveyMode.records.length-1)return;
         return gvNavigateSurveyIndex(gvSurveyMode.index+1);
     }
     if(navigationInFlight)return;
@@ -1833,11 +1848,15 @@ async function navigateForward(){
 
 function updateNavigationAvailability(){
     if(gvSurveyMode){
+        if(gvSurveyMode.index<0){
+            galaxyNavigator.setEnabled({back:false,random:true,forward:false});
+            return;
+        }
         const hasNext=gvSurveyMode.index<gvSurveyMode.records.length-1;
         galaxyNavigator.setEnabled({
             back:gvSurveyMode.index>0,
-            random:true,
-            forward:gvSurveyMode.index>=0&&hasNext
+            random:hasNext,
+            forward:hasNext
         });
         return;
     }
@@ -1871,6 +1890,7 @@ window.GalaxyViewerCore=Object.freeze({
     get historyLength(){return history.length},
     get surveyProvider(){return gvSurveyMode?.provider||''},
     get surveyIndex(){return Number.isInteger(gvSurveyMode?.index)?gvSurveyMode.index:-1},
+    get surveyPendingIndex(){return Number.isInteger(gvSurveyMode?.pendingIndex)?gvSurveyMode.pendingIndex:-1},
     get surveyLength(){return gvSurveyMode?.records?.length||0},
     get surveyCursors(){return Object.freeze(Object.fromEntries([...gvSurveyCursors].map(([provider,index])=>[provider,index+1])))},
     get navigationState(){return navigationRuntime.snapshot()}
