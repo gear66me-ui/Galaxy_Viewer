@@ -276,3 +276,35 @@ Build identity:
 - artifact: `Galaxy-Viewer-DEV-0057-WEBKIT1171-0020`
 - APK SHA-256: `220315d02a0d2135d4237b451ba6541ccb244a81cdac0aab4d4b62dff4e5ef7f`
 - APK signature verification: v3 verified, one signer.
+
+
+## APK 0020 regression and APK 0021 rollback
+
+Date: 2026-10-04.
+
+Observed regression in APK 0020:
+- On arrival, the travel presentation could remain visible instead of handing off cleanly to the destination card.
+- The AVM image presentation could appear stalled at the same boundary.
+
+Diagnosis:
+- APK 0020 added provider-aware secondary-origin `Profile.preconnect(...)` calls on top of APK 0019.
+- The hosted viewer invokes native provider prewarm immediately after destination arrival state is committed.
+- AndroidX documents `Profile.preconnect()` as a UI-thread API that performs DNS/TCP/TLS connection setup and keeps connections open for roughly 30 seconds.
+- The secondary-origin layer therefore introduced new native networking work at the arrival paint boundary. It is treated as the regression suspect and has been removed entirely.
+
+APK 0021:
+- versionCode: `76`
+- versionName: `APK-0021-DEV-0057-WEBKIT1171-APK19RUNTIME`
+- Restores APK 0019 runtime behavior exactly after the PY19 generation step.
+- Retains APK 0019's original single active-provider `profile.preconnect(u)`.
+- Removes APK 0020's `preconnectProviderOrigins(...)` helper and all secondary-origin preconnects.
+- Hosted Galaxy Viewer remains Build 0066.
+- Browser remains 0027 at this rollback point.
+
+Build:
+- workflow commit: `1f047faca760f60df725799267c2f1782654f2c2`
+- workflow run: `37219382738`
+- job: `111486438055`
+- artifact ID: `11309496377`
+- APK SHA-256: `e4de3c3bcc6381d586be0d1ecbe1e9d2afeccea696ef50a5a9f7889136ff4344`
+- APK signature verification: v3 verified.
