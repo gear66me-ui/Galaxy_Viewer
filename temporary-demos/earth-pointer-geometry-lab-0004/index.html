@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Galaxy Viewer — Earth Pointer Geometry Lab 0004</title>
+<style>
+@font-face{
+  font-family:"GV Space Age";
+  src:url("https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");
+  font-style:normal;
+  font-weight:400;
+  font-display:block;
+}
+:root{
+  --yellow:#FFD84A;
+  --cyan:#58BFFF;
+  --stage:270px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#02070d;color:#dff7ff}
+body{
+  padding:18px 12px 30px;
+  font-family:"GV Space Age",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(18,71,105,.24),transparent 36%),
+    linear-gradient(#02070d,#05131f);
+  overscroll-behavior:none;
+}
+.wrap{max-width:620px;margin:0 auto}
+h1{
+  margin:0 0 7px;text-align:center;
+  color:#8fe7ff;font:400 15px/1.25 "GV Space Age",sans-serif;
+  letter-spacing:1px
+}
+.note{
+  margin:0 auto 8px;max-width:520px;text-align:center;
+  color:#a7c1ce;font:12px/1.42 Arial,sans-serif
+}
+.spec{
+  margin:0 auto 13px;text-align:center;
+  color:#FFD84A;font:400 9px/1.45 "GV Space Age",sans-serif;
+  letter-spacing:.7px
+}
+.stageShell{display:grid;place-items:center;padding:8px 0 14px}
+.stage{
+  position:relative;width:270px;height:270px;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+  overflow:visible
+}
+#compass{
+  position:absolute;inset:0;width:270px;height:270px;object-fit:contain;
+  opacity:.60;transform:rotate(0deg);transform-origin:135px 135px;
+  pointer-events:none;will-change:transform
+}
+#earthSvg{
+  position:absolute;inset:0;width:270px;height:270px;
+  overflow:visible;pointer-events:none
+}
+.readout{
+  min-height:21px;text-align:center;margin:0 0 8px;
+  color:#8fe7ff;font:400 10px/1.2 "GV Space Age",sans-serif;
+  letter-spacing:.7px
+}
+.panel{
+  border:1px solid rgba(88,191,255,.75);border-radius:13px;
+  padding:12px;background:linear-gradient(180deg,rgba(5,28,48,.95),rgba(3,17,29,.96));
+  box-shadow:0 0 15px rgba(65,185,255,.15)
+}
+.grid{
+  display:grid;grid-template-columns:128px 1fr 68px;
+  align-items:center;gap:10px 8px
+}
+.labLabel{
+  color:#9be7ff;font:400 9px/1.2 "GV Space Age",sans-serif;
+  letter-spacing:.45px
+}
+input[type=range]{width:100%;accent-color:#49d5ff}
+.value{text-align:right;color:#fff;font:12px/1 Arial,sans-serif}
+.toggles{
+  display:flex;flex-wrap:wrap;gap:14px;margin:13px 0 10px
+}
+.toggles label{color:#d5e7ef;font:12px/1.3 Arial,sans-serif}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{
+  border:1px solid #49c9ff;border-radius:9px;padding:10px 7px;
+  background:#082a45;color:#c5f3ff;
+  font:400 10px/1.2 "GV Space Age",sans-serif;letter-spacing:.5px
+}
+.small{
+  margin-top:10px;text-align:center;color:#6f8b99;
+  font:10px/1.4 Arial,sans-serif
+}
+@media(max-width:390px){
+  .grid{grid-template-columns:115px 1fr 58px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>EARTH POINTER GEOMETRY LAB 0004</h1>
+  <p class="note">Drag anywhere on the compass to rotate the compass only. The yellow pointer stays OUTSIDE the visible compass ring and points INWARD. EARTH stays entirely INSIDE the ring and follows its inner contour.</p>
+  <div class="spec">270 PX COMPASS · VISIBLE RING R=114.26 · POINTER OUTSIDE + 3 PX CLEARANCE · EARTH INSIDE + 2 PX INSET · POINTER 11.25 × 9.954</div>
+
+  <div class="stageShell">
+    <div class="stage" id="stage">
+      <img id="compass" alt="Current Galaxy Viewer compass"
+        src="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/artwork/compass/compass.png">
+      <svg id="earthSvg" viewBox="0 0 270 270" aria-label="Earth pointer overlay">
+        <defs>
+          <filter id="earthGlow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="1.4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g id="earthGroup"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="readout" id="readout">COMPASS 0° · POINTER OUTSIDE / INWARD · EARTH INSIDE</div>
+
+  <div class="panel">
+    <div class="grid">
+      <div class="labLabel">COMPASS °</div>
+      <input id="compassAngle" type="range" min="-180" max="180" step="1" value="0">
+      <div class="value" id="compassAngleV">0°</div>
+
+      <div class="labLabel">EARTH FONT PX</div>
+      <input id="fontSize" type="range" min="6" max="13" step=".25" value="11">
+      <div class="value" id="fontSizeV">11.00</div>
+
+      <div class="labLabel">EARTH INSET PX</div>
+      <input id="inset" type="range" min="0" max="8" step=".25" value="2">
+      <div class="value" id="insetV">2.00</div>
+
+      <div class="labLabel">LETTER GAP PX</div>
+      <input id="letterGap" type="range" min="0" max="4" step=".25" value="1">
+      <div class="value" id="letterGapV">1.00</div>
+
+      <div class="labLabel">EARTH OPACITY</div>
+      <input id="earthOpacity" type="range" min="0" max="1" step=".01" value="1">
+      <div class="value" id="earthOpacityV">100%</div>
+
+      <div class="labLabel">COMPASS OPACITY</div>
+      <input id="compassOpacity" type="range" min="0" max="1" step=".01" value=".60">
+      <div class="value" id="compassOpacityV">60%</div>
+    </div>
+
+    <div class="toggles">
+      <label><input id="showPointer" type="checkbox" checked> POINTER</label>
+      <label><input id="showEarth" type="checkbox" checked> EARTH</label>
+      <label><input id="showGuide" type="checkbox"> EARTH CONTOUR GUIDE</label>
+    </div>
+
+    <div class="buttons">
+      <button id="zero">ZERO COMPASS</button>
+      <button id="exportPng">EXPORT EARTH PNG</button>
+    </div>
+
+    <div class="small">Exact default: current release pointer size 11.25 × 9.954 px; pointer 3 px outside visible ring; EARTH outer contour 2 px inside ring; 11 px GV Space Age; 1 px letter spacing.</div>
+  </div>
+</div>
+
+<script>
+const SIZE=270;
+const C=135;
+const CURRENT_POINTER_WIDTH=11.25;
+const CURRENT_POINTER_DEPTH=9.954;
+const CURRENT_POINTER_TOP=15.47;
+const CURRENT_YELLOW='#FFD84A';
+const INNER_RING_RADIUS=114.26;
+const POINTER_RING_CLEARANCE=3.0;
+
+const stage=document.getElementById('stage');
+const compass=document.getElementById('compass');
+const earthSvg=document.getElementById('earthSvg');
+const earthGroup=document.getElementById('earthGroup');
+const ca=document.getElementById('compassAngle');
+const fs=document.getElementById('fontSize');
+const inset=document.getElementById('inset');
+const gap=document.getElementById('letterGap');
+const eo=document.getElementById('earthOpacity');
+const co=document.getElementById('compassOpacity');
+const showPointer=document.getElementById('showPointer');
+const showEarth=document.getElementById('showEarth');
+const showGuide=document.getElementById('showGuide');
+
+let compassDeg=0;
+
+function svgEl(name,attrs={}){
+  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,String(v));
+  return e;
+}
+
+function earthGeometry(){
+  earthGroup.replaceChildren();
+
+  const fontPx=Number(fs.value);
+  const ringInset=Number(inset.value);
+  const letterGap=Number(gap.value);
+
+  // ACTUAL VISIBLE COMPASS RING:
+  // measured from compass.png and scaled to the 270px runtime reticle.
+  const ringRadius=INNER_RING_RADIUS;
+
+  // EARTH is entirely INSIDE the ring.
+  // Its OUTWARD/TOP glyph contour follows a circle inset from the visible ring.
+  const outerContourRadius=ringRadius-ringInset;
+  const glyphCenterRadius=outerContourRadius-(fontPx*0.56);
+
+  // POINTER is entirely OUTSIDE the ring, with a real clearance gap.
+  // At 9 o'clock it points RIGHT / INWARD toward the compass.
+  // LEFT-side radial order:
+  // POINTER BASE -> POINTER TIP -> CLEARANCE -> RING -> EARTH -> CENTER
+  const tipRadius=ringRadius+POINTER_RING_CLEARANCE;
+  const baseRadius=tipRadius+CURRENT_POINTER_DEPTH;
+  const tipX=C-tipRadius;
+  const baseX=C-baseRadius;
+  const halfW=CURRENT_POINTER_WIDTH/2;
+
+  if(showPointer.checked){
+    const pointer=svgEl('polygon',{
+      points:`${baseX},${C-halfW} ${baseX},${C+halfW} ${tipX},${C}`,
+      fill:CURRENT_YELLOW,
+      filter:'url(#earthGlow)'
+    });
+    earthGroup.appendChild(pointer);
+  }
+
+  if(showGuide.checked){
+    const guide=svgEl('circle',{
+      cx:C,cy:C,r:outerContourRadius,
+      fill:'none',stroke:'rgba(255,216,74,.35)',
+      'stroke-width':'.5','stroke-dasharray':'2 2'
+    });
+    earthGroup.appendChild(guide);
+  }
+
+  if(showEarth.checked){
+    const chars=[...'EARTH'];
+
+    // Approximate actual Space Age advance, then add the same 1px release
+    // letter spacing. This produces a compact arc centered on 9 o'clock.
+    const charAdvance=fontPx*0.63;
+    const pitch=charAdvance+letterGap;
+    const angularStep=(pitch/glyphCenterRadius)*(180/Math.PI);
+    const start=180+angularStep*(chars.length-1)/2;
+
+    chars.forEach((ch,i)=>{
+      const theta=start-i*angularStep;
+      const rad=theta*Math.PI/180;
+      const x=C+glyphCenterRadius*Math.cos(rad);
+      const y=C+glyphCenterRadius*Math.sin(rad);
+
+      // Local "top" of each glyph faces radially outward, so the flat tops
+      // all trace the same outer circle.
+      const rotation=theta+90;
+
+      const t=svgEl('text',{
+        x,y,
+        fill:CURRENT_YELLOW,
+        'font-family':'GV Space Age',
+        'font-size':fontPx,
+        'font-weight':'400',
+        'text-anchor':'middle',
+        'dominant-baseline':'middle',
+        'letter-spacing':'0',
+        transform:`rotate(${rotation} ${x} ${y})`,
+        filter:'url(#earthGlow)'
+      });
+      t.textContent=ch;
+      earthGroup.appendChild(t);
+    });
+  }
+
+  earthSvg.style.opacity=eo.value;
+
+  document.getElementById('fontSizeV').textContent=fontPx.toFixed(2);
+  document.getElementById('insetV').textContent=ringInset.toFixed(2);
+  document.getElementById('letterGapV').textContent=letterGap.toFixed(2);
+  document.getElementById('earthOpacityV').textContent=Math.round(Number(eo.value)*100)+'%';
+}
+
+function paintCompass(){
+  compass.style.transform=`rotate(${compassDeg}deg)`;
+  compass.style.opacity=co.value;
+  ca.value=Math.round(compassDeg);
+  document.getElementById('compassAngleV').textContent=Math.round(compassDeg)+'°';
+  document.getElementById('compassOpacityV').textContent=Math.round(Number(co.value)*100)+'%';
+  document.getElementById('readout').textContent=
+    'COMPASS '+Math.round(compassDeg)+'° · POINTER OUTSIDE / INWARD · EARTH INSIDE';
+}
+
+ca.addEventListener('input',()=>{compassDeg=Number(ca.value);paintCompass()});
+[fs,inset,gap,eo].forEach(el=>el.addEventListener('input',earthGeometry));
+co.addEventListener('input',paintCompass);
+[showPointer,showEarth,showGuide].forEach(el=>el.addEventListener('change',earthGeometry));
+document.getElementById('zero').onclick=()=>{compassDeg=0;paintCompass()};
+
+let drag=null;
+function pointerAngle(ev){
+  const r=stage.getBoundingClientRect();
+  return Math.atan2(ev.clientY-(r.top+r.height/2),ev.clientX-(r.left+r.width/2))*180/Math.PI;
+}
+stage.addEventListener('pointerdown',ev=>{
+  drag={id:ev.pointerId,last:pointerAngle(ev)};
+  stage.setPointerCapture(ev.pointerId);
+  ev.preventDefault();
+});
+stage.addEventListener('pointermove',ev=>{
+  if(!drag||drag.id!==ev.pointerId)return;
+  const a=pointerAngle(ev);
+  let d=a-drag.last;
+  if(d>180)d-=360;
+  if(d<-180)d+=360;
+  compassDeg+=d;
+  while(compassDeg>180)compassDeg-=360;
+  while(compassDeg<=-180)compassDeg+=360;
+  drag.last=a;
+  paintCompass();
+  ev.preventDefault();
+});
+function end(ev){if(drag&&drag.id===ev.pointerId)drag=null}
+stage.addEventListener('pointerup',end);
+stage.addEventListener('pointercancel',end);
+
+async function exportEarthPng(){
+  await document.fonts.load(`400 ${fs.value}px "GV Space Age"`);
+  await document.fonts.ready;
+
+  const canvas=document.createElement('canvas');
+  canvas.width=270;canvas.height=270;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,270,270);
+
+  const fontPx=Number(fs.value);
+  const ringInset=Number(inset.value);
+  const letterGap=Number(gap.value);
+  const ringRadius=INNER_RING_RADIUS;
+  const outerContourRadius=ringRadius-ringInset;
+  const glyphCenterRadius=outerContourRadius-(fontPx*0.56);
+  const alpha=Number(eo.value);
+
+  ctx.save();
+  ctx.globalAlpha=alpha;
+  ctx.fillStyle=CURRENT_YELLOW;
+  ctx.shadowColor='rgba(255,216,74,.95)';
+  ctx.shadowBlur=2;
+
+  if(showPointer.checked){
+    const tipRadius=ringRadius+POINTER_RING_CLEARANCE;
+    const baseRadius=tipRadius+CURRENT_POINTER_DEPTH;
+    const tipX=C-tipRadius;
+    const baseX=C-baseRadius;
+    const halfW=CURRENT_POINTER_WIDTH/2;
+    ctx.beginPath();
+    ctx.moveTo(baseX,C-halfW);
+    ctx.lineTo(baseX,C+halfW);
+    ctx.lineTo(tipX,C);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  if(showEarth.checked){
+    const chars=[...'EARTH'];
+    const charAdvance=fontPx*0.63;
+    const pitch=charAdvance+letterGap;
+    const angularStep=(pitch/glyphCenterRadius)*(180/Math.PI);
+    const start=180+angularStep*(chars.length-1)/2;
+
+    ctx.font=`400 ${fontPx}px "GV Space Age"`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+
+    chars.forEach((ch,i)=>{
+      const theta=start-i*angularStep;
+      const rad=theta*Math.PI/180;
+      const x=C+glyphCenterRadius*Math.cos(rad);
+      const y=C+glyphCenterRadius*Math.sin(rad);
+      const rotation=(theta+90)*Math.PI/180;
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.rotate(rotation);
+      ctx.fillText(ch,0,0);
+      ctx.restore();
+    });
+  }
+
+  ctx.restore();
+
+  const a=document.createElement('a');
+  a.download='gv-earth-pointer-270.png';
+  a.href=canvas.toDataURL('image/png');
+  a.click();
+}
+document.getElementById('exportPng').onclick=exportEarthPng;
+
+document.fonts.ready.then(()=>{earthGeometry();paintCompass()});
+earthGeometry();paintCompass();
+</script>
+</body>
+</html>
