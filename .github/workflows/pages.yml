@@ -265,6 +265,85 @@ jobs:
           fi
           echo "CHANDRA REVIEW 0002 STATIC PAGE READY"
 
+          # Build the approved-image registration gate. This is intentionally
+          # separate from the production catalogs: it only validates AVM/WCS.
+          python3 - <<'PY'
+          import json,pathlib
+
+          feed=json.load(open('/tmp/astropix-chandra-feed.json'))
+          byid={str(r.get('image_id')):r for r in feed if r.get('image_id') is not None}
+
+          review1_ids=['901a','901b','901c','901e','901f','901h','901i','901j','901k','901l','901n','901o','314']
+          review2_ids=['90','102','120','125','126','143','151','156','160','173','183','247','315','345','361','370','371','374','376','378','385','387','398','399','404','405','408','418','420','429','430','431','432','440','444','449','453','462','464','467','478','482','483','491','492','498','500','511','515','520','532','533','535','537','538','543','547','548','555','557','566','571','577','578','589','599','613','624','627','636','645','797','800','813','847','867','870','811c','838f','838p','584a','584b','432a']
+          wanted=review1_ids+review2_ids
+          missing=[x for x in wanted if x not in byid]
+          if missing:
+              raise SystemExit('Missing approved AstroPix IDs: '+','.join(missing))
+
+          def kind_of(r):
+              name=((r.get('object_name') or [''])[0] or '').lower()
+              txt=' '.join([str(r.get('title') or ''),str(r.get('headline') or '')]).lower()
+              if any(x in name+' '+txt for x in ('nebula','supernova','remnant','snr','pulsar','star cluster','stellar nursery')):
+                  return 'nebula/remnant'
+              return 'galaxy/field'
+
+          def slim(image_id,origin):
+              r=byid[image_id]
+              return {
+                  'key':origin+'-'+image_id,
+                  'origin':origin,
+                  'imageId':image_id,
+                  'name':(r.get('object_name') or ['Chandra '+image_id])[0],
+                  'kind':kind_of(r),
+                  'wcsQuality':r.get('wcs_quality') or 'Position',
+                  'releaseDate':r.get('image_release_date'),
+                  'wcsReferenceValue':r.get('wcs_reference_value') or [],
+                  'wcsReferenceDimension':r.get('wcs_reference_dimension') or [],
+                  'wcsReferencePixel':r.get('wcs_reference_pixel') or [],
+                  'wcsScale':r.get('wcs_scale') or [],
+                  'wcsRotation':r.get('wcs_rotation'),
+                  'wcsProjection':r.get('wcs_projection') or 'TAN',
+                  'sourceUrl':r.get('reference_url'),
+                  'resourceUrl':r.get('resource_url'),
+                  'image':'https://www.astropix.org/archive/chandra/'+image_id+'/chandra_'+image_id+'_1024.jpg'
+              }
+
+          queue=[slim(x,'review1') for x in review1_ids]+[slim(x,'review2') for x in review2_ids]
+          queue += [
+              {'key':'review1-heart-2026','origin':'review1','imageId':'heart-2026','name':'Cocoon Nebula · IC 5146','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-02-12','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/heart/','image':'https://chandra.harvard.edu/photo/2026/heart/heart.jpg'},
+              {'key':'review1-spring-w2','origin':'review1','imageId':'spring-w2','name':'Westerlund 2','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg'},
+              {'key':'review1-spring-ngc346','origin':'review1','imageId':'spring-ngc346','name':'NGC 346','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg'},
+              {'key':'review1-spring-catspaw','origin':'review1','imageId':'spring-catspaw','name':"Cat's Paw Nebula · NGC 6334",'kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg'},
+              {'key':'review1-spring-pelican','origin':'review1','imageId':'spring-pelican','name':'Pelican Nebula · NGC 7000','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg'},
+              {'key':'review1-spring-flame','origin':'review1','imageId':'spring-flame','name':'Flame Nebula · NGC 2024','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg'}
+          ]
+          if len(queue)!=102:
+              raise SystemExit(f'Registration queue count {len(queue)} != 102')
+
+          gate=pathlib.Path('temporary-demos/chandra-avm-registration-gate-0001/index.html')
+          html=gate.read_text(encoding='utf-8')
+          marker='__QUEUE_JSON__'
+          if marker not in html:
+              raise SystemExit('Registration gate marker missing')
+          html=html.replace(marker,json.dumps(queue,ensure_ascii=False,separators=(',',':')))
+          gate.write_text(html,encoding='utf-8')
+          pathlib.Path('temporary-demos/chandra-avm-registration-gate-0001/queue.json').write_text(
+              json.dumps({'version':'0001','count':len(queue),'fullWcs':sum(1 for x in queue if x['wcsQuality']=='Full'),'queue':queue},indent=2,ensure_ascii=False),
+              encoding='utf-8'
+          )
+          print('CHANDRA REGISTRATION QUEUE',len(queue))
+          print('FULL_WCS',sum(1 for x in queue if x['wcsQuality']=='Full'))
+          print('UNSOLVED',sum(1 for x in queue if x['wcsQuality']!='Full'))
+          PY
+          test -s temporary-demos/chandra-avm-registration-gate-0001/queue.json
+          grep -q 'const queue=\[' temporary-demos/chandra-avm-registration-gate-0001/index.html
+          if grep -q '__QUEUE_JSON__' temporary-demos/chandra-avm-registration-gate-0001/index.html; then
+            echo "REGISTRATION QUEUE EMBED FAILED"
+            exit 1
+          fi
+          echo "CHANDRA REGISTRATION GATE STATIC PAGE READY"
+
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
