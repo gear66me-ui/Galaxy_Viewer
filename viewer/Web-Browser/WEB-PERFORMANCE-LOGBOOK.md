@@ -99,3 +99,23 @@ For each test, record:
 | Other behavior | |
 
 Priority regression target: Hubble “Panoramic View of Andromeda”.
+
+
+## Hosted instrumentation revision — Build 0061
+
+Date: 2026-10-04.
+
+Purpose: refine APK19 preload telemetry visibility without changing native provider/cache behavior.
+
+Changes:
+- Destination-card provider indicator reduced to a 24 px hairline, 1 px high, faint green, with a 2 px faint ready LED.
+- View-HD provider indicator moved fully inside the 48 px provider/WEB button.
+- HD indicator narrowed to 34 px and 2 px high.
+- HD ready LED remains at the right edge of the bar.
+- When the native provider load reports ready, tiny Space Age `READY ✓` appears beneath the HD progress bar.
+- APK19 remains unchanged; this is hosted UI only.
+- Viewer revision advanced from Build 0060 to Build 0061.
+
+Module commit: `595348338fcd5a85d4999adf906d864b6e64a548`.
+Viewer commit: `5ea02942e26b513421f37aa0a6de181860957f32`.
+Pointer commit: `5d436ad94838d5d6c16cd6afe49cbea3f6960896`.
