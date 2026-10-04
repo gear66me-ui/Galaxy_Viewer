@@ -1661,10 +1661,10 @@ async function gvNavigateSurveyIndex(nextIndex){
     navigationInFlight=true;
     gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
-    galaxyNavigator.setTraveling?.(true);
     gvSurveyMode.index=index;
     target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
     galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,current:index+1,total:gvSurveyMode.records.length});
+    galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
     try{
         const firstTrip=routeIndex===0;
