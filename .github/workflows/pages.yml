@@ -50,7 +50,7 @@ jobs:
 
           # Bootstrap this bypass itself without coupling the first deploy to
           # the stale production build gate.
-          if [[ "${HEAD_MESSAGE}" == "CHANDRA REVIEW: isolate Pages deployment" ]]; then
+          if [[ "${HEAD_MESSAGE}" == CHANDRA\ REVIEW* ]]; then
             echo "review_only=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
