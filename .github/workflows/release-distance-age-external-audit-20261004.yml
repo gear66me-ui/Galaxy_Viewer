@@ -1,0 +1,455 @@
+name: Release Distance Age External Audit 20261004
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/release-distance-age-external-audit-20261004.yml
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Install parser
+        run: python -m pip install --quiet requests beautifulsoup4
+
+      - name: Audit all release records
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, json, math, re, time, urllib.parse
+          from collections import Counter, defaultdict
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from pathlib import Path
+
+          import requests
+          from bs4 import BeautifulSoup
+
+          T0 = 13.466983947061877
+          H0 = 70.0
+          OM = 0.3
+          OL = 0.7
+
+          CATALOGS = {
+              "Hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+              "JWST": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+              "ESO": "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+              "Chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
+              "Spitzer": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+              "NOIRLab": "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
+          }
+
+          UA = "GalaxyViewerScienceAudit/1.0 (+https://github.com/gear66me-ui/Galaxy_Viewer)"
+          session = requests.Session()
+          session.headers.update({"User-Agent": UA, "Accept-Language": "en-US,en;q=0.8"})
+
+          def finite(v):
+              try:
+                  x = float(v)
+                  return x if math.isfinite(x) else None
+              except Exception:
+                  return None
+
+          def cosmic_age_from_z(z):
+              z = finite(z)
+              if z is None or z < 0:
+                  return None
+              H0_s = H0 / 3.0856775814913673e19
+              sec_per_gyr = 365.25 * 24 * 3600 * 1e9
+              H0_gyr = H0_s * sec_per_gyr
+              return (2.0/(3.0*H0_gyr*math.sqrt(OL))) * math.asinh(
+                  math.sqrt(OL/OM) / ((1.0+z)**1.5)
+              )
+
+          def to_mly(num, unit):
+              x = float(str(num).replace(",", ""))
+              u = (unit or "").lower().replace(" ", "")
+              if u.startswith("billion"):
+                  return x * 1000.0
+              if u.startswith("million"):
+                  return x
+              if u.startswith("thousand"):
+                  return x / 1000.0
+              if u in ("mpc", "megaparsec", "megaparsecs"):
+                  return x * 3.261563777
+              if u in ("kpc", "kiloparsec", "kiloparsecs"):
+                  return x * 0.003261563777
+              if u in ("pc", "parsec", "parsecs"):
+                  return x * 3.261563777e-6
+              if u in ("gly",):
+                  return x * 1000.0
+              if u in ("mly",):
+                  return x
+              if u in ("kly",):
+                  return x / 1000.0
+              if u in ("ly", "lightyear", "lightyears", ""):
+                  return x / 1e6
+              return None
+
+          def clean_text(html):
+              soup = BeautifulSoup(html, "html.parser")
+              for tag in soup(["script","style","noscript"]):
+                  tag.decompose()
+              text = " ".join(soup.stripped_strings)
+              return soup, re.sub(r"\s+", " ", text).strip()
+
+          DIST_PATTERNS = [
+              ("label_lightyears", re.compile(r"\bDistance\s*:?\s*(?:about|around|approximately|approx\.?|nearly|roughly|~)?\s*([0-9][0-9,.]*)\s*(billion|million|thousand)?\s*light[- ]?years?\b", re.I)),
+              ("label_parsecs", re.compile(r"\bDistance\s*:?\s*(?:about|around|approximately|approx\.?|nearly|roughly|~)?\s*([0-9][0-9,.]*)\s*(Mpc|kpc|pc)\b", re.I)),
+              ("located_lightyears", re.compile(r"\b(?:located|lies|resides|sits|situated|found)\b.{0,80}?\b(?:about|around|approximately|nearly|roughly)?\s*([0-9][0-9,.]*)\s*(billion|million|thousand)?\s*light[- ]?years?\b", re.I)),
+              ("away_lightyears", re.compile(r"\b([0-9][0-9,.]*)\s*(billion|million|thousand)?\s*light[- ]?years?\s+(?:away|from Earth|distant)\b", re.I)),
+              ("distance_of_lightyears", re.compile(r"\b(?:at|a)\s+distance\s+of\s+(?:about|around|approximately|nearly|roughly)?\s*([0-9][0-9,.]*)\s*(billion|million|thousand)?\s*light[- ]?years?\b", re.I)),
+          ]
+          REDSHIFT_PATTERNS = [
+              re.compile(r"\bredshift\s*(?:of|=|:)?\s*z?\s*[=]?\s*([0-9]+(?:\.[0-9]+)?)", re.I),
+              re.compile(r"\bz\s*=\s*([0-9]+(?:\.[0-9]+)?)\b", re.I),
+          ]
+
+          def parse_source(html):
+              soup, text = clean_text(html)
+              distances = []
+              seen = set()
+              for kind, pat in DIST_PATTERNS:
+                  for m in pat.finditer(text):
+                      val = to_mly(m.group(1), m.group(2) or "")
+                      if val is None or not math.isfinite(val) or val < 0:
+                          continue
+                      key = round(val, 9)
+                      if key in seen:
+                          continue
+                      seen.add(key)
+                      lo=max(0,m.start()-100); hi=min(len(text),m.end()+100)
+                      distances.append({"mly":val,"kind":kind,"context":text[lo:hi]})
+              redshifts=[]
+              rz_seen=set()
+              for pat in REDSHIFT_PATTERNS:
+                  for m in pat.finditer(text):
+                      z=finite(m.group(1))
+                      if z is None or z<0 or z>30:
+                          continue
+                      zr=round(z,8)
+                      if zr in rz_seen: continue
+                      rz_seen.add(zr)
+                      lo=max(0,m.start()-100); hi=min(len(text),m.end()+100)
+                      redshifts.append({"z":z,"context":text[lo:hi]})
+              simbad_ids=[]
+              for a in soup.find_all("a", href=True):
+                  href=a.get("href","")
+                  if "simbad" not in href.lower():
+                      continue
+                  q=urllib.parse.urlparse(href).query
+                  params=urllib.parse.parse_qs(q)
+                  ident=(params.get("Ident") or params.get("ident") or [None])[0]
+                  if ident:
+                      ident=urllib.parse.unquote_plus(ident).strip()
+                      if ident and ident not in simbad_ids:
+                          simbad_ids.append(ident)
+              return text[:500], distances, redshifts, simbad_ids[:4]
+
+          def fetch_url(url):
+              last=None
+              for attempt in range(3):
+                  try:
+                      r=session.get(url,timeout=20,allow_redirects=True)
+                      if r.status_code==200 and r.text:
+                          lead, ds, zs, ids=parse_source(r.text)
+                          return {"ok":True,"status":r.status_code,"finalUrl":r.url,"lead":lead,"distances":ds,"redshifts":zs,"simbadIds":ids}
+                      last=f"HTTP {r.status_code}"
+                  except Exception as e:
+                      last=repr(e)
+                  time.sleep(0.5*(attempt+1))
+              return {"ok":False,"error":last,"distances":[],"redshifts":[],"simbadIds":[]}
+
+          def simbad_query(ident):
+              if not ident:
+                  return None
+              url="https://simbad.cds.unistra.fr/simbad/sim-id"
+              params={"Ident":ident,"output.format":"ASCII"}
+              for attempt in range(2):
+                  try:
+                      r=requests.get(url,params=params,headers={"User-Agent":UA},timeout=20)
+                      if r.status_code==200 and r.text:
+                          txt=re.sub(r"\s+"," ",r.text)
+                          pats=[
+                              re.compile(r"Redshift\s*:?\s*([+-]?[0-9]+(?:\.[0-9]+)?)",re.I),
+                              re.compile(r"z\s*=\s*([+-]?[0-9]+(?:\.[0-9]+)?)",re.I),
+                          ]
+                          for p in pats:
+                              m=p.search(txt)
+                              if m:
+                                  z=finite(m.group(1))
+                                  if z is not None and -0.01 <= z <= 30:
+                                      return {"z":z,"url":r.url,"ident":ident}
+                          return {"z":None,"url":r.url,"ident":ident}
+                  except Exception:
+                      pass
+                  time.sleep(0.8*(attempt+1))
+              return None
+
+          records=[]
+          for provider,path in CATALOGS.items():
+              data=json.loads(Path(path).read_text(encoding="utf-8"))
+              for e in data.get("entries",[]):
+                  s=e.get("science") or {}
+                  records.append({
+                      "provider":provider,
+                      "archiveId":e.get("archiveId"),
+                      "name":e.get("name"),
+                      "designation":e.get("designation"),
+                      "ra":e.get("ra"),
+                      "dec":e.get("dec"),
+                      "sourceUrl":e.get("sourceUrl"),
+                      "distanceMly":finite(s.get("distanceMly")),
+                      "distanceDisplay":s.get("distanceDisplay"),
+                      "distanceMethod":s.get("distanceMethod"),
+                      "ageGyr":finite(s.get("ageGyr")),
+                      "ageDisplay":s.get("ageDisplay"),
+                      "ageMethod":s.get("ageMethod"),
+                      "lookbackGyr":finite(s.get("lookbackTimeGyr")),
+                      "catalogRedshift":finite(s.get("redshift")),
+                  })
+
+          # Fetch every official provider page once.
+          urls=sorted({r["sourceUrl"] for r in records if r["sourceUrl"]})
+          page_cache={}
+          with ThreadPoolExecutor(max_workers=14) as ex:
+              futs={ex.submit(fetch_url,u):u for u in urls}
+              for n,f in enumerate(as_completed(futs),1):
+                  u=futs[f]
+                  try: page_cache[u]=f.result()
+                  except Exception as e: page_cache[u]={"ok":False,"error":repr(e),"distances":[],"redshifts":[],"simbadIds":[]}
+                  if n%100==0: print("provider pages",n,"/",len(urls),flush=True)
+
+          # Build one SIMBAD identifier per record, preferring links from official pages.
+          def fallback_ident(r):
+              d=(r.get("designation") or "").strip()
+              n=(r.get("name") or "").strip()
+              for raw in (d,n):
+                  if not raw: continue
+                  token=re.split(r"\s*/\s*|\s*,\s*|\s+\|\s+",raw)[0].strip()
+                  if token:
+                      return token
+              return None
+
+          idents={}
+          for r in records:
+              p=page_cache.get(r["sourceUrl"],{})
+              ids=p.get("simbadIds") or []
+              ident=ids[0] if ids else fallback_ident(r)
+              if ident: idents[ident]=None
+
+          # SIMBAD one-by-one, deliberately modest concurrency.
+          simbad_cache={}
+          with ThreadPoolExecutor(max_workers=4) as ex:
+              futs={ex.submit(simbad_query,ident):ident for ident in idents}
+              for n,f in enumerate(as_completed(futs),1):
+                  ident=futs[f]
+                  try: simbad_cache[ident]=f.result()
+                  except Exception: simbad_cache[ident]=None
+                  if n%100==0: print("SIMBAD objects",n,"/",len(idents),flush=True)
+
+          def choose_distance(cands, catalog):
+              if not cands:
+                  return None
+              labeled=[c for c in cands if c["kind"].startswith("label_")]
+              pool=labeled or cands
+              if catalog and catalog>0:
+                  # Preserve all candidates in report; choose nearest only within the strongest semantic pool.
+                  return min(pool,key=lambda c:abs(math.log(max(c["mly"],1e-12)/catalog)))
+              return pool[0]
+
+          audit=[]
+          summary=defaultdict(Counter)
+          for r in records:
+              p=page_cache.get(r["sourceUrl"],{"ok":False,"distances":[],"redshifts":[],"simbadIds":[]})
+              chosen=choose_distance(p.get("distances",[]),r["distanceMly"])
+              ext_d=chosen["mly"] if chosen else None
+              rel=None
+              if ext_d is not None and r["distanceMly"] not in (None,0):
+                  rel=abs(ext_d-r["distanceMly"])/abs(ext_d)
+              if ext_d is None:
+                  dver="NO_OFFICIAL_DISTANCE_FOUND"
+              elif rel is not None and rel<=0.10:
+                  dver="PASS"
+              elif rel is not None and rel<=0.25:
+                  dver="REVIEW"
+              else:
+                  dver="MISMATCH"
+
+              # External z: official page first, then SIMBAD one-by-one.
+              ext_z=None; zsrc=None
+              if p.get("redshifts"):
+                  ext_z=p["redshifts"][0]["z"]; zsrc="official_page"
+              else:
+                  ids=p.get("simbadIds") or []
+                  ident=ids[0] if ids else fallback_ident(r)
+                  sq=simbad_cache.get(ident) if ident else None
+                  if sq and sq.get("z") is not None:
+                      ext_z=sq["z"]; zsrc="SIMBAD"
+
+              ext_age=None; age_basis=None
+              if ext_z is not None:
+                  ext_age=cosmic_age_from_z(ext_z); age_basis="external_redshift"
+              elif ext_d is not None and ext_d<=1000:
+                  # Low-z approximation: popular-source light-year distance ~ light-travel time.
+                  ext_age=max(0.0,T0-ext_d/1000.0); age_basis="official_distance_low_z_approx"
+
+              internal_err=None
+              if r["ageGyr"] is not None and r["lookbackGyr"] is not None:
+                  internal_err=abs((r["ageGyr"]+r["lookbackGyr"])-T0)
+                  internal_ver="PASS" if internal_err<=0.005 else "MISMATCH"
+              else:
+                  internal_ver="NO_LOOKBACK_FIELD"
+
+              age_err=None
+              if ext_age is not None and r["ageGyr"] is not None:
+                  age_err=abs(ext_age-r["ageGyr"])
+                  if age_err<=0.10: aver="PASS"
+                  elif age_err<=0.30: aver="REVIEW"
+                  else: aver="MISMATCH"
+              elif ext_age is None:
+                  aver="NO_EXTERNAL_AGE_BASIS"
+              else:
+                  aver="NO_CATALOG_AGE"
+
+              row={
+                  **r,
+                  "providerPageOk":bool(p.get("ok")),
+                  "providerPageStatus":p.get("status"),
+                  "providerFinalUrl":p.get("finalUrl"),
+                  "externalDistanceMly":ext_d,
+                  "externalDistanceKind":chosen.get("kind") if chosen else None,
+                  "externalDistanceContext":chosen.get("context") if chosen else None,
+                  "allExternalDistanceCandidatesMly":[round(c["mly"],6) for c in p.get("distances",[])],
+                  "distanceRelativeError":rel,
+                  "distanceVerdict":dver,
+                  "externalRedshift":ext_z,
+                  "externalRedshiftSource":zsrc,
+                  "externalCosmicAgeGyr":ext_age,
+                  "externalAgeBasis":age_basis,
+                  "ageAbsoluteErrorGyr":age_err,
+                  "ageVerdict":aver,
+                  "internalAgeEquationErrorGyr":internal_err,
+                  "internalAgeEquationVerdict":internal_ver,
+              }
+              audit.append(row)
+              s=summary[r["provider"]]
+              s["records"]+=1
+              s["distance_"+dver]+=1
+              s["age_"+aver]+=1
+              s["internal_"+internal_ver]+=1
+              if p.get("ok"): s["provider_page_ok"]+=1
+              if ext_z is not None: s["external_redshift_found"]+=1
+
+          # Cross-catalog same-designation consistency.
+          groups=defaultdict(list)
+          def key(r):
+              x=(r.get("designation") or r.get("name") or "").upper()
+              x=re.sub(r"[^A-Z0-9+.-]+"," ",x).strip()
+              return x
+          for row in audit:
+              k=key(row)
+              if k: groups[k].append(row)
+          cross=[]
+          for k,grp in groups.items():
+              vals=[g["distanceMly"] for g in grp if g["distanceMly"] and g["distanceMly"]>0]
+              if len(vals)>=2:
+                  lo,hi=min(vals),max(vals)
+                  if hi/lo>1.25:
+                      cross.append({
+                          "targetKey":k,"records":len(grp),"minDistanceMly":lo,"maxDistanceMly":hi,
+                          "ratio":hi/lo,
+                          "members":[{"provider":g["provider"],"archiveId":g["archiveId"],"name":g["name"],"distanceMly":g["distanceMly"]} for g in grp]
+                      })
+
+          totals=Counter()
+          for s in summary.values(): totals.update(s)
+
+          report={
+              "schema":"galaxy-viewer-release-distance-age-external-audit-v1",
+              "branch":"release",
+              "date":"2026-10-04",
+              "method":{
+                  "distance":"Every record's official provider sourceUrl was fetched independently. Distance was extracted from a Distance label or distance-bearing prose. SIMBAD was queried one object at a time for external redshift where available.",
+                  "age":"COSMIC AGE was checked against external redshift using flat LCDM H0=70, OmegaM=0.3, OmegaLambda=0.7. For <=1 BLY records without redshift, official light-year distance was used as a low-z lookback approximation. Internal age+lookback=t0 consistency was also checked.",
+                  "presentCosmicAgeGyr":T0,
+                  "caution":"Popular-source distance labels can be rounded and may represent different cosmological distance conventions. REVIEW/MISMATCH records require human web-source adjudication before catalog edits."
+              },
+              "summaryByProvider":{p:dict(c) for p,c in summary.items()},
+              "totals":dict(totals),
+              "crossCatalogDistanceConflicts":cross,
+              "records":audit,
+          }
+
+          outdir=Path("viewer/image-databases/master-database/curation/audits")
+          outdir.mkdir(parents=True,exist_ok=True)
+          jpath=outdir/"2026-10-04-distance-age-external-audit-0001.json"
+          cpath=outdir/"2026-10-04-distance-age-external-audit-0001.csv"
+          mpath=outdir/"2026-10-04-distance-age-external-audit-0001.md"
+          jpath.write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+
+          cols=[
+              "provider","archiveId","name","designation","distanceMly","externalDistanceMly","distanceRelativeError","distanceVerdict",
+              "ageGyr","externalRedshift","externalRedshiftSource","externalCosmicAgeGyr","ageAbsoluteErrorGyr","ageVerdict",
+              "lookbackGyr","internalAgeEquationErrorGyr","internalAgeEquationVerdict","sourceUrl"
+          ]
+          with cpath.open("w",newline="",encoding="utf-8") as f:
+              w=csv.DictWriter(f,fieldnames=cols); w.writeheader()
+              for row in audit: w.writerow({k:row.get(k) for k in cols})
+
+          flagged=[r for r in audit if r["distanceVerdict"] in ("MISMATCH","REVIEW") or r["ageVerdict"] in ("MISMATCH","REVIEW") or r["internalAgeEquationVerdict"]=="MISMATCH"]
+          md=[
+              "# Release Distance + Cosmic Age External Audit",
+              "",
+              f"- Records audited: **{len(audit)}**",
+              f"- Official provider pages fetched successfully: **{totals['provider_page_ok']}**",
+              f"- External redshift found: **{totals['external_redshift_found']}**",
+              f"- Distance PASS: **{totals['distance_PASS']}**",
+              f"- Distance REVIEW: **{totals['distance_REVIEW']}**",
+              f"- Distance MISMATCH: **{totals['distance_MISMATCH']}**",
+              f"- Distance no official value found: **{totals['distance_NO_OFFICIAL_DISTANCE_FOUND']}**",
+              f"- Cosmic-age PASS: **{totals['age_PASS']}**",
+              f"- Cosmic-age REVIEW: **{totals['age_REVIEW']}**",
+              f"- Cosmic-age MISMATCH: **{totals['age_MISMATCH']}**",
+              f"- Cosmic-age no external basis: **{totals['age_NO_EXTERNAL_AGE_BASIS']}**",
+              f"- Internal age equation mismatches: **{totals['internal_MISMATCH']}**",
+              f"- Cross-catalog >25% distance conflicts: **{len(cross)}**",
+              "",
+              "## Flagged records",
+              "",
+              "| Provider | ID | Object | Catalog MLY | External MLY | Distance | Catalog age Gyr | External age Gyr | Age |",
+              "|---|---|---|---:|---:|---|---:|---:|---|",
+          ]
+          for r in flagged[:500]:
+              md.append("| {provider} | {archiveId} | {name} | {distanceMly} | {externalDistanceMly} | {distanceVerdict} | {ageGyr} | {externalCosmicAgeGyr} | {ageVerdict} |".format(**{k:("" if v is None else v) for k,v in r.items()}))
+          if len(flagged)>500:
+              md.append(f"\nFlagged table truncated in Markdown at 500 rows; JSON/CSV contain all {len(flagged)} flagged records.")
+          mpath.write_text("\n".join(md)+"\n",encoding="utf-8")
+
+          print(json.dumps({
+              "records":len(audit),
+              "urls":len(urls),
+              "simbadIdentifiers":len(idents),
+              "totals":dict(totals),
+              "crossCatalogConflicts":len(cross),
+              "flagged":len(flagged)
+          },indent=2))
+          PY
+
+      - name: Commit audit report
+        run: |
+          git config user.name "Galaxy Viewer Audit"
+          git config user.email "actions@users.noreply.github.com"
+          git add viewer/image-databases/master-database/curation/audits/2026-10-04-distance-age-external-audit-0001.*
+          git commit -m "Release audit: validate distance and cosmic age against external sources"
+          git pull --rebase origin release
+          git push origin HEAD:release
