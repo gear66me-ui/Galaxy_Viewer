@@ -163,5 +163,17 @@
     "androidxWebkit": "1.12.1",
     "embeddedViewerPayload": false,
     "embeddedBrowserPayload": false
+  },
+  "surveyThumbnailPack": {
+    "pointer": "viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-current.json",
+    "index": "viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-index.json",
+    "root": "viewer/artwork/runtime/survey-thumbnails/",
+    "generator": "tools/survey_thumbnails/build_survey_thumbnails.py",
+    "workflow": ".github/workflows/build-survey-thumbnail-pack.yml",
+    "runtimePolicy": "fetch mutable tiny pointer no-store; fetch immutable index and WebP pack by commit; warm all thumbnails in background with six workers",
+    "currentRecordCount": 1848,
+    "currentThumbnailCount": 1848,
+    "currentFailedCount": 0,
+    "currentBytes": 5788518
   }
 }
