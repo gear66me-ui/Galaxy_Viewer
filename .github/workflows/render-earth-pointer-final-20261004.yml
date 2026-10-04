@@ -20,156 +20,145 @@ jobs:
           ref: release
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install renderer
-        run: python -m pip install --disable-pip-version-check pillow
-
-      - name: Render exact Earth pointer PNGs
+      - name: Build exact browser renderer
         shell: bash
         run: |
-          python - <<'PY'
-          from PIL import Image, ImageDraw, ImageFont, ImageFilter
-          import math, os
+          mkdir -p temporary-demos/earth-pointer-final-0001
+          cat > temporary-demos/earth-pointer-final-0001/render-309.html <<'HTML'
+          <!doctype html>
+          <html>
+          <head>
+          <meta charset="utf-8">
+          <style>
+          @font-face{
+            font-family:"GV Space Age";
+            src:url("../../viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf") format("opentype");
+            font-weight:400;
+            font-style:normal;
+            font-display:block;
+          }
+          html,body{margin:0;width:270px;height:270px;overflow:hidden;background:transparent}
+          svg{display:block;width:270px;height:270px;overflow:visible}
+          </style>
+          </head>
+          <body>
+          <svg viewBox="0 0 270 270" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="yellowGlowPointer" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="1.3" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="yellowGlowText" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="1.0" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
 
-          OUTDIR = "temporary-demos/earth-pointer-final-0001"
-          os.makedirs(OUTDIR, exist_ok=True)
+            <!-- Exact Lab 0008 accepted screenshot settings:
+                 bearing 309, font 9.75, gap 3.25,
+                 Earth radial +1.75, pointer radial 0.00.
+                 Pointer base R=118.76, tip R=128.714.
+                 Earth outer R=112.51, center R=107.05. -->
+            <g transform="rotate(309 135 135)">
+              <polygon
+                points="129.375,16.24 140.625,16.24 135,6.286"
+                fill="#FFD84A"
+                filter="url(#yellowGlowPointer)"/>
 
-          FONT_PATH = "viewer/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf"
+              <text x="116.3112587734" y="29.5939591325"
+                    font-family="GV Space Age" font-size="9.75" font-weight="400"
+                    text-anchor="middle" dominant-baseline="middle"
+                    fill="#FFD84A" filter="url(#yellowGlowText)"
+                    transform="rotate(-10.0541916689 116.3112587734 29.5939591325)">E</text>
 
-          # Exact accepted geometry from Lab 0008 / user's screenshot.
-          SIZE = 270
-          C = 135.0
-          RING_R = 114.26
-          PTR_W = 11.25
-          PTR_D = 9.954
-          PTR_BASE_R = 118.76
-          PTR_TIP_R = 128.714
+              <text x="125.6195462494" y="28.3617817692"
+                    font-family="GV Space Age" font-size="9.75" font-weight="400"
+                    text-anchor="middle" dominant-baseline="middle"
+                    fill="#FFD84A" filter="url(#yellowGlowText)"
+                    transform="rotate(-5.0270958344 125.6195462494 28.3617817692)">A</text>
 
-          FONT_PX = 9.75
-          LETTER_GAP = 3.25
-          EARTH_RADIAL = 1.75
-          EARTH_OUTER_ZERO = 110.76
-          EARTH_OUTER_R = EARTH_OUTER_ZERO + EARTH_RADIAL   # 112.51
-          EARTH_CENTER_R = EARTH_OUTER_R - FONT_PX * 0.56
-          YELLOW = (255, 216, 74, 255)
+              <text x="135" y="27.95"
+                    font-family="GV Space Age" font-size="9.75" font-weight="400"
+                    text-anchor="middle" dominant-baseline="middle"
+                    fill="#FFD84A" filter="url(#yellowGlowText)">R</text>
 
-          SCALE = 8
-          W = H = SIZE * SCALE
-          CS = C * SCALE
+              <text x="144.3804537506" y="28.3617817692"
+                    font-family="GV Space Age" font-size="9.75" font-weight="400"
+                    text-anchor="middle" dominant-baseline="middle"
+                    fill="#FFD84A" filter="url(#yellowGlowText)"
+                    transform="rotate(5.0270958344 144.3804537506 28.3617817692)">T</text>
 
-          font = ImageFont.truetype(FONT_PATH, round(FONT_PX * SCALE))
+              <text x="153.6887412266" y="29.5939591325"
+                    font-family="GV Space Age" font-size="9.75" font-weight="400"
+                    text-anchor="middle" dominant-baseline="middle"
+                    fill="#FFD84A" filter="url(#yellowGlowText)"
+                    transform="rotate(10.0541916689 153.6887412266 29.5939591325)">H</text>
+            </g>
+          </svg>
+          <script>
+          document.fonts.ready.then(()=>document.documentElement.dataset.ready="1");
+          </script>
+          </body>
+          </html>
+          HTML
 
-          def compute_letters():
-              pitch = FONT_PX * 0.63 + LETTER_GAP
-              step = pitch / EARTH_CENTER_R
-              chars = list("EARTH")
-              start = -math.pi/2 - step*(len(chars)-1)/2
-              out = []
-              for i,ch in enumerate(chars):
-                  theta = start + i*step
-                  x = C + EARTH_CENTER_R*math.cos(theta)
-                  y = C + EARTH_CENTER_R*math.sin(theta)
-                  rot = theta + math.pi/2
-                  out.append((ch,x,y,rot))
-              return out
+          # Canonical NORTH rotor version for the app to rotate dynamically.
+          sed 's/rotate(309 135 135)/rotate(0 135 135)/'             temporary-demos/earth-pointer-final-0001/render-309.html             > temporary-demos/earth-pointer-final-0001/render-north.html
 
-          LETTERS = compute_letters()
+      - name: Render with Chrome
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome/Chromium not found"
+            exit 1
+          fi
+          echo "Using $CHROME"
 
-          def rot_point(x,y,angle):
-              ca,sa=math.cos(angle),math.sin(angle)
-              dx,dy=x-C,y-C
-              return C + dx*ca-dy*sa, C + dx*sa+dy*ca
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/earth-render-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 1
 
-          def make_layer(bearing_deg):
-              base = Image.new("RGBA",(W,H),(0,0,0,0))
+          COMMON_FLAGS=(
+            --headless=new
+            --no-sandbox
+            --disable-gpu
+            --hide-scrollbars
+            --force-device-scale-factor=1
+            --default-background-color=00000000
+            --window-size=270,270
+            --virtual-time-budget=3000
+          )
 
-              # Draw pointer at NORTH, then rotate as part of the rigid overlay.
-              pointer = Image.new("RGBA",(W,H),(0,0,0,0))
-              pd = ImageDraw.Draw(pointer)
-              half = PTR_W/2
-              pts = [
-                  ((C-half)*SCALE,(C-PTR_BASE_R)*SCALE),
-                  ((C+half)*SCALE,(C-PTR_BASE_R)*SCALE),
-                  (C*SCALE,(C-PTR_TIP_R)*SCALE),
-              ]
-              pd.polygon(pts, fill=YELLOW)
+          "$CHROME" "${COMMON_FLAGS[@]}"             --screenshot="temporary-demos/earth-pointer-final-0001/earth-pointer-yellow-bearing-309-270.png"             "http://127.0.0.1:8765/temporary-demos/earth-pointer-final-0001/render-309.html"
 
-              # Yellow pointer glow, matching the browser's subtle HUD bloom.
-              pa = pointer.getchannel("A")
-              pglow = Image.new("RGBA",(W,H),(255,216,74,0))
-              pglow.putalpha(pa.filter(ImageFilter.GaussianBlur(1.3*SCALE)))
-              base = Image.alpha_composite(base,pglow)
-              base = Image.alpha_composite(base,pointer)
+          "$CHROME" "${COMMON_FLAGS[@]}"             --screenshot="temporary-demos/earth-pointer-final-0001/earth-pointer-yellow-north-270.png"             "http://127.0.0.1:8765/temporary-demos/earth-pointer-final-0001/render-north.html"
 
-              # Draw each exact Space Age glyph at its mathematical NORTH position.
-              textlayer = Image.new("RGBA",(W,H),(0,0,0,0))
-              for ch,x,y,rot in LETTERS:
-                  # generous scratch tile; anchor by glyph center
-                  tile = Image.new("RGBA",(160*SCALE,160*SCALE),(0,0,0,0))
-                  td = ImageDraw.Draw(tile)
-                  bbox = td.textbbox((0,0),ch,font=font)
-                  tw,th=bbox[2]-bbox[0],bbox[3]-bbox[1]
-                  pos=((tile.width-tw)/2-bbox[0],(tile.height-th)/2-bbox[1])
-                  td.text(pos,ch,font=font,fill=YELLOW)
-
-                  # PIL positive degrees are CCW visually; browser SVG rotation is CW in y-down.
-                  # Match the browser math by negating the local glyph angle here.
-                  tile = tile.rotate(-math.degrees(rot), resample=Image.Resampling.BICUBIC, expand=False)
-
-                  px=int(round(x*SCALE-tile.width/2))
-                  py=int(round(y*SCALE-tile.height/2))
-                  textlayer.alpha_composite(tile,(px,py))
-
-              ta = textlayer.getchannel("A")
-              tglow = Image.new("RGBA",(W,H),(255,216,74,0))
-              tglow.putalpha(ta.filter(ImageFilter.GaussianBlur(1.0*SCALE)))
-              base = Image.alpha_composite(base,tglow)
-              base = Image.alpha_composite(base,textlayer)
-
-              if bearing_deg:
-                  # rigid rotation around the exact 135,135 center
-                  base = base.rotate(-bearing_deg, resample=Image.Resampling.BICUBIC, center=(CS,CS), expand=False)
-
-              # Downsample to exact runtime dimensions.
-              return base.resize((SIZE,SIZE),Image.Resampling.LANCZOS)
-
-          north = make_layer(0)
-          preview309 = make_layer(309)
-
-          north.save(os.path.join(OUTDIR,"earth-pointer-yellow-north-270.png"))
-          preview309.save(os.path.join(OUTDIR,"earth-pointer-yellow-bearing-309-270.png"))
-
-          # Tight crop of the 309° screenshot-matching orientation, useful for inspection.
-          alpha = preview309.getchannel("A")
-          bbox = alpha.getbbox()
-          if bbox:
-              pad=4
-              l,t,r,b=bbox
-              l=max(0,l-pad); t=max(0,t-pad); r=min(SIZE,r+pad); b=min(SIZE,b+pad)
-              preview309.crop((l,t,r,b)).save(os.path.join(OUTDIR,"earth-pointer-yellow-bearing-309-tight.png"))
-
-          print("Rendered:")
-          for name in sorted(os.listdir(OUTDIR)):
-              print(" ",name)
-          print("EARTH_OUTER_R",EARTH_OUTER_R)
-          print("EARTH_CENTER_R",EARTH_CENTER_R)
-          print("PTR_BASE_R",PTR_BASE_R)
-          print("PTR_TIP_R",PTR_TIP_R)
+          python3 - <<'PY'
+          from PIL import Image
+          p="temporary-demos/earth-pointer-final-0001/earth-pointer-yellow-bearing-309-270.png"
+          im=Image.open(p).convert("RGBA")
+          assert im.size==(270,270), im.size
+          bbox=im.getchannel("A").getbbox()
+          assert bbox is not None
+          pad=4
+          l,t,r,b=bbox
+          l=max(0,l-pad);t=max(0,t-pad);r=min(270,r+pad);b=min(270,b+pad)
+          im.crop((l,t,r,b)).save("temporary-demos/earth-pointer-final-0001/earth-pointer-yellow-bearing-309-tight.png")
+          print("309 bbox",bbox)
+          print("tight",(l,t,r,b))
           PY
 
-      - name: Commit PNGs
+      - name: Commit browser-rendered PNGs
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add temporary-demos/earth-pointer-final-0001/*.png
+          git add temporary-demos/earth-pointer-final-0001/
           if git diff --cached --quiet; then
             echo "No PNG changes to commit"
           else
-            git commit -m "Render final yellow Earth pointer PNG"
+            git commit -m "Render exact browser yellow Earth pointer PNG"
             git push origin HEAD:release
           fi
