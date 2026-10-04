@@ -192,7 +192,7 @@ jobs:
                   for perm in itertools.permutations(range(3)):
                     m=SimilarityTransform()
                     if not m.estimate(src,itri[list(perm)]): continue
-                    if not (expected*.28 < m.scale < expected*3.6): continue
+                    if not (expected*.65 < m.scale < expected*1.45): continue
                     cw=cat.copy()
                     if mirror: cw[:,0]*=-1
                     pred=m(cw)
@@ -202,7 +202,7 @@ jobs:
                     if score<5: continue
                     med=float(np.median(dist[good]))
                     ratio=score/max(1,min(len(cat),len(img)))
-                    rank=(score,-med,ratio)
+                    scale_error=abs(math.log(m.scale/expected))\n                    rank=(score,-med,-scale_error,ratio)
                     if best is None or rank>best[0]:
                       best=(rank,mirror,m,score,med,ratio)
               if best is None:return None
@@ -232,7 +232,7 @@ jobs:
               cd11=float(sx[0]); cd21=float(sx[1])
               cd12=float(-sy[0]); cd22=float(-sy[1])
               return {
-                'matches':score,'medianResidualPx':med,'matchRatio':ratio,'mirrored':bool(mirror),
+                'matches':score,'medianResidualPx':med,'matchRatio':ratio,'mirrored':bool(mirror),'plateScaleRatioToPublished':float(m.scale/expected),
                 'topLeftReferencePixel0':[float(p0[0]),float(p0[1])],
                 'runtimeWcs':{
                   'NAXIS':2,'NAXIS1':int(w),'NAXIS2':int(h),
