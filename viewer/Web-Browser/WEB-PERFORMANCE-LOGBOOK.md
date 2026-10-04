@@ -423,3 +423,30 @@ Browser 0031 commits:
 - bottom shell: `d4d2037e7d417c6897022fe4ac25808d9d482a45`
 - config: `2fc53f47b3dc1b1285350ad5d7e1b77d4f024b1a`
 - pointer: `501274d9d982f6eafb577dc098e77764b4cd7066`
+
+
+## Build 0071 — spherical startup + Survey progression controller
+
+Date: 2026-10-04.
+
+Projection:
+- Startup projection changed from Mollweide `MOL` to Spherical `SIN`.
+- Projection menu is synchronized to SPHERICAL at startup.
+- Old second-trip automatic MOL→SIN apex trigger is disabled; current/manual projection is no longer force-switched during travel.
+
+Survey behavior:
+- Selecting a provider still automatically launches that provider's first image.
+- After arrival, the center navigator becomes a Survey controller.
+- It alternates every 1.4 s between `PROVIDER N OF TOTAL` and `PRESS FOR NEXT`.
+- During travel the center button shows solid green `TRAVELING`.
+- Pressing the center Survey controller advances sequentially to the next record.
+- Back/Forward continue to move through the same provider sequence.
+- Random Galaxy stars/comets are hidden while Survey mode is active.
+- At the final record the prompt stops and the center control is disabled.
+- Exiting Survey mode restores the normal Random Galaxy presentation.
+
+Artifacts:
+- Navigator 002 commit: `9b2b42806509c723e2eb294acddee118ac50e535`
+- Viewer commits: `97ae312584e1cc34521f1092056ddfe3d1a67d6f`, `e0c758ef6eedf897378af515014066def369a976`, `de2663f97cd746baa6965a1fecf7eeca2c3487e3`
+- Viewer pointer commit: `cde4e9dc2899d3e67d1f4d3c5be11c4d718aa227`
+- Browser remains 0031.
