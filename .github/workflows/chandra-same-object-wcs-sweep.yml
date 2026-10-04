@@ -1,0 +1,84 @@
+name: Chandra Same Object WCS Sweep
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-same-object-wcs-sweep.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sweep Chandra feed
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sweep
+          curl --fail --location --retry 3 --silent --show-error 'https://www.astropix.org/link/918?format=json' -o /tmp/sweep/feed.json
+          python3 - <<'PY'
+          import json,re
+          feed=json.load(open('/tmp/sweep/feed.json'))
+          targets={
+           '901a':['NGC 1672'],
+           '901b':['II Zw 096'],
+           '901c':['M33','Triangulum Galaxy'],
+           '901e':['NGC 1569'],
+           '901f':['M90','NGC 4569'],
+           '901i':['Arp 143','NGC 2444','NGC 2445'],
+           '901j':['NGC 4725'],
+           '901l':['NGC 660'],
+           '901o':['NGC 3938'],
+           '847':['Guitar Nebula','PSR B2224+65'],
+           '838f':['Eagle Nebula','M16'],
+           '838p':['Hb 5','Hb5'],
+           '813':['SN1006','SN 1006','SNR 327.6+14.6'],
+           '800':['Crab Nebula','M1'],
+           '797':["Tycho's Supernova Remnant","Tycho's SNR",'SN 1572','G120.1+01.4'],
+           '429':['RCW 86','G315.4-2.1'],
+           'heart-2026':['IC 5146','Cocoon Nebula'],
+           'spring-w2':['Westerlund 2','Wd 2'],
+           'spring-ngc346':['NGC 346','N66'],
+           'spring-catspaw':['NGC 6334',"Cat's Paw Nebula"],
+           'spring-pelican':['NGC 7000','Pelican Nebula'],
+           'spring-flame':['NGC 2024','Flame Nebula']
+          }
+          def norm(s):return re.sub(r'[^a-z0-9]+','',str(s).lower())
+          def complete(r):
+            return len(r.get('wcs_reference_value') or [])>=2 and len(r.get('wcs_reference_dimension') or [])>=2 and len(r.get('wcs_reference_pixel') or [])>=2 and len(r.get('wcs_scale') or [])>=2 and r.get('wcs_rotation') not in (None,'') and bool(r.get('wcs_projection'))
+          def slim(r):
+            return {
+             'imageId':str(r.get('image_id')),
+             'names':r.get('object_name') or [],
+             'releaseDate':r.get('image_release_date'),
+             'quality':r.get('wcs_quality'),
+             'complete':complete(r),
+             'referenceValue':r.get('wcs_reference_value') or [],
+             'referenceDimension':r.get('wcs_reference_dimension') or [],
+             'referencePixel':r.get('wcs_reference_pixel') or [],
+             'scale':r.get('wcs_scale') or [],
+             'rotation':r.get('wcs_rotation'),
+             'projection':r.get('wcs_projection'),
+             'resourceUrl':r.get('resource_url'),
+             'referenceUrl':r.get('reference_url')
+            }
+          out={}
+          for key,aliases in targets.items():
+            aa=[norm(a) for a in aliases]
+            found=[]
+            for r in feed:
+              nn=[norm(n) for n in (r.get('object_name') or [])]
+              if any(a==n or (len(a)>4 and a in n) or (len(n)>4 and n in a) for a in aa for n in nn):
+                found.append(slim(r))
+            found.sort(key=lambda x:(x['complete'],x.get('releaseDate') or ''),reverse=True)
+            out[key]=found
+            print('\n',key,aliases)
+            for m in found[:12]:
+              print(m['imageId'],m['names'][:3],'FULL',m['complete'],'Q',m['quality'],'ROT',m['rotation'],'DIM',m['referenceDimension'],'SCALE',m['scale'])
+          json.dump(out,open('/tmp/sweep/same-object-wcs.json','w'),indent=2)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chandra-same-object-wcs
+          path: /tmp/sweep/same-object-wcs.json
