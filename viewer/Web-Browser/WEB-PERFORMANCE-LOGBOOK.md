@@ -243,3 +243,36 @@ Build 0066 changes:
 Module commit: `3a3d0d37d4c1260bf7f9184ac57ec4e5724c0ec4`.
 Viewer commit: `91a49759a18f47ac3746891bcb7c5defaa9829ac`.
 Pointer commit: `8716726a6f23b3d59f7e383c3d58c4b529e1dbed`.
+
+
+## APK 0020 — provider-aware multi-origin preconnect
+
+Date: 2026-10-04.
+
+Purpose: reduce cold provider-launch latency by warming the provider page origin and known separate asset/CDN origins at destination landing.
+
+Baseline: APK 0019 persistent provider cache/preload architecture.
+
+APK 0020 changes:
+- Keeps APK 0019 hidden provider WebView load, cache behavior, progress telemetry, return-state persistence, Chandra fit-width handling, and same-URL reuse unchanged.
+- Always preconnects the active provider URL as before.
+- Adds provider-aware secondary-origin preconnects:
+  - ESA/Hubble: `https://cdn.esahubble.org/`
+  - ESA/Webb: `https://cdn.esawebb.org/`
+  - ESO: `https://cdn.eso.org/`
+  - NOIRLab: `https://storage.noirlab.edu/`
+- Spitzer and Chandra continue to preconnect their active source URL; their current page/image assets use the same provider origin, so no redundant second host is added.
+- No hosted Galaxy Viewer build change.
+- Browser 0027 remains current and unchanged.
+
+Build identity:
+- versionCode: `75`
+- versionName: `APK-0020-DEV-0057-WEBKIT1171-MULTIORIGIN`
+- WebKit: `1.17.1`
+- workflow commit: `be4c3893e51e3e78953c247301fed0cb3591e102`
+- workflow run: `37218684964`
+- job: `111484387647`
+- artifact ID: `11309585985`
+- artifact: `Galaxy-Viewer-DEV-0057-WEBKIT1171-0020`
+- APK SHA-256: `220315d02a0d2135d4237b451ba6541ccb244a81cdac0aab4d4b62dff4e5ef7f`
+- APK signature verification: v3 verified, one signer.
