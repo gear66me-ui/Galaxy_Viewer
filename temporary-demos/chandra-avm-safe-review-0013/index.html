@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812"><title>Chandra Full-AVM Review 0013</title>
+<link rel="stylesheet" href="../../viewer/vendor/aladin-lite/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 205px 0;background:#000}
+#top{position:absolute;z-index:40;left:8px;right:8px;top:8px;display:flex;gap:8px;justify-content:space-between;pointer-events:none}
+.tag,.name{padding:6px 9px;border:1px solid #2d7795;border-radius:7px;background:rgba(2,12,22,.82);font-weight:900}
+.tag{font:900 10px/1.1 monospace;color:#81ffc0}.name{font:900 11px/1.1 system-ui;max-width:67%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#panel{position:absolute;z-index:50;left:0;right:0;bottom:0;height:205px;background:#020b13f7;border-top:1px solid #216882;padding:9px 10px}
+.row{display:flex;align-items:center;gap:7px;margin-bottom:7px}.lab{width:61px;font-size:10px;color:#9bc0cf}.val{width:46px;text-align:right;font-size:10px}.row input[type=range]{flex:1}
+button{min-height:36px;border-radius:8px;border:1px solid #28657e;background:#071a27;color:#e8fbff;font-weight:900}
+.pass{flex:1.15;border-color:#26985c;background:#072519;color:#74ffad}.flag{flex:1;border-color:#a95231;background:#2a1108;color:#ffb08d}.nav{flex:1}.export{flex:.75}
+#progress{font:900 10px/1 monospace;color:#8deaff;white-space:nowrap}
+#status{font:900 10px/1.3 monospace;color:#74ffad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#detail{font:10px/1.3 monospace;color:#afcbd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style></head><body>
+<div id="aladin"></div><div id="top"><div class="tag">AVM 1.2 · DIMENSION-CORRECTED</div><div id="name" class="name">Loading…</div></div>
+<div id="panel">
+ <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="val">55%</span></div>
+ <div class="row"><button id="pass" class="pass">PASS + NEXT</button><button id="flag" class="flag">FLAG + NEXT</button></div>
+ <div class="row"><button id="prev" class="nav">◀ BACK</button><span id="progress">1 / 73</span><button id="next" class="nav">NEXT ▶</button><button id="export" class="export">EXPORT</button></div>
+ <div id="status">73 AVM-DERIVATIVE-SAFE RECORDS · 6 QUARANTINED</div>
+ <div id="detail">Exact AstroPix JPEG → AVM 1.2 proportional-rescale gate → explicit WCS → DSS2.</div>
+</div>
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+const QUARANTINED=new Set(['901h','901k','901n','314','870','405']);
+const ALL_ROWS=[{"id":"901h","name":"M104"},{"id":"901k","name":"NGC 1385"},{"id":"901n","name":"NGC 3256"},{"id":"314","name":"Cartwheel Galaxy"},{"id":"90","name":"GOODS Chandra Deep Field-North"},{"id":"102","name":"M86"},{"id":"120","name":"Arp 220"},{"id":"125","name":"NGC 4649"},{"id":"126","name":"NGC 1553"},{"id":"143","name":"NGC 1700"},{"id":"151","name":"HCG 62"},{"id":"156","name":"Circinus Galaxy"},{"id":"160","name":"NGC 4697"},{"id":"173","name":"EMSS 1358+6245"},{"id":"183","name":"NGC 4636"},{"id":"247","name":"MS 0735.6+7421"},{"id":"315","name":"NGC 5746"},{"id":"345","name":"The Eagle Nebula (M16)"},{"id":"361","name":"RCW 103"},{"id":"371","name":"ESO 137-001"},{"id":"374","name":"M42"},{"id":"376","name":"G292.0+1.8"},{"id":"378","name":"NGC 281"},{"id":"385","name":"NGC 1132"},{"id":"387","name":"Kes 75"},{"id":"398","name":"NGC 4649"},{"id":"399","name":"NGC 6543"},{"id":"404","name":"SN 1996cr"},{"id":"405","name":"RCW 108"},{"id":"408","name":"Crab Nebula"},{"id":"418","name":"Tycho's SNR"},{"id":"420","name":"NGC 4194"},{"id":"430","name":"Stephan's Quintet"},{"id":"431","name":"1E 0102.2-7219"},{"id":"432","name":"Cepheus B"},{"id":"440","name":"Crab Nebula"},{"id":"444","name":"Sagittarius A*"},{"id":"449","name":"G54.1+0.3"},{"id":"453","name":"N49"},{"id":"462","name":"Rosette Nebula"},{"id":"464","name":"G327.1-1.1"},{"id":"467","name":"SN 1979C"},{"id":"478","name":"Tycho's Supernova Remnant"},{"id":"482","name":"Crab Nebula"},{"id":"483","name":"Carina Nebula"},{"id":"491","name":"NGC 281"},{"id":"492","name":"G299.2-2.9"},{"id":"498","name":"SXP 1062"},{"id":"500","name":"G350.1-0.3"},{"id":"511","name":"SN 2010jl"},{"id":"515","name":"IGR J11014-6103"},{"id":"520","name":"NGC 1929"},{"id":"532","name":"DEM L50"},{"id":"533","name":"W49B"},{"id":"535","name":"G306.3-0.9"},{"id":"537","name":"NGC 602"},{"id":"538","name":"SN 1006"},{"id":"543","name":"G1.9+0.3"},{"id":"547","name":"Sagittarius A*"},{"id":"548","name":"DEM L241"},{"id":"555","name":"Cassiopeia A"},{"id":"557","name":"Circinus X-1"},{"id":"566","name":"G352.7-0.1"},{"id":"571","name":"Perseus A"},{"id":"577","name":"Puppis A"},{"id":"578","name":"Eta Carinae"},{"id":"589","name":"G299.2-2.9"},{"id":"599","name":"NGC 5813"},{"id":"613","name":"SDSS J103842.59+484917.7"},{"id":"624","name":"G1.9+0.3"},{"id":"627","name":"Tycho's Supernova Remnant"},{"id":"636","name":"RCW 103"},{"id":"645","name":"NGC 6357"},{"id":"867","name":"Infinity Galaxy"},{"id":"870","name":"MSH 15-52"},{"id":"811c","name":"ESO 137-001"},{"id":"584a","name":"MSH 11-62"},{"id":"584b","name":"G327.1-1.1"},{"id":"432a","name":"PSR B1509-58"}].map(r=>({...r,image:'https://www.astropix.org/archive/chandra/'+r.id+'/chandra_'+r.id+'_1024.jpg'}));
+const ROWS=ALL_ROWS.filter(r=>!QUARANTINED.has(r.id));
+if(ALL_ROWS.length!==79||ROWS.length!==73)throw Error('COUNT GATE '+ALL_ROWS.length+' / '+ROWS.length);
+const $=id=>document.getElementById(id),KEY='gv-chandra-full79-review-0013',LAYER='GV_CHANDRA_FULL79_0013';
+let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(_){}
+let idx=Math.max(0,ROWS.findIndex(r=>!decisions[r.id])),layer=null,token=0;
+await A.init;
+const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',
+ showReticle:false,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,showLayersControl:true,showCooGridControl:true,showProjectionControl:false});
+function op(){const v=+$('opacity').value/100;$('opv').textContent=$('opacity').value+'%';try{layer?.setOpacity?.(v)}catch(_){}return v}
+function rm(){try{aladin.removeImageLayer?.(LAYER)}catch(_){}try{aladin.removeOverlayImageLayer?.(LAYER)}catch(_){}layer=null}
+function counts(){const v=Object.values(decisions);return [v.filter(x=>x.d==='PASS').length,v.filter(x=>x.d==='FLAG').length]}
+function avmText(buf){return new TextDecoder('latin1').decode(new Uint8Array(buf))}
+function avmArray(x,key){
+ const leaf=key.split('.').pop();
+ let p=x.indexOf('avm:'+key);if(p<0)p=x.indexOf('avm:'+leaf);if(p<0)p=x.indexOf(key);if(p<0)return[];
+ const z=x.slice(p,p+7000);
+ const a=[...z.matchAll(/<rdf:li[^>]*>([^<]+)<\\/rdf:li>/gi)].map(m=>m[1].trim());
+ if(a.length)return a;
+ const q=z.match(/=[\"\\x27]([^\"\\x27]+)[\"\\x27]/);return q?[q[1]]:[];
+}
+function decodeAvmWcs(buf,w,h){
+ const x=avmText(buf);
+ const ref=avmArray(x,'Spatial.ReferenceValue').map(Number);
+ const dim=avmArray(x,'Spatial.ReferenceDimension').map(Number);
+ const pix=avmArray(x,'Spatial.ReferencePixel').map(Number);
+ const sc=avmArray(x,'Spatial.Scale').map(Number);
+ const rv=avmArray(x,'Spatial.Rotation');
+ const rot=Number(rv[0]);
+ if(ref.length<2||dim.length<2||pix.length<2||sc.length<2||!Number.isFinite(rot))throw Error('AVM WCS FIELDS MISSING');
+ const rx=w/dim[0],ry=h/dim[1];
+ const mismatch=Math.abs(rx-ry)/Math.max((Math.abs(rx)+Math.abs(ry))/2,1e-12);
+ if(mismatch>0.02)throw Error('AVM DERIVATIVE REJECTED · dimension ratio mismatch '+(mismatch*100).toFixed(2)+'%');
+ const sm=Math.abs(Math.abs(sc[0])-Math.abs(sc[1]))/Math.max((Math.abs(sc[0])+Math.abs(sc[1]))/2,1e-30);
+ if(sm>0.02)throw Error('AVM DERIVATIVE REJECTED · scale mismatch '+(sm*100).toFixed(2)+'%');
+ const ratio=(rx+ry)/2;
+ const px=pix[0]*ratio,py=pix[1]*ratio;
+ const sx=Math.abs(sc[0])/ratio,sy=Math.abs(sc[1])/ratio;
+ const t=rot*Math.PI/180,cc=Math.cos(t),ss=Math.sin(t);
+ return {
+  NAXIS:2,NAXIS1:w,NAXIS2:h,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,LONPOLE:180,
+  CRVAL1:ref[0],CRVAL2:ref[1],CRPIX1:px,CRPIX2:py,
+  CD1_1:-sx*cc,CD1_2:-sy*ss,CD2_1:-sx*ss,CD2_2:sy*cc
+ };
+}
+async function show(n){
+ const my=++token;idx=(n+ROWS.length)%ROWS.length;const r=ROWS[idx];rm();
+ $('name').textContent=r.name+' · '+r.id;const [p,f]=counts();$('progress').textContent=(idx+1)+' / 73 · P '+p+' F '+f;
+ $('status').textContent='FETCHING JPEG + DECODING AVM 1.2…';$('detail').textContent='Strict 2% proportional-rescale gate · explicit WCS';
+ try{
+   const resp=await fetch(r.image,{mode:'cors',credentials:'omit',cache:'no-store'});
+   if(!resp.ok)throw Error('HTTP '+resp.status);
+   const blob=await resp.blob();
+   const bmp=await createImageBitmap(blob);const w=bmp.width,h=bmp.height;bmp.close();
+   if(my!==token)return;
+   const wcs=decodeAvmWcs(await blob.arrayBuffer(),w,h);
+   const u=URL.createObjectURL(blob);
+   const img=A.image(u,{name:LAYER,imgFormat:'jpeg',wcs,opacity:op(),
+     successCallback:(ra,dec,fov,obj)=>{if(my!==token){URL.revokeObjectURL(u);return}layer=obj;aladin.gotoRaDec(ra,dec);aladin.setFoV(Math.max(.0002,+fov*1.12));if(typeof aladin.setRotation==='function')aladin.setRotation(0);$('status').textContent='REGISTERED · AVM 1.2 DIMENSION-CORRECTED';$('detail').textContent=r.id+' · '+w+'×'+h+' · uniform AVM rescale · pan/zoom to verify lock';},
+     errorCallback:e=>{if(my!==token)return;$('status').textContent='WCS LOAD ERROR';$('detail').textContent=String(e||'unknown')}
+   });
+   layer=img;aladin.setOverlayImageLayer(img,LAYER);
+ }catch(e){
+   if(my!==token)return;
+   $('status').textContent='REJECTED / LOAD ERROR';
+   $('detail').textContent=String(e?.message||e);
+ }
+}
+function decide(d){const r=ROWS[idx];decisions[r.id]={d,at:new Date().toISOString(),name:r.name};localStorage.setItem(KEY,JSON.stringify(decisions));show(idx+1)}
+$('opacity').oninput=op;$('pass').onclick=()=>decide('PASS');$('flag').onclick=()=>decide('FLAG');$('prev').onclick=()=>show(idx-1);$('next').onclick=()=>show(idx+1);
+$('export').onclick=()=>{const out={version:'0013',total:73,quarantined:[...QUARANTINED],decisions,records:ROWS};const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-full79-review-0013.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+show(idx);
+})().catch(e=>{document.getElementById('status').textContent='FATAL';document.getElementById('detail').textContent=String(e?.message||e)});
+</script></body></html>
