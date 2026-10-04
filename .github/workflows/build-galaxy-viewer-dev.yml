@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer BLD 0059 WebKit 1.17.1 APK 0017 CANCEL SCOPE
-# BLD 0059: APK 0017 = APK 0016 baseline + soft Back-to-Sky cancel and full sky-navigation cancel.
+name: Build Galaxy Viewer DEV 0057 WebKit 1.17.1 APK 0018 CHANDRA FIT WIDTH
+# DEV 0057: APK 0018 = exact APK 0016 baseline + Chandra-only fit-width overview mode. Production untouched.
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Install launcher tools
         run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
 
-      - name: Generate current 0059 hosted shell + tablet fixes
+      - name: Generate current 0057 hosted shell + tablet fixes
         shell: bash
         run: |
           set -euo pipefail
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 72
-              versionName 'APK-0017-BLD-0059-WEBKIT1171-CANCELSCOPE'
+              versionCode 73
+              versionName 'APK-0018-DEV-0057-WEBKIT1171-CHANDRAFIT'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.17.1' }
@@ -149,7 +149,7 @@ jobs:
           </manifest>
           EOF
 
-          # Generate the browser from the frozen GOLD source; final APK identity is BLD 0059 / APK 0017.
+          # Freeze the current Browser 0057 source for this DEV experiment.
           git fetch origin beta --no-tags
           git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer.lab;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
@@ -217,8 +217,7 @@ jobs:
           assert old in s
           new=('      @Override public void onPageCommitVisible(WebView view,String url){ if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} }\n'
                '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(prewarmLoading&&request!=null&&request.isForMainFrame()){prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";} }\n'
-               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n')
-          s=s.replace(old,new,1)
+               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n')          s=s.replace(old,new,1)
 
           # Flush once more when Galaxy Viewer leaves the foreground.
           old='  @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}\n'
@@ -272,7 +271,7 @@ jobs:
           assert old in s
           s=s.replace(old,'    @JavascriptInterface public void prewarm(String url){}\n',1)
 
-          # Baseline stage — official AndroidX WebKit 1.17.1 prerender.
+          # APK 0016 Lucky 13 — official AndroidX WebKit 1.17.1 prerender.
           # One provider WebView only. Prerender never navigates the visible WebView.
           # Each new destination cancels the previous speculative render.
           # Provider browser is revealed only after onPageCommitVisible confirms stale content is gone.
@@ -350,7 +349,7 @@ jobs:
           p.write_text(s)
           PY
 
-          # Baseline stage — layer current WebKit 1.17.1 APIs onto the proven single-WebView prerender output.
+          # APK 0016 Lucky 15 — start from the proven Lucky 13 output and layer current WebKit 1.17.1 APIs.
           python - "$MAIN" <<'PY15'
           from pathlib import Path
           import sys
@@ -437,8 +436,7 @@ jobs:
                        '          Navigation n=activeProviderNavigation;if(!browserMode||!awaitingProviderCommit||n==null)return;\n'
                        '          try{if(page.equals(n.getPage()))revealProvider(providerRevealGeneration,providerTargetUrl);}catch(Exception ignored){}\n'
                        '        }\n'
-                       '      });\n'
-                       '    }\n'
+                       '      });\n'                       '    }\n'
                        '    return v;\n'
                        '  }\n'
                        '  private void fetchPointer(){\n')
@@ -529,51 +527,38 @@ jobs:
           p.write_text(s)
           PY16
 
-          # APK 0017 / BLD 0059 — split cancellation scope.
-          # Back to Sky invalidates only the active handoff/reveal and preserves current-galaxy speculative preload.
-          # Random/Back/Forward use full cancellation and discard obsolete provider speculative work.
-          python - "$MAIN" <<'PY17'
+          # APK 0018 — exact APK 0016 runtime + Chandra fit-to-width only.
+          python - "$MAIN" <<'PY18'
           from pathlib import Path
           import sys
           p=Path(sys.argv[1])
           s=p.read_text()
 
-          insert='  private void cancelProviderWork(){\n'
+          insert='  private String launchProviderIcon(Intent intent){'
           assert s.count(insert)==1
-          soft=('  private void cancelProviderHandoff(){\n'
-                '    providerRevealGeneration++;awaitingProviderCommit=false;browserMode=false;activeProviderNavigation=null;providerTargetUrl="";providerRevealNotBeforeMs=0L;providerRetryUsed=false;\n'
-                '    if(providerWatchdog!=null){providerGateHandler.removeCallbacks(providerWatchdog);providerWatchdog=null;}\n'
-                '    pendingProviderUrl="";pendingProviderIcon="";clearProviderEntryHistory=false;\n'
-                '    if(web!=null){try{web.stopLoading();}catch(Exception ignored){}}\n'
-                '    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n'
-                '  }\n')
-          s=s.replace(insert,soft+insert,1)
+          helper=('  private boolean isChandraProvider(String url){\n'
+                  '    try{if(url==null)return false;String host=Uri.parse(url).getHost();return host!=null&&(host.equalsIgnoreCase("chandra.harvard.edu")||host.toLowerCase(java.util.Locale.US).endsWith(".chandra.harvard.edu"));}catch(Exception ignored){return false;}\n'
+                  '  }\n'
+                  '  private void configureProviderViewport(String url){\n'
+                  '    if(web==null)return;boolean chandra=isChandraProvider(url);WebSettings settings=web.getSettings();settings.setUseWideViewPort(true);settings.setLoadWithOverviewMode(chandra);if(chandra)web.setInitialScale(0);\n'
+                  '  }\n')
+          s=s.replace(insert,helper+insert,1)
 
-          old='    @JavascriptInterface public void cancelProvider(){runOnUiThread(()->cancelProviderWork());}\n'
+          old='  private void prewarmProvider(String u){\n    if(u==null||!u.startsWith("https://")||web==null)return;\n'
           assert s.count(old)==1
-          new=('    @JavascriptInterface public void cancelProvider(){runOnUiThread(()->cancelProviderHandoff());}\n'
-               '    @JavascriptInterface public void cancelProviderHandoff(){runOnUiThread(()->cancelProviderHandoff());}\n'
-               '    @JavascriptInterface public void cancelProviderAll(){runOnUiThread(()->cancelProviderWork());}\n')
+          new='  private void prewarmProvider(String u){\n    if(u==null||!u.startsWith("https://")||web==null)return;\n    configureProviderViewport(u);\n'
           s=s.replace(old,new,1)
 
-          # Technical build identity in native user agent.
-          assert s.count('GalaxyViewerWebBrowser/0057')==2
-          s=s.replace('GalaxyViewerWebBrowser/0057','GalaxyViewerWebBrowser/0059')
+          old='  private void openProvider(String u,String icon){\n    browserMode=true;'
+          assert s.count(old)==1
+          new='  private void openProvider(String u,String icon){\n    configureProviderViewport(u);\n    browserMode=true;'
+          s=s.replace(old,new,1)
 
           p.write_text(s)
-          PY17
+          PY18
 
-          # APK 0017 cancellation-scope gates.
-          grep -q 'GalaxyViewerWebBrowser/0059' "$MAIN"
-          grep -q 'private void cancelProviderHandoff()' "$MAIN"
-          grep -q '@JavascriptInterface public void cancelProviderHandoff()' "$MAIN"
-          grep -q '@JavascriptInterface public void cancelProviderAll()' "$MAIN"
-          grep -q '@JavascriptInterface public void cancelProvider(){runOnUiThread(()->cancelProviderHandoff());}' "$MAIN"
-          grep -q 'providerRevealGeneration++;awaitingProviderCommit=false;browserMode=false' "$MAIN"
-          grep -q 'private void cancelProviderWork()' "$MAIN"
-          grep -q 'providerRevealGeneration++;prerenderGeneration++;awaitingProviderCommit=false;browserMode=false' "$MAIN"
-
-          # Baseline gates before APK 0017 cancellation-scope split.
+          # Nanoscopic gates: APK 0018 must remain APK 0016 plus Chandra viewport handling only.
+          grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
@@ -590,6 +575,11 @@ jobs:
           grep -q 'scheduleProviderWatchdog(providerRevealGeneration,u,10000L)' "$MAIN"
           grep -q 'WEBSITE COULD NOT LOAD' "$MAIN"
           grep -q 'private void cancelProviderWork()' "$MAIN"
+          grep -q 'private boolean isChandraProvider(String url)' "$MAIN"
+          grep -q 'private void configureProviderViewport(String url)' "$MAIN"
+          grep -q 'settings.setLoadWithOverviewMode(chandra)' "$MAIN"
+          grep -q 'if(chandra)web.setInitialScale(0);' "$MAIN"
+          test "$(grep -c 'configureProviderViewport(u);' "$MAIN")" -eq 2
           grep -q 'providerRevealGeneration++;prerenderGeneration++;awaitingProviderCommit=false;browserMode=false' "$MAIN"
           grep -q '@JavascriptInterface public void cancelProvider()' "$MAIN"
           grep -q 'providerGateHandler.removeCallbacks(providerWatchdog)' "$MAIN"
@@ -631,10 +621,10 @@ jobs:
           test ! -e "$ROOT/app/src/main/assets/index.html"
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
-      - name: Build BLD 0059 APK
+      - name: Build DEV 0057 APK
         run: gradle --no-daemon -p /tmp/galaxy-viewer-dev :app:assembleRelease
 
-      - name: Sign BLD 0059 APK
+      - name: Sign DEV 0057 APK
         shell: bash
         env:
           GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
@@ -647,17 +637,17 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-APK-0017-BLD-0059-WEBKIT1171-CANCELSCOPE.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0018.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
           test -s "$APK"
 
-      - name: Verify BLD 0059 APK
+      - name: Verify DEV 0057 APK
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-APK-0017-BLD-0059-WEBKIT1171-CANCELSCOPE.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0018.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -665,8 +655,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-APK-0017-BLD-0059-WEBKIT1171-CANCELSCOPE
+          name: Galaxy-Viewer-DEV-0057-WEBKIT1171-0018
           path: |
-            Galaxy-Viewer-APK-0017-BLD-0059-WEBKIT1171-CANCELSCOPE.apk
-            Galaxy-Viewer-APK-0017-BLD-0059-WEBKIT1171-CANCELSCOPE.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0018.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0018.apk.sha256
           retention-days: 30
