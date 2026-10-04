@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#01060d">
+<title>Chandra AVM Registration Gate 0001</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eefbff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 178px 0;background:#000}
+#top{position:absolute;z-index:20;left:8px;right:8px;top:8px;background:#03111ddd;border:1px solid #2386ae;border-radius:10px;padding:8px 10px;backdrop-filter:blur(8px)}
+#title{font-weight:900;font-size:14px;color:#8eeaff;letter-spacing:.05em}#meta{font-size:10px;color:#bed6df;margin-top:3px;line-height:1.35}
+.badge{display:inline-block;margin-left:5px;padding:2px 5px;border:1px solid;border-radius:5px;font-size:9px;font-weight:900}.full{color:#64ff9d;border-color:#2b9c59}.unsolved{color:#ffd36c;border-color:#9b7622}
+#bottom{position:absolute;z-index:30;left:0;right:0;bottom:0;height:178px;background:#020b13f4;border-top:1px solid #206783;padding:9px 10px}
+.row{display:flex;gap:7px;align-items:center;margin-bottom:7px}.row button{flex:1;min-height:36px;border-radius:8px;border:1px solid #276a84;background:#071b28;color:#e7faff;font-weight:900}.row button.pass{border-color:#2e9a5b;color:#71ffad;background:#082518}.row button.fail{border-color:#9a3d4d;color:#ff98a5;background:#2a0b12}.row button.active{box-shadow:0 0 0 2px #fff5 inset}
+#opacity{flex:1}.label{font-size:10px;color:#9ec3d2;min-width:72px}.value{font-size:10px;color:#fff;min-width:38px;text-align:right}
+#diag{font:10px/1.35 monospace;color:#a9cbd8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#progress{font-size:10px;color:#8eeaff;font-weight:900;white-space:nowrap}
+#export{flex:.7}.disabled{opacity:.4}
+</style>
+</head>
+<body>
+<div id="aladin"></div>
+<div id="top"><div id="title">LOADING CHANDRA REGISTRATION GATE…</div><div id="meta"></div></div>
+<div id="bottom">
+  <div class="row"><span class="label">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="value">55%</span></div>
+  <div class="row"><button id="prev">◀ BACK</button><button id="pass" class="pass">PASS</button><button id="fail" class="fail">FAIL</button><button id="next">NEXT ▶</button></div>
+  <div class="row"><span id="progress">0 / 0</span><button id="fit">FIT IMAGE</button><button id="export">EXPORT GATE</button></div>
+  <div id="diag">DSS2 base + AVM image overlay. PASS only when stars/structures register.</div>
+</div>
+<script type="module">
+import A from '../../aladin-source-clone/dist/aladin.js';
+window.addEventListener('error',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.message||'Unknown JavaScript error')});
+window.addEventListener('unhandledrejection',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.reason?.message||e?.reason||'Unhandled promise rejection')});
+await A.init;
+const queue=__QUEUE_JSON__;
+const KEY='gv-chandra-registration-gate-0001';
+let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(_){}
+let idx=0,layer=null,currentFov=1;
+const $=id=>document.getElementById(id);
+const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',showReticle:true,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,showLayersControl:true,showCooGridControl:true,showProjectionControl:false});
+
+function imgUrl(c){return c.image||('https://www.astropix.org/archive/chandra/'+encodeURIComponent(c.imageId)+'/chandra_'+encodeURIComponent(c.imageId)+'_1024.jpg')}
+function imageSize(url){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok([i.naturalWidth,i.naturalHeight]);i.onerror=()=>no(new Error('IMAGE LOAD FAILED'));i.src=url+(url.includes('?')?'&':'?')+'gvreg=0001'})}
+function avmWcs(c,w,h){
+ const rv=(c.wcsReferenceValue||[]).map(Number),rd=(c.wcsReferenceDimension||[]).map(Number),rp=(c.wcsReferencePixel||[]).map(Number),sc=(c.wcsScale||[]).map(Number),rot=Number(c.wcsRotation),proj=String(c.wcsProjection||'TAN').toUpperCase();
+ if(rv.length<2||rd.length<2||rp.length<2||sc.length<2||![...rv,...rd,...rp,...sc,rot].every(Number.isFinite))throw new Error('NO FULL AVM WCS');
+ const rx=w/rd[0],ry=h/rd[1]; if(Math.abs(rx-ry)/Math.max(rx,ry)>.03)throw new Error('RESIZE RATIO MISMATCH');
+ const crpix1=rp[0]*rx,crpix2=rp[1]*ry,sx=sc[0]/rx,sy=sc[1]/ry,t=rot*Math.PI/180,c0=Math.cos(t),s0=Math.sin(t);
+ return {NAXIS:2,NAXIS1:w,NAXIS2:h,CTYPE1:'RA---'+proj,CTYPE2:'DEC--'+proj,CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,CRVAL1:rv[0],CRVAL2:rv[1],CRPIX1:crpix1,CRPIX2:crpix2,CD1_1:sx*c0,CD1_2:-sy*s0,CD2_1:sx*s0,CD2_2:sy*c0};
+}
+function fovFor(c,w,h){
+ const rd=(c.wcsReferenceDimension||[]).map(Number),sc=(c.wcsScale||[]).map(Number);
+ if(rd.length>=2&&sc.length>=2&&rd.every(Number.isFinite)&&sc.every(Number.isFinite))return Math.max(Math.abs(rd[0]*sc[0]),Math.abs(rd[1]*sc[1]))*1.18;
+ return 1;
+}
+function updateButtons(){
+ const id=queue[idx]?.key,d=decisions[id]||'';
+ $('pass').classList.toggle('active',d==='pass');$('fail').classList.toggle('active',d==='fail');
+ $('progress').textContent=(idx+1)+' / '+queue.length+' · PASS '+Object.values(decisions).filter(x=>x==='pass').length+' · FAIL '+Object.values(decisions).filter(x=>x==='fail').length;
+}
+async function show(n){
+ idx=(n+queue.length)%queue.length;const c=queue[idx];updateButtons();
+ if(layer){try{layer.setOpacity(0)}catch(_){} layer=null}
+ const full=c.wcsQuality==='Full';
+ $('title').innerHTML=(idx+1)+'. '+c.name+' <span class="badge '+(full?'full':'unsolved')+'">'+(full?'FULL AVM WCS':'UNSOLVED WCS')+'</span>';
+ $('meta').textContent='Chandra '+c.imageId+' · '+(c.kind||'candidate')+' · '+(c.releaseDate||'')+' · '+(c.sourceUrl||'');
+ if(!full){$('diag').textContent='BLOCKED: AVM position exists, but full scale/rotation/reference-pixel WCS is missing. Do not approve for runtime.';const rv=(c.wcsReferenceValue||[]).map(Number);if(rv.length>=2&&rv.every(Number.isFinite))aladin.gotoRaDec(rv[0],rv[1]);aladin.setFoV(1);return}
+ $('diag').textContent='Loading AVM overlay…';
+ try{
+   const url=imgUrl(c),sz=await imageSize(url),w=sz[0],h=sz[1],wcs=avmWcs(c,w,h);
+   layer=A.image(url,{name:'CHANDRA '+c.imageId,imgFormat:'jpg',wcs,opacity:Number($('opacity').value)/100});
+   aladin.setOverlayImageLayer(layer,'CHANDRA REGISTRATION');
+   aladin.gotoRaDec(Number(c.wcsReferenceValue[0]),Number(c.wcsReferenceValue[1]));
+   currentFov=fovFor(c,w,h);aladin.setFoV(currentFov);
+   $('diag').textContent='OVERLAY READY · raster '+w+'×'+h+' · '+c.wcsProjection+' · rot '+c.wcsRotation+'° · inspect DSS2 alignment with opacity slider.';
+ }catch(e){$('diag').textContent='OVERLAY ERROR: '+e.message}
+}
+$('opacity').addEventListener('input',()=>{$('opv').textContent=$('opacity').value+'%';if(layer?.setOpacity)layer.setOpacity(Number($('opacity').value)/100)});
+$('prev').onclick=()=>show(idx-1);$('next').onclick=()=>show(idx+1);$('fit').onclick=()=>aladin.setFoV(currentFov);
+function vote(v){const c=queue[idx];if(c.wcsQuality!=='Full'&&v==='pass'){decisions[c.key]='fail'}else decisions[c.key]=v;localStorage.setItem(KEY,JSON.stringify(decisions));updateButtons();show(idx+1)}
+$('pass').onclick=()=>vote('pass');$('fail').onclick=()=>vote('fail');
+$('export').onclick=()=>{const out={version:'0001',generatedAt:new Date().toISOString(),count:queue.length,decisions,queue:queue.map(c=>({key:c.key,imageId:c.imageId,name:c.name,wcsQuality:c.wcsQuality,decision:decisions[c.key]||'unreviewed'}))};const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-registration-gate-0001.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+show(0);
+</script>
+</body></html>
