@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0086 — centered survey banners, Random-style survey traveling, larger galaxy card type, framed All Providers icon
+# BUILD 0087 — generated Survey thumbnail pack; startup background warm-cache; Survey cards prefer cached immutable thumbnails
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0086';
+const GV200001_BUILD='0087';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -893,6 +893,75 @@ target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.ha
     icon:GV_SURVEY_PROVIDER_META[provider].icon
 })));
 if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
+
+// BUILD 0087 — Survey thumbnail pack.
+// The tiny release pointer follows future catalog growth. It names an immutable pack
+// commit, so every WebP receives long-lived CDN/browser caching without cache busts.
+const GV_SURVEY_THUMBNAIL_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-current.json';
+let gvSurveyThumbnailPack=null;
+let gvSurveyThumbnailWarmPromise=null;
+let gvSurveyThumbnailWarmState={phase:'POINTER',loaded:0,failed:0,total:0,bytes:0,packCommit:''};
+
+async function gvWarmSurveyThumbnailPack(pack){
+    if(gvSurveyThumbnailWarmPromise)return gvSurveyThumbnailWarmPromise;
+    const metas=Object.values(pack?.records||{});
+    const urls=[...new Set(metas.map(meta=>String(meta?.path||'').trim()).filter(Boolean).map(path=>pack.baseUrl+path))];
+    gvSurveyThumbnailWarmState={phase:'WARMING',loaded:0,failed:0,total:urls.length,bytes:Number(pack?.pointer?.totalThumbnailBytes)||0,packCommit:pack.commit};
+    let cursor=0;
+    const worker=async()=>{
+        for(;;){
+            const index=cursor++;
+            if(index>=urls.length)return;
+            const url=urls[index];
+            try{
+                const response=await fetch(url,{cache:'force-cache'});
+                if(!response.ok)throw new Error('HTTP '+response.status);
+                await response.blob();
+                gvSurveyThumbnailWarmState.loaded++;
+            }catch(error){
+                gvSurveyThumbnailWarmState.failed++;
+                if(gvSurveyThumbnailWarmState.failed<=6)console.warn('GV SURVEY THUMBNAIL WARM FAILED',url,error);
+            }
+            const done=gvSurveyThumbnailWarmState.loaded+gvSurveyThumbnailWarmState.failed;
+            if(done&&done%250===0)console.info('GV SURVEY THUMBNAIL CACHE',done+'/'+urls.length);
+        }
+    };
+    gvSurveyThumbnailWarmPromise=Promise.all(Array.from({length:6},worker)).then(()=>{
+        gvSurveyThumbnailWarmState.phase=gvSurveyThumbnailWarmState.failed?'READY_WITH_ERRORS':'READY';
+        console.info('GV SURVEY THUMBNAIL CACHE READY',Object.freeze({...gvSurveyThumbnailWarmState}));
+        return gvSurveyThumbnailWarmState;
+    });
+    return gvSurveyThumbnailWarmPromise;
+}
+
+const gvSurveyThumbnailPackReady=(async()=>{
+    try{
+        const pointerResponse=await fetch(GV_SURVEY_THUMBNAIL_POINTER_URL+'?gv='+Date.now(),{cache:'no-store'});
+        if(!pointerResponse.ok)throw new Error('THUMBNAIL POINTER HTTP '+pointerResponse.status);
+        const pointer=await pointerResponse.json();
+        const commit=String(pointer?.packCommit||'').trim();
+        const indexPath=String(pointer?.indexPath||'').trim();
+        if(!/^[0-9a-f]{40}$/i.test(commit)||!indexPath)throw new Error('THUMBNAIL POINTER INVALID');
+        const baseUrl='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@'+commit+'/';
+        const indexResponse=await fetch(baseUrl+indexPath,{cache:'force-cache'});
+        if(!indexResponse.ok)throw new Error('THUMBNAIL INDEX HTTP '+indexResponse.status);
+        const index=await indexResponse.json();
+        const records=index?.records&&typeof index.records==='object'?index.records:{};
+        gvSurveyThumbnailPack=Object.freeze({commit,baseUrl,pointer:Object.freeze(pointer),records:Object.freeze(records)});
+        gvSurveyThumbnailWarmState={phase:'INDEX_READY',loaded:0,failed:0,total:Object.keys(records).length,bytes:Number(pointer?.totalThumbnailBytes)||0,packCommit:commit};
+        setTimeout(()=>{gvWarmSurveyThumbnailPack(gvSurveyThumbnailPack).catch(error=>console.warn('GV SURVEY THUMBNAIL WARM ERROR',error))},250);
+        return gvSurveyThumbnailPack;
+    }catch(error){
+        gvSurveyThumbnailWarmState={phase:'FALLBACK',loaded:0,failed:1,total:0,bytes:0,packCommit:''};
+        console.warn('GV SURVEY THUMBNAIL PACK FALLBACK',error);
+        return null;
+    }
+})();
+window.GalaxySurveyThumbnailCache=Object.freeze({
+    ready:gvSurveyThumbnailPackReady,
+    get state(){return Object.freeze({...gvSurveyThumbnailWarmState})},
+    get packCommit(){return gvSurveyThumbnailPack?.commit||''}
+});
 
 
 
@@ -1746,9 +1815,14 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
 // SECTION 036A — PROVIDER SURVEY MODE
 // ECO: GV200-001 BUILD 0075
 // ============================================================================
-function gvSurveyThumbnailCandidates(record){
+function gvSurveyThumbnailCandidates(record,provider=''){
     const out=[];
     const add=value=>{const v=String(value||'').trim();if(v&&!out.includes(v))out.push(v)};
+    const catalogKey=String(record?.catalogKey||'').trim();
+    const catalogIndex=Number.isFinite(Number(record?.catalogIndex))?Number(record.catalogIndex):0;
+    const packKey=String(provider||record?.provider||'').toUpperCase()+'|'+catalogKey+'|'+catalogIndex;
+    const packed=gvSurveyThumbnailPack?.records?.[packKey];
+    if(packed?.path)add(gvSurveyThumbnailPack.baseUrl+packed.path);
     const base=String(record?.imageUrl||record?.githubImageUrl||record?.hdUrl||'').trim();
     if(base){
         try{
@@ -1764,6 +1838,7 @@ function gvSurveyThumbnailCandidates(record){
 async function gvSelectSurveyProvider(provider){
     if(navigationInFlight)return false;
     const key=String(provider||'').toUpperCase();
+    await gvSurveyThumbnailPackReady;
     const records=gvSurveyCatalog.get(key);
     if(!records?.length)return false;
     const remembered=gvSurveyCursors.get(key);
@@ -1773,7 +1848,7 @@ async function gvSelectSurveyProvider(provider){
         designation:String(record?.designation||record?.name||'').trim(),
         constellation:String(record?.constellation||'').trim(),
         imageType:String(record?.imageType||'').trim(),
-        thumbnails:gvSurveyThumbnailCandidates(record)
+        thumbnails:gvSurveyThumbnailCandidates(record,key)
     })));
     gvSurveyMode={provider:key,providerIcon:GV_SURVEY_PROVIDER_META[key]?.icon||'',records,items,index:-1,pendingIndex:resumeIndex};
     target.close?.();
