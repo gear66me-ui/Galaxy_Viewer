@@ -99,7 +99,7 @@ button{
 <body>
 <div class="wrap">
   <h1>EARTH POINTER GEOMETRY LAB</h1>
-  <p class="note">Drag anywhere on the compass to rotate the compass only. The yellow EARTH pointer stays fixed so its exact geometry can be judged against every compass angle.</p>
+  <p class="note">Drag anywhere on the compass to rotate the compass only. The yellow EARTH label stays fixed just inside the compass ring while the pointer points outward toward EARTH.</p>
   <div class="spec">270 PX COMPASS · R=135 · EARTH OUTER TEXT CONTOUR R=133 · RELEASE POINTER 11.25 × 9.954</div>
 
   <div class="stageShell">
@@ -118,7 +118,7 @@ button{
     </div>
   </div>
 
-  <div class="readout" id="readout">COMPASS 0° · EARTH FIXED LEFT / INWARD</div>
+  <div class="readout" id="readout">COMPASS 0° · EARTH FIXED INSIDE RING · POINTER OUTWARD</div>
 
   <div class="panel">
     <div class="grid">
@@ -200,20 +200,21 @@ function earthGeometry(){
   const letterGap=Number(gap.value);
   const outerContourRadius=C-circleInset;
 
-  // Place glyph centers inward by half their cap-height so their OUTER/TOP
-  // contour follows the requested offset circle.
-  const glyphCenterRadius=outerContourRadius-(fontPx*0.50);
+  // EARTH stays INSIDE the compass. Put each glyph center inward enough that
+  // its outward-facing/top edge follows the requested 133 px contour.
+  const glyphCenterRadius=outerContourRadius-(fontPx*0.58);
 
   // Current release pointer envelope:
   // 11.25px tangential width x 9.954px radial depth.
-  // Keep the same left-side radial envelope, but flip its apex INWARD.
-  const outerX=C-(C-CURRENT_POINTER_TOP+CURRENT_POINTER_DEPTH);
-  const innerX=C-(C-CURRENT_POINTER_TOP);
+  // At the LEFT edge, EARTH is inside the ring and the pointer must point
+  // OUTWARD (left) toward the EARTH label.
+  const apexX=C-(C-CURRENT_POINTER_TOP+CURRENT_POINTER_DEPTH);
+  const baseX=C-(C-CURRENT_POINTER_TOP);
   const halfW=CURRENT_POINTER_WIDTH/2;
 
   if(showPointer.checked){
     const pointer=svgEl('polygon',{
-      points:`${outerX},${C-halfW} ${outerX},${C+halfW} ${innerX},${C}`,
+      points:`${baseX},${C-halfW} ${baseX},${C+halfW} ${apexX},${C}`,
       fill:CURRENT_YELLOW,
       filter:'url(#earthGlow)'
     });
@@ -281,7 +282,7 @@ function paintCompass(){
   document.getElementById('compassAngleV').textContent=Math.round(compassDeg)+'°';
   document.getElementById('compassOpacityV').textContent=Math.round(Number(co.value)*100)+'%';
   document.getElementById('readout').textContent=
-    'COMPASS '+Math.round(compassDeg)+'° · EARTH FIXED LEFT / INWARD';
+    'COMPASS '+Math.round(compassDeg)+'° · EARTH INSIDE RING · POINTER OUTWARD';
 }
 
 ca.addEventListener('input',()=>{compassDeg=Number(ca.value);paintCompass()});
@@ -330,7 +331,7 @@ async function exportEarthPng(){
   const circleInset=Number(inset.value);
   const letterGap=Number(gap.value);
   const outerContourRadius=C-circleInset;
-  const glyphCenterRadius=outerContourRadius-(fontPx*0.50);
+  const glyphCenterRadius=outerContourRadius-(fontPx*0.58);
   const alpha=Number(eo.value);
 
   ctx.save();
@@ -340,13 +341,13 @@ async function exportEarthPng(){
   ctx.shadowBlur=2;
 
   if(showPointer.checked){
-    const outerX=C-(C-CURRENT_POINTER_TOP+CURRENT_POINTER_DEPTH);
-    const innerX=C-(C-CURRENT_POINTER_TOP);
+    const apexX=C-(C-CURRENT_POINTER_TOP+CURRENT_POINTER_DEPTH);
+    const baseX=C-(C-CURRENT_POINTER_TOP);
     const halfW=CURRENT_POINTER_WIDTH/2;
     ctx.beginPath();
-    ctx.moveTo(outerX,C-halfW);
-    ctx.lineTo(outerX,C+halfW);
-    ctx.lineTo(innerX,C);
+    ctx.moveTo(baseX,C-halfW);
+    ctx.lineTo(baseX,C+halfW);
+    ctx.lineTo(apexX,C);
     ctx.closePath();
     ctx.fill();
   }
