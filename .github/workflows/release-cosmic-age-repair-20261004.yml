@@ -1,0 +1,343 @@
+name: Release Cosmic Age Repair 20261004
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - .github/workflows/release-cosmic-age-repair-20261004.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Repair release catalogs and create presentation 0018
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math, re
+          from pathlib import Path
+
+          T0_GYR = 13.466983947061877
+          COSMOLOGY = {
+              "model": "flat LCDM",
+              "H0_km_s_Mpc": 70,
+              "OmegaM": 0.3,
+              "OmegaLambda": 0.7,
+              "presentAgeGyr": T0_GYR,
+          }
+
+          catalog_paths = {
+              "Hubble": Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json"),
+              "JWST": Path("viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json"),
+              "ESO": Path("viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json"),
+              "Chandra": Path("viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json"),
+              "Spitzer": Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json"),
+              "NOIRLab": Path("viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json"),
+          }
+
+          def finite(v):
+              try:
+                  x = float(v)
+                  return x if math.isfinite(x) else None
+              except Exception:
+                  return None
+
+          def cosmic_age_from_z(z):
+              z = finite(z)
+              if z is None or z < 0:
+                  return None
+              H0_s = 70.0 / 3.0856775814913673e19
+              sec_per_gyr = 365.25 * 24 * 3600 * 1e9
+              H0_gyr = H0_s * sec_per_gyr
+              om, ol = 0.3, 0.7
+              return (2.0 / (3.0 * H0_gyr * math.sqrt(ol))) * math.asinh(
+                  math.sqrt(ol / om) / ((1.0 + z) ** 1.5)
+              )
+
+          def cosmic_display(gyr):
+              return f"EST. {gyr:.2f} GYR"
+
+          def is_cosmic(method):
+              return "cosmic_age_at_emission" in str(method or "").lower()
+
+          def is_lookback(method):
+              m = str(method or "").lower()
+              return ("lookback" in m) or bool(re.search(r"light[\s_-]?travel fallback", m))
+
+          policy = {
+              "version": "0001",
+              "definition": "science.ageGyr is the estimated age of the Universe at the photon-emission epoch represented by the image, not stellar/object age and not lookback time.",
+              "cosmology": COSMOLOGY,
+              "equations": {
+                  "fromLookback": "t_emit = t0 - t_lookback",
+                  "flatLCDM": "t(z) = 2/[3 H0 sqrt(OmegaLambda)] * asinh(sqrt(OmegaLambda/OmegaM)/(1+z)^(3/2))",
+              },
+              "repairedAt": "2026-10-04",
+          }
+
+          report = {
+              "schema": "galaxy-viewer-cosmic-age-repair-audit-v1",
+              "branch": "release",
+              "date": "2026-10-04",
+              "policy": policy,
+              "catalogs": {},
+              "manualCorrections": [],
+          }
+
+          total_records = 0
+          total_lookback_converted = 0
+          total_existing_cosmic = 0
+          total_source_age_converted = 0
+          total_explicit_cosmic = 0
+
+          for provider, path in catalog_paths.items():
+              data = json.loads(path.read_text(encoding="utf-8"))
+              entries = data.get("entries", [])
+              stats = {
+                  "records": len(entries),
+                  "existingCosmic": 0,
+                  "lookbackConverted": 0,
+                  "sourceAgeConvertedFromDistance": 0,
+                  "sourceExplicitCosmic": 0,
+                  "sourceAgePreserved": 0,
+              }
+
+              for e in entries:
+                  s = e.setdefault("science", {})
+                  old_gyr = finite(s.get("ageGyr"))
+                  old_display = s.get("ageDisplay")
+                  old_method = str(s.get("ageMethod") or "")
+                  old_evidence = s.get("ageEvidence")
+
+                  if is_cosmic(old_method):
+                      stats["existingCosmic"] += 1
+
+                  elif is_lookback(old_method) and old_gyr is not None:
+                      s["lookbackTimeGyr"] = old_gyr
+                      s["lookbackTimeDisplay"] = old_display
+                      s["lookbackTimeMethod"] = old_method
+                      s["ageGyr"] = max(0.0, T0_GYR - old_gyr)
+                      s["ageDisplay"] = cosmic_display(s["ageGyr"])
+                      s["ageMethod"] = "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001"
+                      s["ageEstimated"] = True
+                      stats["lookbackConverted"] += 1
+
+                  else:
+                      desc = f"{e.get('description','')} {old_evidence or ''}"
+                      explicit_cosmic = bool(re.search(
+                          r"universe.{0,80}(?:was|only|age|old)|(?:age|old).{0,80}universe",
+                          desc, re.I
+                      ))
+                      if explicit_cosmic and old_gyr is not None:
+                          s["ageDisplay"] = cosmic_display(old_gyr)
+                          s["ageMethod"] = "cosmic_age_at_emission_from_source_description_explicit_0001"
+                          s["ageEstimated"] = True
+                          stats["sourceExplicitCosmic"] += 1
+                      else:
+                          s["sourceAgeOriginal"] = {
+                              "ageGyr": old_gyr,
+                              "ageDisplay": old_display,
+                              "ageMethod": old_method or None,
+                              "ageEvidence": old_evidence,
+                          }
+                          stats["sourceAgePreserved"] += 1
+                          distance_mly = finite(s.get("distanceMly"))
+                          if distance_mly is None or distance_mly < 0 or distance_mly / 1000.0 > T0_GYR:
+                              raise RuntimeError(
+                                  f"Cannot derive cosmic age for {provider} {e.get('archiveId')} "
+                                  f"distanceMly={distance_mly} oldMethod={old_method}"
+                              )
+                          lookback = distance_mly / 1000.0
+                          s["lookbackTimeGyr"] = lookback
+                          s["lookbackTimeDisplay"] = f"EST. {lookback:.4f} GYR"
+                          s["lookbackTimeMethod"] = "estimated_from_catalog_light_travel_distance_0001"
+                          s["ageGyr"] = max(0.0, T0_GYR - lookback)
+                          s["ageDisplay"] = cosmic_display(s["ageGyr"])
+                          s["ageMethod"] = "cosmic_age_at_emission_from_catalog_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0001"
+                          s["ageEstimated"] = True
+                          stats["sourceAgeConvertedFromDistance"] += 1
+
+                  if "age" in e:
+                      e["age"] = s.get("ageDisplay")
+
+                  if provider == "Hubble" and e.get("archiveId") == "heic1507d":
+                      before = {
+                          "distanceMly": s.get("distanceMly"),
+                          "distanceDisplay": s.get("distanceDisplay"),
+                          "ageGyr": s.get("ageGyr"),
+                          "ageDisplay": s.get("ageDisplay"),
+                          "ageMethod": s.get("ageMethod"),
+                          "sizeKly": s.get("sizeKly"),
+                          "redshift": s.get("redshift"),
+                      }
+                      z = 0.04584
+                      cosmic = cosmic_age_from_z(z)
+                      lookback = T0_GYR - cosmic
+                      s["distanceMly"] = 642.5
+                      s["distanceDisplay"] = "642.5 million light-years"
+                      s["distanceMethod"] = "manual_literature_luminosity_distance_197_Mpc_2026-10-04"
+                      s["distanceEstimated"] = False
+                      s["redshift"] = z
+                      s["redshiftDisplay"] = "z 0.04584"
+                      s["redshiftEstimated"] = False
+                      s["redshiftMethod"] = "published_spectroscopic_redshift_manual_correction_2026-10-04"
+                      s["sizeKly"] = [172, 159]
+                      s["sizeDisplay"] = "EST. 172 × 159 KLY"
+                      s["sizeMethod"] = "manual_from_published_angular_scale_and_ESA_Hubble_FOV_2026-10-04"
+                      s["sizeEstimated"] = True
+                      s["lookbackTimeGyr"] = lookback
+                      s["lookbackTimeDisplay"] = f"EST. {lookback * 1000.0:.1f} MYR"
+                      s["lookbackTimeMethod"] = "lookback_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
+                      s["ageGyr"] = cosmic
+                      s["ageDisplay"] = cosmic_display(cosmic)
+                      s["ageMethod"] = "cosmic_age_at_emission_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
+                      s["ageEstimated"] = True
+                      e["distance"] = "642.5 million light-years"
+                      if "age" in e:
+                          e["age"] = s["ageDisplay"]
+                      report["manualCorrections"].append({
+                          "provider": "Hubble",
+                          "archiveId": "heic1507d",
+                          "designation": e.get("designation"),
+                          "before": before,
+                          "after": {
+                              "distanceMly": s["distanceMly"],
+                              "distanceDisplay": s["distanceDisplay"],
+                              "redshift": s["redshift"],
+                              "lookbackTimeGyr": s["lookbackTimeGyr"],
+                              "cosmicAgeGyr": s["ageGyr"],
+                              "cosmicAgeDisplay": s["ageDisplay"],
+                              "sizeKly": s["sizeKly"],
+                          },
+                      })
+
+              unresolved = [
+                  {
+                      "archiveId": e.get("archiveId"),
+                      "name": e.get("name"),
+                      "ageMethod": e.get("science", {}).get("ageMethod"),
+                  }
+                  for e in entries
+                  if not is_cosmic(e.get("science", {}).get("ageMethod"))
+              ]
+              if unresolved:
+                  raise RuntimeError(f"{provider}: non-cosmic AGE records remain: {unresolved[:10]}")
+
+              cosmic_values = [
+                  finite(e.get("science", {}).get("ageGyr"))
+                  for e in entries
+                  if finite(e.get("science", {}).get("ageGyr")) is not None
+              ]
+              stats["minCosmicAgeGyr"] = min(cosmic_values)
+              stats["maxCosmicAgeGyr"] = max(cosmic_values)
+              report["catalogs"][provider] = stats
+
+              data["cosmicAgePolicy"] = policy
+              path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+              total_records += len(entries)
+              total_lookback_converted += stats["lookbackConverted"]
+              total_existing_cosmic += stats["existingCosmic"]
+              total_source_age_converted += stats["sourceAgeConvertedFromDistance"]
+              total_explicit_cosmic += stats["sourceExplicitCosmic"]
+
+          if total_records != 1848:
+              raise RuntimeError(f"Expected 1848 release catalog records, got {total_records}")
+
+          report["totals"] = {
+              "records": total_records,
+              "existingCosmic": total_existing_cosmic,
+              "lookbackConverted": total_lookback_converted,
+              "sourceAgeConvertedFromDistance": total_source_age_converted,
+              "sourceExplicitCosmic": total_explicit_cosmic,
+              "finalCosmicAgeRecords": total_records,
+          }
+
+          master_path = Path("viewer/image-databases/master-database/gv-master-catalog.json")
+          master = json.loads(master_path.read_text(encoding="utf-8"))
+          master["version"] = "0005-COSMIC-AGE"
+          master["cosmicAgePolicy"] = policy
+          master["cosmicAgeAudit"] = "viewer/image-databases/master-database/curation/audits/2026-10-04-cosmic-age-repair-0001.json"
+          master_path.write_text(json.dumps(master, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          audit_path = Path("viewer/image-databases/master-database/curation/audits/2026-10-04-cosmic-age-repair-0001.json")
+          audit_path.parent.mkdir(parents=True, exist_ok=True)
+          audit_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          old_module = Path("viewer/modules/destination-presentation/gv-destination-presentation-0017.js")
+          new_module = Path("viewer/modules/destination-presentation/gv-destination-presentation-0018.js")
+          module = old_module.read_text(encoding="utf-8")
+          module = module.replace("const VERSION='0017';", "const VERSION='0018';", 1)
+          old_age = "function age(d){const v=finite(d?.ageYears);if(!(v>0))return['AGE (Y)',clean(d?.age)];if(v>=1e9)return['AGE (BY)',String(Math.round(v/1e9))];if(v>=1e6)return['AGE (MY)',String(Math.round(v/1e6))];if(v>=1e3)return['AGE (KY)',String(Math.round(v/1e3))];return['AGE (Y)',String(Math.round(v))]}"
+          new_age = "function age(d){const v=finite(d?.ageYears);if(!(v>0))return['COSMIC AGE',clean(d?.age)];if(v>=1e9)return['COSMIC AGE',Number((v/1e9).toFixed(2)).toString()+' BY'];if(v>=1e6)return['COSMIC AGE',String(Math.round(v/1e6))+' MY'];if(v>=1e3)return['COSMIC AGE',String(Math.round(v/1e3))+' KY'];return['COSMIC AGE',String(Math.round(v))+' Y']}"
+          if old_age not in module:
+              raise RuntimeError("Destination 0017 age() signature not found")
+          module = module.replace(old_age, new_age, 1)
+          old_info = "if(d?.ageYears||d?.age){const A=age(d);parts.push('AGE '+A[1]+' '+A[0].replace(/^AGE \\(|\\)$/g,'')+'.')}"
+          new_info = "if(d?.ageYears||d?.age){const A=age(d);parts.push('COSMIC AGE '+A[1]+'.')}"
+          if old_info not in module:
+              raise RuntimeError("Destination 0017 infoText AGE signature not found")
+          module = module.replace(old_info, new_info, 1)
+          new_module.write_text(module, encoding="utf-8")
+
+          print(json.dumps(report["totals"], indent=2))
+          PY
+
+          git config user.name "Galaxy Viewer Release Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add             viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json             viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json             viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json             viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json             viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json             viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json             viewer/image-databases/master-database/gv-master-catalog.json             viewer/image-databases/master-database/curation/audits/2026-10-04-cosmic-age-repair-0001.json             viewer/modules/destination-presentation/gv-destination-presentation-0018.js
+          git commit -m "Release catalogs: cosmic age at emission"
+          MODULE_COMMIT="$(git rev-parse HEAD)"
+          export MODULE_COMMIT
+
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+
+          pin = os.environ["MODULE_COMMIT"]
+          rc_path = Path("viewer/RC-V1.0.0.py")
+          rc = rc_path.read_text(encoding="utf-8")
+          rc = re.sub(r"# BUILD 0057 —[^\n]*", "# BUILD 0058 — cosmic-age catalog semantics and COSMIC AGE presentation", rc, count=1)
+          rc = rc.replace("const GV200001_BUILD='0057';", "const GV200001_BUILD='0058';", 1)
+          rc = re.sub(
+              r"const fresh=url=>[^\n]+;",
+              "const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058`;",
+              rc,
+              count=1,
+          )
+          rc = re.sub(
+              r"destinationPresentationUrl:'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@[0-9a-f]+/viewer/modules/destination-presentation/gv-destination-presentation-0017\.js'",
+              f"destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@{pin}/viewer/modules/destination-presentation/gv-destination-presentation-0018.js'",
+              rc,
+              count=1,
+          )
+          rc = rc.replace(
+              "if(window.GalaxyDestinationPresentation?.VERSION!=='0017'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0017 EXPORT MISSING');",
+              "if(window.GalaxyDestinationPresentation?.VERSION!=='0018'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0018 EXPORT MISSING');",
+              1,
+          )
+          if "gv-destination-presentation-0018.js" not in rc or "GV200001_BUILD='0058'" not in rc:
+              raise RuntimeError("RC 0058 patch failed")
+          rc_path.write_text(rc, encoding="utf-8")
+
+          pointer_path = Path("viewer/gv-current-viewer.json")
+          pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+          pointer["version"] = "RC-V1.0.0"
+          pointer["viewer"] = "RC-V1.0.0.py"
+          pointer["build"] = "0058"
+          pointer_path.write_text(json.dumps(pointer, indent=2) + "\n", encoding="utf-8")
+          PY
+
+          git add viewer/RC-V1.0.0.py viewer/gv-current-viewer.json
+          git commit -m "RC 0058: pin cosmic age presentation"
+          git push origin HEAD:release
