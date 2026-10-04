@@ -158,7 +158,7 @@ jobs:
 
           # Freeze the current Browser 0057 source for this DEV experiment.
           git fetch origin beta --no-tags
-          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          git show FETCH_HEAD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
           sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
@@ -806,7 +806,7 @@ jobs:
           grep -q 'setAcceptThirdPartyCookies(v,true)' "$MAIN"
           grep -q 'setAcceptThirdPartyCookies(popup,true)' "$MAIN"
           grep -q "androidx.webkit:webkit:1.17.1" "$ROOT/app/build.gradle"
-          grep -q "versionName 'APK-0022-DEV-0057-WEBKIT1171-RUNTIMEBOM'" "$ROOT/app/build.gradle"
+          grep -q "versionName 'RC-V1.0.0.27-LOCAL-THUMBS'" "$ROOT/app/build.gradle"
           ! grep -q 'startProviderNavigation(providerRevealGeneration,u);scheduleProviderWatchdog(providerRevealGeneration,u,10000L);' "$MAIN"
           ! grep -q '57 TEST' "$MAIN"
           ! grep -q 'test57' "$MAIN"
