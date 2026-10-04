@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      @font-face{
+        font-family:'Space Age';
+        src:url('../../viewer/artwork/Fonts/Space%20Age/space%20age.otf') format('opentype');
+      }
+      .earthText{font-family:'Space Age',Arial,sans-serif;font-size:58px;letter-spacing:9px}
+    </style>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <path id="earthArc" d="M 340 160 Q 500 72 660 160"/>
+  </defs>
+  <g fill="#ffe132" stroke="#ffc400" stroke-width="5" filter="url(#glow)">
+    <path d="M500 8 L454 102 L546 102 Z"/>
+  </g>
+  <text class="earthText" fill="#ffe132" text-anchor="middle" filter="url(#glow)">
+    <textPath href="#earthArc" startOffset="50%">EARTH</textPath>
+  </text>
+</svg>
