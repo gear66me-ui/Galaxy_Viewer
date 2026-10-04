@@ -96,8 +96,19 @@ def slugify(value: str, fallback: str = "image") -> str:
     return s[:64] or fallback
 
 
+PROVIDER_ALIASES = {
+    "ESAHUBBLE": "HUBBLE",
+    "HUBBLESPACETELESCOPE": "HUBBLE",
+    "SPITZERSPACETELESCOPE": "SPITZER",
+    "NASAJPLCALTECHSPITZERSPACETELESCOPE": "SPITZER",
+    "NOIRLAB": "NOIRLAB",
+    "NOAO": "NOIRLAB",
+}
+
+
 def norm_provider(value: str) -> str:
-    return re.sub(r"[^A-Z0-9]+", "", str(value or "").upper()) or "UNKNOWN"
+    raw = re.sub(r"[^A-Z0-9]+", "", str(value or "").upper()) or "UNKNOWN"
+    return PROVIDER_ALIASES.get(raw, raw)
 
 
 def load_json(path: Path) -> Any:
