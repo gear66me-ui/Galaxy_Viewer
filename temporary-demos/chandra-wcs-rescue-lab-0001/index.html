@@ -1,0 +1,95 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812"><title>Chandra WCS Rescue Lab 0001</title>
+<link rel="stylesheet" href="../../viewer/vendor/aladin-lite/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 262px 0;background:#000}#top{position:absolute;z-index:30;left:8px;right:8px;top:8px;background:#03111de8;border:1px solid #2987aa;border-radius:12px;padding:9px 11px;backdrop-filter:blur(8px)}
+#title{font-weight:900;font-size:15px;color:#87e9ff}#meta{font-size:10px;color:#b6d1dc;margin-top:3px;line-height:1.35}.badge{display:inline-block;margin-left:5px;padding:2px 5px;border-radius:5px;border:1px solid;font-size:9px;font-weight:900}.full{color:#68ff9f;border-color:#259553}.seed{color:#ffd76e;border-color:#927321}
+#panel{position:absolute;z-index:40;left:0;right:0;bottom:0;height:262px;background:#020b13f7;border-top:1px solid #216882;padding:8px 10px;overflow:auto}
+.row{display:flex;align-items:center;gap:7px;margin-bottom:6px}.lab{width:62px;font-size:10px;color:#9bc0cf}.val{min-width:48px;text-align:right;font-size:10px;color:#fff}.row input[type=range]{flex:1}
+button{min-height:32px;border-radius:8px;border:1px solid #28657e;background:#071a27;color:#e8fbff;font-weight:900}button.active{box-shadow:0 0 0 2px #fff4 inset}.nav{flex:1}.save{flex:1.25;border-color:#2a9a59;color:#71ffab;background:#072519}.reset{flex:.8}.flip{flex:.7}.nudge{flex:1}.export{flex:1}
+#progress{font-size:10px;color:#8deaff;font-weight:900;white-space:nowrap}#diag{font:10px/1.35 monospace;color:#afcbd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.disabled{opacity:.4;pointer-events:none}
+</style></head><body>
+<div id="aladin"></div>
+<div id="top"><div id="title">LOADING WCS RESCUE LAB…</div><div id="meta"></div></div>
+<div id="panel">
+ <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="val">55%</span></div>
+ <div class="row"><span class="lab">ROTATION</span><input id="rot" type="range" min="-180" max="180" step="0.1" value="0"><span id="rotv" class="val">0.0°</span></div>
+ <div class="row"><span class="lab">SCALE</span><input id="scale" type="range" min="25" max="400" step="0.5" value="100"><span id="scalev" class="val">100%</span></div>
+ <div class="row"><button id="raMinus" class="nudge">RA −</button><button id="raPlus" class="nudge">RA +</button><button id="decMinus" class="nudge">DEC −</button><button id="decPlus" class="nudge">DEC +</button><button id="step" class="flip">FINE</button></div>
+ <div class="row"><button id="flipX" class="flip">FLIP X</button><button id="flipY" class="flip">FLIP Y</button><button id="reset" class="reset">RESET</button><button id="save" class="save">SAVE SOLUTION</button></div>
+ <div class="row"><button id="prev" class="nav">◀ BACK</button><span id="progress">0 / 23</span><button id="next" class="nav">NEXT ▶</button><button id="export" class="export">EXPORT</button></div>
+ <div id="diag">DSS2 base + Chandra overlay. Adjust until stars/features lock.</div>
+</div>
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+const queue=[{"key":"901c","imageId":"901c","name":"M33","image":"https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[23.458333333333332,30.660277777777775],"mode":"full","publishedFovArcmin":50,"avm":{"referenceValue":[23.458333333333332,30.660277777777775],"referenceDimension":[19058,15983],"referencePixel":[9529,7991.5],"scale":[-0.0000594772254824,0.0000594772254824],"rotation":90.0000000000002,"projection":"TAN"}},{"key":"838f","imageId":"838f","name":"The Eagle Nebula (M16)","image":"https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2024/25th/","center":[274.70070833333335,-13.807230555555556],"mode":"full","publishedFovArcmin":null,"avm":{"referenceValue":[274.70070833333335,-13.807230555555556],"referenceDimension":[2400,2353],"referencePixel":[1344.49800795692,106.62122917187],"scale":[-0.00005493083,0.00005493083],"rotation":-0.05091276829,"projection":"TAN"}},{"key":"800","imageId":"800","name":"Crab Nebula","image":"https://www.astropix.org/archive/chandra/800/chandra_800_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2023/crabx/","center":[83.6333,22.0144],"mode":"full","publishedFovArcmin":null,"avm":{"referenceValue":[83.6333,22.0144],"referenceDimension":[3600,2338],"referencePixel":[1762.46950877925,1392.74104731193],"scale":[-0.00002517748,0.00002517748],"rotation":6.02536039311,"projection":"TAN"}},{"key":"370","imageId":"370","name":"Coronet Cluster","image":"https://www.astropix.org/archive/chandra/370/chandra_370_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2007/coronet/","center":[285.4379272,-36.97373199],"mode":"full","publishedFovArcmin":null,"avm":{"referenceValue":[285.4379272,-36.97373199],"referenceDimension":[3300,3300],"referencePixel":[1740.734,1650.5],"scale":[-0.0000848161632504,0.0000848161632504],"rotation":0,"projection":"TAN"}},{"key":"901a","imageId":"901a","name":"NGC 1672","image":"https://www.astropix.org/archive/chandra/901a/chandra_901a_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[71.42541666666666,-59.24888888888889],"mode":"seed","publishedFovArcmin":4.4},{"key":"901b","imageId":"901b","name":"II Zw 096","image":"https://www.astropix.org/archive/chandra/901b/chandra_901b_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[314.35125,17.127861111111113],"mode":"seed","publishedFovArcmin":1.5},{"key":"901e","imageId":"901e","name":"NGC 1569","image":"https://www.astropix.org/archive/chandra/901e/chandra_901e_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[67.70416666666667,64.84833333333333],"mode":"seed","publishedFovArcmin":8},{"key":"901f","imageId":"901f","name":"M90","image":"https://www.astropix.org/archive/chandra/901f/chandra_901f_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[189.2075,13.163583333333333],"mode":"seed","publishedFovArcmin":2.8},{"key":"901i","imageId":"901i","name":"Arp 143","image":"https://www.astropix.org/archive/chandra/901i/chandra_901i_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[116.72791666666667,39.02328055555555],"mode":"seed","publishedFovArcmin":3.3},{"key":"901j","imageId":"901j","name":"NGC 4725","image":"https://www.astropix.org/archive/chandra/901j/chandra_901j_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[192.61083333333335,25.50075],"mode":"seed","publishedFovArcmin":12},{"key":"901l","imageId":"901l","name":"NGC 660","image":"https://www.astropix.org/archive/chandra/901l/chandra_901l_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[25.721666666666668,13.689361111111111],"mode":"seed","publishedFovArcmin":9.3},{"key":"901o","imageId":"901o","name":"NGC 3938","image":"https://www.astropix.org/archive/chandra/901o/chandra_901o_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[178.20583333333335,44.120777777777775],"mode":"seed","publishedFovArcmin":12},{"key":"847","imageId":"847","name":"Guitar Nebula","image":"https://www.astropix.org/archive/chandra/847/chandra_847_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2024/guitar/","center":[336.46816666666666,65.59271944444444],"mode":"seed","publishedFovArcmin":2.6},{"key":"838p","imageId":"838p","name":"Hb 5 Nebula","image":"https://www.astropix.org/archive/chandra/838p/chandra_838p_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2024/25th/","center":[266.9845833333333,29.994472222222225],"mode":"seed","publishedFovArcmin":1.04},{"key":"813","imageId":"813","name":"SN1006","image":"https://www.astropix.org/archive/chandra/813/chandra_813_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2023/sn1006/","center":[225.712,-41.9235667],"mode":"seed","publishedFovArcmin":34},{"key":"797","imageId":"797","name":"Tycho's Supernova Remnant","image":"https://www.astropix.org/archive/chandra/797/chandra_797_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2023/tycho/","center":[6.320833333333334,64.14361111111111],"mode":"seed","publishedFovArcmin":16},{"key":"429","imageId":"429","name":"RCW 86","image":"https://www.astropix.org/archive/chandra/429/chandra_429_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2009/rcw86/","center":[220.1875,-62.666667],"mode":"seed","publishedFovArcmin":6},{"key":"heart-2026","imageId":"heart-2026","name":"Cocoon Nebula · IC 5146","image":"https://www.chandra.harvard.edu/photo/2026/heart/heart.jpg","sourceUrl":"https://www.chandra.harvard.edu/photo/2026/heart/","center":[328.3695833333333,47.27111388888889],"mode":"seed","publishedFovArcmin":23},{"key":"spring-w2","imageId":"spring-w2","name":"Westerlund 2","image":"https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[155.99416666666664,-57.744616666666666],"mode":"seed","publishedFovArcmin":2.1},{"key":"spring-ngc346","imageId":"spring-ngc346","name":"NGC 346","image":"https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[14.771249999999998,-72.17588888888889],"mode":"seed","publishedFovArcmin":3.8},{"key":"spring-catspaw","imageId":"spring-catspaw","name":"Cat's Paw Nebula · NGC 6334","image":"https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[260.04375,-35.95111111111111],"mode":"seed","publishedFovArcmin":72},{"key":"spring-pelican","imageId":"spring-pelican","name":"Pelican Nebula · NGC 7000","image":"https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[312.69999999999993,44.35],"mode":"seed","publishedFovArcmin":19.3},{"key":"spring-flame","imageId":"spring-flame","name":"Flame Nebula · NGC 2024","image":"https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[85.44291666666668,-1.9246388888888888],"mode":"seed","publishedFovArcmin":2.2}];
+const KEY='gv-chandra-wcs-rescue-lab-0001';
+const $=id=>document.getElementById(id);
+let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(_){}
+let idx=0,layer=null,currentRaster=null,current=null,stepFine=true,serial=0;
+await A.init;
+const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',showReticle:true,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,showLayersControl:true,showCooGridControl:true,showProjectionControl:false});
+
+function defaults(c){
+ if(c.mode==='full')return {rotation:Number(c.avm.rotation||0),scalePct:100,raOff:0,decOff:0,flipX:false,flipY:false,mode:'full'};
+ return {rotation:0,scalePct:100,raOff:0,decOff:0,flipX:false,flipY:false,mode:'seed'};
+}
+function state(c){return Object.assign(defaults(c),saved[c.key]?.params||{})}
+function imageSize(url){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok([im.naturalWidth,im.naturalHeight]);im.onerror=()=>no(new Error('IMAGE LOAD FAILED'));im.src=url+(url.includes('?')?'&':'?')+'wcsrescue=0001'})}
+function fullWcs(c,w,h){
+ const a=c.avm,rd=a.referenceDimension,rp=a.referencePixel,sc=a.scale,rx=w/rd[0],ry=h/rd[1],t=Number(a.rotation||0)*Math.PI/180,co=Math.cos(t),si=Math.sin(t),sx=sc[0]/rx,sy=sc[1]/ry;
+ return {NAXIS:2,NAXIS1:w,NAXIS2:h,CTYPE1:'RA---'+(a.projection||'TAN'),CTYPE2:'DEC--'+(a.projection||'TAN'),CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,CRVAL1:a.referenceValue[0],CRVAL2:a.referenceValue[1],CRPIX1:rp[0]*rx,CRPIX2:rp[1]*ry,CD1_1:sx*co,CD1_2:-sy*si,CD2_1:sx*si,CD2_2:sy*co};
+}
+function seedWcs(c,w,h,p){
+ const base=c.publishedFovArcmin/60,fx=base*(p.scalePct/100),fy=fx*(h/w),dec0=c.center[1],cosd=Math.max(.05,Math.cos(dec0*Math.PI/180));
+ const ra=c.center[0]+p.raOff/(60*cosd),dec=dec0+p.decOff/60,t=p.rotation*Math.PI/180,co=Math.cos(t),si=Math.sin(t);
+ const sx=(p.flipX?1:-1)*(fx/w),sy=(p.flipY?-1:1)*(fy/h);
+ return {NAXIS:2,NAXIS1:w,NAXIS2:h,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,CRVAL1:ra,CRVAL2:dec,CRPIX1:(w+1)/2,CRPIX2:(h+1)/2,CD1_1:sx*co,CD1_2:-sy*si,CD2_1:sx*si,CD2_2:sy*co};
+}
+function fovOf(wcs,w,h){const sx=Math.hypot(wcs.CD1_1,wcs.CD2_1),sy=Math.hypot(wcs.CD1_2,wcs.CD2_2);return Math.max(sx*w,sy*h)*1.18}
+function setControls(c,p){
+ $('rot').value=p.rotation;$('rotv').textContent=Number(p.rotation).toFixed(1)+'°';$('scale').value=p.scalePct;$('scalev').textContent=Number(p.scalePct).toFixed(1)+'%';
+ const seeded=c.mode==='seed';['rot','scale','raMinus','raPlus','decMinus','decPlus','step','flipX','flipY','reset'].forEach(id=>$(id).classList.toggle('disabled',!seeded));
+ $('flipX').classList.toggle('active',!!p.flipX);$('flipY').classList.toggle('active',!!p.flipY);$('step').textContent=stepFine?'FINE':'COARSE';
+}
+async function rebuild(){
+ const s=++serial,c=current;if(!c||!currentRaster)return;const [w,h]=currentRaster,p=state(c),wcs=c.mode==='full'?fullWcs(c,w,h):seedWcs(c,w,h,p);
+ if(layer){try{layer.setOpacity(0)}catch(_){}}
+ layer=A.image(c.image,{name:'CHANDRA WCS RESCUE',imgFormat:'jpg',wcs,opacity:Number($('opacity').value)/100});
+ aladin.setOverlayImageLayer(layer,'CHANDRA WCS RESCUE');if(s!==serial)return;
+ aladin.gotoRaDec(wcs.CRVAL1,wcs.CRVAL2);aladin.setFoV(fovOf(wcs,w,h));
+ $('diag').textContent=(c.mode==='full'?'RECOVERED AVM WCS':'SEEDED FROM CHANDRA CENTER + PUBLISHED '+c.publishedFovArcmin+'′ FOV')+' · raster '+w+'×'+h+' · RAoff '+p.raOff.toFixed(3)+'′ · DECoff '+p.decOff.toFixed(3)+'′';
+ current._wcs=wcs;
+}
+async function show(n){
+ idx=(n+queue.length)%queue.length;current=queue[idx];currentRaster=null;if(layer){try{layer.setOpacity(0)}catch(_){}layer=null}
+ const p=state(current);setControls(current,p);$('title').innerHTML=(idx+1)+'. '+current.name+' <span class="badge '+(current.mode==='full'?'full':'seed')+'">'+(current.mode==='full'?'RECOVERED FULL WCS':'WCS RESCUE SEED')+'</span>';
+ $('meta').textContent='Chandra '+current.imageId+' · '+(current.mode==='full'?'metadata complete':'published center + '+current.publishedFovArcmin+' arcmin scale')+' · '+current.sourceUrl;
+ $('progress').textContent=(idx+1)+' / '+queue.length+' · SAVED '+Object.keys(saved).length;
+ $('diag').textContent='Loading image…';
+ try{currentRaster=await imageSize(current.image);await rebuild()}catch(e){$('diag').textContent='ERROR: '+e.message}
+}
+function persistParams(){
+ if(!current||current.mode!=='seed')return;
+ saved[current.key]=saved[current.key]||{};saved[current.key].params=state(current);localStorage.setItem(KEY,JSON.stringify(saved));
+}
+function updateSeed(mut){
+ if(!current||current.mode!=='seed')return;let p=state(current);mut(p);saved[current.key]=saved[current.key]||{};saved[current.key].params=p;localStorage.setItem(KEY,JSON.stringify(saved));setControls(current,p);rebuild();
+}
+$('opacity').oninput=()=>{$('opv').textContent=$('opacity').value+'%';if(layer?.setOpacity)layer.setOpacity(Number($('opacity').value)/100)};
+$('rot').oninput=()=>{$('rotv').textContent=Number($('rot').value).toFixed(1)+'°'};$('rot').onchange=()=>updateSeed(p=>p.rotation=Number($('rot').value));
+$('scale').oninput=()=>{$('scalev').textContent=Number($('scale').value).toFixed(1)+'%'};$('scale').onchange=()=>updateSeed(p=>p.scalePct=Number($('scale').value));
+function nudge(which,sign){if(!current||current.mode!=='seed')return;const step=(current.publishedFovArcmin||1)*(stepFine?.002:.01);updateSeed(p=>p[which]+=sign*step)}
+$('raMinus').onclick=()=>nudge('raOff',-1);$('raPlus').onclick=()=>nudge('raOff',1);$('decMinus').onclick=()=>nudge('decOff',-1);$('decPlus').onclick=()=>nudge('decOff',1);
+$('step').onclick=()=>{stepFine=!stepFine;$('step').textContent=stepFine?'FINE':'COARSE'};
+$('flipX').onclick=()=>updateSeed(p=>p.flipX=!p.flipX);$('flipY').onclick=()=>updateSeed(p=>p.flipY=!p.flipY);
+$('reset').onclick=()=>{if(!current||current.mode!=='seed')return;delete saved[current.key];localStorage.setItem(KEY,JSON.stringify(saved));setControls(current,defaults(current));rebuild()};
+$('save').onclick=()=>{if(!current||!current._wcs)return;const p=state(current);saved[current.key]={params:p,wcs:current._wcs,raster:{width:currentRaster[0],height:currentRaster[1]},savedAt:new Date().toISOString(),verified:true};localStorage.setItem(KEY,JSON.stringify(saved));$('progress').textContent=(idx+1)+' / '+queue.length+' · SAVED '+Object.keys(saved).length;show(idx+1)};
+$('prev').onclick=()=>show(idx-1);$('next').onclick=()=>show(idx+1);
+$('export').onclick=()=>{const out={version:'0001',generatedAt:new Date().toISOString(),queueCount:queue.length,solutions:saved,queue:queue.map(c=>({key:c.key,imageId:c.imageId,name:c.name,mode:c.mode,publishedFovArcmin:c.publishedFovArcmin,center:c.center,image:c.image,sourceUrl:c.sourceUrl}))};const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-wcs-rescue-solutions-0001.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+show(0);
+})().catch(e=>{document.getElementById('title').textContent='WCS RESCUE LAB ERROR';document.getElementById('diag').textContent='FATAL: '+(e?.message||e)});
+</script></body></html>
