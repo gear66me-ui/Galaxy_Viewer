@@ -218,3 +218,28 @@ Changes:
 Module commit: `d919817b976f157c4e44af4178c37041693b1c7c`.
 Viewer commit: `f09a118f8421de0a1f8c0bb927a0175caa4e36e0`.
 Pointer commit: `8b4a1a520cd6d7607b1de054741418d2ff9dc300`.
+
+
+## Hosted instrumentation revision — Build 0066
+
+Date: 2026-10-04.
+
+Purpose: preserve provider READY state across same-destination website / View-HD / Back-to-Sky cycles.
+
+Root cause in Build 0065:
+- View-HD Back to Sky explicitly cleared the hosted provider progress/ready latch.
+- The same handler then fell back to APK19 `GVNative.cancelProvider()`, which reset/stopped the native provider preload.
+- Reopening View HD therefore defaulted to `LOADING` even when the same provider website had already been loaded and displayed.
+
+Build 0066 changes:
+- Back to Sky no longer clears provider progress/ready state for the current destination.
+- Back to Sky no longer cancels APK19 provider work.
+- Reopening View HD immediately resynchronizes the live native telemetry.
+- Returning from the provider website immediately resynchronizes telemetry and preserves the ready latch.
+- `READY ✓` remains latched for the current destination.
+- Actual navigation to a different astronomical destination remains the destructive boundary: the existing viewer navigation path still cancels old provider work and the destination presentation `depart()` resets hosted status.
+- APK19 itself is unchanged.
+
+Module commit: `3a3d0d37d4c1260bf7f9184ac57ec4e5724c0ec4`.
+Viewer commit: `91a49759a18f47ac3746891bcb7c5defaa9829ac`.
+Pointer commit: `8716726a6f23b3d59f7e383c3d58c4b529e1dbed`.
