@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812">
+<title>Chandra Final Injection Review 0001</title>
+<link rel="stylesheet" href="../../viewer/vendor/aladin-lite/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 250px 0;background:#000}
+#imageStage{position:absolute;left:0;right:0;top:0;bottom:250px;z-index:31;overflow:hidden;pointer-events:none}
+#floatImage{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;max-height:none;pointer-events:none;user-select:none;-webkit-user-drag:none;display:none}
+#badge{position:absolute;z-index:44;top:8px;left:8px;padding:5px 8px;border:1px solid #2d7795;border-radius:7px;background:rgba(2,12,22,.76);font:900 10px/1.15 monospace;color:#c9f4ff;pointer-events:none}
+#nameBox{position:absolute;z-index:44;top:8px;right:8px;max-width:58%;padding:5px 8px;border:1px solid #2d7795;border-radius:7px;background:rgba(2,12,22,.76);font:900 10px/1.15 system-ui;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+#panel{position:absolute;z-index:50;left:0;right:0;bottom:0;height:250px;background:#020b13f7;border-top:1px solid #216882;padding:8px 10px;overflow:auto}
+.row{display:flex;align-items:center;gap:7px;margin-bottom:6px}.lab{width:62px;font-size:10px;color:#9bc0cf}.val{min-width:65px;text-align:right;font-size:10px}.row input[type=range]{flex:1}
+button{min-height:34px;border-radius:8px;border:1px solid #28657e;background:#071a27;color:#e8fbff;font-weight:900}.nav{flex:1}.pass{flex:1.2;border-color:#26985c;background:#072519;color:#74ffad}.flag{flex:1;border-color:#a95231;background:#2a1108;color:#ffb08d}.export{flex:.8}
+#progress{font-size:10px;color:#8deaff;font-weight:900;white-space:nowrap}#diag{font:10px/1.35 monospace;color:#afcbd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#status{font-size:9px;color:#b7d4df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.done{color:#74ffad!important}.warn{color:#ffb08d!important}
+</style></head><body>
+<div id="aladin"></div>
+<div id="imageStage"><img id="floatImage" alt=""></div>
+<div id="badge">LOADING</div><div id="nameBox">Chandra Final Injection Review</div>
+<div id="panel">
+ <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="val">55%</span></div>
+ <div class="row"><button id="pass" class="pass">PASS + NEXT</button><button id="flag" class="flag">FLAG + NEXT</button></div>
+ <div class="row"><button id="prev" class="nav">◀ BACK</button><span id="progress">0 / 75</span><button id="next" class="nav">NEXT ▶</button><button id="export" class="export">EXPORT</button></div>
+ <div id="status">52 release records + 23 rescue registrations · no production changes</div>
+ <div id="diag">Loading release catalog and rescue set…</div>
+</div>
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+const RELEASE_URL='../../viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json';
+const RESCUE_URL='./gv-chandra-wcs-rescue-solutions-0010.json';
+const KEY='gv-chandra-final-injection-review-0001';
+const $=id=>document.getElementById(id);
+const [release,rescue]=await Promise.all([fetch(RELEASE_URL,{cache:'no-store'}).then(r=>r.json()),fetch(RESCUE_URL,{cache:'no-store'}).then(r=>r.json())]);
+const releaseRows=(release.entries||[]).map((e,i)=>({
+ key:'release:'+String(e.archiveId||i),origin:'RELEASE 0007',name:e.displayName||e.name||e.archiveId,
+ image:e.selectedImageUrl||e.githubImageUrl||(e.jpegCandidates||[])[0],sourceUrl:e.sourceUrl||null,
+ ra:Number(e.ra),dec:Number(e.dec),fov:Number(e.fovDegrees??e.fieldOfView??1),rotation:Number(e.aladinRotation??e.orientation??0),
+ archiveId:e.archiveId||null,designation:e.designation||null
+}));
+const rescueRows=(rescue.queue||[]).map((q,i)=>({
+ key:'rescue:'+q.key,origin:'RESCUE 0010',name:q.name,image:q.image,sourceUrl:q.sourceUrl||null,
+ ra:Number(q.center?.[0]),dec:Number(q.center?.[1]),wcs:rescue.solutions?.[q.key]?.wcs||null,
+ archiveId:q.imageId||q.key,designation:null
+}));
+const queue=[...releaseRows,...rescueRows];
+if(releaseRows.length!==52||rescueRows.length!==23||queue.length!==75)throw new Error('COUNT GATE FAILED: '+releaseRows.length+' + '+rescueRows.length+' = '+queue.length);
+let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(_){}
+let idx=0,current=null,currentRaster=null,baseFit=1;
+const first=queue.findIndex(x=>!decisions[x.key]);if(first>=0)idx=first;
+await A.init;
+const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',showReticle:false,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,showLayersControl:true,showCooGridControl:true,showProjectionControl:false});
+function wrapRa(d){d%=360;if(d<0)d+=360;return d}
+function raDelta(a,b){let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d}
+function imageSize(url){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok([im.naturalWidth,im.naturalHeight]);im.onerror=()=>no(new Error('IMAGE LOAD FAILED'));im.src=url+(url.includes('?')?'&':'?')+'finalreview=0001'})}
+function stageSize(){const r=$('imageStage').getBoundingClientRect();return[r.width,r.height]}
+function fitWidth(w){const [W]=stageSize();return Math.max(.0001,W/w)}
+function renderImage(){if(!currentRaster)return;const[w,h]=currentRaster,[W,H]=stageSize(),s=baseFit,cx=W/2,cy=H/2,e=cx-s*w/2,f=cy-s*h/2,im=$('floatImage');im.style.transform='matrix('+[s,0,0,s,e,f].join(',')+')';im.style.opacity=String(Number($('opacity').value)/100);im.style.display='block'}
+function imagePointToScreen(x,y){const[w,h]=currentRaster,[W,H]=stageSize(),s=baseFit;return[W/2+(x-w/2)*s,H/2+(y-h/2)*s]}
+function rescueView(rec){
+ const w=rec.wcs;if(!w||!currentRaster)return null;
+ const[iw,ih]=currentRaster,[W]=stageSize(),sx=Math.hypot(Number(w.CD1_1),Number(w.CD2_1)),rpX=Number(w.CRPIX1)-1,rpY=Number(w.CRPIX2)-1,dx=iw/2-rpX,dy=ih/2-rpY;
+ const tx=Number(w.CD1_1)*dx+Number(w.CD1_2)*dy,ty=Number(w.CD2_1)*dx+Number(w.CD2_2)*dy,cosd=Math.max(.02,Math.abs(Math.cos(Number(w.CRVAL2)*Math.PI/180)));
+ return{ra:wrapRa(Number(w.CRVAL1)+tx/cosd),dec:Math.max(-89.9,Math.min(89.9,Number(w.CRVAL2)+ty)),fov:Math.max(.0001,sx*W/baseFit),rotation:(Math.atan2(Number(w.CD2_1),Number(w.CD1_1))*180/Math.PI+180+360)%360,w};
+}
+async function applyView(rec){
+ if(rec.origin==='RESCUE 0010'){
+   const v=rescueView(rec);if(!v)throw new Error('RESCUE WCS MISSING');
+   aladin.gotoRaDec(v.ra,v.dec);aladin.setFoV(v.fov);if(typeof aladin.setRotation==='function')aladin.setRotation(v.rotation);
+   await new Promise(r=>setTimeout(r,90));
+   for(let i=0;i<2;i++){const p=imagePointToScreen(Number(v.w.CRPIX1)-1,Number(v.w.CRPIX2)-1),under=aladin.pix2world(p[0],p[1],'ICRSd'),ctr=aladin.getRaDec();if(!under||!ctr)break;const cosd=Math.max(.02,Math.abs(Math.cos(Number(v.w.CRVAL2)*Math.PI/180))),dra=raDelta(Number(v.w.CRVAL1),Number(under[0]))*cosd,ddec=Number(v.w.CRVAL2)-Number(under[1]);aladin.gotoRaDec(wrapRa(Number(ctr[0])+dra/cosd),Math.max(-89.9,Math.min(89.9,Number(ctr[1])+ddec)));await new Promise(r=>setTimeout(r,55))}
+ }else{
+   aladin.gotoRaDec(rec.ra,rec.dec);aladin.setFoV(Math.max(.0001,rec.fov));if(typeof aladin.setRotation==='function')aladin.setRotation(rec.rotation||0);
+ }
+}
+function updateStatus(){
+ const pass=Object.values(decisions).filter(x=>x?.decision==='PASS').length,flag=Object.values(decisions).filter(x=>x?.decision==='FLAG').length;
+ $('progress').textContent=(idx+1)+' / '+queue.length+' · PASS '+pass+' · FLAG '+flag;
+ const d=decisions[current?.key];$('status').textContent=d?('CURRENT: '+d.decision+' · '+(d.at||'')):'UNREVIEWED · 52 release + 23 rescue';$('status').className=d?.decision==='PASS'?'done':d?.decision==='FLAG'?'warn':'';
+}
+async function show(n){
+ idx=(n+queue.length)%queue.length;current=queue[idx];currentRaster=null;$('floatImage').style.display='none';$('badge').textContent=current.origin;$('nameBox').textContent=current.name;updateStatus();$('diag').textContent='Loading '+current.origin+' image…';
+ try{currentRaster=await imageSize(current.image);$('floatImage').src=current.image;$('floatImage').width=currentRaster[0];$('floatImage').height=currentRaster[1];baseFit=fitWidth(currentRaster[0]);renderImage();await applyView(current);$('diag').textContent=current.origin+' · '+(current.archiveId||'')+' · '+(current.designation||'')+' · clean center / opacity only'}catch(e){$('diag').textContent='ERROR: '+(e?.message||e)}
+}
+function decide(v){decisions[current.key]={decision:v,at:new Date().toISOString(),origin:current.origin,name:current.name,archiveId:current.archiveId};localStorage.setItem(KEY,JSON.stringify(decisions));show(idx+1)}
+$('opacity').oninput=()=>{$('opv').textContent=$('opacity').value+'%';renderImage()};
+$('pass').onclick=()=>decide('PASS');$('flag').onclick=()=>decide('FLAG');$('prev').onclick=()=>show(idx-1);$('next').onclick=()=>show(idx+1);
+$('export').onclick=()=>{const out={version:'0001',generatedAt:new Date().toISOString(),releaseCount:releaseRows.length,rescueCount:rescueRows.length,totalCount:queue.length,decisions,queue:queue.map(x=>({key:x.key,origin:x.origin,name:x.name,archiveId:x.archiveId,sourceUrl:x.sourceUrl}))};const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-final-injection-review-0001.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+window.addEventListener('resize',()=>{if(currentRaster){baseFit=fitWidth(currentRaster[0]);renderImage();applyView(current)}});
+show(idx);
+})().catch(e=>{document.getElementById('badge').textContent='ERROR';document.getElementById('diag').textContent='FATAL: '+(e?.message||e)});
+</script></body></html>
