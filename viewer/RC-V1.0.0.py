@@ -324,15 +324,21 @@ updateDirectionalReticle();
 // SECTION 041B — EARTH BEARING POINTER / ARRIVAL DISTANCE
 // ECO: GV200-028 BUILD 0001
 // ============================================================================
+const GV_EARTH_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/compass/gv-earth-pointer-yellow-final-270.png';
 function gvInstallEarthBearingPointer(){
     if(document.getElementById('gv-earth-bearing-rotor'))return;
     const rotor=document.createElement('div');
     rotor.id='gv-earth-bearing-rotor';
     rotor.setAttribute('aria-hidden','true');
     Object.assign(rotor.style,{position:'absolute',inset:'0',width:'270px',height:'270px',pointerEvents:'none',transformOrigin:'50% 50%',willChange:'transform',zIndex:'10',overflow:'visible'});
-    const tick=document.createElement('i');
-    Object.assign(tick.style,{position:'absolute',left:'50%',top:'15.47px',width:'0',height:'0',transform:'translate(-50%,-100%)',borderLeft:'5.625px solid transparent',borderRight:'5.625px solid transparent',borderBottom:'9.954px solid #FFD84A',filter:'drop-shadow(0 0 1px #000) drop-shadow(0 0 2px rgba(255,216,74,.95))',zIndex:'20'});
-    rotor.appendChild(tick);
+    const pointer=document.createElement('img');
+    pointer.id='gv-earth-bearing-pointer-image';
+    pointer.src=fresh(GV_EARTH_POINTER_URL);
+    pointer.alt='';
+    pointer.width=270;
+    pointer.height=270;
+    Object.assign(pointer.style,{position:'absolute',inset:'0',width:'270px',height:'270px',objectFit:'contain',pointerEvents:'none',userSelect:'none',WebkitUserDrag:'none',zIndex:'20'});
+    rotor.appendChild(pointer);
     reticle.appendChild(rotor);
 }
 let gvEarthPointerActive=false;
