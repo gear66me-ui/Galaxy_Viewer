@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0072 — restore Mollweide launch; first galaxy stays MOL; switch to spherical at 60° apex on next outbound travel
+# BUILD 0073 — remember last successfully viewed record independently for each Survey provider during the app session
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0072';
+const GV200001_BUILD='0073';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -925,6 +925,7 @@ let routeIndex=0;
 let navigationInFlight=false;
 let activeDestination=null;
 let gvSurveyMode=null;
+const gvSurveyCursors=new Map();
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
     get currentDestination(){return activeDestination},
@@ -1631,12 +1632,14 @@ async function gvSelectSurveyProvider(provider){
     const key=String(provider||'').toUpperCase();
     const records=gvSurveyCatalog.get(key);
     if(!records?.length)return false;
+    const remembered=gvSurveyCursors.get(key);
+    const resumeIndex=Number.isInteger(remembered)&&remembered>=0&&remembered<records.length?remembered:0;
     gvSurveyMode={provider:key,records,index:-1};
     history.length=0;historyIndex=-1;
-    target.setActiveProvider(key,{index:0,total:records.length});
-    galaxyNavigator.setSurvey?.({provider:key,current:1,total:records.length});
+    target.setActiveProvider(key,{index:resumeIndex+1,total:records.length});
+    galaxyNavigator.setSurvey?.({provider:key,current:resumeIndex+1,total:records.length});
     updateNavigationAvailability();
-    await gvNavigateSurveyIndex(0);
+    await gvNavigateSurveyIndex(resumeIndex);
     return true;
 }
 function gvExitSurveyMode(){
@@ -1670,6 +1673,7 @@ async function gvNavigateSurveyIndex(nextIndex){
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
         await showDestination(destination,{firstTrip,switchToSphericalAtApex});
+        gvSurveyCursors.set(gvSurveyMode.provider,index);
         return true;
     }finally{
         navigationInFlight=false;
@@ -1794,6 +1798,7 @@ window.GalaxyViewerCore=Object.freeze({
     get surveyProvider(){return gvSurveyMode?.provider||''},
     get surveyIndex(){return Number.isInteger(gvSurveyMode?.index)?gvSurveyMode.index:-1},
     get surveyLength(){return gvSurveyMode?.records?.length||0},
+    get surveyCursors(){return Object.freeze(Object.fromEntries([...gvSurveyCursors].map(([provider,index])=>[provider,index+1])))},
     get navigationState(){return navigationRuntime.snapshot()}
 });
 
