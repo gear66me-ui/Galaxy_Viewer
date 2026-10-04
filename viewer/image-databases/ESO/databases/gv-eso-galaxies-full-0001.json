@@ -5930,20 +5930,20 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 434.9 × 365.9 KLY",
-        "ageGyr": 0.0,
-        "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
+        "ageGyr": 13.399529922362683,
+        "ageMethod": "cosmic_age_at_emission_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 0.00 GYR",
+        "ageDisplay": "EST. 13.40 GYR",
         "ageEvidence": null,
-        "redshift": "55770000.0",
-        "redshiftDisplay": "55770000.0",
+        "redshift": 0.004846,
+        "redshiftDisplay": "z 0.004846",
         "redshiftEstimated": false,
-        "redshiftMethod": "astropix_structured_redshift",
-        "lookbackTimeGyr": 13.466984,
-        "lookbackTimeDisplay": "EST. 13.47 GYR",
-        "lookbackTimeMethod": "lookback_from_catalog_redshift_flat_lcdm_H0_70_Om_0.3"
+        "redshiftMethod": "SIMBAD_emission_redshift_2004MNRAS_350_1195M",
+        "lookbackTimeGyr": 0.06745402469919348,
+        "lookbackTimeDisplay": "EST. 67.5 MYR",
+        "lookbackTimeMethod": "lookback_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "NGC 2442",
@@ -5963,7 +5963,7 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 16058,
       "astropixLastUpdated": "2011-04-28T20:25:21+02:00",
-      "age": "EST. 0.00 GYR"
+      "age": "EST. 13.40 GYR"
     },
     {
       "archiveId": "eso1115b",

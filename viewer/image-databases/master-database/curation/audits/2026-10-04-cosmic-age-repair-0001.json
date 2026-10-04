@@ -26,7 +26,7 @@
       "sourceAgeConvertedFromDistance": 4,
       "sourceExplicitCosmic": 2,
       "sourceAgePreserved": 4,
-      "minCosmicAgeGyr": 0,
+      "minCosmicAgeGyr": 0.408805947061877,
       "maxCosmicAgeGyr": 13.46709
     },
     "JWST": {
@@ -46,7 +46,7 @@
       "sourceAgeConvertedFromDistance": 2,
       "sourceExplicitCosmic": 1,
       "sourceAgePreserved": 2,
-      "minCosmicAgeGyr": 0,
+      "minCosmicAgeGyr": 3.0,
       "maxCosmicAgeGyr": 13.466983947061877
     },
     "Chandra": {
@@ -118,5 +118,51 @@
     "sourceAgeConvertedFromDistance": 57,
     "sourceExplicitCosmic": 3,
     "finalCosmicAgeRecords": 1848
+  },
+  "residualAnomalyRepairs": [
+    {
+      "provider": "Hubble",
+      "archiveId": "potw2401a",
+      "name": "HerS J020941.1+001557",
+      "reason": "19.5 billion light-years was incorrectly treated as 19.5 Gyr lookback time",
+      "before": {
+        "ageGyr": 0.0,
+        "ageDisplay": "EST. 0.00 GYR",
+        "lookbackTimeGyr": 19.5,
+        "lookbackTimeMethod": "lookback_from_light_travel_distance",
+        "redshift": null
+      },
+      "after": {
+        "redshift": 2.55274,
+        "lookbackTimeGyr": 10.949567659964801,
+        "cosmicAgeGyr": 2.5174162870970753,
+        "cosmicAgeDisplay": "EST. 2.52 GYR"
+      }
+    },
+    {
+      "provider": "ESO",
+      "archiveId": "eso1115a",
+      "name": "NGC 2442",
+      "reason": "55.77 MLY distance was misparsed as redshift 55,770,000",
+      "before": {
+        "ageGyr": 0.0,
+        "ageDisplay": "EST. 0.00 GYR",
+        "lookbackTimeGyr": 13.466984,
+        "lookbackTimeMethod": "lookback_from_catalog_redshift_flat_lcdm_H0_70_Om_0.3",
+        "redshift": "55770000.0"
+      },
+      "after": {
+        "redshift": 0.004846,
+        "lookbackTimeGyr": 0.06745402469919348,
+        "cosmicAgeGyr": 13.399529922362683,
+        "cosmicAgeDisplay": "EST. 13.40 GYR"
+      }
+    }
+  ],
+  "finalValidation": {
+    "records": 1848,
+    "allAgeMethodsCosmicAgeAtEmission": true,
+    "allCosmicAgeGyrPositive": true,
+    "validatedAt": "2026-10-04"
   }
 }
