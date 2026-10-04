@@ -1,0 +1,315 @@
+name: Chandra 23 Component Gaia Registration
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-23-component-gaia-registration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install astrometry dependencies
+        run: |
+          python -m pip install --upgrade pip >/dev/null
+          python -m pip install numpy scipy astropy astroquery pillow requests scikit-image >/dev/null
+
+      - name: Solve clean release components against Gaia DR3
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chandra23-component
+          cat > /tmp/chandra23-component/solve.py <<'PY'
+          import json, math, pathlib, warnings, itertools
+          import numpy as np
+          import requests
+          from PIL import Image
+          from scipy.ndimage import gaussian_filter, maximum_filter
+          from scipy.spatial import cKDTree
+          from skimage.transform import SimilarityTransform
+          from astropy.coordinates import SkyCoord
+          import astropy.units as u
+          from astroquery.vizier import Vizier
+
+          warnings.filterwarnings('ignore')
+          ROOT=pathlib.Path('/tmp/chandra23-component')
+          Vizier.ROW_LIMIT=1800
+
+          T=[
+          dict(key='901c',name='M33',center=[23.458333333333332,30.660277777777775],fov=50.0,
+               target='https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_m33_optical.jpg']),
+          dict(key='838f',name='Eagle Nebula (M16)',center=[274.70070833333335,-13.807230555555556],fov=2.5,
+               target='https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2024/25th/25th_m16_ir.jpg']),
+          dict(key='800',name='Crab Nebula',center=[83.6333,22.0144],fov=5.5,
+               target='https://www.astropix.org/archive/chandra/800/chandra_800_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2024/25th/25th_crab_optical.jpg']),
+          dict(key='370',name='Coronet Cluster',center=[285.4379272,-36.97373199],fov=16.8,
+               target='https://www.astropix.org/archive/chandra/370/chandra_370_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2007/coronet/coronet_ir.jpg']),
+          dict(key='901a',name='NGC 1672',center=[71.42541666666666,-59.24888888888889],fov=4.4,
+               target='https://www.astropix.org/archive/chandra/901a/chandra_901a_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_ngc1672_optical.jpg']),
+          dict(key='901b',name='II Zw 096',center=[314.35125,17.127861111111113],fov=1.5,
+               target='https://www.astropix.org/archive/chandra/901b/chandra_901b_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_iizw096_optical.jpg']),
+          dict(key='901e',name='NGC 1569',center=[67.70416666666667,64.84833333333333],fov=8.0,
+               target='https://www.astropix.org/archive/chandra/901e/chandra_901e_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_ngc1569_optical.jpg']),
+          dict(key='901f',name='M90',center=[189.2075,13.163583333333333],fov=2.8,
+               target='https://www.astropix.org/archive/chandra/901f/chandra_901f_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_m90_optical.jpg']),
+          dict(key='901i',name='Arp 143',center=[116.72791666666667,39.02328055555555],fov=3.3,
+               target='https://www.astropix.org/archive/chandra/901i/chandra_901i_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_arp143_optical.jpg']),
+          dict(key='901j',name='NGC 4725',center=[192.61083333333335,25.50075],fov=12.0,
+               target='https://www.astropix.org/archive/chandra/901j/chandra_901j_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_ngc4725_optical.jpg']),
+          dict(key='901l',name='NGC 660',center=[25.721666666666668,13.689361111111111],fov=9.3,
+               target='https://www.astropix.org/archive/chandra/901l/chandra_901l_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_ngc660_optical.jpg']),
+          dict(key='901o',name='NGC 3938',center=[178.20583333333335,44.120777777777775],fov=12.0,
+               target='https://www.astropix.org/archive/chandra/901o/chandra_901o_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/galaxies/galaxies_ngc3938_optical.jpg']),
+          dict(key='847',name='Guitar Nebula',center=[336.46816666666666,65.59271944444444],fov=2.6,
+               target='https://www.astropix.org/archive/chandra/847/chandra_847_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2024/guitar/guitar_optical.jpg']),
+          dict(key='838p',name='Hb 5 Nebula',center=[266.9845833333333,29.994472222222225],fov=1.04,
+               target='https://www.astropix.org/archive/chandra/838p/chandra_838p_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2024/25th/25th_hb5_optical.jpg']),
+          dict(key='813',name='SN 1006',center=[225.712,-41.9235667],fov=34.0,
+               target='https://www.astropix.org/archive/chandra/813/chandra_813_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2023/sn1006/sn1006_ir.jpg']),
+          dict(key='797',name="Tycho's Supernova Remnant",center=[6.320833333333334,64.14361111111111],fov=16.0,
+               target='https://www.astropix.org/archive/chandra/797/chandra_797_1024.jpg',
+               comp=['https://chandra.harvard.edu/photo/2023/tycho/tycho_optical.jpg']),
+          dict(key='429',name='RCW 86',center=[220.1875,-62.666667],fov=6.0,
+               target='https://www.astropix.org/archive/chandra/429/chandra_429_1024.jpg',
+               comp=['https://www.astropix.org/archive/chandra/429/chandra_429_1024.jpg']),
+          dict(key='heart-2026',name='Cocoon Nebula · IC 5146',center=[328.3695833333333,47.27111388888889],fov=23.0,
+               target='https://chandra.harvard.edu/photo/2026/heart/heart.jpg',
+               comp=['https://www.chandra.harvard.edu/photo/2026/heart/heart_optical.jpg']),
+          dict(key='spring-w2',name='Westerlund 2',center=[155.99416666666664,-57.744616666666666],fov=2.1,
+               target='https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2_infrared.jpg']),
+          dict(key='spring-ngc346',name='NGC 346',center=[14.771249999999998,-72.17588888888889],fov=3.8,
+               target='https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/spring/spring_ngc346_optical.jpg']),
+          dict(key='spring-catspaw',name="Cat's Paw Nebula · NGC 6334",center=[260.04375,-35.95111111111111],fov=72.0,
+               target='https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/spring/spring_catspaw_infrared.jpg']),
+          dict(key='spring-pelican',name='Pelican Nebula · NGC 7000',center=[312.69999999999993,44.35],fov=19.3,
+               target='https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/spring/spring_pelican_optical.jpg']),
+          dict(key='spring-flame',name='Flame Nebula · NGC 2024',center=[85.44291666666668,-1.9246388888888888],fov=2.2,
+               target='https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg',
+               comp=['https://chandra.harvard.edu/photo/2026/spring/spring_flame_infrared.jpg']),
+          ]
+
+          def get(url,path):
+              r=requests.get(url,timeout=90,headers={'User-Agent':'GalaxyViewer-Chandra-Gaia/3.0'})
+              r.raise_for_status(); path.write_bytes(r.content)
+              im=Image.open(path).convert('RGB')
+              return im
+
+          def pts(im):
+              a=np.asarray(im,dtype=np.float32)
+              g=.2126*a[:,:,0]+.7152*a[:,:,1]+.0722*a[:,:,2]
+              hp=g-gaussian_filter(g,4.0)
+              vals=hp[np.isfinite(hp)]
+              med=float(np.median(vals)); mad=float(np.median(np.abs(vals-med))) or 1.0
+              sig=1.4826*mad
+              mx=maximum_filter(hp,size=5,mode='nearest')
+              mask=(hp==mx)&(hp>(med+2.5*sig))
+              yy,xx=np.nonzero(mask)
+              edge=8
+              k=(xx>edge)&(yy>edge)&(xx<g.shape[1]-edge)&(yy<g.shape[0]-edge)
+              xx,yy=xx[k],yy[k]
+              score=hp[yy,xx] if len(xx) else np.array([])
+              order=np.argsort(score)[::-1][:220] if len(score) else []
+              return np.column_stack((xx[order].astype(float),yy[order].astype(float))) if len(score) else np.empty((0,2))
+
+          def gaia(center,fov_arcmin):
+              c=SkyCoord(center[0]*u.deg,center[1]*u.deg,frame='icrs')
+              rad=max(fov_arcmin*0.78,2.0)*u.arcmin
+              v=Vizier(columns=['RA_ICRS','DE_ICRS','Gmag'],column_filters={'Gmag':'<20.5'})
+              tabs=v.query_region(c,radius=rad,catalog='I/355/gaiadr3')
+              if not tabs:return np.empty((0,2)),0
+              tab=tabs[0]; rows=[]
+              for r in tab:
+                  try: rows.append((float(r['RA_ICRS']),float(r['DE_ICRS']),float(r['Gmag'])))
+                  except: pass
+              rows=sorted(rows,key=lambda z:z[2])[:240]
+              ra0,dec0=np.deg2rad(center[0]),np.deg2rad(center[1]); out=[]
+              for ra,dec,g in rows:
+                  rr,dd=np.deg2rad(ra),np.deg2rad(dec)
+                  dra=(rr-ra0+np.pi)%(2*np.pi)-np.pi
+                  den=np.sin(dec0)*np.sin(dd)+np.cos(dec0)*np.cos(dd)*np.cos(dra)
+                  if den<=0: continue
+                  x=np.cos(dd)*np.sin(dra)/den
+                  y=(np.cos(dec0)*np.sin(dd)-np.sin(dec0)*np.cos(dd)*np.cos(dra))/den
+                  out.append([np.rad2deg(x),np.rad2deg(y)])
+              return np.asarray(out,float),len(rows)
+
+          def tris(p,nmax):
+              p=np.asarray(p,float)[:nmax]; inv=[]; ids=[]
+              for i in range(len(p)-2):
+                for j in range(i+1,len(p)-1):
+                  for k in range(j+1,len(p)):
+                    q=p[[i,j,k]]
+                    d=sorted([np.linalg.norm(q[0]-q[1]),np.linalg.norm(q[0]-q[2]),np.linalg.norm(q[1]-q[2])])
+                    if d[2]<=0: continue
+                    inv.append([d[0]/d[2],d[1]/d[2]]); ids.append((i,j,k))
+              return np.asarray(inv,float),ids
+
+          def solve(cat,img,w,h,fov_arcmin):
+              if len(cat)<5 or len(img)<5:return None
+              ci,cids=tris(cat,28); ii,iids=tris(img,36)
+              if not len(ci) or not len(ii):return None
+              tree=cKDTree(ci)
+              dd,jj=tree.query(ii,k=min(2,len(ci)))
+              cand=[]
+              if dd.ndim==1: dd=dd[:,None]; jj=jj[:,None]
+              for ix in range(len(ii)):
+                for n in range(dd.shape[1]):
+                  if dd[ix,n] < .035:
+                    cand.append((float(dd[ix,n]),int(jj[ix,n]),ix))
+              cand.sort(); cand=cand[:600]
+              imgtree=cKDTree(img)
+              expected=w/(fov_arcmin/60.0)
+              best=None
+              for _,cx,ix in cand:
+                ctri=cat[list(cids[cx])]; itri=img[list(iids[ix])]
+                for mirror in (False,True):
+                  src=ctri.copy()
+                  if mirror: src[:,0]*=-1
+                  for perm in itertools.permutations(range(3)):
+                    m=SimilarityTransform()
+                    if not m.estimate(src,itri[list(perm)]): continue
+                    if not (expected*.28 < m.scale < expected*3.6): continue
+                    cw=cat.copy()
+                    if mirror: cw[:,0]*=-1
+                    pred=m(cw)
+                    dist,idx=imgtree.query(pred,k=1)
+                    good=dist<5.0
+                    score=int(good.sum())
+                    if score<5: continue
+                    med=float(np.median(dist[good]))
+                    ratio=score/max(1,min(len(cat),len(img)))
+                    rank=(score,-med,ratio)
+                    if best is None or rank>best[0]:
+                      best=(rank,mirror,m,score,med,ratio)
+              if best is None:return None
+              _,mirror,m,score,med,ratio=best
+              # Tangent plane deg -> top-left JPEG pixel. Refine with nearest correspondences.
+              cw=cat.copy()
+              if mirror:cw[:,0]*=-1
+              pred=m(cw); dist,idx=cKDTree(img).query(pred,k=1)
+              good=dist<4.0
+              if good.sum()>=5:
+                mm=SimilarityTransform()
+                if mm.estimate(cw[good],img[idx[good]]): m=mm
+              # Pixel->tangent finite differences in top-left image coordinates.
+              inv=m.inverse
+              origin=np.array([[0.0,0.0]])
+              om=origin.copy()
+              if mirror:om[:,0]*=-1
+              p0=m(om)[0]
+              sky0=inv(np.array([p0]))[0]
+              sx=inv(np.array([p0+[1,0]]))[0]-sky0
+              sy=inv(np.array([p0+[0,1]]))[0]-sky0
+              if mirror:
+                sky0[0]*=-1; sx[0]*=-1; sy[0]*=-1
+              # Convert top-left JPEG solution to FITS/Aladin lower-left WCS.
+              crpix1=float(p0[0]+1.0)
+              crpix2=float(h-p0[1])
+              cd11=float(sx[0]); cd21=float(sx[1])
+              cd12=float(-sy[0]); cd22=float(-sy[1])
+              return {
+                'matches':score,'medianResidualPx':med,'matchRatio':ratio,'mirrored':bool(mirror),
+                'topLeftReferencePixel0':[float(p0[0]),float(p0[1])],
+                'runtimeWcs':{
+                  'NAXIS':2,'NAXIS1':int(w),'NAXIS2':int(h),
+                  'CTYPE1':'RA---TAN','CTYPE2':'DEC--TAN','CUNIT1':'deg','CUNIT2':'deg',
+                  'EQUINOX':2000.0,'CRPIX1':crpix1,'CRPIX2':crpix2,
+                  'CD1_1':cd11,'CD1_2':cd12,'CD2_1':cd21,'CD2_2':cd22
+                }
+              }
+
+          def transfer(wcs,cw,ch,tw,th):
+              rx=tw/cw; ry=th/ch
+              out=dict(wcs)
+              out['NAXIS1']=tw; out['NAXIS2']=th
+              out['CRPIX1']=wcs['CRPIX1']*rx
+              out['CRPIX2']=wcs['CRPIX2']*ry
+              out['CD1_1']=wcs['CD1_1']/rx
+              out['CD2_1']=wcs['CD2_1']/rx
+              out['CD1_2']=wcs['CD1_2']/ry
+              out['CD2_2']=wcs['CD2_2']/ry
+              return out
+
+          results=[]
+          for t in T:
+            print('SOLVING',t['key'],t['name'],flush=True)
+            item={k:t[k] for k in ('key','name','center','fov','target','comp')}
+            try:
+              tp=ROOT/(t['key']+'-target.jpg'); tim=get(t['target'],tp); tw,th=tim.size
+              item['targetSize']=[tw,th]
+              cat,ncat=gaia(t['center'],t['fov']); item['gaiaStars']=int(ncat)
+              best=None
+              trials=[]
+              for n,u0 in enumerate(t['comp']):
+                try:
+                  cp=ROOT/(t['key']+f'-component-{n}.jpg'); cim=get(u0,cp); cw,ch=cim.size
+                  pp=pts(cim)
+                  sol=solve(cat,pp,cw,ch,t['fov'])
+                  trial={'url':u0,'size':[cw,ch],'detectedPoints':int(len(pp)),'solution':sol}
+                  trials.append(trial)
+                  if sol:
+                    rank=(sol['matches'],-sol['medianResidualPx'])
+                    if best is None or rank>best[0]: best=(rank,trial)
+                except Exception as e:
+                  trials.append({'url':u0,'error':repr(e)})
+              item['componentTrials']=trials
+              if best:
+                tr=best[1]; cw,ch=tr['size']; sol=tr['solution']
+                aspect_delta=abs((cw/ch)/(tw/th)-1.0)
+                item['bestComponent']=tr['url']
+                item['aspectDeltaFraction']=float(aspect_delta)
+                item['componentWcs']=sol['runtimeWcs']
+                item['componentWcs']['CRVAL1']=t['center'][0]; item['componentWcs']['CRVAL2']=t['center'][1]
+                if aspect_delta<=0.003:
+                  rw=transfer(item['componentWcs'],cw,ch,tw,th)
+                  rw['CRVAL1']=t['center'][0]; rw['CRVAL2']=t['center'][1]
+                  item['targetRuntimeWcsCandidate']=rw
+                  item['transferStatus']='SAME_RELEASE_ASPECT_MATCH_REVIEW_REQUIRED'
+                else:
+                  item['targetRuntimeWcsCandidate']=None
+                  item['transferStatus']='FRAME_MISMATCH_NO_TRANSFER'
+                item['confidenceMetrics']={'matches':sol['matches'],'medianResidualPx':sol['medianResidualPx'],'matchRatio':sol['matchRatio']}
+              else:
+                item['transferStatus']='NO_GAIA_COMPONENT_SOLUTION'
+            except Exception as e:
+              item['error']=repr(e)
+            results.append(item)
+            print(' ->',item.get('transferStatus'),item.get('confidenceMetrics'),flush=True)
+
+          out={'version':'0001-component-gaia-research','status':'RESEARCH_NOT_PRODUCTION',
+               'coordinateConvention':'targetRuntimeWcsCandidate is FITS/Aladin lower-left WCS converted from solved top-left JPEG component geometry',
+               'count':len(results),'records':results}
+          (ROOT/'gv-chandra-registration-component-gaia-0001.json').write_text(json.dumps(out,indent=2),encoding='utf-8')
+          PY
+          python /tmp/chandra23-component/solve.py
+          test -s /tmp/chandra23-component/gv-chandra-registration-component-gaia-0001.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chandra-23-component-gaia-registration
+          path: /tmp/chandra23-component/gv-chandra-registration-component-gaia-0001.json
+          retention-days: 30
