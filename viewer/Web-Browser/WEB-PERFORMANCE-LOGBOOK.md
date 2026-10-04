@@ -343,3 +343,25 @@ Browser 0028 commits:
 - bottom timing fix: `deae1a1821c6f53e529cbda78bd35fd866a05cae`
 - config: `14896051e1b7a1c8b46b945b147d41c789c4d6eb`
 - current pointer: `b241691ed7ff1913910f47abff2d5d4579c7b3d8`
+
+
+## Browser 0029 — full-tile green navigation acknowledgment
+
+Date: 2026-10-04.
+
+Purpose: make browser navigation feedback visually unambiguous and consistent.
+
+Changes from Browser 0028:
+- Back-to-Galaxy-Viewer return control: the entire left tile now turns green, including border, background, glow, and left arrow.
+- Browser Back control: the entire left navigation tile and arrow turn green for 520 ms on press.
+- Browser Forward control: the entire right navigation tile and arrow turn green for 520 ms on press.
+- Return-to-Galaxy-Viewer keeps the Browser 0028 double-requestAnimationFrame paint gate and 520 ms hold before GV.exit().
+- No browser navigation semantics changed.
+- No Galaxy Viewer hosted code changed.
+- No APK change; APK 0021 remains current.
+
+Commits:
+- top shell: `4bd20447e2e5916b64e42688489f3c8a992b4277`
+- bottom shell: `8438aa69953448d98f2c1ec793c7bf0a6db30784`
+- config: `849bb11674cdb117821cb38674da7b5153d2d9bd`
+- pointer: `44bc5266088ac3799a7269f62187775fcaf3368e`
