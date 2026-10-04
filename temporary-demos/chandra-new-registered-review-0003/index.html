@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812">
+<title>Chandra New-Images Registered-Layer Review 0003</title>
+<link rel="stylesheet" href="../../viewer/vendor/aladin-lite/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 190px 0;background:#000}
+#badge{position:absolute;z-index:45;top:8px;left:8px;padding:5px 8px;border:1px solid #2d7795;border-radius:7px;background:rgba(2,12,22,.78);font:900 10px/1.15 monospace;color:#c9f4ff;pointer-events:none}
+#nameBox{position:absolute;z-index:45;top:8px;right:8px;max-width:62%;padding:5px 8px;border:1px solid #2d7795;border-radius:7px;background:rgba(2,12,22,.78);font:900 10px/1.15 system-ui;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+#panel{position:absolute;z-index:50;left:0;right:0;bottom:0;height:190px;background:#020b13f7;border-top:1px solid #216882;padding:8px 10px}
+.row{display:flex;align-items:center;gap:7px;margin-bottom:7px}.lab{width:62px;font-size:10px;color:#9bc0cf}.val{min-width:58px;text-align:right;font-size:10px}.row input[type=range]{flex:1}
+button{min-height:36px;border-radius:8px;border:1px solid #28657e;background:#071a27;color:#e8fbff;font-weight:900}.nav{flex:1}
+#progress{font-size:10px;color:#8deaff;font-weight:900;white-space:nowrap}
+#state{font:900 10px/1.2 monospace;color:#70ffae}
+#diag{font:10px/1.35 monospace;color:#afcbd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style></head><body>
+<div id="aladin"></div>
+<div id="badge">LOADING</div>
+<div id="nameBox">Chandra New-Images Registered-Layer Review</div>
+<div id="panel">
+ <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="val">55%</span></div>
+ <div class="row"><button id="prev" class="nav">◀ BACK</button><span id="progress">0 / 23</span><button id="next" class="nav">NEXT ▶</button></div>
+ <div id="state">ALADIN WCS IMAGE LAYER · NO FLOATING HTML IMAGE</div>
+ <div id="diag">Loading 23 new rescue registrations…</div>
+</div>
+
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+const RESCUE_URL='./gv-chandra-wcs-rescue-solutions-0010.json';
+const LAYER='GV_CHANDRA_REGISTERED_REVIEW_0003';
+const $=id=>document.getElementById(id);
+const rescue=await fetch(RESCUE_URL,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('rescue catalog '+r.status);return r.json()});
+
+const rescueRows=(rescue.queue||[]).map(q=>({
+ key:'rescue:'+q.key,origin:'RESCUE 0010',name:q.name,image:q.image,archiveId:q.imageId||q.key,
+ wcs:rescue.solutions?.[q.key]?.wcs||null,kind:'wcs'
+}));
+const queue=[...rescueRows];
+if(rescueRows.length!==23||queue.length!==23)throw Error('COUNT GATE FAILED: rescue '+rescueRows.length);
+
+await A.init;
+const aladin=A.aladin('#aladin',{
+ survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',
+ showReticle:false,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,
+ showLayersControl:true,showCooGridControl:true,showProjectionControl:false
+});
+
+let idx=0,current=null,currentLayer=null,currentDims=null,loadToken=0;
+
+function wrapRa(d){d%=360;if(d<0)d+=360;return d}
+function imageSize(url){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok([im.naturalWidth,im.naturalHeight]);im.onerror=()=>no(new Error('IMAGE LOAD FAILED'));im.src=url+(url.includes('?')?'&':'?')+'reglayer=0003'})}
+function wcsCenterAndFov(w){
+ const W=Number(w.NAXIS1),H=Number(w.NAXIS2),rpX=Number(w.CRPIX1)-1,rpY=Number(w.CRPIX2)-1,dx=(W-1)/2-rpX,dy=(H-1)/2-rpY;
+ const tx=Number(w.CD1_1)*dx+Number(w.CD1_2)*dy,ty=Number(w.CD2_1)*dx+Number(w.CD2_2)*dy;
+ const cosd=Math.max(.02,Math.abs(Math.cos(Number(w.CRVAL2)*Math.PI/180)));
+ const ra=wrapRa(Number(w.CRVAL1)+tx/cosd),dec=Math.max(-89.9,Math.min(89.9,Number(w.CRVAL2)+ty));
+ const sx=Math.hypot(Number(w.CD1_1),Number(w.CD2_1)),sy=Math.hypot(Number(w.CD1_2),Number(w.CD2_2));
+ return {ra,dec,fov:1.35*Math.max(sx*W,sy*H)};
+}
+function setOpacity(){
+ const op=Math.max(0,Math.min(1,Number($('opacity').value)/100));
+ try{currentLayer?.setOpacity?.(op)}catch(_){}
+}
+async function show(n){
+ const token=++loadToken;
+ idx=(n+queue.length)%queue.length;current=queue[idx];currentLayer=null;currentDims=null;
+ $('badge').textContent=current.origin+' · REGISTERED';
+ $('nameBox').textContent=current.name;
+ $('progress').textContent=(idx+1)+' / '+queue.length;
+ $('diag').textContent='REGISTERING INTO ALADIN WCS LAYER…';
+ try{
+   const dims=await imageSize(current.image);if(token!==loadToken)return;currentDims=dims;
+   const wcs=current.wcs;
+   if(!wcs)throw Error('WCS MISSING');
+   const op=Math.max(0,Math.min(1,Number($('opacity').value)/100));
+   const layer=A.image(current.image,{name:LAYER,imgFormat:/\.png(?:[?#]|$)/i.test(current.image)?'png':'jpeg',opacity:op,wcs});
+   if(!layer)throw Error('A.image returned empty layer');
+   aladin.setOverlayImageLayer(layer,LAYER);
+   currentLayer=layer;
+   const v=wcsCenterAndFov(wcs);
+   aladin.gotoRaDec(v.ra,v.dec);
+   aladin.setFoV(Math.max(.0003,v.fov));
+   if(typeof aladin.setRotation==='function')aladin.setRotation(0);
+   $('diag').textContent='LOCKED TO SKY · '+current.archiveId+' · WCS '+dims[0]+'×'+dims[1]+' · pan/zoom/rotate Aladin to verify it stays registered';
+ }catch(e){
+   $('diag').textContent='ERROR · '+current.archiveId+' · '+(e?.message||e);
+ }
+}
+$('opacity').oninput=()=>{$('opv').textContent=$('opacity').value+'%';setOpacity()};
+$('prev').onclick=()=>show(idx-1);
+$('next').onclick=()=>show(idx+1);
+show(0);
+})().catch(e=>{document.getElementById('badge').textContent='ERROR';document.getElementById('diag').textContent='FATAL: '+(e?.message||e)});
+</script></body></html>
