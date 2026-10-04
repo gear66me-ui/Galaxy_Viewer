@@ -33,7 +33,7 @@ jobs:
           import astropy.units as u
           from astroquery.vizier import Vizier
           from photutils.detection import DAOStarFinder
-          from astropy.stats import sigma_clipped_stats
+          from astropy.stats import sigma_clipped_stats\n          from scipy.ndimage import gaussian_filter, maximum_filter
           from skimage.transform import SimilarityTransform
           from skimage.measure import ransac
 
