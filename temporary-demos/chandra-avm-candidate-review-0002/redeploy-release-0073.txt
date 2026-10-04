@@ -1,1 +1,1 @@
-Deploy current release branch for Galaxy Viewer Build 0075.
+Deploy current release branch for Galaxy Viewer Build 0076.
