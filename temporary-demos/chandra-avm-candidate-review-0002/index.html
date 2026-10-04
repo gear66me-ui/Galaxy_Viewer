@@ -52,114 +52,49 @@ footer{max-width:1240px;margin:18px auto 60px;padding:0 13px;display:grid;gap:8p
 <div class="small">No production catalog is modified by this page.</div>
 </footer>
 <script>
-const FEED='astropix-chandra-feed.json';
-const LIVE='../../viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json';
 const KEY='gv-chandra-avm-review-0002';
-const priorIds=new Set(['901a','901b','901c','901e','901f','901h','901i','901j','901k','901l','901n','901o','314']);
-const priorNames=[
-'NGC 1672','II Zw 096','M33','Triangulum Galaxy','NGC 1569','M90','NGC 4569','M104','Sombrero Galaxy',
-'Arp 143','NGC 4725','NGC 1385','NGC 660','NGC 3256','NGC 3938','Cartwheel Galaxy',
-'Tarantula Nebula','30 Doradus','Cocoon Nebula','IC 5146','Westerlund 2','NGC 346','Cat\\'s Paw Nebula','NGC 6334','Pelican Nebula','NGC 7000','Flame Nebula','NGC 2024'
-];
-const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'').trim();
-const splitAliases=s=>String(s||'').split(/[\\/|•;,]+/).map(norm).filter(Boolean);
+const candidates=__CANDIDATES_JSON__;
 let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
-let candidates=[],active='all';
+let active='all';
 
-function classify(r){
- const subjects=(r.subject||[]).map(s=>String(s).replace(/\\.+$/,''));
- const name=(r.object_name||[]).join(' ').toLowerCase();
- const title=String(r.title||'').toLowerCase();
- const headline=String(r.headline||'').toLowerCase();
- const text=name+' '+title+' '+headline;
- if(/nebula|supernova|remnant|\\bsnr\\b|pulsar wind|star.?forming|star formation|h ii|hii region/i.test(text))return 'nebula';
- if(subjects.some(s=>s.startsWith('B.4')||s.startsWith('C.4')||['B.3.1.8','C.3.1.8','B.3.1.9.1'].includes(s)))return 'nebula';
- if(/galax|andromeda|antennae|centaurus a|whirlpool|sombrero|\\bm31\\b|\\bm51\\b|\\bm81\\b|\\bm82\\b|\\bm83\\b|\\bm84\\b|\\bm87\\b|quasar|\\bagn\\b|seyfert/i.test(text))return 'galaxy';
- if(subjects.some(s=>s.startsWith('C.5')||s.startsWith('D.5')))return 'galaxy';
- return null;
-}
-function goodImage(r){
- const type=String(r.image_type||'').toLowerCase();
- const text=[r.title,(r.object_name||[]).join(' '),r.headline].join(' ').toLowerCase();
- if(/illustration|artwork|diagram|chart|spectrum/.test(type+' '+text))return false;
- return !!r.image_id && Array.isArray(r.wcs_reference_value) && r.wcs_reference_value.length>=2;
-}
-function wcsFull(r){
- return String(r.wcs_quality||'').toLowerCase()==='full' ||
-   (Array.isArray(r.wcs_scale)&&r.wcs_scale.length>=2 && r.wcs_projection && Array.isArray(r.wcs_reference_pixel)&&r.wcs_reference_pixel.length>=2);
-}
-function aliasesFromEntry(e){
- let a=[];['name','displayName','designation','title'].forEach(k=>{if(e&&e[k])a.push(...splitAliases(e[k]))});
- return a;
-}
-function imageUrl(r){return 'https://www.astropix.org/archive/chandra/'+encodeURIComponent(r.image_id)+'/chandra_'+encodeURIComponent(r.image_id)+'_1024.jpg'}
-function astroUrl(r){return 'https://www.astropix.org/image/chandra/'+encodeURIComponent(r.image_id)}
-function fov(r){
- if(!Array.isArray(r.wcs_reference_dimension)||r.wcs_reference_dimension.length<2||!Array.isArray(r.wcs_scale)||r.wcs_scale.length<2)return '—';
- const x=Math.abs(Number(r.wcs_reference_dimension[0])*Number(r.wcs_scale[0])*60),y=Math.abs(Number(r.wcs_reference_dimension[1])*Number(r.wcs_scale[1])*60);
+function imageUrl(c){return 'https://www.astropix.org/archive/chandra/'+encodeURIComponent(c.imageId)+'/chandra_'+encodeURIComponent(c.imageId)+'_1024.jpg'}
+function astroUrl(c){return 'https://www.astropix.org/image/chandra/'+encodeURIComponent(c.imageId)}
+function fov(c){
+ if(!Array.isArray(c.wcsReferenceDimension)||c.wcsReferenceDimension.length<2||!Array.isArray(c.wcsScale)||c.wcsScale.length<2)return '—';
+ const x=Math.abs(Number(c.wcsReferenceDimension[0])*Number(c.wcsScale[0])*60),y=Math.abs(Number(c.wcsReferenceDimension[1])*Number(c.wcsScale[1])*60);
  if(!isFinite(x)||!isFinite(y))return '—';
  return x.toFixed(x<10?2:1)+' × '+y.toFixed(y<10?2:1)+' arcmin';
 }
-function dist(r){
- const n=Number((r.distance||[])[0]||r.distance_ly); if(!isFinite(n)||n<=0)return '—';
+function dist(c){
+ const n=Number(c.distanceLy||0); if(!isFinite(n)||n<=0)return '—';
  if(n>=1e9)return (n/1e9).toFixed(n>=1e10?1:2)+' BLY';
  if(n>=1e6)return (n/1e6).toFixed(n>=1e8?0:1)+' MLY';
  if(n>=1e3)return (n/1e3).toFixed(n>=1e5?0:1)+' KLY';
  return n.toLocaleString()+' LY';
 }
-function build(feed,live){
- const exclude=new Set(priorNames.map(norm));
- (live.entries||[]).forEach(e=>aliasesFromEntry(e).forEach(x=>exclude.add(x)));
- const dedupe=new Set(),gal=[],neb=[];
- for(const r of feed){
-   if(!goodImage(r)||priorIds.has(String(r.image_id)))continue;
-   const kind=classify(r); if(!kind)continue;
-   const name=((r.object_name||[])[0]||('Chandra '+r.image_id)).trim();
-   const n=norm(name);
-   if(!n||exclude.has(n)||dedupe.has(n))continue;
-   dedupe.add(n);
-   const obj={...r,kind,name,full:wcsFull(r)};
-   (kind==='galaxy'?gal:neb).push(obj);
- }
- const score=(a,b)=>{
-   const af=a.full?1:0,bf=b.full?1:0;
-   const ad=Date.parse(a.image_release_date||'1900-01-01')||0,bd=Date.parse(b.image_release_date||'1900-01-01')||0;
-   return (bd-ad)||((bf-af)*0)||((Number(b.image_width)||0)*(Number(b.image_height)||0)-(Number(a.image_width)||0)*(Number(a.image_height)||0));
- };
- gal.sort(score);neb.sort(score);
- const wantGal=Math.min(60,gal.length),wantNeb=Math.min(40,neb.length);
- let out=[...gal.slice(0,wantGal),...neb.slice(0,wantNeb)];
- if(out.length<100){
-   const used=new Set(out.map(x=>x.image_id));
-   const rest=[...gal,...neb].filter(x=>!used.has(x.image_id));
-   out.push(...rest.slice(0,100-out.length));
- }
- out=out.slice(0,100);
- out.sort((a,b)=>(Date.parse(b.image_release_date||0)||0)-(Date.parse(a.image_release_date||0)||0));
- return out;
-}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function render(){
  const grid=document.getElementById('grid');grid.innerHTML='';
  const list=candidates.filter(c=>{
-  if(active==='all')return true;if(active==='galaxy'||active==='nebula')return c.kind===active;
-  if(active==='full')return c.full;if(active==='position')return !c.full;
-  if(active==='kept')return decisions[c.image_id]==='keep';
-  if(active==='unreviewed')return !decisions[c.image_id];
+  if(active==='all')return true;
+  if(active==='galaxy'||active==='nebula')return c.kind===active;
+  if(active==='full')return c.wcsQuality==='Full';
+  if(active==='position')return c.wcsQuality!=='Full';
+  if(active==='kept')return decisions[c.imageId]==='keep';
+  if(active==='unreviewed')return !decisions[c.imageId];
   return true;
  });
  for(const c of list){
-   const d=decisions[c.image_id]||'';
+   const d=decisions[c.imageId]||'';
    const el=document.createElement('article');el.className='card '+d;
-   const tel=(c.telescope_facility||[]).slice(0,3).join(' + ')||'Chandra';
-   const desc=c.headline||c.title||'Chandra image candidate';
    el.innerHTML=
-   '<img class="thumb" loading="lazy" referrerpolicy="no-referrer" src="'+imageUrl(c)+'" alt="'+c.name.replace(/"/g,'&quot;')+'" onerror="this.onerror=null;this.src=\\'https://www.astropix.org/archive/chandra/'+c.image_id+'/chandra_'+c.image_id+'_1024.jpg\\'">'+
-   '<div class="body"><div class="top"><div class="name">'+c.name+'</div><div class="kind">'+(c.kind==='galaxy'?'GALAXY':'NEBULA / REMNANT')+'</div></div>'+
-   '<div class="badges"><span class="badge avm">AVM VERIFIED SOURCE</span><span class="badge new">NEW TO REVIEW</span><span class="badge '+(c.full?'full':'pos')+'">'+(c.full?'FULL WCS':'POSITION WCS')+'</span></div>'+
-   '<div class="meta"><b>CHANDRA ID</b> '+c.image_id+' · <b>DATE</b> '+(c.image_release_date||'—')+'<br><b>DIST</b> '+dist(c)+' · <b>FOV</b> '+fov(c)+'<br><b>PROJ</b> '+(c.wcs_projection||'—')+' · <b>TELESCOPES</b> '+tel+'</div>'+
-   '<div class="desc">'+desc+'</div>'+
-   '<div class="links"><a target="_blank" rel="noopener" href="'+astroUrl(c)+'">ASTROPIX</a><a target="_blank" rel="noopener" href="'+(c.reference_url||'#')+'">CHANDRA</a></div>'+
-   '<div class="decision"><button class="keepbtn" data-id="'+c.image_id+'" data-v="keep">KEEP</button><button class="delbtn" data-id="'+c.image_id+'" data-v="delete">DELETE</button></div></div>';
+   '<img class="thumb" loading="lazy" referrerpolicy="no-referrer" src="'+imageUrl(c)+'" alt="'+esc(c.name)+'">'+
+   '<div class="body"><div class="top"><div class="name">'+esc(c.name)+'</div><div class="kind">'+(c.kind==='galaxy'?'GALAXY':'NEBULA / REMNANT')+'</div></div>'+
+   '<div class="badges"><span class="badge avm">AVM SOURCE</span><span class="badge new">NEW REVIEW IMAGE</span><span class="badge '+(c.wcsQuality==='Full'?'full':'pos')+'">'+(c.wcsQuality==='Full'?'FULL WCS':'POSITION WCS')+'</span></div>'+
+   '<div class="meta"><b>CHANDRA ID</b> '+esc(c.imageId)+' · <b>DATE</b> '+esc(c.releaseDate||'—')+'<br><b>DIST</b> '+dist(c)+' · <b>FOV</b> '+fov(c)+'<br><b>PROJ</b> '+esc(c.wcsProjection||'—')+' · <b>TELESCOPES</b> '+esc((c.telescopes||[]).slice(0,3).join(' + ')||'Chandra')+'</div>'+
+   '<div class="desc">'+esc(c.headline||c.title||'Chandra AVM candidate')+'</div>'+
+   '<div class="links"><a target="_blank" rel="noopener" href="'+astroUrl(c)+'">ASTROPIX</a><a target="_blank" rel="noopener" href="'+esc(c.sourceUrl||'#')+'">CHANDRA</a></div>'+
+   '<div class="decision"><button class="keepbtn" data-id="'+esc(c.imageId)+'" data-v="keep">KEEP</button><button class="delbtn" data-id="'+esc(c.imageId)+'" data-v="delete">DELETE</button></div></div>';
    grid.appendChild(el);
  }
  grid.querySelectorAll('.decision button').forEach(b=>b.onclick=()=>{
@@ -167,30 +102,21 @@ function render(){
    localStorage.setItem(KEY,JSON.stringify(decisions));render();
  });
 }
-async function init(){
- try{
-   const [fr,lr]=await Promise.all([fetch(FEED,{cache:'no-store'}),fetch(LIVE,{cache:'no-store'})]);
-   if(!fr.ok)throw new Error('AstroPix feed HTTP '+fr.status);
-   if(!lr.ok)throw new Error('Live Chandra catalog HTTP '+lr.status);
-   const feed=await fr.json(),live=await lr.json();
-   candidates=build(feed,live);
-   if(!candidates.length)throw new Error('No qualifying Chandra AVM candidates survived the filters.');
-   document.getElementById('loading').classList.add('hidden');
-   document.getElementById('countGal').textContent='GALAXIES '+candidates.filter(x=>x.kind==='galaxy').length;
-   document.getElementById('countNeb').textContent='NEBULAE '+candidates.filter(x=>x.kind==='nebula').length;
-   document.getElementById('countFull').textContent='FULL WCS '+candidates.filter(x=>x.full).length;
-   render();
- }catch(err){
-   document.getElementById('loading').classList.add('hidden');const e=document.getElementById('error');e.classList.remove('hidden');
-   e.textContent='REVIEW LOAD FAILED — '+err.message;
- }
-}
-document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');active=b.dataset.filter;render()});
+document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
+ b.classList.add('active');active=b.dataset.filter;render();
+});
 document.getElementById('export').onclick=()=>{
- const payload={version:'0002',generatedAt:new Date().toISOString(),source:'AstroPix Chandra feed /link/918?format=json',baseline:'release Chandra full-0007',selectionCount:candidates.length,decisions,candidates:candidates.map(c=>({id:'chandra-'+c.image_id,imageId:c.image_id,name:c.name,kind:c.kind,avm:true,wcsStatus:c.full?'full':'position',decision:decisions[c.image_id]||'unreviewed',astroPix:astroUrl(c),source:c.reference_url,image:imageUrl(c),distance:c.distance||[],wcs:{frame:c.wcs_coordinate_frame,equinox:c.wcs_equinox,referenceValue:c.wcs_reference_value,referenceDimension:c.wcs_reference_dimension,referencePixel:c.wcs_reference_pixel,scale:c.wcs_scale,rotation:c.wcs_rotation,projection:c.wcs_projection,quality:c.wcs_quality},metadata:c})};
- const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gv-chandra-avm-candidate-review-0002.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ const payload={version:'0002-static',generatedAt:new Date().toISOString(),selectionCount:candidates.length,decisions,
+ candidates:candidates.map(c=>Object.assign({},c,{avm:true,decision:decisions[c.imageId]||'unreviewed',astroPix:astroUrl(c),image:imageUrl(c)}))};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download='gv-chandra-avm-candidate-review-0002.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
-init();
+document.getElementById('loading').classList.add('hidden');
+document.getElementById('countGal').textContent='GALAXIES '+candidates.filter(x=>x.kind==='galaxy').length;
+document.getElementById('countNeb').textContent='NEBULAE '+candidates.filter(x=>x.kind==='nebula').length;
+document.getElementById('countFull').textContent='FULL WCS '+candidates.filter(x=>x.wcsQuality==='Full').length;
+render();
 </script>
 </body>
 </html>
