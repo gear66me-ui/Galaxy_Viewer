@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.17.1 APK 0021 APK19 RUNTIME ROLLBACK
-# DEV 0057: APK 0021 = exact APK 0019 runtime behavior, versionCode raised above APK 0020. Production untouched.
+name: Build Galaxy Viewer DEV 0057 WebKit 1.17.1 APK 0022 RUNTIME BOM BRIDGE
+# DEV 0057: APK 0022 = exact APK 0021 runtime + read-only native browser runtime BOM bridge. Production untouched.
 
 on:
   push:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 76
-              versionName 'APK-0021-DEV-0057-WEBKIT1171-APK19RUNTIME'
+              versionCode 77
+              versionName 'APK-0022-DEV-0057-WEBKIT1171-RUNTIMEBOM'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.17.1' }
@@ -665,12 +665,56 @@ jobs:
           p.write_text(s)
           PY19
 
-          # APK 0021 — no runtime patch after PY19. This intentionally preserves APK 0019 behavior exactly.
+          # APK 0022 — exact APK 0021 runtime + read-only native browser runtime BOM bridge.
+          # No provider, travel, WebView persistence, camera, AVM, or prewarm behavior changes.
+          python - "$MAIN" <<'PY22'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text()
 
-          # Nanoscopic gates: APK 0021 = exact APK 0019 runtime behavior.
+          # Record exactly which browser revision/config/shells native parsed.
+          old='  private WebView top, web, bottom, viewerWeb;\n'
+          assert s.count(old)==1
+          new=(old+
+               '  private volatile String browserRuntimeVersion="", browserRuntimeConfig="", browserRuntimeTop="", browserRuntimeBottom="";\n')
+          s=s.replace(old,new,1)
+
+          old=('      JSONObject p=getJson(POINTER+"?gv="+t);\n'
+               '      String config=p.getString("config");\n'
+               '      JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);\n')
+          assert s.count(old)==1
+          new=('      JSONObject p=getJson(POINTER+"?gv="+t);\n'
+               '      String config=p.getString("config");\n'
+               '      browserRuntimeVersion=p.optString("version","");browserRuntimeConfig=config;\n'
+               '      JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);\n')
+          s=s.replace(old,new,1)
+
+          old='      String th=c.getString("topShell"), bh=c.getString("bottomShell");\n'
+          assert s.count(old)==1
+          new=old+'      browserRuntimeTop=th;browserRuntimeBottom=bh;\n'
+          s=s.replace(old,new,1)
+
+          old='  public final class ViewerBridge{\n    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n'
+          assert s.count(old)==1
+          new=('  public final class ViewerBridge{\n'
+               '    @JavascriptInterface public String browserRuntimeBom(){try{JSONObject o=new JSONObject();o.put("version",browserRuntimeVersion);o.put("config",browserRuntimeConfig);o.put("topShell",browserRuntimeTop);o.put("bottomShell",browserRuntimeBottom);return o.toString();}catch(Exception ignored){return "{}";}}\n'
+               '    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n')
+          s=s.replace(old,new,1)
+
+          p.write_text(s)
+          PY22
+
+          # Nanoscopic gates: APK 0022 = APK 0021 runtime + read-only browser BOM bridge only.
           grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
+          grep -q 'browserRuntimeVersion=p.optString("version","");browserRuntimeConfig=config;' "$MAIN"
+          grep -q 'browserRuntimeTop=th;browserRuntimeBottom=bh;' "$MAIN"
+          grep -q '@JavascriptInterface public String browserRuntimeBom()' "$MAIN"
+          grep -q 'POINTER+"?gv="+t' "$MAIN"
+          grep -q 'c.setUseCaches(false)' "$MAIN"
+          grep -q 'Cache-Control","no-cache, no-store, max-age=0' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
           grep -q 'if(browserMode)syncShell();' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
@@ -702,7 +746,7 @@ jobs:
           grep -q 'setAcceptThirdPartyCookies(v,true)' "$MAIN"
           grep -q 'setAcceptThirdPartyCookies(popup,true)' "$MAIN"
           grep -q "androidx.webkit:webkit:1.17.1" "$ROOT/app/build.gradle"
-          grep -q "versionName 'APK-0021-DEV-0057-WEBKIT1171-APK19RUNTIME'" "$ROOT/app/build.gradle"
+          grep -q "versionName 'APK-0022-DEV-0057-WEBKIT1171-RUNTIMEBOM'" "$ROOT/app/build.gradle"
           ! grep -q 'startProviderNavigation(providerRevealGeneration,u);scheduleProviderWatchdog(providerRevealGeneration,u,10000L);' "$MAIN"
           ! grep -q '57 TEST' "$MAIN"
           ! grep -q 'test57' "$MAIN"
@@ -725,7 +769,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0021.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0022.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -735,7 +779,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0021.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0022.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -743,8 +787,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT1171-0021
+          name: Galaxy-Viewer-DEV-0057-WEBKIT1171-0022
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT1171-0021.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT1171-0021.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0022.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0022.apk.sha256
           retention-days: 30
