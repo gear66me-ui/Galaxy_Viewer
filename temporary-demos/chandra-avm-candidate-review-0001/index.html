@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020711">
+<title>Galaxy Viewer — Chandra AVM Candidate Review 0001</title>
+<style>
+:root{color-scheme:dark;--bg:#020711;--panel:#07111f;--line:#1e91bd;--cyan:#7feaff;--muted:#91a9b7;--green:#63ff9c;--yellow:#ffd66b;--red:#ff6f7f}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -20%,#123456 0,#06111f 35%,#020711 75%);color:#e9fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:10;background:rgba(2,7,17,.94);backdrop-filter:blur(12px);border-bottom:1px solid #16465d;padding:14px 14px 10px}
+h1{font-size:18px;letter-spacing:.16em;margin:0;color:var(--cyan);text-transform:uppercase} .sub{font-size:12px;color:#a7c4d2;margin-top:5px;line-height:1.4}
+.stats{display:flex;gap:8px;overflow:auto;padding:10px 0 2px}.stat{white-space:nowrap;border:1px solid #1a4e67;border-radius:999px;padding:6px 9px;font-size:11px;color:#bdefff;background:#06131f}
+.controls{display:flex;gap:7px;overflow:auto;padding:10px 0 1px}.filter{border:1px solid #22566d;background:#071722;color:#d9f8ff;border-radius:9px;padding:8px 10px;font-weight:700;font-size:11px}.filter.active{background:#0c3850;border-color:#69dfff}
+main{max-width:1180px;margin:auto;padding:14px}.note{border:1px solid #16475f;background:#061522;border-radius:12px;padding:12px;font-size:12px;color:#b7d3df;line-height:1.5;margin-bottom:14px}.note b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:13px}.card{border:1px solid #174b64;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#081827,#050d17);box-shadow:0 8px 24px #0008}.card.keep{border-color:#27c875;box-shadow:0 0 0 1px #27c87555,0 8px 24px #0008}.card.delete{opacity:.48;border-color:#87404b}
+.thumb{width:100%;aspect-ratio:4/3;object-fit:cover;background:#000;display:block}.body{padding:11px}.topline{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.name{font-size:17px;font-weight:800;line-height:1.15}.kind{font-size:9px;letter-spacing:.12em;color:#8adff8;border:1px solid #25617a;padding:3px 6px;border-radius:999px;white-space:nowrap}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}.badge{font-size:9px;font-weight:800;letter-spacing:.07em;padding:4px 6px;border-radius:6px;border:1px solid}.full{color:var(--green);border-color:#268d52;background:#092819}.partial{color:var(--yellow);border-color:#866b25;background:#2a2108}.avm{color:#8beaff;border-color:#21708b;background:#06222d}.new{color:#fff;border-color:#5f5dd0;background:#17174a}
+.meta{font-size:11px;color:#a8bfca;line-height:1.45;min-height:47px}.why{font-size:11px;color:#d8eaf0;line-height:1.45;margin-top:7px}
+.links,.decision{display:flex;gap:7px;margin-top:10px}.links a,.decision button{flex:1;text-align:center;text-decoration:none;border-radius:8px;padding:8px 6px;font-size:10px;font-weight:800}.links a{color:#c9f7ff;border:1px solid #20576e;background:#071a27}.decision button{border:1px solid;cursor:pointer}.keepbtn{color:#6dffa7;border-color:#258c51!important;background:#082417}.delbtn{color:#ff8c9a;border-color:#8c3644!important;background:#2b0b11}
+footer{max-width:1180px;margin:20px auto 50px;padding:0 14px}.export{width:100%;padding:13px;border-radius:10px;border:1px solid #25a4cf;background:#0a3043;color:#e9fbff;font-weight:800;letter-spacing:.08em}.small{font-size:10px;color:#7793a1;margin-top:8px;text-align:center}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <h1>Chandra AVM Candidate Review 0001</h1>
+  <div class="sub">Release catalog baseline: gv-chandra-galaxies-full-0007.json · 52 records. These are candidates absent as targets from that release catalog.</div>
+  <div class="stats">
+    <span class="stat">52 CURRENT RECORDS</span><span class="stat">13 NEW GALAXIES</span><span class="stat">7 NEBULA / SF REGIONS</span><span class="stat">4 FULL-WCS GALAXIES READY</span>
+  </div>
+  <div class="controls">
+    <button class="filter active" data-filter="all">ALL</button>
+    <button class="filter" data-filter="galaxy">GALAXIES</button>
+    <button class="filter" data-filter="nebula">NEBULAE</button>
+    <button class="filter" data-filter="full">FULL WCS</button>
+    <button class="filter" data-filter="check">WCS CHECK</button>
+    <button class="filter" data-filter="kept">KEPT</button>
+  </div>
+</header>
+<main>
+<div class="note"><b>Gate used here:</b> AstroPix full-size products carry AVM metadata. A green <b>FULL WCS</b> badge means AstroPix explicitly exposes reference value, dimensions/pixel, scale, rotation and projection. Yellow <b>WCS CHECK</b> means the image is a valid Chandra/AVM candidate but should not enter the runtime overlay catalog until its spatial registration is verified. KEEP/DELETE choices are saved locally on this device.</div>
+<div id="grid" class="grid"></div>
+</main>
+<footer>
+<button id="export" class="export">EXPORT KEEP / DELETE JSON</button>
+<div class="small">No production catalog is modified by this review page.</div>
+</footer>
+<script>
+const candidates=[
+{id:"chandra-901a",name:"NGC 1672",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901a/chandra_901a_1024.jpg",astro:"https://www.astropix.org/image/chandra/901a",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901a · Aug 25 2026",why:"New barred spiral target. AVM image; AstroPix currently exposes position-level spatial metadata."},
+{id:"chandra-901b",name:"II Zw 096",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901b/chandra_901b_1024.jpg",astro:"https://www.astropix.org/image/chandra/901b",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901b · Aug 25 2026",why:"New interacting/luminous infrared galaxy target; visually very different from the current Chandra set."},
+{id:"chandra-901c",name:"M33 · Triangulum Galaxy",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg",astro:"https://www.astropix.org/image/chandra/901c",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901c · Aug 25 2026",why:"Major Local Group galaxy absent from the current Chandra catalog. Spatial WCS fields are present, but AstroPix quality is not marked Full."},
+{id:"chandra-901e",name:"NGC 1569",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901e/chandra_901e_1024.jpg",astro:"https://www.astropix.org/image/chandra/901e",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901e · Aug 25 2026",why:"Nearby dwarf irregular/starburst; a useful morphology we barely represent."},
+{id:"chandra-901f",name:"M90 · NGC 4569",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901f/chandra_901f_1024.jpg",astro:"https://www.astropix.org/image/chandra/901f",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901f · Aug 25 2026",why:"Virgo spiral absent from the current Chandra list."},
+{id:"chandra-901h",name:"M104 · Sombrero Galaxy",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901h/chandra_901h_1024.jpg",astro:"https://www.astropix.org/image/chandra/901h",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"full",meta:"Chandra Galactic Gems · AstroPix 901h · FOV 3.9 × 3.8 arcmin",why:"Excellent candidate: AstroPix Quality Full, TAN projection, scale/rotation/reference pixel all present."},
+{id:"chandra-901i",name:"Arp 143",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901i/chandra_901i_1024.jpg",astro:"https://www.astropix.org/image/chandra/901i",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901i · Aug 25 2026",why:"Interacting ring-like pair, absent from current catalog."},
+{id:"chandra-901j",name:"NGC 4725",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901j/chandra_901j_1024.jpg",astro:"https://www.astropix.org/image/chandra/901j",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901j · Aug 25 2026",why:"Distinct one-armed barred spiral candidate."},
+{id:"chandra-901k",name:"NGC 1385",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901k/chandra_901k_1024.jpg",astro:"https://www.astropix.org/image/chandra/901k",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"full",meta:"Chandra Galactic Gems · AstroPix 901k · FOV 2.7 × 2.2 arcmin",why:"Excellent candidate: AstroPix Quality Full with TAN WCS, scale and 99.86° rotation."},
+{id:"chandra-901l",name:"NGC 660",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901l/chandra_901l_1024.jpg",astro:"https://www.astropix.org/image/chandra/901l",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901l · Aug 25 2026",why:"Polar-ring galaxy — unusually shaped and visually strong."},
+{id:"chandra-901n",name:"NGC 3256",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901n/chandra_901n_1024.jpg",astro:"https://www.astropix.org/image/chandra/901n",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"full",meta:"Chandra Galactic Gems · AstroPix 901n · FOV 2.2 × 1.8 arcmin",why:"Excellent candidate: AstroPix Quality Full with TAN WCS and 52.96° rotation."},
+{id:"chandra-901o",name:"NGC 3938",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/901o/chandra_901o_1024.jpg",astro:"https://www.astropix.org/image/chandra/901o",source:"https://chandra.harvard.edu/photo/2026/galaxies/",status:"check",meta:"Chandra Galactic Gems · AstroPix 901o · Aug 25 2026",why:"Face-on spiral absent from the current Chandra list."},
+{id:"chandra-314",name:"Cartwheel Galaxy",kind:"galaxy",img:"https://www.astropix.org/archive/chandra/314/chandra_314_1024.jpg",astro:"https://www.astropix.org/image/chandra/314",source:"https://chandra.harvard.edu/photo/2006/cartwheel/",status:"full",meta:"Chandra / AstroPix 314 · FOV 2.5 × 2.5 arcmin",why:"Strong legacy find: AstroPix Quality Full; TAN WCS was resolved by Chandra PinpointWCS."},
+
+{id:"chandra-30dor-2026",name:"Tarantula Nebula · 30 Doradus",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/30dor/30dor.jpg",astro:"https://www.astropix.org/search?q=Tarantula%20Nebula",source:"https://chandra.harvard.edu/photo/2026/30dor/",status:"check",meta:"Chandra · Aug 11 2026 · ~10 arcmin · 160,000 ly",why:"New 2026 Chandra/Hubble/Webb composite. Source JPEG/TIFF available; audit spatial AVM before runtime use."},
+{id:"chandra-heart-2026",name:"Cocoon Nebula · IC 5146",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/heart/heart.jpg",astro:"https://www.astropix.org/search?q=IC%205146",source:"https://chandra.harvard.edu/photo/2026/heart/",status:"check",meta:"Chandra · Feb 12 2026 · ~23 arcmin · 2,650 ly",why:"Beautiful heart-shaped star-forming region. Chandra supplies JPEG + TIFF and coordinates; spatial AVM audit still required."},
+{id:"chandra-spring-w2",name:"Westerlund 2",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg",astro:"https://www.astropix.org/search?q=Westerlund%202",source:"https://chandra.harvard.edu/photo/2026/spring/more.html",status:"check",meta:"Chandra Spring Collection · Mar 19 2026 · ~2.1 arcmin",why:"Dense young cluster embedded in a spectacular star-forming field; composite JPEG/TIFF available."},
+{id:"chandra-spring-ngc346",name:"NGC 346",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg",astro:"https://www.astropix.org/search?q=NGC%20346",source:"https://chandra.harvard.edu/photo/2026/spring/more.html",status:"check",meta:"Chandra Spring Collection · Mar 19 2026 · ~3.8 arcmin",why:"Small Magellanic Cloud star-forming region with Chandra + Hubble composite."},
+{id:"chandra-spring-catspaw",name:"Cat's Paw Nebula · NGC 6334",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg",astro:"https://www.astropix.org/search?q=Cat%27s%20Paw%20Nebula",source:"https://chandra.harvard.edu/photo/2026/spring/more.html",status:"check",meta:"Chandra Spring Collection · Mar 19 2026 · ~72 arcmin",why:"Large colorful Chandra + Webb composite. Worth keeping if the TIFF spatial metadata registers cleanly."},
+{id:"chandra-spring-pelican",name:"Pelican Nebula · NGC 7000",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg",astro:"https://www.astropix.org/search?q=NGC%207000",source:"https://chandra.harvard.edu/photo/2026/spring/more.html",status:"check",meta:"Chandra Spring Collection · Mar 19 2026 · ~19.3 arcmin",why:"Chandra + optical stellar nursery with dramatic structure."},
+{id:"chandra-spring-flame",name:"Flame Nebula · NGC 2024",kind:"nebula",img:"https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg",astro:"https://www.astropix.org/search?q=Flame%20Nebula",source:"https://chandra.harvard.edu/photo/2026/spring/more.html",status:"check",meta:"Chandra Spring Collection · Mar 19 2026 · ~2.2 arcmin",why:"Chandra X-rays embedded in Webb infrared; strong visual candidate."}
+];
+
+const storeKey="gv-chandra-avm-review-0001";
+let decisions={};try{decisions=JSON.parse(localStorage.getItem(storeKey)||"{}")}catch(e){}
+const grid=document.getElementById("grid");
+let active="all";
+
+function render(){
+ grid.innerHTML="";
+ const list=candidates.filter(c=>{
+   if(active==="all")return true;
+   if(active==="galaxy"||active==="nebula")return c.kind===active;
+   if(active==="full")return c.status==="full";
+   if(active==="check")return c.status==="check";
+   if(active==="kept")return decisions[c.id]==="keep";
+   return true;
+ });
+ list.forEach(c=>{
+   const d=decisions[c.id]||"";
+   const el=document.createElement("article");
+   el.className="card "+d;
+   el.innerHTML=
+   '<img class="thumb" loading="lazy" referrerpolicy="no-referrer" src="'+c.img+'" alt="'+c.name+'">'+
+   '<div class="body"><div class="topline"><div class="name">'+c.name+'</div><div class="kind">'+c.kind.toUpperCase()+'</div></div>'+
+   '<div class="badges"><span class="badge avm">AVM SOURCE</span><span class="badge new">NOT IN CURRENT TARGET SET</span>'+
+   (c.status==="full"?'<span class="badge full">FULL WCS</span>':'<span class="badge partial">WCS CHECK</span>')+
+   '</div><div class="meta">'+c.meta+'</div><div class="why">'+c.why+'</div>'+
+   '<div class="links"><a target="_blank" rel="noopener" href="'+c.astro+'">ASTROPIX</a><a target="_blank" rel="noopener" href="'+c.source+'">SOURCE</a></div>'+
+   '<div class="decision"><button class="keepbtn" data-id="'+c.id+'" data-v="keep">KEEP</button><button class="delbtn" data-id="'+c.id+'" data-v="delete">DELETE</button></div></div>';
+   grid.appendChild(el);
+ });
+ grid.querySelectorAll(".decision button").forEach(b=>b.onclick=()=>{
+   const id=b.dataset.id,v=b.dataset.v;
+   decisions[id]=decisions[id]===v?"":v;
+   if(!decisions[id])delete decisions[id];
+   localStorage.setItem(storeKey,JSON.stringify(decisions));render();
+ });
+}
+document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");active=b.dataset.filter;render();
+});
+document.getElementById("export").onclick=()=>{
+ const payload={version:"0001",generatedAt:new Date().toISOString(),baseline:"release/viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",decisions,candidates:candidates.map(c=>({id:c.id,name:c.name,kind:c.kind,wcsStatus:c.status,decision:decisions[c.id]||"unreviewed",astroPix:c.astro,source:c.source,image:c.img}))};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="gv-chandra-avm-candidate-review-0001.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+render();
+</script>
+</body>
+</html>
