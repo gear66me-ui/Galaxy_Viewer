@@ -140,3 +140,33 @@ Build 0062 changes:
 Module commit: `cbcddc1e2f07aa6c3b199b4746200c80ecc8e07f`.
 Viewer commit: `6408c778215cf53b16831d49c5c323e3c8c15043`.
 Pointer commit: `3cfee8526ab7aaccdf958387564dd47e7e0dc0f6`.
+
+
+## Hosted instrumentation revision — Build 0063
+
+Date: 2026-10-04.
+
+Observed failure in Build 0062:
+- Provider website could already be fully ready while the HD progress bar remained stale.
+- Screenshot on NGC 3372 / NOIRLab showed the HD status bar and LED present but not advancing to READY.
+
+Root cause:
+- APK19 emits progress into `#gv-provider-native-progress` only while it can find `.gvdp-card.gvdp-visible .gvdp-icon`.
+- Build 0062 removed `gvdp-visible` from the destination card when View HD opened.
+- Native telemetry therefore removed the progress anchor while the provider WebView continued loading normally.
+- Result: preload could succeed, but the HD mirror lost its live progress source.
+
+Build 0063 correction:
+- Keep the destination card logically `gvdp-visible` underneath the full-screen HD overlay so APK19 telemetry continues updating.
+- No visual duplication occurs because the HD layer remains above it.
+- HD progress bar reduced to 26 px.
+- Ready LED separated from the bar by a visible gap.
+- Tiny `DOWNLOADING` text is shown below the bar while loading.
+- `DOWNLOADING` pulses on the same 1.65 s cadence as the WEB chevrons.
+- At native ready, loading text is replaced by persistent `READY ✓`.
+- Existing ready latch remains active until Back to Sky / destination departure.
+- APK19 native code remains unchanged.
+
+Module commit: `8d9f784bf32812e9d8e1a89423778bd40f6d94b3`.
+Viewer commit: `752bdcea7c571f68b76350204d788025ccd0e5b3`.
+Pointer commit: `7febbb961bd4a8815701e55999c310b60a74d154`.
