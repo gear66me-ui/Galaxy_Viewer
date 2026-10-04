@@ -31,6 +31,9 @@
 </div>
 <script type="module">
 import A from '../../aladin-source-clone/dist/aladin.js';
+window.addEventListener('error',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.message||'Unknown JavaScript error')});
+window.addEventListener('unhandledrejection',e=>{const t=document.getElementById('title'),d=document.getElementById('diag');if(t)t.textContent='REGISTRATION LAB ERROR';if(d)d.textContent='FATAL: '+(e?.reason?.message||e?.reason||'Unhandled promise rejection')});
+await A.init;
 const queue=__QUEUE_JSON__;
 const KEY='gv-chandra-registration-gate-0001';
 let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(_){}
