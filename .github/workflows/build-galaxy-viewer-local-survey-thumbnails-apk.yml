@@ -1,0 +1,308 @@
+name: Build Galaxy Viewer Local Survey Thumbnails APK
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-local-survey-thumbnails-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Install launcher tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+
+      - name: Assemble production shell with bundled Survey thumbnails
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=/tmp/galaxy-viewer-local-thumbs
+          GOLD=8081fda85c7216fe4cbd580fc2a26f765cde64d1
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
+          mkdir -p "$ROOT/app/src/main/assets/survey-thumbnails"
+          mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
+
+          THUMB_ROOT=viewer/artwork/runtime/survey-thumbnails
+          test -s "$THUMB_ROOT/gv-survey-thumbnail-index.json"
+          test -s "$THUMB_ROOT/gv-survey-thumbnail-current.json"
+          THUMB_COUNT="$(find "$THUMB_ROOT" -type f -name '*.webp' | wc -l | tr -d ' ')"
+          test "$THUMB_COUNT" = "1848"
+          cp -a "$THUMB_ROOT"/. "$ROOT/app/src/main/assets/survey-thumbnails/"
+
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewerLocalThumbs'
+          include ':app'
+          EOF
+
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
+
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.gear66me.galaxyviewer'
+            compileSdk 36
+            defaultConfig {
+              applicationId 'com.gear66me.galaxyviewer'
+              minSdk 29
+              targetSdk 36
+              versionCode 10026
+              versionName 'RC-V1.0.0.26'
+            }
+          }
+          dependencies { implementation 'androidx.webkit:webkit:1.14.0' }
+          EOF
+
+          test -s viewer/artwork/app_icon_4.png
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
+
+          cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <solid android:color="#00000000"/>
+            <size android:width="1dp" android:height="1dp"/>
+          </shape>
+          EOF
+
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_background.xml" <<'EOF'
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
+          EOF
+
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_foreground.xml" <<'EOF'
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:gravity="center" android:width="66dp" android:height="66dp"><bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/></item></layer-list>
+          EOF
+
+          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/gv_launcher_background"/><foreground android:drawable="@drawable/gv_launcher_foreground"/></adaptive-icon>
+          EOF
+          cp "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+
+          for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            density="${spec%%:*}"
+            px="${spec##*:}"
+            mkdir -p "$ROOT/app/src/main/res/mipmap-${density}"
+            convert viewer/artwork/app_icon_4.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            cp "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
+          done
+
+          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+
+          cat > "$ROOT/app/src/main/res/values-v31/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:windowSplashScreenBackground">#000000</item>
+              <item name="android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon</item>
+              <item name="android:windowSplashScreenAnimationDuration">0</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application android:allowBackup="false" android:hardwareAccelerated="true"
+              android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
+              android:label="Galaxy Viewer" android:theme="@style/GalaxyViewerTheme"
+              android:usesCleartextTraffic="false">
+              <activity android:name=".MainActivity"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:exported="true" android:screenOrientation="portrait">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          git fetch origin beta --no-tags
+          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+
+          MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          python - "$MAIN" <<'PY'
+          from pathlib import Path
+          import sys
+
+          p=Path(sys.argv[1])
+          s=p.read_text(encoding='utf-8')
+
+          old='import java.io.BufferedReader;\nimport java.io.InputStreamReader;\n'
+          new='import java.io.BufferedReader;\nimport java.io.InputStreamReader;\nimport java.io.InputStream;\nimport java.io.IOException;\nimport java.util.HashMap;\n'
+          if s.count(old)!=1:
+              raise SystemExit('import anchor mismatch')
+          s=s.replace(old,new,1)
+
+          anchor='  private WebView viewer(){\n'
+          helper=r'''  private WebResourceResponse localSurveyThumbnailOrAsset(Uri uri){
+            if(uri!=null){
+              String path=uri.getPath();
+              String marker="/viewer/artwork/runtime/survey-thumbnails/";
+              if(path!=null){
+                int at=path.indexOf(marker);
+                if(at>=0){
+                  String rel=path.substring(at+marker.length());
+                  if(!rel.isEmpty()&&!rel.contains("..")){
+                    try{
+                      InputStream in=getAssets().open("survey-thumbnails/"+rel);
+                      String mime=rel.endsWith(".webp")?"image/webp":"application/json";
+                      String encoding=rel.endsWith(".json")?"UTF-8":null;
+                      HashMap<String,String> headers=new HashMap<>();
+                      headers.put("Access-Control-Allow-Origin","*");
+                      headers.put("Cache-Control","public, max-age=31536000, immutable");
+                      headers.put("X-Galaxy-Viewer-Thumbnail-Source","APK");
+                      return new WebResourceResponse(mime,encoding,200,"OK",headers,in);
+                    }catch(IOException ignored){}
+                  }
+                }
+              }
+            }
+            return assetLoader==null?null:assetLoader.shouldInterceptRequest(uri);
+          }
+
+          '''
+          if s.count(anchor)!=1:
+              raise SystemExit('viewer anchor mismatch')
+          s=s.replace(anchor,helper+anchor,1)
+
+          old_req='      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }\n      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }'
+          new_req='      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return localSurveyThumbnailOrAsset(request.getUrl()); }\n      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return localSurveyThumbnailOrAsset(Uri.parse(url)); }'
+          if s.count(old_req)<1:
+              raise SystemExit('viewer intercept anchor missing')
+          s=s.replace(old_req,new_req,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+
+          grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
+          grep -q 'addJavascriptInterface(new ViewerBridge(),"GVNative")' "$MAIN"
+          grep -q 'WebViewCompat.prerenderUrlAsync(web,u' "$MAIN"
+          grep -q 'X-Galaxy-Viewer-Thumbnail-Source' "$MAIN"
+          grep -q 'getAssets().open("survey-thumbnails/"+rel)' "$MAIN"
+          grep -q 'localSurveyThumbnailOrAsset(request.getUrl())' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
+
+          echo "Bundled Survey thumbnails: $THUMB_COUNT"
+
+      - name: Build release APK
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-local-thumbs :app:assembleRelease
+
+      - name: Sign APK
+        shell: bash
+        env:
+          GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
+          GV_UPLOAD_STORE_PASSWORD: ${{ secrets.GALAXY_VIEWER_UPLOAD_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYSTORE=/tmp/galaxy-viewer-upload.jks
+          UNSIGNED=/tmp/galaxy-viewer-local-thumbs/app/build/outputs/apk/release/app-release-unsigned.apk
+          OUT=Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+          test -n "$GV_UPLOAD_KEYSTORE_BASE64"
+          test -n "$GV_UPLOAD_STORE_PASSWORD"
+          printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          test -s "$UNSIGNED"
+          "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$UNSIGNED" /tmp/gv-local-thumbs-aligned.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias galaxyviewer-upload \
+            --ks-pass env:GV_UPLOAD_STORE_PASSWORD \
+            --key-pass env:GV_UPLOAD_STORE_PASSWORD \
+            --out "$OUT" \
+            /tmp/gv-local-thumbs-aligned.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee apk-signature.txt
+          sha256sum "$OUT" | tee "$OUT.sha256"
+
+      - name: Verify bundled thumbnail payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+          test -s "$APK"
+          COUNT="$(unzip -l "$APK" | grep -E 'assets/survey-thumbnails/.+\.webp$' | wc -l | tr -d ' ')"
+          test "$COUNT" = "1848"
+          unzip -l "$APK" | grep -q 'assets/survey-thumbnails/gv-survey-thumbnail-index.json'
+          unzip -l "$APK" | grep -q 'assets/survey-thumbnails/gv-survey-thumbnail-current.json'
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer'" apk-badging.txt
+          grep -q "versionCode='10026'" apk-badging.txt
+          echo "Verified APK-bundled thumbnails: $COUNT"
+
+      - name: Publish direct-download APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-rc-v1.0.0.26-local-survey-thumbnails
+          APK=Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" "$APK" "$APK.sha256" apk-badging.txt apk-signature.txt \
+            --target release \
+            --title 'Galaxy Viewer RC-V1.0.0.26 — Local Survey Thumbnails' \
+            --notes 'Current hosted Galaxy Viewer runtime with the complete 1,848-image Survey thumbnail pack bundled inside the APK. No viewer/UI changes; Survey thumbnail requests are intercepted and served directly from APK assets.'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails
+          path: |
+            Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk
+            Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk.sha256
+            apk-badging.txt
+            apk-signature.txt
+          retention-days: 30
