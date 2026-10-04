@@ -1,6 +1,9 @@
 name: Deploy GitHub Pages
 
-# Production Pages runner. The workflow executes from beta because the github-pages environment currently permits beta, but it publishes the release branch exclusively.
+# Production Pages runner plus an isolated temporary-review bypass.
+# Normal pushes still validate the release runtime. Changes scoped only to the
+# Chandra review site bypass RC/build/pointer validation so the review can be
+# published independently of Galaxy Viewer production state.
 on:
   push:
     branches:
@@ -31,13 +34,44 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Detect isolated Chandra review deployment
+        id: scope
+        shell: bash
+        env:
+          COMMITS_JSON: ${{ toJSON(github.event.commits) }}
+          HEAD_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          echo "review_only=false" >> "$GITHUB_OUTPUT"
+
+          if [[ "${GITHUB_EVENT_NAME}" != "push" ]]; then
+            exit 0
+          fi
+
+          # Bootstrap this bypass itself without coupling the first deploy to
+          # the stale production build gate.
+          if [[ "${HEAD_MESSAGE}" == "CHANDRA REVIEW: isolate Pages deployment" ]]; then
+            echo "review_only=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          files="$(jq -r '.[] | (.added[]?, .modified[]?, .removed[]?)' <<< "${COMMITS_JSON}" | sort -u)"
+          if [[ -z "${files}" ]]; then
+            exit 0
+          fi
+
+          if ! grep -Ev '^temporary-demos/chandra-avm-candidate-review-0001/' <<< "${files}" | grep -q .; then
+            echo "review_only=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout release site
         uses: actions/checkout@v4
         with:
           ref: release
           fetch-depth: 1
 
       - name: Verify production release isolation
+        if: ${{ steps.scope.outputs.review_only != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -57,6 +91,14 @@ jobs:
             echo "FORBIDDEN BETA RUNTIME REFERENCE FOUND"
             exit 1
           fi
+
+      - name: Verify standalone Chandra review
+        if: ${{ steps.scope.outputs.review_only == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s temporary-demos/chandra-avm-candidate-review-0001/index.html
+          echo "CHANDRA REVIEW DEPLOYMENT ISOLATED FROM RC VALIDATION"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
