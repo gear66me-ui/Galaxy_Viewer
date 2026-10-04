@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0056 — destination info distance units use KLY / MLY / BLY; choreography and native handoff unchanged
+# BUILD 0057 — cancel stale provider handoff before sky navigation; choreography unchanged
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0056';
+const GV200001_BUILD='0057';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-BOM05714b2c06e2-DPdc5c1046027d`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -105,7 +105,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-navigator/gv-galaxy-navigator-001.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hud/gv-heads-up-display-0001.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@07681a741cd052e70e2628826f4ae51ab396a0fc/viewer/modules/destination-presentation/gv-destination-presentation-0017.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f70d599c02e83239935118e402372d014a60a8f8/viewer/modules/destination-presentation/gv-destination-presentation-0017.js'
 });
 
 
@@ -1503,6 +1503,14 @@ function validateDestination(destination){
 }
 
 
+function gvCancelProviderHandoff(){
+    try{
+        if(window.GVNative&&typeof window.GVNative.cancelProvider==='function'){
+            window.GVNative.cancelProvider();
+            console.info('GV PROVIDER HANDOFF CANCELLED BEFORE SKY NAVIGATION');
+        }
+    }catch(error){console.warn('GV PROVIDER CANCEL SKIPPED',error)}
+}
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!url.startsWith('https://'))return;
@@ -1576,6 +1584,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
 // ============================================================================
 async function navigateRandom(){
     if(navigationInFlight)return;
+    gvCancelProviderHandoff();
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
     navigationInFlight=true;
@@ -1611,6 +1620,7 @@ async function navigateRandom(){
 // ============================================================================
 async function navigateBack(){
     if(navigationInFlight||historyIndex<=0)return;
+    gvCancelProviderHandoff();
     navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
     try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
@@ -1622,6 +1632,7 @@ async function navigateBack(){
 // ============================================================================
 async function navigateForward(){
     if(navigationInFlight||historyIndex>=history.length-1)return;
+    gvCancelProviderHandoff();
     navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
     try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
 }
