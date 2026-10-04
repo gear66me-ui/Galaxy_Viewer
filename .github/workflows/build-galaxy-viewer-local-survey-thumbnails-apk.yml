@@ -182,6 +182,12 @@ jobs:
           p=Path(sys.argv[1])
           s=p.read_text(encoding='utf-8')
 
+          old='import android.os.Bundle;\nimport android.os.Message;\n'
+          new='import android.os.Bundle;\nimport android.os.Message;\nimport android.os.Handler;\nimport android.os.Looper;\n'
+          if s.count(old)!=1:
+              raise SystemExit('android.os import anchor mismatch')
+          s=s.replace(old,new,1)
+
           old='import java.io.BufferedReader;\nimport java.io.InputStreamReader;\n'
           new='import java.io.BufferedReader;\nimport java.io.InputStreamReader;\nimport java.io.InputStream;\nimport java.io.IOException;\nimport java.util.HashMap;\n'
           if s.count(old)!=1:
