@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0081 — SELECT SURVEY companion satellite tile; supplied satellite artwork added to release
+# BUILD 0082 — integrate symmetric hamburger + satellite inside 36px SELECT SURVEY control; fix immutable icon source
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0081';
+const GV200001_BUILD='0082';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -939,8 +939,9 @@ const gvSurveySelectStyle=document.createElement('style');
 gvSurveySelectStyle.id='gv-survey-select-galaxy-style';
 gvSurveySelectStyle.textContent=`
 #gv-survey-select-galaxy{
-  appearance:none;-webkit-appearance:none;position:fixed;z-index:8902;display:none;align-items:center;justify-content:center;gap:10px;
-  height:32px;margin:0;padding:0 15px;overflow:hidden;border:1px solid #FFB45A;border-radius:10px;
+  appearance:none;-webkit-appearance:none;position:fixed;z-index:8902;display:none;
+  grid-template-columns:30px minmax(0,1fr) 30px;align-items:center;column-gap:8px;
+  height:36px;margin:0;padding:0 5px;overflow:hidden;border:1px solid #FFB45A;border-radius:10px;
   background:linear-gradient(180deg,#B96512 0%,#873700 17%,#481600 58%,#A84600 100%);
   opacity:1!important;
   color:#FFF0D0;
@@ -952,44 +953,33 @@ gvSurveySelectStyle.textContent=`
 #gv-survey-select-galaxy::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,203,122,.08) 26%,transparent 44%);pointer-events:none}
 #gv-survey-select-galaxy:active:not(:disabled){transform:translateX(-50%) translateY(1px) scale(.992);filter:brightness(1.13)}
 #gv-survey-select-galaxy:disabled{opacity:1!important;filter:saturate(.82) brightness(.88);cursor:default}
-#gv-survey-satellite-tile{
-  appearance:none;-webkit-appearance:none;position:fixed;z-index:8902;display:none;align-items:center;justify-content:center;
-  width:32px;height:32px;margin:0;padding:1px;overflow:hidden;border:1px solid #43CFFF;border-radius:9px;
-  background:linear-gradient(180deg,#174E86 0%,#082C59 13%,#041B3E 54%,#07366A 88%,#0D5A98 100%);
-  box-shadow:inset 0 2px 2px rgba(225,251,255,.72),inset 0 -3px 5px rgba(0,0,0,.58),inset 0 0 11px rgba(41,153,255,.34),0 0 3px rgba(221,248,255,.90),0 0 9px rgba(50,190,255,.72),0 0 17px rgba(20,116,219,.34);
-  pointer-events:auto;touch-action:manipulation;outline:none
+.gv-survey-menu-inset,.gv-survey-satellite-inset{
+  position:relative;z-index:1;width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;border:1px solid rgba(255,208,145,.86);border-radius:8px;
+  background:linear-gradient(180deg,#8B410E 0%,#542000 55%,#9F4C0B 100%);
+  box-shadow:inset 0 1px 2px rgba(255,239,210,.58),inset 0 -2px 4px rgba(55,12,0,.64),0 0 4px rgba(255,193,105,.64),0 0 8px rgba(255,128,30,.38)
 }
-#gv-survey-satellite-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.32) 0%,rgba(118,225,255,.08) 26%,transparent 45%);pointer-events:none}
-#gv-survey-satellite-tile img{position:relative;z-index:1;display:block;width:29px;height:29px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(70,220,255,.72))}
-#gv-survey-satellite-tile:active:not(:disabled){transform:translateY(1px) scale(.96);filter:brightness(1.15)}
-#gv-survey-satellite-tile:disabled{opacity:1!important;filter:saturate(.82) brightness(.88);cursor:default}
-.gv-survey-select-menu{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;gap:3px;width:15px;height:15px;flex:0 0 15px}
-.gv-survey-select-menu i{display:block;width:15px;height:2px;border-radius:2px;background:#FFF0D0;box-shadow:0 0 3px rgba(255,245,220,.95),0 0 6px rgba(255,153,55,.78)}
-.gv-survey-select-label{position:relative;z-index:1;white-space:nowrap}
+.gv-survey-menu-inset{flex-direction:column;gap:3px}
+.gv-survey-menu-inset i{display:block;width:15px;height:2px;border-radius:2px;background:#FFF0D0;box-shadow:0 0 3px rgba(255,245,220,.95),0 0 6px rgba(255,153,55,.78)}
+.gv-survey-satellite-inset{border-color:#43CFFF;background:linear-gradient(180deg,#174E86 0%,#082C59 15%,#041B3E 56%,#0D5A98 100%);box-shadow:inset 0 1px 2px rgba(225,251,255,.72),inset 0 -2px 4px rgba(0,0,0,.58),0 0 3px rgba(221,248,255,.90),0 0 8px rgba(50,190,255,.68)}
+.gv-survey-satellite-inset::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(118,225,255,.07) 35%,transparent 58%);pointer-events:none}
+.gv-survey-satellite-inset img{position:relative;z-index:1;display:block;width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(70,220,255,.74))}
+.gv-survey-select-label{position:relative;z-index:1;min-width:0;white-space:nowrap;text-align:center;justify-self:stretch}
 `;
 document.head.appendChild(gvSurveySelectStyle);
 const gvSurveySelectButton=document.createElement('button');
 gvSurveySelectButton.id='gv-survey-select-galaxy';
 gvSurveySelectButton.type='button';
-gvSurveySelectButton.innerHTML='<span class="gv-survey-select-menu" aria-hidden="true"><i></i><i></i><i></i></span><span class="gv-survey-select-label">SELECT SURVEY</span>';
+const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1c63af8247ef45d25c891da8a3cc91067cc528b2/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
+gvSurveySelectButton.innerHTML=`<span class="gv-survey-menu-inset" aria-hidden="true"><i></i><i></i><i></i></span><span class="gv-survey-select-label">SELECT SURVEY</span><span class="gv-survey-satellite-inset" aria-hidden="true"><img src="${GV_SURVEY_SATELLITE_ICON_URL}" alt="" draggable="false"></span>`;
 gvSurveySelectButton.setAttribute('aria-label','SELECT SURVEY');
 document.body.appendChild(gvSurveySelectButton);
-const GV_SURVEY_SATELLITE_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png?v=0081';
-const gvSurveySatelliteTile=document.createElement('button');
-gvSurveySatelliteTile.id='gv-survey-satellite-tile';
-gvSurveySatelliteTile.type='button';
-gvSurveySatelliteTile.setAttribute('aria-label','SELECT SURVEY');
-gvSurveySatelliteTile.title='SELECT SURVEY';
-gvSurveySatelliteTile.innerHTML=`<img src="${GV_SURVEY_SATELLITE_ICON_URL}" alt="" aria-hidden="true" draggable="false">`;
-document.body.appendChild(gvSurveySatelliteTile);
-function gvHideSurveySelectButton(){gvSurveySelectButton.style.display='none';gvSurveySatelliteTile.style.display='none'}
+function gvHideSurveySelectButton(){gvSurveySelectButton.style.display='none'}
 function gvSurveySelectLabel(){
     const label='SELECT SURVEY';
     const e=gvSurveySelectButton.querySelector('.gv-survey-select-label');
     if(e)e.textContent=label;
     gvSurveySelectButton.setAttribute('aria-label',label);
-    gvSurveySatelliteTile.setAttribute('aria-label',label);
-    gvSurveySatelliteTile.title=label;
 }
 function gvPositionProviderSurveyPanel(){
     const panel=target?.panel;
@@ -1011,16 +1001,12 @@ function gvSyncSurveySelectButton(){
     gvSurveySelectLabel();
     const center=Math.round(r.left+r.width/2);
     const top=Math.round(r.bottom+5);
-    const buttonWidth=Math.round(Math.min(214,Math.max(194,r.width*.70)));
+    const buttonWidth=Math.round(Math.min(236,Math.max(224,r.width*.78)));
     gvSurveySelectButton.style.left=center+'px';
     gvSurveySelectButton.style.top=top+'px';
     gvSurveySelectButton.style.width=buttonWidth+'px';
     gvSurveySelectButton.disabled=Boolean(navigationInFlight);
-    gvSurveySelectButton.style.display='flex';
-    gvSurveySatelliteTile.style.left=Math.round(center+buttonWidth/2+6)+'px';
-    gvSurveySatelliteTile.style.top=top+'px';
-    gvSurveySatelliteTile.disabled=Boolean(navigationInFlight);
-    gvSurveySatelliteTile.style.display='flex';
+    gvSurveySelectButton.style.display='grid';
     if(target?.open)gvPositionProviderSurveyPanel();
 }
 const gvToggleSurveyProviderMenu=()=>{
@@ -1030,7 +1016,6 @@ const gvToggleSurveyProviderMenu=()=>{
     if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
 };
 gvSurveySelectButton.addEventListener('click',gvToggleSurveyProviderMenu);
-gvSurveySatelliteTile.addEventListener('click',gvToggleSurveyProviderMenu);
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
 requestAnimationFrame(gvSyncSurveySelectButton);
 const randomGalaxyBridge=Object.freeze({
