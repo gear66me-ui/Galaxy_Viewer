@@ -277,7 +277,7 @@ function rotationScreenSign(){
  return d>=0?1:-1;
 }
 function positionStepPx(){return stepFine?1.5:8}
-function rotationStep(){return stepFine?.2:2}
+function rotationStep(){return stepFine?0.2:2}
 
 async function show(n){
  idx=(n+queue.length)%queue.length;current=queue[idx];currentRaster=null;baseMatrix=null;baseRefScreen=null;soft={dx:0,dy:0,rot:0,scale:1};
@@ -412,7 +412,7 @@ $('export').onclick=()=>{
  const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-wcs-rescue-solutions-0006.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 
-window.addEventListener('resize',()=>{if(current?. _wcs)establishPreview(false)});
+window.addEventListener('resize',()=>{if(current?._wcs)establishPreview(false)});
 let start=queue.findIndex(c=>!saved[c.key]?.verified);if(start<0)start=0;
 show(start);
 })().catch(e=>{document.getElementById('miniName').textContent='LAB ERROR';document.getElementById('diag').textContent='FATAL: '+(e?.message||e)});
