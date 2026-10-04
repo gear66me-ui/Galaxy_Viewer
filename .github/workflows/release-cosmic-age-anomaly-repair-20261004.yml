@@ -1,0 +1,179 @@
+name: Release Cosmic Age Anomaly Repair 20261004
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - .github/workflows/release-cosmic-age-anomaly-repair-20261004.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Repair two residual cosmic-age anomalies
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+
+          H0 = 70.0
+          OM = 0.3
+          OL = 0.7
+          MPC_KM = 3.0856775814913673e19
+          SEC_GYR = 365.25 * 24 * 3600 * 1e9
+          H0_GYR = (H0 / MPC_KM) * SEC_GYR
+
+          def cosmic_age(z):
+              return (2.0 / (3.0 * H0_GYR * math.sqrt(OL))) * math.asinh(
+                  math.sqrt(OL / OM) / ((1.0 + z) ** 1.5)
+              )
+
+          T0 = cosmic_age(0.0)
+          repairs = []
+
+          # Hubble: HerS J020941.1+001557. The catalog had treated the quoted
+          # 19.5 BLY distance as a 19.5 Gyr lookback time. Use the published
+          # spectroscopic source redshift z=2.55274 instead.
+          hp = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          hd = json.loads(hp.read_text(encoding="utf-8"))
+          he = next(e for e in hd["entries"] if e.get("archiveId") == "potw2401a")
+          hs = he["science"]
+          before = {
+              "ageGyr": hs.get("ageGyr"),
+              "ageDisplay": hs.get("ageDisplay"),
+              "lookbackTimeGyr": hs.get("lookbackTimeGyr"),
+              "lookbackTimeMethod": hs.get("lookbackTimeMethod"),
+              "redshift": hs.get("redshift"),
+          }
+          z = 2.55274
+          age = cosmic_age(z)
+          lookback = T0 - age
+          hs["redshift"] = z
+          hs["redshiftDisplay"] = "z 2.55274"
+          hs["redshiftEstimated"] = False
+          hs["redshiftMethod"] = "SIMBAD_spectroscopic_emission_redshift_2021ApJ_908_95H"
+          hs["lookbackTimeGyr"] = lookback
+          hs["lookbackTimeDisplay"] = f"EST. {lookback:.2f} GYR"
+          hs["lookbackTimeMethod"] = "lookback_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
+          hs["ageGyr"] = age
+          hs["ageDisplay"] = f"EST. {age:.2f} GYR"
+          hs["ageMethod"] = "cosmic_age_at_emission_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
+          hs["ageEstimated"] = True
+          if "age" in he:
+              he["age"] = hs["ageDisplay"]
+          repairs.append({
+              "provider": "Hubble",
+              "archiveId": "potw2401a",
+              "name": he.get("name"),
+              "reason": "19.5 billion light-years was incorrectly treated as 19.5 Gyr lookback time",
+              "before": before,
+              "after": {
+                  "redshift": z,
+                  "lookbackTimeGyr": lookback,
+                  "cosmicAgeGyr": age,
+                  "cosmicAgeDisplay": hs["ageDisplay"],
+              },
+          })
+          hp.write_text(json.dumps(hd, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          # ESO: NGC 2442. A 55.77 million-light-year distance had been parsed
+          # into the redshift field as 55,770,000. Replace with SIMBAD z=0.004846.
+          ep = Path("viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json")
+          ed = json.loads(ep.read_text(encoding="utf-8"))
+          ee = next(e for e in ed["entries"] if e.get("archiveId") == "eso1115a")
+          es = ee["science"]
+          before = {
+              "ageGyr": es.get("ageGyr"),
+              "ageDisplay": es.get("ageDisplay"),
+              "lookbackTimeGyr": es.get("lookbackTimeGyr"),
+              "lookbackTimeMethod": es.get("lookbackTimeMethod"),
+              "redshift": es.get("redshift"),
+          }
+          z = 0.004846
+          age = cosmic_age(z)
+          lookback = T0 - age
+          es["redshift"] = z
+          es["redshiftDisplay"] = "z 0.004846"
+          es["redshiftEstimated"] = False
+          es["redshiftMethod"] = "SIMBAD_emission_redshift_2004MNRAS_350_1195M"
+          es["lookbackTimeGyr"] = lookback
+          es["lookbackTimeDisplay"] = f"EST. {lookback * 1000.0:.1f} MYR"
+          es["lookbackTimeMethod"] = "lookback_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
+          es["ageGyr"] = age
+          es["ageDisplay"] = f"EST. {age:.2f} GYR"
+          es["ageMethod"] = "cosmic_age_at_emission_from_published_redshift_flat_lcdm_H0_70_Om_0.3_2026-10-04"
+          es["ageEstimated"] = True
+          if "age" in ee:
+              ee["age"] = es["ageDisplay"]
+          repairs.append({
+              "provider": "ESO",
+              "archiveId": "eso1115a",
+              "name": ee.get("name"),
+              "reason": "55.77 MLY distance was misparsed as redshift 55,770,000",
+              "before": before,
+              "after": {
+                  "redshift": z,
+                  "lookbackTimeGyr": lookback,
+                  "cosmicAgeGyr": age,
+                  "cosmicAgeDisplay": es["ageDisplay"],
+              },
+          })
+          ep.write_text(json.dumps(ed, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          audit_path = Path("viewer/image-databases/master-database/curation/audits/2026-10-04-cosmic-age-repair-0001.json")
+          audit = json.loads(audit_path.read_text(encoding="utf-8"))
+          audit["residualAnomalyRepairs"] = repairs
+
+          # Recompute min/max for the two touched catalogs and prove no AGE <= 0 remains.
+          for provider, data in [("Hubble", hd), ("ESO", ed)]:
+              vals = [float(e["science"]["ageGyr"]) for e in data["entries"]]
+              audit["catalogs"][provider]["minCosmicAgeGyr"] = min(vals)
+              audit["catalogs"][provider]["maxCosmicAgeGyr"] = max(vals)
+
+          all_paths = {
+              "Hubble": hp,
+              "JWST": Path("viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json"),
+              "ESO": ep,
+              "Chandra": Path("viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json"),
+              "Spitzer": Path("viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json"),
+              "NOIRLab": Path("viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json"),
+          }
+          bad = []
+          count = 0
+          for provider, path in all_paths.items():
+              data = hd if provider == "Hubble" else ed if provider == "ESO" else json.loads(path.read_text(encoding="utf-8"))
+              for e in data["entries"]:
+                  count += 1
+                  age = float(e["science"]["ageGyr"])
+                  method = str(e["science"].get("ageMethod") or "")
+                  if age <= 0 or "cosmic_age_at_emission" not in method:
+                      bad.append((provider, e.get("archiveId"), age, method))
+          if count != 1848 or bad:
+              raise RuntimeError(f"Final cosmic-age validation failed count={count} bad={bad[:20]}")
+
+          audit["finalValidation"] = {
+              "records": count,
+              "allAgeMethodsCosmicAgeAtEmission": True,
+              "allCosmicAgeGyrPositive": True,
+              "validatedAt": "2026-10-04",
+          }
+          audit_path.write_text(json.dumps(audit, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print(json.dumps({"repairs": repairs, "finalRecords": count}, indent=2))
+          PY
+
+          git config user.name "Galaxy Viewer Release Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add             viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json             viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json             viewer/image-databases/master-database/curation/audits/2026-10-04-cosmic-age-repair-0001.json
+          git commit -m "Release catalogs: repair two residual cosmic-age anomalies"
+          git push origin HEAD:release
