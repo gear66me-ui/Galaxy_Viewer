@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020711">
+<title>Galaxy Viewer — Chandra AVM Review 0002</title>
+<style>
+:root{color-scheme:dark;--bg:#020711;--panel:#07111f;--line:#1e91bd;--cyan:#7feaff;--muted:#91a9b7;--green:#63ff9c;--yellow:#ffd66b;--red:#ff6f7f;--violet:#b99cff}
+*{box-sizing:border-box}html,body{margin:0;background:#020711;color:#e9fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{background:radial-gradient(circle at 50% -12%,#12395d 0,#06111f 34%,#020711 72%) fixed}
+header{position:sticky;top:0;z-index:20;background:rgba(2,7,17,.95);backdrop-filter:blur(14px);border-bottom:1px solid #17465d;padding:13px 13px 10px}
+h1{font-size:18px;letter-spacing:.14em;margin:0;color:var(--cyan);text-transform:uppercase}.sub{font-size:11px;color:#a8c8d5;line-height:1.45;margin-top:5px}
+.stats,.controls{display:flex;gap:7px;overflow:auto;scrollbar-width:none}.stats{padding:9px 0 3px}.controls{padding:7px 0 0}.stat,.filter{white-space:nowrap;border:1px solid #20556d;background:#071722;color:#cff6ff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800}.filter{border-radius:8px;cursor:pointer}.filter.active{background:#0d3b53;border-color:#69dfff}
+main{max-width:1240px;margin:auto;padding:13px}.notice{border:1px solid #17516c;border-radius:12px;background:#061522;padding:11px;font-size:11px;line-height:1.5;color:#bdd8e4;margin-bottom:13px}.notice b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:13px}.card{border:1px solid #174b64;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#081827,#050d17);box-shadow:0 8px 24px #0008}.card.keep{border-color:#25ca78;box-shadow:0 0 0 1px #25ca7855,0 8px 24px #0008}.card.delete{opacity:.42;border-color:#8b3a47}
+.thumb{width:100%;aspect-ratio:4/3;object-fit:cover;background:#000;display:block}.body{padding:11px}.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.name{font-size:17px;font-weight:900;line-height:1.15}.kind{font-size:9px;letter-spacing:.11em;border:1px solid #24627b;color:#8fe9ff;border-radius:999px;padding:3px 6px;white-space:nowrap}.badges{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}.badge{font-size:9px;font-weight:900;letter-spacing:.06em;padding:4px 6px;border-radius:6px;border:1px solid}.avm{color:#9bf1ff;border-color:#237692;background:#06242f}.full{color:#70ffa9;border-color:#2a9c5b;background:#082719}.pos{color:#ffd976;border-color:#8a6f25;background:#2a2108}.new{color:#ddd3ff;border-color:#6051ad;background:#17123b}.meta{font-size:11px;color:#acc4cf;line-height:1.48}.meta b{color:#e9fbff}.desc{font-size:11px;color:#d7e7ee;line-height:1.45;margin-top:7px;min-height:32px}.links,.decision{display:flex;gap:7px;margin-top:10px}.links a,.decision button{flex:1;text-align:center;text-decoration:none;border-radius:8px;padding:8px 6px;font-size:10px;font-weight:900}.links a{color:#c9f7ff;border:1px solid #20576e;background:#071a27}.decision button{border:1px solid;cursor:pointer}.keepbtn{color:#73ffad;border-color:#278c53!important;background:#082417}.delbtn{color:#ff97a3;border-color:#913744!important;background:#2b0b11}
+#loading{padding:32px 10px;text-align:center;color:#bfefff;font-size:13px;letter-spacing:.08em}.error{border:1px solid #873847;background:#2a0b12;color:#ffd8dd;border-radius:12px;padding:14px;line-height:1.5}
+footer{max-width:1240px;margin:18px auto 60px;padding:0 13px;display:grid;gap:8px}.export{width:100%;padding:13px;border-radius:10px;border:1px solid #26a8d4;background:#0a3043;color:#e9fbff;font-weight:900;letter-spacing:.08em}.small{font-size:10px;color:#7793a1;text-align:center}
+.hidden{display:none!important}.pillgreen{color:#71ffad!important;border-color:#258c51!important}
+</style>
+</head>
+<body>
+<header>
+<h1>Chandra AVM Review 0002</h1>
+<div class="sub">100 NEW Chandra galaxy / nebula / remnant candidates · sourced from the AstroPix Chandra AVM feed · excludes the live release catalog and Review 0001.</div>
+<div class="stats">
+<span class="stat">TARGET 100 NEW</span>
+<span class="stat" id="countGal">GALAXIES —</span>
+<span class="stat" id="countNeb">NEBULAE —</span>
+<span class="stat" id="countFull">FULL WCS —</span>
+<span class="stat pillgreen">AVM IMAGES ONLY</span>
+</div>
+<div class="controls">
+<button class="filter active" data-filter="all">ALL</button>
+<button class="filter" data-filter="galaxy">GALAXIES</button>
+<button class="filter" data-filter="nebula">NEBULA / REMNANT</button>
+<button class="filter" data-filter="full">FULL WCS</button>
+<button class="filter" data-filter="position">POSITION WCS</button>
+<button class="filter" data-filter="kept">KEPT</button>
+<button class="filter" data-filter="unreviewed">UNREVIEWED</button>
+</div>
+</header>
+<main>
+<div class="notice"><b>AVM gate:</b> every candidate comes from AstroPix's Chandra feed and uses a 1024-pixel full-image derivative, not an icon. AstroPix states that its full images are AVM-tagged. <b>FULL WCS</b> means scale/projection/reference geometry is present; <b>POSITION WCS</b> means the image is AVM-tagged but needs registration work before entering Galaxy Viewer's runtime overlay catalog. Your KEEP/DELETE choices stay on this device and can be exported as JSON.</div>
+<div id="loading">LOADING FROZEN CHANDRA AVM FEED…</div>
+<div id="error" class="error hidden"></div>
+<div id="grid" class="grid"></div>
+</main>
+<footer>
+<button id="export" class="export">EXPORT REVIEW 0002 JSON</button>
+<div class="small">No production catalog is modified by this page.</div>
+</footer>
+<script>
+const FEED='astropix-chandra-feed.json';
+const LIVE='../../viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json';
+const KEY='gv-chandra-avm-review-0002';
+const priorIds=new Set(['901a','901b','901c','901e','901f','901h','901i','901j','901k','901l','901n','901o','314']);
+const priorNames=[
+'NGC 1672','II Zw 096','M33','Triangulum Galaxy','NGC 1569','M90','NGC 4569','M104','Sombrero Galaxy',
+'Arp 143','NGC 4725','NGC 1385','NGC 660','NGC 3256','NGC 3938','Cartwheel Galaxy',
+'Tarantula Nebula','30 Doradus','Cocoon Nebula','IC 5146','Westerlund 2','NGC 346','Cat\\'s Paw Nebula','NGC 6334','Pelican Nebula','NGC 7000','Flame Nebula','NGC 2024'
+];
+const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'').trim();
+const splitAliases=s=>String(s||'').split(/[\\/|•;,]+/).map(norm).filter(Boolean);
+let decisions={};try{decisions=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+let candidates=[],active='all';
+
+function classify(r){
+ const subj=(r.subject||[]).join(' ').toLowerCase();
+ const name=((r.object_name||[])[0]||'').toLowerCase();
+ const text=subj+' '+name;
+ const neb=/(nebula|supernova|remnant|planetary|pulsar wind|star.?forming|star formation|h ii|hii region)/i.test(text);
+ if(neb)return 'nebula';
+ if(/galaxy/i.test(subj))return 'galaxy';
+ if(/\\bgalax(y|ies)\\b/i.test(name))return 'galaxy';
+ return null;
+}
+function goodImage(r){
+ const type=String(r.image_type||'').toLowerCase();
+ const text=[r.title,(r.object_name||[]).join(' '),r.headline].join(' ').toLowerCase();
+ if(/illustration|artwork|diagram|chart|spectrum/.test(type+' '+text))return false;
+ return !!r.image_id && Array.isArray(r.wcs_reference_value) && r.wcs_reference_value.length>=2;
+}
+function wcsFull(r){
+ return String(r.wcs_quality||'').toLowerCase()==='full' ||
+   (Array.isArray(r.wcs_scale)&&r.wcs_scale.length>=2 && r.wcs_projection && Array.isArray(r.wcs_reference_pixel)&&r.wcs_reference_pixel.length>=2);
+}
+function aliasesFromEntry(e){
+ let a=[];['name','displayName','designation','title'].forEach(k=>{if(e&&e[k])a.push(...splitAliases(e[k]))});
+ return a;
+}
+function imageUrl(r){return 'https://images.ipac.caltech.edu/chandra/'+encodeURIComponent(r.image_id)+'/chandra_'+encodeURIComponent(r.image_id)+'_1024.jpg'}
+function astroUrl(r){return 'https://www.astropix.org/image/chandra/'+encodeURIComponent(r.image_id)}
+function fov(r){
+ if(!Array.isArray(r.wcs_reference_dimension)||r.wcs_reference_dimension.length<2||!Array.isArray(r.wcs_scale)||r.wcs_scale.length<2)return '—';
+ const x=Math.abs(Number(r.wcs_reference_dimension[0])*Number(r.wcs_scale[0])*60),y=Math.abs(Number(r.wcs_reference_dimension[1])*Number(r.wcs_scale[1])*60);
+ if(!isFinite(x)||!isFinite(y))return '—';
+ return x.toFixed(x<10?2:1)+' × '+y.toFixed(y<10?2:1)+' arcmin';
+}
+function dist(r){
+ const n=Number((r.distance||[])[0]||r.distance_ly); if(!isFinite(n)||n<=0)return '—';
+ if(n>=1e9)return (n/1e9).toFixed(n>=1e10?1:2)+' BLY';
+ if(n>=1e6)return (n/1e6).toFixed(n>=1e8?0:1)+' MLY';
+ if(n>=1e3)return (n/1e3).toFixed(n>=1e5?0:1)+' KLY';
+ return n.toLocaleString()+' LY';
+}
+function build(feed,live){
+ const exclude=new Set(priorNames.map(norm));
+ (live.entries||[]).forEach(e=>aliasesFromEntry(e).forEach(x=>exclude.add(x)));
+ const dedupe=new Set(),gal=[],neb=[];
+ for(const r of feed){
+   if(!goodImage(r)||priorIds.has(String(r.image_id)))continue;
+   const kind=classify(r); if(!kind)continue;
+   const name=((r.object_name||[])[0]||('Chandra '+r.image_id)).trim();
+   const n=norm(name);
+   if(!n||exclude.has(n)||dedupe.has(n))continue;
+   dedupe.add(n);
+   const obj={...r,kind,name,full:wcsFull(r)};
+   (kind==='galaxy'?gal:neb).push(obj);
+ }
+ const score=(a,b)=>{
+   const af=a.full?1:0,bf=b.full?1:0;
+   const ad=Date.parse(a.image_release_date||'1900-01-01')||0,bd=Date.parse(b.image_release_date||'1900-01-01')||0;
+   return (bd-ad)||((bf-af)*0)||((Number(b.image_width)||0)*(Number(b.image_height)||0)-(Number(a.image_width)||0)*(Number(a.image_height)||0));
+ };
+ gal.sort(score);neb.sort(score);
+ const wantGal=Math.min(60,gal.length),wantNeb=Math.min(40,neb.length);
+ let out=[...gal.slice(0,wantGal),...neb.slice(0,wantNeb)];
+ if(out.length<100){
+   const used=new Set(out.map(x=>x.image_id));
+   const rest=[...gal,...neb].filter(x=>!used.has(x.image_id));
+   out.push(...rest.slice(0,100-out.length));
+ }
+ out=out.slice(0,100);
+ out.sort((a,b)=>(Date.parse(b.image_release_date||0)||0)-(Date.parse(a.image_release_date||0)||0));
+ return out;
+}
+function render(){
+ const grid=document.getElementById('grid');grid.innerHTML='';
+ const list=candidates.filter(c=>{
+  if(active==='all')return true;if(active==='galaxy'||active==='nebula')return c.kind===active;
+  if(active==='full')return c.full;if(active==='position')return !c.full;
+  if(active==='kept')return decisions[c.image_id]==='keep';
+  if(active==='unreviewed')return !decisions[c.image_id];
+  return true;
+ });
+ for(const c of list){
+   const d=decisions[c.image_id]||'';
+   const el=document.createElement('article');el.className='card '+d;
+   const tel=(c.telescope_facility||[]).slice(0,3).join(' + ')||'Chandra';
+   const desc=c.headline||c.title||'Chandra image candidate';
+   el.innerHTML=
+   '<img class="thumb" loading="lazy" referrerpolicy="no-referrer" src="'+imageUrl(c)+'" alt="'+c.name.replace(/"/g,'&quot;')+'" onerror="this.onerror=null;this.src=\\'https://www.astropix.org/archive/chandra/'+c.image_id+'/chandra_'+c.image_id+'_1024.jpg\\'">'+
+   '<div class="body"><div class="top"><div class="name">'+c.name+'</div><div class="kind">'+(c.kind==='galaxy'?'GALAXY':'NEBULA / REMNANT')+'</div></div>'+
+   '<div class="badges"><span class="badge avm">AVM VERIFIED SOURCE</span><span class="badge new">NEW TO REVIEW</span><span class="badge '+(c.full?'full':'pos')+'">'+(c.full?'FULL WCS':'POSITION WCS')+'</span></div>'+
+   '<div class="meta"><b>CHANDRA ID</b> '+c.image_id+' · <b>DATE</b> '+(c.image_release_date||'—')+'<br><b>DIST</b> '+dist(c)+' · <b>FOV</b> '+fov(c)+'<br><b>PROJ</b> '+(c.wcs_projection||'—')+' · <b>TELESCOPES</b> '+tel+'</div>'+
+   '<div class="desc">'+desc+'</div>'+
+   '<div class="links"><a target="_blank" rel="noopener" href="'+astroUrl(c)+'">ASTROPIX</a><a target="_blank" rel="noopener" href="'+(c.reference_url||'#')+'">CHANDRA</a></div>'+
+   '<div class="decision"><button class="keepbtn" data-id="'+c.image_id+'" data-v="keep">KEEP</button><button class="delbtn" data-id="'+c.image_id+'" data-v="delete">DELETE</button></div></div>';
+   grid.appendChild(el);
+ }
+ grid.querySelectorAll('.decision button').forEach(b=>b.onclick=()=>{
+   const id=b.dataset.id,v=b.dataset.v;decisions[id]=decisions[id]===v?'':v;if(!decisions[id])delete decisions[id];
+   localStorage.setItem(KEY,JSON.stringify(decisions));render();
+ });
+}
+async function init(){
+ try{
+   const [fr,lr]=await Promise.all([fetch(FEED,{cache:'no-store'}),fetch(LIVE,{cache:'no-store'})]);
+   if(!fr.ok)throw new Error('AstroPix feed HTTP '+fr.status);
+   if(!lr.ok)throw new Error('Live Chandra catalog HTTP '+lr.status);
+   const feed=await fr.json(),live=await lr.json();
+   candidates=build(feed,live);
+   if(candidates.length<100)throw new Error('Only '+candidates.length+' qualifying new AVM candidates survived the filters.');
+   document.getElementById('loading').classList.add('hidden');
+   document.getElementById('countGal').textContent='GALAXIES '+candidates.filter(x=>x.kind==='galaxy').length;
+   document.getElementById('countNeb').textContent='NEBULAE '+candidates.filter(x=>x.kind==='nebula').length;
+   document.getElementById('countFull').textContent='FULL WCS '+candidates.filter(x=>x.full).length;
+   render();
+ }catch(err){
+   document.getElementById('loading').classList.add('hidden');const e=document.getElementById('error');e.classList.remove('hidden');
+   e.textContent='REVIEW LOAD FAILED — '+err.message;
+ }
+}
+document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');active=b.dataset.filter;render()});
+document.getElementById('export').onclick=()=>{
+ const payload={version:'0002',generatedAt:new Date().toISOString(),source:'AstroPix Chandra feed /link/918?format=json',baseline:'release Chandra full-0007',selectionCount:candidates.length,decisions,candidates:candidates.map(c=>({id:'chandra-'+c.image_id,imageId:c.image_id,name:c.name,kind:c.kind,avm:true,wcsStatus:c.full?'full':'position',decision:decisions[c.image_id]||'unreviewed',astroPix:astroUrl(c),source:c.reference_url,image:imageUrl(c),distance:c.distance||[],wcs:{frame:c.wcs_coordinate_frame,equinox:c.wcs_equinox,referenceValue:c.wcs_reference_value,referenceDimension:c.wcs_reference_dimension,referencePixel:c.wcs_reference_pixel,scale:c.wcs_scale,rotation:c.wcs_rotation,projection:c.wcs_projection,quality:c.wcs_quality},metadata:c})};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gv-chandra-avm-candidate-review-0002.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+init();
+</script>
+</body>
+</html>
