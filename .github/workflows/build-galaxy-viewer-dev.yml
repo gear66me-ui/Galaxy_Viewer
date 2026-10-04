@@ -557,8 +557,8 @@ jobs:
           s=s.replace(old,new,1)
 
           # Technical build identity in native user agent.
-          assert s.count('GalaxyViewerWebBrowser/0057')==1
-          s=s.replace('GalaxyViewerWebBrowser/0057','GalaxyViewerWebBrowser/0059',1)
+          assert s.count('GalaxyViewerWebBrowser/0057')==2
+          s=s.replace('GalaxyViewerWebBrowser/0057','GalaxyViewerWebBrowser/0059')
 
           p.write_text(s)
           PY17
