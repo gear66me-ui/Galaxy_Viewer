@@ -450,3 +450,21 @@ Artifacts:
 - Viewer commits: `97ae312584e1cc34521f1092056ddfe3d1a67d6f`, `e0c758ef6eedf897378af515014066def369a976`, `de2663f97cd746baa6965a1fecf7eeca2c3487e3`
 - Viewer pointer commit: `cde4e9dc2899d3e67d1f4d3c5be11c4d718aa227`
 - Browser remains 0031.
+
+
+## Build 0072 — restore delayed projection transition
+
+Date: 2026-10-04.
+
+Correction:
+- Reverted Build 0071's unauthorized startup projection change.
+- Launch is again Mollweide / MOL.
+- First HOME → galaxy trip remains Mollweide.
+- On the next outbound trip, at the 60° apex, projection switches Mollweide → Spherical / SIN.
+- After that, projection remains current unless the user changes it manually.
+- Survey auto-first-image behavior and Navigator 002 counter/prompt remain unchanged.
+- Browser remains 0031; APK remains 0022.
+
+Commits:
+- viewer: `20f86c3a28c216e2f6380a1e1d59958d2b9853b0`
+- pointer: `c0dc1d16f2cf28447711e7bae43a8b297fa5ff97`
