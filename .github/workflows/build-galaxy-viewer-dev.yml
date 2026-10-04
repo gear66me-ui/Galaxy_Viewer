@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.17.1 APK 0015 SMART PROVIDER PRELOAD
-# DEV 0057: APK 0015 = Lucky 13 single-WebView baseline + WebKit 1.17.1 layered provider preload/navigation gate. Production untouched.
+name: Build Galaxy Viewer DEV 0057 WebKit 1.17.1 APK 0016 PROVIDER CANCEL GATE
+# DEV 0057: APK 0016 = Lucky 15 baseline + provider cancellation generation gate. Production untouched.
 
 on:
   push:
@@ -70,8 +70,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 70
-              versionName 'APK-0015-DEV-0057-WEBKIT1171-SMARTPRELOAD'
+              versionCode 71
+              versionName 'APK-0016-DEV-0057-WEBKIT1171-CANCELGATE'
             }
           }
           dependencies { implementation 'androidx.webkit:webkit:1.17.1' }
@@ -156,7 +156,7 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0015: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
+          # DEV 0016: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
           # When the hosted top shell reloads after a prewarmed provider is already ready, immediately repopulate its browser state.
           python - "$MAIN" <<'PY'
           from pathlib import Path
@@ -187,7 +187,7 @@ jobs:
               assert line in s
               s=s.replace(line,'',1)
 
-          # APK 0015 / proven 0008: if the hosted top shell finishes after the provider already loaded,
+          # APK 0016 / proven 0008: if the hosted top shell finishes after the provider already loaded,
           # immediately repopulate URL/provider state instead of leaving its default LOADING… text.
           old='          fitTopShell();\n        }\n      }\n    }); return v;\n'
           assert old in s
@@ -266,13 +266,13 @@ jobs:
           assert old in s
           s=s.replace(old,'  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n',1)
 
-          # Diagnostic APK 0015: disable native provider-page prewarm completely.
+          # Diagnostic APK 0016: disable native provider-page prewarm completely.
           # Hosted GVNative.prewarm(url) calls remain harmless no-ops; provider pages load only on explicit WEB press.
           old='    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n'
           assert old in s
           s=s.replace(old,'    @JavascriptInterface public void prewarm(String url){}\n',1)
 
-          # APK 0015 Lucky 13 — official AndroidX WebKit 1.17.1 prerender.
+          # APK 0016 Lucky 13 — official AndroidX WebKit 1.17.1 prerender.
           # One provider WebView only. Prerender never navigates the visible WebView.
           # Each new destination cancels the previous speculative render.
           # Provider browser is revealed only after onPageCommitVisible confirms stale content is gone.
@@ -350,7 +350,7 @@ jobs:
           p.write_text(s)
           PY
 
-          # APK 0015 Lucky 15 — start from the proven Lucky 13 output and layer current WebKit 1.17.1 APIs.
+          # APK 0016 Lucky 15 — start from the proven Lucky 13 output and layer current WebKit 1.17.1 APIs.
           python - "$MAIN" <<'PY15'
           from pathlib import Path
           import sys
@@ -501,7 +501,35 @@ jobs:
           p.write_text(s)
           PY15
 
-          # Nanoscopic gates: APK 0015 is Lucky 13 + WebKit 1.17.1 layered preload + exact navigation/FCP gate.
+          # APK 0016 — cancellation gate only. Invalidate every pending provider reveal before sky navigation.
+          python - "$MAIN" <<'PY16'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text()
+
+          insert='  private String launchProviderIcon(Intent intent){'
+          assert s.count(insert)==1
+          helper=('  private void cancelProviderWork(){\n'
+                  '    providerRevealGeneration++;prerenderGeneration++;awaitingProviderCommit=false;browserMode=false;activeProviderNavigation=null;providerTargetUrl="";providerRevealNotBeforeMs=0L;providerRetryUsed=false;\n'
+                  '    if(providerWatchdog!=null){providerGateHandler.removeCallbacks(providerWatchdog);providerWatchdog=null;}\n'
+                  '    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}\n'
+                  '    if(prefetchSignal!=null){try{prefetchSignal.cancel();}catch(Exception ignored){}prefetchSignal=null;}\n'
+                  '    prewarmLoading=false;prewarmFailed=false;prewarmedUrl="";prewarmReadyUrl="";prewarmCommittedUrl="";\n'
+                  '    pendingProviderUrl="";pendingProviderIcon="";clearProviderEntryHistory=false;\n'
+                  '    if(web!=null){try{web.stopLoading();}catch(Exception ignored){}}\n'
+                  '    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n'
+                  '  }\n')
+          s=s.replace(insert,helper+insert,1)
+
+          old='    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n'
+          assert s.count(old)==1
+          s=s.replace(old,old+'    @JavascriptInterface public void cancelProvider(){runOnUiThread(()->cancelProviderWork());}\n',1)
+
+          p.write_text(s)
+          PY16
+
+          # Nanoscopic gates: APK 0016 is Lucky 15 + provider cancellation generation gate.
           grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
@@ -518,6 +546,13 @@ jobs:
           grep -q 'providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L' "$MAIN"
           grep -q 'scheduleProviderWatchdog(providerRevealGeneration,u,10000L)' "$MAIN"
           grep -q 'WEBSITE COULD NOT LOAD' "$MAIN"
+          grep -q 'private void cancelProviderWork()' "$MAIN"
+          grep -q 'providerRevealGeneration++;prerenderGeneration++;awaitingProviderCommit=false;browserMode=false' "$MAIN"
+          grep -q '@JavascriptInterface public void cancelProvider()' "$MAIN"
+          grep -q 'providerGateHandler.removeCallbacks(providerWatchdog)' "$MAIN"
+          grep -q 'prerenderSignal.cancel()' "$MAIN"
+          grep -q 'prefetchSignal.cancel()' "$MAIN"
+          grep -q 'web.stopLoading()' "$MAIN"
           grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
           grep -q 'prerenderSignal.cancel()' "$MAIN"
           grep -q 'final int generation=++prerenderGeneration' "$MAIN"
@@ -569,7 +604,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0016.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -579,7 +614,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0016.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -587,8 +622,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT1171-0015
+          name: Galaxy-Viewer-DEV-0057-WEBKIT1171-0016
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0016.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0016.apk.sha256
           retention-days: 30
