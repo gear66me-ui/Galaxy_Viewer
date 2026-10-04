@@ -1,0 +1,252 @@
+name: Chandra Gaia WCS Rescue
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/chandra-gaia-wcs-rescue.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install solver dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy scipy astropy astroquery photutils scikit-image pillow requests
+
+      - name: Solve Chandra images against Gaia
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chandra-gaia
+          cat > /tmp/chandra-gaia/solve.py <<'PY'
+          import json, math, os, pathlib, warnings
+          import numpy as np
+          import requests
+          from PIL import Image
+          from astropy.coordinates import SkyCoord
+          import astropy.units as u
+          from astroquery.vizier import Vizier
+          from photutils.detection import DAOStarFinder
+          from astropy.stats import sigma_clipped_stats
+          from skimage.transform import SimilarityTransform
+          from skimage.measure import ransac
+
+          warnings.filterwarnings('ignore')
+          ROOT=pathlib.Path('/tmp/chandra-gaia')
+          Vizier.ROW_LIMIT=500
+
+          targets=[
+            {'key':'901a','name':'NGC 1672','center':[71.42541666666666,-59.24888888888889],'fov':4.4},
+            {'key':'901b','name':'II Zw 096','center':[314.35125,17.127861111111113],'fov':1.5},
+            {'key':'901e','name':'NGC 1569','center':[67.70416666666667,64.84833333333333],'fov':8.0},
+            {'key':'901f','name':'M90','center':[189.2075,13.163583333333333],'fov':2.8},
+            {'key':'901i','name':'Arp 143','center':[116.72791666666667,39.02328055555555],'fov':3.3},
+            {'key':'901j','name':'NGC 4725','center':[192.61083333333335,25.50075],'fov':12.0},
+            {'key':'901l','name':'NGC 660','center':[25.721666666666668,13.689361111111111],'fov':9.3},
+            {'key':'901o','name':'NGC 3938','center':[178.20583333333335,44.120777777777775],'fov':12.0},
+            {'key':'847','name':'Guitar Nebula','center':[336.46816666666666,65.59271944444444],'fov':2.6},
+            {'key':'838p','name':'Hb 5 Nebula','center':[266.9845833333333,29.994472222222225],'fov':1.04},
+            {'key':'813','name':'SN1006','center':[225.712,-41.9235667],'fov':34.0},
+            {'key':'797','name':"Tycho's Supernova Remnant",'center':[6.320833333333334,64.14361111111111],'fov':16.0},
+            {'key':'429','name':'RCW 86','center':[220.1875,-62.666667],'fov':6.0},
+            {'key':'heart-2026','name':'Cocoon Nebula','center':[328.3695833333333,47.27111388888889],'fov':23.0,
+             'url':'https://www.chandra.harvard.edu/photo/2026/heart/heart.jpg'},
+            {'key':'spring-w2','name':'Westerlund 2','center':[155.99416666666664,-57.744616666666666],'fov':2.1,
+             'url':'https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg'},
+            {'key':'spring-ngc346','name':'NGC 346','center':[14.771249999999998,-72.17588888888889],'fov':3.8,
+             'url':'https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg'},
+            {'key':'spring-catspaw','name':"Cat's Paw Nebula",'center':[260.04375,-35.95111111111111],'fov':72.0,
+             'url':'https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg'},
+            {'key':'spring-pelican','name':'Pelican Nebula','center':[312.69999999999993,44.35],'fov':19.3,
+             'url':'https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg'},
+            {'key':'spring-flame','name':'Flame Nebula','center':[85.44291666666668,-1.9246388888888888],'fov':2.2,
+             'url':'https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg'},
+          ]
+
+          for t in targets:
+              t.setdefault('url',f"https://www.astropix.org/archive/chandra/{t['key']}/chandra_{t['key']}_1024.jpg")
+
+          def download(url,path):
+              r=requests.get(url,timeout=60,headers={'User-Agent':'GalaxyViewer-WCS-Rescue/2.0'})
+              r.raise_for_status(); path.write_bytes(r.content)
+
+          def detect(path):
+              im=Image.open(path).convert('RGB')
+              arr=np.asarray(im,dtype=np.float32)
+              gray=.2126*arr[:,:,0]+.7152*arr[:,:,1]+.0722*arr[:,:,2]
+              # suppress broad nebulosity with local-ish median proxy via percentile clipping
+              mean,med,std=sigma_clipped_stats(gray,sigma=3.0,maxiters=5)
+              out=[]
+              for thr in (4.5,3.5,2.8):
+                  try:
+                      tbl=DAOStarFinder(fwhm=3.0,threshold=thr*max(std,1.0),exclude_border=True)(gray-med)
+                      if tbl is not None and len(tbl)>=8:
+                          # brightest compact sources first
+                          rows=sorted(tbl,key=lambda r:float(r['flux']),reverse=True)[:120]
+                          out=np.array([[float(r['xcentroid']),float(r['ycentroid'])] for r in rows],dtype=float)
+                          break
+                  except Exception:
+                      pass
+              return np.array(out), im.size
+
+          def gaia(center,fov):
+              c=SkyCoord(center[0]*u.deg,center[1]*u.deg,frame='icrs')
+              radius=max(fov/2*1.35,1.5)/60*u.deg
+              v=Vizier(columns=['RA_ICRS','DE_ICRS','Gmag'],column_filters={'Gmag':'<18.5'})
+              tabs=v.query_region(c,radius=radius,catalog='I/355/gaiadr3')
+              if not tabs:return np.empty((0,2)),[]
+              tab=tabs[0]
+              rows=[]
+              for r in tab:
+                  try:
+                      rows.append((float(r['RA_ICRS']),float(r['DE_ICRS']),float(r['Gmag'])))
+                  except Exception: pass
+              rows=sorted(rows,key=lambda x:x[2])[:180]
+              ra0,dec0=np.deg2rad(center[0]),np.deg2rad(center[1])
+              pts=[]
+              for ra,dec,g in rows:
+                  # gnomonic projection in degrees, east/north
+                  rra,rdec=np.deg2rad(ra),np.deg2rad(dec)
+                  dra=(rra-ra0+np.pi)%(2*np.pi)-np.pi
+                  den=np.sin(dec0)*np.sin(rdec)+np.cos(dec0)*np.cos(rdec)*np.cos(dra)
+                  if den<=0: continue
+                  x=np.cos(rdec)*np.sin(dra)/den
+                  y=(np.cos(dec0)*np.sin(rdec)-np.sin(dec0)*np.cos(rdec)*np.cos(dra))/den
+                  pts.append([np.rad2deg(x),np.rad2deg(y)])
+              return np.array(pts,dtype=float),rows
+
+          def triangle_invariants(pts,maxn=35):
+              pts=np.asarray(pts,float)[:maxn]
+              out=[]
+              n=len(pts)
+              for i in range(n-2):
+                  for j in range(i+1,n-1):
+                      for k in range(j+1,n):
+                          tri=pts[[i,j,k]]
+                          ds=[(np.linalg.norm(tri[a]-tri[b]),a,b) for a,b in ((0,1),(0,2),(1,2))]
+                          ds.sort()
+                          if ds[2][0]<=0: continue
+                          inv=(ds[0][0]/ds[2][0],ds[1][0]/ds[2][0])
+                          out.append((inv,(i,j,k)))
+              return out
+
+          def match_similarity(cat,img,width,height,center,fov):
+              if len(cat)<6 or len(img)<6:return None
+              # Work in normalized coordinates for invariant matching.
+              # cat units deg; image pixels.
+              ci=triangle_invariants(cat,30)
+              ii=triangle_invariants(img,45)
+              if not ci or not ii:return None
+              C=np.array([x[0] for x in ci]); I=np.array([x[0] for x in ii])
+              # nearest invariant pairs
+              pairs=[]
+              for ix,v in enumerate(I):
+                  d=np.sum((C-v)**2,axis=1)
+                  for cx in np.argsort(d)[:2]:
+                      if d[cx]<0.0015:
+                          pairs.append((cx,ix,d[cx]))
+              pairs=sorted(pairs,key=lambda x:x[2])[:700]
+              candidates=[]
+              for cx,ix,_ in pairs:
+                  ctri=cat[list(ci[cx][1])]
+                  itri=img[list(ii[ix][1])]
+                  # permutations + optional sky mirror
+                  import itertools
+                  for mirror in (False,True):
+                      src=ctri.copy()
+                      if mirror: src[:,0]*=-1
+                      for perm in itertools.permutations(range(3)):
+                          model=SimilarityTransform()
+                          if not model.estimate(src,itri[list(perm)]): continue
+                          # expected scale px/deg from field
+                          sc=model.scale
+                          expect=width/(fov/60)
+                          if not (expect/3 < sc < expect*3): continue
+                          # transform all cat, nearest image residuals
+                          pred=model(src=np.column_stack(((-cat[:,0] if mirror else cat[:,0]),cat[:,1])))
+                          # nearest neighbors
+                          diff=pred[:,None,:]-img[None,:,:]
+                          dist=np.sqrt(np.sum(diff*diff,axis=2))
+                          mins=dist.min(axis=1)
+                          good=mins<6.0
+                          score=int(good.sum())
+                          med=float(np.median(mins[good])) if score else 999
+                          if score>=5:
+                              candidates.append((score,-med,mirror,model))
+              if not candidates:return None
+              candidates.sort(key=lambda x:(x[0],x[1]),reverse=True)
+              score,negmed,mirror,model=candidates[0]
+              # robust refit from nearest correspondences
+              catwork=np.column_stack(((-cat[:,0] if mirror else cat[:,0]),cat[:,1]))
+              pred=model(catwork)
+              diff=pred[:,None,:]-img[None,:,:]
+              dist=np.sqrt(np.sum(diff*diff,axis=2))
+              jj=dist.argmin(axis=1); dd=dist[np.arange(len(catwork)),jj]
+              mask=dd<6.0
+              src=catwork[mask]; dst=img[jj[mask]]
+              if len(src)>=4:
+                  try:
+                      model2,inliers=ransac((src,dst),SimilarityTransform,min_samples=3,residual_threshold=3,max_trials=500)
+                      if model2 is not None and inliers.sum()>=4:
+                          model=model2;score=int(inliers.sum())
+                          pred2=model(src[inliers]);med=float(np.median(np.linalg.norm(pred2-dst[inliers],axis=1)))
+                      else: med=-negmed
+                  except Exception: med=-negmed
+              else: med=-negmed
+              # Build CD by finite differencing inverse transform pixel -> tangent degrees
+              inv=model.inverse
+              p0=np.array([[width/2,height/2]],float)
+              s0=inv(p0)[0]; sx=inv(p0+[[1,0]])[0]-s0; sy=inv(p0+[[0,1]])[0]-s0
+              if mirror:
+                  s0[0]*=-1; sx[0]*=-1; sy[0]*=-1
+              # reference pixel corresponding to tangent plane 0,0
+              origin=np.array([[0.0,0.0]])
+              ow=origin.copy()
+              if mirror: ow[:,0]*=-1
+              crpix=model(ow)[0]
+              return {
+                  'matches':score,'medianResidualPx':float(med),'mirror':bool(mirror),
+                  'crpix':[float(crpix[0]),float(crpix[1])],
+                  'cd':[[float(sx[0]),float(sy[0])],[float(sx[1]),float(sy[1])]],
+                  'scaleArcsecPerPx':float(math.sqrt(abs(np.linalg.det(np.array([[sx[0],sy[0]],[sx[1],sy[1]]]))))*3600),
+                  'rotationDeg':float(math.degrees(math.atan2(sx[1],sx[0]))),
+              }
+
+          results=[]
+          for t in targets:
+              print('SOLVING',t['key'],t['name'],flush=True)
+              path=ROOT/(t['key'].replace('/','_')+'.jpg')
+              out={'key':t['key'],'name':t['name'],'center':t['center'],'publishedFovArcmin':t['fov'],'url':t['url']}
+              try:
+                  download(t['url'],path)
+                  img,size=detect(path); out['imageSize']=list(size);out['detectedStars']=int(len(img))
+                  cat,raw=gaia(t['center'],t['fov']);out['gaiaStars']=int(len(cat))
+                  sol=match_similarity(cat,img,size[0],size[1],t['center'],t['fov'])
+                  if sol:
+                      out['solution']=sol
+                      out['wcs']={'CRVAL1':t['center'][0],'CRVAL2':t['center'][1],
+                                  'CRPIX1':sol['crpix'][0]+1,'CRPIX2':sol['crpix'][1]+1,
+                                  'CD1_1':sol['cd'][0][0],'CD1_2':sol['cd'][0][1],
+                                  'CD2_1':sol['cd'][1][0],'CD2_2':sol['cd'][1][1],
+                                  'CTYPE1':'RA---TAN','CTYPE2':'DEC--TAN'}
+                  print(' ->',out.get('solution'),flush=True)
+              except Exception as e:
+                  out['error']=repr(e);print(' ERROR',repr(e),flush=True)
+              results.append(out)
+
+          json.dump({'version':'gaia-rescue-0001','results':results},open(ROOT/'gaia-rescue.json','w'),indent=2)
+          PY
+          python /tmp/chandra-gaia/solve.py
+
+      - name: Upload Gaia rescue
+        uses: actions/upload-artifact@v4
+        with:
+          name: chandra-gaia-wcs-rescue
+          path: /tmp/chandra-gaia/gaia-rescue.json
+          if-no-files-found: error
