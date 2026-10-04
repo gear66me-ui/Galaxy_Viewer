@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812">
+<title>Chandra WCS Rescue Lab 0007 Soft Registration</title>
+<link rel="stylesheet" href="../../viewer/vendor/aladin-lite/3.8.2/aladin.css">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01060d;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#aladin{position:absolute;inset:0 0 300px 0;background:#000}
+#guideSvg{position:absolute;left:0;right:0;top:0;bottom:300px;z-index:35;pointer-events:none;width:100%;height:calc(100% - 300px);overflow:visible}
+#miniInfo{
+ position:absolute;z-index:44;top:8px;right:8px;max-width:190px;
+ padding:4px 7px;border:1px solid rgba(80,205,255,.58);border-radius:7px;
+ background:rgba(2,12,22,.72);backdrop-filter:blur(5px);
+ font-size:9px;font-weight:800;line-height:1.15;color:#dff8ff;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none
+}
+#miniInfo .n{color:#75e7ff;margin-right:5px}
+#miniInfo .saved{color:#72ffab;margin-left:5px}
+#panel{position:absolute;z-index:50;left:0;right:0;bottom:0;height:300px;background:#020b13f7;border-top:1px solid #216882;padding:8px 10px;overflow:auto}
+.row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.lab{width:62px;font-size:10px;color:#9bc0cf}.val{min-width:88px;text-align:right;font-size:10px;color:#fff}
+.row input[type=range]{flex:1}
+button{min-height:32px;border-radius:8px;border:1px solid #28657e;background:#071a27;color:#e8fbff;font-weight:900}
+button.active{box-shadow:0 0 0 2px #fff4 inset}
+.nav{flex:1}.save{flex:1.25;border-color:#2a9a59;color:#71ffab;background:#072519}.reset{flex:.8}.flip{flex:.7}.nudge{flex:1}.export{flex:1}.rotbtn{flex:.8}
+#progress{font-size:10px;color:#8deaff;font-weight:900;white-space:nowrap}
+#diag{font:10px/1.35 monospace;color:#afcbd6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#guideLegend{font-size:9px;color:#bdd9e4;line-height:1.25;border:1px solid #194d61;border-radius:7px;padding:4px 6px;background:#03111b}
+.resetRow{margin-top:10px;padding-top:8px;border-top:1px solid #183746}.resetSpacer{flex:1}.dangerReset{flex:0 0 132px;min-height:30px;border-color:#7e2b34;color:#ffadb5;background:#24080c;font-size:10px}.dangerReset.armed{border-color:#ff596b;color:#fff;background:#5b111c;box-shadow:0 0 0 2px #ff596b55 inset}.disabled{opacity:.4;pointer-events:none}
+#softStage{position:absolute;left:0;right:0;top:0;bottom:300px;z-index:32;overflow:hidden;pointer-events:none}
+#softImage{position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-drag:none;cursor:move;max-width:none;max-height:none;will-change:transform;display:none}
+.registerRow{margin-top:2px}.registerBtn{flex:1;min-height:38px;border-color:#2ca768;background:#08291b;color:#7dffb5;font-size:12px;letter-spacing:.2px}
+.registerBtn.pending{border-color:#ffcb55;background:#352408;color:#ffe59a}
+.softNote{font-size:9px;color:#9ed9eb;margin-left:4px;white-space:nowrap}
+</style></head><body>
+<div id="aladin"></div>
+<div id="softStage"><img id="softImage" alt=""></div>
+
+<svg id="guideSvg" aria-hidden="true">
+ <defs>
+  <marker id="arrowMagenta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#ff55dc"/></marker>
+  <marker id="arrowMagentaDim" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#a93893"/></marker>
+  <marker id="arrowCyan" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#54ddff"/></marker>
+  <marker id="arrowCyanDim" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#267d9c"/></marker>
+  <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#62ff9c"/></marker>
+  <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#ff7f93"/></marker>
+ </defs>
+ <g id="axisGuide"></g>
+ <g id="rotGuide"></g>
+</svg>
+
+<div id="miniInfo"><span id="miniIndex" class="n">0/23</span><span id="miniName">Loading…</span><span id="miniSaved" class="saved"></span></div>
+
+<div id="panel">
+ <div class="row"><span class="lab">OPACITY</span><input id="opacity" type="range" min="0" max="100" value="55"><span id="opv" class="val">55%</span></div>
+
+ <div class="row">
+   <span class="lab">ROTATION</span>
+   <input id="rot" type="range" min="0" max="360" step="0.1" value="0">
+   <span id="rotv" class="val">0.0° (= +0.0°)</span>
+ </div>
+
+ <div class="row">
+   <button id="rotMinus" class="rotbtn">ROT −</button>
+   <button id="rotPlus" class="rotbtn">ROT +</button>
+   <span class="lab" style="width:auto">SCALE</span>
+   <input id="scale" type="range" min="0" max="200" step="0.5" value="100">
+   <span id="scalev" class="val">100%</span>
+ </div>
+
+ <div class="row"><button id="raMinus" class="nudge">RA −</button><button id="raPlus" class="nudge">RA +</button><button id="decMinus" class="nudge">DEC −</button><button id="decPlus" class="nudge">DEC +</button><button id="step" class="flip">FINE</button></div>
+ <div class="row registerRow"><button id="register" class="registerBtn">REGISTER COORDINATES</button><span id="softState" class="softNote">SOFT 0,0 · 0.0° · 100%</span></div>
+ <div class="row"><button id="flipX" class="flip">FLIP X</button><button id="flipY" class="flip">FLIP Y</button><button id="save" class="save">SAVE SOLUTION</button></div>
+ <div class="row"><button id="prev" class="nav">◀ BACK</button><span id="progress">0 / 23</span><button id="next" class="nav">NEXT ▶</button><button id="export" class="export">EXPORT</button></div>
+ <div id="guideLegend">DRAG THE IMAGE OR USE RA/DEC/ROT/SCALE. Nothing is committed until REGISTER COORDINATES.</div>
+ <div id="diag">DSS2 base + Chandra overlay. Adjust until stars/features lock.</div>
+ <div class="row resetRow"><span class="resetSpacer"></span><button id="reset" class="reset dangerReset">RESET CURRENT</button></div>
+</div>
+
+<script src="../../viewer/vendor/aladin-lite/3.8.2/aladin.js"></script>
+<script>
+(async()=>{
+const queue=[{"key":"901c","imageId":"901c","name":"M33","image":"https://www.astropix.org/archive/chandra/901c/chandra_901c_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[23.458333333333332,30.660277777777775],"mode":"full","publishedFovArcmin":50,"avm":{"referenceValue":[23.458333333333332,30.660277777777775],"referenceDimension":[19058,15983],"referencePixel":[9529,7991.5],"scale":[-0.0000594772254824,0.0000594772254824],"rotation":90.0000000000002,"projection":"TAN"}},{"key":"838f","imageId":"838f","name":"The Eagle Nebula (M16)","image":"https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2024/25th/","center":[274.70070833333335,-13.807230555555556],"mode":"full","publishedFovArcmin":null,"avm":{"referenceValue":[274.70070833333335,-13.807230555555556],"referenceDimension":[2400,2353],"referencePixel":[1344.49800795692,106.62122917187],"scale":[-0.00005493083,0.00005493083],"rotation":-0.05091276829,"projection":"TAN"}},{"key":"800","imageId":"800","name":"Crab Nebula","image":"https://www.astropix.org/archive/chandra/800/chandra_800_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2023/crabx/","center":[83.6333,22.0144],"mode":"full","publishedFovArcmin":null,"avm":{"referenceValue":[83.6333,22.0144],"referenceDimension":[3600,2338],"referencePixel":[1762.46950877925,1392.74104731193],"scale":[-0.00002517748,0.00002517748],"rotation":6.02536039311,"projection":"TAN"}},{"key":"370","imageId":"370","name":"Coronet Cluster","image":"https://www.astropix.org/archive/chandra/370/chandra_370_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2007/coronet/","center":[285.4379272,-36.97373199],"mode":"full","publishedFovArcmin":null,"avm":{"referenceValue":[285.4379272,-36.97373199],"referenceDimension":[3300,3300],"referencePixel":[1740.734,1650.5],"scale":[-0.0000848161632504,0.0000848161632504],"rotation":0,"projection":"TAN"}},{"key":"901a","imageId":"901a","name":"NGC 1672","image":"https://www.astropix.org/archive/chandra/901a/chandra_901a_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[71.42541666666666,-59.24888888888889],"mode":"seed","publishedFovArcmin":4.4},{"key":"901b","imageId":"901b","name":"II Zw 096","image":"https://www.astropix.org/archive/chandra/901b/chandra_901b_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[314.35125,17.127861111111113],"mode":"seed","publishedFovArcmin":1.5},{"key":"901e","imageId":"901e","name":"NGC 1569","image":"https://www.astropix.org/archive/chandra/901e/chandra_901e_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[67.70416666666667,64.84833333333333],"mode":"seed","publishedFovArcmin":8},{"key":"901f","imageId":"901f","name":"M90","image":"https://www.astropix.org/archive/chandra/901f/chandra_901f_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[189.2075,13.163583333333333],"mode":"seed","publishedFovArcmin":2.8},{"key":"901i","imageId":"901i","name":"Arp 143","image":"https://www.astropix.org/archive/chandra/901i/chandra_901i_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[116.72791666666667,39.02328055555555],"mode":"seed","publishedFovArcmin":3.3},{"key":"901j","imageId":"901j","name":"NGC 4725","image":"https://www.astropix.org/archive/chandra/901j/chandra_901j_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[192.61083333333335,25.50075],"mode":"seed","publishedFovArcmin":12},{"key":"901l","imageId":"901l","name":"NGC 660","image":"https://www.astropix.org/archive/chandra/901l/chandra_901l_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[25.721666666666668,13.689361111111111],"mode":"seed","publishedFovArcmin":9.3},{"key":"901o","imageId":"901o","name":"NGC 3938","image":"https://www.astropix.org/archive/chandra/901o/chandra_901o_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2026/galaxies/","center":[178.20583333333335,44.120777777777775],"mode":"seed","publishedFovArcmin":12},{"key":"847","imageId":"847","name":"Guitar Nebula","image":"https://www.astropix.org/archive/chandra/847/chandra_847_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2024/guitar/","center":[336.46816666666666,65.59271944444444],"mode":"seed","publishedFovArcmin":2.6},{"key":"838p","imageId":"838p","name":"Hb 5 Nebula","image":"https://www.astropix.org/archive/chandra/838p/chandra_838p_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2024/25th/","center":[266.9845833333333,29.994472222222225],"mode":"seed","publishedFovArcmin":1.04},{"key":"813","imageId":"813","name":"SN1006","image":"https://www.astropix.org/archive/chandra/813/chandra_813_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2023/sn1006/","center":[225.712,-41.9235667],"mode":"seed","publishedFovArcmin":34},{"key":"797","imageId":"797","name":"Tycho's Supernova Remnant","image":"https://www.astropix.org/archive/chandra/797/chandra_797_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2023/tycho/","center":[6.320833333333334,64.14361111111111],"mode":"seed","publishedFovArcmin":16},{"key":"429","imageId":"429","name":"RCW 86","image":"https://www.astropix.org/archive/chandra/429/chandra_429_1024.jpg","sourceUrl":"http://chandra.harvard.edu/photo/2009/rcw86/","center":[220.1875,-62.666667],"mode":"seed","publishedFovArcmin":6},{"key":"heart-2026","imageId":"heart-2026","name":"Cocoon Nebula · IC 5146","image":"https://www.chandra.harvard.edu/photo/2026/heart/heart.jpg","sourceUrl":"https://www.chandra.harvard.edu/photo/2026/heart/","center":[328.3695833333333,47.27111388888889],"mode":"seed","publishedFovArcmin":23},{"key":"spring-w2","imageId":"spring-w2","name":"Westerlund 2","image":"https://chandra.harvard.edu/photo/2026/spring/spring_westerlund2.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[155.99416666666664,-57.744616666666666],"mode":"seed","publishedFovArcmin":2.1},{"key":"spring-ngc346","imageId":"spring-ngc346","name":"NGC 346","image":"https://chandra.harvard.edu/photo/2026/spring/spring_ngc346.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[14.771249999999998,-72.17588888888889],"mode":"seed","publishedFovArcmin":3.8},{"key":"spring-catspaw","imageId":"spring-catspaw","name":"Cat's Paw Nebula · NGC 6334","image":"https://chandra.harvard.edu/photo/2026/spring/spring_catspaw.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[260.04375,-35.95111111111111],"mode":"seed","publishedFovArcmin":72},{"key":"spring-pelican","imageId":"spring-pelican","name":"Pelican Nebula · NGC 7000","image":"https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[312.69999999999993,44.35],"mode":"seed","publishedFovArcmin":19.3},{"key":"spring-flame","imageId":"spring-flame","name":"Flame Nebula · NGC 2024","image":"https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg","sourceUrl":"https://chandra.harvard.edu/photo/2026/spring/","center":[85.44291666666668,-1.9246388888888888],"mode":"seed","publishedFovArcmin":2.2}];
+const BOOTSTRAP={"370":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"full"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":1024,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":285.4379272,"CRVAL2":-36.97373199,"CRPIX1":540.1550351515151,"CRPIX2":512.1551515151515,"CD1_1":-0.00027333333859992187,"CD1_2":0,"CD2_1":0,"CD2_2":0.00027333333859992187},"raster":{"width":1024,"height":1024},"savedAt":"2026-10-04T19:02:15.591Z","verified":true},"429":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":580,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":220.1875,"CRVAL2":-62.666667,"CRPIX1":512.5,"CRPIX2":290.5,"CD1_1":-0.00009765625,"CD1_2":0,"CD2_1":0,"CD2_2":0.00009765625},"raster":{"width":1024,"height":580},"savedAt":"2026-10-04T19:11:14.552Z","verified":true},"797":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":769,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":6.320833333333334,"CRVAL2":64.14361111111111,"CRPIX1":512.5,"CRPIX2":385,"CD1_1":-0.00026041666666666666,"CD1_2":0,"CD2_1":0,"CD2_2":0.00026041666666666666},"raster":{"width":1024,"height":769},"savedAt":"2026-10-04T19:10:56.657Z","verified":true},"813":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":1020,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":225.712,"CRVAL2":-41.9235667,"CRPIX1":512.5,"CRPIX2":510.5,"CD1_1":-0.0005533854166666667,"CD1_2":0,"CD2_1":0,"CD2_2":0.0005533854166666667},"raster":{"width":1024,"height":1020},"savedAt":"2026-10-04T19:10:45.449Z","verified":true},"901c":{"params":{"rotation":90.0000000000002,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"full"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":859,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":23.458333333333332,"CRVAL2":30.660277777777775,"CRPIX1":512,"CRPIX2":429.5,"CD1_1":3.8648958246358346e-18,"CD1_2":-0.0011066641383995334,"CD2_1":-0.0011069501594175577,"CD2_2":-3.863897187588885e-18},"raster":{"width":1024,"height":859},"savedAt":"2026-10-04T19:01:29.167Z","verified":true},"901b":{"params":{"rotation":79.3,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":753,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":314.35125,"CRVAL2":17.127861111111113,"CRPIX1":512.5,"CRPIX2":377,"CD1_1":-0.000004532876352186944,"CD1_2":-0.000023989570228115605,"CD2_1":-0.000023989570228115608,"CD2_2":0.000004532876352186943},"raster":{"width":1024,"height":753},"savedAt":"2026-10-04T19:03:02.653Z","verified":true},"901e":{"params":{"rotation":-17.3,"scalePct":75.5,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":687,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":67.70416666666667,"CRVAL2":64.84833333333333,"CRPIX1":512.5,"CRPIX2":344,"CD1_1":-0.00009385994838862136,"CD1_2":0.000029234118480303176,"CD2_1":0.000029234118480303176,"CD2_2":0.00009385994838862136},"raster":{"width":1024,"height":687},"savedAt":"2026-10-04T19:03:12.091Z","verified":true},"901f":{"params":{"rotation":97.3,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":913,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":189.2075,"CRVAL2":13.163583333333333,"CRPIX1":512.5,"CRPIX2":457,"CD1_1":0.000005790704819071962,"CD1_2":-0.0000452035227742852,"CD2_1":-0.0000452035227742852,"CD2_2":-0.000005790704819071962},"raster":{"width":1024,"height":913},"savedAt":"2026-10-04T19:03:36.001Z","verified":true},"901a":{"params":{"rotation":48.5,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":728,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":71.42541666666666,"CRVAL2":-59.24888888888889,"CRPIX1":512.5,"CRPIX2":364.5,"CD1_1":-0.000047453258661283284,"CD1_2":-0.00005363615187942072,"CD2_1":-0.00005363615187942072,"CD2_2":0.000047453258661283284},"raster":{"width":1024,"height":728},"savedAt":"2026-10-04T19:02:51.341Z","verified":true},"901i":{"params":{"rotation":110.1,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":666,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":116.72791666666667,"CRVAL2":39.02328055555555,"CRPIX1":512.5,"CRPIX2":333.5,"CD1_1":0.00001845828437715711,"CD1_2":-0.000050439632680868175,"CD2_1":-0.00005043963268086817,"CD2_2":-0.00001845828437715711},"raster":{"width":1024,"height":666},"savedAt":"2026-10-04T19:04:28.998Z","verified":true},"901j":{"params":{"rotation":103.7,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":778,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":192.61083333333335,"CRVAL2":25.50075,"CRPIX1":512.5,"CRPIX2":389.5,"CD1_1":0.00004625745040344114,"CD1_2":-0.0001897556874995403,"CD2_1":-0.00018975568749954026,"CD2_2":-0.00004625745040344115},"raster":{"width":1024,"height":778},"savedAt":"2026-10-04T19:05:00.004Z","verified":true},"901l":{"params":{"rotation":-180,"scalePct":68,"raOff":-0.14880000000000002,"decOff":-0.11160000000000002,"flipX":false,"flipY":false,"mode":"seed"}},"901o":{"params":{"rotation":0,"scalePct":76.5,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":962,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":178.20583333333335,"CRVAL2":44.120777777777775,"CRPIX1":512.5,"CRPIX2":481.5,"CD1_1":-0.00014941406250000002,"CD1_2":0,"CD2_1":0,"CD2_2":0.00014941406250000002},"raster":{"width":1024,"height":962},"savedAt":"2026-10-04T19:09:53.744Z","verified":true},"838p":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":1024,"NAXIS2":778,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":266.9845833333333,"CRVAL2":29.994472222222225,"CRPIX1":512.5,"CRPIX2":389.5,"CD1_1":-0.000016927083333333333,"CD1_2":0,"CD2_1":0,"CD2_2":0.000016927083333333333},"raster":{"width":1024,"height":778},"savedAt":"2026-10-04T19:10:33.714Z","verified":true},"heart-2026":{"params":{"rotation":-13.2,"scalePct":78,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":864,"NAXIS2":871,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":328.3695833333333,"CRVAL2":47.27111388888889,"CRPIX1":432.5,"CRPIX2":436,"CD1_1":-0.0003369214027304109,"CD1_2":0.00007902420157764591,"CD2_1":0.00007902420157764591,"CD2_2":0.0003369214027304108},"raster":{"width":864,"height":871},"savedAt":"2026-10-04T19:12:37.979Z","verified":true},"spring-w2":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":864,"NAXIS2":879,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":155.99416666666664,"CRVAL2":-57.744616666666666,"CRPIX1":432.5,"CRPIX2":440,"CD1_1":-0.000040509259259259265,"CD1_2":0,"CD2_1":0,"CD2_2":0.00004050925925925927},"raster":{"width":864,"height":879},"savedAt":"2026-10-04T19:12:49.295Z","verified":true},"spring-ngc346":{"params":{"rotation":0,"scalePct":100,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":864,"NAXIS2":648,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":14.771249999999998,"CRVAL2":-72.17588888888889,"CRPIX1":432.5,"CRPIX2":324.5,"CD1_1":-0.00007330246913580245,"CD1_2":0,"CD2_1":0,"CD2_2":0.00007330246913580245},"raster":{"width":864,"height":648},"savedAt":"2026-10-04T19:13:00.852Z","verified":true},"spring-catspaw":{"params":{"rotation":0,"scalePct":132,"raOff":0,"decOff":0,"flipX":false,"flipY":false,"mode":"seed"},"wcs":{"NAXIS":2,"NAXIS1":864,"NAXIS2":949,"CTYPE1":"RA---TAN","CTYPE2":"DEC--TAN","CUNIT1":"deg","CUNIT2":"deg","EQUINOX":2000,"CRVAL1":260.04375,"CRVAL2":-35.95111111111111,"CRPIX1":432.5,"CRPIX2":475,"CD1_1":-0.0018333333333333335,"CD1_2":0,"CD2_1":0,"CD2_2":0.0018333333333333333},"raster":{"width":864,"height":949},"savedAt":"2026-10-04T19:13:59.998Z","verified":true},"spring-pelican":{"params":{"rotation":-108,"scalePct":70.5,"raOff":-0.8105999999999999,"decOff":0.11580000000000001,"flipX":false,"flipY":false,"mode":"seed"}}};
+const KEY='gv-chandra-wcs-rescue-lab-0007';
+const PREVKEYS=['gv-chandra-wcs-rescue-lab-0004','gv-chandra-wcs-rescue-lab-0005','gv-chandra-wcs-rescue-lab-0006'];
+const $=id=>document.getElementById(id);
+
+function clone(v){return JSON.parse(JSON.stringify(v||{}))}
+let saved=clone(BOOTSTRAP);
+for(const k of PREVKEYS){try{saved=Object.assign(saved,JSON.parse(localStorage.getItem(k)||'{}')||{})}catch(_){}}
+try{saved=Object.assign(saved,JSON.parse(localStorage.getItem(KEY)||'{}')||{})}catch(_){}
+
+let idx=0,currentRaster=null,current=null,stepFine=true;
+let baseMatrix=null,baseRefScreen=null;
+let soft={dx:0,dy:0,rot:0,scale:1};
+let drag=null;
+
+await A.init;
+const aladin=A.aladin('#aladin',{
+ survey:'P/DSS2/color',target:'0 +0',fov:1,cooFrame:'ICRS',projection:'TAN',
+ showReticle:true,showGotoControl:false,showZoomControl:true,showFullscreenControl:true,
+ showLayersControl:true,showCooGridControl:true,showProjectionControl:false
+});
+
+function signedToUnsigned(deg){deg=Number(deg)||0;return ((deg%360)+360)%360}
+function unsignedToSigned(deg){deg=Number(deg)||0;return deg>180?deg-360:deg}
+function norm180(deg){deg=((Number(deg)||0)+180)%360;if(deg<0)deg+=360;return deg-180}
+function signText(deg){deg=Number(deg)||0;return (deg>=0?'+':'')+deg.toFixed(1)+'°'}
+function wrapRa(d){d%=360;if(d<0)d+=360;return d}
+function raDelta(a,b){let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d}
+
+function defaults(c){
+ if(c.mode==='full')return {rotation:Number(c.avm.rotation||0),scalePct:100,raOff:0,decOff:0,flipX:false,flipY:false,mode:'full'};
+ return {rotation:0,scalePct:100,raOff:0,decOff:0,flipX:false,flipY:false,mode:'seed'};
+}
+function state(c){return Object.assign(defaults(c),saved[c.key]?.params||{})}
+function baseReference(c){
+ if(c.mode==='full')return [Number(c.avm.referenceValue[0]),Number(c.avm.referenceValue[1])];
+ return [Number(c.center[0]),Number(c.center[1])];
+}
+function loadSoftImage(url){
+ return new Promise((ok,no)=>{
+   const im=$('softImage');
+   im.onload=()=>{
+     const w=im.naturalWidth,h=im.naturalHeight;
+     if(!w||!h){no(new Error('IMAGE HAS NO DIMENSIONS'));return}
+     im.width=w;im.height=h;im.style.display='block';
+     fallbackVisible(w,h);
+     ok([w,h]);
+   };
+   im.onerror=()=>no(new Error('IMAGE LOAD FAILED'));
+   im.src=url;
+ });
+}
+function wcsFor(c,w,h,p){
+ let ra0,dec0,crpix1,crpix2,sx0,sy0;
+ if(c.mode==='full'){
+   const a=c.avm,rd=a.referenceDimension,rp=a.referencePixel,sc=a.scale,rx=w/rd[0],ry=h/rd[1];
+   ra0=Number(a.referenceValue[0]);dec0=Number(a.referenceValue[1]);
+   crpix1=Number(rp[0])*rx;crpix2=Number(rp[1])*ry;
+   sx0=Number(sc[0])/rx;sy0=Number(sc[1])/ry;
+ }else{
+   const base=Number(c.publishedFovArcmin)/60;
+   ra0=Number(c.center[0]);dec0=Number(c.center[1]);
+   crpix1=(w+1)/2;crpix2=(h+1)/2;
+   sx0=-(base/w);sy0=(base/w);
+ }
+ const cosd=Math.max(.05,Math.abs(Math.cos(dec0*Math.PI/180)));
+ const ra=wrapRa(ra0+Number(p.raOff||0)/(60*cosd));
+ const dec=dec0+Number(p.decOff||0)/60;
+ const factor=Math.max(0.001,Number(p.scalePct ?? 100)/100);
+ let sx=sx0*factor,sy=sy0*factor;
+ if(p.flipX)sx*=-1;if(p.flipY)sy*=-1;
+ const t=Number(p.rotation||0)*Math.PI/180,co=Math.cos(t),si=Math.sin(t);
+ return {NAXIS:2,NAXIS1:w,NAXIS2:h,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',CUNIT1:'deg',CUNIT2:'deg',EQUINOX:2000,
+  CRVAL1:ra,CRVAL2:dec,CRPIX1:crpix1,CRPIX2:crpix2,
+  CD1_1:sx*co,CD1_2:-sy*si,CD2_1:sx*si,CD2_2:sy*co};
+}
+function fovOf(wcs,w,h){
+ const sx=Math.hypot(wcs.CD1_1,wcs.CD2_1),sy=Math.hypot(wcs.CD1_2,wcs.CD2_2);
+ return Math.max(sx*w,sy*h)*1.18;
+}
+function worldForPixel(wcs,x,y){
+ const dx=(x+1)-wcs.CRPIX1,dy=(y+1)-wcs.CRPIX2;
+ const xi=wcs.CD1_1*dx+wcs.CD1_2*dy;
+ const eta=wcs.CD2_1*dx+wcs.CD2_2*dy;
+ const cosd=Math.max(.02,Math.abs(Math.cos(wcs.CRVAL2*Math.PI/180)));
+ return [wrapRa(wcs.CRVAL1+xi/cosd),Math.max(-89.99999,Math.min(89.99999,wcs.CRVAL2+eta))];
+}
+function screenForPixel(wcs,x,y){
+ const [ra,dec]=worldForPixel(wcs,x,y);
+ const p=aladin.world2pix(ra,dec,'ICRSd');
+ return [Number(p?.[0]),Number(p?.[1])];
+}
+function mat(a,b,c,d,e,f){return {a,b,c,d,e,f}}
+function mul(A,B){
+ return mat(
+  A.a*B.a+A.c*B.b,
+  A.b*B.a+A.d*B.b,
+  A.a*B.c+A.c*B.d,
+  A.b*B.c+A.d*B.d,
+  A.a*B.e+A.c*B.f+A.e,
+  A.b*B.e+A.d*B.f+A.f
+ );
+}
+function translate(x,y){return mat(1,0,0,1,x,y)}
+function rotateM(deg){const t=deg*Math.PI/180,c=Math.cos(t),s=Math.sin(t);return mat(c,s,-s,c,0,0)}
+function scaleM(s){return mat(s,0,0,s,0,0)}
+function applyM(M,x,y){return [M.a*x+M.c*y+M.e,M.b*x+M.d*y+M.f]}
+
+function buildBaseMatrix(wcs,w,h){
+ const ref=aladin.world2pix(wcs.CRVAL1,wcs.CRVAL2,'ICRSd');
+ if(!ref)throw new Error('REFERENCE POINT NOT PROJECTABLE');
+ const cosd=Math.max(.02,Math.abs(Math.cos(wcs.CRVAL2*Math.PI/180)));
+ const px=aladin.world2pix(
+   wrapRa(wcs.CRVAL1+wcs.CD1_1/cosd),
+   Math.max(-89.99999,Math.min(89.99999,wcs.CRVAL2+wcs.CD2_1)),
+   'ICRSd'
+ );
+ const py=aladin.world2pix(
+   wrapRa(wcs.CRVAL1+wcs.CD1_2/cosd),
+   Math.max(-89.99999,Math.min(89.99999,wcs.CRVAL2+wcs.CD2_2)),
+   'ICRSd'
+ );
+ const vals=[Number(ref[0]),Number(ref[1]),Number(px?.[0]),Number(px?.[1]),Number(py?.[0]),Number(py?.[1])];
+ if(!vals.every(Number.isFinite))throw new Error('SCREEN BASIS NOT PROJECTABLE');
+ const a=Number(px[0])-Number(ref[0]),b=Number(px[1])-Number(ref[1]);
+ const c=Number(py[0])-Number(ref[0]),d=Number(py[1])-Number(ref[1]);
+ const rx=wcs.CRPIX1-1,ry=wcs.CRPIX2-1;
+ const e=Number(ref[0])-a*rx-c*ry;
+ const f=Number(ref[1])-b*rx-d*ry;
+ return {M:mat(a,b,c,d,e,f),ref:[Number(ref[0]),Number(ref[1])]};
+}
+function softMatrix(){
+ if(!baseRefScreen)return mat(1,0,0,1,0,0);
+ const [x,y]=baseRefScreen;
+ return mul(translate(soft.dx,soft.dy),mul(translate(x,y),mul(rotateM(soft.rot),mul(scaleM(soft.scale),translate(-x,-y)))));
+}
+function renderSoft(){
+ if(!baseMatrix)return;
+ const F=mul(softMatrix(),baseMatrix);
+ const im=$('softImage');
+ im.style.transform='matrix('+[F.a,F.b,F.c,F.d,F.e,F.f].join(',')+')';
+ im.style.opacity=String(Number($('opacity').value)/100);
+ const pct=(soft.scale*100).toFixed(1);
+ $('softState').textContent='SOFT '+soft.dx.toFixed(1)+','+soft.dy.toFixed(1)+' px · '+signText(soft.rot)+' · '+pct+'%';
+ const dirty=Math.abs(soft.dx)>.01||Math.abs(soft.dy)>.01||Math.abs(soft.rot)>.001||Math.abs(soft.scale-1)>.0001;
+ $('register').classList.toggle('pending',dirty);
+ drawGuides();
+}
+function resetSoft(){soft={dx:0,dy:0,rot:0,scale:1};renderSoft()}
+
+function setControls(c,p){
+ const u=signedToUnsigned(p.rotation);
+ $('rot').value=u;
+ $('rotv').textContent=u.toFixed(1)+'° (= '+signText(unsignedToSigned(u))+')';
+ $('scale').value=p.scalePct;
+ $('scalev').textContent=Number(p.scalePct).toFixed(1)+'%';
+ $('flipX').classList.toggle('active',!!p.flipX);
+ $('flipY').classList.toggle('active',!!p.flipY);
+ $('step').textContent=stepFine?'FINE':'COARSE';
+}
+function persistParams(p){
+ if(!current)return;
+ saved[current.key]=saved[current.key]||{};
+ saved[current.key].params=Object.assign({},p);
+ localStorage.setItem(KEY,JSON.stringify(saved));
+}
+function fallbackVisible(w,h){
+ const stage=$('softStage').getBoundingClientRect();
+ const fit=Math.min((stage.width*.72)/w,(stage.height*.72)/h);
+ const sc=Number.isFinite(fit)&&fit>0?fit:0.5;
+ const e=(stage.width-w*sc)/2,f=(stage.height-h*sc)/2;
+ baseMatrix=mat(sc,0,0,sc,e,f);
+ const rx=Number(current?._wcs?.CRPIX1||((w+1)/2))-1;
+ const ry=Number(current?._wcs?.CRPIX2||((h+1)/2))-1;
+ baseRefScreen=applyM(baseMatrix,rx,ry);
+ soft={dx:0,dy:0,rot:0,scale:1};
+ renderSoft();
+ $('diag').textContent='IMAGE LOADED · waiting for Aladin registration…';
+}
+function projectionSignature(wcs){
+ try{
+  const q=buildBaseMatrix(wcs,currentRaster[0],currentRaster[1]);
+  return {q,v:[q.M.a,q.M.b,q.M.c,q.M.d,q.ref[0],q.ref[1]]};
+ }catch(_){return null}
+}
+async function waitForStableProjection(wcs,timeout=2200){
+ const start=performance.now();let prev=null,stable=0,last=null;
+ while(performance.now()-start<timeout){
+   await new Promise(r=>setTimeout(r,120));
+   const cur=projectionSignature(wcs);
+   if(!cur)continue;
+   last=cur;
+   if(prev){
+     const delta=Math.max(...cur.v.map((x,i)=>Math.abs(x-prev.v[i])));
+     if(delta<0.18)stable++;else stable=0;
+     if(stable>=2)return cur.q;
+   }
+   prev=cur;
+ }
+ return last?.q||null;
+}
+async function establishPreview(recenter=true){
+ if(!current||!currentRaster)return;
+ const p=state(current),w=currentRaster[0],h=currentRaster[1],wcs=wcsFor(current,w,h,p);
+ current._wcs=wcs;
+ if(recenter){
+   aladin.gotoRaDec(wcs.CRVAL1,wcs.CRVAL2);
+   aladin.setFoV(fovOf(wcs,w,h));
+ }
+ const q=await waitForStableProjection(wcs,recenter?2400:900);
+ if(!q){
+   $('diag').textContent='IMAGE VISIBLE IN FALLBACK MODE · Aladin projection not settled yet';
+   return;
+ }
+ baseMatrix=q.M;baseRefScreen=q.ref;
+ const im=$('softImage');im.width=w;im.height=h;im.style.display='block';
+ soft={dx:0,dy:0,rot:0,scale:1};
+ renderSoft();
+ $('diag').textContent='SOFT REGISTRATION READY · drag image or adjust controls · Aladin stays fixed';
+}
+
+function screenAxisVectors(){
+ if(!current?._wcs)return null;
+ const w=current._wcs;
+ const fov=Math.max(.0001,fovOf(w,currentRaster[0],currentRaster[1]));
+ const delta=Math.max(1e-6,Math.min(.02,fov*.08));
+ const cosd=Math.max(.02,Math.abs(Math.cos(w.CRVAL2*Math.PI/180)));
+ const p0=aladin.world2pix(w.CRVAL1,w.CRVAL2,'ICRSd');
+ const pRA=aladin.world2pix(wrapRa(w.CRVAL1+delta/cosd),w.CRVAL2,'ICRSd');
+ const pDEC=aladin.world2pix(w.CRVAL1,Math.min(89.99999,w.CRVAL2+delta),'ICRSd');
+ function n(p){const x=Number(p?.[0])-Number(p0?.[0]),y=Number(p?.[1])-Number(p0?.[1]),d=Math.hypot(x,y);return d?[x/d,y/d]:null}
+ return {ra:n(pRA),dec:n(pDEC)};
+}
+function rotationScreenSign(){
+ if(!current||!currentRaster)return 1;
+ const p=state(current),w=currentRaster[0],h=currentRaster[1];
+ const w0=wcsFor(current,w,h,p),w1=wcsFor(current,w,h,Object.assign({},p,{rotation:Number(p.rotation||0)+1}));
+ function angle(W){
+  const P0=aladin.world2pix(W.CRVAL1,W.CRVAL2,'ICRSd');
+  const dpx=Math.max(20,w*.08);
+  const P1=aladin.world2pix(wrapRa(W.CRVAL1+W.CD1_1*dpx/Math.max(.02,Math.cos(W.CRVAL2*Math.PI/180))),W.CRVAL2+W.CD2_1*dpx,'ICRSd');
+  return Math.atan2(Number(P1?.[1])-Number(P0?.[1]),Number(P1?.[0])-Number(P0?.[0]));
+ }
+ let d=angle(w1)-angle(w0);while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+ return d>=0?1:-1;
+}
+function positionStepPx(){return stepFine?1.5:8}
+function rotationStep(){return stepFine?0.2:2}
+
+async function show(n){
+ idx=(n+queue.length)%queue.length;current=queue[idx];currentRaster=null;baseMatrix=null;baseRefScreen=null;soft={dx:0,dy:0,rot:0,scale:1};
+ $('softImage').style.display='none';
+ const p=state(current);setControls(current,p);
+ $('miniIndex').textContent=(idx+1)+'/'+queue.length;
+ $('miniName').textContent=current.name;
+ $('miniSaved').textContent=saved[current.key]?.verified?'✓':'';
+ $('progress').textContent=(idx+1)+' / '+queue.length+' · VERIFIED '+Object.values(saved).filter(x=>x&&x.verified).length;
+ $('diag').textContent='Loading image once…';
+ clearGuides();
+ try{
+   const probe=saved[current.key]?.raster;
+   current._wcs=wcsFor(current,Number(probe?.width||1024),Number(probe?.height||1024),p);
+   currentRaster=await loadSoftImage(current.image);
+   current._wcs=wcsFor(current,currentRaster[0],currentRaster[1],p);
+   await establishPreview(true);
+ }catch(e){$('diag').textContent='ERROR: '+e.message}
+}
+
+function commitSoft(){
+ if(!current||!currentRaster||!baseRefScreen)return;
+ const p=state(current),sign=rotationScreenSign();
+ const S=softMatrix();
+ const finalRef=applyM(S,baseRefScreen[0],baseRefScreen[1]);
+ const world=aladin.pix2world(finalRef[0],finalRef[1],'ICRSd');
+ const newRa=Number(world?.[0]),newDec=Number(world?.[1]);
+ if(!Number.isFinite(newRa)||!Number.isFinite(newDec)){ $('diag').textContent='REGISTER FAILED: could not convert screen position to sky';return; }
+ const [ra0,dec0]=baseReference(current);
+ const cosd=Math.max(.05,Math.abs(Math.cos(dec0*Math.PI/180)));
+ p.raOff=raDelta(newRa,ra0)*cosd*60;
+ p.decOff=(newDec-dec0)*60;
+ p.rotation=norm180(Number(p.rotation||0)+soft.rot*sign);
+ p.scalePct=Math.max(.1,Math.min(200,Number(p.scalePct||100)*soft.scale));
+ persistParams(p);setControls(current,p);
+ soft={dx:0,dy:0,rot:0,scale:1};
+ const wcs=wcsFor(current,currentRaster[0],currentRaster[1],p);current._wcs=wcs;
+ const q=buildBaseMatrix(wcs,currentRaster[0],currentRaster[1]);baseMatrix=q.M;baseRefScreen=q.ref;
+ renderSoft();
+ $('diag').textContent='COORDINATES REGISTERED · RAoff '+p.raOff.toFixed(4)+'′ · DECoff '+p.decOff.toFixed(4)+'′ · rot '+signText(p.rotation)+' · scale '+p.scalePct.toFixed(1)+'%';
+}
+
+function svgSize(){
+ const svg=$('guideSvg'),r=svg.getBoundingClientRect();
+ svg.setAttribute('viewBox','0 0 '+Math.max(1,r.width)+' '+Math.max(1,r.height));
+ return {w:r.width,h:r.height};
+}
+function clearGuides(){$('axisGuide').innerHTML='';$('rotGuide').innerHTML=''}
+function esc(t){return String(t).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function lineSvg(x1,y1,x2,y2,color,marker,label,lx,ly){
+ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+color+'" stroke-width="3" marker-end="url(#'+marker+')" />'+
+ '<text x="'+lx+'" y="'+ly+'" fill="'+color+'" font-size="13" font-weight="900" paint-order="stroke" stroke="#00101a" stroke-width="3">'+esc(label)+'</text>';
+}
+function arcPath(cx,cy,r,a0,a1){
+ const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+ return 'M '+x0+' '+y0+' A '+r+' '+r+' 0 0 '+(a1>a0?1:0)+' '+x1+' '+y1;
+}
+function drawGuides(){
+ if(!current||!current._wcs)return;
+ const {w,h}=svgSize(),v=screenAxisVectors();if(!v)return;
+ const ax=Math.min(92,Math.max(76,w*.14)),ay=Math.min(Math.max(145,h*.30),h-85),L=46;
+ let axis='<rect x="'+(ax-66)+'" y="'+(ay-66)+'" width="132" height="132" rx="12" fill="rgba(2,12,22,.62)" stroke="rgba(85,205,255,.6)" />';
+ if(v.ra){
+  axis+=lineSvg(ax,ay,ax+v.ra[0]*L,ay+v.ra[1]*L,'#ff55dc','arrowMagenta','RA+',ax+v.ra[0]*(L+10)-10,ay+v.ra[1]*(L+10)-5);
+  axis+=lineSvg(ax,ay,ax-v.ra[0]*L,ay-v.ra[1]*L,'#a93893','arrowMagentaDim','RA−',ax-v.ra[0]*(L+18)-10,ay-v.ra[1]*(L+18)-5);
+ }
+ if(v.dec){
+  axis+=lineSvg(ax,ay,ax+v.dec[0]*L,ay+v.dec[1]*L,'#54ddff','arrowCyan','DEC+',ax+v.dec[0]*(L+16)-14,ay+v.dec[1]*(L+16)-5);
+  axis+=lineSvg(ax,ay,ax-v.dec[0]*L,ay-v.dec[1]*L,'#267d9c','arrowCyanDim','DEC−',ax-v.dec[0]*(L+20)-14,ay-v.dec[1]*(L+20)-5);
+ }
+ axis+='<circle cx="'+ax+'" cy="'+ay+'" r="3" fill="#fff"/>';$('axisGuide').innerHTML=axis;
+ const sign=rotationScreenSign(),rx=w-82,ry=Math.min(Math.max(145,h*.30),h-85),r=39;
+ let rot='<rect x="'+(rx-66)+'" y="'+(ry-66)+'" width="132" height="132" rx="12" fill="rgba(2,12,22,.62)" stroke="rgba(85,205,255,.6)" />';
+ if(sign>0){
+  rot+='<path d="'+arcPath(rx,ry,r,-2.45,-.55)+'" fill="none" stroke="#62ff9c" stroke-width="3" marker-end="url(#arrowGreen)"/><text x="'+(rx-52)+'" y="'+(ry-48)+'" fill="#62ff9c" font-size="12" font-weight="900">ROT+ CW</text>';
+ }else{
+  rot+='<path d="'+arcPath(rx,ry,r,2.45,.55)+'" fill="none" stroke="#62ff9c" stroke-width="3" marker-end="url(#arrowGreen)"/><text x="'+(rx-58)+'" y="'+(ry-48)+'" fill="#62ff9c" font-size="12" font-weight="900">ROT+ CCW</text>';
+ }
+ rot+='<text x="'+rx+'" y="'+(ry+4)+'" fill="#fff" font-size="12" font-weight="900" text-anchor="middle">SOFT '+signText(soft.rot)+'</text>';$('rotGuide').innerHTML=rot;
+}
+
+// Instant local controls: no Aladin rebuild, no image reload.
+$('opacity').oninput=()=>{$('opv').textContent=$('opacity').value+'%';renderSoft()};
+$('rot').oninput=()=>{
+ const p=state(current),desired=unsignedToSigned(Number($('rot').value)),delta=norm180(desired-Number(p.rotation||0));
+ soft.rot=delta*rotationScreenSign();
+ $('rotv').textContent=Number($('rot').value).toFixed(1)+'° (= '+signText(desired)+')';renderSoft();
+};
+$('scale').oninput=()=>{
+ const p=state(current),desired=Number($('scale').value);
+ soft.scale=Math.max(.001,desired/Math.max(.1,Number(p.scalePct||100)));
+ $('scalev').textContent=desired.toFixed(1)+'%';renderSoft();
+};
+$('rotMinus').onclick=()=>{soft.rot-=rotationStep()*rotationScreenSign();const p=state(current),d=norm180(Number(p.rotation||0)+soft.rot*rotationScreenSign());$('rot').value=signedToUnsigned(d);$('rotv').textContent=signedToUnsigned(d).toFixed(1)+'° (= '+signText(d)+')';renderSoft()};
+$('rotPlus').onclick=()=>{soft.rot+=rotationStep()*rotationScreenSign();const p=state(current),d=norm180(Number(p.rotation||0)+soft.rot*rotationScreenSign());$('rot').value=signedToUnsigned(d);$('rotv').textContent=signedToUnsigned(d).toFixed(1)+'° (= '+signText(d)+')';renderSoft()};
+function softNudge(axis,sgn){
+ const v=screenAxisVectors();if(!v||!v[axis])return;
+ const px=positionStepPx();soft.dx+=v[axis][0]*px*sgn;soft.dy+=v[axis][1]*px*sgn;renderSoft();
+}
+$('raMinus').onclick=()=>softNudge('ra',-1);$('raPlus').onclick=()=>softNudge('ra',1);$('decMinus').onclick=()=>softNudge('dec',-1);$('decPlus').onclick=()=>softNudge('dec',1);
+$('step').onclick=()=>{stepFine=!stepFine;$('step').textContent=stepFine?'FINE':'COARSE'};
+$('flipX').onclick=()=>{const p=state(current);p.flipX=!p.flipX;persistParams(p);setControls(current,p);soft={dx:0,dy:0,rot:0,scale:1};establishPreview(false)};
+$('flipY').onclick=()=>{const p=state(current);p.flipY=!p.flipY;persistParams(p);setControls(current,p);soft={dx:0,dy:0,rot:0,scale:1};establishPreview(false)};
+$('register').onclick=commitSoft;
+
+// Direct drag on Chandra image.
+$('softImage').addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,dx:soft.dx,dy:soft.dy};$('softImage').setPointerCapture(e.pointerId);e.preventDefault()});
+$('softImage').addEventListener('pointermove',e=>{if(!drag)return;soft.dx=drag.dx+(e.clientX-drag.x);soft.dy=drag.dy+(e.clientY-drag.y);renderSoft();e.preventDefault()});
+function endDrag(){drag=null}
+$('softImage').addEventListener('pointerup',endDrag);$('softImage').addEventListener('pointercancel',endDrag);
+
+let resetArmedUntil=0,resetArmTimer=null;
+$('reset').onclick=()=>{
+ if(!current)return;
+ const now=Date.now();
+ if(now<resetArmedUntil){
+  clearTimeout(resetArmTimer);resetArmedUntil=0;$('reset').classList.remove('armed');$('reset').textContent='RESET CURRENT';
+  saved[current.key]={params:defaults(current)};localStorage.setItem(KEY,JSON.stringify(saved));
+  soft={dx:0,dy:0,rot:0,scale:1};setControls(current,defaults(current));establishPreview(true);return;
+ }
+ resetArmedUntil=now+3000;$('reset').classList.add('armed');$('reset').textContent='TAP AGAIN TO RESET';
+ clearTimeout(resetArmTimer);resetArmTimer=setTimeout(()=>{resetArmedUntil=0;$('reset').classList.remove('armed');$('reset').textContent='RESET CURRENT'},3000);
+};
+$('save').onclick=()=>{
+ if(!current||!current._wcs||!currentRaster)return;
+ if(Math.abs(soft.dx)>.01||Math.abs(soft.dy)>.01||Math.abs(soft.rot)>.001||Math.abs(soft.scale-1)>.0001)commitSoft();
+ const p=state(current),wcs=wcsFor(current,currentRaster[0],currentRaster[1],p);current._wcs=wcs;
+ saved[current.key]={params:Object.assign({},p),wcs:Object.assign({},wcs),raster:{width:currentRaster[0],height:currentRaster[1]},savedAt:new Date().toISOString(),verified:true};
+ localStorage.setItem(KEY,JSON.stringify(saved));show(idx+1);
+};
+$('prev').onclick=()=>show(idx-1);$('next').onclick=()=>show(idx+1);
+$('export').onclick=()=>{
+ const out={version:'0007',generatedAt:new Date().toISOString(),queueCount:queue.length,solutions:saved,queue:queue.map(c=>({key:c.key,imageId:c.imageId,name:c.name,mode:c.mode,publishedFovArcmin:c.publishedFovArcmin,center:c.center,image:c.image,sourceUrl:c.sourceUrl}))};
+ const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='gv-chandra-wcs-rescue-solutions-0007.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+let viewportSyncTimer=null;
+function syncViewportSoon(){
+ clearTimeout(viewportSyncTimer);
+ viewportSyncTimer=setTimeout(()=>{if(current?._wcs&&currentRaster)establishPreview(false)},180);
+}
+window.addEventListener('resize',syncViewportSoon);
+try{
+ if(typeof aladin.on==='function'){
+   aladin.on('positionChanged',syncViewportSoon);
+   aladin.on('zoomChanged',syncViewportSoon);
+ }
+}catch(_){}
+let start=queue.findIndex(c=>!saved[c.key]?.verified);if(start<0)start=0;
+show(start);
+})().catch(e=>{document.getElementById('miniName').textContent='LAB ERROR';document.getElementById('diag').textContent='FATAL: '+(e?.message||e)});
+</script></body></html>
