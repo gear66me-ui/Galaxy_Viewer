@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0078 — provider selection arms without travel; direct selection travels; explicit GO TO / DISPLAYING Survey states
+# BUILD 0079 — move Survey/provider selection from Target icon to persistent orange SELECT SURVEY control
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0078';
+const GV200001_BUILD='0079';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -825,6 +825,11 @@ const target=await window.GalaxyViewerTargetSimbad.init({
     onSelectProvider:(provider)=>gvSelectSurveyProvider(provider).catch(error=>console.error('GV SURVEY SELECT FAILED',error)),
     onExitSurvey:()=>gvExitSurveyMode()
 });
+target.button.style.pointerEvents='none';
+target.button.tabIndex=-1;
+target.button.setAttribute('aria-label','TARGET');
+target.button.title='TARGET';
+
 
 
 // ============================================================================
@@ -887,6 +892,8 @@ target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.ha
     count:gvSurveyCatalog.get(provider).length,
     icon:GV_SURVEY_PROVIDER_META[provider].icon
 })));
+if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
+
 
 
 // ============================================================================
@@ -953,26 +960,54 @@ document.head.appendChild(gvSurveySelectStyle);
 const gvSurveySelectButton=document.createElement('button');
 gvSurveySelectButton.id='gv-survey-select-galaxy';
 gvSurveySelectButton.type='button';
-gvSurveySelectButton.innerHTML='<span class="gv-survey-select-menu" aria-hidden="true"><i></i><i></i><i></i></span><span class="gv-survey-select-label">SELECT GALAXY</span>';
-gvSurveySelectButton.setAttribute('aria-label','SELECT GALAXY');
+gvSurveySelectButton.innerHTML='<span class="gv-survey-select-menu" aria-hidden="true"><i></i><i></i><i></i></span><span class="gv-survey-select-label">SELECT SURVEY</span>';
+gvSurveySelectButton.setAttribute('aria-label','SELECT SURVEY');
 document.body.appendChild(gvSurveySelectButton);
 function gvHideSurveySelectButton(){gvSurveySelectButton.style.display='none'}
+function gvSurveySelectLabel(){
+    const label=gvSurveyMode?'SELECT GALAXY':'SELECT SURVEY';
+    const e=gvSurveySelectButton.querySelector('.gv-survey-select-label');
+    if(e)e.textContent=label;
+    gvSurveySelectButton.setAttribute('aria-label',label);
+}
+function gvPositionProviderSurveyPanel(){
+    const panel=target?.panel;
+    if(!panel)return;
+    if(panel.parentElement!==document.body)document.body.appendChild(panel);
+    const r=gvSurveySelectButton.getBoundingClientRect();
+    panel.style.position='fixed';
+    panel.style.left=Math.round(r.left+r.width/2)+'px';
+    panel.style.right='auto';
+    panel.style.top=Math.round(r.bottom+4)+'px';
+    panel.style.transform='translateX(-50%)';
+    panel.style.zIndex='8901';
+}
 function gvSyncSurveySelectButton(){
     const coord=document.getElementById('gv-coordinate-host');
-    if(!gvSurveyMode||!coord){gvHideSurveySelectButton();return}
+    if(!coord){gvHideSurveySelectButton();return}
     const r=coord.getBoundingClientRect();
     if(!r.width||!r.height){gvHideSurveySelectButton();return}
+    gvSurveySelectLabel();
     gvSurveySelectButton.style.left=Math.round(r.left+r.width/2)+'px';
     gvSurveySelectButton.style.top=Math.round(r.bottom+5)+'px';
     gvSurveySelectButton.style.width=Math.round(Math.min(210,Math.max(190,r.width*.68)))+'px';
     gvSurveySelectButton.disabled=Boolean(navigationInFlight);
     gvSurveySelectButton.style.display='flex';
+    if(target?.open)gvPositionProviderSurveyPanel();
 }
 gvSurveySelectButton.addEventListener('click',()=>{
-    if(!gvSurveyMode||navigationInFlight)return;
-    galaxyNavigator.toggleSurveySelector?.(gvSurveySelectButton)
+    if(navigationInFlight)return;
+    if(gvSurveyMode){
+        target.close?.();
+        galaxyNavigator.toggleSurveySelector?.(gvSurveySelectButton);
+        return;
+    }
+    galaxyNavigator.closeSurveySelector?.();
+    target.toggle?.();
+    if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
 });
-window.addEventListener('resize',()=>requestAnimationFrame(gvSyncSurveySelectButton),{passive:true});
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
+requestAnimationFrame(gvSyncSurveySelectButton);
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
     get currentDestination(){return activeDestination},
@@ -1704,6 +1739,7 @@ async function gvSelectSurveyProvider(provider){
         thumbnails:gvSurveyThumbnailCandidates(record)
     })));
     gvSurveyMode={provider:key,records,items,index:-1,pendingIndex:resumeIndex};
+    target.close?.();
     gvSyncSurveySelectButton();
     history.length=0;historyIndex=-1;
     target.setActiveProvider(key,{index:resumeIndex+1,total:records.length});
@@ -1713,7 +1749,6 @@ async function gvSelectSurveyProvider(provider){
 }
 function gvExitSurveyMode(){
     if(navigationInFlight)return false;
-    gvHideSurveySelectButton();
     gvSurveyMode=null;
     history.length=0;historyIndex=-1;
     target.setActiveProvider('',{index:0,total:0});
