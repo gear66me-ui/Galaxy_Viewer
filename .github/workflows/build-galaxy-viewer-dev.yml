@@ -1,5 +1,5 @@
-name: Build Galaxy Viewer DEV 0057 WebKit 1.13 APK 0014 OFFICIAL PRERENDER
-# DEV 0057: APK 0014 diagnostic = proven APK 0014 single-WebView architecture with native provider prewarm disabled. Production untouched.
+name: Build Galaxy Viewer DEV 0057 WebKit 1.17.1 APK 0015 SMART PROVIDER PRELOAD
+# DEV 0057: APK 0015 = Lucky 13 single-WebView baseline + WebKit 1.17.1 layered provider preload/navigation gate. Production untouched.
 
 on:
   push:
@@ -70,11 +70,11 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 36
-              versionCode 69
-              versionName 'APK-0014-DEV-0057-WEBKIT113-READY2S'
+              versionCode 70
+              versionName 'APK-0015-DEV-0057-WEBKIT1171-SMARTPRELOAD'
             }
           }
-          dependencies { implementation 'androidx.webkit:webkit:1.13.0' }
+          dependencies { implementation 'androidx.webkit:webkit:1.17.1' }
           EOF
 
           # Android launcher artwork only. Galaxy Viewer stays hosted and follows the current launch/pointers.
@@ -135,7 +135,7 @@ jobs:
             <uses-permission android:name="android.permission.INTERNET" />
             <application android:allowBackup="false" android:hardwareAccelerated="true"
               android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
-              android:label="Galaxy Viewer DEV 57 W112" android:theme="@style/GalaxyViewerTheme"
+              android:label="Galaxy Viewer DEV 57 W117" android:theme="@style/GalaxyViewerTheme"
               android:usesCleartextTraffic="false">
               <activity android:name=".MainActivity"
                 android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
@@ -156,7 +156,7 @@ jobs:
 
           MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java"
 
-          # DEV 0014: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
+          # DEV 0015: exact APK 0008 runtime behavior; 0009 stale/restart experiment removed.
           # When the hosted top shell reloads after a prewarmed provider is already ready, immediately repopulate its browser state.
           python - "$MAIN" <<'PY'
           from pathlib import Path
@@ -187,7 +187,7 @@ jobs:
               assert line in s
               s=s.replace(line,'',1)
 
-          # APK 0014 / proven 0008: if the hosted top shell finishes after the provider already loaded,
+          # APK 0015 / proven 0008: if the hosted top shell finishes after the provider already loaded,
           # immediately repopulate URL/provider state instead of leaving its default LOADING… text.
           old='          fitTopShell();\n        }\n      }\n    }); return v;\n'
           assert old in s
@@ -266,13 +266,13 @@ jobs:
           assert old in s
           s=s.replace(old,'  @Override public void onBackPressed(){if(browserMode){returnToViewer();}else{moveTaskToBack(true);}}\n',1)
 
-          # Diagnostic APK 0014: disable native provider-page prewarm completely.
+          # Diagnostic APK 0015: disable native provider-page prewarm completely.
           # Hosted GVNative.prewarm(url) calls remain harmless no-ops; provider pages load only on explicit WEB press.
           old='    @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}\n'
           assert old in s
           s=s.replace(old,'    @JavascriptInterface public void prewarm(String url){}\n',1)
 
-          # APK 0014 Lucky 13 — official AndroidX WebKit 1.13 prerender.
+          # APK 0015 Lucky 13 — official AndroidX WebKit 1.17.1 prerender.
           # One provider WebView only. Prerender never navigates the visible WebView.
           # Each new destination cancels the previous speculative render.
           # Provider browser is revealed only after onPageCommitVisible confirms stale content is gone.
@@ -289,8 +289,7 @@ jobs:
           old='  private boolean prewarmLoading=false, prewarmFailed=false;\n'
           assert old in s
           new=('  private boolean prewarmLoading=false, prewarmFailed=false;\n'
-               '  private CancellationSignal prerenderSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false; private boolean providerNavigationArmed=false;\n'
-               '  private String providerRevealUrl=""; private int providerRevealGeneration=0; private long providerRevealNotBeforeMs=0L;\n')
+               '  private CancellationSignal prerenderSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false;\n')
           s=s.replace(old,new,1)
 
           # Replace live hidden-navigation prewarm with official WebView speculative prerender.
@@ -320,10 +319,9 @@ jobs:
                '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(prewarmLoading&&request!=null&&request.isForMainFrame()){prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";} }\n'
                '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(prewarmLoading&&!prewarmedUrl.isEmpty()){prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=prewarmedUrl;prewarmCommittedUrl=url==null?"":url;} if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }\n')
           assert old in s
-          new=('      @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){ if(browserMode&&awaitingProviderCommit&&url!=null&&url.equals(providerRevealUrl))providerNavigationArmed=true; }\n'
-               '      @Override public void onPageCommitVisible(WebView view,String url){ if(browserMode&&awaitingProviderCommit){String committed=url==null?"":url;final String target=providerRevealUrl;final int generation=providerRevealGeneration;boolean currentCommit=!target.isEmpty()&&(target.equals(committed)||providerNavigationArmed);if(!currentCommit)return;awaitingProviderCommit=false;providerNavigationArmed=false;if(clearProviderEntryHistory){web.clearHistory();clearProviderEntryHistory=false;}if(!committed.isEmpty())sourceUrl=committed;long remaining=Math.max(0L,providerRevealNotBeforeMs-android.os.SystemClock.uptimeMillis());Runnable reveal=()->{if(!browserMode||providerRevealGeneration!=generation||!target.equals(providerRevealUrl))return;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}syncShell();immersive();};if(remaining>0L&&web!=null)web.postDelayed(reveal,remaining);else reveal.run();} }\n'
-               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(browserMode&&awaitingProviderCommit&&request!=null&&request.isForMainFrame()){providerNavigationArmed=false;providerRevealUrl="";} }\n'
-               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(browserMode&&!awaitingProviderCommit){ if(url!=null&&!url.isEmpty())sourceUrl=url; syncShell(); } }\n')
+          new=('      @Override public void onPageCommitVisible(WebView view,String url){ if(browserMode&&awaitingProviderCommit){awaitingProviderCommit=false;if(clearProviderEntryHistory){web.clearHistory();clearProviderEntryHistory=false;}if(url!=null&&!url.isEmpty())sourceUrl=url;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}syncShell();immersive();} }\n'
+               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(browserMode&&awaitingProviderCommit&&request!=null&&request.isForMainFrame()){awaitingProviderCommit=false;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}immersive();} }\n'
+               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(browserMode){ if(url!=null&&!url.isEmpty())sourceUrl=url; syncShell(); } }\n')
           s=s.replace(old,new,1)
 
           # Pressing WEB activates the exact prerendered URL. Keep Galaxy Viewer visible until commit.
@@ -332,9 +330,9 @@ jobs:
                "    fetchPointer();\n"
                "    immersive();\n")
           assert old in s
-          new=("    providerRevealGeneration++;providerRevealUrl=u;providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L;providerNavigationArmed=false;awaitingProviderCommit=true;\n"
+          new=("    awaitingProviderCommit=true;\n"
                "    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n"
-               "    if(web!=null){web.requestFocus();try{web.stopLoading();}catch(Exception ignored){}web.loadUrl(u);}\n"
+               "    if(web!=null){web.requestFocus();web.loadUrl(u);}\n"
                "    fetchPointer();\n"
                "    immersive();\n")
           s=s.replace(old,new,1)
@@ -352,19 +350,174 @@ jobs:
           p.write_text(s)
           PY
 
-          # Nanoscopic gates: APK 0014 uses one provider WebView + AndroidX WebKit 1.13 prerender + exact-current commit + 2s minimum reveal.
+          # APK 0015 Lucky 15 — start from the proven Lucky 13 output and layer current WebKit 1.17.1 APIs.
+          python - "$MAIN" <<'PY15'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text()
+
+          needle='import androidx.webkit.PrerenderException;\n'
+          assert needle in s
+          s=s.replace(needle,needle+
+              'import androidx.webkit.Navigation;\n'
+              'import androidx.webkit.NavigationListener;\n'
+              'import androidx.webkit.NavigationParameters;\n'
+              'import androidx.webkit.Page;\n'
+              'import androidx.webkit.PrefetchCache;\n'
+              'import androidx.webkit.PrefetchException;\n'
+              'import androidx.webkit.PrefetchParameters;\n'
+              'import androidx.webkit.PrefetchResult;\n'
+              'import androidx.webkit.Profile;\n'
+              'import androidx.webkit.WebViewOutcomeReceiver;\n',1)
+
+          old='  private CancellationSignal prerenderSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false;\n'
+          assert old in s
+          new=('  private CancellationSignal prerenderSignal=null, prefetchSignal=null; private int prerenderGeneration=0; private boolean awaitingProviderCommit=false;\n'
+               '  private Navigation activeProviderNavigation=null; private String providerTargetUrl=""; private int providerRevealGeneration=0; private long providerRevealNotBeforeMs=0L; private boolean providerRetryUsed=false;\n'
+               '  private final Handler providerGateHandler=new Handler(Looper.getMainLooper()); private Runnable providerWatchdog=null;\n')
+          s=s.replace(old,new,1)
+
+          start=s.index('  private void prewarmProvider(String u){')
+          end=s.index('  private String launchProviderIcon(Intent intent){',start)
+          assert start>=0 and end>start
+          replacement=('  private void prewarmProvider(String u){\n'
+                       '    if(u==null||!u.startsWith("https://")||web==null)return;\n'
+                       '    if(u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed)return;\n'
+                       '    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}\n'
+                       '    if(prefetchSignal!=null){try{prefetchSignal.cancel();}catch(Exception ignored){}prefetchSignal=null;}\n'
+                       '    final int generation=++prerenderGeneration;\n'
+                       '    prewarmedUrl=u;prewarmReadyUrl="";prewarmCommittedUrl="";prewarmLoading=true;prewarmFailed=false;\n'
+                       '    try{\n'
+                       '      if(WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)){\n'
+                       '        Profile profile=WebViewCompat.getProfile(web);\n'
+                       '        if(WebViewFeature.isFeatureSupported(WebViewFeature.WARM_UP_RENDERER_PROCESS)){try{profile.warmUpRendererProcess();}catch(Exception ignored){}}\n'
+                       '        if(WebViewFeature.isFeatureSupported(WebViewFeature.PRECONNECT)){try{profile.preconnect(u);}catch(Exception ignored){}}\n'
+                       '        if(WebViewFeature.isFeatureSupported(WebViewFeature.PREFETCH_CACHE_V1)&&WebViewFeature.isFeatureSupported(WebViewFeature.PROFILE_URL_PREFETCH)){\n'
+                       '          prefetchSignal=new CancellationSignal();\n'
+                       '          PrefetchCache cache=profile.getPrefetchCache();\n'
+                       '          PrefetchParameters params=new PrefetchParameters.Builder().build();\n'
+                       '          cache.prefetchUrlAsync(u,prefetchSignal,getMainExecutor(),params,new WebViewOutcomeReceiver<PrefetchResult,PrefetchException>(){\n'
+                       '            @Override public void onResult(PrefetchResult result){}\n'
+                       '            @Override public void onError(PrefetchException error){}\n'
+                       '          });\n'
+                       '        }\n'
+                       '      }\n'
+                       '    }catch(Exception ignored){}\n'
+                       '    if(WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){\n'
+                       '      prerenderSignal=new CancellationSignal();\n'
+                       '      try{WebViewCompat.prerenderUrlAsync(web,u,prerenderSignal,getMainExecutor(),new PrerenderOperationCallback(){\n'
+                       '        @Override public void onPrerenderActivated(){if(generation!=prerenderGeneration||!u.equals(prewarmedUrl))return;prewarmLoading=false;prewarmFailed=false;prewarmReadyUrl=u;prewarmCommittedUrl=u;}\n'
+                       '        @Override public void onError(PrerenderException e){if(generation!=prerenderGeneration||!u.equals(prewarmedUrl))return;prewarmLoading=false;prewarmFailed=true;prewarmReadyUrl="";prewarmCommittedUrl="";}\n'
+                       '      });}catch(Exception e){if(generation==prerenderGeneration&&u.equals(prewarmedUrl)){prewarmLoading=false;prewarmFailed=true;}}\n'
+                       '    }else{prewarmLoading=false;prewarmFailed=true;}\n'
+                       '  }\n')
+          s=s[:start]+replacement+s[end:]
+
+          old=('      @Override public void onPageCommitVisible(WebView view,String url){ if(browserMode&&awaitingProviderCommit){awaitingProviderCommit=false;if(clearProviderEntryHistory){web.clearHistory();clearProviderEntryHistory=false;}if(url!=null&&!url.isEmpty())sourceUrl=url;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}syncShell();immersive();} }\n'
+               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){ if(browserMode&&awaitingProviderCommit&&request!=null&&request.isForMainFrame()){awaitingProviderCommit=false;if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}immersive();} }\n'
+               '      @Override public void onPageFinished(WebView view,String url){ CookieManager.getInstance().flush(); if(browserMode){ if(url!=null&&!url.isEmpty())sourceUrl=url; syncShell(); } }\n')
+          assert old in s
+          new=('      @Override public void onPageCommitVisible(WebView view,String url){if(browserMode&&awaitingProviderCommit&&activeProviderNavigation==null)visualRevealProvider(providerRevealGeneration,providerTargetUrl);}\n'
+               '      @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){if(browserMode&&awaitingProviderCommit&&activeProviderNavigation==null&&request!=null&&request.isForMainFrame())retryProviderNavigation(providerRevealGeneration,providerTargetUrl);}\n'
+               '      @Override public void onPageFinished(WebView view,String url){CookieManager.getInstance().flush();if(browserMode&&!awaitingProviderCommit){if(url!=null&&!url.isEmpty())sourceUrl=url;syncShell();}}\n')
+          s=s.replace(old,new,1)
+
+          marker='    }); return v;\n  }\n  private void fetchPointer(){\n'
+          assert marker in s
+          navlistener=('    });\n'
+                       '    if(WebViewFeature.isFeatureSupported(WebViewFeature.NAVIGATION_LISTENER)){\n'
+                       '      WebViewCompat.addNavigationListener(v,new NavigationListener(){\n'
+                       '        @Override public void onNavigationCompleted(Navigation navigation){\n'
+                       '          if(!browserMode||!awaitingProviderCommit||navigation!=activeProviderNavigation)return;\n'
+                       '          if(navigation.didCommitErrorPage()){retryProviderNavigation(providerRevealGeneration,providerTargetUrl);return;}\n'
+                       '          if(navigation.didCommit())visualRevealProvider(providerRevealGeneration,providerTargetUrl);\n'
+                       '        }\n'
+                       '        @Override public void onFirstContentfulPaintMillis(Page page,long durationMillis){\n'
+                       '          Navigation n=activeProviderNavigation;if(!browserMode||!awaitingProviderCommit||n==null)return;\n'
+                       '          try{if(page.equals(n.getPage()))revealProvider(providerRevealGeneration,providerTargetUrl);}catch(Exception ignored){}\n'
+                       '        }\n'
+                       '      });\n'
+                       '    }\n'
+                       '    return v;\n'
+                       '  }\n'
+                       '  private void fetchPointer(){\n')
+          s=s.replace(marker,navlistener,1)
+
+          insert='  private String launchProviderIcon(Intent intent){'
+          idx=s.index(insert)
+          assert idx>=0
+          helpers=('  private boolean providerRequestCurrent(int generation,String url){return browserMode&&awaitingProviderCommit&&generation==providerRevealGeneration&&url!=null&&url.equals(providerTargetUrl);}\n'
+                   '  private void revealProvider(int generation,String url){\n'
+                   '    if(!providerRequestCurrent(generation,url))return;\n'
+                   '    long remaining=Math.max(0L,providerRevealNotBeforeMs-android.os.SystemClock.uptimeMillis());\n'
+                   '    if(remaining>0L){providerGateHandler.postDelayed(()->revealProvider(generation,url),remaining);return;}\n'
+                   '    awaitingProviderCommit=false;activeProviderNavigation=null;if(providerWatchdog!=null){providerGateHandler.removeCallbacks(providerWatchdog);providerWatchdog=null;}\n'
+                   '    if(clearProviderEntryHistory){web.clearHistory();clearProviderEntryHistory=false;}String current=web==null?null:web.getUrl();if(current!=null&&!current.isEmpty()&&!"about:blank".equals(current))sourceUrl=current;\n'
+                   '    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}syncShell();immersive();\n'
+                   '  }\n'
+                   '  private void visualRevealProvider(int generation,String url){\n'
+                   '    if(web==null||!providerRequestCurrent(generation,url))return;\n'
+                   '    try{web.postVisualStateCallback(generation,new WebView.VisualStateCallback(){@Override public void onComplete(long requestId){revealProvider(generation,url);}});}catch(Exception e){revealProvider(generation,url);}\n'
+                   '  }\n'
+                   '  private void scheduleProviderWatchdog(int generation,String url,long delayMs){\n'
+                   '    if(providerWatchdog!=null)providerGateHandler.removeCallbacks(providerWatchdog);\n'
+                   '    providerWatchdog=()->{if(!providerRequestCurrent(generation,url))return;if(!providerRetryUsed)retryProviderNavigation(generation,url);else showProviderLoadFailure(generation,url);};\n'
+                   '    providerGateHandler.postDelayed(providerWatchdog,delayMs);\n'
+                   '  }\n'
+                   '  private void retryProviderNavigation(int generation,String url){\n'
+                   '    if(!providerRequestCurrent(generation,url)||web==null)return;if(providerRetryUsed){showProviderLoadFailure(generation,url);return;}providerRetryUsed=true;\n'
+                   '    try{web.stopLoading();}catch(Exception ignored){}activeProviderNavigation=null;\n'
+                   '    providerGateHandler.postDelayed(()->{if(!providerRequestCurrent(generation,url))return;startProviderNavigation(generation,url);scheduleProviderWatchdog(generation,url,18000L);},120L);\n'
+                   '  }\n'
+                   '  private void showProviderLoadFailure(int generation,String url){\n'
+                   '    if(!providerRequestCurrent(generation,url)||web==null)return;awaitingProviderCommit=false;activeProviderNavigation=null;if(providerWatchdog!=null){providerGateHandler.removeCallbacks(providerWatchdog);providerWatchdog=null;}\n'
+                   '    String html="<html><body style=\\\"margin:0;background:#000;color:#dff7ff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center\\\"><div><h3>WEBSITE COULD NOT LOAD</h3><p>The current provider page did not become ready.</p></div></body></html>";\n'
+                   '    web.loadDataWithBaseURL(url,html,"text/html","UTF-8",null);if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}sourceUrl=url;syncShell();immersive();\n'
+                   '  }\n'
+                   '  private void startProviderNavigation(int generation,String url){\n'
+                   '    if(!providerRequestCurrent(generation,url)||web==null)return;web.requestFocus();\n'
+                   '    if(WebViewFeature.isFeatureSupported(WebViewFeature.WEBVIEW_NAVIGATE_EXPERIMENTAL_V1)&&WebViewFeature.isFeatureSupported(WebViewFeature.NAVIGATION_LISTENER)){\n'
+                   '      try{NavigationParameters params=new NavigationParameters.Builder().setShouldReplaceCurrentEntry(true).build();activeProviderNavigation=WebViewCompat.navigate(web,url,params);return;}catch(Exception ignored){activeProviderNavigation=null;}\n'
+                   '    }\n'
+                   '    activeProviderNavigation=null;web.loadUrl(url);\n'
+                   '  }\n')
+          s=s[:idx]+helpers+s[idx:]
+
+          old=("    awaitingProviderCommit=true;\n"
+               "    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n"
+               "    if(web!=null){web.requestFocus();web.loadUrl(u);}\n"
+               "    fetchPointer();\n"
+               "    immersive();\n")
+          assert old in s
+          new=("    if(!u.equals(prewarmedUrl))prewarmProvider(u);\n"
+               "    providerRevealGeneration++;providerTargetUrl=u;providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L;providerRetryUsed=false;awaitingProviderCommit=true;activeProviderNavigation=null;\n"
+               "    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n"
+               "    startProviderNavigation(providerRevealGeneration,u);scheduleProviderWatchdog(providerRevealGeneration,u,10000L);\n"
+               "    fetchPointer();\n"
+               "    immersive();\n")
+          s=s.replace(old,new,1)
+
+          p.write_text(s)
+          PY15
+
+          # Nanoscopic gates: APK 0015 is Lucky 13 + WebKit 1.17.1 layered preload + exact navigation/FCP gate.
           grep -q 'GalaxyViewerWebBrowser/0057' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
           grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
           grep -q 'onConfigurationChanged(Configuration c)' "$MAIN"
           grep -q 'if(browserMode)syncShell();' "$MAIN"
           grep -q 'if(browserMode){returnToViewer();}else{moveTaskToBack(true);}' "$MAIN"
-          grep -q 'providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L' "$MAIN"
-          grep -q 'providerRevealGeneration++' "$MAIN"
-          grep -q 'providerNavigationArmed=true' "$MAIN"
-          grep -q 'target.equals(committed)||providerNavigationArmed' "$MAIN"
-          grep -q 'web.stopLoading()' "$MAIN"
           grep -q 'awaitingProviderCommit=true;' "$MAIN"
+          grep -q 'profile.preconnect(u)' "$MAIN"
+          grep -q 'profile.warmUpRendererProcess()' "$MAIN"
+          grep -q 'prefetchUrlAsync' "$MAIN"
+          grep -q 'WebViewCompat.addNavigationListener' "$MAIN"
+          grep -q 'WebViewCompat.navigate(web,url,params)' "$MAIN"
+          grep -q 'onFirstContentfulPaintMillis' "$MAIN"
+          grep -q 'providerRevealNotBeforeMs=android.os.SystemClock.uptimeMillis()+2000L' "$MAIN"
+          grep -q 'scheduleProviderWatchdog(providerRevealGeneration,u,10000L)' "$MAIN"
+          grep -q 'WEBSITE COULD NOT LOAD' "$MAIN"
           grep -q 'browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();' "$MAIN"
           grep -q 'prerenderSignal.cancel()' "$MAIN"
           grep -q 'final int generation=++prerenderGeneration' "$MAIN"
@@ -382,12 +535,12 @@ jobs:
           grep -q 'prewarmLoading=true;prewarmFailed=false' "$MAIN"
           grep -q 'onPageCommitVisible(WebView view,String url)' "$MAIN"
           grep -q 'request.isForMainFrame()' "$MAIN"
-          grep -q 'if(web!=null){web.requestFocus();try{web.stopLoading();}catch(Exception ignored){}web.loadUrl(u);}' "$MAIN"
+          grep -q 'startProviderNavigation(providerRevealGeneration,u)' "$MAIN"
           grep -q '@JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}' "$MAIN"
           grep -q 'onPrerenderActivated()' "$MAIN"
           ! grep -q 'launchPrewarm' "$MAIN"
           ! grep -q 'postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000' "$MAIN"
-          grep -q "androidx.webkit:webkit:1.13.0" "$ROOT/app/build.gradle"
+          grep -q "androidx.webkit:webkit:1.17.1" "$ROOT/app/build.gradle"
           grep -q 'import android.webkit.CookieManager;' "$MAIN"
           grep -q 'import android.webkit.WebResourceError;' "$MAIN"
           grep -q 'setAcceptCookie(true)' "$MAIN"
@@ -416,7 +569,7 @@ jobs:
           printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
           test -s "$KEYSTORE"
           APK_UNSIGNED=/tmp/galaxy-viewer-dev/app/build/outputs/apk/release/app-release-unsigned.apk
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT113-0014.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk
           test -s "$APK_UNSIGNED"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -f -p 4 "$APK_UNSIGNED" /tmp/app-release-aligned.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks "$KEYSTORE" --ks-key-alias galaxyviewer-upload --ks-pass env:GV_UPLOAD_STORE_PASSWORD --key-pass env:GV_UPLOAD_STORE_PASSWORD --out "$APK" /tmp/app-release-aligned.apk
@@ -426,7 +579,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APK=Galaxy-Viewer-DEV-0057-WEBKIT113-0014.apk
+          APK=Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee apk-rc-signature.txt
           sha256sum "$APK" | tee "$APK.sha256"
@@ -434,8 +587,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-DEV-0057-WEBKIT113-0014
+          name: Galaxy-Viewer-DEV-0057-WEBKIT1171-0015
           path: |
-            Galaxy-Viewer-DEV-0057-WEBKIT113-0014.apk
-            Galaxy-Viewer-DEV-0057-WEBKIT113-0014.apk.sha256
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk
+            Galaxy-Viewer-DEV-0057-WEBKIT1171-0015.apk.sha256
           retention-days: 30
