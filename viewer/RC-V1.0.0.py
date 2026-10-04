@@ -1668,7 +1668,7 @@ async function gvNavigateSurveyIndex(nextIndex){
     updateNavigationAvailability();
     try{
         const firstTrip=routeIndex===0;
-        const switchToSphericalAtApex=routeIndex===1;
+        const switchToSphericalAtApex=false;
         routeIndex++;
         await showDestination(destination,{firstTrip,switchToSphericalAtApex});
         return true;
@@ -1710,7 +1710,7 @@ async function navigateRandom(){
         history.push(destination);
         historyIndex=history.length-1;
         const firstTrip=routeIndex===0;
-        const switchToSphericalAtApex=routeIndex===1;
+        const switchToSphericalAtApex=false;
         routeIndex++;
         await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
     }finally{
