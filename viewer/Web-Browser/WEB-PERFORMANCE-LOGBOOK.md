@@ -602,3 +602,21 @@ Commits:
 - Navigator 006: `30803ce207747022a5485f783c845af8bb7238a6`
 - Viewer: `9a8fc71336347e414345aaebc7b4f201ece6e777`
 - Pointer: `4823741bf8489f79613950c5d741cbcdf3b6dfbf`
+
+
+## Build 0079 — Survey ownership moved to orange control
+
+Date: 2026-10-04.
+
+UI ownership:
+- RANDOM GALAXY remains unchanged.
+- Orange top control now starts as `SELECT SURVEY`.
+- Tapping `SELECT SURVEY` opens the existing provider list.
+- Target icon no longer opens the Survey/provider menu.
+- After a provider is selected, the same orange control becomes `SELECT GALAXY`.
+- Tapping `SELECT GALAXY` opens that provider's galaxy selector.
+- Build 0078 travel, provider memory, thumbnail behavior, projection choreography, Browser 0031 and APK behavior are preserved.
+
+Commits:
+- viewer: `ae65d91da9600b66070cc49081589d866f31e9f7`
+- pointer: `f9a98dc4e74dc9cfdfa6bc939fa0603c997efe01`
