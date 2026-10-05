@@ -48,9 +48,9 @@ jobs:
             exit 0
           fi
 
-          # Bootstrap this bypass itself without coupling the first deploy to
-          # the stale production build gate.
-          if [[ "${HEAD_MESSAGE}" == CHANDRA\ REVIEW* ]]; then
+          # Bootstrap isolated static-site deployments without coupling them
+          # to the production viewer validation gate.
+          if [[ "${HEAD_MESSAGE}" == CHANDRA\ REVIEW* || "${HEAD_MESSAGE}" == GALAXY\ VIEWER\ PUBLIC\ SITE* ]]; then
             echo "review_only=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -60,7 +60,7 @@ jobs:
             exit 0
           fi
 
-          if ! grep -Ev '^temporary-demos/chandra-avm-candidate-review-' <<< "${files}" | grep -q .; then
+          if ! grep -Ev '^(temporary-demos/chandra-avm-candidate-review-|galaxy-viewer/)' <<< "${files}" | grep -q .; then
             echo "review_only=true" >> "$GITHUB_OUTPUT"
           fi
 
