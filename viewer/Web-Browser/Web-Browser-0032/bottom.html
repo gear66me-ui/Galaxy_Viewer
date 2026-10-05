@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>
+@font-face{font-family:GV;src:url("../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf") format("opentype");font-display:block}
+:root{--ice:#43CFFF;--white:#F4FDFF;--green:#78FFAB}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:GV,sans-serif}
+body{padding:2px;background:linear-gradient(180deg,#020812,#01040a)}
+.row{height:32px;display:grid;grid-template-columns:minmax(0,1fr) 32px;gap:4px}
+.panel{appearance:none;-webkit-appearance:none;position:relative;overflow:hidden;margin:0;border:1px solid rgba(67,207,255,.82);border-radius:10px;background:linear-gradient(155deg,#03122B,#052B5B 58%,#021026);box-shadow:inset 0 1px 1px rgba(225,251,255,.34),inset 0 -3px 8px rgba(0,0,0,.55),0 0 5px rgba(50,190,255,.34);color:var(--white)}
+.panel:after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(118,225,255,.035) 28%,transparent 46%);pointer-events:none}
+.exit{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 12px;font:400 12.6px/1 GV,sans-serif;letter-spacing:.34px;text-shadow:0 0 4px rgba(255,255,255,.88),0 0 8px rgba(88,191,255,.68);touch-action:manipulation}
+.exit-arrow{position:relative;z-index:1;width:10px;height:10px;flex:0 0 10px}
+.exit-arrow:before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border:solid var(--white);border-width:0 3px 3px 0;filter:drop-shadow(0 0 3px #8DDAFF) drop-shadow(0 0 7px #58BFFF);transform:translate(-35%,-50%) rotate(135deg)}
+.exit-label{position:relative;z-index:1;white-space:nowrap}
+.icon{display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#0B2749 0%,#02070F 73%)}
+.icon img{position:relative;z-index:1;width:29px;height:29px;object-fit:contain}
+.exit.gvflash{border-color:var(--green)!important;background:linear-gradient(145deg,#062B1D 0%,#08783F 44%,#13B968 100%)!important;box-shadow:inset 0 0 6px rgba(120,255,171,.22),0 0 5px rgba(120,255,171,.72)!important;color:#DFFFF0!important}
+.exit.gvflash .exit-arrow:before{border-color:var(--green);filter:drop-shadow(0 0 4px var(--green)) drop-shadow(0 0 8px #38E69A)}
+</style>
+</head>
+<body>
+<div class="row">
+  <button id="gv-exit-main" class="panel exit" type="button" aria-label="Back to Galaxy Viewer">
+    <span class="exit-arrow" aria-hidden="true"></span>
+    <span class="exit-label">BACK TO GALAXY VIEWER</span>
+  </button>
+  <div class="panel icon"><img src="../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg" alt=""></div>
+</div>
+<script>
+let gvExiting=false;
+function paintGreen(b){b.classList.add('gvflash');void b.offsetWidth}
+function exitToViewer(){if(gvExiting)return;gvExiting=true;const b=document.getElementById('gv-exit-main');paintGreen(b);requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>GV.exit(),460)))}
+const b=document.getElementById('gv-exit-main');let pointerSeen=false;
+b.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button!==0)return;pointerSeen=true;e.preventDefault();exitToViewer()});
+b.addEventListener('click',e=>{if(pointerSeen){pointerSeen=false;e.preventDefault();return}if(e.detail===0){e.preventDefault();exitToViewer()}});
+</script>
+</body>
+</html>
