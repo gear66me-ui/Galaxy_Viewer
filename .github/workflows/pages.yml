@@ -317,6 +317,43 @@ jobs:
               {'key':'review1-spring-pelican','origin':'review1','imageId':'spring-pelican','name':'Pelican Nebula · NGC 7000','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_pelican.jpg'},
               {'key':'review1-spring-flame','origin':'review1','imageId':'spring-flame','name':'Flame Nebula · NGC 2024','kind':'nebula/remnant','wcsQuality':'Unsolved','releaseDate':'2026-03-19','wcsReferenceValue':[],'wcsReferenceDimension':[],'wcsReferencePixel':[],'wcsScale':[],'wcsRotation':None,'wcsProjection':'TAN','sourceUrl':'https://chandra.harvard.edu/photo/2026/spring/more.html','image':'https://chandra.harvard.edu/photo/2026/spring/spring_flame.jpg'}
           ]
+
+          # Apply release-authoritative manual registration overrides after the
+          # AstroPix feed is normalized, so feed refreshes cannot resurrect
+          # known bad geometry.
+          override_path=pathlib.Path('viewer/image-databases/Chandra/databases/gv-chandra-avm-manual-overrides-0001.json')
+          overrides=json.load(open(override_path,encoding='utf-8'))
+          override_by_id={str(x.get('imageId')):x for x in overrides.get('records',[])}
+
+          for rec in queue:
+              image_id=str(rec.get('imageId'))
+              if image_id=='315':
+                  o=override_by_id.get('315')
+                  if not o:
+                      raise SystemExit('Missing NGC 5746 manual override')
+                  rec['sourceWcsRotation']=rec.get('wcsRotation')
+                  rec['wcsRotation']=o['correctedRotationDeg']
+                  rec['manualRotationCorrectionDeg']=o['rotationCorrectionDeg']
+                  rec['registrationStatus']='manual_rotation_corrected'
+              elif image_id=='345':
+                  # Keep the historical record in the 102-item audit queue,
+                  # but do not approve it for runtime registration. The user's
+                  # verified 838f registration is the canonical Eagle image.
+                  rec['wcsQuality']='Superseded'
+                  rec['registrationStatus']='superseded_by_838f_manual'
+                  rec['supersededBy']='838f'
+              elif image_id=='838f':
+                  o=override_by_id.get('838f')
+                  if not o:
+                      raise SystemExit('Missing Eagle 838f manual override')
+                  rec['wcsQuality']='Manual'
+                  rec['registrationStatus']='manual_verified'
+                  rec['manualWcs']=o['aladinRgbaWcs']
+                  rec['manualRegistrationSource']=o['sourceRegistrationFile']
+                  rec['replacesReviewImageId']=o.get('replacesReviewImageId')
+
+          print('MANUAL OVERRIDES APPLIED',sum(1 for x in queue if x.get('registrationStatus','').startswith('manual_')))
+          print('SUPERSEDED RECORDS',sum(1 for x in queue if x.get('wcsQuality')=='Superseded'))
           if len(queue)!=102:
               raise SystemExit(f'Registration queue count {len(queue)} != 102')
 
@@ -328,12 +365,14 @@ jobs:
           html=html.replace(marker,json.dumps(queue,ensure_ascii=False,separators=(',',':')))
           gate.write_text(html,encoding='utf-8')
           pathlib.Path('temporary-demos/chandra-avm-registration-gate-0001/queue.json').write_text(
-              json.dumps({'version':'0001','count':len(queue),'fullWcs':sum(1 for x in queue if x['wcsQuality']=='Full'),'queue':queue},indent=2,ensure_ascii=False),
+              json.dumps({'version':'0001','count':len(queue),'fullWcs':sum(1 for x in queue if x['wcsQuality']=='Full'),'manualWcs':sum(1 for x in queue if x['wcsQuality']=='Manual'),'superseded':sum(1 for x in queue if x['wcsQuality']=='Superseded'),'queue':queue},indent=2,ensure_ascii=False),
               encoding='utf-8'
           )
           print('CHANDRA REGISTRATION QUEUE',len(queue))
           print('FULL_WCS',sum(1 for x in queue if x['wcsQuality']=='Full'))
-          print('UNSOLVED',sum(1 for x in queue if x['wcsQuality']!='Full'))
+          print('MANUAL_WCS',sum(1 for x in queue if x['wcsQuality']=='Manual'))
+          print('SUPERSEDED',sum(1 for x in queue if x['wcsQuality']=='Superseded'))
+          print('UNSOLVED',sum(1 for x in queue if x['wcsQuality'] not in ('Full','Manual')))
           PY
           test -s temporary-demos/chandra-avm-registration-gate-0001/queue.json
           grep -q 'const queue=\[' temporary-demos/chandra-avm-registration-gate-0001/index.html
