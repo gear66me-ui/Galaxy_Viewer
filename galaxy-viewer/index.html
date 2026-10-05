@@ -60,7 +60,7 @@ a{color:inherit}.shell{position:relative;z-index:1;width:min(1120px,calc(100% - 
 .profile h3{margin:0;font:400 15px/1.3 GVSpace,Arial,sans-serif}.profile p{color:#7dcfff;font-size:12px;line-height:1.7;text-transform:uppercase;letter-spacing:.08em}
 .storycopy{padding:26px 26px}.storycopy p{margin:0 0 15px;color:#c7dfea;font-size:15px;line-height:1.78}.storycopy p:last-child{margin-bottom:0}.storycopy .quote{color:#eafaff;font-size:18px;line-height:1.65;text-align:center;margin:22px 0;padding:17px;border-top:1px solid rgba(120,232,255,.18);border-bottom:1px solid rgba(120,232,255,.18);text-shadow:0 0 12px rgba(61,179,255,.20)}
 .providers{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:27px}.provider{min-height:112px;padding:12px 8px;border:1px solid rgba(120,232,255,.2);border-radius:14px;background:rgba(4,17,38,.78);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center}
-.provider img{width:54px;height:54px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 7px rgba(113,218,255,.42))}.provider b{font:400 8px/1.25 GVSpace,Arial,sans-serif;letter-spacing:.04em;color:#bdefff}
+.provider-glyph{width:54px;height:54px;border-radius:12px;border:1px solid rgba(120,232,255,.48);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,rgba(68,189,255,.34),rgba(5,27,58,.9));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 12px rgba(56,183,255,.22);color:#e9fbff;font:400 16px/1 GVSpace,Arial,sans-serif;text-shadow:0 0 8px #55cfff}.provider b{font:400 8px/1.25 GVSpace,Arial,sans-serif;letter-spacing:.04em;color:#bdefff}
 .science{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}.science .card{min-height:155px}
 .testbox{margin-top:26px;border:1px solid rgba(120,255,171,.38);border-radius:18px;background:linear-gradient(145deg,rgba(4,40,30,.82),rgba(2,14,18,.92));padding:26px;text-align:center;box-shadow:0 0 22px rgba(120,255,171,.08)}.testbox h3{margin:0 0 8px;font:400 17px/1.4 GVSpace,Arial,sans-serif}.testbox p{max-width:720px;margin:0 auto;color:#b9d9ca;font-size:14px;line-height:1.7}
 .credits{max-width:840px;margin:25px auto 0;color:#7fa5ba;font-size:11px;line-height:1.75;text-align:center}
@@ -142,12 +142,12 @@ footer{padding:34px 0 50px;border-top:1px solid rgba(120,232,255,.12);text-align
     <p class="section-intro">At the heart of Galaxy Viewer's interactive sky is Aladin Lite, developed at the Centre de Données astronomiques de Strasbourg (CDS). Galaxy Viewer also draws on astronomical catalogs, metadata and imagery made accessible by observatories, missions and scientific institutions around the world.</p>
 
     <div class="providers" aria-label="Image providers">
-      <div class="provider"><img src="../viewer/artwork/Hubble/Hubble.jpg" alt="Hubble"><b>HUBBLE</b></div>
-      <div class="provider"><img src="../viewer/artwork/JWST/JWST.jpeg" alt="JWST"><b>JWST</b></div>
-      <div class="provider"><img src="../viewer/artwork/NoirLabs/NOIRLab.jpg" alt="NOIRLab"><b>NOIRLAB</b></div>
-      <div class="provider"><img src="../viewer/artwork/ESO/ESO.jpg" alt="ESO"><b>ESO</b></div>
-      <div class="provider"><img src="../viewer/artwork/Chandra/Chandra.jpg" alt="Chandra"><b>CHANDRA</b></div>
-      <div class="provider"><img src="../viewer/artwork/Spitzer/Spitzer.jpg" alt="Spitzer"><b>SPITZER</b></div>
+      <div class="provider"><span class="provider-glyph">H</span><b>HUBBLE</b></div>
+      <div class="provider"><span class="provider-glyph">J</span><b>JWST</b></div>
+      <div class="provider"><span class="provider-glyph">N</span><b>NOIRLAB</b></div>
+      <div class="provider"><span class="provider-glyph">E</span><b>ESO</b></div>
+      <div class="provider"><span class="provider-glyph">C</span><b>CHANDRA</b></div>
+      <div class="provider"><span class="provider-glyph">S</span><b>SPITZER</b></div>
     </div>
 
     <div class="science">
