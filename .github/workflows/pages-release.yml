@@ -5,8 +5,10 @@ on:
     branches:
       - release
     paths:
+      - 'viewer/**'
       - 'galaxy-viewer/**'
-      - 'viewer/artwork/**'
+      - 'temporary-demos/**'
+      - 'release-manifest.json'
       - '.github/workflows/pages-release.yml'
   workflow_dispatch:
 
@@ -21,6 +23,9 @@ concurrency:
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout release
@@ -29,18 +34,46 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Verify public site
+      - name: Verify release site and runtime pointers
         shell: bash
         run: |
           set -euo pipefail
           test -s galaxy-viewer/index.html
           test -s galaxy-viewer/assets/galaxy-viewer-disintegration-banner.jpg
-          grep -q 'galaxy-viewer-disintegration-banner.jpg?v=0004' galaxy-viewer/index.html
-          grep -q 'JOIN ANDROID CLOSED TEST' galaxy-viewer/index.html
-          if grep -q '<iframe[^>]*banner.html' galaxy-viewer/index.html; then
-            echo "STALE IFRAME BANNER FOUND"
-            exit 1
-          fi
+          test -s viewer/releases/launch/Galaxy-Viewer-Launch/index.html
+          test -s viewer/gv-current-viewer.json
+          test -s viewer/RC-V1.0.0.py
+          test -s viewer/Web-Browser/web-browser-current.json
+
+          python3 - <<'PY'
+          import json,re,pathlib,urllib.parse
+          root=pathlib.Path('.')
+
+          vp=json.loads((root/'viewer/gv-current-viewer.json').read_text())
+          src=(root/'viewer'/vp['viewer']).read_text()
+          m=re.search(r"GV200001_BUILD='(\d+)'",src)
+          if not m or m.group(1)!=str(vp['build']):
+              raise SystemExit(f"Viewer build mismatch: pointer={vp.get('build')} source={m.group(1) if m else 'missing'}")
+
+          bp=json.loads((root/'viewer/Web-Browser/web-browser-current.json').read_text())
+          prefix='/Galaxy_Viewer/'
+          u=urllib.parse.urlparse(bp['config'])
+          if prefix not in u.path:
+              raise SystemExit('Unexpected browser config URL: '+bp['config'])
+          cfg_path=root/u.path.split(prefix,1)[1]
+          if not cfg_path.is_file():
+              raise SystemExit('Browser config missing: '+str(cfg_path))
+          cfg=json.loads(cfg_path.read_text())
+          if str(cfg.get('version'))!=str(bp.get('version')):
+              raise SystemExit(f"Browser version mismatch: pointer={bp.get('version')} config={cfg.get('version')}")
+          for key in ('topShell','bottomShell'):
+              su=urllib.parse.urlparse(cfg[key])
+              rel=su.path.split(prefix,1)[1]
+              if not (root/rel).is_file():
+                  raise SystemExit(f'{key} missing: {rel}')
+
+          print('RELEASE POINTERS OK build='+str(vp['build'])+' browser='+str(bp['version']))
+          PY
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
