@@ -147,6 +147,52 @@ body{
   display:block;
   font-size:clamp(46px,6.65vw,102px);
 }
+.brand-x{
+  position:relative;
+  display:inline-block !important;
+  width:.72em;
+  height:.88em;
+  margin:0 .015em;
+  vertical-align:-.06em;
+}
+.brand-x .x-arc{
+  position:absolute;
+  left:50%;
+  width:.54em;
+  height:.28em;
+  transform:translateX(-50%);
+  border:.085em solid currentColor;
+  border-left-color:transparent;
+  border-right-color:transparent;
+  border-radius:50%;
+  filter:
+    drop-shadow(0 0 .025em rgba(183,226,255,.95))
+    drop-shadow(0 0 .075em rgba(72,165,255,.92))
+    drop-shadow(0 0 .16em rgba(32,118,255,.70));
+}
+.brand-x .x-top{
+  top:.08em;
+  border-bottom-color:currentColor;
+  transform:translateX(-50%) rotate(180deg);
+}
+.brand-x .x-bottom{
+  bottom:.06em;
+  border-bottom-color:currentColor;
+}
+.brand-x .x-dot{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:.16em;
+  height:.16em;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:
+    0 0 .03em rgba(255,255,255,.95),
+    0 0 .10em rgba(72,165,255,.95),
+    0 0 .20em rgba(32,118,255,.78);
+}
 
 /* very subtle blue aura behind title, not a second copy */
 .title-glow{
@@ -194,7 +240,7 @@ body{
     <div class="title-glow" aria-hidden="true"></div>
 
     <h1 class="title">
-      <span>GALAXY</span>
+      <span>GALA<span class="brand-x" aria-label="X"><i class="x-arc x-top"></i><i class="x-dot"></i><i class="x-arc x-bottom"></i></span>Y</span>
       <span>VIEWER</span>
     </h1>
 
