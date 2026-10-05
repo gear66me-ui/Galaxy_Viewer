@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0096 — fix Survey prewarm rendering; prime local thumbnail cache, then paint visible rows directly
+# BUILD 0097 — route Survey thumbnail requests through native APK interceptor; preload visible local images before paint
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -26,7 +26,7 @@ COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@323ff573ea1cbf57e9897e9de1fcf4f8aa840302/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@38990d04aa6374053b6923da0e2166c62b3cc84d/viewer/modules/galaxy-navigator/gv-galaxy-navigator-012.js"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@fb4d9b9212efbba7f768b7923c650523ab1e0df4/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js"
 
 # ============================================================================
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0096';
+const GV200001_BUILD='0097';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -102,7 +102,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@323ff573ea1cbf57e9897e9de1fcf4f8aa840302/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b9e8d49a721bd139b93c81378dd8e0e578668780/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@38990d04aa6374053b6923da0e2166c62b3cc84d/viewer/modules/galaxy-navigator/gv-galaxy-navigator-012.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@fb4d9b9212efbba7f768b7923c650523ab1e0df4/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@62ff8916760574fc378d02592e818262560cfa05/viewer/modules/destination-presentation/gv-destination-presentation-0020.js'
@@ -655,7 +655,7 @@ if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='000
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
-if(window.GalaxyNavigator?.VERSION!=='012'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 012 EXPORT MISSING');
+if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
 if(window.GalaxyDestinationPresentation?.VERSION!=='0020'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0020 EXPORT MISSING');
@@ -902,7 +902,6 @@ if(target.panel?.parentElement!==document.body)document.body.appendChild(target.
 // The tiny release pointer follows future catalog growth. It names an immutable pack
 // commit, so every WebP receives long-lived CDN/browser caching without cache busts.
 const GV_SURVEY_THUMBNAIL_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-current.json';
-const GV_SURVEY_THUMBNAIL_LOCAL_BASE='https://appassets.androidplatform.net/assets/survey-thumbnails/';
 let gvSurveyThumbnailPack=null;
 let gvSurveyThumbnailWarmPromise=null;
 let gvSurveyThumbnailWarmState={phase:'POINTER',loaded:0,failed:0,total:0,bytes:0,packCommit:''};
@@ -1838,12 +1837,11 @@ function gvSurveyThumbnailCandidates(record,provider=''){
     const packKey=String(provider||record?.provider||'').toUpperCase()+'|'+catalogKey+'|'+catalogIndex;
     const packed=gvSurveyThumbnailPack?.records?.[packKey];
     if(window.GVNative){
-        if(packed?.path){
-            const marker='viewer/artwork/runtime/survey-thumbnails/';
-            const path=String(packed.path||'');
-            const at=path.indexOf(marker);
-            if(at>=0)add(GV_SURVEY_THUMBNAIL_LOCAL_BASE+path.slice(at+marker.length));
-        }
+        // Keep the immutable pack URL as the WebView request key. RC 0027's native
+        // shouldInterceptRequest() recognizes this repository path and returns the
+        // matching getAssets().open("survey-thumbnails/...") stream with image/webp.
+        // No provider/original-image fallback participates in Android Survey thumbnails.
+        if(packed?.path)add(gvSurveyThumbnailPack.baseUrl+packed.path);
         return Object.freeze(out);
     }
     if(packed?.path)add(gvSurveyThumbnailPack.baseUrl+packed.path);
