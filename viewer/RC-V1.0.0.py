@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0094 — APK Survey thumbnails use direct appassets URLs only; no thumbnail-image network fallback
+# BUILD 0095 — predecode APK Survey thumbnail window before selector opens; retain decoded local thumbnails
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -26,7 +26,7 @@ COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@323ff573ea1cbf57e9897e9de1fcf4f8aa840302/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e8f80cda2e4b4c0a6e361a37271dc58170aa75c7/viewer/modules/galaxy-navigator/gv-galaxy-navigator-010.js"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@376b1e29dccc456023bfb5855579a27f5dfdbe3a/viewer/modules/galaxy-navigator/gv-galaxy-navigator-011.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js"
 
 # ============================================================================
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0094';
+const GV200001_BUILD='0095';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -102,7 +102,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@323ff573ea1cbf57e9897e9de1fcf4f8aa840302/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b9e8d49a721bd139b93c81378dd8e0e578668780/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e8f80cda2e4b4c0a6e361a37271dc58170aa75c7/viewer/modules/galaxy-navigator/gv-galaxy-navigator-010.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@376b1e29dccc456023bfb5855579a27f5dfdbe3a/viewer/modules/galaxy-navigator/gv-galaxy-navigator-011.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@62ff8916760574fc378d02592e818262560cfa05/viewer/modules/destination-presentation/gv-destination-presentation-0020.js'
@@ -655,7 +655,7 @@ if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='000
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
-if(window.GalaxyNavigator?.VERSION!=='010'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 010 EXPORT MISSING');
+if(window.GalaxyNavigator?.VERSION!=='011'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 011 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
 if(window.GalaxyDestinationPresentation?.VERSION!=='0020'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0020 EXPORT MISSING');
