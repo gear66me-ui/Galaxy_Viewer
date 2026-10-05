@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0091 — Spitzer provider alias fix promoted; Survey selector now maps SPITZER SPACE TELESCOPE -> SPITZER
+# BUILD 0092 — destination provider authority is record.provider only; removed presentation provider inference/fallback
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0091';
+const GV200001_BUILD='0092';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -105,7 +105,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34a4f34accdcc029b938f8ee92f4cc58fa916472/viewer/modules/galaxy-navigator/gv-galaxy-navigator-009.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4cea16f10060294024c36a2df878c604583f9d31/viewer/modules/hud/gv-heads-up-display-0002.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a2efdf23d4eb0f89b59b50342861d79311b91b4c/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3e316e7677f5c49c57d942666f7745819af0c733/viewer/modules/destination-presentation/gv-destination-presentation-0019.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@62ff8916760574fc378d02592e818262560cfa05/viewer/modules/destination-presentation/gv-destination-presentation-0020.js'
 });
 
 
@@ -658,7 +658,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='009'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 009 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0019'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0019 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0020'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0020 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
