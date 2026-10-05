@@ -252,11 +252,11 @@ jobs:
                        '  }\n')
           s=s[:start]+replacement+s[end:]
 
-          # Browser 0057 fast provider handoff: visible immediately, no 4-second cover.
+          # Browser 0058: provider navigation starts immediately; keep the shell covered for exactly 2 seconds while top/bottom chrome renders.
           old=("    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);\n"
                "    if(web!=null&&!(u.equals(prewarmedUrl)&&u.equals(web.getUrl())))web.loadUrl(u);\n"
                "    fetchPointer();\n"
-               "    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},4000);\n")
+               "    new Handler(Looper.getMainLooper()).postDelayed(()->{if(browserMode&&browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);immersive();}},2000);\n")
           assert old in s
           new=("    if(browserLayer!=null){browserLayer.setVisibility(View.VISIBLE);browserLayer.bringToFront();}\n"
                "    if(web!=null){web.requestFocus();String current=web.getUrl();boolean currentReady=u.equals(prewarmReadyUrl)&&current!=null&&!current.isEmpty()&&!\"about:blank\".equals(current)&&(current.equals(prewarmCommittedUrl)||current.equals(u));boolean currentLoading=u.equals(prewarmedUrl)&&prewarmLoading&&!prewarmFailed&&current!=null&&!current.isEmpty()&&!\"about:blank\".equals(current);if(!(currentReady||currentLoading)){prewarmedUrl=u;prewarmReadyUrl=\"\";prewarmCommittedUrl=\"\";prewarmLoading=true;prewarmFailed=false;web.loadUrl(u);}}\n"
