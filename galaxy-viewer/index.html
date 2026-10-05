@@ -8,7 +8,7 @@
 <meta property="og:title" content="Galaxy Viewer — Explore the Universe">
 <meta property="og:description" content="Travel across the sky, explore real astronomical imagery, and connect the universe to the observatories that reveal it.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://gear66me-ui.github.io/Galaxy_Viewer/galaxy-viewer/assets/galaxy-viewer-disintegration-banner.jpg?v=0004">
+<meta property="og:image" content="https://gear66me-ui.github.io/Galaxy_Viewer/galaxy-viewer/assets/galaxy-viewer-presentation-banner.webp?v=0005">
 <title>Galaxy Viewer — Explore the Universe</title>
 <link rel="icon" href="../viewer/artwork/icon.svg" type="image/svg+xml">
 <style>
@@ -24,11 +24,11 @@ a{color:inherit}.shell{position:relative;z-index:1;width:min(1180px,calc(100% - 
 .top{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);background:rgba(4,8,13,.90);border-bottom:1px solid rgba(155,204,222,.12);box-shadow:0 10px 30px rgba(0,0,0,.34)}
 .nav{height:66px;display:flex;align-items:center;gap:14px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none}.brand img{width:40px;height:40px;border-radius:12px;filter:drop-shadow(0 0 8px rgba(115,184,207,.38))}.brand span{font-size:13px;line-height:1;letter-spacing:.12em;color:#d9e7ed;text-shadow:0 0 8px rgba(104,175,199,.28)}
 .navlinks{margin-left:auto;display:flex;gap:8px;align-items:center}.navlinks a{font-size:10px;line-height:1;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;color:#bad0da;padding:10px 12px;border:1px solid transparent;border-radius:11px}.navlinks a:hover{background:rgba(130,183,202,.06);border-color:rgba(155,204,222,.12)}
-.banner-stage{position:relative;margin:18px auto 0;padding:16px 0 12px;isolation:isolate}
-.banner-stage:before{content:"";position:absolute;z-index:-1;inset:-70px -12vw -55px;pointer-events:none;opacity:.48;background:radial-gradient(ellipse at 18% 42%,rgba(42,55,82,.16),transparent 34%),radial-gradient(ellipse at 78% 30%,rgba(42,76,94,.12),transparent 31%),radial-gradient(circle at 8% 18%,rgba(220,235,242,.42) 0 1px,transparent 1.3px),radial-gradient(circle at 29% 70%,rgba(151,188,203,.30) 0 .8px,transparent 1.2px),radial-gradient(circle at 62% 17%,rgba(255,255,255,.30) 0 .9px,transparent 1.2px),radial-gradient(circle at 92% 62%,rgba(132,176,193,.26) 0 .8px,transparent 1.2px);background-size:auto,auto,211px 211px,271px 271px,307px 307px,353px 353px}
-.banner-wrap{position:relative;width:min(1360px,calc(100vw - 12px));left:50%;transform:translateX(-50%);margin:0 auto;padding:0;overflow:hidden;border-radius:10px;border:1px solid rgba(139,163,174,.16);background:#020407;box-shadow:inset 0 1px 0 rgba(255,255,255,.02),0 20px 55px rgba(0,0,0,.50),0 0 18px rgba(77,105,119,.05)}
-.banner-wrap:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;box-shadow:inset 0 0 30px rgba(0,0,0,.16)}
-.banner-art{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:1536/315;object-fit:cover;object-position:center center;background:#020407}
+.banner-stage{position:relative;margin:18px auto 0;padding:12px 0 18px;isolation:isolate}
+.banner-stage:before{content:"";position:absolute;z-index:-1;inset:-46px -8vw -38px;pointer-events:none;opacity:.34;background:radial-gradient(ellipse at 50% 48%,rgba(35,82,126,.18),transparent 48%),radial-gradient(ellipse at 78% 42%,rgba(31,63,104,.10),transparent 34%)}
+.banner-wrap{position:relative;width:min(1500px,calc(100vw - 16px));left:50%;transform:translateX(-50%);margin:0 auto;overflow:hidden;border-radius:28px;border:1px solid rgba(137,184,218,.30);background:#01040a;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 0 26px rgba(0,0,0,.16),0 22px 58px rgba(0,0,0,.48),0 0 24px rgba(55,125,188,.10)}
+.banner-wrap:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;box-shadow:inset 0 0 26px rgba(0,0,0,.16)}
+.banner-art{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:3/1;object-fit:cover;object-position:center center;background:#01040a}
 .hero{padding:36px 0 50px;text-align:center}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid rgba(122,198,153,.32);border-radius:999px;background:linear-gradient(180deg,rgba(18,54,42,.43),rgba(8,25,21,.54));color:#b5dbc5;font-size:9px;line-height:1;letter-spacing:.13em;text-transform:uppercase;box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 13px rgba(120,200,159,.06)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(131,214,165,.70)}
 .hero h1{margin:22px auto 12px;max-width:900px;font-size:clamp(32px,7vw,72px);line-height:1.03;font-weight:400;letter-spacing:.06em;color:#e9f0f3;text-shadow:0 0 10px rgba(154,211,229,.30),0 0 26px rgba(49,86,111,.26)}
@@ -54,7 +54,7 @@ a{color:inherit}.shell{position:relative;z-index:1;width:min(1180px,calc(100% - 
 .credits{max-width:860px;margin:27px auto 0;color:#718792;font-size:8px;line-height:1.95;text-align:center}
 footer{position:relative;z-index:1;padding:36px 0 52px;border-top:1px solid rgba(140,190,207,.10);text-align:center;color:#526a77;font-size:7px;line-height:2;letter-spacing:.06em}.status{display:inline-flex;align-items:center;gap:6px}
 @media(max-width:850px){.grid{grid-template-columns:1fr}.story{grid-template-columns:1fr}.science{grid-template-columns:1fr}.navlinks a:nth-child(-n+2){display:none}}
-@media(max-width:520px){.shell{width:min(100% - 18px,1180px)}.nav{height:60px}.brand span{font-size:9px}.navlinks a{font-size:7px;padding:8px 7px}.banner-stage{margin-top:8px;padding:8px 0 10px}.banner-wrap{width:calc(100vw - 6px);border-radius:7px}.banner-art{min-height:92px;object-fit:cover}.hero{padding:28px 5px 38px}.hero h1{font-size:33px}.hero .lead{font-size:11px}.hero .sub{font-size:8px}.section{padding:48px 0}.storycopy{padding:22px 18px}.profile{padding:22px 16px}.actions{display:grid;grid-template-columns:1fr}.btn{width:100%;font-size:8px}.provider-grid{gap:7px}.provider-last-row{gap:7px;width:calc((100% - 14px)/3 * 2 + 7px);margin-top:7px}.provider{min-height:104px;padding:10px 5px;border-radius:18px;gap:8px}.provider img{width:54px;height:54px;border-radius:14px}.provider b{font-size:6.6px}}
+@media(max-width:520px){.shell{width:min(100% - 18px,1180px)}.nav{height:60px}.brand span{font-size:9px}.navlinks a{font-size:7px;padding:8px 7px}.banner-stage{margin-top:8px;padding:8px 0 14px}.banner-wrap{width:calc(100vw - 8px);border-radius:20px}.banner-art{width:100%;height:auto;aspect-ratio:3/1;object-fit:cover}.hero{padding:28px 5px 38px}.hero h1{font-size:33px}.hero .lead{font-size:11px}.hero .sub{font-size:8px}.section{padding:48px 0}.storycopy{padding:22px 18px}.profile{padding:22px 16px}.actions{display:grid;grid-template-columns:1fr}.btn{width:100%;font-size:8px}.provider-grid{gap:7px}.provider-last-row{gap:7px;width:calc((100% - 14px)/3 * 2 + 7px);margin-top:7px}.provider{min-height:104px;padding:10px 5px;border-radius:18px;gap:8px}.provider img{width:54px;height:54px;border-radius:14px}.provider b{font-size:6.6px}}
 </style>
 </head>
 <body>
@@ -72,7 +72,7 @@ footer{position:relative;z-index:1;padding:36px 0 52px;border-top:1px solid rgba
 
 <main id="top">
 <div class="shell">
-  <div class="banner-stage"><div class="banner-wrap"><img class="banner-art" src="./assets/galaxy-viewer-disintegration-banner.jpg?v=0004" alt="Galaxy Viewer — original galaxy disintegration banner"></div></div>
+  <div class="banner-stage"><div class="banner-wrap"><img class="banner-art" src="./assets/galaxy-viewer-presentation-banner.webp?v=0005" alt="Galaxy Viewer — presentation banner"></div></div>
 
   <section class="hero">
     <div class="eyebrow"><span class="dot"></span> Independent astronomy exploration project</div>
