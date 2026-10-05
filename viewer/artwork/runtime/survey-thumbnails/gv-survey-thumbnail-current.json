@@ -1,10 +1,10 @@
 {
   "version": "0001",
-  "packCommit": "8e06d7acf66bd34145c038e6c11e06eb810b8867",
+  "packCommit": "a151b2246654f0944d789222efb91e2d63b34c52",
   "indexPath": "viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-index.json",
   "thumbnailCount": 1848,
   "recordCount": 1848,
   "failedCount": 0,
   "totalThumbnailBytes": 5788518,
-  "generatedAt": "2026-10-04T23:09:31.279889Z"
+  "generatedAt": "2026-10-05T00:10:59.812529Z"
 }
