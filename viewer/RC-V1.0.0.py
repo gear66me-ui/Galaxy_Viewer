@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0088 — destination Back to Sky control resized to destination-card proportions; module contract updated to 0019
+# BUILD 0089 — Survey selector left tile shows selected provider icon; reverts to generic satellite outside Survey mode
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0088';
+const GV200001_BUILD='0089';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1069,6 +1069,14 @@ function gvSurveySelectLabel(){
     if(e)e.textContent=label;
     gvSurveySelectButton.setAttribute('aria-label',label);
 }
+function gvSyncSurveyProviderIcon(){
+    const img=gvSurveySatelliteButton.querySelector('img');
+    if(!img)return;
+    const provider=String(gvSurveyMode?.provider||'').toUpperCase();
+    const icon=GV_SURVEY_PROVIDER_META[provider]?.icon||GV_SURVEY_SATELLITE_ICON_URL;
+    if(img.src!==icon)img.src=icon;
+    gvSurveySatelliteButton.setAttribute('aria-label',provider?provider+' SURVEY':'SELECT SURVEY');
+}
 function gvPositionProviderSurveyPanel(){
     const panel=target?.panel;
     if(!panel)return;
@@ -1089,6 +1097,7 @@ function gvSyncSurveySelectButton(){
     const r=coord.getBoundingClientRect();
     if(!r.width||!r.height){gvHideSurveySelectButton();return}
     gvSurveySelectLabel();
+    gvSyncSurveyProviderIcon();
     const center=Math.round(r.left+r.width/2);
     const top=Math.round(r.bottom+5);
     const groupWidth=Math.round(Math.min(250,Math.max(242,r.width*.84)));
@@ -1867,6 +1876,7 @@ function gvExitSurveyMode(){
     target.setActiveProvider('',{index:0,total:0});
     galaxyNavigator.clearSurvey?.();
     headsUpDisplay?.render?.();
+    gvSyncSurveySelectButton();
     updateNavigationAvailability();
     return true;
 }
