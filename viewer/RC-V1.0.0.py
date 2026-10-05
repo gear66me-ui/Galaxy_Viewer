@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0093 — bundled Survey thumbnails paint directly from APK assets; APK skips redundant thumbnail warm pass
+# BUILD 0094 — APK Survey thumbnails use direct appassets URLs only; no thumbnail-image network fallback
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0093';
+const GV200001_BUILD='0094';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -902,6 +902,7 @@ if(target.panel?.parentElement!==document.body)document.body.appendChild(target.
 // The tiny release pointer follows future catalog growth. It names an immutable pack
 // commit, so every WebP receives long-lived CDN/browser caching without cache busts.
 const GV_SURVEY_THUMBNAIL_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-current.json';
+const GV_SURVEY_THUMBNAIL_LOCAL_BASE='https://appassets.androidplatform.net/assets/survey-thumbnails/';
 let gvSurveyThumbnailPack=null;
 let gvSurveyThumbnailWarmPromise=null;
 let gvSurveyThumbnailWarmState={phase:'POINTER',loaded:0,failed:0,total:0,bytes:0,packCommit:''};
@@ -1836,6 +1837,15 @@ function gvSurveyThumbnailCandidates(record,provider=''){
     const catalogIndex=Number.isFinite(Number(record?.catalogIndex))?Number(record.catalogIndex):0;
     const packKey=String(provider||record?.provider||'').toUpperCase()+'|'+catalogKey+'|'+catalogIndex;
     const packed=gvSurveyThumbnailPack?.records?.[packKey];
+    if(window.GVNative){
+        if(packed?.path){
+            const marker='viewer/artwork/runtime/survey-thumbnails/';
+            const path=String(packed.path||'');
+            const at=path.indexOf(marker);
+            if(at>=0)add(GV_SURVEY_THUMBNAIL_LOCAL_BASE+path.slice(at+marker.length));
+        }
+        return Object.freeze(out);
+    }
     if(packed?.path)add(gvSurveyThumbnailPack.baseUrl+packed.path);
     const base=String(record?.imageUrl||record?.githubImageUrl||record?.hdUrl||'').trim();
     if(base){
