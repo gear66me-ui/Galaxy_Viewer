@@ -1,5 +1,6 @@
 name: Build Galaxy Viewer RC-V1.0.0.27 Play AAB — Exact 0022 Browser + Local Survey Thumbnails
 # RC 1.0.0.27 Play AAB: exact known-good APK 0022 provider runtime + ONLY bundled Survey thumbnails/interception.
+# Trigger 0001: build the Play AAB from this frozen recipe.
 
 on:
   push:
