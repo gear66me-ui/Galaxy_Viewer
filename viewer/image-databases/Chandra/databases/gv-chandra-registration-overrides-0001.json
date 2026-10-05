@@ -1,0 +1,99 @@
+{
+  "version": "0001",
+  "catalogType": "CHANDRA_REGISTRATION_OVERRIDES",
+  "recordCount": 2,
+  "sourceSet": "Chandra curated 102 registration queue",
+  "notes": [
+    "Only records 315 and 838f are overridden.",
+    "All unrelated Chandra records remain unchanged."
+  ],
+  "records": [
+    {
+      "imageId": "315",
+      "name": "NGC 5746",
+      "imageUrl": "https://www.astropix.org/archive/chandra/315/chandra_315_1024.jpg",
+      "method": "EMBEDDED_AVM_PLUS_MANUAL_90_DEG_CLOCKWISE_CORRECTION",
+      "correction": {
+        "rotationClockwiseDeg": 90,
+        "originalSpatialRotationDeg": 89.91582784802,
+        "effectiveSpatialRotationDeg": 179.91582784802
+      },
+      "sourceAvm": {
+        "spatialQuality": "Full",
+        "referenceDimension": [
+          2400,
+          2400
+        ],
+        "referencePixel": [
+          1207.95394554503,
+          1197.60342884305
+        ],
+        "referenceValue": [
+          221.233278,
+          1.954692
+        ],
+        "scale": [
+          -0.00009347136,
+          0.00009347136
+        ],
+        "projection": "TAN"
+      },
+      "raster": {
+        "width": 1024,
+        "height": 1024
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 1024,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "LONPOLE": 180,
+        "CRVAL1": 221.233278,
+        "CRVAL2": 1.954692,
+        "CRPIX1": 515.3936834325461,
+        "CRPIX2": 510.97746297303473,
+        "CD1_1": 0.00021907326359787855,
+        "CD1_2": -3.218366424311003e-7,
+        "CD2_1": -3.218366424311003e-7,
+        "CD2_2": -0.00021907326359787855
+      }
+    },
+    {
+      "imageId": "838f",
+      "name": "The Eagle Nebula (M16)",
+      "imageUrl": "https://www.astropix.org/archive/chandra/838f/chandra_838f_1024.jpg",
+      "method": "USER_MANUAL_REGISTRATION_FROM_GV_CHANDRA_WCS_RESCUE_SOLUTIONS_0010",
+      "raster": {
+        "width": 1024,
+        "height": 965
+      },
+      "wcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 965,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 274.7135739840296,
+        "CRVAL2": -13.83010764055956,
+        "CRPIX1": 573.6524833949526,
+        "CRPIX2": 43.72693844065217,
+        "CD1_1": -0.00003421009435520163,
+        "CD2_1": 8.264602385033015e-7,
+        "CD1_2": -8.262212741151861e-7,
+        "CD2_2": -0.0000342101058017974
+      },
+      "provenance": {
+        "savedAt": "2026-10-04T21:42:19.560Z",
+        "verified": true,
+        "finalReviewed": true
+      }
+    }
+  ]
+}
