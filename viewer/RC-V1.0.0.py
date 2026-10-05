@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0101 — restore exact pre-0100 splash launch choreography; no travel logic changes
+# BUILD 0102 — prewarm provider website at trip start; preserve splash and travel choreography exactly
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0101';
+const GV200001_BUILD='0102';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1803,6 +1803,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvEarthPointerActive=true;
     gvUpdateEarthBearingPointer();
     const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination),registeredTravelPromise=recordPromise.then(gvRegisteredTravelStateFromRecord),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,recordPromise)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination,recordPromise),sourceDestination=activeDestination;
+    // Start native provider prerender as soon as the trip begins. This only warms the
+    // provider WebView in the background; it does not alter camera/travel choreography.
+    gvPrewarmProviderWebsite(v.destination);
     activeDestination=v.destination;destinationPresentation.depart();
     travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false,displayReady=Promise.resolve(false);
