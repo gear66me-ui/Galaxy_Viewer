@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0090 — Spitzer restored to Survey provider catalog via nested effective-FOV normalization
+# BUILD 0090 — Spitzer restored to Survey provider list; canonicalizes catalog label SPITZER SPACE TELESCOPE -> SPITZER
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -880,9 +880,13 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
 });
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
 const gvSurveyCatalog=new Map();
+function gvSurveyProviderKey(record){
+    const provider=String(record?.provider||'').toUpperCase();
+    return provider==='SPITZER SPACE TELESCOPE'?'SPITZER':provider;
+}
 for(const provider of GV_SURVEY_PROVIDER_ORDER){
     const records=navigationRuntime.catalog.records
-        .filter(record=>String(record?.provider||'').toUpperCase()===provider&&Number.isFinite(Number(record?.ra))&&Number.isFinite(Number(record?.dec))&&Number.isFinite(Number(record?.fovDegrees))&&Number(record?.fovDegrees)>0&&String(record?.imageUrl||'').trim())
+        .filter(record=>gvSurveyProviderKey(record)===provider&&Number.isFinite(Number(record?.ra))&&Number.isFinite(Number(record?.dec))&&Number.isFinite(Number(record?.fovDegrees))&&Number(record?.fovDegrees)>0&&String(record?.imageUrl||'').trim())
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
