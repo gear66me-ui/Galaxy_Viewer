@@ -1,0 +1,58 @@
+name: Deploy Galaxy Viewer public site from release
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - 'galaxy-viewer/**'
+      - 'viewer/artwork/**'
+      - '.github/workflows/pages-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Verify public site
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s galaxy-viewer/index.html
+          test -s galaxy-viewer/assets/galaxy-viewer-disintegration-banner.jpg
+          grep -q 'galaxy-viewer-disintegration-banner.jpg?v=0004' galaxy-viewer/index.html
+          grep -q 'JOIN ANDROID CLOSED TEST' galaxy-viewer/index.html
+          if grep -q '<iframe[^>]*banner.html' galaxy-viewer/index.html; then
+            echo "STALE IFRAME BANNER FOUND"
+            exit 1
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
