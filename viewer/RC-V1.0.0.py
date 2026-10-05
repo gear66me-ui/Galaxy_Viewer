@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0097 — route Survey thumbnail requests through native APK interceptor; preload visible local images before paint
+# BUILD 0098 — fix APK thumbnail index CORS interception; use non-intercepted immutable bridge and never blank on bridge failure
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0097';
+const GV200001_BUILD='0098';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -898,19 +898,22 @@ target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.ha
 })));
 if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
 
-// BUILD 0087 — Survey thumbnail pack.
-// The tiny release pointer follows future catalog growth. It names an immutable pack
-// commit, so every WebP receives long-lived CDN/browser caching without cache busts.
-const GV_SURVEY_THUMBNAIL_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/runtime/survey-thumbnails/gv-survey-thumbnail-current.json';
+// BUILD 0098 — Survey thumbnail lookup bridge.
+// IMPORTANT: The APK native interceptor owns /viewer/artwork/runtime/survey-thumbnails/*.
+// Fetching pointer/index JSON from that path causes Android WebView to synthesize a
+// cross-origin WebResourceResponse; APK variants without ACAO then fail JavaScript CORS.
+// This immutable bridge deliberately lives OUTSIDE the intercepted path. Image requests
+// themselves keep their immutable pack URLs, so native APK builds serve the WebPs locally.
+const GV_SURVEY_THUMBNAIL_BRIDGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3883a89bc184aa51ecc1d7b7b099d90d1824c5b1/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json';
 let gvSurveyThumbnailPack=null;
 let gvSurveyThumbnailWarmPromise=null;
-let gvSurveyThumbnailWarmState={phase:'POINTER',loaded:0,failed:0,total:0,bytes:0,packCommit:''};
+let gvSurveyThumbnailWarmState={phase:'BRIDGE',loaded:0,failed:0,total:0,bytes:0,packCommit:''};
 
 async function gvWarmSurveyThumbnailPack(pack){
     if(gvSurveyThumbnailWarmPromise)return gvSurveyThumbnailWarmPromise;
     const metas=Object.values(pack?.records||{});
     const urls=[...new Set(metas.map(meta=>String(meta?.path||'').trim()).filter(Boolean).map(path=>pack.baseUrl+path))];
-    gvSurveyThumbnailWarmState={phase:'WARMING',loaded:0,failed:0,total:urls.length,bytes:Number(pack?.pointer?.totalThumbnailBytes)||0,packCommit:pack.commit};
+    gvSurveyThumbnailWarmState={phase:'WARMING',loaded:0,failed:0,total:urls.length,bytes:Number(pack?.bridge?.totalThumbnailBytes)||0,packCommit:pack.commit};
     let cursor=0;
     const worker=async()=>{
         for(;;){
@@ -940,25 +943,22 @@ async function gvWarmSurveyThumbnailPack(pack){
 
 const gvSurveyThumbnailPackReady=(async()=>{
     try{
-        const pointerResponse=await fetch(GV_SURVEY_THUMBNAIL_POINTER_URL+'?gv='+Date.now(),{cache:'no-store'});
-        if(!pointerResponse.ok)throw new Error('THUMBNAIL POINTER HTTP '+pointerResponse.status);
-        const pointer=await pointerResponse.json();
-        const commit=String(pointer?.packCommit||'').trim();
-        const indexPath=String(pointer?.indexPath||'').trim();
-        if(!/^[0-9a-f]{40}$/i.test(commit)||!indexPath)throw new Error('THUMBNAIL POINTER INVALID');
+        const response=await fetch(GV_SURVEY_THUMBNAIL_BRIDGE_URL,{cache:'force-cache'});
+        if(!response.ok)throw new Error('THUMBNAIL BRIDGE HTTP '+response.status);
+        const bridge=await response.json();
+        const commit=String(bridge?.packCommit||'').trim();
+        const records=bridge?.records&&typeof bridge.records==='object'?bridge.records:{};
+        if(!/^[0-9a-f]{40}$/i.test(commit)||!Object.keys(records).length)throw new Error('THUMBNAIL BRIDGE INVALID');
         const baseUrl='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@'+commit+'/';
-        const indexResponse=await fetch(baseUrl+indexPath,{cache:'force-cache'});
-        if(!indexResponse.ok)throw new Error('THUMBNAIL INDEX HTTP '+indexResponse.status);
-        const index=await indexResponse.json();
-        const records=index?.records&&typeof index.records==='object'?index.records:{};
-        gvSurveyThumbnailPack=Object.freeze({commit,baseUrl,pointer:Object.freeze(pointer),records:Object.freeze(records)});
+        gvSurveyThumbnailPack=Object.freeze({commit,baseUrl,bridge:Object.freeze(bridge),records:Object.freeze(records)});
         const recordTotal=Object.keys(records).length;
-        gvSurveyThumbnailWarmState={phase:window.GVNative?'READY_LOCAL':'INDEX_READY',loaded:window.GVNative?recordTotal:0,failed:0,total:recordTotal,bytes:Number(pointer?.totalThumbnailBytes)||0,packCommit:commit};
+        gvSurveyThumbnailWarmState={phase:window.GVNative?'READY_LOCAL':'INDEX_READY',loaded:window.GVNative?recordTotal:0,failed:0,total:recordTotal,bytes:Number(bridge?.totalThumbnailBytes)||0,packCommit:commit};
         if(!window.GVNative)setTimeout(()=>{gvWarmSurveyThumbnailPack(gvSurveyThumbnailPack).catch(error=>console.warn('GV SURVEY THUMBNAIL WARM ERROR',error))},250);
+        console.info('GV SURVEY THUMBNAIL BRIDGE READY',{records:recordTotal,packCommit:commit,native:Boolean(window.GVNative)});
         return gvSurveyThumbnailPack;
     }catch(error){
         gvSurveyThumbnailWarmState={phase:'FALLBACK',loaded:0,failed:1,total:0,bytes:0,packCommit:''};
-        console.warn('GV SURVEY THUMBNAIL PACK FALLBACK',error);
+        console.error('GV SURVEY THUMBNAIL BRIDGE FAILED',error);
         return null;
     }
 })();
@@ -1837,12 +1837,14 @@ function gvSurveyThumbnailCandidates(record,provider=''){
     const packKey=String(provider||record?.provider||'').toUpperCase()+'|'+catalogKey+'|'+catalogIndex;
     const packed=gvSurveyThumbnailPack?.records?.[packKey];
     if(window.GVNative){
-        // Keep the immutable pack URL as the WebView request key. RC 0027's native
-        // shouldInterceptRequest() recognizes this repository path and returns the
-        // matching getAssets().open("survey-thumbnails/...") stream with image/webp.
-        // No provider/original-image fallback participates in Android Survey thumbnails.
-        if(packed?.path)add(gvSurveyThumbnailPack.baseUrl+packed.path);
-        return Object.freeze(out);
+        // The immutable pack URL is the request key for shouldInterceptRequest().
+        // If the lookup bridge is unavailable, fall through to the ordinary image
+        // candidates rather than producing an empty selector.
+        if(packed?.path){
+            add(gvSurveyThumbnailPack.baseUrl+packed.path);
+            return Object.freeze(out);
+        }
+        console.error('GV SURVEY THUMBNAIL LOOKUP MISS',packKey);
     }
     if(packed?.path)add(gvSurveyThumbnailPack.baseUrl+packed.path);
     const base=String(record?.imageUrl||record?.githubImageUrl||record?.hdUrl||'').trim();
