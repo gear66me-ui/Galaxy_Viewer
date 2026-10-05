@@ -51,6 +51,11 @@ const aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'0 +0',fov:1,cooFr
 function imgUrl(c){return c.image||('https://www.astropix.org/archive/chandra/'+encodeURIComponent(c.imageId)+'/chandra_'+encodeURIComponent(c.imageId)+'_1024.jpg')}
 function imageSize(url){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok([i.naturalWidth,i.naturalHeight]);i.onerror=()=>no(new Error('IMAGE LOAD FAILED'));i.src=url+(url.includes('?')?'&':'?')+'gvreg=0001'})}
 function avmWcs(c,w,h){
+ if(c.manualWcs){
+  const m={...c.manualWcs};
+  if(Number(m.NAXIS1)!==w||Number(m.NAXIS2)!==h)throw new Error('MANUAL WCS RASTER MISMATCH');
+  return m;
+ }
  const rv=(c.wcsReferenceValue||[]).map(Number),rd=(c.wcsReferenceDimension||[]).map(Number),rp=(c.wcsReferencePixel||[]).map(Number),sc=(c.wcsScale||[]).map(Number),rot=Number(c.wcsRotation),proj=String(c.wcsProjection||'TAN').toUpperCase();
  if(rv.length<2||rd.length<2||rp.length<2||sc.length<2||![...rv,...rd,...rp,...sc,rot].every(Number.isFinite))throw new Error('NO FULL AVM WCS');
  const rx=w/rd[0],ry=h/rd[1]; if(Math.abs(rx-ry)/Math.max(rx,ry)>.03)throw new Error('RESIZE RATIO MISMATCH');
@@ -70,10 +75,10 @@ function updateButtons(){
 async function show(n){
  idx=(n+queue.length)%queue.length;const c=queue[idx];updateButtons();
  if(layer){try{layer.setOpacity(0)}catch(_){} layer=null}
- const full=c.wcsQuality==='Full';
- $('title').innerHTML=(idx+1)+'. '+c.name+' <span class="badge '+(full?'full':'unsolved')+'">'+(full?'FULL AVM WCS':'UNSOLVED WCS')+'</span>';
+ const full=c.wcsQuality==='Full'||c.wcsQuality==='Manual';
+ $('title').innerHTML=(idx+1)+'. '+c.name+' <span class="badge '+(full?'full':'unsolved')+'">'+(c.wcsQuality==='Manual'?'MANUAL WCS':(c.wcsQuality==='Superseded'?'SUPERSEDED':(full?'FULL AVM WCS':'UNSOLVED WCS')))+'</span>';
  $('meta').textContent='Chandra '+c.imageId+' · '+(c.kind||'candidate')+' · '+(c.releaseDate||'')+' · '+(c.sourceUrl||'');
- if(!full){$('diag').textContent='BLOCKED: AVM position exists, but full scale/rotation/reference-pixel WCS is missing. Do not approve for runtime.';const rv=(c.wcsReferenceValue||[]).map(Number);if(rv.length>=2&&rv.every(Number.isFinite))aladin.gotoRaDec(rv[0],rv[1]);aladin.setFoV(1);return}
+ if(!full){$('diag').textContent=c.wcsQuality==='Superseded'?('BLOCKED: superseded by '+(c.supersededBy||'manual replacement')+'.'): 'BLOCKED: AVM position exists, but full scale/rotation/reference-pixel WCS is missing. Do not approve for runtime.';const rv=(c.wcsReferenceValue||[]).map(Number);if(rv.length>=2&&rv.every(Number.isFinite))aladin.gotoRaDec(rv[0],rv[1]);aladin.setFoV(1);return}
  $('diag').textContent='Loading AVM overlay…';
  try{
    const url=imgUrl(c),sz=await imageSize(url),w=sz[0],h=sz[1],wcs=avmWcs(c,w,h);
@@ -81,7 +86,7 @@ async function show(n){
    aladin.setOverlayImageLayer(layer,'CHANDRA REGISTRATION');
    aladin.gotoRaDec(Number(c.wcsReferenceValue[0]),Number(c.wcsReferenceValue[1]));
    currentFov=fovFor(c,w,h);aladin.setFoV(currentFov);
-   $('diag').textContent='OVERLAY READY · raster '+w+'×'+h+' · '+c.wcsProjection+' · rot '+c.wcsRotation+'° · inspect DSS2 alignment with opacity slider.';
+   $('diag').textContent='OVERLAY READY · raster '+w+'×'+h+' · '+(c.wcsQuality==='Manual'?'USER MANUAL WCS':(c.wcsProjection+' · rot '+c.wcsRotation+'°'))+' · inspect DSS2 alignment with opacity slider.';
  }catch(e){$('diag').textContent='OVERLAY ERROR: '+e.message}
 }
 $('opacity').addEventListener('input',()=>{$('opv').textContent=$('opacity').value+'%';if(layer?.setOpacity)layer.setOpacity(Number($('opacity').value)/100)});
