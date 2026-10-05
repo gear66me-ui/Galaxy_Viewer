@@ -26,7 +26,7 @@ try{
  const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));
  ver.textContent='VERSION '+String(p.version||'').toUpperCase();bld.textContent='BUILD '+String(p.build||'').toUpperCase();
  const identityStarted=performance.now();
- const splashReady=new Promise(resolve=>{const timeout=setTimeout(()=>{removeEventListener('message',onMessage);console.warn('GV SPLASH PREP WATCHDOG — continuing without splash');resolve(false)},10000);const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve(true)}};addEventListener('message',onMessage)});
+ const splashReady=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH PREP TIMEOUT')),20000);const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};addEventListener('message',onMessage)});
  splash.src='../../splash/Galaxy-Viewer-Singularity-FINAL/index.html?armed=1&v=prep-'+Date.now();
 
  // FULL BOOT BEHIND CURTAIN: viewer boot owns all heavy downloads/initialization here.
@@ -46,16 +46,14 @@ try{
  const deadline=Date.now()+60000;while(!ready()&&Date.now()<deadline)await sleep(100);
  if(!ready())throw Error('VIEWER APP READINESS TIMEOUT '+JSON.stringify(readiness()));
 
- // FINAL SPLASH: splash is decorative and must never be allowed to brick a ready Viewer.
- const splashPrepared=await splashReady;
- if(splashPrepared){
-   await sleep(2000);
-   const splashComplete=new Promise(resolve=>{const timeout=setTimeout(()=>{removeEventListener('message',onMessage);console.warn('GV SPLASH COMPLETION WATCHDOG — revealing ready Viewer');resolve(false)},15000);const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-complete'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve(true)}};addEventListener('message',onMessage)});
-   splash.style.display='block';
-   await paint2();
-   try{splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*')}catch(error){console.warn('GV SPLASH START FAILED',error)}
-   await splashComplete;
- }
+ // FINAL SPLASH: prepared behind spinner; keep spinner 2s, then reveal and start frame zero.
+ await splashReady;
+ await sleep(2000);
+ const splashComplete=new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('SPLASH COMPLETION TIMEOUT')),18000);const onMessage=ev=>{if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-complete'){clearTimeout(timeout);removeEventListener('message',onMessage);resolve()}};addEventListener('message',onMessage)});
+ splash.style.display='block';
+ await paint2();
+ splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
+ await splashComplete;
  if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
  await paint2();
  splash.remove();curtain.remove();
