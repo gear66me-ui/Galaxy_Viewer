@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>
+@font-face{font-family:GV;src:url("../../artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf") format("opentype");font-display:block}
+:root{--ice:#43CFFF;--ice2:#9EDCFF;--white:#F4FDFF;--green:#78FFAB;--deep:#02070F;--navy:#03122B;--mid:#052B5B;--edge:#021026}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:var(--white);font-family:GV,sans-serif}
+body{padding:2px 2px 0;background:linear-gradient(180deg,#01040a 0%,#020812 100%)}
+.row{display:grid;align-items:stretch;gap:4px}
+.brand{height:31px;grid-template-columns:31px minmax(0,1fr) 31px}
+.navrow{height:32px;margin-top:3px;grid-template-columns:31px minmax(0,1fr) 31px}
+.panel{position:relative;overflow:hidden;border:1px solid rgba(67,207,255,.82);border-radius:10px;background:linear-gradient(155deg,var(--navy),var(--mid) 58%,var(--edge));box-shadow:inset 0 1px 1px rgba(225,251,255,.34),inset 0 -3px 8px rgba(0,0,0,.55),0 0 5px rgba(50,190,255,.34)}
+.panel:after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(118,225,255,.035) 28%,transparent 46%);pointer-events:none}
+.iconbox,.providerbox{display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#0B2749 0%,#02070F 73%)}
+.iconbox img{width:28px;height:28px;object-fit:contain;position:relative;z-index:1}
+.providerbox img{width:27px;height:27px;object-fit:cover;border-radius:7px;position:relative;z-index:1;background:#000}
+.titlebox{display:flex;align-items:center;justify-content:center;padding:0 8px}
+.title{position:relative;z-index:1;white-space:nowrap;font:400 14px/1 GV,sans-serif;letter-spacing:.85px;color:#F4FDFF;text-shadow:0 0 3px rgba(255,255,255,.9),0 0 8px rgba(88,191,255,.72)}
+.nav{appearance:none;-webkit-appearance:none;margin:0;padding:0;color:transparent;touch-action:manipulation}
+.nav:before{content:"";position:absolute;z-index:2;left:50%;top:50%;width:10px;height:10px;border:solid #F4FDFF;border-width:0 3px 3px 0;filter:drop-shadow(0 0 3px #8DDAFF) drop-shadow(0 0 7px #58BFFF);transform:translate(-58%,-50%) rotate(-45deg)}
+.nav.back:before{transform:translate(-42%,-50%) rotate(135deg)}
+.url{display:flex;align-items:center;min-width:0;padding:0 9px;background:linear-gradient(180deg,rgba(23,78,134,.78),rgba(4,27,62,.97) 58%,rgba(13,90,152,.68))}
+.lock{position:relative;z-index:1;width:9px;height:7px;flex:0 0 9px;margin:1px 7px 0 1px;border:1.4px solid var(--white);border-radius:2px;filter:drop-shadow(0 0 2px #58BFFF)}
+.lock:before{content:"";position:absolute;left:50%;top:-5px;width:6px;height:5px;border:1.4px solid var(--white);border-bottom:0;border-radius:5px 5px 0 0;transform:translateX(-50%)}
+.urltext{position:relative;z-index:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#DDF5FF;font:400 10.8px/1 GV,sans-serif;letter-spacing:.25px;text-shadow:0 0 5px rgba(88,191,255,.38)}
+.nav.gvflash{border-color:var(--green)!important;background:linear-gradient(145deg,#062B1D 0%,#08783F 44%,#13B968 100%)!important;box-shadow:inset 0 0 6px rgba(120,255,171,.22),0 0 5px rgba(120,255,171,.72)!important}
+.nav.gvflash:before{border-color:var(--green);filter:drop-shadow(0 0 4px var(--green)) drop-shadow(0 0 8px #38E69A)}
+</style>
+</head>
+<body>
+<div class="row brand">
+  <div class="panel iconbox"><img src="../../artwork/runtime/navigation/galaxy-viewer-target-icon.svg" alt=""></div>
+  <div class="panel titlebox"><div class="title">GALAXY VIEWER</div></div>
+  <div class="panel providerbox"><img id="pi" alt=""></div>
+</div>
+<div class="row navrow">
+  <button id="gv-browser-back" class="panel nav back" type="button" aria-label="Back"></button>
+  <div class="panel url"><span class="lock" aria-hidden="true"></span><span class="urltext" id="u">LOADING…</span></div>
+  <button id="gv-browser-forward" class="panel nav" type="button" aria-label="Forward"></button>
+</div>
+<script>
+function pulse(b){b.classList.add('gvflash');setTimeout(()=>b.classList.remove('gvflash'),420)}
+function bindNav(id,fn){const b=document.getElementById(id);let pointerSeen=false;b.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button!==0)return;pointerSeen=true;e.preventDefault();pulse(b);fn()});b.addEventListener('click',e=>{if(pointerSeen){pointerSeen=false;e.preventDefault();return}if(e.detail===0){e.preventDefault();pulse(b);fn()}})}
+bindNav('gv-browser-back',()=>GV.back());
+bindNav('gv-browser-forward',()=>GV.forward());
+let last='';
+window.setBrowserState=(url,icon)=>{
+ const e=document.getElementById('u');
+ if(url&&url!==last){e.textContent=url;e.animate([{opacity:.25},{opacity:1}],{duration:240});last=url}else e.textContent=url||'';
+ document.getElementById('pi').src=icon||'';
+};
+</script>
+</body>
+</html>
