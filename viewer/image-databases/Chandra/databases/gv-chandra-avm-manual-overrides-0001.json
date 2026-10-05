@@ -1,0 +1,77 @@
+{
+  "version": "0001",
+  "catalogType": "CHANDRA_AVM_MANUAL_REGISTRATION_OVERRIDES",
+  "createdAt": "2026-10-04",
+  "recordCount": 2,
+  "sourceOfTruth": "release",
+  "records": [
+    {
+      "imageId": "315",
+      "name": "NGC 5746",
+      "action": "ROTATION_CORRECTION",
+      "sourceAvmRotationDeg": 89.91582784802,
+      "rotationCorrectionDeg": 90,
+      "correctedRotationDeg": 179.91582784802,
+      "preserve": [
+        "RA",
+        "Dec",
+        "scale",
+        "referencePixel",
+        "raster"
+      ],
+      "method": "manual_visual_review",
+      "note": "User visually confirmed the image layer is one quarter-turn counterclockwise from the sky; apply +90 degrees clockwise only."
+    },
+    {
+      "imageId": "838f",
+      "name": "The Eagle Nebula (M16)",
+      "action": "MANUAL_WCS",
+      "replacesReviewImageId": "345",
+      "sourceRegistrationFile": "gv-chandra-wcs-rescue-solutions-0010.json",
+      "sourceRegistrationKey": "838f",
+      "sourceRaster": {
+        "width": 1024,
+        "height": 965
+      },
+      "rawManualWcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 965,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 274.7135739840296,
+        "CRVAL2": -13.83010764055956,
+        "CRPIX1": 573.6524833949526,
+        "CRPIX2": 43.72693844065217,
+        "CD1_1": -0.00003421009435520163,
+        "CD2_1": 8.264602385033015e-7,
+        "CD1_2": -8.262212741151861e-7,
+        "CD2_2": -0.0000342101058017974
+      },
+      "aladinRgbaWcs": {
+        "NAXIS": 2,
+        "NAXIS1": 1024,
+        "NAXIS2": 965,
+        "CTYPE1": "RA---TAN",
+        "CTYPE2": "DEC--TAN",
+        "CUNIT1": "deg",
+        "CUNIT2": "deg",
+        "EQUINOX": 2000,
+        "CRVAL1": 274.7135739840296,
+        "CRVAL2": -13.83010764055956,
+        "CRPIX1": 573.6524833949526,
+        "CRPIX2": 922.2730615593479,
+        "CD1_1": -0.00003421009435520163,
+        "CD2_1": 8.264602385033015e-7,
+        "CD1_2": 8.262212741151861e-7,
+        "CD2_2": 0.0000342101058017974
+      },
+      "verified": true,
+      "finalReviewed": true,
+      "note": "Use the user's saved 838f registration on the 838f raster. Do not transplant this WCS onto AstroPix 345 because 345 is a different 2007 raster/FOV."
+    }
+  ]
+}
