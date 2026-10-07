@@ -88,7 +88,7 @@ jobs:
           grep -q '"build": "0198"' viewer/gv-current-viewer.json
           grep -q "gv-galaxy-navigator-013.js" viewer/RC-V1.0.0.py release-manifest.json
           grep -q '"build": "0198"' release-manifest.json
-          grep -q '"dependencySnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43"' release-manifest.json
+          grep -q '"sourceCommit": "e56be0c7ade3934ed1e417af93a6dd4f2edd380e2"' release-manifest.json
           ! grep -q 'Galaxy_Viewer@release/' viewer/RC-V1.0.0.py
           pins="$(grep -oE 'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@[0-9a-f]{40}' viewer/RC-V1.0.0.py | sort -u)"
           test "$(printf '%s\n' "$pins" | sed '/^$/d' | wc -l)" -eq 1
