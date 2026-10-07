@@ -119,7 +119,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.1 BUILD 0207')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.1 BUILD 0001')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
@@ -427,4 +427,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-# BUILD 0207 FINAL DEPLOYMENT TRIGGER
+# BUILD 0001 DIAGNOSTIC DEPLOYMENT TRIGGER
