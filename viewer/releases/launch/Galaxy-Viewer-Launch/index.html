@@ -56,7 +56,7 @@ try{
  await splashComplete;
  if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
  await paint2();
- document.documentElement.dataset.gvSplashComplete='1';splash.remove();curtain.remove();
+ document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
 }catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD\n\n'+String(e&&e.stack||e)}
 })();
