@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0001 — RC-V1.0.1 diagnostic generation based on 0163 runtime logic
+# BUILD 0002 — RC-V1.0.1 diagnostic generation using AVM runtime catalog 0002
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0001';
+const GV200001_BUILD='0002';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -879,7 +879,7 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
     SPITZER:Object.freeze({label:'SPITZER',icon:globalThis.GVProviderArtwork.icon('SPITZER')})
 });
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
-const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
+const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
 const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
     const provider=String(record?.provider||record?.providerKey||'').toUpperCase();
@@ -1278,7 +1278,7 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(url)}catch(_){}
 }
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
