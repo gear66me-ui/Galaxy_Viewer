@@ -1104,7 +1104,6 @@ function gvSyncSurveySelectButton(){
     if(target?.open)gvPositionProviderSurveyPanel();
 }
 const gvToggleSurveyProviderMenu=()=>{
-    if(navigationInFlight)return;
     if(target.open){
         target.close?.();
         return;
