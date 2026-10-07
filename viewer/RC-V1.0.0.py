@@ -1789,14 +1789,22 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
+        // Navigation must never wait indefinitely on AVM/HD metadata.
+        // The Route Engine destination already carries authoritative RA/Dec/FOV/rotation.
+        // AVM registration is an enhancement for exact raster/WCS alignment, not a boot gate.
         if(registeredPromise){
             try{
-                const registered=await registeredPromise;
+                const registered=await Promise.race([
+                    registeredPromise,
+                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('REGISTERED TRAVEL METADATA TIMEOUT')),1500))
+                ]);
                 const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);
                 if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){
                     ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation;
                 }
-            }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
+            }catch(error){
+                console.warn('GV 130H FIRST-TRIP REGISTERED METADATA SKIPPED — USING ROUTE ENGINE DESTINATION',error);
+            }
         }
         const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
