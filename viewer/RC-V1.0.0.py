@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0160 — restored latest working RC artifact; preserve full survey/provider/navigation implementation
+# BUILD 0160 — restored release candidate from the last known working RC-V1.0.0 artifact; build identity advanced to 0160
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
