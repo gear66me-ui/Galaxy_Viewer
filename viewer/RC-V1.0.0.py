@@ -1015,7 +1015,7 @@ const gvSurveySelectStyle=document.createElement('style');
 gvSurveySelectStyle.id='gv-survey-select-galaxy-style';
 gvSurveySelectStyle.textContent=`
 #gv-survey-select-group{
-  position:fixed;z-index:99999;display:none;align-items:center;
+  position:fixed;z-index:97000;display:none;align-items:center;
   height:38px;margin:0;pointer-events:auto;transform:translateX(-50%)
 }
 .gv-survey-control-button{
@@ -1128,13 +1128,12 @@ const gvToggleSurveyProviderMenu=()=>{
 };
 gvSurveySelectButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();gvToggleSurveyProviderMenu();});
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
-// SPLASH GATE: the SELECT SURVEY control must not appear during the splash.
-// The launch page calls this hook only after galaxy-splash-complete and curtain removal.
-gvHideSurveySelectButton();
-window.GalaxyViewerSetSplashComplete=()=>{
-    gvSurveySyncRetry=0;
-    requestAnimationFrame(gvSyncSurveySelectButton);
-};
+// BUILD 0178: SELECT SURVEY is part of the sky reveal.
+// The launch curtain/cosmic veil owns splash masking; the survey control must
+// already exist underneath that veil so the same 5px reveal exposes it with
+// the rendered sky instead of waiting for an unrelated UI event.
+gvSurveySyncRetry=0;
+requestAnimationFrame(gvSyncSurveySelectButton);
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
     get currentDestination(){return activeDestination},
