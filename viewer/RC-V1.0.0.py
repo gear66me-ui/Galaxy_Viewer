@@ -1445,6 +1445,16 @@ setInterval(gvSyncFovReadout,GV_FOV_REPORT_MS);
 let zoomCommand=0;
 let zoomFrame=0;
 let gvAutoZoom=null;
+// GV ZOOM HOLD: keep the active HD image layer registered while zooming out.
+// Aladin may otherwise drop/cull the small WCS layer as the FOV expands.
+let gvHdZoomHoldAt=0;
+function gvHoldDirectHdDuringZoomOut(now){
+    if(zoomCommand<=0||!directHdOverlay)return;
+    if(Number(now)-gvHdZoomHoldAt<120)return;
+    gvHdZoomHoldAt=Number(now);
+    try{aladin.setOverlayImageLayer(directHdOverlay,DIRECT_HD_LAYER)}catch(_){ }
+    try{applyDirectHdOpacity()}catch(_){ }
+}
 function gvSetZoomCommand(command){
     zoomCommand=Math.max(-1,Math.min(1,Number(command)||0));
     zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
@@ -1453,6 +1463,8 @@ function zoomStep(){
     zoomFrame=0;
     if(!zoomCommand)return;
     try{
+        const now=performance.now();
+        gvHoldDirectHdDuringZoomOut(now);
         const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(current)&&current>0){
             if(gvAutoZoom){
