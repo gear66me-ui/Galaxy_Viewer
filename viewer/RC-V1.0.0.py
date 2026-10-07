@@ -908,13 +908,19 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
-target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.has(provider)).map(provider=>({
-    key:provider,
-    label:GV_SURVEY_PROVIDER_META[provider].label,
-    count:gvSurveyCatalog.get(provider).length,
-    icon:GV_SURVEY_PROVIDER_META[provider].icon
-})));
-if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
+// BUILD 0200 HOTFIX — Target/SIMBAD 0005 is display-only and does not expose
+// the provider-survey API used by newer survey UI code. Do not abort the entire
+// viewer boot on that optional interface mismatch.
+const gvTargetSupportsSurvey=typeof target.setProviders==='function';
+if(gvTargetSupportsSurvey){
+    target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.has(provider)).map(provider=>({
+        key:provider,
+        label:GV_SURVEY_PROVIDER_META[provider].label,
+        count:gvSurveyCatalog.get(provider).length,
+        icon:GV_SURVEY_PROVIDER_META[provider].icon
+    })));
+    if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
+}
 
 // BUILD 0098 — Survey thumbnail lookup bridge.
 // IMPORTANT: The APK native interceptor owns /viewer/artwork/runtime/survey-thumbnails/*.
@@ -1104,6 +1110,7 @@ function gvPositionProviderSurveyPanel(){
 }
 let gvSurveySyncRetry=0;
 function gvSyncSurveySelectButton(){
+    if(!gvTargetSupportsSurvey){gvHideSurveySelectButton();return}
     const coord=document.getElementById('gv-coordinate-host');
     if(!coord){gvHideSurveySelectButton();return}
     // BUILD 0176: after splash, the coordinate shelf can need one or more
@@ -1138,6 +1145,7 @@ function gvSyncSurveySelectButton(){
     if(target?.open)gvPositionProviderSurveyPanel();
 }
 const gvToggleSurveyProviderMenu=()=>{
+    if(!gvTargetSupportsSurvey)return;
     galaxyNavigator.closeSurveySelector?.();
     target.toggle?.();
     if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
