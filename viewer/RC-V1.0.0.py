@@ -1063,7 +1063,6 @@ gvSurveySelectStyle.textContent=`
   background:linear-gradient(145deg,#081B3A 0%,#0B3177 42%,#1484DB 76%,#296DBD 100%)!important;
   box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35)!important
 }
-`;
 .gv-survey-provider-menu{position:fixed;z-index:100000;display:grid;gap:5px;padding:8px;width:226px;box-sizing:border-box;border:1px solid #7CCBFF;border-radius:12px;background:linear-gradient(145deg,rgba(3,17,38,.985),rgba(7,43,93,.985) 58%,rgba(4,21,47,.985));box-shadow:inset 0 1px 2px rgba(225,251,255,.30),0 0 18px rgba(50,190,255,.48);pointer-events:auto}
 .gv-survey-provider-menu-title{height:22px;display:flex;align-items:center;justify-content:center;color:#DDF8FF;font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1.1px;text-shadow:0 0 5px rgba(88,191,255,.82)}
 .gv-survey-provider-menu-list{display:flex;flex-direction:column;gap:5px}
@@ -1078,6 +1077,7 @@ gvSurveySelectStyle.textContent=`
 .gv-survey-provider-menu-tile.gv-active .gv-survey-provider-menu-count{color:#DFFFF0}
 .gv-survey-provider-menu-index{position:absolute;right:46px;top:50%;z-index:3;transform:translateY(-50%);font:400 7px/1 "GV Space Age",sans-serif;letter-spacing:.45px;color:#DFFFF0;text-shadow:0 0 4px rgba(120,255,171,.8);pointer-events:none}
 @media(max-width:390px){.gv-survey-provider-menu{width:214px}}
+`;
 document.head.appendChild(gvSurveySelectStyle);
 const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
 const gvSurveySelectGroup=document.createElement('div');
