@@ -1482,10 +1482,8 @@ function zoomStep(){
                 }
             }
             aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*.018))));
-            // BUILD 0162 — keep the active HD image rendered throughout manual zoom-out.
-            // Aladin may drop/reset the image-layer opacity while the FOV is changing;
-            // re-assert the user's cross-fade value on each zoom frame and leave final
-            // image state untouched when zooming stops.
+            // BUILD 0163 — suppress the HD raster at the wide-FOV safety threshold.
+            // 55° leaves a 5° margin when the intended travel endpoint is 60°.
             if(directHdOverlay)applyDirectHdOpacity();
         }
     }catch(_){}
