@@ -1226,6 +1226,8 @@ galaxyNavigator?.random?.addEventListener('pointerdown',event=>{
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
 const DIRECT_HD_LAYER='GV_DIRECT_HD_0056';
+let directHdLayerName=DIRECT_HD_LAYER;
+let directHdLayerSequence=0;
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
 const MAX_BLEND_DIMENSION=2048;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
@@ -1379,7 +1381,7 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=gvHdEffectiveOpacity();
-    const target=directHdOverlay||aladin.getOverlayImageLayer?.(DIRECT_HD_LAYER);
+    const target=directHdOverlay||aladin.getOverlayImageLayer?.(directHdLayerName);
     try{target?.setOpacity?.(value)}catch(_){}
     try{target?.setAlpha?.(value)}catch(_){}
     try{target?.setOptions?.({opacity:value})}catch(_){}
@@ -1447,16 +1449,9 @@ setInterval(gvSyncFovReadout,GV_FOV_REPORT_MS);
 let zoomCommand=0;
 let zoomFrame=0;
 let gvAutoZoom=null;
-// GV ZOOM HOLD: keep the active HD image layer registered while zooming out.
-// Aladin may otherwise drop/cull the small WCS layer as the FOV expands.
-let gvHdZoomHoldAt=0;
-function gvHoldDirectHdDuringZoomOut(now){
-    if(zoomCommand<=0||!directHdOverlay)return;
-    if(Number(now)-gvHdZoomHoldAt<120)return;
-    gvHdZoomHoldAt=Number(now);
-    try{aladin.setOverlayImageLayer(directHdOverlay,DIRECT_HD_LAYER)}catch(_){ }
-    try{applyDirectHdOpacity()}catch(_){ }
-}
+// The active HD layer is installed once per destination and is deliberately
+// not re-registered during zoom frames. Re-registering the same WCS layer while
+// Aladin is changing FOV can race its layer stack and intermittently blank it.
 function gvSetZoomCommand(command){
     zoomCommand=Math.max(-1,Math.min(1,Number(command)||0));
     zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
@@ -1465,8 +1460,6 @@ function zoomStep(){
     zoomFrame=0;
     if(!zoomCommand)return;
     try{
-        const now=performance.now();
-        gvHoldDirectHdDuringZoomOut(now);
         const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(current)&&current>0){
             if(gvAutoZoom){
@@ -1629,14 +1622,41 @@ function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
     let resolveReady,rejectReady;
     const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
+    const previousLayerName=directHdLayerName;
+    const layerName=DIRECT_HD_LAYER+'_'+(++directHdLayerSequence);
     directHdDestination=destination;
     const layer=A.image(imageObjectUrl,{
-        name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination){resolveReady(false);return}directHdOverlay=layer;applyDirectHdOpacity();resolveReady(true);},
-        errorCallback:error=>{gvReleaseHdObjectUrl(imageObjectUrl);rejectReady(error);console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
+        name:layerName,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
+        successCallback:()=>{
+            if(directHdDestination!==destination){
+                try{aladin.removeImageLayer?.(layerName)}catch(_){}
+                gvReleaseHdObjectUrl(imageObjectUrl);
+                resolveReady(false);
+                return
+            }
+            directHdOverlay=layer;
+            directHdLayerName=layerName;
+            applyDirectHdOpacity();
+            if(previousLayerName&&previousLayerName!==layerName){
+                try{aladin.removeImageLayer?.(previousLayerName)}catch(_){}
+            }
+            resolveReady(true);
+        },
+        errorCallback:error=>{
+            gvReleaseHdObjectUrl(imageObjectUrl);
+            try{aladin.removeImageLayer?.(layerName)}catch(_){}
+            rejectReady(error);
+            console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)
+        }
     });
-    try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return ready;
+    // Stage the new raster before retiring the previous one. This makes the
+    // destination handoff atomic from the user's perspective.
+    try{aladin.setOverlayImageLayer(layer,layerName)}catch(error){
+        gvReleaseHdObjectUrl(imageObjectUrl);
+        try{aladin.removeImageLayer?.(layerName)}catch(_){}
+        rejectReady(error);
+    }
+    return ready;
 }
 function gvFlightClamp01(value){return Math.max(0,Math.min(1,Number(value)))}
 function gvFlightNavigationSmootherstep(value){const t=gvFlightClamp01(value);return 35*t**4-84*t**5+70*t**6-20*t**7}
