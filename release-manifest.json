@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0",
   "sourceBranch": "release",
-  "sourceCommit": "198bebb9bc9f19a10dc646a8dab2a801a85517c0",
-  "build": "0191",
+  "sourceCommit": "97428a1eb383e3210d55a6445306dda5cdaf4026",
+  "build": "0194",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
@@ -20,7 +20,7 @@
   ],
   "catalogs": [
     "viewer/image-databases/master-database/gv-master-catalog.json",
-    "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json",
+    "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json",
     "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
     "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
     "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
