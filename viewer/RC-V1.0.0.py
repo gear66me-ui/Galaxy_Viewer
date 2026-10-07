@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0206 — resilient AVM source fallback and immediate survey touch activation
+# BUILD 0207 — restore proven route engine pin and remove Target/SIMBAD from Survey control
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -25,7 +25,7 @@ HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7a
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/target-simbad/gv-target-simbad-0005.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
-GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js"
+GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fe23be5817b7d0405e132d770133d2b721144ba/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hud/gv-heads-up-display-0001.js"
 
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0206';
+const GV200001_BUILD='0207';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0005-AVM-SURVEY`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -103,7 +103,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/target-simbad/gv-target-simbad-0005.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
-    galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
+    galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fe23be5817b7d0405e132d770133d2b721144ba/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hud/gv-heads-up-display-0001.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
@@ -908,20 +908,7 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
-// BUILD 0205 — Target/SIMBAD 0005 survey compatibility.
-// Target/SIMBAD 0007 exposes setProviders(), matching the release viewer's
-// provider-survey contract. Retain the capability guard as a defensive gate.
-const gvTargetSupportsSurvey=typeof target.setProviders==='function';
-if(gvTargetSupportsSurvey){
-    target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.has(provider)).map(provider=>({
-        key:provider,
-        label:GV_SURVEY_PROVIDER_META[provider].label,
-        count:gvSurveyCatalog.get(provider).length,
-        icon:GV_SURVEY_PROVIDER_META[provider].icon
-    })));
-}
-
-// BUILD 0098 — Survey thumbnail lookup bridge.
+// BUILD 0207 — Target/SIMBAD 0005 is display-only. Survey control is owned by Navigator/RC.\n// BUILD 0098 — Survey thumbnail lookup bridge.
 // IMPORTANT: The APK native interceptor owns /viewer/artwork/runtime/survey-thumbnails/*.
 // Fetching pointer/index JSON from that path causes Android WebView to synthesize a
 // cross-origin WebResourceResponse; APK variants without ACAO then fail JavaScript CORS.
@@ -2165,7 +2152,6 @@ async function gvSelectSurveyProvider(provider){
     target.close?.();
     gvSyncSurveySelectButton();
     history.length=0;historyIndex=-1;
-    target.setActiveProvider?.(key,{index:resumeIndex+1,total:records.length});
     galaxyNavigator.setSurvey?.({provider:key,providerIcon:gvSurveyMode.providerIcon,current:resumeIndex+1,total:records.length,items,displaying:false});
     updateNavigationAvailability();
     requestAnimationFrame(()=>{gvSyncSurveySelectButton();galaxyNavigator.openSurveySelector?.(gvSurveySelectGroup)});
@@ -2175,7 +2161,6 @@ function gvExitSurveyMode(){
     if(navigationInFlight)return false;
     gvSurveyMode=null;
     history.length=0;historyIndex=-1;
-    target.setActiveProvider?.('',{index:0,total:0});
     galaxyNavigator.clearSurvey?.();
     headsUpDisplay?.render?.();
     gvSyncSurveySelectButton();
@@ -2198,7 +2183,6 @@ async function gvNavigateSurveyIndex(nextIndex){
     gvSyncSurveySelectButton();
     gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
-    target.setActiveProvider?.(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
     galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:false});
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
@@ -2210,15 +2194,13 @@ async function gvNavigateSurveyIndex(nextIndex){
         gvSurveyMode.index=index;
         gvSurveyMode.pendingIndex=index;
         gvSurveyCursors.set(gvSurveyMode.provider,index);
-        target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
-        galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:true});
+            galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:true});
         requestAnimationFrame(()=>{gvSyncSurveySelectButton();setTimeout(gvSyncSurveySelectButton,180)});
         return true;
     }catch(error){
         gvSurveyMode.index=previousIndex;
         gvSurveyMode.pendingIndex=previousPendingIndex;
         const restoreIndex=previousIndex>=0?previousIndex:previousPendingIndex;
-        target.setActiveProvider?.(gvSurveyMode.provider,{index:restoreIndex+1,total:gvSurveyMode.records.length});
         galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:restoreIndex+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:previousIndex>=0});
         throw error;
     }finally{
