@@ -1371,12 +1371,14 @@ crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
 function directHdOpacity(){return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
+const GV_HD_HIDE_FOV_DEGREES=55;
+function gvHdEffectiveOpacity(){try{const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);if(Number.isFinite(fov)&&fov>=GV_HD_HIDE_FOV_DEGREES)return 0}catch(_){}return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
     crossFadeControl.thumb.style.top=`${crossFadeControl.rail.offsetTop+((100-v)/100)*crossFadeControl.rail.offsetHeight}px`;
 }
 function applyDirectHdOpacity(){
-    const value=directHdOpacity();
+    const value=gvHdEffectiveOpacity();
     const target=directHdOverlay||aladin.getOverlayImageLayer?.(DIRECT_HD_LAYER);
     try{target?.setOpacity?.(value)}catch(_){}
     try{target?.setAlpha?.(value)}catch(_){}
@@ -1484,7 +1486,7 @@ function zoomStep(){
             // Aladin may drop/reset the image-layer opacity while the FOV is changing;
             // re-assert the user's cross-fade value on each zoom frame and leave final
             // image state untouched when zooming stops.
-            if(zoomCommand>0&&directHdOverlay)applyDirectHdOpacity();
+            if(directHdOverlay)applyDirectHdOpacity();
         }
     }catch(_){}
     zoomFrame=requestAnimationFrame(zoomStep);
