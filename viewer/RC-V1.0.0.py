@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0174 — splash-gated survey control
+# BUILD 0175 — defer HD retirement during travel; preload shelf fonts
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -34,6 +34,8 @@ HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d8
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
+<link rel="preload" as="font" type="font/otf" crossorigin href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf" />
+<link rel="preload" as="font" type="font/otf" crossorigin href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular/GV-Coordinate-Digits-0005.otf" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" />
 <div id="aladin-cosmic-command-test">
 
@@ -85,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0174';
+const GV200001_BUILD='0175';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1269,6 +1271,19 @@ function gvTrackHdObjectUrl(url){
         try{URL.revokeObjectURL(stale)}catch(_){}
     }
 }
+const gvPendingHdRetirements=new Map();
+function gvRetirePendingHdLayers(keepLayerName=directHdLayerName){
+    for(const [layerName,objectUrl] of [...gvPendingHdRetirements.entries()]){
+        if(layerName===keepLayerName)continue;
+        try{
+            aladin.removeImageLayer?.(layerName);
+            gvPendingHdRetirements.delete(layerName);
+            if(objectUrl)gvReleaseHdObjectUrl(objectUrl);
+        }catch(error){
+            console.warn('GV DEFERRED HD LAYER RETIRE FAILED',layerName,error);
+        }
+    }
+}
 function gvReleaseHdObjectUrl(url){
     // BUILD 0167 — the active raster is a hard ownership boundary.
     // Never unprotect/revoke the URL currently attached to the live layer.
@@ -1675,10 +1690,13 @@ function gvInstallPreparedHd(prepared){
             directHdObjectUrl=imageObjectUrl;
             gvProtectHdObjectUrl(imageObjectUrl);
             applyDirectHdOpacity();
+            // BUILD 0175: keep the previous live raster during the travel handoff.
+            // The new raster can become ready while the camera is still zooming
+            // out from the old galaxy. Removing the old layer here caused the
+            // visible galaxy to disappear ~2s after RANDOM GALAXY was pressed.
             if(previousLayerName&&previousLayerName!==layerName){
-                try{aladin.removeImageLayer?.(previousLayerName)}catch(_){}
+                gvPendingHdRetirements.set(previousLayerName,previousObjectUrl||'');
             }
-            if(previousObjectUrl&&previousObjectUrl!==imageObjectUrl){gvUnprotectHdObjectUrl(previousObjectUrl);gvReleaseHdObjectUrl(previousObjectUrl)}
             resolveReady(true);
         },
         errorCallback:error=>{
@@ -1915,6 +1933,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         travelPresentation.end();
+        gvRetirePendingHdLayers(directHdLayerName);
         destinationPresentation.arrive(gvPresentationDestination(v.destination),{imageUrl:String(directHdUrl(v.destination)).trim()});
         headsUpDisplay.render();
         gvShowEarthDistance(v.destination);
@@ -1926,6 +1945,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     travelPresentation.end();
+    gvRetirePendingHdLayers(directHdLayerName);
     destinationPresentation.arrive(gvPresentationDestination(v.destination),{imageUrl:String(directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();
     gvShowEarthDistance(v.destination);
