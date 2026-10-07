@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const VERSION='0017';
+const VERSION='0031';
 const FONT='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
 const CONSTELLATIONS=ART+'Constellations/';
