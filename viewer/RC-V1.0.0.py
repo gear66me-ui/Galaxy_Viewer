@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0198';
+const GV200001_BUILD='0199';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYROLL0066-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1945,7 +1945,9 @@ function gvStartFirstDestinationPreload(){
     return gvFirstDestinationPreload;
 }
 // IMPORTANT: start only after the AVM/HD preparation functions and their let/const dependencies are initialized.
-const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
+const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload();
+window.GalaxyViewerPreloadReady=gvFirstDestinationPreloadKick;
+gvFirstDestinationPreloadKick.catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
 
 // ============================================================================
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
