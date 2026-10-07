@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0201 — Restore release module dependency contract and verify Random Galaxy
+# BUILD 0202 — Restore BOM long-press, decouple survey UI, harden Random Galaxy
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,9 +87,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0201';
+const GV200001_BUILD='0202';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYROLL0066-WRAPPER0064-SHELL0076`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYROLL0066-WRAPPER0064-SHELL0077`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -911,6 +911,9 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
 // BUILD 0201 HOTFIX — Target/SIMBAD 0005 is display-only and does not expose
 // the provider-survey API used by newer survey UI code. Do not abort the entire
 // viewer boot on that optional interface mismatch.
+// BUILD 0202 — Target/SIMBAD 0005 supplies the target icon only.
+// Survey selection is owned by the Galaxy Viewer/Navigator UI and must not
+// depend on an optional provider API that this display-only Target module does not expose.
 const gvTargetSupportsSurvey=typeof target.setProviders==='function';
 if(gvTargetSupportsSurvey){
     target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.has(provider)).map(provider=>({
@@ -919,7 +922,6 @@ if(gvTargetSupportsSurvey){
         count:gvSurveyCatalog.get(provider).length,
         icon:GV_SURVEY_PROVIDER_META[provider].icon
     })));
-    if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
 }
 
 // BUILD 0098 — Survey thumbnail lookup bridge.
@@ -1110,7 +1112,6 @@ function gvPositionProviderSurveyPanel(){
 }
 let gvSurveySyncRetry=0;
 function gvSyncSurveySelectButton(){
-    if(!gvTargetSupportsSurvey){gvHideSurveySelectButton();return}
     const coord=document.getElementById('gv-coordinate-host');
     if(!coord){gvHideSurveySelectButton();return}
     // BUILD 0176: after splash, the coordinate shelf can need one or more
@@ -1144,11 +1145,51 @@ function gvSyncSurveySelectButton(){
     gvSurveySelectGroup.style.display='grid';
     if(target?.open)gvPositionProviderSurveyPanel();
 }
+let gvSurveyProviderMenu=null;
+function gvCloseSurveyProviderMenu(){
+    gvSurveyProviderMenu?.remove();
+    gvSurveyProviderMenu=null;
+}
+function gvOpenSurveyProviderMenu(){
+    gvCloseSurveyProviderMenu();
+    const available=GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.has(provider));
+    if(!available.length)return;
+    const menu=document.createElement('div');
+    menu.id='gv-survey-provider-menu';
+    Object.assign(menu.style,{
+        position:'fixed',zIndex:'100000',display:'grid',gap:'4px',padding:'6px',
+        width:'236px',boxSizing:'border-box',border:'1px solid #7CCBFF',
+        borderRadius:'8px',background:'linear-gradient(145deg,rgba(3,17,38,.98),rgba(7,43,93,.98))',
+        boxShadow:'0 0 18px rgba(50,190,255,.55)',pointerEvents:'auto'
+    });
+    const r=gvSurveySelectGroup.getBoundingClientRect();
+    menu.style.left=Math.round(r.left+r.width/2)+'px';
+    menu.style.top=Math.round(r.bottom+4)+'px';
+    menu.style.transform='translateX(-50%)';
+    for(const provider of available){
+        const b=document.createElement('button');
+        b.type='button';
+        b.textContent=GV_SURVEY_PROVIDER_META[provider].label;
+        Object.assign(b.style,{
+            height:'34px',border:'1px solid #43CFFF',borderRadius:'6px',
+            background:'linear-gradient(180deg,#174E86,#082C59)',color:'#F4FDFF',
+            font:'400 11px/1 "GV Space Age",sans-serif',letterSpacing:'.4px',
+            cursor:'pointer',textAlign:'center'
+        });
+        b.addEventListener('click',event=>{
+            event.preventDefault();event.stopPropagation();
+            gvCloseSurveyProviderMenu();
+            gvSelectSurveyProvider(provider).catch(error=>console.error('GV SURVEY SELECT FAILED',error));
+        });
+        menu.appendChild(b);
+    }
+    document.body.appendChild(menu);
+    gvSurveyProviderMenu=menu;
+}
 const gvToggleSurveyProviderMenu=()=>{
-    if(!gvTargetSupportsSurvey)return;
     galaxyNavigator.closeSurveySelector?.();
-    target.toggle?.();
-    if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
+    if(gvSurveyProviderMenu){gvCloseSurveyProviderMenu();return}
+    gvOpenSurveyProviderMenu();
 };
 gvSurveySelectButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();gvToggleSurveyProviderMenu();});
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
@@ -2076,7 +2117,7 @@ async function gvSelectSurveyProvider(provider){
     target.close?.();
     gvSyncSurveySelectButton();
     history.length=0;historyIndex=-1;
-    target.setActiveProvider(key,{index:resumeIndex+1,total:records.length});
+    target.setActiveProvider?.(key,{index:resumeIndex+1,total:records.length});
     galaxyNavigator.setSurvey?.({provider:key,providerIcon:gvSurveyMode.providerIcon,current:resumeIndex+1,total:records.length,items,displaying:false});
     updateNavigationAvailability();
     requestAnimationFrame(()=>{gvSyncSurveySelectButton();galaxyNavigator.openSurveySelector?.(gvSurveySelectGroup)});
@@ -2086,7 +2127,7 @@ function gvExitSurveyMode(){
     if(navigationInFlight)return false;
     gvSurveyMode=null;
     history.length=0;historyIndex=-1;
-    target.setActiveProvider('',{index:0,total:0});
+    target.setActiveProvider?.('',{index:0,total:0});
     galaxyNavigator.clearSurvey?.();
     headsUpDisplay?.render?.();
     gvSyncSurveySelectButton();
@@ -2109,7 +2150,7 @@ async function gvNavigateSurveyIndex(nextIndex){
     gvSyncSurveySelectButton();
     gvSetTripCycle(true);
     galaxyNavigator.setBusy(true);
-    target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
+    target.setActiveProvider?.(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
     galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:false});
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
@@ -2129,7 +2170,7 @@ async function gvNavigateSurveyIndex(nextIndex){
         gvSurveyMode.index=previousIndex;
         gvSurveyMode.pendingIndex=previousPendingIndex;
         const restoreIndex=previousIndex>=0?previousIndex:previousPendingIndex;
-        target.setActiveProvider(gvSurveyMode.provider,{index:restoreIndex+1,total:gvSurveyMode.records.length});
+        target.setActiveProvider?.(gvSurveyMode.provider,{index:restoreIndex+1,total:gvSurveyMode.records.length});
         galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:restoreIndex+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:previousIndex>=0});
         throw error;
     }finally{
@@ -2175,7 +2216,26 @@ async function navigateRandom(){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
-        await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
+        try{
+            await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
+        }catch(error){
+            console.error('GV RANDOM GALAXY NAVIGATION FAILED — DIRECT HANDOFF FALLBACK',error);
+            try{
+                const v=validateDestination(destination);
+                aladin.gotoRaDec(v.ra,v.dec);
+                aladin.setRotation(v.rotation);
+                aladin.setFov(v.fov);
+                coordinate?.update(v.ra,v.dec);
+                gvSetEarthPointerPosition(v.ra,v.dec,true);
+                headsUpDisplay.render();
+                destinationPresentation.end?.();
+                travelPresentation.end?.();
+                console.warn('GV RANDOM GALAXY DIRECT HANDOFF RECOVERED',destination?.name||destination?.objectName||'UNKNOWN');
+            }catch(fallbackError){
+                console.error('GV RANDOM GALAXY DIRECT HANDOFF FAILED',fallbackError);
+                throw error;
+            }
+        }
     }finally{
         navigationInFlight=false;
         gvSetTripCycle(false);
@@ -2267,6 +2327,49 @@ window.GalaxyViewerCore=Object.freeze({
     get navigationState(){return navigationRuntime.snapshot()}
 });
 
+// BUILD 0202 — 10-second Hamburger long-press Build Material console.
+// Kept in the RC shell because the pinned Hamburger 0009 is intentionally
+// display/menu-only and must not acquire hidden engineering gestures.
+(()=>{
+    const button=hamburger?.menuButton;
+    if(!button)return;
+    let timer=0,triggered=false;
+    const close=()=>{clearTimeout(timer);timer=0};
+    const open=()=>{
+        if(document.getElementById('gv-bom-console'))return;
+        const panel=document.createElement('div');
+        panel.id='gv-bom-console';
+        Object.assign(panel.style,{position:'fixed',inset:'0',zIndex:'2147483646',padding:'10px',boxSizing:'border-box',background:'rgba(0,5,16,.97)',color:'#DDF8FF',fontFamily:'"Space Age",Arial,sans-serif',overflow:'auto'});
+        const core=window.GalaxyViewerCore;
+        const cfg=window.GV_BOOT_CONFIG||{};
+        const snap=core?.navigationState||{};
+        const rows=[
+            ['VIEWER','RC-V1.0.0'],
+            ['BUILD',GV200001_BUILD],
+            ['RUNTIME',GV_RUNTIME],
+            ['POINTER','gv-current-viewer.json → '+GV200001_BUILD],
+            ['TARGET MODULE',String(cfg.targetUrl||'')],
+            ['NAVIGATOR MODULE',String(cfg.galaxyNavigatorUrl||'')],
+            ['ROUTE ENGINE',String(cfg.galaxyRouteEngineUrl||'')],
+            ['ALADIN',String(cfg.aladinJsUrl||'')],
+            ['UA',String(navigator.userAgent||'')],
+            ['NAVIGATION',JSON.stringify(snap)]
+        ];
+        panel.innerHTML='<div style="border:1px solid #7CCBFF;border-radius:10px;padding:14px;background:linear-gradient(145deg,#031126,#072B5D);box-shadow:0 0 24px rgba(50,190,255,.35)"><div style="font-size:18px;letter-spacing:1px">GALAXY VIEWER · BUILD MATERIAL</div><div style="margin-top:6px;font-size:11px;color:#8FEAFF">ENGINEERING CONSOLE · BUILD 0202</div><div style="margin-top:14px;font:12px/1.6 monospace;overflow-wrap:anywhere">'+rows.map(([k,v])=>'<div><span style="color:#78FFAB">'+k+'</span> · '+String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>').join('')+'</div><button id="gv-bom-close" style="margin-top:16px;width:100%;height:40px;border:1px solid #7CCBFF;border-radius:7px;background:#0B3177;color:#FFF">CLOSE</button></div>';
+        document.body.appendChild(panel);
+        panel.querySelector('#gv-bom-close')?.addEventListener('click',()=>panel.remove());
+    };
+    button.addEventListener('pointerdown',event=>{
+        if(event.button!==undefined&&event.button!==0)return;
+        triggered=false;close();
+        timer=setTimeout(()=>{triggered=true;open();navigator.vibrate?.(40)},10000);
+    },{capture:true});
+    button.addEventListener('pointerup',close,{capture:true});
+    button.addEventListener('pointercancel',close,{capture:true});
+    button.addEventListener('click',event=>{
+        if(triggered){event.preventDefault();event.stopImmediatePropagation();triggered=false}
+    },{capture:true});
+})();
 window.GalaxyViewerPrepareCosmicReveal=gvCosmicReveal.prepare;
 window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
 console.info(`${VERSION} — TRIAL READY`,{
