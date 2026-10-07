@@ -1373,8 +1373,12 @@ crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
 function directHdOpacity(){return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
-const GV_HD_HIDE_FOV_DEGREES=55;
-function gvHdEffectiveOpacity(){try{const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);if(Number.isFinite(fov)&&fov>=GV_HD_HIDE_FOV_DEGREES)return 0}catch(_){}return directHdOpacity()}
+// BUILD 0164 FIX — never derive image visibility from FOV.
+// The HD raster must remain visible while zooming; opacity is owned only by
+// the CROSS FADE control. The previous 55° FOV suppression created an
+// intermittent race: a layer installed while FOV >=55° could be left at
+// opacity 0 after arrival, and touching CROSS FADE happened to restore it.
+function gvHdEffectiveOpacity(){return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
     crossFadeControl.thumb.style.top=`${crossFadeControl.rail.offsetTop+((100-v)/100)*crossFadeControl.rail.offsetHeight}px`;
