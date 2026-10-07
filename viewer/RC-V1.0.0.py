@@ -698,7 +698,9 @@ if(!aladin)throw new Error('ALADIN VIEWER INITIALIZATION FAILED');
 // ECO: GV200-001
 // ============================================================================
 const hosts=Object.freeze({
-    hamburger:document.getElementById('gv-hamburger-host'),    coordinate:document.getElementById('gv-coordinate-host'),    target:document.getElementById('gv-target-host'),
+    hamburger:document.getElementById('gv-hamburger-host'),
+    coordinate:document.getElementById('gv-coordinate-host'),
+    target:document.getElementById('gv-target-host'),
     navigation:document.getElementById('gv-navigation-host')
 });
 
@@ -1395,9 +1397,12 @@ function gvTanPixelToWorld(wcs,x,y){
     const d2r=Math.PI/180,r2d=180/Math.PI;
     const dx=Number(x)-Number(wcs.CRPIX1),dy=Number(y)-Number(wcs.CRPIX2);
     const xi=(Number(wcs.CD1_1)*dx+Number(wcs.CD1_2)*dy)*d2r;
-    const eta=(Number(wcs.CD2_1)*dx+Number(wcs.CD2_2)*dy)*d2r;    const ra0=Number(wcs.CRVAL1)*d2r,dec0=Number(wcs.CRVAL2)*d2r;
-    const denom=Math.cos(dec0)-eta*Math.sin(dec0);    let ra=ra0+Math.atan2(xi,denom);
-    const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));    ra=((ra*r2d)%360+360)%360;
+    const eta=(Number(wcs.CD2_1)*dx+Number(wcs.CD2_2)*dy)*d2r;
+    const ra0=Number(wcs.CRVAL1)*d2r,dec0=Number(wcs.CRVAL2)*d2r;
+    const denom=Math.cos(dec0)-eta*Math.sin(dec0);
+    let ra=ra0+Math.atan2(xi,denom);
+    const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));
+    ra=((ra*r2d)%360+360)%360;
     return [ra,dec*r2d];
 }
 function gvRegisteredTravelStateFromRecord(record){
@@ -2095,9 +2100,11 @@ async function gvNavigateSurveyIndex(nextIndex){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
-        await showDestination(destination,{firstTrip,switchToSphericalAtApex});        gvSurveyMode.index=index;
+        await showDestination(destination,{firstTrip,switchToSphericalAtApex});
+        gvSurveyMode.index=index;
         gvSurveyMode.pendingIndex=index;
-        gvSurveyCursors.set(gvSurveyMode.provider,index);        target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
+        gvSurveyCursors.set(gvSurveyMode.provider,index);
+        target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
         galaxyNavigator.setSurvey?.({provider:gvSurveyMode.provider,providerIcon:gvSurveyMode.providerIcon,current:index+1,total:gvSurveyMode.records.length,items:gvSurveyMode.items,displaying:true});
         requestAnimationFrame(()=>{gvSyncSurveySelectButton();setTimeout(gvSyncSurveySelectButton,180)});
         return true;
