@@ -1246,6 +1246,10 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
+let directHdObjectUrl=null;
+// BUILD 0166 — active HD object URL is never revoked by the rolling resource window.
+// Prefetch can create many object URLs; revoking the URL still used by the visible
+// Aladin layer causes the intermittent image disappearance seen after zoom/FOV changes.
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
 const GV_HD_RESOURCE_WINDOW=10;
