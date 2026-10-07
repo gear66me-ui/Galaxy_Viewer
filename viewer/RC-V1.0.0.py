@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0182 — resolve Survey provider from catalogKey when source records omit provider
+# BUILD 0183 — reconcile AVM runtime count from the catalog's declared recordCount
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0182';
+const GV200001_BUILD='0183';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1344,7 +1344,7 @@ async function gvLoadAvmRuntimeCatalog(){
             .then(response=>{if(!response.ok)throw new Error('GV AVM RUNTIME CATALOG HTTP '+response.status);return response.json()})
             .then(payload=>{
                 const records=Array.isArray(payload)?payload:payload?.records;
-                if(!Array.isArray(records)||records.length!==1848)throw new Error('GV AVM RUNTIME CATALOG INVALID');
+                const expectedCount=Number(payload?.recordCount);\n                if(!Array.isArray(records)||!Number.isInteger(expectedCount)||expectedCount<1||records.length!==expectedCount)throw new Error('GV AVM RUNTIME CATALOG INVALID');
                 const byUrl=new Map(),byId=new Map();
                 for(const record of records){
                     const url=String(record?.imageUrl||'').trim().toLowerCase();
