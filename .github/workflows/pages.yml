@@ -87,19 +87,19 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0'
           assert viewer.get('viewer')=='RC-V1.0.0.py'
-          assert viewer.get('build')=='0206'
-          assert manifest.get('build')=='0206'
+          assert viewer.get('build')=='0207'
+          assert manifest.get('build')=='0207'
           assert manifest.get('sourceBranch')=='release'
-          assert manifest.get('sourceCommit')=='e56be0c7ade3934ed1e417af93a6dd4f2edd380e'
+          assert manifest.get('sourceCommit')=='a698397819efd4a0904c141042b56252b447c8ae'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0206';" in rc
+          assert "const GV200001_BUILD='0207';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==['7fe23be5817b7d0405e132d770133d2b721144ba','e56be0c7ade3934ed1e417af93a6dd4f2edd380e'], pins
+          assert pins==['7fe23be5817b7d0405e132d770133d2b721144ba','d85d91201ea52aa6524a62394fc81b450b15ac23','e56be0c7ade3934ed1e417af93a6dd4f2edd380e'], pins
           assert 'Galaxy_Viewer@7fe23be5817b7d0405e132d770133d2b721144ba/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
@@ -119,7 +119,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0206')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0207')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
@@ -427,4 +427,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-# BUILD 0206 FINAL DEPLOYMENT TRIGGER
+# BUILD 0207 FINAL DEPLOYMENT TRIGGER
