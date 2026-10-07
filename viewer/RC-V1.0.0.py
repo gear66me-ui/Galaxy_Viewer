@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0203 — Restore Target/SIMBAD 0007 survey contract
+# BUILD 0204 — Restore survey tile presentation
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,9 +87,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0203';
+const GV200001_BUILD='0204';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0007-RESTORE`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0005-SURVEY-TILES`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -908,7 +908,7 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
-// BUILD 0203 HOTFIX — Restore Target/SIMBAD 0007 survey contract.
+// BUILD 0204 — Target/SIMBAD 0005 survey compatibility.
 // Target/SIMBAD 0007 exposes setProviders(), matching the release viewer's
 // provider-survey contract. Retain the capability guard as a defensive gate.
 const gvTargetSupportsSurvey=typeof target.setProviders==='function';
