@@ -3,6 +3,8 @@ name: One-shot Hubble catalog correction
 on:
   push:
     branches: [release]
+  pull_request:
+    branches: [release]
 
 permissions:
   contents: write
@@ -29,19 +31,24 @@ jobs:
           data["entries"] = [e for e in data["entries"] if e.get("archiveId") != "heic0106j"]
           after = len(data["entries"])
 
+          if before == 1103 and after == 1103:
+              print("heic0106j already removed; nothing to do.")
+              raise SystemExit(0)
+
           if before != 1104 or after != 1103:
               raise SystemExit(f"Unexpected Hubble count: {before} -> {after}")
-
-          if any(e.get("archiveId") == "heic0106j" for e in data["entries"]):
-              raise SystemExit("heic0106j still present")
 
           p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
           print(f"Hubble entries: {before} -> {after}")
           print("Removed: heic0106j")
           PY
 
-      - name: Commit correction
+      - name: Commit correction if needed
         run: |
+          if git diff --quiet -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json; then
+            echo "No catalog change required."
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
