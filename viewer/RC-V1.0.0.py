@@ -26,7 +26,7 @@ COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/target-simbad/gv-target-simbad-0005.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4b4f738057ca1e0a6bab062790fca6a4a57f86f6/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fe23be5817b7d0405e132d770133d2b721144ba/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hud/gv-heads-up-display-0001.js"
 
 # ============================================================================
@@ -104,7 +104,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/target-simbad/gv-target-simbad-0005.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4b4f738057ca1e0a6bab062790fca6a4a57f86f6/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fe23be5817b7d0405e132d770133d2b721144ba/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hud/gv-heads-up-display-0001.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
