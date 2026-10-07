@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0176 — repair survey control lifecycle across splash and HD
+# BUILD 0177 — close survey menu when HD presentation opens
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0176';
+const GV200001_BUILD='0177';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1154,7 +1154,15 @@ const destinationPresentation=window.GalaxyDestinationPresentation.mount(documen
 // floats above the HD banner, while returning to the sky restores it.
 const gvHdSurveyVisibility=document.querySelector('.gvdp-hd');
 if(gvHdSurveyVisibility){
-    const gvHdSurveyObserver=new MutationObserver(()=>requestAnimationFrame(gvSyncSurveySelectButton));
+    const gvHdSurveyObserver=new MutationObserver(()=>{
+        if(gvHdSurveyVisibility.classList.contains('gvdp-open')){
+            galaxyNavigator.closeSurveySelector?.();
+            target.close?.();
+            gvHideSurveySelectButton();
+            return;
+        }
+        requestAnimationFrame(gvSyncSurveySelectButton);
+    });
     gvHdSurveyObserver.observe(gvHdSurveyVisibility,{attributes:true,attributeFilter:['class']});
 }
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
