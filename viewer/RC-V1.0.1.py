@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0109 — resilient provider and constellation artwork loading
+# BUILD 0001 — RC-V1.0.1 diagnostic generation based on 0163 runtime logic
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
