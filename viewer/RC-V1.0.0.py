@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0175 — defer HD retirement during travel; preload shelf fonts
+# BUILD 0176 — repair survey control lifecycle across splash and HD
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0175';
+const GV200001_BUILD='0176';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1086,11 +1086,27 @@ function gvPositionProviderSurveyPanel(){
     panel.style.zIndex='99999';
     panel.style.pointerEvents='auto';
 }
+let gvSurveySyncRetry=0;
 function gvSyncSurveySelectButton(){
     const coord=document.getElementById('gv-coordinate-host');
     if(!coord){gvHideSurveySelectButton();return}
+    // BUILD 0176: after splash, the coordinate shelf can need one or more
+    // layout frames before it has dimensions. Do not lose the control forever.
     const r=coord.getBoundingClientRect();
-    if(!r.width||!r.height){gvHideSurveySelectButton();return}
+    if(!r.width||!r.height){
+        gvHideSurveySelectButton();
+        if(gvSurveySyncRetry<60){
+            gvSurveySyncRetry++;
+            requestAnimationFrame(gvSyncSurveySelectButton);
+        }
+        return;
+    }
+    gvSurveySyncRetry=0;
+    // BUILD 0176: the survey control belongs to the sky UI, never the HD page.
+    if(document.querySelector('.gvdp-hd.gvdp-open')){
+        gvHideSurveySelectButton();
+        return;
+    }
     gvSurveySelectLabel();
     gvSyncSurveyProviderIcon();
     const center=Math.round(r.left+r.width/2);
@@ -1115,7 +1131,10 @@ window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySele
 // SPLASH GATE: the SELECT SURVEY control must not appear during the splash.
 // The launch page calls this hook only after galaxy-splash-complete and curtain removal.
 gvHideSurveySelectButton();
-window.GalaxyViewerSetSplashComplete=()=>requestAnimationFrame(()=>gvSyncSurveySelectButton());
+window.GalaxyViewerSetSplashComplete=()=>{
+    gvSurveySyncRetry=0;
+    requestAnimationFrame(gvSyncSurveySelectButton);
+};
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
     get currentDestination(){return activeDestination},
@@ -1130,6 +1149,14 @@ const randomGalaxyBridge=Object.freeze({
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
 const travelPresentation=window.GalaxyRandomTravelPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
 const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'),{onBackToSky:()=>requestAnimationFrame(()=>{gvResyncEarthPointerFromAladin();gvSyncSurveySelectButton()})});
+// BUILD 0176: Destination Presentation owns the HD overlay internally.
+// Observe only its open/closed class so the sky-only survey control never
+// floats above the HD banner, while returning to the sky restores it.
+const gvHdSurveyVisibility=document.querySelector('.gvdp-hd');
+if(gvHdSurveyVisibility){
+    const gvHdSurveyObserver=new MutationObserver(()=>requestAnimationFrame(gvSyncSurveySelectButton));
+    gvHdSurveyObserver.observe(gvHdSurveyVisibility,{attributes:true,attributeFilter:['class']});
+}
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
