@@ -2264,26 +2264,8 @@ async function navigateRandom(){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
-        try{
-            await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
-        }catch(error){
-            console.error('GV RANDOM GALAXY NAVIGATION FAILED — DIRECT HANDOFF FALLBACK',error);
-            try{
-                const v=validateDestination(destination);
-                aladin.gotoRaDec(v.ra,v.dec);
-                aladin.setRotation(v.rotation);
-                aladin.setFov(v.fov);
-                coordinate?.update(v.ra,v.dec);
-                gvSetEarthPointerPosition(v.ra,v.dec,true);
-                headsUpDisplay.render();
-                destinationPresentation.end?.();
-                travelPresentation.end?.();
-                console.warn('GV RANDOM GALAXY DIRECT HANDOFF RECOVERED',destination?.name||destination?.objectName||'UNKNOWN');
-            }catch(fallbackError){
-                console.error('GV RANDOM GALAXY DIRECT HANDOFF FAILED',fallbackError);
-                throw error;
-            }
-        }
+        await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
+
     }finally{
         navigationInFlight=false;
         gvSetTripCycle(false);
