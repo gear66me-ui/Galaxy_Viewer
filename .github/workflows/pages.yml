@@ -92,7 +92,7 @@ jobs:
           ! grep -q 'Galaxy_Viewer@release/' viewer/RC-V1.0.0.py
           pins="$(grep -oE 'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@[0-9a-f]{40}' viewer/RC-V1.0.0.py | sort -u)"
           test "$(printf '%s\n' "$pins" | sed '/^$/d' | wc -l)" -eq 1
-          grep -q 'Galaxy_Viewer@4b4d7e740aa172c510fd06ae59d75a8590e8ef43' viewer/RC-V1.0.0.py
+          grep -q 'Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e' viewer/RC-V1.0.0.py
           ! grep -R "gv-galaxy-navigator-001.js" viewer/RC-V1.0.0.py release-manifest.json
           grep -q '"viewer": "RC-V1.0.0.py"' viewer/gv-current-viewer.json
           grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
