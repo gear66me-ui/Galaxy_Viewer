@@ -1,8 +1,8 @@
 {
-  "release": "RC-V1.0.0",
+  "release": "RC-V1.0.1",
   "sourceBranch": "release",
-  "sourceCommit":"a698397819efd4a0904c141042b56252b447c8ae",
-  "build": "0207",
+  "sourceCommit":"b33f3ec1376ad2cd966af2f0b1d3b3c6745b4111",
+  "build": "0001",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js",
@@ -15,7 +15,7 @@
     "viewer/modules/destination-presentation/gv-destination-presentation-0017.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
     "viewer/modules/hud/gv-heads-up-display-0001.js",
-    "viewer/RC-V1.0.0.py",
+    "viewer/RC-V1.0.1.py",
     "viewer/gv-current-viewer.json"
   ],
   "catalogs": [
