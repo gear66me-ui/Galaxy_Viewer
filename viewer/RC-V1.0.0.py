@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0167';
+const GV200001_BUILD='0168';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1412,6 +1412,19 @@ function applyDirectHdOpacity(){
     updateCrossFadeThumb();
     return value;
 }
+function gvEnsureDirectHdLayer(){
+    const active=directHdOverlay;
+    const name=directHdLayerName;
+    if(!active||!name||!directHdObjectUrl)return false;
+    try{
+        const attached=aladin.getOverlayImageLayer?.(name);
+        if(!attached)aladin.setOverlayImageLayer(active,name);
+    }catch(_){}
+    applyDirectHdOpacity();
+    return true;
+}
+aladin.on?.('zoomChanged',()=>requestAnimationFrame(gvEnsureDirectHdLayer));
+
 function setCrossFadeFromY(clientY){
     const r=crossFadeControl.rail.getBoundingClientRect();if(!r.height)return;
     crossFadeInput.value=String(Math.max(0,Math.min(100,Math.round(((r.bottom-clientY)/r.height)*100))));
