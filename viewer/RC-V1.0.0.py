@@ -1112,7 +1112,7 @@ const gvToggleSurveyProviderMenu=()=>{
     target.open?.();
     requestAnimationFrame(()=>requestAnimationFrame(gvPositionProviderSurveyPanel));
 };
-gvSurveySelectButton.addEventListener('click',gvToggleSurveyProviderMenu);
+gvSurveySelectButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();gvToggleSurveyProviderMenu();});
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
 requestAnimationFrame(gvSyncSurveySelectButton);
 const randomGalaxyBridge=Object.freeze({
