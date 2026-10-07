@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0177 — close survey menu when HD presentation opens
+# BUILD 0178 — close survey menu when HD presentation opens
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
