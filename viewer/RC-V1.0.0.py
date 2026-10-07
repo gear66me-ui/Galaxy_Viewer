@@ -697,8 +697,7 @@ if(!aladin)throw new Error('ALADIN VIEWER INITIALIZATION FAILED');
 // SECTION 021 — DOM HOST ACQUISITION
 // ECO: GV200-001
 // ============================================================================
-const hosts=Object.freeze({
-    hamburger:document.getElementById('gv-hamburger-host'),
+const hosts=Object.freeze({    hamburger:document.getElementById('gv-hamburger-host'),
     coordinate:document.getElementById('gv-coordinate-host'),
     target:document.getElementById('gv-target-host'),
     navigation:document.getElementById('gv-navigation-host')
@@ -1397,8 +1396,7 @@ function gvTanPixelToWorld(wcs,x,y){
     const d2r=Math.PI/180,r2d=180/Math.PI;
     const dx=Number(x)-Number(wcs.CRPIX1),dy=Number(y)-Number(wcs.CRPIX2);
     const xi=(Number(wcs.CD1_1)*dx+Number(wcs.CD1_2)*dy)*d2r;
-    const eta=(Number(wcs.CD2_1)*dx+Number(wcs.CD2_2)*dy)*d2r;
-    const ra0=Number(wcs.CRVAL1)*d2r,dec0=Number(wcs.CRVAL2)*d2r;
+    const eta=(Number(wcs.CD2_1)*dx+Number(wcs.CD2_2)*dy)*d2r;    const ra0=Number(wcs.CRVAL1)*d2r,dec0=Number(wcs.CRVAL2)*d2r;
     const denom=Math.cos(dec0)-eta*Math.sin(dec0);
     let ra=ra0+Math.atan2(xi,denom);
     const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));
@@ -1891,7 +1889,7 @@ function validateDestination(destination){
     const ra=Number(destination.ra);
     const dec=Number(destination.dec);
     const fov=Number(destination.fovDegrees);
-    const rotation=destination.aladinRotation;
+    const rotation=Number(destination?.aladinRotation??destination?.avmRotation??destination?.rotation??destination?.orientation??0);
     if(!Number.isFinite(ra))throw new Error('DESTINATION RA INVALID');
     if(!Number.isFinite(dec))throw new Error('DESTINATION DEC INVALID');
     if(!Number.isFinite(fov)||fov<=0)throw new Error('DESTINATION FOV INVALID');
@@ -2041,7 +2039,9 @@ function gvSurveyThumbnailCandidates(record,provider=''){
 async function gvSelectSurveyProvider(provider){
     if(navigationInFlight)return false;
     const key=String(provider||'').toUpperCase();
-    await gvSurveyThumbnailPackReady;
+    // Survey navigation must not be gated by the optional thumbnail cache bridge.
+    // The catalog records already contain ordinary image candidates; thumbnails are
+    // presentation-only and may warm asynchronously after the survey is selectable.
     const records=gvSurveyCatalog.get(key);
     if(!records?.length)return false;
     const remembered=gvSurveyCursors.get(key);
@@ -2097,8 +2097,7 @@ async function gvNavigateSurveyIndex(nextIndex){
     try{
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
-        routeIndex++;
-        await showDestination(destination,{firstTrip,switchToSphericalAtApex});
+        routeIndex++;        await showDestination(destination,{firstTrip,switchToSphericalAtApex});
         gvSurveyMode.index=index;
         gvSurveyMode.pendingIndex=index;
         gvSurveyCursors.set(gvSurveyMode.provider,index);
