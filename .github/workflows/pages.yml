@@ -95,7 +95,7 @@ jobs:
           grep -q 'Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e' viewer/RC-V1.0.0.py
           ! grep -R "gv-galaxy-navigator-001.js" viewer/RC-V1.0.0.py release-manifest.json
           grep -q '"viewer": "RC-V1.0.0.py"' viewer/gv-current-viewer.json
-          grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
+          grep -q '"version": "0026"' viewer/Web-Browser/web-browser-current.json
           grep -q '"sourceBranch": "release"' release-manifest.json
           grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
           echo "PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0198"
