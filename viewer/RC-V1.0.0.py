@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0180 — close survey menu when HD presentation opens
+# BUILD 0181 — close survey menu when HD presentation opens
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0180';
+const GV200001_BUILD='0181';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -624,7 +624,7 @@ const gvCosmicReveal=(()=>{
         fired=true;
         if(!prepared&&!prepare())return;
         if(!veil||!ctx)return;
-        // BUILD 0180: synchronize the sky UI at the exact instant the cosmic
+        // BUILD 0181: synchronize the sky UI at the exact instant the cosmic
         // 5px-cell reveal starts. SELECT SURVEY is already underneath the veil,
         // so its pixels are revealed in the same trickle as the rendered sky.
         if(typeof gvSyncSurveySelectButton==='function')gvSyncSurveySelectButton();
@@ -1132,7 +1132,7 @@ const gvToggleSurveyProviderMenu=()=>{
 };
 gvSurveySelectButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();gvToggleSurveyProviderMenu();});
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
-// BUILD 0180: SELECT SURVEY is part of the sky reveal.
+// BUILD 0181: SELECT SURVEY is part of the sky reveal.
 // The launch curtain/cosmic veil owns splash masking; the survey control must
 // already exist underneath that veil so the same 5px reveal exposes it with
 // the rendered sky instead of waiting for an unrelated UI event.
