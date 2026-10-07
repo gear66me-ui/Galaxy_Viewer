@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0166';
+const GV200001_BUILD='0167';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1272,8 +1272,12 @@ function gvTrackHdObjectUrl(url){
     }
 }
 function gvReleaseHdObjectUrl(url){
-    gvUnprotectHdObjectUrl(url);
+    // BUILD 0167 — the active raster is a hard ownership boundary.
+    // Never unprotect/revoke the URL currently attached to the live layer.
+    // A late prefetch/error callback must not be able to make the visible
+    // raster eligible for the rolling-window revoke.
     if(url===directHdObjectUrl)return;
+    gvUnprotectHdObjectUrl(url);
     const index=gvHdObjectUrls.indexOf(url);
     if(index>=0)gvHdObjectUrls.splice(index,1);
     try{URL.revokeObjectURL(url)}catch(_){}
@@ -1402,10 +1406,10 @@ function updateCrossFadeThumb(){
 function applyDirectHdOpacity(){
     const value=gvHdEffectiveOpacity();
     const target=directHdOverlay||aladin.getOverlayImageLayer?.(directHdLayerName);
+    // BUILD 0167 — one authoritative opacity writer. Do not mix Aladin
+    // setOpacity/setAlpha/setOptions/options mutations; those competing
+    // writers made the visible state timing-dependent.
     try{target?.setOpacity?.(value)}catch(_){}
-    try{target?.setAlpha?.(value)}catch(_){}
-    try{target?.setOptions?.({opacity:value})}catch(_){}
-    if(target?.options)try{target.options.opacity=value}catch(_){}
     updateCrossFadeThumb();
     return value;
 }
