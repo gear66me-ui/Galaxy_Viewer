@@ -85,7 +85,7 @@ jobs:
           test -s viewer/Web-Browser/Web-Browser-0026/config.json
           test -s viewer/Web-Browser/Web-Browser-0026/top.html
           test -s viewer/Web-Browser/Web-Browser-0026/bottom.html
-          grep -q "build": "0198" viewer/gv-current-viewer.json
+          grep -q '"build": "0198"' viewer/gv-current-viewer.json
           grep -q "gv-galaxy-navigator-013.js" viewer/RC-V1.0.0.py release-manifest.json
           grep -q '"build": "0198"' release-manifest.json
           grep -q '"dependencySnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43"' release-manifest.json
