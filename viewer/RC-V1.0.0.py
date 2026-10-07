@@ -624,6 +624,10 @@ const gvCosmicReveal=(()=>{
         fired=true;
         if(!prepared&&!prepare())return;
         if(!veil||!ctx)return;
+        // BUILD 0178: synchronize the sky UI at the exact instant the cosmic
+        // 5px-cell reveal starts. SELECT SURVEY is already underneath the veil,
+        // so its pixels are revealed in the same trickle as the rendered sky.
+        if(typeof gvSyncSurveySelectButton==='function')gvSyncSurveySelectButton();
         let cursor=0,startTime=0;
         const frame=now=>{
             if(!startTime)startTime=now;
