@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0185';
+const GV200001_BUILD='0186';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -889,8 +889,6 @@ const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
     const catalogKey=String(record?.catalogKey||'').trim().toUpperCase();
     const provider=String(record?.provider||'').trim().toUpperCase();
-    // The master catalog key is authoritative. Provider labels are presentation
-    // metadata and may vary across source records (e.g. ESA/Hubble, HST).
     if(catalogKey==='HUBBLE'||catalogKey==='JWST'||catalogKey==='CHANDRA'||catalogKey==='ESO'||catalogKey==='NOIRLAB'||catalogKey==='SPITZER')return catalogKey;
     const resolved=provider||catalogKey;
     if(/^(?:ESA[ /_-]?HUBBLE|HST|HUBBLE SPACE TELESCOPE)$/.test(resolved))return 'HUBBLE';
