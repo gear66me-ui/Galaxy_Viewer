@@ -25,7 +25,7 @@ HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
-GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@c00ed84bbe117ca3708428ffd74649332798d95e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
+GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@16c902ec2454d629f65d78b6786a24a0ce957b69/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js"
 
