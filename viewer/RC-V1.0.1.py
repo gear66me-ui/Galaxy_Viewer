@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0003 — RC-V1.0.1 metadata hydration + provider website restoration
+# BUILD 0004 — RC-V1.0.1 provider-survey metadata key normalization
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0003';
+const GV200001_BUILD='0004';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1806,7 +1806,9 @@ async function gvLoadPresentationCatalog(key){
     return promise;
 }
 async function gvPresentationDestination(destination){
-    const key=String(destination?.catalogKey||'').trim().toLowerCase();
+    const rawCatalogKey=String(destination?.catalogKey||'').trim().toLowerCase();
+    const providerKey=String(destination?.providerKey||destination?.provider||'').trim().toLowerCase();
+    const key=GV_PRESENTATION_PROVIDER_BY_CATALOG[rawCatalogKey]?rawCatalogKey:(GV_PRESENTATION_PROVIDER_BY_CATALOG[providerKey]?providerKey:'');
     const provider=GV_PRESENTATION_PROVIDER_BY_CATALOG[key];
     let enriched=provider&&String(destination?.provider||'').trim().toUpperCase()!==provider
         ? Object.freeze({...destination,provider})
