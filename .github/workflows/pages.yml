@@ -80,16 +80,16 @@ jobs:
           test -s viewer/RC-V1.0.0.py
           test -s viewer/artwork/startup/galaxy-viewer-startup.png
           grep -q 'VIEWER_VERSION = "RC-V1.0.0"' viewer/RC-V1.0.0.py
-          grep -q "const GV200001_BUILD='0160';" viewer/RC-V1.0.0.py
+          grep -q "const GV200001_BUILD='0165';" viewer/RC-V1.0.0.py
           test -s viewer/Web-Browser/web-browser-current.json
           test -s viewer/Web-Browser/Web-Browser-0026/config.json
           test -s viewer/Web-Browser/Web-Browser-0026/top.html
           test -s viewer/Web-Browser/Web-Browser-0026/bottom.html
-          grep -q '"build": "0160"' viewer/gv-current-viewer.json
+          grep -q '"build": "0165"' viewer/gv-current-viewer.json
           grep -q '"viewer": "RC-V1.0.0.py"' viewer/gv-current-viewer.json
           grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
           grep -q '"sourceBranch": "release"' release-manifest.json
-          grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json
+          grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json
           if grep -RInI -E 'Galaxy_Viewer/beta/|Galaxy_Viewer@beta/|[?&]ref=beta([^A-Za-z0-9_-]|$)|"sourceBranch"[[:space:]]*:[[:space:]]*"beta"' viewer release-manifest.json; then
             echo "FORBIDDEN BETA RUNTIME REFERENCE FOUND"
             exit 1
