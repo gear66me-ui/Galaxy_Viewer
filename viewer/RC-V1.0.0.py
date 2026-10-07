@@ -1013,7 +1013,7 @@ const gvSurveySelectStyle=document.createElement('style');
 gvSurveySelectStyle.id='gv-survey-select-galaxy-style';
 gvSurveySelectStyle.textContent=`
 #gv-survey-select-group{
-  position:fixed;z-index:8902;display:none;align-items:center;
+  position:fixed;z-index:99999;display:none;align-items:center;
   height:38px;margin:0;pointer-events:auto;transform:translateX(-50%)
 }
 .gv-survey-control-button{
