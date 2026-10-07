@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0202 — Restore BOM long-press, decouple survey UI, harden Random Galaxy
+# BUILD 0203 — Restore Target/SIMBAD 0007 survey contract
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -23,7 +23,7 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7a
 HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js"
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
-TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/target-simbad/gv-target-simbad-0005.js"
+TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = HAMBURGER_BASE_URL
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
@@ -87,9 +87,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0202';
+const GV200001_BUILD='0203';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYROLL0066-WRAPPER0064-SHELL0077`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0007-RESTORE`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -101,7 +101,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
-    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/target-simbad/gv-target-simbad-0005.js',
+    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
