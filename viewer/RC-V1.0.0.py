@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0164';
+const GV200001_BUILD='0165';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1373,7 +1373,7 @@ crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
 function directHdOpacity(){return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
-// BUILD 0164 FIX — never derive image visibility from FOV.
+// BUILD 0165 FIX — never derive image visibility from FOV.
 // The HD raster must remain visible while zooming; opacity is owned only by
 // the CROSS FADE control. The previous 55° FOV suppression created an
 // intermittent race: a layer installed while FOV >=55° could be left at
@@ -1479,8 +1479,7 @@ function zoomStep(){
                 }
             }
             aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*.018))));
-            // BUILD 0163 — suppress the HD raster at the wide-FOV safety threshold.
-            // 55° leaves a 5° margin when the intended travel endpoint is 60°.
+            // BUILD 0165 — HD raster visibility is controlled only by CROSS FADE; FOV never hides the image.
             if(directHdOverlay)applyDirectHdOpacity();
         }
     }catch(_){}
