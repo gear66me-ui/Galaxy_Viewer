@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0192 — restore Galaxy Navigator 013 runtime contract
+# BUILD 0193 — accept AVM URL aliases when archiveId matches
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -1368,7 +1368,7 @@ async function gvRuntimeAvmRecord(destination){
     const record=catalog.byUrl.get(url)||catalog.byId.get(id);
     if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(url||id));
     const recordUrl=String(record?.imageUrl||'').trim().toLowerCase();
-    if(url&&recordUrl!==url)throw new Error('GV AVM RUNTIME IMAGE MISMATCH: destination='+url+' record='+recordUrl);
+    if(url&&recordUrl!==url)console.warn('GV AVM RUNTIME IMAGE URL ALIAS: archiveId='+id+' destination='+url+' record='+recordUrl);
     return record;
 }
 function gvSyntheticWcsFromRuntimeRecord(record,width,height){
