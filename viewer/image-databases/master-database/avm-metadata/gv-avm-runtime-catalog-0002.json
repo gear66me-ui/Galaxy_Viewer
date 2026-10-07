@@ -10,8 +10,8 @@
   },
   "summary": {
     "hubble": {
-      "total": 1104,
-      "imageAvm": 1103,
+      "total": 1103,
+      "imageAvm": 1102,
       "catalogFallback": 1,
       "failed": 0
     },
@@ -46,7 +46,7 @@
       "failed": 0
     }
   },
-  "recordCount": 1848,
+  "recordCount": 1847,
   "failureCount": 0,
   "records": [
     {
@@ -29507,38 +29507,6 @@
       "scale": [
         0.0000276975367937,
         0.0000275807720805
-      ],
-      "cdMatrix": null,
-      "projection": "TAN",
-      "coordinateFrame": "ICRS"
-    },
-    {
-      "providerKey": "hubble",
-      "archiveId": "heic0106j",
-      "name": "IRAS 04022-4329 , NGC 1512",
-      "sourceCatalog": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
-      "sourceIndex": 636,
-      "imageUrl": "https://cdn.esahubble.org/archives/images/screen/heic0106j.jpg",
-      "authority": "PRECOMPUTED_IMAGE_AVM",
-      "ra": 60.9667310689,
-      "dec": -43.3486513598,
-      "fovDegrees": 0.041993624163724604,
-      "fovXDegrees": 0.041993624163724604,
-      "fovYDegrees": 0.0412738916467458,
-      "fovPolicy": "X",
-      "spatialRotationDeg": 220.38000000000005,
-      "aladinRotation": -139.61999999999995,
-      "referencePixel": [
-        758.5,
-        745.5
-      ],
-      "referenceDimension": [
-        1517,
-        1491
-      ],
-      "scale": [
-        -0.0000276820198838,
-        0.0000276820198838
       ],
       "cdMatrix": null,
       "projection": "TAN",
