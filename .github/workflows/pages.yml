@@ -87,13 +87,13 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0'
           assert viewer.get('viewer')=='RC-V1.0.0.py'
-          assert viewer.get('build')=='0199'
-          assert manifest.get('build')=='0199'
+          assert viewer.get('build')=='0200'
+          assert manifest.get('build')=='0200'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('sourceCommit')=='e56be0c7ade3934ed1e417af93a6dd4f2edd380e'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0199';" in rc
+          assert "const GV200001_BUILD='0200';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
@@ -118,7 +118,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0199')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0200')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
