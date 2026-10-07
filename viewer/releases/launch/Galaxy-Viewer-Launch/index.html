@@ -21,6 +21,24 @@ const read=async u=>{
  finally{clearTimeout(timer)}
 };
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// DIAGNOSTIC 0200: surface the viewer's real boot exception instead of masking it as a readiness timeout.
+window.__GV_BOOT_ERRORS=[];
+const gvNativeConsoleError=console.error.bind(console);
+console.error=(...args)=>{
+  try{
+    const head=String(args[0]??'');
+    if(head.includes('GV200-001 BOOT FAILURE')){
+      window.__GV_BOOT_ERRORS.push(args.map(v=>v?.stack||v?.message||String(v)).join('\\n'));
+    }
+  }catch(_){}
+  gvNativeConsoleError(...args);
+};
+addEventListener('error',event=>{
+  try{window.__GV_BOOT_ERRORS.push('WINDOW ERROR: '+String(event?.error?.stack||event?.message||'UNKNOWN ERROR'))}catch(_){}
+});
+addEventListener('unhandledrejection',event=>{
+  try{window.__GV_BOOT_ERRORS.push('UNHANDLED REJECTION: '+String(event?.reason?.stack||event?.reason?.message||event?.reason||'UNKNOWN REJECTION'))}catch(_){}
+});
 const paint2=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
 try{
  const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));
@@ -53,6 +71,9 @@ try{
 
  // The identity screen remains up while the full application boots.
  const readiness=()=>{
+   if(window.__GV_BOOT_ERRORS?.length){
+     throw Error('VIEWER BOOT FAILURE\\n'+window.__GV_BOOT_ERRORS.slice(-4).join('\\n---\\n'));
+   }
    const root=document.getElementById('aladin-cosmic-command-test');
    const core=window.GalaxyViewerCore,runtime=window.GalaxyViewerRuntime,navState=runtime?.navigationState;
    return {root:!!root,core:!!core,runtime:!!runtime,aladin:!!core?.aladin,phase:navState?.phase??null,active:navState?.active??null};
