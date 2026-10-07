@@ -92,7 +92,7 @@ jobs:
           grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
           grep -q '"sourceBranch": "release"' release-manifest.json
           grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json
-          echo "PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0190"
+          echo "PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0191"
       - name: Build standalone Chandra review
         if: ${{ steps.scope.outputs.review_only == 'true' }}
         shell: bash
