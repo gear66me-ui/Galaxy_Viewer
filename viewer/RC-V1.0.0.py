@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0204 — Restore survey tile presentation
+# BUILD 0205 — AVM handoff and survey row navigation repair
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,9 +87,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0204';
+const GV200001_BUILD='0205';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0005-SURVEY-TILES`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0005-AVM-SURVEY`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -908,7 +908,7 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
-// BUILD 0204 — Target/SIMBAD 0005 survey compatibility.
+// BUILD 0205 — Target/SIMBAD 0005 survey compatibility.
 // Target/SIMBAD 0007 exposes setProviders(), matching the release viewer's
 // provider-survey contract. Retain the capability guard as a defensive gate.
 const gvTargetSupportsSurvey=typeof target.setProviders==='function';
@@ -1717,7 +1717,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
             const bitmap=await createImageBitmap(blob);
             try{
-                const w=bitmap.width,h=bitmap.height;
+                const sourceW=bitmap.width,sourceH=bitmap.height,scale=Math.min(1,MAX_BLEND_DIMENSION/Math.max(sourceW,sourceH)),w=Math.max(1,Math.round(sourceW*scale)),h=Math.max(1,Math.round(sourceH*scale));
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(bitmap,0,0,w,h);
@@ -1768,7 +1768,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
 }
 async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(destination)){
     const record=await recordPromise;
-    const url=directHdUrl(destination);
+    const url=String(record?.imageUrl||directHdUrl(destination)||'').trim();
     if(!url)throw new Error('GV DESTINATION IMAGE URL MISSING');
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
