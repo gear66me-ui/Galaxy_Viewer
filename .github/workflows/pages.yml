@@ -83,17 +83,17 @@ jobs:
           pointer=json.loads((root/'viewer/Web-Browser/web-browser-current.json').read_text())
           manifest=json.loads((root/'release-manifest.json').read_text())
           avm=json.loads((root/'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json').read_text())
-          rc=(root/'viewer/RC-V1.0.0.py').read_text()
+          rc=(root/'viewer/RC-V1.0.1.py').read_text()
 
-          assert viewer.get('version')=='RC-V1.0.0'
-          assert viewer.get('viewer')=='RC-V1.0.0.py'
-          assert viewer.get('build')=='0207'
-          assert manifest.get('build')=='0207'
+          assert viewer.get('version')=='RC-V1.0.1'
+          assert viewer.get('viewer')=='RC-V1.0.1.py'
+          assert viewer.get('build')=='0001'
+          assert manifest.get('build')=='0001'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('sourceCommit')=='a698397819efd4a0904c141042b56252b447c8ae'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0207';" in rc
+          assert "const GV200001_BUILD='0001';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
@@ -119,7 +119,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0207')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.1 BUILD 0207')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
