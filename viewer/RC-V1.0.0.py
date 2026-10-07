@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0205 — AVM handoff and survey row navigation repair
+# BUILD 0206 — resilient AVM source fallback and immediate survey touch activation
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0205';
+const GV200001_BUILD='0206';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-TARGET0005-AVM-SURVEY`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1773,57 +1773,93 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
-    const raster=await gvLoadGate2MImage(url,destination,record);
-    const imageObjectUrl=URL.createObjectURL(raster.blob);gvProtectHdObjectUrl(imageObjectUrl);gvTrackHdObjectUrl(imageObjectUrl);
-    const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
-    const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-    return {destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
+    let raster=null,rasterError=null;
+    try{raster=await gvLoadGate2MImage(url,destination,record)}
+    catch(error){rasterError=String(error?.message||error||'GV RASTER PREPARE FAILED');console.warn('GV AVM RASTER PREPARE FAILED — USING DIRECT SOURCE FALLBACK',url,error)}
+    const rawDims=record?.referenceDimension,width=Number(rawDims?.[0]),height=Number(rawDims?.[1]);
+    const rasterWidth=Number(raster?.width),rasterHeight=Number(raster?.height);
+    const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,
+        Number.isFinite(rasterWidth)&&rasterWidth>0?rasterWidth:(Number.isFinite(width)&&width>0?width:1024),
+        Number.isFinite(rasterHeight)&&rasterHeight>0?rasterHeight:(Number.isFinite(height)&&height>0?height:1024));
+    const imageCenter=gvTanPixelToWorld(displayWcs,(displayWcs.NAXIS1+1)/2,(displayWcs.NAXIS2+1)/2);
+    let imageObjectUrl=null;
+    if(raster?.blob){imageObjectUrl=URL.createObjectURL(raster.blob);gvProtectHdObjectUrl(imageObjectUrl);gvTrackHdObjectUrl(imageObjectUrl)}
+    return {destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0,rasterError};
 }
 function gvInstallPreparedHd(prepared){
-    const {destination,record,imageObjectUrl,displayWcs}=prepared;
+    const {destination,record,imageObjectUrl,displayWcs,imageUrl}=prepared;
     let resolveReady,rejectReady;
     const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
     const previousLayerName=directHdLayerName;
-    const layerName=DIRECT_HD_LAYER+'_'+(++directHdLayerSequence);
+    const layerBase=DIRECT_HD_LAYER+'_'+(++directHdLayerSequence);
     directHdDestination=destination;
-    gvProtectHdObjectUrl(imageObjectUrl);
-    const layer=A.image(imageObjectUrl,{
-        name:layerName,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
-        successCallback:()=>{
-            if(directHdDestination!==destination){
-                try{aladin.removeImageLayer?.(layerName)}catch(_){}
-                gvReleaseHdObjectUrl(imageObjectUrl);
-                resolveReady(false);
-                return
-            }
-            const previousObjectUrl=directHdObjectUrl;
-            directHdOverlay=layer;
-            directHdLayerName=layerName;
-            directHdObjectUrl=imageObjectUrl;
-            gvProtectHdObjectUrl(imageObjectUrl);
-            applyDirectHdOpacity();
-            // BUILD 0175: keep the previous live raster during the travel handoff.
-            // The new raster can become ready while the camera is still zooming
-            // out from the old galaxy. Removing the old layer here caused the
-            // visible galaxy to disappear ~2s after RANDOM GALAXY was pressed.
-            if(previousLayerName&&previousLayerName!==layerName){
-                gvPendingHdRetirements.set(previousLayerName,previousObjectUrl||'');
-            }
-            resolveReady(true);
-        },
-        errorCallback:error=>{
-            gvReleaseHdObjectUrl(imageObjectUrl);
+    const rawUrl=String(imageUrl||record?.imageUrl||'').trim();
+    const proxyUrl=rawUrl?CANVAS_IMAGE_PROXY+encodeURIComponent(rawUrl)+'&consumer=gv0206-direct-fallback':'';
+    const rawCandidates=[rawUrl,proxyUrl].filter(Boolean);
+    const finishSuccess=(layer,layerName)=>{
+        if(directHdDestination!==destination){
             try{aladin.removeImageLayer?.(layerName)}catch(_){}
-            rejectReady(error);
-            console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)
+            if(imageObjectUrl)gvReleaseHdObjectUrl(imageObjectUrl);
+            resolveReady(false);
+            return;
         }
-    });
-    // Stage the new raster before retiring the previous one. This makes the
-    // destination handoff atomic from the user's perspective.
-    try{aladin.setOverlayImageLayer(layer,layerName)}catch(error){
-        gvReleaseHdObjectUrl(imageObjectUrl);
-        try{aladin.removeImageLayer?.(layerName)}catch(_){}
-        rejectReady(error);
+        const previousObjectUrl=directHdObjectUrl;
+        directHdOverlay=layer;
+        directHdLayerName=layerName;
+        directHdObjectUrl=imageObjectUrl||'';
+        if(imageObjectUrl)gvProtectHdObjectUrl(imageObjectUrl);
+        applyDirectHdOpacity();
+        if(previousLayerName&&previousLayerName!==layerName)gvPendingHdRetirements.set(previousLayerName,previousObjectUrl||'');
+        resolveReady(true);
+    };
+    const tryRaw=(index,lastError='')=>{
+        if(index>=rawCandidates.length){
+            if(imageObjectUrl)gvReleaseHdObjectUrl(imageObjectUrl);
+            const error=new Error('GV DIRECT HD SOURCE FALLBACK FAILED: '+(lastError||'NO SOURCE'));
+            console.error('GV DIRECT HD SOURCE FALLBACK FAILED',error);
+            rejectReady(error);
+            return;
+        }
+        const source=rawCandidates[index],layerName=layerBase+'_'+index;
+        const imgFormat=/\.png(?:[?#]|$)/i.test(source)?'png':'jpeg';
+        let layer;
+        try{
+            layer=A.image(source,{name:layerName,imgFormat,wcs:displayWcs,opacity:directHdOpacity(),
+                successCallback:()=>finishSuccess(layer,layerName),
+                errorCallback:error=>{
+                    try{aladin.removeImageLayer?.(layerName)}catch(_){}
+                    console.warn('GV DIRECT HD SOURCE CANDIDATE FAILED',source,error);
+                    tryRaw(index+1,String(error?.message||error||lastError||'IMAGE LOAD FAILED'));
+                }});
+            if(!layer)throw new Error('A.image returned empty layer');
+            aladin.setOverlayImageLayer(layer,layerName);
+        }catch(error){
+            try{aladin.removeImageLayer?.(layerName)}catch(_){}
+            console.warn('GV DIRECT HD SOURCE CANDIDATE START FAILED',source,error);
+            tryRaw(index+1,String(error?.message||error||lastError||'IMAGE START FAILED'));
+        }
+    };
+    if(imageObjectUrl){
+        const layerName=layerBase+'_raster';
+        gvProtectHdObjectUrl(imageObjectUrl);
+        let layer;
+        try{
+            layer=A.image(imageObjectUrl,{name:layerName,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
+                successCallback:()=>finishSuccess(layer,layerName),
+                errorCallback:error=>{
+                    try{aladin.removeImageLayer?.(layerName)}catch(_){}
+                    console.warn('GV DIRECT HD RASTER LAYER FAILED — TRYING HTTP SOURCE',error);
+                    tryRaw(0,String(error?.message||error||'RASTER LAYER FAILED'));
+                }});
+            if(!layer)throw new Error('A.image returned empty raster layer');
+            aladin.setOverlayImageLayer(layer,layerName);
+        }catch(error){
+            try{aladin.removeImageLayer?.(layerName)}catch(_){}
+            console.warn('GV DIRECT HD RASTER LAYER START FAILED — TRYING HTTP SOURCE',error);
+            tryRaw(0,String(error?.message||error||'RASTER LAYER START FAILED'));
+        }
+    }else{
+        tryRaw(0,prepared?.rasterError||'RASTER PREPARE UNAVAILABLE');
     }
     return ready;
 }
