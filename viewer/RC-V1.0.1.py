@@ -1766,12 +1766,84 @@ if(activeRoute.length!==100)throw new Error(`NAVIGATION ACTIVE ROUTE LENGTH INVA
 // ECO: GV200-001
 // ============================================================================
 const GV_PRESENTATION_PROVIDER_BY_CATALOG=Object.freeze({hubble:'HUBBLE',jwst:'JWST',eso:'ESO',chandra:'CHANDRA',spitzer:'SPITZER',noirlab:'NOIRLAB'});
-function gvPresentationDestination(destination){
+const GV_PRESENTATION_ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/';
+let gvPresentationMasterPromise=null;
+const gvPresentationCatalogPromises=new Map();
+const gvPresentationCatalogs=new Map();
+async function gvLoadPresentationCatalog(key){
+    const catalogKey=String(key||'').trim().toLowerCase();
+    if(!catalogKey)return null;
+    if(gvPresentationCatalogs.has(catalogKey))return gvPresentationCatalogs.get(catalogKey);
+    if(gvPresentationCatalogPromises.has(catalogKey))return gvPresentationCatalogPromises.get(catalogKey);
+    const promise=(async()=>{
+        if(!gvPresentationMasterPromise){
+            gvPresentationMasterPromise=fetch(fresh(GV_MASTER_CATALOG_URL),{cache:'force-cache'})
+                .then(response=>{if(!response.ok)throw new Error('GV PRESENTATION MASTER CATALOG HTTP '+response.status);return response.json()});
+        }
+        const master=await gvPresentationMasterPromise;
+        const relative=String(master?.catalogs?.[catalogKey]||'').trim();
+        if(!relative)throw new Error('GV PRESENTATION SOURCE CATALOG MISSING: '+catalogKey);
+        const response=await fetch(fresh(GV_PRESENTATION_ROOT+relative),{cache:'force-cache'});
+        if(!response.ok)throw new Error('GV PRESENTATION SOURCE CATALOG HTTP '+response.status+': '+catalogKey);
+        const payload=await response.json();
+        const entries=Array.isArray(payload)?payload:(Array.isArray(payload?.entries)?payload.entries:[]);
+        if(!entries.length)throw new Error('GV PRESENTATION SOURCE CATALOG EMPTY: '+catalogKey);
+        const byId=new Map(),byUrl=new Map();
+        entries.forEach((entry,index)=>{
+            const id=String(entry?.archiveId||entry?.id||'').trim().toLowerCase();
+            const urls=[entry?.selectedImageUrl,entry?.imageUrl,entry?.hdUrl,entry?.sourceUrl].map(v=>String(v||'').trim().toLowerCase()).filter(Boolean);
+            if(id)byId.set(id,{entry,index});
+            for(const url of urls)byUrl.set(url,{entry,index});
+        });
+        const catalog=Object.freeze({entries,byId,byUrl});
+        gvPresentationCatalogs.set(catalogKey,catalog);
+        return catalog;
+    })().catch(error=>{
+        gvPresentationCatalogPromises.delete(catalogKey);
+        throw error;
+    });
+    gvPresentationCatalogPromises.set(catalogKey,promise);
+    return promise;
+}
+async function gvPresentationDestination(destination){
     const key=String(destination?.catalogKey||'').trim().toLowerCase();
     const provider=GV_PRESENTATION_PROVIDER_BY_CATALOG[key];
-    if(!provider)return destination;
-    if(String(destination?.provider||'').trim().toUpperCase()===provider)return destination;
-    return Object.freeze({...destination,provider});
+    let enriched=provider&&String(destination?.provider||'').trim().toUpperCase()!==provider
+        ? Object.freeze({...destination,provider})
+        : destination;
+    try{
+        const catalog=await gvLoadPresentationCatalog(key);
+        const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
+        const url=String(destination?.imageUrl||destination?.selectedImageUrl||destination?.hdUrl||'').trim().toLowerCase();
+        const source=(
+            (id&&catalog?.byId.get(id))||
+            (url&&catalog?.byUrl.get(url))||
+            (Number.isInteger(Number(destination?.catalogIndex))&&catalog?.entries[Number(destination.catalogIndex)])
+        )?.entry;
+        if(!source)return enriched;
+        const science=source?.science||{};
+        return Object.freeze({
+            ...enriched,
+            sourceUrl:source?.sourceUrl||enriched?.sourceUrl||'',
+            archiveId:source?.archiveId||enriched?.archiveId||enriched?.id||'',
+            designation:source?.designation||enriched?.designation||source?.name||enriched?.name||'',
+            name:source?.displayName||source?.name||enriched?.name||'',
+            commonName:source?.displayName||source?.name||enriched?.commonName||enriched?.name||'',
+            pseudonym:source?.pseudonym||source?.commonName||enriched?.pseudonym||'',
+            constellation:source?.constellation||enriched?.constellation||'',
+            distanceMly:Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):(enriched?.distanceMly??enriched?.distance),
+            distance:source?.distance||enriched?.distance||'',
+            sizeKly:Array.isArray(science?.sizeKly)?science.sizeKly:(Array.isArray(source?.sizeKly)?source.sizeKly:enriched?.sizeKly),
+            ageYears:Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:(enriched?.ageYears??null),
+            age:science?.ageDisplay||source?.ageDisplay||enriched?.age||'',
+            imageType:source?.imageType||enriched?.imageType||'',
+            title:source?.title||enriched?.title||'',
+            description:source?.description||enriched?.description||''
+        });
+    }catch(error){
+        console.warn('GV PRESENTATION METADATA HYDRATION FAILED',key,error);
+        return enriched;
+    }
 }
 
 function validateDestination(destination){
@@ -1845,8 +1917,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvUpdateEarthBearingPointer();
     const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination),registeredTravelPromise=recordPromise.then(gvRegisteredTravelStateFromRecord),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,recordPromise)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination,recordPromise),sourceDestination=activeDestination;
     activeDestination=v.destination;destinationPresentation.depart();
-    destinationPresentation.preview(gvPresentationDestination(v.destination),{imageUrl:String(directHdUrl(v.destination)).trim()});
-    travelPresentation.begin(v.destination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
+    const presentationDestination=await gvPresentationDestination(v.destination);
+    destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
+    travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false;
     const installWhenReady=prepared=>{
         if(activeDestination!==v.destination||installed)return Promise.resolve(false);
@@ -1873,7 +1946,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         travelPresentation.end();
-        destinationPresentation.arrive(gvPresentationDestination(v.destination),{imageUrl:String(directHdUrl(v.destination)).trim()});
+        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
         headsUpDisplay.render();
         gvShowEarthDistance(v.destination);
         gvPrewarmProviderWebsite(v.destination);
@@ -1884,7 +1957,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     travelPresentation.end();
-    destinationPresentation.arrive(gvPresentationDestination(v.destination),{imageUrl:String(directHdUrl(v.destination)).trim()});
+    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
     headsUpDisplay.render();
     gvShowEarthDistance(v.destination);
     gvPrewarmProviderWebsite(v.destination);
