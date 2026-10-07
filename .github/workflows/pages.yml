@@ -90,7 +90,9 @@ jobs:
           grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
           grep -q '"sourceBranch": "release"' release-manifest.json
           grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json
-          if grep -RInI -E 'Galaxy_Viewer/beta/|Galaxy_Viewer@beta/|[?&]ref=beta([^A-Za-z0-9_-]|$)|"sourceBranch"[[:space:]]*:[[:space:]]*"beta"' viewer release-manifest.json; then
+          # Historical viewer/archive snapshots may contain beta URLs by design.
+          # The production gate must inspect only live runtime files, not archived history.
+          if find viewer -type f -not -path 'viewer/archive/*' -print0 | xargs -0 grep -InI -E 'Galaxy_Viewer/beta/|Galaxy_Viewer@beta/|[?&]ref=beta([^A-Za-z0-9_-]|$)|"sourceBranch"[[:space:]]*:[[:space:]]*"beta"' || grep -nE 'Galaxy_Viewer/beta/|Galaxy_Viewer@beta/|[?&]ref=beta([^A-Za-z0-9_-]|$)|"sourceBranch"[[:space:]]*:[[:space:]]*"beta"' release-manifest.json; then
             echo "FORBIDDEN BETA RUNTIME REFERENCE FOUND"
             exit 1
           fi
