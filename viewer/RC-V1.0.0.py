@@ -1257,7 +1257,9 @@ const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
     gvHdObjectUrls.push(url);
     while(gvHdObjectUrls.length>GV_HD_RESOURCE_WINDOW){
-        const stale=gvHdObjectUrls.shift();
+        const index=gvHdObjectUrls.findIndex(candidate=>candidate!==directHdObjectUrl);
+        if(index<0)break;
+        const stale=gvHdObjectUrls.splice(index,1)[0];
         try{URL.revokeObjectURL(stale)}catch(_){}
     }
 }
@@ -1641,12 +1643,15 @@ function gvInstallPreparedHd(prepared){
                 resolveReady(false);
                 return
             }
+            const previousObjectUrl=directHdObjectUrl;
             directHdOverlay=layer;
             directHdLayerName=layerName;
+            directHdObjectUrl=imageObjectUrl;
             applyDirectHdOpacity();
             if(previousLayerName&&previousLayerName!==layerName){
                 try{aladin.removeImageLayer?.(previousLayerName)}catch(_){}
             }
+            if(previousObjectUrl&&previousObjectUrl!==imageObjectUrl)gvReleaseHdObjectUrl(previousObjectUrl);
             resolveReady(true);
         },
         errorCallback:error=>{
