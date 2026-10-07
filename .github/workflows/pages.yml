@@ -80,7 +80,7 @@ jobs:
           test -s viewer/RC-V1.0.0.py
           test -s viewer/artwork/startup/galaxy-viewer-startup.png
           grep -q 'VIEWER_VERSION = "RC-V1.0.0"' viewer/RC-V1.0.0.py
-          grep -q "const GV200001_BUILD='0195';" viewer/RC-V1.0.0.py
+          grep -q "const GV200001_BUILD='0196';" viewer/RC-V1.0.0.py
           test -s viewer/Web-Browser/web-browser-current.json
           test -s viewer/Web-Browser/Web-Browser-0026/config.json
           test -s viewer/Web-Browser/Web-Browser-0026/top.html
@@ -92,7 +92,7 @@ jobs:
           grep -q '"version":"0026"' viewer/Web-Browser/web-browser-current.json
           grep -q '"sourceBranch": "release"' release-manifest.json
           grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
-          echo "PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0195"
+          echo "PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0196"
       - name: Build standalone Chandra review
         if: ${{ steps.scope.outputs.review_only == 'true' }}
         shell: bash
