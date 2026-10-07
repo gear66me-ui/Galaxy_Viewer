@@ -75,30 +75,54 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s viewer/releases/launch/Galaxy-Viewer-Launch/index.html
-          test -s viewer/gv-current-viewer.json
-          test -s viewer/RC-V1.0.0.py
-          test -s viewer/artwork/startup/galaxy-viewer-startup.png
-          grep -q 'VIEWER_VERSION = "RC-V1.0.0"' viewer/RC-V1.0.0.py
-          grep -q "const GV200001_BUILD='0198';" viewer/RC-V1.0.0.py
-          test -s viewer/Web-Browser/web-browser-current.json
-          test -s viewer/Web-Browser/Web-Browser-0026/config.json
-          test -s viewer/Web-Browser/Web-Browser-0026/top.html
-          test -s viewer/Web-Browser/Web-Browser-0026/bottom.html
-          grep -q '"build": "0198"' viewer/gv-current-viewer.json
-          grep -q "gv-galaxy-navigator-013.js" viewer/RC-V1.0.0.py release-manifest.json
-          grep -q '"build": "0198"' release-manifest.json
-          grep -q '"sourceCommit": "e56be0c7ade3934ed1e417af93a6dd4f2edd380e"' release-manifest.json
-          ! grep -q 'Galaxy_Viewer@release/' viewer/RC-V1.0.0.py
-          pins="$(grep -oE 'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@[0-9a-f]{40}' viewer/RC-V1.0.0.py | sort -u)"
-          test "$(printf '%s\n' "$pins" | sed '/^$/d' | wc -l)" -eq 1
-          grep -q 'Galaxy_Viewer@e56be0c7ade3934ed1e417af93a6dd4f2edd380e' viewer/RC-V1.0.0.py
-          ! grep -R "gv-galaxy-navigator-001.js" viewer/RC-V1.0.0.py release-manifest.json
-          grep -q '"viewer": "RC-V1.0.0.py"' viewer/gv-current-viewer.json
-          grep -q '"version": "0026"' viewer/Web-Browser/web-browser-current.json
-          grep -q '"sourceBranch": "release"' release-manifest.json
-          grep -q '"sourceBranch": "release"' viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
-          echo "PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0198"
+          python3 - <<'PY'
+          import json,re,pathlib
+
+          root=pathlib.Path('.')
+          viewer=json.loads((root/'viewer/gv-current-viewer.json').read_text())
+          pointer=json.loads((root/'viewer/Web-Browser/web-browser-current.json').read_text())
+          manifest=json.loads((root/'release-manifest.json').read_text())
+          avm=json.loads((root/'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json').read_text())
+          rc=(root/'viewer/RC-V1.0.0.py').read_text()
+
+          assert viewer.get('version')=='RC-V1.0.0'
+          assert viewer.get('viewer')=='RC-V1.0.0.py'
+          assert viewer.get('build')=='0198'
+          assert manifest.get('build')=='0198'
+          assert manifest.get('sourceBranch')=='release'
+          assert manifest.get('sourceCommit')=='e56be0c7ade3934ed1e417af93a6dd4f2edd380e'
+          assert pointer.get('version')=='0026'
+          assert avm.get('sourceBranch')=='release'
+          assert "const GV200001_BUILD='0198';" in rc
+          assert 'Galaxy_Viewer@release/' not in rc
+          assert 'gv-galaxy-navigator-013.js' in rc
+          assert 'gv-galaxy-navigator-001.js' not in rc
+
+          pins=sorted(set(re.findall(r'https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
+          assert pins==['e56be0c7ade3934ed1e417af93a6dd4f2edd380e'], pins
+
+          required=[
+              'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
+              'viewer/artwork/startup/galaxy-viewer-startup.png',
+              'viewer/Web-Browser/Web-Browser-0026/config.json',
+              'viewer/Web-Browser/Web-Browser-0026/top.html',
+              'viewer/Web-Browser/Web-Browser-0026/bottom.html',
+              'viewer/image-databases/master-database/gv-master-catalog.json',
+              'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',
+              'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',
+              'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',
+              'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',
+              'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',
+              'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json',
+          ]
+          missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
+          assert not missing, missing
+
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0 BUILD 0198')
+          print('DEPENDENCY SNAPSHOT:', pins[0])
+          print('WEB BROWSER:', pointer['version'])
+          print('SOURCE BRANCH:', avm['sourceBranch'])
+          PY
       - name: Build standalone Chandra review
         if: ${{ steps.scope.outputs.review_only == 'true' }}
         shell: bash
