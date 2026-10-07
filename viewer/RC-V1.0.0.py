@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0165';
+const GV200001_BUILD='0166';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1081,7 +1081,8 @@ function gvPositionProviderSurveyPanel(){
     panel.style.right='auto';
     panel.style.top=Math.round(r.bottom+4)+'px';
     panel.style.transform='translateX(-50%)';
-    panel.style.zIndex='8901';
+    panel.style.zIndex='99999';
+    panel.style.pointerEvents='auto';
 }
 function gvSyncSurveySelectButton(){
     const coord=document.getElementById('gv-coordinate-host');
@@ -1097,16 +1098,20 @@ function gvSyncSurveySelectButton(){
     gvSurveySelectGroup.style.top=top+'px';
     gvSurveySelectGroup.style.width=groupWidth+'px';
     document.documentElement.style.setProperty('--gv-survey-control-width',groupWidth+'px');
-    const disabled=Boolean(navigationInFlight);
+    const disabled=false;
     gvSurveySelectButton.disabled=disabled;
     gvSurveySelectGroup.style.display='grid';
     if(target?.open)gvPositionProviderSurveyPanel();
 }
 const gvToggleSurveyProviderMenu=()=>{
     if(navigationInFlight)return;
+    if(target.open){
+        target.close?.();
+        return;
+    }
     galaxyNavigator.closeSurveySelector?.();
-    target.toggle?.();
-    if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
+    target.open?.();
+    requestAnimationFrame(()=>requestAnimationFrame(gvPositionProviderSurveyPanel));
 };
 gvSurveySelectButton.addEventListener('click',gvToggleSurveyProviderMenu);
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
@@ -1254,16 +1259,21 @@ let directHdObjectUrl=null;
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
 const GV_HD_RESOURCE_WINDOW=10;
 const gvHdObjectUrls=[];
+const gvHdProtectedObjectUrls=new Set();
+function gvProtectHdObjectUrl(url){if(url)gvHdProtectedObjectUrls.add(url);return url}
+function gvUnprotectHdObjectUrl(url){if(url)gvHdProtectedObjectUrls.delete(url);return url}
 function gvTrackHdObjectUrl(url){
     gvHdObjectUrls.push(url);
     while(gvHdObjectUrls.length>GV_HD_RESOURCE_WINDOW){
-        const index=gvHdObjectUrls.findIndex(candidate=>candidate!==directHdObjectUrl);
+        const index=gvHdObjectUrls.findIndex(candidate=>candidate!==directHdObjectUrl&&!gvHdProtectedObjectUrls.has(candidate));
         if(index<0)break;
         const stale=gvHdObjectUrls.splice(index,1)[0];
         try{URL.revokeObjectURL(stale)}catch(_){}
     }
 }
 function gvReleaseHdObjectUrl(url){
+    gvUnprotectHdObjectUrl(url);
+    if(url===directHdObjectUrl)return;
     const index=gvHdObjectUrls.indexOf(url);
     if(index>=0)gvHdObjectUrls.splice(index,1);
     try{URL.revokeObjectURL(url)}catch(_){}
@@ -1622,7 +1632,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
     const raster=await gvLoadGate2MImage(url,destination,record);
-    const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
+    const imageObjectUrl=URL.createObjectURL(raster.blob);gvProtectHdObjectUrl(imageObjectUrl);gvTrackHdObjectUrl(imageObjectUrl);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
     return {destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
@@ -1634,6 +1644,7 @@ function gvInstallPreparedHd(prepared){
     const previousLayerName=directHdLayerName;
     const layerName=DIRECT_HD_LAYER+'_'+(++directHdLayerSequence);
     directHdDestination=destination;
+    gvProtectHdObjectUrl(imageObjectUrl);
     const layer=A.image(imageObjectUrl,{
         name:layerName,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
         successCallback:()=>{
@@ -1647,11 +1658,12 @@ function gvInstallPreparedHd(prepared){
             directHdOverlay=layer;
             directHdLayerName=layerName;
             directHdObjectUrl=imageObjectUrl;
+            gvProtectHdObjectUrl(imageObjectUrl);
             applyDirectHdOpacity();
             if(previousLayerName&&previousLayerName!==layerName){
                 try{aladin.removeImageLayer?.(previousLayerName)}catch(_){}
             }
-            if(previousObjectUrl&&previousObjectUrl!==imageObjectUrl)gvReleaseHdObjectUrl(previousObjectUrl);
+            if(previousObjectUrl&&previousObjectUrl!==imageObjectUrl){gvUnprotectHdObjectUrl(previousObjectUrl);gvReleaseHdObjectUrl(previousObjectUrl)}
             resolveReady(true);
         },
         errorCallback:error=>{
