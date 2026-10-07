@@ -1085,6 +1085,12 @@ function gvPositionProviderSurveyPanel(){
     panel.style.pointerEvents='auto';
 }
 function gvSyncSurveySelectButton(){
+    // Do not expose the survey control during startup/splash. The launch page
+    // sets gvSplashComplete only after the entire splash sequence has finished.
+    if(document.documentElement.dataset.gvSplashComplete!=='1'){
+        gvHideSurveySelectButton();
+        return;
+    }
     const coord=document.getElementById('gv-coordinate-host');
     if(!coord){gvHideSurveySelectButton();return}
     const r=coord.getBoundingClientRect();
@@ -1114,6 +1120,8 @@ const gvToggleSurveyProviderMenu=()=>{
 };
 gvSurveySelectButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();gvToggleSurveyProviderMenu();});
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
+// Re-sync immediately when the launch page releases the splash curtain.
+new MutationObserver(()=>gvSyncSurveySelectButton()).observe(document.documentElement,{attributes:true,attributeFilter:['data-gv-splash-complete']});
 requestAnimationFrame(gvSyncSurveySelectButton);
 const randomGalaxyBridge=Object.freeze({
     get activeDestination(){return activeDestination},
