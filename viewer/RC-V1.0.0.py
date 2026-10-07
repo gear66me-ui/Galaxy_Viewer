@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0200 — Restore release module dependency contract and verify Random Galaxy
+# BUILD 0201 — Restore release module dependency contract and verify Random Galaxy
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0200';
+const GV200001_BUILD='0201';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYROLL0066-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -141,7 +141,7 @@ function loadScript(url){
 // ECO: GV200-001
 // ============================================================================
 const config=window.GV_BOOT_CONFIG;
-// BUILD 0200 HOTFIX — Provider Artwork is local to the viewer boot contract.
+// BUILD 0201 HOTFIX — Provider Artwork is local to the viewer boot contract.
 // The production dependency pin predates this module; loading it from that pin
 // returns 404 and aborts Promise.all before Core/Runtime can be created.
 if(!globalThis.GVProviderArtwork){
@@ -908,7 +908,7 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
-// BUILD 0200 HOTFIX — Target/SIMBAD 0005 is display-only and does not expose
+// BUILD 0201 HOTFIX — Target/SIMBAD 0005 is display-only and does not expose
 // the provider-survey API used by newer survey UI code. Do not abort the entire
 // viewer boot on that optional interface mismatch.
 const gvTargetSupportsSurvey=typeof target.setProviders==='function';
