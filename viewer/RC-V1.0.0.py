@@ -908,12 +908,9 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
-// BUILD 0201 HOTFIX — Target/SIMBAD 0005 is display-only and does not expose
-// the provider-survey API used by newer survey UI code. Do not abort the entire
-// viewer boot on that optional interface mismatch.
-// BUILD 0202 — Target/SIMBAD 0005 supplies the target icon only.
-// Survey selection is owned by the Galaxy Viewer/Navigator UI and must not
-// depend on an optional provider API that this display-only Target module does not expose.
+// BUILD 0203 HOTFIX — Restore Target/SIMBAD 0007 survey contract.
+// Target/SIMBAD 0007 exposes setProviders(), matching the release viewer's
+// provider-survey contract. Retain the capability guard as a defensive gate.
 const gvTargetSupportsSurvey=typeof target.setProviders==='function';
 if(gvTargetSupportsSurvey){
     target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.has(provider)).map(provider=>({
