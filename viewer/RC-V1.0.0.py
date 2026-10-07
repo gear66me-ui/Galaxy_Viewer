@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0193 — accept AVM URL aliases when archiveId matches
+# BUILD 0194 — use release-synchronized AVM runtime catalog 0003
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -1339,7 +1339,7 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(url)}catch(_){}
 }
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@16c902ec2454d629f65d78b6786a24a0ce957b69/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@218e6f0df52d121ee2e346e085a6136ed0674462/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
