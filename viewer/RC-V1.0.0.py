@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0198 — Immutable production dependency roll
+# BUILD 0199 — Splash boot sequencing fix
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
