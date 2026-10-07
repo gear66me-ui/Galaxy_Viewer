@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0171';
+const GV200001_BUILD='0172';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1110,13 +1110,9 @@ function gvSyncSurveySelectButton(){
     if(target?.open)gvPositionProviderSurveyPanel();
 }
 const gvToggleSurveyProviderMenu=()=>{
-    if(target.open){
-        target.close?.();
-        return;
-    }
     galaxyNavigator.closeSurveySelector?.();
-    target.open?.();
-    requestAnimationFrame(()=>requestAnimationFrame(gvPositionProviderSurveyPanel));
+    target.toggle?.();
+    if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
 };
 gvSurveySelectButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();gvToggleSurveyProviderMenu();});
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
