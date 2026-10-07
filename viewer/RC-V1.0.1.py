@@ -879,13 +879,30 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
     SPITZER:Object.freeze({label:'SPITZER',icon:globalThis.GVProviderArtwork.icon('SPITZER')})
 });
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
+const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
-    const provider=String(record?.provider||'').toUpperCase();
+    const provider=String(record?.provider||record?.providerKey||'').toUpperCase();
     return provider==='SPITZER SPACE TELESCOPE'?'SPITZER':provider;
 }
+const gvSurveyRuntimePayload=await fetch(fresh(GV_SURVEY_RUNTIME_CATALOG_URL),{cache:'force-cache'}).then(response=>{
+    if(!response.ok)throw new Error('GV SURVEY RUNTIME CATALOG HTTP '+response.status);
+    return response.json();
+});
+const gvSurveyRuntimeRecords=(Array.isArray(gvSurveyRuntimePayload)?gvSurveyRuntimePayload:gvSurveyRuntimePayload?.records);
+if(!Array.isArray(gvSurveyRuntimeRecords)||gvSurveyRuntimeRecords.length!==1847)throw new Error('GV SURVEY RUNTIME CATALOG INVALID');
 for(const provider of GV_SURVEY_PROVIDER_ORDER){
-    const records=navigationRuntime.catalog.records
+    const records=gvSurveyRuntimeRecords
+        .map((record,index)=>Object.freeze({
+            ...record,
+            provider:String(record?.providerKey||record?.provider||'').toUpperCase(),
+            providerLabel:String(record?.providerKey||record?.provider||'').toUpperCase(),
+            selectedImageUrl:String(record?.imageUrl||'').trim(),
+            catalogKey:String(record?.sourceCatalog||'').trim(),
+            catalogIndex:Number.isFinite(Number(record?.sourceIndex))?Number(record.sourceIndex):index,
+            fovDegrees:Number(record?.fovXDegrees??record?.fovDegrees),
+            aladinRotation:Number(record?.aladinRotation??record?.spatialRotationDeg)
+        }))
         .filter(record=>gvSurveyProviderKey(record)===provider&&Number.isFinite(Number(record?.ra))&&Number.isFinite(Number(record?.dec))&&Number.isFinite(Number(record?.fovDegrees))&&Number(record?.fovDegrees)>0&&String(record?.imageUrl||'').trim())
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
@@ -1261,7 +1278,7 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(url)}catch(_){}
 }
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
@@ -1269,7 +1286,7 @@ async function gvLoadAvmRuntimeCatalog(){
             .then(response=>{if(!response.ok)throw new Error('GV AVM RUNTIME CATALOG HTTP '+response.status);return response.json()})
             .then(payload=>{
                 const records=Array.isArray(payload)?payload:payload?.records;
-                if(!Array.isArray(records)||records.length!==1848)throw new Error('GV AVM RUNTIME CATALOG INVALID');
+                if(!Array.isArray(records)||records.length!==1847)throw new Error('GV AVM RUNTIME CATALOG INVALID');
                 const byUrl=new Map(),byId=new Map();
                 for(const record of records){
                     const url=String(record?.imageUrl||'').trim().toLowerCase();
