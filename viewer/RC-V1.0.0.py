@@ -141,9 +141,16 @@ function loadScript(url){
 // ECO: GV200-001
 // ============================================================================
 const config=window.GV_BOOT_CONFIG;
+// BUILD 0200 HOTFIX — Provider Artwork is local to the viewer boot contract.
+// The production dependency pin predates this module; loading it from that pin
+// returns 404 and aborts Promise.all before Core/Runtime can be created.
+if(!globalThis.GVProviderArtwork){
+    const GV_PROVIDER_ART=Object.freeze({HUBBLE:'Hubble/Hubble.jpg',JWST:'JWST/JWST.jpeg',CHANDRA:'Chandra/Chandra.jpg',ESO:'ESO/ESO.jpg',NOIRLAB:'NoirLabs/NOIRLab.jpg',SPITZER:'Spitzer/Spitzer.jpg'});
+    const GV_PROVIDER_ART_ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
+    globalThis.GVProviderArtwork=Object.freeze({VERSION:'0004',icon(provider){const p=GV_PROVIDER_ART[String(provider||'').trim().toUpperCase()];return p?GV_PROVIDER_ART_ROOT+p:''},icons:GV_PROVIDER_ART});
+}
 const gvModuleLoadPromise=Promise.all([
     loadScript(config.hamburgerBaseUrl),
-    loadScript(config.providerArtworkUrl),
     loadScript(config.coordinateUrl).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
     loadScript(config.targetUrl),
     loadScript(config.galaxyRouteEngineUrl),
