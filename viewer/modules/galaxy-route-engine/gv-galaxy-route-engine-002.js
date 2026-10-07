@@ -75,7 +75,7 @@ function normalizeRaw(r,i,catalogKey,meta){
   hdUrl:clean(r?.hdUrl),
   githubImageUrl:clean(r?.githubImageUrl),
   sha256:clean(r?.sha256),
-  fovDegrees:finite(r?.fovDegrees??r?.fieldOfViewDegrees),
+  fovDegrees:finite(r?.fovDegrees??r?.fieldOfViewDegrees?.effectiveDegrees??r?.fieldOfViewDegrees),
   avmHorizontalFovDegrees:finite(r?.avmHorizontalFovDegrees),
   avmVerticalFovDegrees:finite(r?.avmVerticalFovDegrees),
   avmRotation:finite(r?.avmRotation),
