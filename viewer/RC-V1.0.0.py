@@ -892,7 +892,7 @@ function gvSurveyProviderKey(record){
 }
 for(const provider of GV_SURVEY_PROVIDER_ORDER){
     const records=navigationRuntime.catalog.records
-        .filter(record=>gvSurveyProviderKey(record)===provider&&Number.isFinite(Number(record?.ra))&&Number.isFinite(Number(record?.dec))&&Number.isFinite(Number(record?.fovDegrees))&&Number(record?.fovDegrees)>0&&String(record?.imageUrl||'').trim())
+        .filter(record=>gvSurveyProviderKey(record)===provider)
         .sort((a,b)=>String(a.catalogKey||'').localeCompare(String(b.catalogKey||''))||Number(a.catalogIndex||0)-Number(b.catalogIndex||0));
     if(records.length)gvSurveyCatalog.set(provider,Object.freeze(records));
 }
