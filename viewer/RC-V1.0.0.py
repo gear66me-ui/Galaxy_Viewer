@@ -1339,7 +1339,7 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(url)}catch(_){}
 }
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@16c902ec2454d629f65d78b6786a24a0ce957b69/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
