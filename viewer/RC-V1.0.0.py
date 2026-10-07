@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0';
-const GV200001_BUILD='0195';
+const GV200001_BUILD='0196';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -697,8 +697,7 @@ if(!aladin)throw new Error('ALADIN VIEWER INITIALIZATION FAILED');
 // SECTION 021 — DOM HOST ACQUISITION
 // ECO: GV200-001
 // ============================================================================
-const hosts=Object.freeze({    hamburger:document.getElementById('gv-hamburger-host'),
-    coordinate:document.getElementById('gv-coordinate-host'),
+const hosts=Object.freeze({    hamburger:document.getElementById('gv-hamburger-host'),    coordinate:document.getElementById('gv-coordinate-host'),
     target:document.getElementById('gv-target-host'),
     navigation:document.getElementById('gv-navigation-host')
 });
@@ -1397,8 +1396,7 @@ function gvTanPixelToWorld(wcs,x,y){
     const dx=Number(x)-Number(wcs.CRPIX1),dy=Number(y)-Number(wcs.CRPIX2);
     const xi=(Number(wcs.CD1_1)*dx+Number(wcs.CD1_2)*dy)*d2r;
     const eta=(Number(wcs.CD2_1)*dx+Number(wcs.CD2_2)*dy)*d2r;    const ra0=Number(wcs.CRVAL1)*d2r,dec0=Number(wcs.CRVAL2)*d2r;
-    const denom=Math.cos(dec0)-eta*Math.sin(dec0);
-    let ra=ra0+Math.atan2(xi,denom);
+    const denom=Math.cos(dec0)-eta*Math.sin(dec0);    let ra=ra0+Math.atan2(xi,denom);
     const dec=Math.atan2(Math.sin(dec0)+eta*Math.cos(dec0),Math.sqrt(denom*denom+xi*xi));
     ra=((ra*r2d)%360+360)%360;
     return [ra,dec*r2d];
@@ -2097,8 +2095,7 @@ async function gvNavigateSurveyIndex(nextIndex){
     try{
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
-        routeIndex++;        await showDestination(destination,{firstTrip,switchToSphericalAtApex});
-        gvSurveyMode.index=index;
+        routeIndex++;        await showDestination(destination,{firstTrip,switchToSphericalAtApex});        gvSurveyMode.index=index;
         gvSurveyMode.pendingIndex=index;
         gvSurveyCursors.set(gvSurveyMode.provider,index);
         target.setActiveProvider(gvSurveyMode.provider,{index:index+1,total:gvSurveyMode.records.length});
