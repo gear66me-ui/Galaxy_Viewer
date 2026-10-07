@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0"
-# BUILD 0181 — close survey menu when HD presentation opens
+# BUILD 0182 — resolve Survey provider from catalogKey when source records omit provider
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -887,8 +887,10 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
 const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
-    const provider=String(record?.provider||'').toUpperCase();
-    return provider==='SPITZER SPACE TELESCOPE'?'SPITZER':provider;
+    const provider=String(record?.provider||'').trim().toUpperCase();
+    const catalogKey=String(record?.catalogKey||'').trim().toUpperCase();
+    const resolved=provider||catalogKey;
+    return resolved==='ESAHUBBLE'?'HUBBLE':resolved==='SPITZER SPACE TELESCOPE'?'SPITZER':resolved;
 }
 for(const provider of GV_SURVEY_PROVIDER_ORDER){
     const records=navigationRuntime.catalog.records
