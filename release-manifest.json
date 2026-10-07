@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0",
   "sourceBranch": "release",
-  "sourceCommit": "8894c0319377a44164b516188e859ed148030ab8",
-  "build": "0197",
+  "sourceCommit": "e56be0c7ade3934ed1e417af93a6dd4f2edd380e",
+  "build": "0198",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
@@ -147,5 +147,6 @@
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png",
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
   ],
-  "dependencySnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43"
+  "dependencySnapshot": "e56be0c7ade3934ed1e417af93a6dd4f2edd380e",
+  "catalogSnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43"
 }
