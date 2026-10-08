@@ -933,7 +933,17 @@ function gvSearchRender(query){
     gvSearchResults.replaceChildren();
     if(!q){gvSearchResults.style.display='none';return}
     const tokens=q.split(/\s+/).filter(Boolean);
-    const matches=gvSearchIndex.filter(item=>tokens.every(token=>item.text.includes(token)));
+    const matches=gvSearchIndex
+        .filter(item=>tokens.every(token=>item.text.includes(token)))
+        .sort((a,b)=>{
+            const an=gvSearchDisplayName(a.record).toLowerCase();
+            const bn=gvSearchDisplayName(b.record).toLowerCase();
+            const ap=tokens.every(token=>an.includes(token)),bp=tokens.every(token=>bn.includes(token));
+            const as=tokens.every(token=>an.startsWith(token)),bs=tokens.every(token=>bn.startsWith(token));
+            if(as!==bs)return bs-as;
+            if(ap!==bp)return bp-ap;
+            return an.localeCompare(bn);
+        });
     gvSearchResults.style.display='block';
     if(!matches.length){
         const empty=document.createElement('div');empty.className='gv-search-empty';empty.textContent='NO GALAXIES FOUND';gvSearchResults.appendChild(empty);return;
