@@ -438,10 +438,13 @@ jobs:
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: galaxy-pages-v27
           path: .
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: galaxy-pages-v27
 
 # BUILD 0001 DIAGNOSTIC DEPLOYMENT TRIGGER
