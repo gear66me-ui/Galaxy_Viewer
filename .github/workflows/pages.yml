@@ -86,7 +86,7 @@ jobs:
           assert manifest.get('build')=='0009'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='17e3d2c24beaa097a64d63b8ae339696c078c820'
+          assert manifest.get('sourceCommit')=='1d2688aaa876fff77d3b8477fc53d69980648102'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert "const GV200001_BUILD='0009';" in rc
@@ -95,7 +95,7 @@ jobs:
           assert 'gv-galaxy-navigator-001.js' not in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','ec7c43fde06d9b723b00c611838792fa73dfe2d9','d85d91201ea52aa6524a62394fc81b450b15ac23','eb83b198ed1b59860fec21acb2d3bb7ba938e80d']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','9f63ac69eb5ac5b2661856da74af702bb02a147a','d85d91201ea52aa6524a62394fc81b450b15ac23','eb83b198ed1b59860fec21acb2d3bb7ba938e80d']), pins
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
