@@ -82,8 +82,8 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.3'
           assert viewer.get('viewer')=='RC-V1.0.0.3.py'
-          assert viewer.get('build')=='0004'
-          assert manifest.get('build')=='0004'
+          assert viewer.get('build')=='0005'
+          assert manifest.get('build')=='0005'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert manifest.get('sourceCommit')=='77b7e90859d4df49839dd60f2ca15f4054a2b0db'
