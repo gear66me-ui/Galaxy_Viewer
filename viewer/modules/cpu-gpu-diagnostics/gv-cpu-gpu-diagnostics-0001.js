@@ -3,7 +3,7 @@
 */
 (()=>{"use strict";
 const VERSION="0001",ROOT_ID="gv-cpu-gpu-diagnostics";
-let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0,observer=null;
+let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0;
 const frames=[],events=[],MAX=900;
 let lastFrame=performance.now(),lastLong=0,longTasks=[],eventLoopLag=[];let longObserver=null;let lagTimer=null;
 function now(){return performance.now()}
@@ -32,7 +32,7 @@ function appState(){
   try{o.travelRetired=typeof gvHdTravelRetired!=="undefined"?!!gvHdTravelRetired:null}catch(_){}
   return o;
 }
-function targetButton(){return document.querySelector("button.gv-target-proxy")}
+function targetButton(){return document.querySelector("button.gv-target-survey-button")}
 function targetHandler(e){
   if(e.type==="pointerdown"){
     if(e.button!==undefined&&e.button!==0)return;
@@ -83,14 +83,14 @@ function mount(){
   raf=requestAnimationFrame(sampleFrame);
   if('PerformanceObserver' in window){try{longObserver=new PerformanceObserver(list=>{for(const e of list.getEntries())longTasks.push({start:e.startTime,duration:e.duration});if(longTasks.length>100)longTasks=longTasks.slice(-100)});longObserver.observe({type:'longtask',buffered:true})}catch(_){}}
   let expected=now()+250;lagTimer=setInterval(()=>{const t=now(),lag=Math.max(0,t-expected);eventLoopLag.push(Number(lag.toFixed(2)));if(eventLoopLag.length>100)eventLoopLag.shift();expected+=250},250);
-  observer=new MutationObserver(attach);observer.observe(document.body,{childList:true,subtree:true});attach();
+  attach();
   window.addEventListener("beforeunload",unmount,{once:true});
   console.log("GV CPU/GPU DIAGNOSTICS 0001 MOUNTED — hold target 3 seconds");
 }
 function unmount(){
   cancelAnimationFrame(raf);raf=0;clearTimeout(pressTimer);armed=false;
   if(button){button.removeEventListener("pointerdown",targetHandler,true);button.removeEventListener("pointerup",targetHandler,true);button.removeEventListener("pointercancel",targetHandler,true);button.removeEventListener("pointerleave",targetHandler,true);button.removeEventListener("keydown",keyHandler,true);button=null}
-  observer?.disconnect();observer=null;longObserver?.disconnect();longObserver=null;if(lagTimer){clearInterval(lagTimer);lagTimer=null}root?.remove();root=null;
+  longObserver?.disconnect();longObserver=null;if(lagTimer){clearInterval(lagTimer);lagTimer=null}root?.remove();root=null;
 }
 globalThis.GV_CPU_GPU_DIAGNOSTICS={version:VERSION,mount,unmount,snapshot:report,copy:copyReport};
 })();
