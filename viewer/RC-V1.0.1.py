@@ -1715,7 +1715,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
         aladin.setFov(finalFov);
-
+        return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
     const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false;
@@ -1745,7 +1745,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             aladin.setFov(finalFov);aladin.setRotation(targetRotation);resolve(prepared);
         }catch(error){reject(error)}};requestAnimationFrame(frame);
     });
-
+    return prepared;
 }
 
 
