@@ -181,7 +181,7 @@ await loadScript(config.aladinJsUrl);
 const A=globalThis.A;
 if(!A?.init)throw new Error('ALADIN CDS GLOBAL MISSING: A.init');
 await A.init;
-if(globalThis.GV_CPU_GPU_DIAGNOSTICS?.mount)globalThis.GV_CPU_GPU_DIAGNOSTICS.mount();
+loadScript(config.diagnosticsUrl).then(()=>{try{globalThis.GV_CPU_GPU_DIAGNOSTICS?.mount?.()}catch(error){console.warn('GV CPU/GPU DIAGNOSTICS MOUNT FAILED',error)}}).catch(error=>console.warn('GV CPU/GPU DIAGNOSTICS OPTIONAL LOAD FAILED',error));
 
 
 // ============================================================================
