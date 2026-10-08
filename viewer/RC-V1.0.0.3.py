@@ -88,7 +88,7 @@ display(Javascript(r"""
 const VERSION='RC-V1.0.0.3';
 const GV200001_BUILD='0013';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0013`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -144,7 +144,7 @@ const gvModuleLoadPromise=Promise.all([
     loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
     loadScript(config.providerArtworkUrl).catch(error=>{console.error('PROVIDER ARTWORK LOAD FAILED',error)}),
     loadScript(config.coordinateUrl).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
-    loadScript(config.targetUrl).catch(error=>{console.error('TARGET MODULE LOAD FAILED',error)}),
+    loadScript(fresh(config.targetUrl)).catch(error=>{console.error('TARGET MODULE LOAD FAILED',error)}),
     loadScript(config.galaxyRouteEngineUrl).catch(error=>{console.error('ROUTE ENGINE LOAD FAILED',error)}),
     loadScript(config.galaxyNavigatorUrl).catch(error=>{console.error('GALAXY NAVIGATOR LOAD FAILED',error)}),
     loadScript(config.headsUpDisplayUrl).catch(error=>{console.error('HEADS-UP DISPLAY LOAD FAILED',error)}),
@@ -788,6 +788,7 @@ const target=await window.GalaxyViewerTargetSimbad.init({
     onSelectProvider:(provider)=>gvSelectSurveyProvider(provider).catch(error=>console.error('GV SURVEY SELECT FAILED',error)),
     onExitSurvey:()=>gvExitSurveyMode()
 });
+if(typeof target.setProviders!=='function')throw new Error('TARGET SURVEY 0007 API MISMATCH: setProviders() MISSING');
 target.button.style.pointerEvents='auto';
 target.button.tabIndex=0;
 target.button.setAttribute('aria-label','TARGET');
