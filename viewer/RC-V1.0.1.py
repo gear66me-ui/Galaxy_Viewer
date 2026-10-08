@@ -1987,7 +1987,7 @@ function gvSurveyThumbnailCandidates(record,provider=''){
         // If the lookup bridge is unavailable, fall through to the ordinary image
         // candidates rather than producing an empty selector.
         if(packed?.path){
-            const localPath=String(packed.path).replace(/^viewer\\/artwork\\/runtime\\/survey-thumbnails\\//,'survey-thumbnails/');
+            const packedPath=String(packed.path); const localPrefix='viewer/artwork/runtime/survey-thumbnails/'; const localPath=packedPath.startsWith(localPrefix)?'survey-thumbnails/'+packedPath.slice(localPrefix.length):packedPath;
             add(gvSurveyThumbnailPack.nativeBaseUrl+localPath);
             return Object.freeze(out);
         }
