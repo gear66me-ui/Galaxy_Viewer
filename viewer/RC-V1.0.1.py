@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0010 — RC-V1.0.1 single-authority 55° HD retirement
+# BUILD 0011 — RC-V1.0.1 HD lifecycle: retire old / activate next at zoom-in start
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,9 +85,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0010';
+const GV200001_BUILD='0011';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-HDRETIRE55-0010`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-HDLIFECYCLE-0011`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1734,15 +1734,18 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*gvDoeRate/1000);
             doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
             if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{gvDoeCommand('setFov',[60]);aladin.setFov(60);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 60° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
-            if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
+            if(!zoomInStarted&&t>=zoomInThreshold){
+                zoomInStarted=true;
+                try{
+                    gvHdTravelRetired=true;
+                    applyDirectHdOpacity();
+                    console.info('GV HD RETIRED — ZOOM-IN START');
+                    onZoomInStart?.();
+                }catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
+            }
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:60,startRotation,targetRotation});
                 gvHoldDirectHdDuringTravel(now);
-                if(!gvHdTravelRetired&&state.fov>=GV_HD_RETIRE_FOV){
-                    gvHdTravelRetired=true;
-                    applyDirectHdOpacity();
-                    console.info('GV HD RETIRED AT FOV',GV_HD_RETIRE_FOV);
-                }
                 gvDoeCommand('setFov',[state.fov]);aladin.setFov(state.fov);
                 if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
                 else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
@@ -1940,8 +1943,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             return Promise.reject(error);
         }
     };
-    // BUILD 0010: do not replace the current HD raster during zoom-out.
-    // Destination HD is installed only at zoom-in start, after the 55° retirement point.
+    // BUILD 0011: the current galaxy HD remains visible through zoom-out,
+    // translation and rotation. At zoom-in start the current HD is retired,
+    // then the next galaxy HD is installed and activated.
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
         const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:registeredTravelPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
