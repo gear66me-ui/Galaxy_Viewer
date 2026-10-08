@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.2"
 BUILD_NUMBER = "0001"
-# ROLLUP 1.0.0.2 / BUILD 0.0.0.1 — memory hardening: 3-HD window + 3-provider portal window
+# ROLLUP 1.0.0.2 / BUILD 0001 — memory hardening: 3-HD window + 3-provider portal window
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
