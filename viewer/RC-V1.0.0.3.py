@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0004"
+BUILD_NUMBER = "0005"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0004';
+const GV200001_BUILD='0005';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1701,12 +1701,9 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
             if(!response.ok)throw new Error('HTTP '+response.status);
             let blob=await response.blob();
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
-            const bitmap=await createImageBitmap(blob);
-            blob=null;
+            const bitmap=await createImageBitmap(blob);blob=null;
             try{
-                const sourceW=bitmap.width,sourceH=bitmap.height;
-                const scale=Math.min(1,MAX_BLEND_DIMENSION/Math.max(sourceW,sourceH));
-                const w=Math.max(1,Math.round(sourceW*scale)),h=Math.max(1,Math.round(sourceH*scale));
+                const w=bitmap.width,h=bitmap.height;
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(bitmap,0,0,w,h);
@@ -1762,11 +1759,14 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+    const prepStarted=performance.now();
     const raster=await gvLoadGate2MImage(url,destination,record);
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-    return {destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
+    const prepared={destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
+    console.info('GV HD PREPARED',{ms:Math.round(performance.now()-prepStarted),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
+    return prepared;
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
@@ -2087,6 +2087,8 @@ function gvStartFirstDestinationPreload(){
     const destination=activeRoute[0];
     if(!destination)return Promise.reject(new Error('GV FIRST DESTINATION MISSING'));
     const started=performance.now();
+    // BUILD 0005: provider warm-up and HD preparation begin together for the first destination.
+    gvPrewarmProviderWebsite(destination);
     gvFirstDestinationPreload=gvPrepareDirectHd(destination).then(prepared=>{
         console.info('GV FIRST DESTINATION PREPARED',{ms:Math.round(performance.now()-started),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
         return {destination,prepared};
@@ -2106,7 +2108,8 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvEarthPointerActive=true;
     gvUpdateEarthBearingPointer();
     const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination),registeredTravelPromise=recordPromise.then(gvRegisteredTravelStateFromRecord),preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,recordPromise)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination,recordPromise),sourceDestination=activeDestination;
-    activeDestination=v.destination;destinationPresentation.depart();
+    // BUILD 0005: warm the provider portal as soon as the destination is committed, not after arrival.
+    activeDestination=v.destination;gvPrewarmProviderWebsite(v.destination);destinationPresentation.depart();
     const presentationDestination=await gvPresentationDestination(v.destination);
     destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
     travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
