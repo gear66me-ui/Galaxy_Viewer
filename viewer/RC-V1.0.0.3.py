@@ -880,7 +880,7 @@ if(target.panel?.parentElement!==document.body)document.body.appendChild(target.
 const GV_SEARCH_GALAXY_ICON_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg';
 const gvSearchStyle=document.createElement('style');
 gvSearchStyle.id='gv-catalog-search-style';
-gvSearchStyle.textContent=\`
+gvSearchStyle.textContent=`
 #gv-catalog-search-tile{position:relative;display:block;width:100%;box-sizing:border-box;margin:0 0 7px;padding:8px 9px 9px;border:1px solid rgba(124,203,255,.78);border-radius:9px;background:linear-gradient(145deg,rgba(8,30,62,.98),rgba(4,15,34,.98));box-shadow:inset 0 1px 1px rgba(225,251,255,.22),inset 0 -3px 7px rgba(0,0,0,.48),0 0 5px rgba(72,191,255,.20);z-index:20}
 #gv-catalog-search-tile .gv-search-line{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;column-gap:8px;height:34px}
 #gv-catalog-search-tile .gv-search-icon{position:relative;display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(124,203,255,.45);border-radius:8px;background:rgba(5,22,47,.82);font:400 19px/1 "Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;box-shadow:0 0 4px rgba(67,207,255,.22),0 0 11px rgba(67,207,255,.12);text-shadow:0 0 4px rgba(223,251,255,.95),0 0 9px rgba(67,207,255,.75);user-select:none}
@@ -897,7 +897,7 @@ gvSearchStyle.textContent=\`
 .gv-search-result-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#EAFBFF;font:400 10.5px/13px "GV Space Age",Arial,sans-serif;letter-spacing:.25px}
 .gv-search-result-meta{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;color:rgba(181,222,241,.78);font:400 8.5px/11px Arial,sans-serif}
 .gv-search-empty{padding:10px 7px;color:rgba(181,222,241,.76);font:400 9px/13px "GV Space Age",Arial,sans-serif;letter-spacing:.35px;text-align:center}
-\`;
+`;
 document.head.appendChild(gvSearchStyle);
 const gvSearchTile=document.createElement('div');
 gvSearchTile.id='gv-catalog-search-tile';
