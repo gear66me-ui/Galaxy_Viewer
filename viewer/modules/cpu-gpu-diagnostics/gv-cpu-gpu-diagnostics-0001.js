@@ -32,6 +32,7 @@ function appState(){
   try{o.travelRetired=typeof gvHdTravelRetired!=="undefined"?!!gvHdTravelRetired:null}catch(_){}
   return o;
 }
+function targetRoot(){return document.querySelector(".gv-target-survey-root")}
 function targetButton(){return document.querySelector("button.gv-target-survey-button")}
 function targetHandler(e){
   if(e.type==="pointerdown"){
@@ -42,10 +43,10 @@ function targetHandler(e){
 }
 function keyHandler(e){if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){clearTimeout(pressTimer);pressStarted=now();pressTimer=setTimeout(()=>showReport(),3000)}}
 function attach(){
-  const b=targetButton(); if(!b||b===button)return;
+  const r=targetRoot(); if(!r||r===button)return;
   if(button){button.removeEventListener("pointerdown",targetHandler,true);button.removeEventListener("pointerup",targetHandler,true);button.removeEventListener("pointercancel",targetHandler,true);button.removeEventListener("pointerleave",targetHandler,true);button.removeEventListener("keydown",keyHandler,true)}
-  button=b;
-  b.addEventListener("pointerdown",targetHandler,true);b.addEventListener("pointerup",targetHandler,true);b.addEventListener("pointercancel",targetHandler,true);b.addEventListener("pointerleave",targetHandler,true);b.addEventListener("keydown",keyHandler,true);
+  button=r;
+  r.addEventListener("pointerdown",targetHandler,true);r.addEventListener("pointerup",targetHandler,true);r.addEventListener("pointercancel",targetHandler,true);r.addEventListener("pointerleave",targetHandler,true);r.addEventListener("keydown",keyHandler,true);
 }
 function esc(s){return String(s??"").replace(/[&<>"]/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]))}
 function stats(){
