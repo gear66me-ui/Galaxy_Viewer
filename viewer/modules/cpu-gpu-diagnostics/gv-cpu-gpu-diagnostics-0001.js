@@ -2,8 +2,8 @@
    Isolated diagnostics module. It does not modify the target scene.
 */
 (()=>{"use strict";
-const VERSION="0001",ROOT_ID="gv-cpu-gpu-diagnostics";
-let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0;
+const VERSION="0002",ROOT_ID="gv-cpu-gpu-diagnostics";
+let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0,enabled=true,collecting=false,targetObserver=null;
 const frames=[],events=[],MAX=900;
 let lastFrame=performance.now(),lastLong=0,longTasks=[],eventLoopLag=[];let longObserver=null;let lagTimer=null;
 function now(){return performance.now()}
@@ -35,13 +35,14 @@ function appState(){
 function targetRoot(){return document.querySelector(".gv-target-survey-root")}
 function targetButton(){return document.querySelector("button.gv-target-survey-button")}
 function targetHandler(e){
+  if(!enabled)return;
   if(e.type==="pointerdown"){
     if(e.button!==undefined&&e.button!==0)return;
-    clearTimeout(pressTimer);pressStarted=now();armed=true;
+    clearTimeout(pressTimer);pressStarted=now();armed=true;startCollection();
     pressTimer=setTimeout(()=>{if(armed)showReport()},3000);
-  }else if(e.type==="pointerup"||e.type==="pointercancel"||e.type==="pointerleave"){armed=false;clearTimeout(pressTimer)}
+  }else if(e.type==="pointerup"||e.type==="pointercancel"||e.type==="pointerleave"){armed=false;clearTimeout(pressTimer);stopCollection()}
 }
-function keyHandler(e){if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){clearTimeout(pressTimer);pressStarted=now();pressTimer=setTimeout(()=>showReport(),3000)}}
+function keyHandler(e){if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){clearTimeout(pressTimer);pressStarted=now();startCollection();pressTimer=setTimeout(()=>showReport(),3000)}}
 function attach(){
   const r=targetRoot(); if(!r||r===button)return;
   if(button){button.removeEventListener("pointerdown",targetHandler,true);button.removeEventListener("pointerup",targetHandler,true);button.removeEventListener("pointercancel",targetHandler,true);button.removeEventListener("pointerleave",targetHandler,true);button.removeEventListener("keydown",keyHandler,true)}
@@ -66,7 +67,7 @@ async function copyReport(){
   }
 }
 function showReport(){
-  armed=false;clearTimeout(pressTimer);events.push({t:new Date().toISOString(),type:"snapshot"});
+  armed=false;clearTimeout(pressTimer);stopCollection();events.push({t:new Date().toISOString(),type:"snapshot"});
   if(!root){root=document.createElement("div");root.id=ROOT_ID;root.style.cssText="position:fixed;left:8px;right:8px;top:56px;z-index:2147483647;padding:10px;border:1px solid rgba(120,255,180,.8);border-radius:8px;background:rgba(0,8,12,.94);color:#eafff2;font:12px monospace;box-shadow:0 4px 20px rgba(0,0,0,.5);white-space:pre-wrap";document.body.appendChild(root)}
   const r=report(),m=r.memory,w=r.webgl,s=r.rendering,a=r.app;
   root.innerHTML="<b>CPU / GPU DIAGNOSTICS</b>  "+esc(r.timestamp)+"\n"+
@@ -79,19 +80,31 @@ function showReport(){
   root.querySelector("#"+ROOT_ID+"-copy").onclick=async()=>{await copyReport();root.querySelector("#"+ROOT_ID+"-copy").textContent="COPIED";setTimeout(()=>root.querySelector("#"+ROOT_ID+"-copy").textContent="COPY FULL DIAGNOSTIC",1200)};
   root.querySelector("#"+ROOT_ID+"-close").onclick=()=>{root.remove();root=null};
 }
-function mount(){
-  if(raf)return;
-  raf=requestAnimationFrame(sampleFrame);
+function startCollection(){
+  if(!enabled||collecting)return;
+  collecting=true;lastFrame=now();raf=requestAnimationFrame(sampleFrame);
   if('PerformanceObserver' in window){try{longObserver=new PerformanceObserver(list=>{for(const e of list.getEntries())longTasks.push({start:e.startTime,duration:e.duration});if(longTasks.length>100)longTasks=longTasks.slice(-100)});longObserver.observe({type:'longtask',buffered:true})}catch(_){}}
-  let expected=now()+250;lagTimer=setInterval(()=>{const t=now(),lag=Math.max(0,t-expected);eventLoopLag.push(Number(lag.toFixed(2)));if(eventLoopLag.length>100)eventLoopLag.shift();expected+=250},250);
+  let expected=now()+250;
+  lagTimer=setInterval(()=>{const t=now(),lag=Math.max(0,t-expected);eventLoopLag.push(Number(lag.toFixed(2)));if(eventLoopLag.length>100)eventLoopLag.shift();expected+=250},250);
+}
+function stopCollection(){
+  if(!collecting)return;
+  collecting=false;cancelAnimationFrame(raf);raf=0;clearInterval(lagTimer);lagTimer=null;longObserver?.disconnect();longObserver=null;
+}
+function mount(){
+  if(targetObserver)return;
   attach();
+  targetObserver=new MutationObserver(()=>{if(!button)attach()});
+  targetObserver.observe(document.body,{childList:true,subtree:true});
   window.addEventListener("beforeunload",unmount,{once:true});
-  console.log("GV CPU/GPU DIAGNOSTICS 0001 MOUNTED — hold target 3 seconds");
+  console.log("GV CPU/GPU DIAGNOSTICS 0002 MOUNTED — IDLE; hold TARGET 3 seconds to sample");
 }
 function unmount(){
-  cancelAnimationFrame(raf);raf=0;clearTimeout(pressTimer);armed=false;
+  stopCollection();clearTimeout(pressTimer);armed=false;
   if(button){button.removeEventListener("pointerdown",targetHandler,true);button.removeEventListener("pointerup",targetHandler,true);button.removeEventListener("pointercancel",targetHandler,true);button.removeEventListener("pointerleave",targetHandler,true);button.removeEventListener("keydown",keyHandler,true);button=null}
-  longObserver?.disconnect();longObserver=null;if(lagTimer){clearInterval(lagTimer);lagTimer=null}root?.remove();root=null;
+  targetObserver?.disconnect();targetObserver=null;root?.remove();root=null;
 }
-globalThis.GV_CPU_GPU_DIAGNOSTICS={version:VERSION,mount,unmount,snapshot:report,copy:copyReport};
+function setEnabled(value){enabled=!!value;try{localStorage.setItem("gvDiagnosticsEnabled",enabled?"1":"0")}catch(_){}if(!enabled)stopCollection()}
+try{enabled=localStorage.getItem("gvDiagnosticsEnabled")!=="0"}catch(_){}
+globalThis.GV_CPU_GPU_DIAGNOSTICS={version:VERSION,mount,unmount,snapshot:report,copy:copyReport,setEnabled,get enabled(){return enabled}};
 })();
