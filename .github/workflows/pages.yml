@@ -8,7 +8,7 @@ on:
   push:
     branches:
       - release
-  # PRODUCTION FROZEN after this restoration: manual dispatch remains available.
+  # PRODUCTION FROZEN after this restoration: manual dispatch remains available. Restoration trigger is temporary.
   workflow_dispatch:
 
 permissions:
