@@ -42,7 +42,8 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-Release-1.0.0-Test.apk
           sha256sum Galaxy-Viewer-Release-1.0.0-Test.apk > Galaxy-Viewer-Release-1.0.0-Test.apk.sha256
       - name: Publish direct-download test asset
-        env: { GH_TOKEN: ${{ github.token }} }
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           T=galaxy-viewer-release-1.0.0-test
           gh release delete "$T" --yes --cleanup-tag >/dev/null 2>&1 || true
