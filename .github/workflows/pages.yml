@@ -37,6 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "review_only=false" >> "$GITHUB_OUTPUT"
+          echo "workflow_only=false" >> "$GITHUB_OUTPUT"
 
           if [[ "${GITHUB_EVENT_NAME}" != "push" ]]; then
             exit 0
@@ -54,6 +55,12 @@ jobs:
             exit 0
           fi
 
+          # Workflow-only commits do not change the deployed site.
+          if ! grep -Ev '^\.github/workflows/' <<< "${files}" | grep -q .; then
+            echo "workflow_only=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           if ! grep -Ev '^(temporary-demos/chandra-avm-candidate-review-|galaxy-viewer/)' <<< "${files}" | grep -q .; then
             echo "review_only=true" >> "$GITHUB_OUTPUT"
           fi
@@ -65,7 +72,7 @@ jobs:
           fetch-depth: 1
 
       - name: Verify production release isolation
-        if: ${{ steps.scope.outputs.review_only != 'true' }}
+        if: ${{ steps.scope.outputs.review_only != 'true' && steps.scope.outputs.workflow_only != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -124,7 +131,7 @@ jobs:
       - name: Compile extracted viewer JavaScript
         # The v27 public-site restoration is a static-site recovery; do not let
         # the unrelated legacy viewer syntax gate prevent Pages deployment.
-        if: ${{ steps.scope.outputs.review_only != 'true' && !contains(github.event.head_commit.message, 'V2.7') }}
+        if: ${{ steps.scope.outputs.review_only != 'true' && steps.scope.outputs.workflow_only != 'true' && !contains(github.event.head_commit.message, 'V2.7') }}
         shell: bash
         run: |
           set -euo pipefail
