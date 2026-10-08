@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0009 — RC-V1.0.1 Random Galaxy HD retirement test
+# BUILD 0010 — RC-V1.0.1 single-authority 55° HD retirement
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,9 +85,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0009';
+const GV200001_BUILD='0010';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-HDRETIRE55-0010`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1262,8 +1262,8 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
-let gvHdArrivalRetireTimer=null;
-let gvHdArrivalRetired=false;
+const GV_HD_RETIRE_FOV=55;
+let gvHdTravelRetired=false;
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
 const GV_HD_RESOURCE_WINDOW=10;
@@ -1390,7 +1390,7 @@ Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',wi
 crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
-function directHdOpacity(){if(gvHdArrivalRetired)return 0;return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
+function directHdOpacity(){if(gvHdTravelRetired)return 0;return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
 function gvHdEffectiveOpacity(){return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
@@ -1466,13 +1466,13 @@ setInterval(gvSyncFovReadout,GV_FOV_REPORT_MS);
 let zoomCommand=0;
 let zoomFrame=0;
 let gvAutoZoom=null;
-// GV ZOOM HOLD: keep the active HD image layer registered while zooming out.
-// Aladin may otherwise drop/cull the small WCS layer as the FOV expands.
-let gvHdZoomHoldAt=0;
-function gvHoldDirectHdDuringZoomOut(now){
-    if(zoomCommand<=0||!directHdOverlay)return;
-    if(Number(now)-gvHdZoomHoldAt<120)return;
-    gvHdZoomHoldAt=Number(now);
+// SINGLE HD TRAVEL AUTHORITY — keep the active raster registered during
+// Random Galaxy travel. Visibility is retired only by the 55° FOV rule below.
+let gvHdTravelHoldAt=0;
+function gvHoldDirectHdDuringTravel(now){
+    if(!directHdOverlay)return;
+    if(Number(now)-gvHdTravelHoldAt<120)return;
+    gvHdTravelHoldAt=Number(now);
     try{aladin.setOverlayImageLayer(directHdOverlay,DIRECT_HD_LAYER)}catch(_){ }
     try{applyDirectHdOpacity()}catch(_){ }
 }
@@ -1485,8 +1485,7 @@ function zoomStep(){
     if(!zoomCommand)return;
     try{
         const now=performance.now();
-        gvHoldDirectHdDuringZoomOut(now);
-        const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
+                const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(current)&&current>0){
             if(gvAutoZoom){
                 const a=gvAutoZoom,elapsed=performance.now()-a.started;
@@ -1501,8 +1500,6 @@ function zoomStep(){
                 }
             }
             aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*.018))));
-            // BUILD 0005 — preserve the HD raster while travel/random zoom-out is active.
-            if(directHdOverlay)applyDirectHdOpacity();
         }
     }catch(_){}
     zoomFrame=requestAnimationFrame(zoomStep);
@@ -1645,6 +1642,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
+    gvHdTravelRetired=false;
     let resolveReady,rejectReady;
     const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
     directHdDestination=destination;
@@ -1721,7 +1719,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             const frame=now=>{try{
                 const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
                 doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
-                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvDoeCommand('setFov',[fov]);aladin.setFov(fov);lastSample=sample}
+                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);gvDoeCommand('setFov',[fov]);aladin.setFov(fov);lastSample=sample}
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
@@ -1739,6 +1737,12 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             if(!zoomInStarted&&t>=zoomInThreshold){zoomInStarted=true;try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}}
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:60,startRotation,targetRotation});
+                gvHoldDirectHdDuringTravel(now);
+                if(!gvHdTravelRetired&&state.fov>=GV_HD_RETIRE_FOV){
+                    gvHdTravelRetired=true;
+                    applyDirectHdOpacity();
+                    console.info('GV HD RETIRED AT FOV',GV_HD_RETIRE_FOV);
+                }
                 gvDoeCommand('setFov',[state.fov]);aladin.setFov(state.fov);
                 if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
                 else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
@@ -1874,18 +1878,6 @@ function gvCancelProviderAll(){
         }
     }catch(error){console.warn('GV PROVIDER FULL CANCEL SKIPPED',error)}
 }
-function gvScheduleHdArrivalRetirement(destination){
-    if(gvHdArrivalRetireTimer)clearTimeout(gvHdArrivalRetireTimer);
-    gvHdArrivalRetired=false;
-    gvHdArrivalRetireTimer=setTimeout(()=>{
-        if(activeDestination!==destination)return;
-        gvHdArrivalRetired=true;
-        applyDirectHdOpacity();
-        console.info('GV HD ARRIVAL TIMER RETIRED',destination?.name||destination?.objectName||'');
-    },5000);
-}
-const gvRandomGalaxyButton=document.getElementById('gv-random-galaxy');
-if(gvRandomGalaxyButton)gvRandomGalaxyButton.addEventListener('click',()=>{if(activeDestination)gvScheduleHdArrivalRetirement(activeDestination)},true);
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!url.startsWith('https://'))return;
@@ -1927,9 +1919,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // ECO: GV200-001
 // ============================================================================
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
-    if(gvHdArrivalRetireTimer)clearTimeout(gvHdArrivalRetireTimer);
-    gvHdArrivalRetireTimer=null;
-    gvHdArrivalRetired=false;
+    gvHdTravelRetired=false;
     gvHideEarthDistance();
     gvEarthPointerActive=true;
     gvUpdateEarthBearingPointer();
@@ -1950,14 +1940,8 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             return Promise.reject(error);
         }
     };
-    // BLD 0153: prepare and install the destination raster as soon as it is ready.
-    // The travel choreography remains unchanged; only the active raster handoff
-    // moves forward so the trip planner and sky raster change as one destination.
-    preparedPromise.then(prepared=>{
-        if(activeDestination!==v.destination||installed)return;
-        headsUpDisplay.markReady?.(v.destination);
-        return installWhenReady(prepared);
-    }).catch(error=>console.error('GV DIRECT HD PREPARE/INSTALL FAILED',error));
+    // BUILD 0010: do not replace the current HD raster during zoom-out.
+    // Destination HD is installed only at zoom-in start, after the 55° retirement point.
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
         const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:registeredTravelPromise,onZoomInStart:()=>{preparedPromise.then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
