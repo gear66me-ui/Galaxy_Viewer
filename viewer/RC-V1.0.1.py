@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0006 — RC-V1.0.1 use validated DSS2 Color mirror
+# BUILD 0007 — RC-V1.0.1 arrival prewarm + timed HD retirement
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0006';
+const GV200001_BUILD='0007';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1261,6 +1261,8 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
+let gvHdArrivalRetireTimer=null;
+let gvHdArrivalRetired=false;
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
 const GV_HD_RESOURCE_WINDOW=10;
@@ -1387,7 +1389,7 @@ Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',wi
 crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
-function directHdOpacity(){return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
+function directHdOpacity(){if(gvHdArrivalRetired)return 0;return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
 function gvHdEffectiveOpacity(){return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
@@ -1871,6 +1873,16 @@ function gvCancelProviderAll(){
         }
     }catch(error){console.warn('GV PROVIDER FULL CANCEL SKIPPED',error)}
 }
+function gvScheduleHdArrivalRetirement(destination){
+    if(gvHdArrivalRetireTimer)clearTimeout(gvHdArrivalRetireTimer);
+    gvHdArrivalRetired=false;
+    gvHdArrivalRetireTimer=setTimeout(()=>{
+        if(activeDestination!==destination)return;
+        gvHdArrivalRetired=true;
+        applyDirectHdOpacity();
+        console.info('GV HD ARRIVAL TIMER RETIRED',destination?.name||destination?.objectName||'');
+    },5000);
+}
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!url.startsWith('https://'))return;
@@ -1912,6 +1924,9 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // ECO: GV200-001
 // ============================================================================
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
+    if(gvHdArrivalRetireTimer)clearTimeout(gvHdArrivalRetireTimer);
+    gvHdArrivalRetireTimer=null;
+    gvHdArrivalRetired=false;
     gvHideEarthDistance();
     gvEarthPointerActive=true;
     gvUpdateEarthBearingPointer();
@@ -1947,9 +1962,10 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         if(activeDestination!==v.destination)return v.destination;
         travelPresentation.end();
         destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
+        gvPrewarmProviderWebsite(v.destination);
+        gvScheduleHdArrivalRetirement(v.destination);
         headsUpDisplay.render();
         gvShowEarthDistance(v.destination);
-        gvPrewarmProviderWebsite(v.destination);
         return v.destination;
     }
     const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
@@ -1958,9 +1974,10 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     if(activeDestination!==v.destination)return v.destination;
     travelPresentation.end();
     destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
+    gvPrewarmProviderWebsite(v.destination);
+    gvScheduleHdArrivalRetirement(v.destination);
     headsUpDisplay.render();
     gvShowEarthDistance(v.destination);
-    gvPrewarmProviderWebsite(v.destination);
     return v.destination;
 }
 // ============================================================================
