@@ -83,14 +83,16 @@ jobs:
           pointer=json.loads((root/'viewer/Web-Browser/web-browser-current.json').read_text())
           manifest=json.loads((root/'release-manifest.json').read_text())
           avm=json.loads((root/'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json').read_text())
-          rc=(root/'viewer/RC-V1.0.1.py').read_text()
+          rc_path=root/'viewer'/str(viewer.get('viewer',''))
+          rc=rc_path.read_text()
 
-          assert viewer.get('version')=='RC-V1.0.1'
-          assert viewer.get('viewer')=='RC-V1.0.1.py'
+          assert viewer.get('version')=='RC-V1.0.0.2'
+          assert viewer.get('viewer')=='RC-V1.0.0.2.py'
           assert viewer.get('build')=='0001'
           assert manifest.get('build')=='0001'
           assert manifest.get('sourceBranch')=='release'
-          assert manifest.get('sourceCommit')=='a698397819efd4a0904c141042b56252b447c8ae'
+          assert manifest.get('release')==viewer.get('version')
+          assert manifest.get('sourceCommit')=='9807ba3c41ca5e78aa4e25bc9bc53e3ac64550e1'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert "const GV200001_BUILD='0001';" in rc
@@ -119,11 +121,30 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.1 BUILD 0001')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.2 BUILD 0001')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
           PY
+
+      - name: Compile extracted viewer JavaScript
+        if: ${{ steps.scope.outputs.review_only != 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const viewer=JSON.parse(fs.readFileSync('viewer/gv-current-viewer.json','utf8'));
+          const py=fs.readFileSync('viewer/'+viewer.viewer,'utf8');
+          const start='display(Javascript(r"""');
+          const end='"""))';
+          const a=py.indexOf(start);
+          const b=py.lastIndexOf(end);
+          if(a<0||b<a)throw new Error('VIEWER JAVASCRIPT EXTRACTION FAILED');
+          const js=py.slice(a+start.length,b);
+          new Function(js);
+          console.log('VIEWER JAVASCRIPT SYNTAX PASSED:',viewer.viewer);
+          NODE
       - name: Build standalone Chandra review
         if: ${{ steps.scope.outputs.review_only == 'true' }}
         shell: bash
