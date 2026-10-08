@@ -5,8 +5,9 @@ import json
 # SECTION 001 — FILE IDENTITY / PYTHON IMPORTS
 # ECO: GV200-001
 # ============================================================================
-VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0014 — RC-V1.0.1 memory lifecycle cleanup: 5-HD window, DOE removed
+VIEWER_VERSION = "RC-V1.0.0.2"
+BUILD_NUMBER = "0.0.0.1"
+# ROLLUP 1.0.0.2 / BUILD 0.0.0.1 — memory hardening: 3-HD window + 3-provider portal window
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -84,15 +85,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
-const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0014';
+const VERSION='RC-V1.0.0.2';
+const GV200001_BUILD='0.0.0.1';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
-    viewerVersion:'RC-V1.0.1',
+    viewerVersion:'RC-V1.0.0.2',
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
@@ -1227,7 +1228,7 @@ const GV_HD_RETIRE_FOV=55;
 let gvHdTravelRetired=false;
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
-const GV_HD_RESOURCE_WINDOW=5
+const GV_HD_RESOURCE_WINDOW=3
 const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
     const value=String(url||'').trim();
@@ -1870,15 +1871,43 @@ function gvCancelProviderAll(){
         }
     }catch(error){console.warn('GV PROVIDER FULL CANCEL SKIPPED',error)}
 }
+const GV_PROVIDER_PORTAL_WINDOW=3;
+const gvProviderPortalOrigins=[];
+function gvReleaseProviderPortalOrigin(origin){
+    const value=String(origin||'').trim();
+    if(!value)return;
+    for(const rel of ['dns-prefetch','preconnect']){
+        document.querySelectorAll('link[data-gv-provider-warm="'+rel+'"]').forEach(link=>{
+            try{if(String(link.href||'').replace(/\\/$/,'')===value)link.remove()}catch(_){}
+        });
+    }
+}
+function gvTrackProviderPortal(origin){
+    const value=String(origin||'').trim().replace(/\\/$/,'');
+    if(!value)return;
+    const existing=gvProviderPortalOrigins.indexOf(value);
+    if(existing>=0)gvProviderPortalOrigins.splice(existing,1);
+    gvProviderPortalOrigins.push(value);
+    while(gvProviderPortalOrigins.length>GV_PROVIDER_PORTAL_WINDOW){
+        const stale=gvProviderPortalOrigins.shift();
+        gvReleaseProviderPortalOrigin(stale);
+        try{
+            if(window.GVNative&&typeof window.GVNative.releaseProviderPortal==='function'){
+                window.GVNative.releaseProviderPortal(stale);
+            }
+        }catch(_){}
+    }
+}
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!url.startsWith('https://'))return;
     try{
+        const origin=new URL(url).origin;
+        gvTrackProviderPortal(origin);
         if(window.GVNative&&typeof window.GVNative.prewarm==='function'){
             window.GVNative.prewarm(url);
             console.info('GV PROVIDER NATIVE PRERENDER REQUESTED',url);
         }
-        const origin=new URL(url).origin;
         for(const rel of ['dns-prefetch','preconnect']){
             const selector='link[data-gv-provider-warm="'+rel+'"][href="'+CSS.escape(origin)+'"]';
             if(!document.querySelector(selector)){
