@@ -93,7 +93,7 @@ const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeo
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
-    viewerVersion:'RC-V1.0.0.2',
+    viewerVersion:'RC-V1.0.0.3',
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
