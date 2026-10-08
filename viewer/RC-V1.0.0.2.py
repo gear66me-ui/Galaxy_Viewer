@@ -1878,12 +1878,12 @@ function gvReleaseProviderPortalOrigin(origin){
     if(!value)return;
     for(const rel of ['dns-prefetch','preconnect']){
         document.querySelectorAll('link[data-gv-provider-warm="'+rel+'"]').forEach(link=>{
-            try{if(String(link.href||'').replace(/\\/$/,'')===value)link.remove()}catch(_){}
+            try{if(String(link.href||'').replace(/\/$/,'')===value)link.remove()}catch(_){}
         });
     }
 }
 function gvTrackProviderPortal(origin){
-    const value=String(origin||'').trim().replace(/\\/$/,'');
+    const value=String(origin||'').trim().replace(/\/$/,'');
     if(!value)return;
     const existing=gvProviderPortalOrigins.indexOf(value);
     if(existing>=0)gvProviderPortalOrigins.splice(existing,1);
