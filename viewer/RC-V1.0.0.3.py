@@ -150,7 +150,7 @@ const gvModuleLoadPromise=Promise.all([
     loadScript(config.headsUpDisplayUrl),
     loadScript(config.travelPresentationUrl),
     loadScript(config.destinationPresentationUrl),
-    loadScript(config.diagnosticsUrl).catch(error=>{console.warn('GV CPU/GPU DIAGNOSTICS OPTIONAL LOAD FAILED',error)})
+    Promise.resolve()
 ]);
 if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
     const css=document.createElement('link');
