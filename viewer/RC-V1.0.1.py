@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0012 — RC-V1.0.1 local survey thumbnails: native APK assets, no network image fetch
+# BUILD 0013 — RC-V1.0.1 memory lifecycle cleanup: 5-HD window, explicit retirement, DOE removed
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0012';
+const GV200001_BUILD='0013';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -712,40 +712,6 @@ for(const [name,host] of Object.entries(hosts)){
 // SECTION 023 — HAMBURGER 0007 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const GV_DOE_RATES=Object.freeze([20,60,120]);
-let gvDoeRate=20;
-const gvDoeReports={20:[],60:[],120:[]};
-let gvDoeActiveRun=null;
-function gvDoeNow(){return performance.now()}
-function gvDoeBeginRun(meta){
-    const run={schema:'gv-flight-doe-0001',build:GV200001_BUILD,rateHz:gvDoeRate,startedAt:gvDoeNow(),meta:{...meta},browserRaf:[],aladinRedraw:[],commands:[]};
-    gvDoeActiveRun=run;return run;
-}
-function gvDoeCommand(type,args){if(type==='setRotation'){const rotation=Number(args?.[0]);if(Number.isFinite(rotation))gvAuthoritativeRotation=rotation}if(gvDoeActiveRun)gvDoeActiveRun.commands.push({t:gvDoeNow()-gvDoeActiveRun.startedAt,type,args})}
-function gvDoeFinishRun(run){
-    if(gvDoeActiveRun===run)gvDoeActiveRun=null;
-    run.endedAt=gvDoeNow();run.durationMs=run.endedAt-run.startedAt;
-    gvDoeReports[run.rateHz]?.push(run);return run;
-}
-function gvDoeDownload(rate){
-    const selected=Number(rate);
-    const payload={schema:'gv-flight-doe-report-0001',viewer:VERSION,build:GV200001_BUILD,aladinVersion:config.aladinVersion,selectedRateHz:selected,generatedAt:new Date().toISOString(),runs:gvDoeReports[selected]||[]};
-    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download=`GV_DOE_${selected}Hz_BLD${GV200001_BUILD}_${Date.now()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
-}
-try{
-    const view=aladin.view;
-    if(view&&typeof view.redrawClbk==='function'&&!view.__gvDoeWrapped){
-        const original=view.redrawClbk;
-        view.redrawClbk=function(now){
-            if(gvDoeActiveRun)gvDoeActiveRun.aladinRedraw.push({t:gvDoeNow()-gvDoeActiveRun.startedAt,rafNow:Number(now),rendering:typeof view.wasm?.isRendering==='function'?!!view.wasm.isRendering():null});
-            return original(now);
-        };
-        view.__gvDoeWrapped=true;
-    }
-}catch(error){console.error('GV DOE ALADIN REDRAW PROBE FAILED',error)}
-
 const GV_ABOUT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/about/gv-about-presentation-0013.js';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
@@ -784,12 +750,6 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
-hamburger.root.addEventListener('gv-doe-rate-selected',event=>{
-    const rate=Number(event.detail?.rate);
-    if(GV_DOE_RATES.includes(rate))gvDoeRate=rate;
-});
-hamburger.root.addEventListener('gv-doe-download',event=>gvDoeDownload(Number(event.detail?.rate)));
-
 
 // ============================================================================
 // SECTION 024 — COORDINATE OVERLAY 0006 INITIALIZATION
@@ -1262,23 +1222,29 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
+let directHdObjectUrl=null;
 const GV_HD_RETIRE_FOV=55;
 let gvHdTravelRetired=false;
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
-const GV_HD_RESOURCE_WINDOW=10;
+const GV_HD_RESOURCE_WINDOW=5;
 const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
-    gvHdObjectUrls.push(url);
+    const value=String(url||'').trim();
+    if(!value||gvHdObjectUrls.includes(value))return;
+    gvHdObjectUrls.push(value);
     while(gvHdObjectUrls.length>GV_HD_RESOURCE_WINDOW){
         const stale=gvHdObjectUrls.shift();
         try{URL.revokeObjectURL(stale)}catch(_){}
     }
 }
 function gvReleaseHdObjectUrl(url){
-    const index=gvHdObjectUrls.indexOf(url);
+    const value=String(url||'').trim();
+    if(!value)return;
+    const index=gvHdObjectUrls.indexOf(value);
     if(index>=0)gvHdObjectUrls.splice(index,1);
-    try{URL.revokeObjectURL(url)}catch(_){}
+    try{URL.revokeObjectURL(value)}catch(_){}
+    if(directHdObjectUrl===value)directHdObjectUrl=null;
 }
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
 const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
@@ -1642,17 +1608,45 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
 }
 function gvInstallPreparedHd(prepared){
     const {destination,record,imageObjectUrl,displayWcs}=prepared;
+    if(!imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
+    if(directHdOverlay||directHdObjectUrl){
+        try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
+        const oldObjectUrl=directHdObjectUrl;
+        directHdOverlay=null;
+        directHdDestination=null;
+        directHdObjectUrl=null;
+        if(oldObjectUrl)gvReleaseHdObjectUrl(oldObjectUrl);
+    }
     gvHdTravelRetired=false;
     let resolveReady,rejectReady;
     const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
     directHdDestination=destination;
+    directHdObjectUrl=imageObjectUrl;
     const layer=A.image(imageObjectUrl,{
         name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
-        successCallback:()=>{if(directHdDestination!==destination){resolveReady(false);return}directHdOverlay=layer;applyDirectHdOpacity();resolveReady(true);},
-        errorCallback:error=>{gvReleaseHdObjectUrl(imageObjectUrl);rejectReady(error);console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error)}
+        successCallback:()=>{
+            if(directHdDestination!==destination){
+                gvReleaseHdObjectUrl(imageObjectUrl);
+                resolveReady(false);
+                return;
+            }
+            directHdOverlay=layer;
+            applyDirectHdOpacity();
+            resolveReady(true);
+        },
+        errorCallback:error=>{
+            if(directHdObjectUrl===imageObjectUrl){
+                directHdObjectUrl=null;
+                directHdOverlay=null;
+                directHdDestination=null;
+            }
+            gvReleaseHdObjectUrl(imageObjectUrl);
+            rejectReady(error);
+            console.error('GV DIRECT HD JSON-WCS LAYER LOAD FAILED',error);
+        }
     });
-    try{aladin.removeImageLayer?.(DIRECT_HD_LAYER)}catch(_){}
-    directHdOverlay=layer;aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);return ready;
+    aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+    return ready;
 }
 function gvFlightClamp01(value){return Math.max(0,Math.min(1,Number(value)))}
 function gvFlightNavigationSmootherstep(value){const t=gvFlightClamp01(value);return 35*t**4-84*t**5+70*t**6-20*t**7}
@@ -1694,46 +1688,40 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
         }
         const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
-        const doeRun=gvDoeBeginRun({firstHomeTrip:true,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
         const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
         const translateStarted=performance.now();let lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
-                const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
-                doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
+                const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*20/1000);
                 if(sample!==lastSample){
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
                     if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
-                    gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
-                    gvDoeCommand('setRotation',[rotation]);aladin.setRotation(rotation);
+                    [pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
+                    [rotation]);aladin.setRotation(rotation);
                     lastSample=sample;
                 }
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
-        gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);
+        [ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
+        [targetRotation]);aladin.setRotation(targetRotation);
         try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
-                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed*gvDoeRate/1000);
-                doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
-                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);gvDoeCommand('setFov',[fov]);aladin.setFov(fov);lastSample=sample}
+                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed*20/1000);
+                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);[fov]);aladin.setFov(fov);lastSample=sample}
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
-        gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);
-        doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
+        [finalFov]);aladin.setFov(finalFov);
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
     const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false;
-    const doeRun=gvDoeBeginRun({firstHomeTrip:false,durationSeconds,start:{ra:ra0,dec:dec0,fov:startFov,rotation:startRotation},target:{ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation}});
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
-            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*gvDoeRate/1000);
-            doeRun.browserRaf.push({t:gvDoeNow()-doeRun.startedAt,rafNow:Number(now)});
-            if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{gvDoeCommand('setFov',[60]);aladin.setFov(60);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 60° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
+            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*20/1000);
+            if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{[60]);aladin.setFov(60);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 60° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
             if(!zoomInStarted&&t>=zoomInThreshold){
                 zoomInStarted=true;
                 try{
@@ -1746,17 +1734,16 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:60,startRotation,targetRotation});
                 gvHoldDirectHdDuringTravel(now);
-                gvDoeCommand('setFov',[state.fov]);aladin.setFov(state.fov);
-                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);gvDoeCommand('gotoRaDec',[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
-                else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
-                gvDoeCommand('setRotation',[state.rotation]);aladin.setRotation(state.rotation);lastSample=sample;
+                [state.fov]);aladin.setFov(state.fov);
+                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);[pos[0],pos[1]]);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
+                else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
+                [state.rotation]);aladin.setRotation(state.rotation);lastSample=sample;
             }
             if(t<1){requestAnimationFrame(frame);return}
-            if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);gvDoeCommand('gotoRaDec',[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            gvDoeCommand('setFov',[finalFov]);aladin.setFov(finalFov);gvDoeCommand('setRotation',[targetRotation]);aladin.setRotation(targetRotation);resolve(prepared);
+            if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);[ra1,dec1]);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
+            [finalFov]);aladin.setFov(finalFov);[targetRotation]);aladin.setRotation(targetRotation);resolve(prepared);
         }catch(error){reject(error)}};requestAnimationFrame(frame);
     });
-    doeRun.meta.targetFinal={ra:ra1,dec:dec1,fov:finalFov,rotation:targetRotation};gvDoeFinishRun(doeRun);return prepared;
 }
 
 
@@ -1933,12 +1920,17 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
     let installed=false;
     const installWhenReady=prepared=>{
-        if(activeDestination!==v.destination||installed)return Promise.resolve(false);
+        if(!prepared?.imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
+        if(activeDestination!==v.destination||installed){
+            gvReleaseHdObjectUrl(prepared.imageObjectUrl);
+            return Promise.resolve(false);
+        }
         try{
             const ready=gvInstallPreparedHd(prepared);
             installed=true;
             return ready;
         }catch(error){
+            gvReleaseHdObjectUrl(prepared.imageObjectUrl);
             console.error('GV DIRECT HD INSTALL START FAILED',error);
             return Promise.reject(error);
         }
