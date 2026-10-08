@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.3",
   "sourceBranch": "release",
-  "sourceCommit": "cd51474c87b58de90cffac6417db538e0a127731",
-  "build": "0010",
+  "sourceCommit": "33bc829e01686cf3e0c8ff50cd00a3ed06b1e6fe",
+  "build": "0011",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
@@ -16,7 +16,7 @@
     "viewer/modules/about/gv-about-presentation-0013.js",
     "viewer/modules/hud/gv-heads-up-display-0002.js",
     "viewer/RC-V1.0.0.3.py",
-    "viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0001.js",
+    "viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0002.js",
     "viewer/gv-current-viewer.json"
   ],
   "catalogs": [
