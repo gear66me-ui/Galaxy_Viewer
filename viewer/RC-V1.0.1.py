@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0008 — RC-V1.0.1 website-press HD retirement
+# BUILD 0009 — RC-V1.0.1 Random Galaxy HD retirement test
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0008';
+const GV200001_BUILD='0009';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1142,7 +1142,7 @@ const randomGalaxyBridge=Object.freeze({
 window.GalaxyRandomGalaxy=randomGalaxyBridge;
 const travelPresentation=window.GalaxyRandomTravelPresentation.mount(document.getElementById('aladin-cosmic-command-test'));
 const destinationPresentation=window.GalaxyDestinationPresentation.mount(document.getElementById('aladin-cosmic-command-test'),{onBackToSky:()=>requestAnimationFrame(()=>{gvResyncEarthPointerFromAladin();gvSyncSurveySelectButton()})});
-document.addEventListener('click',event=>{const button=event.target?.closest?.('.gvdp-archive-button');if(!button)return;if(activeDestination)gvScheduleHdArrivalRetirement(activeDestination)},true);
+
 const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElementById('aladin-cosmic-command-test'),{
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
@@ -1884,6 +1884,8 @@ function gvScheduleHdArrivalRetirement(destination){
         console.info('GV HD ARRIVAL TIMER RETIRED',destination?.name||destination?.objectName||'');
     },5000);
 }
+const gvRandomGalaxyButton=document.getElementById('gv-random-galaxy');
+if(gvRandomGalaxyButton)gvRandomGalaxyButton.addEventListener('click',()=>{if(activeDestination)gvScheduleHdArrivalRetirement(activeDestination)},true);
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
     if(!url.startsWith('https://'))return;
