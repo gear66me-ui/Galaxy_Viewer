@@ -174,7 +174,11 @@ req('import android.webkit.WebViewClient;\n',
     'import android.webkit.WebViewClient;\nimport android.webkit.WebStorage;\nimport android.webkit.CookieManager;\nimport androidx.webkit.WebStorageCompat;\nimport androidx.webkit.WebViewCompat;\nimport androidx.webkit.WebViewFeature;\n',
     'imports')
 
-req('  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\n',
+req('  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\nreq('  private WebView top, web, bottom, viewerWeb;\n',
+    '  private WebView top, web, bottom, viewerWeb; private FrameLayout root;\n',
+    'root field')\n\nreq('    FrameLayout root=new FrameLayout(this); root.setBackgroundColor(Color.BLACK);\n',
+    '    root=new FrameLayout(this); root.setBackgroundColor(Color.BLACK);\n',
+    'root local')\n',
     '  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\n'
     '  private static final int PROVIDER_PORTAL_WINDOW=3;\n'
     '  private final java.util.ArrayDeque<String> providerSites=new java.util.ArrayDeque<>();\n',
@@ -263,7 +267,7 @@ new='''        return false;
       }
       @Override public boolean onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
         releaseWebView(view);
-        if(view==viewerWeb){viewerWeb=viewer();((ViewGroup)view.getParent());((ViewGroup)browserLayer.getParent()).addView(viewerWeb,0,new FrameLayout.LayoutParams(-1,-1));launchGalaxyViewer();}
+        if(view==viewerWeb){viewerWeb=viewer();root.addView(viewerWeb,0,new FrameLayout.LayoutParams(-1,-1));launchGalaxyViewer();}
         return true;
       }
     });
@@ -332,7 +336,7 @@ PY
           test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
 
       - name: Build AAB 1.0.0.2 BUILD 0.0.0.1
-        run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:bundleRelease
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-1.0.0.2 :app:bundleRelease
 
       - name: Sign AAB 1.0.0.2 BUILD 0.0.0.1
         shell: bash
@@ -350,12 +354,12 @@ PY
           test -s "$AAB"
           jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
 
-      - name: Verify AAB 0015
+      - name: Verify AAB 1.0.0.2 BUILD 0.0.0.1
         shell: bash
         run: |
           set -euo pipefail
           AAB=/tmp/galaxy-viewer-1.0.0.2/app/build/outputs/bundle/release/app-release.aab
-          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
+          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0.0.0.1.aab
           test -s "$AAB"
           cp "$AAB" "$OUT"
           unzip -t "$OUT" | tee aab-rc-zip-test.txt
@@ -368,13 +372,13 @@ PY
           grep -q 'jar verified' aab-rc-signature.txt
           sha256sum "$OUT" | tee "$OUT.sha256"
 
-      - name: Publish AAB 0015
+      - name: Publish AAB 1.0.0.2 BUILD 0.0.0.1
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          TAG=galaxy-viewer-rc-v1.0.0.16
+          TAG=galaxy-viewer-1.0.0.2-build-0.0.0.1
           OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer 1.0.0.2 AAB' --notes 'Android App Bundle test: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
