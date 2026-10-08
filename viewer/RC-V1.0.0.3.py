@@ -1940,9 +1940,9 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             if(!zoomInStarted&&t>=zoomInThreshold){
                 zoomInStarted=true;
                 try{
-                    gvHdTravelRetired=true;
-                    applyDirectHdOpacity();
-                    console.info('GV HD RETIRED — ZOOM-IN START');
+                    // Keep the currently mounted HD raster visible until the incoming layer reports success.
+                    // gvInstallPreparedHd retires the previous layer only after the staged replacement mounts.
+                    console.info('GV HD HANDOFF REQUESTED — ZOOM-IN START');
                     onZoomInStart?.();
                 }catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
             }
