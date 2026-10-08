@@ -5,7 +5,7 @@
 const VERSION="0001",ROOT_ID="gv-cpu-gpu-diagnostics";
 let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0,observer=null;
 const frames=[],events=[],MAX=900;
-let lastFrame=performance.now(),lastLong=0;
+let lastFrame=performance.now(),lastLong=0,longTasks=[],eventLoopLag=[];let longObserver=null;let lagTimer=null;
 function now(){return performance.now()}
 function sampleFrame(t){
   const dt=t-lastFrame; lastFrame=t;
@@ -13,7 +13,7 @@ function sampleFrame(t){
   if(frames.length>MAX)frames.shift();
   raf=requestAnimationFrame(sampleFrame);
 }
-function memory(){
+function resourceCounts(){const imgs=[...document.images],canvases=[...document.querySelectorAll('canvas')],scripts=[...document.scripts],links=[...document.querySelectorAll('link')];return {images:imgs.length,imagesComplete:imgs.filter(x=>x.complete).length,canvases:canvases.length,scripts:scripts.length,stylesheets:links.filter(x=>x.rel==='stylesheet').length,resourceEntries:performance.getEntriesByType('resource').length}}\nasync function cacheStorage(){try{if(!globalThis.caches)return null;const names=await caches.keys(),counts={};for(const n of names){try{counts[n]=(await caches.open(n)).length}catch(_){counts[n]=null}}return {cacheNames:names,entryCounts:counts}}catch(e){return {error:String(e)}}}\nfunction memory(){
   const m=performance.memory;
   return m?{usedJSHeapSize:m.usedJSHeapSize,totalJSHeapSize:m.totalJSHeapSize,jsHeapSizeLimit:m.jsHeapSizeLimit}:null;
 }
@@ -55,7 +55,7 @@ function stats(){
   return {samples:n,avgFrameMs:avg,p50FrameMs:at(.50),p95FrameMs:at(.95),p99FrameMs:at(.99),maxFrameMs:n?a[n-1]:null,fps:avg?Number((1000/avg).toFixed(1)):null,framesOver16_7:a.filter(x=>x>16.7).length,framesOver33:a.filter(x=>x>33).length,framesOver50:a.filter(x=>x>50).length,framesOver100:a.filter(x=>x>100).length};
 }
 function report(){
-  const r={schema:"GV-CPU-GPU-DIAGNOSTIC-0001",diagnosticsVersion:VERSION,timestamp:new Date().toISOString(),uptimeMs:Math.round(performance.now()),userAgent:navigator.userAgent,devicePixelRatio:devicePixelRatio,viewport:{width:innerWidth,height:innerHeight},hardware:{cores:navigator.hardwareConcurrency||null,deviceMemory:navigator.deviceMemory||null},memory:memory(),webgl:webgl(),rendering:stats(),app:appState(),capabilities:{performanceMemory:!!performance.memory,performanceObserver:!!window.PerformanceObserver,webgl2:!!document.createElement("canvas").getContext("webgl2")},rollingFrameHistory:frames.slice(-300),events:events.slice(-100)};
+  const r={schema:"GV-CPU-GPU-DIAGNOSTIC-0001",diagnosticsVersion:VERSION,timestamp:new Date().toISOString(),uptimeMs:Math.round(performance.now()),userAgent:navigator.userAgent,devicePixelRatio:devicePixelRatio,viewport:{width:innerWidth,height:innerHeight},hardware:{cores:navigator.hardwareConcurrency||null,deviceMemory:navigator.deviceMemory||null},memory:memory(),webgl:webgl(),rendering:stats(),app:appState(),capabilities:{performanceMemory:!!performance.memory,performanceObserver:!!window.PerformanceObserver,webgl2:!!document.createElement("canvas").getContext("webgl2")},resources:resourceCounts(),longTasks:longTasks.slice(-100),eventLoopLagMs:eventLoopLag.slice(-100),rollingFrameHistory:frames.slice(-300),events:events.slice(-100)};
   return r;
 }
 async function copyReport(){
@@ -81,6 +81,8 @@ function showReport(){
 function mount(){
   if(raf)return;
   raf=requestAnimationFrame(sampleFrame);
+  if('PerformanceObserver' in window){try{longObserver=new PerformanceObserver(list=>{for(const e of list.getEntries())longTasks.push({start:e.startTime,duration:e.duration});if(longTasks.length>100)longTasks=longTasks.slice(-100)});longObserver.observe({type:'longtask',buffered:true})}catch(_){}}
+  let expected=now()+250;lagTimer=setInterval(()=>{const t=now(),lag=Math.max(0,t-expected);eventLoopLag.push(Number(lag.toFixed(2)));if(eventLoopLag.length>100)eventLoopLag.shift();expected+=250},250);
   observer=new MutationObserver(attach);observer.observe(document.body,{childList:true,subtree:true});attach();
   window.addEventListener("beforeunload",unmount,{once:true});
   console.log("GV CPU/GPU DIAGNOSTICS 0001 MOUNTED — hold target 3 seconds");
@@ -88,7 +90,7 @@ function mount(){
 function unmount(){
   cancelAnimationFrame(raf);raf=0;clearTimeout(pressTimer);armed=false;
   if(button){button.removeEventListener("pointerdown",targetHandler,true);button.removeEventListener("pointerup",targetHandler,true);button.removeEventListener("pointercancel",targetHandler,true);button.removeEventListener("pointerleave",targetHandler,true);button.removeEventListener("keydown",keyHandler,true);button=null}
-  observer?.disconnect();observer=null;root?.remove();root=null;
+  observer?.disconnect();observer=null;longObserver?.disconnect();longObserver=null;if(lagTimer){clearInterval(lagTimer);lagTimer=null}root?.remove();root=null;
 }
 globalThis.GV_CPU_GPU_DIAGNOSTICS={version:VERSION,mount,unmount,snapshot:report,copy:copyReport};
 })();
