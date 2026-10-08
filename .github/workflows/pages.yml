@@ -86,7 +86,7 @@ jobs:
           assert manifest.get('build')=='0002'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='3ab8b017c6e516d662c49d9dd1cbe2e5a8a19cd8'
+          assert manifest.get('sourceCommit')=='1bdcd246ecf300d832a81a201cd71716ab53e143'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert "const GV200001_BUILD='0002';" in rc
