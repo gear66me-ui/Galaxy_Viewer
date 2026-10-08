@@ -1745,10 +1745,6 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
 // ============================================================================
 // SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
 // ECO: GV200-001
-
-// ============================================================================
-// SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
-// ECO: GV200-001
 // ============================================================================
 const activeRoute=navigationRuntime.active?.route;
 if(!Array.isArray(activeRoute))throw new Error('NAVIGATION ACTIVE ROUTE MISSING');
