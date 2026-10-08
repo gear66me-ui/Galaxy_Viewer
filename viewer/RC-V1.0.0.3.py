@@ -890,9 +890,11 @@ gvSearchStyle.textContent=`
 #gv-catalog-search-results{display:none;max-height:min(55vh,420px);overflow-y:auto;margin-top:7px;padding-right:2px;scrollbar-width:thin}
 .gv-search-group{margin:6px 0 0}
 .gv-search-group-head{padding:4px 7px;color:#9CDEFF;font:400 9px/1 "GV Space Age",Arial,sans-serif;letter-spacing:.55px;text-transform:uppercase;text-shadow:0 0 5px rgba(67,207,255,.38)}
-.gv-search-result{appearance:none;-webkit-appearance:none;width:100%;display:grid;grid-template-columns:minmax(0,1fr) 30px;column-gap:8px;align-items:center;min-height:42px;margin:2px 0;padding:4px 6px;box-sizing:border-box;border:1px solid rgba(90,170,215,.20);border-radius:7px;background:linear-gradient(145deg,rgba(8,29,58,.90),rgba(2,11,26,.94));color:#E9FBFF;text-align:left;cursor:pointer;touch-action:manipulation}
+.gv-search-result{appearance:none;-webkit-appearance:none;position:relative;width:100%;display:grid;grid-template-columns:32px minmax(0,1fr) 30px;column-gap:7px;align-items:center;min-height:40px;margin:2px 0;padding:3px 6px 3px 3px;box-sizing:border-box;border:1px solid rgba(67,207,255,.72);border-radius:9px;background:linear-gradient(180deg,rgba(23,78,134,.86),rgba(4,27,62,.96) 58%,rgba(13,90,152,.78));color:#F4FDFF;text-align:left;cursor:pointer;touch-action:manipulation;overflow:hidden;box-shadow:inset 0 1px 2px rgba(225,251,255,.32),inset 0 -2px 4px rgba(0,0,0,.42),0 0 4px rgba(50,190,255,.26)}
 .gv-search-result:active{transform:translateY(1px);filter:brightness(1.18)}
-.gv-search-result-icon{width:26px;height:26px;object-fit:contain;display:block;filter:drop-shadow(0 0 3px rgba(124,203,255,.60))}
+.gv-search-result-thumb{width:32px;height:32px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(158,220,255,.66);border-radius:8px;background:radial-gradient(circle at 50% 45%,#0B2749 0%,#02070F 72%);box-shadow:inset 0 0 5px rgba(0,0,0,.52),0 0 4px rgba(88,191,255,.32)}
+.gv-search-result-thumb img{display:block;width:100%;height:100%;object-fit:contain;object-position:center center;background:#000}
+.gv-search-result-icon{width:30px;height:30px;object-fit:cover;object-position:center center;display:block;border:1px solid rgba(158,220,255,.66);border-radius:8px;background:#000;box-shadow:inset 0 0 5px rgba(0,0,0,.52),0 0 4px rgba(88,191,255,.32)}
 .gv-search-result-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#EAFBFF;font:400 10.5px/13px "GV Space Age",Arial,sans-serif;letter-spacing:.25px}
 .gv-search-result-meta{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;color:rgba(181,222,241,.78);font:400 8.5px/11px Arial,sans-serif}
 .gv-search-empty{padding:10px 7px;color:rgba(181,222,241,.76);font:400 9px/13px "GV Space Age",Arial,sans-serif;letter-spacing:.35px;text-align:center}
@@ -962,11 +964,17 @@ function gvSearchRender(query){
         group.appendChild(head);
         for(const record of records){
             const row=document.createElement('button');row.type='button';row.className='gv-search-result';
+            const thumbWrap=document.createElement('span');thumbWrap.className='gv-search-result-thumb';
+            const thumb=document.createElement('img');thumb.alt='';thumb.draggable=false;
+            const candidates=gvSurveyThumbnailCandidates(record,provider);
+            let thumbIndex=0;
+            const loadThumb=()=>{const src=candidates[thumbIndex++];if(!src){thumb.removeAttribute('src');return}thumb.src=src};
+            thumb.onerror=loadThumb;loadThumb();thumbWrap.appendChild(thumb);
             const icon=document.createElement('img');icon.className='gv-search-result-icon';icon.src=GV_SURVEY_PROVIDER_META[provider]?.icon||'';icon.alt=provider+' provider';icon.draggable=false;
             const copy=document.createElement('span');copy.style.minWidth='0';
             const name=document.createElement('span');name.className='gv-search-result-name';name.textContent=gvSearchDisplayName(record);
             const meta=document.createElement('span');meta.className='gv-search-result-meta';meta.textContent=gvSearchMeta(record);
-            copy.append(name,meta);row.append(copy,icon);
+            copy.append(name,meta);row.append(thumbWrap,copy,icon);
             row.addEventListener('click',()=>gvNavigateSearchResult(record).catch(error=>console.error('GV GALAXY SEARCH SELECT FAILED',error)));
             group.appendChild(row);
         }
