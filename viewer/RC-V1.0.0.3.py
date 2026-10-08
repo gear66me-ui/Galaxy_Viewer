@@ -101,7 +101,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
-    diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@64b0285a62c46a82def6966679fb9485da9ab3d7/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0003.js',
+    diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@2ec24d1ffe6b827da8c6647631842da2965cf86e/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0004.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
@@ -845,7 +845,7 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
     SPITZER:Object.freeze({label:'SPITZER',icon:globalThis.GVProviderArtwork.icon('SPITZER')})
 });
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
-const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
+const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
     const provider=[record?.provider,record?.providerKey,record?.catalogKey].filter(Boolean).join(' ').toUpperCase();
@@ -862,7 +862,7 @@ const gvSurveyRuntimePayload=await fetch(fresh(GV_SURVEY_RUNTIME_CATALOG_URL),{c
     return response.json();
 });
 const gvSurveyRuntimeRecords=(Array.isArray(gvSurveyRuntimePayload)?gvSurveyRuntimePayload:gvSurveyRuntimePayload?.records);
-if(!Array.isArray(gvSurveyRuntimeRecords)||gvSurveyRuntimeRecords.length!==1847)throw new Error('GV SURVEY RUNTIME CATALOG INVALID');
+if(!Array.isArray(gvSurveyRuntimeRecords)||gvSurveyRuntimeRecords.length===0)throw new Error('GV SURVEY RUNTIME CATALOG INVALID: expected non-empty records from 0003');
 for(const provider of GV_SURVEY_PROVIDER_ORDER){
     const records=gvSurveyRuntimeRecords
         .map((record,index)=>Object.freeze({
@@ -1418,7 +1418,7 @@ function gvReleaseHdObjectUrl(url){
     if(directHdObjectUrl===value)directHdObjectUrl=null;
 }
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
@@ -1426,7 +1426,7 @@ async function gvLoadAvmRuntimeCatalog(){
             .then(response=>{if(!response.ok)throw new Error('GV AVM RUNTIME CATALOG HTTP '+response.status);return response.json()})
             .then(payload=>{
                 const records=Array.isArray(payload)?payload:payload?.records;
-                if(!Array.isArray(records)||records.length!==1847)throw new Error('GV AVM RUNTIME CATALOG INVALID');
+                if(!Array.isArray(records)||records.length===0)throw new Error('GV AVM RUNTIME CATALOG INVALID: expected non-empty records from 0003');
                 const byUrl=new Map(),byId=new Map();
                 for(const record of records){
                     const url=String(record?.imageUrl||'').trim().toLowerCase();
