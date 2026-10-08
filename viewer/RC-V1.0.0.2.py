@@ -1589,7 +1589,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                 }
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
                 return {blob:vignetteBlob,width:w,height:h};
-            }finally{try{bitmap.close?.()}catch(_){}}
+            }finally{try{bitmap.close?.()}catch(_){try{bitmap.close()}catch(__){}}try{canvas.width=0;canvas.height=0}catch(_){}}
         }catch(error){last=String(error?.message||error||'')}
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
