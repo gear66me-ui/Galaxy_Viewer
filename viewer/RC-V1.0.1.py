@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0011 — RC-V1.0.1 HD lifecycle: retire old / activate next at zoom-in start
+# BUILD 0012 — RC-V1.0.1 local survey thumbnails: native APK assets, no network image fetch
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,9 +85,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0011';
+const GV200001_BUILD='0012';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-HDLIFECYCLE-0011`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -915,12 +915,11 @@ target.setProviders(GV_SURVEY_PROVIDER_ORDER.filter(provider=>gvSurveyCatalog.ha
 })));
 if(target.panel?.parentElement!==document.body)document.body.appendChild(target.panel);
 
-// BUILD 0098 — Survey thumbnail lookup bridge.
-// IMPORTANT: The APK native interceptor owns /viewer/artwork/runtime/survey-thumbnails/*.
-// Fetching pointer/index JSON from that path causes Android WebView to synthesize a
-// cross-origin WebResourceResponse; APK variants without ACAO then fail JavaScript CORS.
-// This immutable bridge deliberately lives OUTSIDE the intercepted path. Image requests
-// themselves keep their immutable pack URLs, so native APK builds serve the WebPs locally.
+// BUILD 0012 — Survey thumbnail lookup bridge.
+// The bridge/index remains remote because it is metadata. Native APK image requests do NOT.
+// In GVNative mode, thumbnail candidates are rewritten to the WebViewAssetLoader appassets
+// origin and therefore resolve directly from assets/survey-thumbnails/* inside the APK.
+// Browser mode continues to use the immutable jsDelivr pack URLs.
 const GV_SURVEY_THUMBNAIL_BRIDGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json';
 let gvSurveyThumbnailPack=null;
 let gvSurveyThumbnailWarmPromise=null;
@@ -967,7 +966,8 @@ const gvSurveyThumbnailPackReady=(async()=>{
         const records=bridge?.records&&typeof bridge.records==='object'?bridge.records:{};
         if(!/^[0-9a-f]{40}$/i.test(commit)||!Object.keys(records).length)throw new Error('THUMBNAIL BRIDGE INVALID');
         const baseUrl='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@'+commit+'/';
-        gvSurveyThumbnailPack=Object.freeze({commit,baseUrl,bridge:Object.freeze(bridge),records:Object.freeze(records)});
+        const nativeBaseUrl='https://appassets.androidplatform.net/assets/';
+        gvSurveyThumbnailPack=Object.freeze({commit,baseUrl,nativeBaseUrl,bridge:Object.freeze(bridge),records:Object.freeze(records)});
         const recordTotal=Object.keys(records).length;
         gvSurveyThumbnailWarmState={phase:window.GVNative?'READY_LOCAL':'INDEX_READY',loaded:window.GVNative?recordTotal:0,failed:0,total:recordTotal,bytes:Number(bridge?.totalThumbnailBytes)||0,packCommit:commit};
         if(!window.GVNative)setTimeout(()=>{gvWarmSurveyThumbnailPack(gvSurveyThumbnailPack).catch(error=>console.warn('GV SURVEY THUMBNAIL WARM ERROR',error))},250);
@@ -1987,7 +1987,8 @@ function gvSurveyThumbnailCandidates(record,provider=''){
         // If the lookup bridge is unavailable, fall through to the ordinary image
         // candidates rather than producing an empty selector.
         if(packed?.path){
-            add(gvSurveyThumbnailPack.baseUrl+packed.path);
+            const localPath=String(packed.path).replace(/^viewer\\/artwork\\/runtime\\/survey-thumbnails\\//,'survey-thumbnails/');
+            add(gvSurveyThumbnailPack.nativeBaseUrl+localPath);
             return Object.freeze(out);
         }
         console.error('GV SURVEY THUMBNAIL LOOKUP MISS',packKey);
