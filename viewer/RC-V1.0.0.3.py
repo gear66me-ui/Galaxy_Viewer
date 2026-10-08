@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0003"
+BUILD_NUMBER = "0004"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0003';
+const GV200001_BUILD='0004';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -921,11 +921,22 @@ function gvSearchDesignation(record){
     const name=gvSearchDisplayName(record);
     return values.find(v=>v.toLowerCase()!==name.toLowerCase())||'';
 }
-function gvSearchRender(query){
-    const q=String(query||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const GV_SEARCH_RESULT_LIMIT=12;
+const GV_SEARCH_RENDER_DEBOUNCE_MS=120;
+let gvSearchRenderTimer=0;
+
+function gvClearSearchResultImages(){
+    gvSearchResults.querySelectorAll('img').forEach(img=>{
+        try{img.onload=null;img.onerror=null;img.removeAttribute('src');img.removeAttribute('srcset')}catch(_){}
+    });
     gvSearchResults.replaceChildren();
+}
+
+function gvSearchRender(query){
+    const q=String(query||'').normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();
+    gvClearSearchResultImages();
     if(!q){gvSearchResults.style.display='none';return}
-    const tokens=q.split(/\s+/).filter(Boolean);
+    const tokens=q.split(/\\s+/).filter(Boolean);
     const matches=gvSearchIndex
         .filter(item=>tokens.every(token=>item.text.includes(token)))
         .sort((a,b)=>{
@@ -941,8 +952,9 @@ function gvSearchRender(query){
     if(!matches.length){
         const empty=document.createElement('div');empty.className='gv-search-empty';empty.textContent='NO GALAXIES FOUND';gvSearchResults.appendChild(empty);return;
     }
+    const visibleMatches=matches.slice(0,GV_SEARCH_RESULT_LIMIT);
     const groups=new Map();
-    for(const item of matches){
+    for(const item of visibleMatches){
         const provider=gvSurveyProviderKey(item.record)||'OTHER';
         if(!groups.has(provider))groups.set(provider,[]);
         groups.get(provider).push(item.record);
@@ -957,12 +969,18 @@ function gvSearchRender(query){
         for(const record of records){
             const row=document.createElement('button');row.type='button';row.className='gv-search-result';
             const thumbWrap=document.createElement('span');thumbWrap.className='gv-search-result-thumb';
-            const thumb=document.createElement('img');thumb.alt='';thumb.draggable=false;
+            const thumb=document.createElement('img');
+            thumb.alt='';thumb.draggable=false;thumb.loading='lazy';thumb.decoding='async';thumb.fetchPriority='low';
             const candidates=gvSurveyThumbnailCandidates(record,provider);
             let thumbIndex=0;
-            const loadThumb=()=>{const src=candidates[thumbIndex++];if(!src){thumb.removeAttribute('src');return}thumb.src=src};
+            const loadThumb=()=>{
+                const src=candidates[thumbIndex++];
+                if(!src){thumb.removeAttribute('src');return}
+                thumb.src=src;
+            };
             thumb.onerror=loadThumb;loadThumb();thumbWrap.appendChild(thumb);
-            const icon=document.createElement('img');icon.className='gv-search-result-icon';icon.src=GV_SURVEY_PROVIDER_META[provider]?.icon||'';icon.alt=provider+' provider';icon.draggable=false;
+            const icon=document.createElement('img');icon.className='gv-search-result-icon';
+            icon.src=GV_SURVEY_PROVIDER_META[provider]?.icon||'';icon.alt=provider+' provider';icon.draggable=false;
             const name=document.createElement('span');name.className='gv-search-result-name';name.textContent=gvSearchDisplayName(record);
             row.append(thumbWrap,name,icon);
             row.addEventListener('click',()=>gvNavigateSearchResult(record).catch(error=>console.error('GV GALAXY SEARCH SELECT FAILED',error)));
@@ -970,10 +988,26 @@ function gvSearchRender(query){
         }
         gvSearchResults.appendChild(group);
     }
+    if(matches.length>GV_SEARCH_RESULT_LIMIT){
+        console.info('GV SEARCH RESULT CAP',{query:q,total:matches.length,rendered:GV_SEARCH_RESULT_LIMIT});
+    }
 }
-gvSearchInput.addEventListener('input',()=>gvSearchRender(gvSearchInput.value));
+
+function gvQueueSearchRender(query){
+    if(gvSearchRenderTimer)clearTimeout(gvSearchRenderTimer);
+    gvSearchRenderTimer=setTimeout(()=>{
+        gvSearchRenderTimer=0;
+        gvSearchRender(query);
+    },GV_SEARCH_RENDER_DEBOUNCE_MS);
+}
+
+gvSearchInput.addEventListener('input',()=>gvQueueSearchRender(gvSearchInput.value));
 gvSearchInput.addEventListener('keydown',event=>{
-    if(event.key==='Escape'){gvSearchInput.value='';gvSearchRender('');gvSearchInput.blur();}
+    if(event.key==='Escape'){
+        if(gvSearchRenderTimer)clearTimeout(gvSearchRenderTimer);
+        gvSearchRenderTimer=0;
+        gvSearchInput.value='';gvSearchRender('');gvSearchInput.blur();
+    }
 });
 gvSearchTile.addEventListener('pointerdown',event=>event.stopPropagation());
 gvSearchTile.addEventListener('click',event=>event.stopPropagation());
@@ -1040,7 +1074,10 @@ const gvSurveyThumbnailPackReady=(async()=>{
         gvSurveyThumbnailPack=Object.freeze({commit,baseUrl,nativeBaseUrl,bridge:Object.freeze(bridge),records:Object.freeze(records)});
         const recordTotal=Object.keys(records).length;
         gvSurveyThumbnailWarmState={phase:window.GVNative?'READY_LOCAL':'INDEX_READY',loaded:window.GVNative?recordTotal:0,failed:0,total:recordTotal,bytes:Number(bridge?.totalThumbnailBytes)||0,packCommit:commit};
-        if(!window.GVNative)setTimeout(()=>{gvWarmSurveyThumbnailPack(gvSurveyThumbnailPack).catch(error=>console.warn('GV SURVEY THUMBNAIL WARM ERROR',error))},250);
+        // BUILD 0004: never pre-warm the entire thumbnail pack in browser mode.
+// That downloaded hundreds/thousands of images into the renderer cache before a search.
+// Search thumbnails are now lazy, capped, and released when the search changes.
+if(!window.GVNative)console.info('GV SURVEY THUMBNAILS LAZY MODE');
         console.info('GV SURVEY THUMBNAIL BRIDGE READY',{records:recordTotal,packCommit:commit,native:Boolean(window.GVNative)});
         return gvSurveyThumbnailPack;
     }catch(error){
@@ -1335,9 +1372,9 @@ let directHdDestination=null;
 let directHdObjectUrl=null;
 const GV_HD_RETIRE_FOV=55;
 let gvHdTravelRetired=false;
-// BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
+// BUILD 0004 — bounded HD resource ownership: maximum three tracked object URLs; stale resources are explicitly revoked.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
-const GV_HD_RESOURCE_WINDOW=3
+const GV_HD_RESOURCE_WINDOW=3;
 const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
     const value=String(url||'').trim();
@@ -1345,8 +1382,20 @@ function gvTrackHdObjectUrl(url){
     gvHdObjectUrls.push(value);
     while(gvHdObjectUrls.length>GV_HD_RESOURCE_WINDOW){
         const stale=gvHdObjectUrls.shift();
+        if(stale===directHdObjectUrl){
+            gvHdObjectUrls.push(stale);
+            break;
+        }
         try{URL.revokeObjectURL(stale)}catch(_){}
     }
+}
+function gvHdResourceSnapshot(){
+    return Object.freeze({
+        window:GV_HD_RESOURCE_WINDOW,
+        tracked:gvHdObjectUrls.length,
+        current:directHdObjectUrl?1:0,
+        overlay:directHdOverlay?1:0
+    });
 }
 function gvReleaseHdObjectUrl(url){
     const value=String(url||'').trim();
@@ -1650,11 +1699,14 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
         try{
             const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'no-store',redirect:'follow'});
             if(!response.ok)throw new Error('HTTP '+response.status);
-            const blob=await response.blob();
+            let blob=await response.blob();
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
             const bitmap=await createImageBitmap(blob);
+            blob=null;
             try{
-                const w=bitmap.width,h=bitmap.height;
+                const sourceW=bitmap.width,sourceH=bitmap.height;
+                const scale=Math.min(1,MAX_BLEND_DIMENSION/Math.max(sourceW,sourceH));
+                const w=Math.max(1,Math.round(sourceW*scale)),h=Math.max(1,Math.round(sourceH*scale));
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(bitmap,0,0,w,h);
@@ -2036,7 +2088,7 @@ function gvStartFirstDestinationPreload(){
     if(!destination)return Promise.reject(new Error('GV FIRST DESTINATION MISSING'));
     const started=performance.now();
     gvFirstDestinationPreload=gvPrepareDirectHd(destination).then(prepared=>{
-        console.info('GV FIRST DESTINATION PREPARED',{ms:Math.round(performance.now()-started),name:destination?.name||destination?.objectName||''});
+        console.info('GV FIRST DESTINATION PREPARED',{ms:Math.round(performance.now()-started),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
         return {destination,prepared};
     }).catch(error=>{gvFirstDestinationPreload=null;throw error});
     return gvFirstDestinationPreload;
