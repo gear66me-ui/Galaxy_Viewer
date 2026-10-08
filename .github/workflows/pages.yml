@@ -5,17 +5,8 @@ name: Deploy GitHub Pages
 # Chandra review site bypass RC/build/pointer validation so the review can be
 # published independently of Galaxy Viewer production state.
 on:
-  push:
-    branches:
-      - release
+  # PRODUCTION FROZEN: no automatic Pages deployments. Manual dispatch only.
   workflow_dispatch:
-  workflow_run:
-    workflows:
-      - Galaxy Viewer Controlled Engineering Change
-    types:
-      - completed
-    branches:
-      - release
 
 permissions:
   contents: read
