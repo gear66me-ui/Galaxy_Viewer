@@ -100,6 +100,13 @@ jobs:
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
+          # BUILD 0013 dependency contract: fail CI before publishing if the
+          # Survey module can be reused stale or the runtime catalog drifts.
+          assert "loadScript(fresh(config.targetUrl))" in rc
+          assert "TARGET SURVEY 0007 API MISMATCH: setProviders() MISSING" in rc
+          assert 'SURVEYLOCAL-0013' in rc
+          assert 'gv-avm-runtime-catalog-0003.json' in rc
+          assert 'gv-cpu-gpu-diagnostics-0004.js' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
           assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','e217b8c64399efd2021d22e49ba182860de7fd14','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','eb83b198ed1b59860fec21acb2d3bb7ba938e80d']), pins
