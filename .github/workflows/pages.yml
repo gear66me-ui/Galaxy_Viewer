@@ -106,10 +106,10 @@ jobs:
           assert "TARGET SURVEY 0007 API MISMATCH: setProviders() MISSING" in rc
           assert 'SURVEYLOCAL-0014' in rc
           assert 'gv-avm-runtime-catalog-0003.json' in rc
-          assert 'gv-cpu-gpu-diagnostics-0004.js' in rc
+          assert 'gv-cpu-gpu-diagnostics-0005.js' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','63134ad2a3a0fba830c0117b9b38ffc0d0aacc89','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','eb83b198ed1b59860fec21acb2d3bb7ba938e80d']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','e4b3d15ff6ff62a67b2c192cdb6e10717e6e5b37','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','eb83b198ed1b59860fec21acb2d3bb7ba938e80d']), pins
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
