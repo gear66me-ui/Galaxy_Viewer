@@ -6,8 +6,8 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0002"
-# ROLLUP 1.0.0.3 / BUILD 0002 — Galaxy Search provider-icon refinement
+BUILD_NUMBER = "0003"
+# ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0002';
+const GV200001_BUILD='0003';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -896,7 +896,6 @@ gvSearchStyle.textContent=`
 .gv-search-result-thumb img{display:block;width:100%;height:100%;object-fit:contain;object-position:center center;background:#000}
 .gv-search-result-icon{width:30px;height:30px;object-fit:cover;object-position:center center;display:block;border:1px solid rgba(158,220,255,.66);border-radius:8px;background:#000;box-shadow:inset 0 0 5px rgba(0,0,0,.52),0 0 4px rgba(88,191,255,.32)}
 .gv-search-result-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#EAFBFF;font:400 10.5px/13px "GV Space Age",Arial,sans-serif;letter-spacing:.25px}
-.gv-search-result-meta{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;color:rgba(181,222,241,.78);font:400 8.5px/11px Arial,sans-serif}
 .gv-search-empty{padding:10px 7px;color:rgba(181,222,241,.76);font:400 9px/13px "GV Space Age",Arial,sans-serif;letter-spacing:.35px;text-align:center}
 `;
 document.head.appendChild(gvSearchStyle);
@@ -921,13 +920,6 @@ function gvSearchDesignation(record){
     const values=[record?.designation,record?.commonName,record?.pseudonym,record?.archiveId].map(v=>String(v||'').trim()).filter(Boolean);
     const name=gvSearchDisplayName(record);
     return values.find(v=>v.toLowerCase()!==name.toLowerCase())||'';
-}
-function gvSearchMeta(record){
-    const provider=gvSurveyProviderKey(record);
-    const constellation=String(record?.constellation||record?.constellationName||'').trim();
-    const distance=String(record?.distance||record?.distanceMly||record?.distanceMpc||'').trim();
-    const designation=gvSearchDesignation(record);
-    return [provider,designation,constellation,distance].filter(Boolean).join(' · ');
 }
 function gvSearchRender(query){
     const q=String(query||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -971,10 +963,8 @@ function gvSearchRender(query){
             const loadThumb=()=>{const src=candidates[thumbIndex++];if(!src){thumb.removeAttribute('src');return}thumb.src=src};
             thumb.onerror=loadThumb;loadThumb();thumbWrap.appendChild(thumb);
             const icon=document.createElement('img');icon.className='gv-search-result-icon';icon.src=GV_SURVEY_PROVIDER_META[provider]?.icon||'';icon.alt=provider+' provider';icon.draggable=false;
-            const copy=document.createElement('span');copy.style.minWidth='0';
             const name=document.createElement('span');name.className='gv-search-result-name';name.textContent=gvSearchDisplayName(record);
-            const meta=document.createElement('span');meta.className='gv-search-result-meta';meta.textContent=gvSearchMeta(record);
-            copy.append(name,meta);row.append(thumbWrap,copy,icon);
+            row.append(thumbWrap,name,icon);
             row.addEventListener('click',()=>gvNavigateSearchResult(record).catch(error=>console.error('GV GALAXY SEARCH SELECT FAILED',error)));
             group.appendChild(row);
         }
