@@ -25,7 +25,7 @@ HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
-DIAGNOSTICS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@bd090f08f5566d832929265239d196277efa35c0/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0006.js"
+DIAGNOSTICS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f268336d97d7d1fe2520b995d44f99ba6f054f73/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0006.js"
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js"
@@ -101,7 +101,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
-    diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@bd090f08f5566d832929265239d196277efa35c0/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0006.js',
+    diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f268336d97d7d1fe2520b995d44f99ba6f054f73/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0006.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
