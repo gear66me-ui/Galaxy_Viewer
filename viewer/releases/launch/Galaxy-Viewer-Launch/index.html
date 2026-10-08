@@ -33,9 +33,6 @@ console.error=(...args)=>{
   }catch(_){}
   gvNativeConsoleError(...args);
 };
-addEventListener('error',event=>{
-  try{window.__GV_BOOT_ERRORS.push('WINDOW ERROR: '+String(event?.error?.stack||event?.message||'UNKNOWN ERROR'))}catch(_){}
-});
 addEventListener('unhandledrejection',event=>{
   try{window.__GV_BOOT_ERRORS.push('UNHANDLED REJECTION: '+String(event?.reason?.stack||event?.reason?.message||event?.reason||'UNKNOWN REJECTION'))}catch(_){}
 });
