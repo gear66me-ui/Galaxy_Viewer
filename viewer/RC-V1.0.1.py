@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0005 — RC-V1.0.1 preserve HD image during travel / random zoom-out
+# BUILD 0006 — RC-V1.0.1 use validated DSS2 Color mirror
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0005';
+const GV200001_BUILD='0006';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -186,7 +186,7 @@ await A.init;
 // ECO: GV200-001
 // ============================================================================
 const aladin=A.aladin('#aladin-cosmic-command-test',{
-    survey:'P/DSS2/color',
+    survey:'https://alaskybis.unistra.fr/DSS/DSSColor',
     projection:'MOL',
     fov:360,
     showReticle:false,
