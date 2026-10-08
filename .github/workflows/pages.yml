@@ -101,7 +101,7 @@ jobs:
           assert 'gv-galaxy-navigator-001.js' not in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==['d85d91201ea52aa6524a62394fc81b450b15ac23','d85d91201ea52aa6524a62394fc81b450b15ac23','e56be0c7ade3934ed1e417af93a6dd4f2edd380e'], pins
+          assert pins==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','eb83b198ed1b59860fec21acb2d3bb7ba938e80d'], pins
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
