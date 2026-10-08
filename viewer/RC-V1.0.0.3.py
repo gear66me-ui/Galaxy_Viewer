@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0009"
+BUILD_NUMBER = "0010"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -24,8 +24,8 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
-TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/target-simbad/gv-target-simbad-0007.js"
-DIAGNOSTICS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9f63ac69eb5ac5b2661856da74af702bb02a147a/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0001.js"
+TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
+DIAGNOSTICS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@cc810a7e78eb2d700ad29f9789402092253ff3a0/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0001.js"
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js"
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0009';
+const GV200001_BUILD='0010';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -100,8 +100,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
-    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/target-simbad/gv-target-simbad-0007.js',
-    diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9f63ac69eb5ac5b2661856da74af702bb02a147a/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0001.js',
+    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
+    diagnosticsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@cc810a7e78eb2d700ad29f9789402092253ff3a0/viewer/modules/cpu-gpu-diagnostics/gv-cpu-gpu-diagnostics-0001.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
@@ -1704,10 +1704,28 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
             const bitmap=await createImageBitmap(blob);blob=null;
             try{
-                const w=bitmap.width,h=bitmap.height;
+                const sourceW=bitmap.width,sourceH=bitmap.height,sourceMax=Math.max(sourceW,sourceH);
+                let workingBitmap=bitmap, w=sourceW, h=sourceH;
+                if(sourceMax>MAX_BLEND_DIMENSION){
+                    const scale=MAX_BLEND_DIMENSION/sourceMax;
+                    const targetW=Math.max(1,Math.round(sourceW*scale));
+                    const targetH=Math.max(1,Math.round(sourceH*scale));
+                    try{
+                        workingBitmap=await createImageBitmap(bitmap,{resizeWidth:targetW,resizeHeight:targetH,resizeQuality:'high'});
+                    }catch(_){
+                        const resizeCanvas=document.createElement('canvas');resizeCanvas.width=targetW;resizeCanvas.height=targetH;
+                        const resizeCtx=resizeCanvas.getContext('2d');if(!resizeCtx)throw new Error('HARD 2048 RESIZE CONTEXT UNAVAILABLE');
+                        resizeCtx.drawImage(bitmap,0,0,targetW,targetH);
+                        workingBitmap=await createImageBitmap(resizeCanvas);
+                        resizeCanvas.width=0;resizeCanvas.height=0;
+                    }
+                    try{bitmap.close?.()}catch(_){}
+                    w=targetW;h=targetH;
+                    console.info('GV HD HARD 2048 RESIZE',{source:[sourceW,sourceH],target:[w,h]});
+                }
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
-                ctx.drawImage(bitmap,0,0,w,h);
+                ctx.drawImage(workingBitmap,0,0,w,h);
                 const exception=gvVignetteException(destination,record);
                 const p=VIGNETTE,cx=w/2,cy=h/2,actualAspect=Math.max(w/h,h/w),highAspect=actualAspect>1.3;
                 if(exception?.mode==='edge-only'){
@@ -1748,7 +1766,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                 }
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
                 return {blob:vignetteBlob,width:w,height:h};
-            }finally{try{bitmap.close?.()}catch(_){try{bitmap.close()}catch(__){}}try{canvas.width=0;canvas.height=0}catch(_){}}
+            }finally{try{workingBitmap.close?.()}catch(_){try{workingBitmap.close()}catch(__){}}try{canvas.width=0;canvas.height=0}catch(_){}}
         }catch(error){last=String(error?.message||error||'')}
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
