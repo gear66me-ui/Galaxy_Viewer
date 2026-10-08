@@ -360,7 +360,7 @@ PY
         run: |
           set -euo pipefail
           AAB=/tmp/galaxy-viewer-1.0.0.2/app/build/outputs/bundle/release/app-release.aab
-          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0.0.0.1.aab
+          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1.aab
           test -s "$AAB"
           cp "$AAB" "$OUT"
           unzip -t "$OUT" | tee aab-rc-zip-test.txt
@@ -380,16 +380,16 @@ PY
         run: |
           set -euo pipefail
           TAG=galaxy-viewer-1.0.0.2-build-0.0.0.1
-          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
+          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1.aab
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
           gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer 1.0.0.2 AAB' --notes 'Android App Bundle test: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015-AAB
+          name: Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-AAB
           path: |
-            Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
-            Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab.sha256
+            Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1.aab
+            Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1.aab.sha256
             aab-rc-zip-test.txt
             aab-rc-contents.txt
             aab-rc-signature.txt
