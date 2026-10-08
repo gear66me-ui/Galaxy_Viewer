@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0005"
+BUILD_NUMBER = "0007"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0006';
+const GV200001_BUILD='0007';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1374,7 +1374,7 @@ const GV_HD_RETIRE_FOV=55;
 let gvHdTravelRetired=false;
 // BUILD 0004 — bounded HD resource ownership: maximum three tracked object URLs; stale resources are explicitly revoked.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
-const GV_HD_RESOURCE_WINDOW=3;
+const GV_HD_RESOURCE_WINDOW=2;
 let directHdDisplayWcs=null;
 const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
@@ -1382,11 +1382,9 @@ function gvTrackHdObjectUrl(url){
     if(!value||gvHdObjectUrls.includes(value))return;
     gvHdObjectUrls.push(value);
     while(gvHdObjectUrls.length>GV_HD_RESOURCE_WINDOW){
-        const stale=gvHdObjectUrls.shift();
-        if(stale===directHdObjectUrl){
-            gvHdObjectUrls.push(stale);
-            break;
-        }
+        const staleIndex=gvHdObjectUrls.findIndex(item=>item!==directHdObjectUrl);
+        if(staleIndex<0)break;
+        const [stale]=gvHdObjectUrls.splice(staleIndex,1);
         try{URL.revokeObjectURL(stale)}catch(_){}
     }
 }
