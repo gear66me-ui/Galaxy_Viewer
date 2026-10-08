@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0005';
+const GV200001_BUILD='0006';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1375,6 +1375,7 @@ let gvHdTravelRetired=false;
 // BUILD 0004 — bounded HD resource ownership: maximum three tracked object URLs; stale resources are explicitly revoked.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
 const GV_HD_RESOURCE_WINDOW=3;
+let directHdDisplayWcs=null;
 const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
     const value=String(url||'').trim();
@@ -1777,6 +1778,7 @@ function gvInstallPreparedHd(prepared){
         directHdOverlay=null;
         directHdDestination=null;
         directHdObjectUrl=null;
+        directHdDisplayWcs=null;
         if(oldObjectUrl)gvReleaseHdObjectUrl(oldObjectUrl);
     }
     gvHdTravelRetired=false;
@@ -1784,6 +1786,7 @@ function gvInstallPreparedHd(prepared){
     const ready=new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject});
     directHdDestination=destination;
     directHdObjectUrl=imageObjectUrl;
+    directHdDisplayWcs=displayWcs;
     const layer=A.image(imageObjectUrl,{
         name:DIRECT_HD_LAYER,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
         successCallback:()=>{
@@ -1810,6 +1813,26 @@ function gvInstallPreparedHd(prepared){
     aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
     return ready;
 }
+function gvRestoreDirectHd(){
+    if(!directHdObjectUrl||!directHdDestination||activeDestination!==directHdDestination)return false;
+    try{
+        if(directHdOverlay){
+            aladin.setOverlayImageLayer(directHdOverlay,DIRECT_HD_LAYER);
+            gvHdTravelRetired=false;
+            applyDirectHdOpacity();
+            console.info('GV HD RESTORED — EXISTING ALADIN LAYER REATTACHED');
+            return true;
+        }
+        if(!directHdDisplayWcs)return false;
+        const destination=directHdDestination,objectUrl=directHdObjectUrl;
+        const layer=A.image(objectUrl,{name:DIRECT_HD_LAYER,imgFormat:'png',wcs:directHdDisplayWcs,opacity:directHdOpacity(),successCallback:()=>{if(directHdObjectUrl!==objectUrl)return;directHdOverlay=layer;gvHdTravelRetired=false;applyDirectHdOpacity();console.info('GV HD RESTORED — EXISTING OBJECT URL REINSTALLED')},errorCallback:error=>console.warn('GV HD RESTORE FAILED',error)});
+        directHdOverlay=layer;
+        aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+        return true;
+    }catch(error){console.warn('GV HD RESTORE SKIPPED',error);return false}
+}
+window.addEventListener('focus',()=>{if(document.visibilityState==='visible')setTimeout(gvRestoreDirectHd,0)});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(gvRestoreDirectHd,0)});
 function gvFlightClamp01(value){return Math.max(0,Math.min(1,Number(value)))}
 function gvFlightNavigationSmootherstep(value){const t=gvFlightClamp01(value);return 35*t**4-84*t**5+70*t**6-20*t**7}
 function gvFlightSmootherstep(value){const t=gvFlightClamp01(value);return t*t*t*(t*(t*6-15)+10)}
@@ -2139,7 +2162,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         await travelPromise;
         if(activeDestination!==v.destination)return v.destination;
         travelPresentation.end();
-        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
+        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
         gvPrewarmProviderWebsite(v.destination);
 
         headsUpDisplay.render();
@@ -2151,7 +2174,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     await travelPromise;
     if(activeDestination!==v.destination)return v.destination;
     travelPresentation.end();
-    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
+    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
     gvPrewarmProviderWebsite(v.destination);
 
     headsUpDisplay.render();
