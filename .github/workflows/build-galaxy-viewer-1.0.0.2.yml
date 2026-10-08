@@ -1,0 +1,391 @@
+name: Build Galaxy Viewer 1.0.0.2 BUILD 0.0.0.1 AAB
+# ROLLUP 1.0.0.2 / BUILD 0.0.0.1: 3-HD resources, 3-provider portal window, explicit WebView data cleanup
+
+on:
+  push:
+    branches: [beta]
+    paths:
+      - '.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Install launcher tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+
+      - name: Generate 0049 hosted shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=/tmp/galaxy-viewer-1.0.0.2
+          GOLD=b254d7be60b78aa0b9a0e991056f98b9b3d9f4e7
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer"
+          mkdir -p "$ROOT/app/src/main/res/drawable" "$ROOT/app/src/main/res/mipmap-anydpi-v26" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/values-v31"
+
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewer'
+          include ':app'
+          EOF
+
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
+
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.gear66me.galaxyviewer'
+            compileSdk 35
+            defaultConfig {
+              applicationId 'com.gear66me.galaxyviewer'
+              minSdk 29
+              targetSdk 35
+              versionCode 100020001
+              versionName '1.0.0.2'
+            }
+          }
+          dependencies { implementation 'androidx.webkit:webkit:1.17.1' }
+          EOF
+
+          # Android launcher artwork only. Galaxy Viewer itself stays hosted, exactly like 0049.
+          test -s viewer/artwork/app_icon_4.png
+          cp viewer/artwork/app_icon_4.png "$ROOT/app/src/main/res/drawable/app_icon_4.png"
+          cat > "$ROOT/app/src/main/res/drawable/transparent_splash_icon.xml" <<'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <solid android:color="#00000000"/>
+            <size android:width="1dp" android:height="1dp"/>
+          </shape>
+          XML
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_background.xml" <<'EOF'
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="#000000"/></shape>
+          EOF
+          cat > "$ROOT/app/src/main/res/drawable/gv_launcher_foreground.xml" <<'EOF'
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:gravity="center" android:width="66dp" android:height="66dp"><bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/></item></layer-list>
+          EOF
+          cat > "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/gv_launcher_background"/><foreground android:drawable="@drawable/gv_launcher_foreground"/></adaptive-icon>
+          EOF
+          cp "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" "$ROOT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+          for spec in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            density="${spec%%:*}"; px="${spec##*:}"; mkdir -p "$ROOT/app/src/main/res/mipmap-${density}"
+            convert viewer/artwork/app_icon_4.png -resize "${px}x${px}" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png"
+            cp "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher.png" "$ROOT/app/src/main/res/mipmap-${density}/ic_launcher_round.png"
+          done
+
+          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+          cat > "$ROOT/app/src/main/res/values-v31/styles.xml" <<'EOF'
+          <resources>
+            <style name="GalaxyViewerTheme" parent="@android:style/Theme.Material.NoActionBar">
+              <item name="android:windowBackground">#000000</item>
+              <item name="android:windowSplashScreenBackground">#000000</item>
+              <item name="android:windowSplashScreenAnimatedIcon">@drawable/transparent_splash_icon</item>
+              <item name="android:windowSplashScreenAnimationDuration">0</item>
+              <item name="android:navigationBarColor">#000000</item>
+              <item name="android:statusBarColor">#000000</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:windowLightNavigationBar">false</item>
+            </style>
+          </resources>
+          EOF
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application android:allowBackup="false" android:hardwareAccelerated="true"
+              android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"
+              android:label="Galaxy Viewer" android:theme="@style/GalaxyViewerTheme"
+              android:usesCleartextTraffic="false">
+              <activity android:name=".MainActivity"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:exported="true" android:screenOrientation="portrait">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          # Exact known-good 0049 browser/viewer Activity. Only Java package namespace changes.
+          git show "$GOLD:android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java" > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          sed -i 's/package com\.gear66me\.galaxyviewer\.webbrowser;/package com.gear66me.galaxyviewer;/' "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+
+          # ROLLUP 1.0.0.2 memory policy:
+          #   * 3 provider origins retained; oldest origin data is deleted on the 4th.
+          #   * viewer WebView is paused while provider mode is active.
+          #   * provider navigation is stopped/cleared between portal changes.
+          #   * WebView resource cache + browsing data are hard-cleared at launch.
+          #   * renderer termination is handled so an OOM renderer does not take down the app.
+          python3 - "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java" <<'PY'
+from pathlib import Path
+p=Path(__import__("sys").argv[1])
+s=p.read_text()
+
+def req(old,new,tag):
+    global s
+    if old not in s:
+        raise SystemExit("PATCH MISSING: "+tag)
+    s=s.replace(old,new,1)
+
+req('import android.webkit.WebViewClient;\n',
+    'import android.webkit.WebViewClient;\nimport android.webkit.WebStorage;\nimport android.webkit.CookieManager;\nimport androidx.webkit.WebStorageCompat;\nimport androidx.webkit.WebViewCompat;\nimport androidx.webkit.WebViewFeature;\n',
+    'imports')
+
+req('  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\n',
+    '  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="";\n'
+    '  private static final int PROVIDER_PORTAL_WINDOW=3;\n'
+    '  private final java.util.ArrayDeque<String> providerSites=new java.util.ArrayDeque<>();\n',
+    'fields')
+
+anchor='  private WebView viewer(){\n'
+helpers='''  private void hardClearWebData(){
+    try{if(viewerWeb!=null)viewerWeb.clearCache(true);}catch(Exception ignored){}
+    try{if(top!=null)top.clearCache(true);}catch(Exception ignored){}
+    try{if(web!=null)web.clearCache(true);}catch(Exception ignored){}
+    try{if(bottom!=null)bottom.clearCache(true);}catch(Exception ignored){}
+    try{CookieManager.getInstance().removeAllCookies(null);}catch(Exception ignored){}
+    try{
+      if(WebViewFeature.isFeatureSupported(WebViewFeature.DELETE_BROWSING_DATA)){
+        WebStorageCompat.deleteBrowsingData(WebStorage.getInstance(),()->{});
+      }else{
+        WebStorage.getInstance().deleteAllData();
+      }
+    }catch(Exception ignored){}
+  }
+  private void trackProviderSite(String url){
+    try{
+      String origin=Uri.parse(url).getScheme()+"://"+Uri.parse(url).getHost();
+      if(origin==null||origin.endsWith("://null"))return;
+      providerSites.remove(origin); providerSites.addLast(origin);
+      while(providerSites.size()>PROVIDER_PORTAL_WINDOW){
+        String stale=providerSites.removeFirst();
+        try{
+          if(WebViewFeature.isFeatureSupported(WebViewFeature.DELETE_BROWSING_DATA)){
+            WebStorageCompat.deleteBrowsingDataForSite(WebStorage.getInstance(),stale,()->{});
+          }else{
+            WebStorage.getInstance().deleteOrigin(stale);
+          }
+        }catch(Exception ignored){}
+      }
+    }catch(Exception ignored){}
+  }
+  private void releaseWebView(WebView v){
+    if(v==null)return;
+    try{v.stopLoading();v.loadUrl("about:blank");v.clearHistory();}catch(Exception ignored){}
+    try{ViewGroup parent=(ViewGroup)v.getParent();if(parent!=null)parent.removeView(v);}catch(Exception ignored){}
+    try{v.destroy();}catch(Exception ignored){}
+  }
+  private void pauseViewer(){
+    try{if(viewerWeb!=null){viewerWeb.onPause();viewerWeb.pauseTimers();}}catch(Exception ignored){}
+  }
+  private void resumeViewer(){
+    try{if(viewerWeb!=null){viewerWeb.resumeTimers();viewerWeb.onResume();}}catch(Exception ignored){}
+  }
+
+'''
+req(anchor,helpers+anchor,'helpers')
+
+req('    launchGalaxyViewer();\n',
+    '    hardClearWebData();\n    launchGalaxyViewer();\n',
+    'startup clear')
+
+req('    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0049");',
+    '    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0050");',
+    'UA')
+
+req('    s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);',
+    '    s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);\n    s.setOffscreenPreRaster(false);',
+    'provider settings')
+
+req('  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }',
+    '  private void openProvider(String u,String icon){ browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u; trackProviderSite(u); pauseViewer(); if(web!=null){try{web.stopLoading();web.clearHistory();}catch(Exception ignored){}} if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); fetchPointer(); }',
+    'openProvider')
+
+req('  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); }',
+    '  private void returnToViewer(){ browserMode=false; if(web!=null){try{web.stopLoading();web.clearHistory();}catch(Exception ignored){}} if(browserLayer!=null)browserLayer.setVisibility(View.GONE); resumeViewer(); }',
+    'returnToViewer')
+
+# Add renderer termination handling to every custom WebViewClient by inserting the method
+# before each client closes. The provider and viewer clients are the critical renderers.
+needle='      @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){'
+if needle not in s: raise SystemExit("PATCH MISSING: viewer client")
+# First client (viewer): insert immediately before its closing pattern.
+old='''        return false;
+      }
+    });
+    return v;
+  }
+'''
+new='''        return false;
+      }
+      @Override public boolean onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
+        releaseWebView(view);
+        if(view==viewerWeb){viewerWeb=viewer();((ViewGroup)view.getParent());((ViewGroup)browserLayer.getParent()).addView(viewerWeb,0,new FrameLayout.LayoutParams(-1,-1));launchGalaxyViewer();}
+        return true;
+      }
+    });
+    return v;
+  }
+'''
+# Avoid the invalid old reconstruction by use a safer targeted replacement below.
+if old not in s: raise SystemExit("PATCH MISSING: viewer close")
+new='''        return false;
+      }
+      @Override public boolean onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
+        releaseWebView(view);
+        if(view==viewerWeb){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); launchGalaxyViewer(); }
+        return true;
+      }
+    });
+    return v;
+  }
+'''
+s=s.replace(old,new,1)
+
+# Provider client: insert termination callback before its closing.
+old='''      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }
+    }); return v;
+  }
+'''
+new='''      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }
+      @Override public boolean onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
+        releaseWebView(view);
+        browserMode=false;
+        if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
+        resumeViewer();
+        launchGalaxyViewer();
+        return true;
+      }
+    }); return v;
+  }
+'''
+if old not in s: raise SystemExit("PATCH MISSING: provider close")
+s=s.replace(old,new,1)
+
+# Proper viewer recreation after renderer loss: keep it simple by rebuilding the activity's viewer path.
+req('  @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}',
+    '  @Override protected void onDestroy(){\n    try{releaseWebView(top);}catch(Exception ignored){} try{releaseWebView(web);}catch(Exception ignored){} try{releaseWebView(bottom);}catch(Exception ignored){} try{releaseWebView(viewerWeb);}catch(Exception ignored){}\n    super.onDestroy();\n  }\n  @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}',
+    'destroy cleanup')
+
+# Make the viewer WebView less likely to keep running while hidden.
+req('  private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }',
+    '  private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); resumeViewer(); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }',
+    'launch viewer')
+
+p.write_text(s)
+PY
+
+          # Nanoscopic gates: prove this remains the hosted 0049 architecture.
+          MAIN="$ROOT/app/src/main/java/com/gear66me/galaxyviewer/MainActivity.java"
+          grep -q 'GalaxyViewerWebBrowser/0050' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv=' "$MAIN"
+          grep -q 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json' "$MAIN"
+          grep -q 'viewerWeb=viewer()' "$MAIN"
+          grep -q 'openProvider' "$MAIN"
+          grep -q 'returnToViewer' "$MAIN"
+          grep -q 'onCreateWindow' "$MAIN"
+          grep -q 'WebViewAssetLoader' "$MAIN"
+          test ! -e "$ROOT/app/src/main/assets/index.html"
+          test ! -e "$ROOT/app/src/main/assets/rc-payload.js"
+
+      - name: Build AAB 1.0.0.2 BUILD 0.0.0.1
+        run: gradle --no-daemon -p /tmp/galaxy-viewer-0015 :app:bundleRelease
+
+      - name: Sign AAB 1.0.0.2 BUILD 0.0.0.1
+        shell: bash
+        env:
+          GV_UPLOAD_KEYSTORE_BASE64: ${{ secrets.GALAXY_VIEWER_UPLOAD_KEYSTORE }}
+          GV_UPLOAD_STORE_PASSWORD: ${{ secrets.GALAXY_VIEWER_UPLOAD_PASSWORD }}
+        run: |
+          set -euo pipefail
+          AAB=/tmp/galaxy-viewer-1.0.0.2/app/build/outputs/bundle/release/app-release.aab
+          KEYSTORE=/tmp/galaxy-viewer-upload.jks
+          test -n "$GV_UPLOAD_KEYSTORE_BASE64"
+          test -n "$GV_UPLOAD_STORE_PASSWORD"
+          printf '%s' "$GV_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          test -s "$AAB"
+          jarsigner -keystore "$KEYSTORE" -storepass:env GV_UPLOAD_STORE_PASSWORD -keypass:env GV_UPLOAD_STORE_PASSWORD "$AAB" galaxyviewer-upload
+
+      - name: Verify AAB 0015
+        shell: bash
+        run: |
+          set -euo pipefail
+          AAB=/tmp/galaxy-viewer-1.0.0.2/app/build/outputs/bundle/release/app-release.aab
+          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
+          test -s "$AAB"
+          cp "$AAB" "$OUT"
+          unzip -t "$OUT" | tee aab-rc-zip-test.txt
+          grep -q 'No errors detected' aab-rc-zip-test.txt
+          unzip -l "$OUT" | tee aab-rc-contents.txt
+          grep -q 'base/manifest/AndroidManifest.xml' aab-rc-contents.txt
+          grep -q 'base/dex/classes.dex' aab-rc-contents.txt
+          grep -q 'base/res/' aab-rc-contents.txt
+          jarsigner -verify -verbose -certs "$OUT" | tee aab-rc-signature.txt
+          grep -q 'jar verified' aab-rc-signature.txt
+          sha256sum "$OUT" | tee "$OUT.sha256"
+
+      - name: Publish AAB 0015
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=galaxy-viewer-rc-v1.0.0.16
+          OUT=Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
+          gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" "$OUT" "$OUT.sha256" --target release --title 'Galaxy Viewer 1.0.0.2 AAB' --notes 'Android App Bundle test: exact known-good 0049 hosted architecture; Galaxy Viewer runtime remains RC-V1.0.0 BLD 0003 RT 0082.'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015-AAB
+          path: |
+            Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab
+            Galaxy-Viewer-1.0.0.2-BUILD-0.0.0.1-Build-0015.aab.sha256
+            aab-rc-zip-test.txt
+            aab-rc-contents.txt
+            aab-rc-signature.txt
+          retention-days: 30
