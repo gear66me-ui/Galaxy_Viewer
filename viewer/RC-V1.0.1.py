@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.1"
-# BUILD 0013 — RC-V1.0.1 memory lifecycle cleanup: 5-HD window, explicit retirement, DOE removed
+# BUILD 0014 — RC-V1.0.1 memory lifecycle cleanup: 5-HD window, DOE removed
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -85,7 +85,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.1';
-const GV200001_BUILD='0013';
+const GV200001_BUILD='0014';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0012`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1227,7 +1227,7 @@ const GV_HD_RETIRE_FOV=55;
 let gvHdTravelRetired=false;
 // BUILD 0014 — bounded ownership of Galaxy Viewer-created HD object URLs.
 // Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
-const GV_HD_RESOURCE_WINDOW=5;
+const GV_HD_RESOURCE_WINDOW=5
 const gvHdObjectUrls=[];
 function gvTrackHdObjectUrl(url){
     const value=String(url||'').trim();
@@ -1672,6 +1672,10 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
+async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,registeredPromise=null,switchToSphericalAtApex=false}={}){
+    const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
+    if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
+    const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
         if(registeredPromise){
@@ -1711,6 +1715,7 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
             }catch(error){reject(error)}};requestAnimationFrame(frame);
         });
         aladin.setFov(finalFov);
+
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
     const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false;
@@ -1730,6 +1735,7 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:60,startRotation,targetRotation});
                 gvHoldDirectHdDuringTravel(now);
+                aladin.setFov(state.fov);
                 if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
                 else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
                 aladin.setRotation(state.rotation);lastSample=sample;
@@ -1739,6 +1745,7 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
             aladin.setFov(finalFov);aladin.setRotation(targetRotation);resolve(prepared);
         }catch(error){reject(error)}};requestAnimationFrame(frame);
     });
+
 }
 
 
