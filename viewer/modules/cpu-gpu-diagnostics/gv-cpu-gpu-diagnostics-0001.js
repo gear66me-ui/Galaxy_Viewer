@@ -3,7 +3,7 @@
 */
 (()=>{"use strict";
 const VERSION="0002",ROOT_ID="gv-cpu-gpu-diagnostics";
-let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0,enabled=true,collecting=false,targetObserver=null;
+let root=null,button=null,pressTimer=null,pressStarted=0,armed=false,raf=0,enabled=true,collecting=false;
 const frames=[],events=[],MAX=900;
 let lastFrame=performance.now(),lastLong=0,longTasks=[],eventLoopLag=[];let longObserver=null;let lagTimer=null;
 function now(){return performance.now()}
@@ -92,17 +92,15 @@ function stopCollection(){
   collecting=false;cancelAnimationFrame(raf);raf=0;clearInterval(lagTimer);lagTimer=null;longObserver?.disconnect();longObserver=null;
 }
 function mount(){
-  if(targetObserver)return;
+  if(button)return;
   attach();
-  targetObserver=new MutationObserver(()=>{if(!button)attach()});
-  targetObserver.observe(document.body,{childList:true,subtree:true});
   window.addEventListener("beforeunload",unmount,{once:true});
   console.log("GV CPU/GPU DIAGNOSTICS 0002 MOUNTED — IDLE; hold TARGET 3 seconds to sample");
 }
 function unmount(){
   stopCollection();clearTimeout(pressTimer);armed=false;
   if(button){button.removeEventListener("pointerdown",targetHandler,true);button.removeEventListener("pointerup",targetHandler,true);button.removeEventListener("pointercancel",targetHandler,true);button.removeEventListener("pointerleave",targetHandler,true);button.removeEventListener("keydown",keyHandler,true);button=null}
-  targetObserver?.disconnect();targetObserver=null;root?.remove();root=null;
+  root?.remove();root=null;
 }
 function setEnabled(value){enabled=!!value;try{localStorage.setItem("gvDiagnosticsEnabled",enabled?"1":"0")}catch(_){}if(!enabled)stopCollection()}
 try{enabled=localStorage.getItem("gvDiagnosticsEnabled")!=="0"}catch(_){}
