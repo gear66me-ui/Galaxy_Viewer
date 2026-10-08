@@ -3,7 +3,7 @@ name: Build Galaxy Viewer 1.0.0.2 BUILD 0.0.0.1 AAB
 
 on:
   push:
-    branches: [beta]
+    branches: [release]
     paths:
       - '.github/workflows/build-galaxy-viewer-release-1.0.0-test.yml'
   workflow_dispatch:
@@ -185,7 +185,7 @@ req('  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pend
     'fields')
 
 anchor='  private WebView viewer(){\n'
-helpers='''  private void hardClearWebData(){
+helpers='''  private void hardClearWebData(Runnable done){
     try{if(viewerWeb!=null)viewerWeb.clearCache(true);}catch(Exception ignored){}
     try{if(top!=null)top.clearCache(true);}catch(Exception ignored){}
     try{if(web!=null)web.clearCache(true);}catch(Exception ignored){}
@@ -193,11 +193,12 @@ helpers='''  private void hardClearWebData(){
     try{CookieManager.getInstance().removeAllCookies(null);}catch(Exception ignored){}
     try{
       if(WebViewFeature.isFeatureSupported(WebViewFeature.DELETE_BROWSING_DATA)){
-        WebStorageCompat.deleteBrowsingData(WebStorage.getInstance(),()->{});
+        WebStorageCompat.deleteBrowsingData(WebStorage.getInstance(),done);
       }else{
         WebStorage.getInstance().deleteAllData();
+        done.run();
       }
-    }catch(Exception ignored){}
+    }catch(Exception ignored){done.run();}
   }
   private void trackProviderSite(String url){
     try{
@@ -233,7 +234,7 @@ helpers='''  private void hardClearWebData(){
 req(anchor,helpers+anchor,'helpers')
 
 req('    launchGalaxyViewer();\n',
-    '    hardClearWebData();\n    launchGalaxyViewer();\n',
+    '    hardClearWebData(()->launchGalaxyViewer());\n',
     'startup clear')
 
 req('    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0049");',
