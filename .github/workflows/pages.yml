@@ -132,8 +132,8 @@ jobs:
           const fs=require('fs');
           const viewer=JSON.parse(fs.readFileSync('viewer/gv-current-viewer.json','utf8'));
           const py=fs.readFileSync('viewer/'+viewer.viewer,'utf8');
-          const start='display(Javascript(r"""');
-          const end='"""))';
+          const start=`display(Javascript(r"""`);
+          const end=`"""))`;
           const a=py.indexOf(start);
           const b=py.lastIndexOf(end);
           if(a<0||b<a)throw new Error('VIEWER JAVASCRIPT EXTRACTION FAILED');
