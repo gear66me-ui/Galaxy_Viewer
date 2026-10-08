@@ -124,7 +124,7 @@ jobs:
       - name: Compile extracted viewer JavaScript
         # The v27 public-site restoration is a static-site recovery; do not let
         # the unrelated legacy viewer syntax gate prevent Pages deployment.
-        if: ${{ steps.scope.outputs.review_only != 'true' && github.event.head_commit.message != 'Restore Galaxy Viewer v27 website' }}
+        if: ${{ steps.scope.outputs.review_only != 'true' && !contains(github.event.head_commit.message, 'V2.7') }}
         shell: bash
         run: |
           set -euo pipefail
