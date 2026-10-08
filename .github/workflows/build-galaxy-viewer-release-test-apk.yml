@@ -1,7 +1,6 @@
 name: Build Galaxy Viewer Release Test APK
 on:
-  push:
-    branches: [release]
+  # PRODUCTION FROZEN: no automatic test-APK builds. Manual dispatch only.
   workflow_dispatch:
 permissions: { contents: write }
 jobs:
