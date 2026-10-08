@@ -89,7 +89,7 @@ jobs:
           assert manifest.get('sourceCommit')=='88c50e75e7f13d00b3165e5145b08e835bc46aa0'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0006';" in rc
+          assert "const GV200001_BUILD='0007';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
