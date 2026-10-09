@@ -89,22 +89,25 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.3'
           assert viewer.get('viewer')=='RC-V1.0.0.3.py'
-          assert viewer.get('build')=='0023'
-          assert manifest.get('build')=='0023'
+          assert viewer.get('build')=='0024'
+          assert manifest.get('build')=='0024'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='8013587b51e50b5f99922f4cf94b866ffe1b458a'
+          assert manifest.get('sourceCommit')=='d92796d3fdcde45ead083a030b0121d0fc95d806'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0023';" in rc
-          assert 'gvSetZoomCommand(command,{moveThumb:false});' in rc
-          assert 'Math.min(1,error*12)' in rc
+          assert "const GV200001_BUILD='0024';" in rc
+          assert 'if(!gvTravelZoomHidden)zoomControl.thumb.style.top=' in rc
+          assert 'Math.max(0.002,eta/a.landingMs)' in rc
+          assert 'gvCommandZoomTowardFov' not in rc
           flight=rc[rc.index('async function gvFly130H('):rc.index('// SECTION 034')]
-          assert 'aladin.setFov(' not in flight
+          assert 'if(t<zoomInThreshold)aladin.setFov(state.fov)' in flight
+          assert 'zoomInPromise=gvEnergizeZoomJoystick(1,finalFov' in flight
+          assert 'await gvEnergizeZoomJoystick(1,finalFov' in flight
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
-          # BUILD 0023 release contract: validate hidden slider commands and eased travel zoom arrival.
+          # BUILD 0024 release contract: restore Build 0020 choreography with hidden slider-driven eased arrival.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
@@ -128,7 +131,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0023')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0024')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
