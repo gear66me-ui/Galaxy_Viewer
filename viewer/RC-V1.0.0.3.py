@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0018"
+BUILD_NUMBER = "0019"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0018';
+const GV200001_BUILD='0019';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0018`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0019`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1230,16 +1230,21 @@ function gvSyncSurveySelectButton(){
     gvSurveySelectGroup.style.top=top+'px';
     gvSurveySelectGroup.style.width=groupWidth+'px';
     document.documentElement.style.setProperty('--gv-survey-control-width',groupWidth+'px');
-    const disabled=Boolean(navigationInFlight);
-    gvSurveySelectButton.disabled=disabled;
+    // The selector is a navigation control, not a navigation action. Never
+    // leave it disabled by a stale in-flight flag; provider selection itself
+    // still checks navigationInFlight before changing survey state.
+    gvSurveySelectButton.disabled=false;
     gvSurveySelectGroup.style.display='grid';
     if(target?.open)gvPositionProviderSurveyPanel();
 }
 const gvToggleSurveyProviderMenu=()=>{
-    if(navigationInFlight)return;
-    galaxyNavigator.closeSurveySelector?.();
-    target.toggle?.();
-    if(target.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
+    // Keep the provider dropdown independently actuable even if a travel state
+    // is still settling. Close the galaxy-list overlay, then explicitly open
+    // or close this menu rather than relying on a chained toggle call.
+    try{galaxyNavigator.closeSurveySelector?.()}catch(error){console.warn('GV GALAXY SELECTOR CLOSE FAILED',error)}
+    if(target?.open)target.close?.();
+    else target?.open?.();
+    if(target?.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
 };
 gvSurveySelectButton.addEventListener('click',gvToggleSurveyProviderMenu);
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{gvSyncSurveySelectButton();if(target?.open)gvPositionProviderSurveyPanel()}),{passive:true});
