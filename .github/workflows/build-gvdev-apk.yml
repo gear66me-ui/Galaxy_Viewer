@@ -96,6 +96,23 @@ jobs:
           if missing_resources:
               raise SystemExit('GVDEV RESOURCE AUDIT FAILED: ' + repr(missing_resources))
           print('GVDEV RESOURCE AUDIT PASSED: all required repository URLs resolve in this checkout.')
+          # Cross-check boot-time export guards against the exact modules being packaged.
+          contracts = {
+              'viewer/modules/hud/gv-heads-up-display-0001.js': "const VERSION='0001';",
+              'viewer/modules/destination-presentation/gv-destination-presentation-0017.js': "const VERSION='0032';",
+          }
+          for path, token in contracts.items():
+              body = Path(path).read_text(encoding='utf-8')
+              if token not in body:
+                  raise SystemExit(f'GVDEV MODULE CONTRACT FAILED: {path} does not contain {token}')
+              if token not in js:
+                  # The extracted app must validate the same version as the packaged module.
+                  expected = token.split("'")[1]
+                  if path.endswith('gv-heads-up-display-0001.js') and f"GalaxyViewerHeadsUpDisplay?.VERSION!=='{expected}'" not in js:
+                      raise SystemExit('GVDEV HUD EXPORT GATE DOES NOT MATCH PACKAGED MODULE VERSION')
+                  if path.endswith('gv-destination-presentation-0017.js') and f"GalaxyDestinationPresentation?.VERSION!=='{expected}'" not in js:
+                      raise SystemExit('GVDEV DESTINATION EXPORT GATE DOES NOT MATCH PACKAGED MODULE VERSION')
+          print('GVDEV MODULE CONTRACT AUDIT PASSED: HUD 0001 and destination presentation 0032.')
           required = ['gv-hamburger-host', 'gv-coordinate-host', 'gv-target-host', 'gv-navigation-host']
           missing = [x for x in required if x not in html]
           if missing:
@@ -132,8 +149,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 35
-              versionCode 2
-              versionName 'GVDEV-APK-002'
+              versionCode 3
+              versionName 'GVDEV-APK-003'
             }
             dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           }
@@ -209,14 +226,14 @@ jobs:
           grep -q "package: name='com.gear66me.galaxyviewer.lab'" apk-badging.txt
           grep -q "application-label:'Galaxy Viewer GVDEV'" apk-badging.txt
           mkdir -p dist
-          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-002.apk
-          sha256sum dist/Galaxy-Viewer-GVDEV-APK-002.apk > dist/Galaxy-Viewer-GVDEV-APK-002.apk.sha256
+          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-003.apk
+          sha256sum dist/Galaxy-Viewer-GVDEV-APK-003.apk > dist/Galaxy-Viewer-GVDEV-APK-003.apk.sha256
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-GVDEV-APK-002
+          name: Galaxy-Viewer-GVDEV-APK-003
           path: |
-            dist/Galaxy-Viewer-GVDEV-APK-002.apk
-            dist/Galaxy-Viewer-GVDEV-APK-002.apk.sha256
+            dist/Galaxy-Viewer-GVDEV-APK-003.apk
+            dist/Galaxy-Viewer-GVDEV-APK-003.apk.sha256
             apk-badging.txt
           retention-days: 30
