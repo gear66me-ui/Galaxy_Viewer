@@ -89,18 +89,18 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.3'
           assert viewer.get('viewer')=='RC-V1.0.0.3.py'
-          assert viewer.get('build')=='0020'
-          assert manifest.get('build')=='0020'
+          assert viewer.get('build')=='0022'
+          assert manifest.get('build')=='0022'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='8cb321b1275c0ea072a0189e85505395b84db2e2'
+          assert manifest.get('sourceCommit')=='50754abdcc351e2f24a1ed13c301f7b4478d0dae'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0020';" in rc
+          assert "const GV200001_BUILD='0022';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
-          # BUILD 0020 release contract: validate the active runtime catalog.
+          # BUILD 0022 release contract: validate the slider-driven travel zoom experiment.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
@@ -124,7 +124,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0020')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0022')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
