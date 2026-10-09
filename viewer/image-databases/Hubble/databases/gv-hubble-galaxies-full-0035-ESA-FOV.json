@@ -77686,7 +77686,7 @@
       "title": "The Eagle has risen: stellar spire in the Eagle Nebula",
       "ra": 274.8174588,
       "dec": -13.7565451,
-      "distance": "10 light-years",
+      "distance": "6,500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "3.2080 x 6.5003 arcminutes",
       "orientation": "AVM/WCS rotation 96.800000 degrees",
@@ -77707,11 +77707,11 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 9.5e-06,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "9.5 light-years",
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Hubble_authoritative_object_distance",
+        "distanceEvidence": "NASA Eagle Nebula / Pillars of Creation object distance: 6,500 light-years",
         "distanceRangeMly": null,
-        "distanceDisplay": "10 light-years",
+        "distanceDisplay": "6.5 KLY",
         "distanceEstimated": false,
         "sizeKly": [
           8.865042781087501e-06,
@@ -77720,13 +77720,13 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 0 × 0 LY",
-        "ageGyr": 0.0,
-        "ageMethod": "lookback_from_light_travel_distance",
+        "ageGyr": 1.5e-06,
+        "ageMethod": "young_eagle_nebula_cluster_age_reference",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 0.0 MYR",
-        "ageEvidence": null,
+        "ageDisplay": "EST. 1.5 MYR",
+        "ageEvidence": "Approximate 1–2 million-year age of the young stellar population; representative estimate 1.5 Myr.",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -77764,7 +77764,8 @@
       "avmProfile": "AVM",
       "avmStatus": "ASTROPIX_SPATIAL_AVM",
       "catalogRollup": "HUBBLE-0034-ASTROPIX-MERGE",
-      "age": "EST. 0.0 MYR"
+      "age": "EST. 1.5 MYR",
+      "imageBand": "Visible light"
     },
     {
       "archiveId": "heic0513c",
