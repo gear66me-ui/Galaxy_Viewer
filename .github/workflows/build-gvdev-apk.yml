@@ -36,6 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           ROOT="$RUNNER_TEMP/gvdev"
+          export ROOT
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab" "$ROOT/app/src/main/assets" "$ROOT/app/src/main/res/values"
           python3 - <<'PY'
           from pathlib import Path
@@ -45,13 +46,13 @@ jobs:
               m = re.search(pattern, src, re.S)
               if not m: raise SystemExit('Could not extract '+label+' from viewer source')
               return m.group(1)
-          html = extract(r'display\\(HTML\\(\\"\\"\\"([\\s\\S]*?)\\"\\"\\"\\)\\)', 'HTML')
-          js = extract(r'display\\(Javascript\\(r?\\"\\"\\"([\\s\\S]*?)\\"\\"\\"\\)\\)', 'JavaScript')
+          html = extract(r'display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)', 'HTML')
+          js = extract(r'display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)', 'JavaScript')
           # Development APK pulls runtime modules from the development branch, never release.
           html = html.replace('gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/', 'gear66me-ui/Galaxy_Viewer@dev/gvdev/')
           js = js.replace('gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/', 'gear66me-ui/Galaxy_Viewer@dev/gvdev/')
           # Keep the bundled page independent of Jupyter display wrappers.
-          Path('ROOT/app/src/main/assets/index.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="color-scheme" content="dark"><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head><body>'+html+'<script>'+js+'</script></body></html>')
+          Path(__import__('os').environ['ROOT']) / 'app/src/main/assets/index.html'.write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="color-scheme" content="dark"><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head><body>'+html+'<script>'+js+'</script></body></html>')
           print('Extracted embedded HTML/JS; development CDN URLs rewritten to @dev/gvdev')
           PY
           cat > "$ROOT/settings.gradle" <<'EOF'
