@@ -7,7 +7,7 @@
 (function(global){
 'use strict';
 const VERSION='001';
-const FONT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const FONT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@dev/gvdev/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
 
 function installStyle(){
  if(document.getElementById('gv-galaxy-navigator-001-style'))return;
