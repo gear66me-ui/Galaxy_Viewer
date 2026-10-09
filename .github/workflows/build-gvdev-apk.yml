@@ -46,6 +46,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import os, re, subprocess
+          from urllib.parse import unquote
           src = Path('viewer/RC-V1.0.0.3.py').read_text()
           def extract(pattern, label):
               m = re.search(pattern, src, re.S)
@@ -73,10 +74,26 @@ jobs:
               js = js.replace(old, new)
           html, js = pin_urls(html), pin_urls(js)
           combined = html + '\n' + js
-          repo_urls = re.findall(r'https://(?:cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@|raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/)[^\s\"\']+', combined)
+          repo_urls = re.findall(r'https://(?:cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@|raw\\.githubusercontent\\.com/gear66me-ui/Galaxy_Viewer/)[^\\s\\\"\\']+', combined)
           bad = [u for u in repo_urls if not (u.startswith('https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/') or u.startswith('https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/'))]
           if bad:
               raise SystemExit('Isolation audit failed: ' + repr(bad))
+          # Check every required same-repository resource against the checkout.
+          # The thumbnail bridge is optional; its loader explicitly falls back.
+          missing_resources = []
+          for url in repo_urls:
+              m = re.search(r'https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/([^\\s\\\"\\']+)|https://raw\\.githubusercontent\\.com/gear66me-ui/Galaxy_Viewer/[^/]+/([^\\s\\\"\\']+)', url)
+              if not m:
+                  continue
+              path = unquote((m.group(1) or m.group(2)).split('?', 1)[0])
+              if path == 'viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json':
+                  print('OPTIONAL RESOURCE NOT PRESENT (fallback expected):', path)
+                  continue
+              if not Path(path).is_file():
+                  missing_resources.append((url, path))
+          if missing_resources:
+              raise SystemExit('GVDEV RESOURCE AUDIT FAILED: ' + repr(missing_resources))
+          print('GVDEV RESOURCE AUDIT PASSED: all required repository URLs resolve in this checkout.')
           required = ['gv-hamburger-host', 'gv-coordinate-host', 'gv-target-host', 'gv-navigation-host']
           missing = [x for x in required if x not in html]
           if missing:
@@ -190,14 +207,14 @@ jobs:
           grep -q "package: name='com.gear66me.galaxyviewer.lab'" apk-badging.txt
           grep -q "application-label:'Galaxy Viewer GVDEV'" apk-badging.txt
           mkdir -p dist
-          cp "$APK" dist/Galaxy-Viewer-GVDEV-Build-0001.apk
-          sha256sum dist/Galaxy-Viewer-GVDEV-Build-0001.apk > dist/Galaxy-Viewer-GVDEV-Build-0001.apk.sha256
+          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-002.apk
+          sha256sum dist/Galaxy-Viewer-GVDEV-APK-002.apk > dist/Galaxy-Viewer-GVDEV-APK-002.apk.sha256
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-GVDEV-Build-0001
+          name: Galaxy-Viewer-GVDEV-APK-002
           path: |
-            dist/Galaxy-Viewer-GVDEV-Build-0001.apk
-            dist/Galaxy-Viewer-GVDEV-Build-0001.apk.sha256
+            dist/Galaxy-Viewer-GVDEV-APK-002.apk
+            dist/Galaxy-Viewer-GVDEV-APK-002.apk.sha256
             apk-badging.txt
           retention-days: 30
