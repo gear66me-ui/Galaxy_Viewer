@@ -52,8 +52,8 @@ jobs:
               if not m:
                   raise SystemExit('Could not extract ' + label + ' from viewer source')
               return m.group(1)
-          html = extract(r'display\\(HTML\\(\"\"\"([\\s\\S]*?)\"\"\"\\)\\)', 'HTML')
-          js = extract(r'display\\(Javascript\\(r?\"\"\"([\\s\\S]*?)\"\"\"\\)\\)', 'JavaScript')
+          html = extract(r'display\(HTML\("""([\s\S]*?)"""\)\)', 'HTML')
+          js = extract(r'display\(Javascript\(r?"""([\s\S]*?)"""\)\)', 'JavaScript')
           commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
           combined = html + '\n' + js
           combined = re.sub(r'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/', 'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/', combined)
