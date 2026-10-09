@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0016"
+BUILD_NUMBER = "0017"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0016';
+const GV200001_BUILD='0017';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0016`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0017`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1711,10 +1711,11 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
             if(!response.ok)throw new Error('HTTP '+response.status);
             let blob=await response.blob();
             if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
-            const bitmap=await createImageBitmap(blob);blob=null;
+            let bitmap=await createImageBitmap(blob);blob=null;
+            let workingBitmap=null,canvas=null,resizeCanvas=null;
             try{
                 const sourceW=bitmap.width,sourceH=bitmap.height,sourceMax=Math.max(sourceW,sourceH);
-                let workingBitmap=bitmap, w=sourceW, h=sourceH;
+                workingBitmap=bitmap;let w=sourceW,h=sourceH;
                 if(sourceMax>MAX_BLEND_DIMENSION){
                     const scale=MAX_BLEND_DIMENSION/sourceMax;
                     const targetW=Math.max(1,Math.round(sourceW*scale));
@@ -1722,7 +1723,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                     try{
                         workingBitmap=await createImageBitmap(bitmap,{resizeWidth:targetW,resizeHeight:targetH,resizeQuality:'high'});
                     }catch(_){
-                        const resizeCanvas=document.createElement('canvas');resizeCanvas.width=targetW;resizeCanvas.height=targetH;
+                        resizeCanvas=document.createElement('canvas');resizeCanvas.width=targetW;resizeCanvas.height=targetH;
                         const resizeCtx=resizeCanvas.getContext('2d');if(!resizeCtx)throw new Error('HARD 1536 RESIZE CONTEXT UNAVAILABLE');
                         resizeCtx.drawImage(bitmap,0,0,targetW,targetH);
                         workingBitmap=await createImageBitmap(resizeCanvas);
@@ -1732,7 +1733,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                     w=targetW;h=targetH;
                     console.info('GV HD HARD 1536 RESIZE',{source:[sourceW,sourceH],target:[w,h]});
                 }
-                const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+                canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(workingBitmap,0,0,w,h);
                 const exception=gvVignetteException(destination,record);
@@ -1775,7 +1776,11 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                 }
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
                 return {blob:vignetteBlob,width:w,height:h};
-            }finally{try{workingBitmap.close?.()}catch(_){try{workingBitmap.close()}catch(__){}}try{canvas.width=0;canvas.height=0}catch(_){}}
+            }finally{
+                if(workingBitmap&&workingBitmap!==bitmap){try{workingBitmap.close?.()}catch(_){}}
+                if(bitmap){try{bitmap.close?.()}catch(_){}}
+                for(const tempCanvas of [canvas,resizeCanvas]){if(tempCanvas){try{tempCanvas.width=0;tempCanvas.height=0}catch(_){}}}
+            }
         }catch(error){last=String(error?.message||error||'')}
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
