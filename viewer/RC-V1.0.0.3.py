@@ -89,26 +89,6 @@ const VERSION='RC-V1.0.0.3';
 const GV200001_BUILD='0016';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0016`;
-function gvShowRuntimeError(stage,error){
-    const detail=String(error?.stack||error?.message||error||'Unknown error');
-    console.error('GV RUNTIME FAILURE — '+stage,error);
-    let panel=document.getElementById('gv-runtime-error-panel');
-    if(!panel){
-        panel=document.createElement('section');
-        panel.id='gv-runtime-error-panel';
-        panel.setAttribute('role','alert');
-        Object.assign(panel.style,{position:'fixed',left:'12px',right:'12px',top:'12px',zIndex:'2147483647',maxHeight:'42vh',overflow:'auto',padding:'12px',boxSizing:'border-box',border:'1px solid #ff7474',borderRadius:'10px',background:'rgba(35,4,12,.97)',color:'#fff',font:'12px/1.45 monospace',whiteSpace:'pre-wrap',overflowWrap:'anywhere',pointerEvents:'auto',boxShadow:'0 0 18px rgba(255,45,75,.35)'});
-        const close=document.createElement('button');
-        close.type='button';close.textContent='DISMISS';
-        Object.assign(close.style,{display:'block',margin:'0 0 8px auto',padding:'6px 10px',border:'1px solid #ffaaaa',borderRadius:'6px',background:'#54121d',color:'#fff',font:'bold 11px sans-serif'});
-        close.addEventListener('click',()=>panel.remove());
-        panel.appendChild(close);
-        const body=document.createElement('div');body.id='gv-runtime-error-detail';panel.appendChild(body);
-        document.body.appendChild(panel);
-    }
-    const body=panel.querySelector('#gv-runtime-error-detail');
-    if(body)body.textContent='GALAXY VIEWER ERROR\\n'+stage+'\\n\\n'+detail;
-}
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -685,7 +665,7 @@ const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
 const galaxyNavigator=window.GalaxyNavigator.mount(earlyNavigationHost,{
     onBack:()=>navigateBack(),
-    onRandom:()=>{gvSetTripCycle(true);return navigateRandom().catch(error=>{gvShowRuntimeError('RANDOM GALAXY NAVIGATION FAILED',error)})},
+    onRandom:()=>{gvSetTripCycle(true);return navigateRandom()},
     onForward:()=>navigateForward(),
     onSelectSurveyIndex:(index)=>gvNavigateSurveyIndex(Number(index)).catch(error=>console.error('GV SURVEY DIRECT SELECT FAILED',error))
 });
@@ -2516,6 +2496,6 @@ console.info(`${VERSION} — TRIAL READY`,{
     navigation:navigationRuntime.snapshot()
 });
 })().catch(error=>{
-    gvShowRuntimeError('APPLICATION STARTUP FAILED',error);
+    console.error('GV200-001 BOOT FAILURE',error);
 });
 """))
