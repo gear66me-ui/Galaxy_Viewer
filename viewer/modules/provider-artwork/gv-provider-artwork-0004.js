@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const VERSION='0004';
-const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
+const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/dev/gvdev/viewer/artwork/';
 const ICONS=Object.freeze({
   HUBBLE:'Hubble/Hubble.jpg',
   JWST:'JWST/JWST.jpeg',
