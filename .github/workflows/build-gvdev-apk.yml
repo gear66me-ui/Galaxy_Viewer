@@ -74,7 +74,7 @@ jobs:
               js = js.replace(old, new)
           html, js = pin_urls(html), pin_urls(js)
           combined = html + '\n' + js
-          repo_urls = re.findall(r'https://(?:cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@|raw\\.githubusercontent\\.com/gear66me-ui/Galaxy_Viewer/)[^\\s\\\"\\']+', combined)
+          repo_urls = re.findall(r'https://(?:cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@|raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/)[^\s"\']+', combined)
           bad = [u for u in repo_urls if not (u.startswith('https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/') or u.startswith('https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/'))]
           if bad:
               raise SystemExit('Isolation audit failed: ' + repr(bad))
@@ -82,7 +82,7 @@ jobs:
           # The thumbnail bridge is optional; its loader explicitly falls back.
           missing_resources = []
           for url in repo_urls:
-              m = re.search(r'https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/([^\\s\\\"\\']+)|https://raw\\.githubusercontent\\.com/gear66me-ui/Galaxy_Viewer/[^/]+/([^\\s\\\"\\']+)', url)
+              m = re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/([^\s"\']+)|https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/[^/]+/([^\s"\']+)', url)
               if not m:
                   continue
               path = unquote((m.group(1) or m.group(2)).split('?', 1)[0])
@@ -131,7 +131,7 @@ jobs:
               minSdk 29
               targetSdk 35
               versionCode 1
-              versionName 'GVDEV-0001'
+              versionName 'GVDEV-APK-002'
             }
             dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           }
