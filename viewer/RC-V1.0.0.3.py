@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0019"
+BUILD_NUMBER = "0020"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0019';
+const GV200001_BUILD='0020';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0019`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1242,8 +1242,10 @@ const gvToggleSurveyProviderMenu=()=>{
     // is still settling. Close the galaxy-list overlay, then explicitly open
     // or close this menu rather than relying on a chained toggle call.
     try{galaxyNavigator.closeSurveySelector?.()}catch(error){console.warn('GV GALAXY SELECTOR CLOSE FAILED',error)}
-    if(target?.open)target.close?.();
-    else target?.open?.();
+    // The target module exposes both a Boolean getter and an open() method
+    // under the same property name; the method wins in its API object, so
+    // target.open is always truthy. Use the module's internal-state-aware toggle.
+    target?.toggle?.();
     if(target?.open)requestAnimationFrame(gvPositionProviderSurveyPanel);
 };
 gvSurveySelectButton.addEventListener('click',gvToggleSurveyProviderMenu);
