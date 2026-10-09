@@ -89,18 +89,18 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.3'
           assert viewer.get('viewer')=='RC-V1.0.0.3.py'
-          assert viewer.get('build')=='0014'
-          assert manifest.get('build')=='0014'
+          assert viewer.get('build')=='0015'
+          assert manifest.get('build')=='0015'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='e4538c8905cd1c883c5701fa1b5378cd73b4b812'
+          assert manifest.get('sourceCommit')=='3decdd1bf92b79887229eb0c974223227bb1347d'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0014';" in rc
+          assert "const GV200001_BUILD='0015';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
-          # BUILD 0014 dependency contract: fail CI before publishing if the
+          # BUILD 0015 dependency contract: fail CI before publishing if the
           # Survey module can be reused stale or the runtime catalog drifts.
           assert "loadScript(fresh(config.targetUrl))" in rc
           assert "TARGET SURVEY 0007 API MISMATCH: setProviders() MISSING" in rc
@@ -128,7 +128,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0014')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0015')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
