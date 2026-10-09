@@ -55,19 +55,29 @@ jobs:
           html = extract(r'display\(HTML\("""([\s\S]*?)"""\)\)', 'HTML')
           js = extract(r'display\(Javascript\(r?"""([\s\S]*?)"""\)\)', 'JavaScript')
           commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          def pin_urls(text):
+              text = re.sub(r'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/', 'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/', text)
+              text = re.sub(r'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/[^/]+/', 'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/', text)
+              return text
+          # Preserve HTML and JavaScript as separate blocks. Splitting the combined
+          # string at its first newline truncated the HTML and removed the app shell.
+          html, js = pin_urls(html), pin_urls(js)
           combined = html + '\n' + js
-          combined = re.sub(r'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/', 'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/', combined)
-          combined = re.sub(r'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/[^/]+/', 'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/', combined)
-          html, js = combined.split('\n', 1)
           repo_urls = re.findall(r'https://(?:cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@|raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/)[^\s\"\']+', combined)
           bad = [u for u in repo_urls if not (u.startswith('https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/') or u.startswith('https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/'))]
           if bad:
               raise SystemExit('Isolation audit failed: ' + repr(bad))
+          required = ['gv-hamburger-host', 'gv-coordinate-host', 'gv-target-host', 'gv-navigation-host']
+          missing = [x for x in required if x not in html]
+          if missing:
+              raise SystemExit('HTML extraction incomplete; missing hosts: ' + repr(missing))
           assets = Path(os.environ['ROOT']) / 'app/src/main/assets'
           assets.mkdir(parents=True, exist_ok=True)
           page = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="color-scheme" content="dark"><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head><body>' + html + '<script>' + js + '</script></body></html>'
           (assets / 'index.html').write_text(page)
+          (Path(os.environ['ROOT']) / 'extracted-app.js').write_text(js)
           print('GVDEV source commit:', commit)
+          print('HTML characters:', len(html), 'JavaScript characters:', len(js))
           print('Isolation audit passed: every Galaxy_Viewer CDN/raw URL pins to this exact commit.')
           PY
           cat > "$ROOT/settings.gradle" <<'EOF'
@@ -95,6 +105,7 @@ jobs:
               versionCode 1
               versionName 'GVDEV-0001'
             }
+            dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           }
           EOF
           cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
@@ -112,10 +123,43 @@ jobs:
           EOF
           cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java" <<'EOF'
           package com.gear66me.galaxyviewer.lab;
-          import android.app.Activity; import android.os.Bundle; import android.graphics.Color; import android.view.View; import android.webkit.WebChromeClient; import android.webkit.WebSettings; import android.webkit.WebView; import android.webkit.WebViewClient;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.graphics.Color;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import androidx.webkit.WebViewAssetLoader;
+          import androidx.webkit.WebViewClientCompat;
           public final class MainActivity extends Activity {
             private WebView web;
-            @Override public void onCreate(Bundle state) { super.onCreate(state); getWindow().setStatusBarColor(Color.BLACK); getWindow().setNavigationBarColor(Color.BLACK); web=new WebView(this); web.setBackgroundColor(Color.BLACK); WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true); s.setMediaPlaybackRequiresUserGesture(false); web.setWebViewClient(new WebViewClient()); web.setWebChromeClient(new WebChromeClient()); setContentView(web); web.loadUrl("file:///android_asset/index.html"); }
+            @Override public void onCreate(Bundle state) {
+              super.onCreate(state);
+              getWindow().setStatusBarColor(Color.BLACK);
+              getWindow().setNavigationBarColor(Color.BLACK);
+              web=new WebView(this);
+              web.setBackgroundColor(Color.BLACK);
+              WebSettings s=web.getSettings();
+              s.setJavaScriptEnabled(true);
+              s.setDomStorageEnabled(true);
+              s.setDatabaseEnabled(true);
+              s.setMediaPlaybackRequiresUserGesture(false);
+              s.setAllowFileAccess(false);
+              s.setAllowContentAccess(false);
+              s.setAllowFileAccessFromFileURLs(false);
+              s.setAllowUniversalAccessFromFileURLs(false);
+              WebViewAssetLoader loader=new WebViewAssetLoader.Builder()
+                .addPathHandler("/assets/",new WebViewAssetLoader.AssetsPathHandler(this))
+                .build();
+              web.setWebViewClient(new WebViewClientCompat(){
+                @Override public android.webkit.WebResourceResponse shouldInterceptRequest(WebView view, android.webkit.WebResourceRequest request) {
+                  return loader.shouldInterceptRequest(request.getUrl());
+                }
+              });
+              web.setWebChromeClient(new WebChromeClient());
+              setContentView(web);
+              web.loadUrl("https://appassets.androidplatform.net/assets/index.html");
+            }
             @Override public void onBackPressed() { if(web!=null && web.canGoBack()) web.goBack(); else super.onBackPressed(); }
           }
           EOF
