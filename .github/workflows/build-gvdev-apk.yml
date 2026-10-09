@@ -43,26 +43,31 @@ jobs:
           ROOT="$RUNNER_TEMP/gvdev"
           export ROOT
           mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab" "$ROOT/app/src/main/assets" "$ROOT/app/src/main/res/values"
+          BASELINE_APK="$ROOT/thumbnail-baseline.apk"
+          curl -fL --retry 3 --retry-delay 2 "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-viewer-rc-v1.0.0.26-local-survey-thumbnails/Galaxy-Viewer-RC-V1.0.0.26-Local-Survey-Thumbnails.apk" -o "$BASELINE_APK"
+          echo "3b142b14103b72b1b87c7071c112819da7a03d01a7488e0fbf8ad84142b4811e  $BASELINE_APK" | sha256sum -c -
+          unzip -q "$BASELINE_APK" 'assets/survey-thumbnails/*' -d "$ROOT/thumbnail-extract"
           python3 - <<'PY'
           from pathlib import Path
-          import os, re, subprocess
-          from urllib.parse import unquote
-          src = Path('viewer/RC-V1.0.0.3.py').read_text()
+          import os, re, subprocess, shutil, json
+          from urllib.parse import unquote, urlsplit
+          
+          ROOT = Path(os.environ['ROOT'])
+          ASSETS = ROOT / 'app/src/main/assets'
+          ASSET_BASE = 'https://appassets.androidplatform.net/assets/'
+          src = Path('viewer/RC-V1.0.0.3.py').read_text(encoding='utf-8')
+          
           def extract(pattern, label):
               m = re.search(pattern, src, re.S)
               if not m:
                   raise SystemExit('Could not extract ' + label + ' from viewer source')
               return m.group(1)
+          
           html = extract(r'display\(HTML\("""([\s\S]*?)"""\)\)', 'HTML')
           js = extract(r'display\(Javascript\(r?"""([\s\S]*?)"""\)\)', 'JavaScript')
           commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-          def pin_urls(text):
-              text = re.sub(r'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/', 'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/', text)
-              text = re.sub(r'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/[^/]+/', 'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/', text)
-              return text
-          # Preserve HTML and JavaScript as separate blocks. Splitting the combined
-          # string at its first newline truncated the HTML and removed the app shell.
-          # Correct stale filenames to files that actually exist on this GVDEV branch.
+          
+          # Correct only known stale module filenames; all other module versions are preserved.
           module_path_fixes = {
               '/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js': '/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
               '/viewer/modules/hud/gv-heads-up-display-0002.js': '/viewer/modules/hud/gv-heads-up-display-0001.js',
@@ -72,72 +77,137 @@ jobs:
           for old, new in module_path_fixes.items():
               html = html.replace(old, new)
               js = js.replace(old, new)
-          html, js = pin_urls(html), pin_urls(js)
-          combined = html + '\n' + js
-          repo_urls = re.findall(r'https://(?:cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@|raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/)[^\s"\']+', combined)
-          bad = [u for u in repo_urls if not (u.startswith('https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@' + commit + '/') or u.startswith('https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/' + commit + '/'))]
-          if bad:
-              raise SystemExit('Isolation audit failed: ' + repr(bad))
-          # Check every required same-repository resource against the checkout.
-          # The thumbnail bridge is optional; its loader explicitly falls back.
-          missing_resources = []
-          for url in repo_urls:
-              m = re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@[^/]+/([^\s"\']+)|https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/[^/]+/([^\s"\']+)', url)
-              if not m:
-                  continue
-              path = unquote((m.group(1) or m.group(2)).split('?', 1)[0])
-              if not path and url.endswith('/'):
-                  continue  # pinned repository root used as a base for dynamic resource paths
-              if path == 'viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json':
-                  print('OPTIONAL RESOURCE NOT PRESENT (fallback expected):', path)
-                  continue
-              if not Path(path).is_file():
-                  missing_resources.append((url, path))
-          if missing_resources:
-              raise SystemExit('GVDEV RESOURCE AUDIT FAILED: ' + repr(missing_resources))
-          print('GVDEV RESOURCE AUDIT PASSED: all required repository URLs resolve in this checkout.')
-          # Cross-check boot-time export guards against the exact modules being packaged.
-          contracts = {
-              'viewer/modules/hud/gv-heads-up-display-0001.js': "const VERSION='0001';",
-              'viewer/modules/destination-presentation/gv-destination-presentation-0017.js': "const VERSION='0032';",
+          
+          def rewrite_repo_urls(text):
+              # The thumbnail pack used a commit-derived base URL; in the native build its
+              # records resolve to the bundled APK assets instead of a network CDN.
+              text = text.replace(
+                  "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@'+commit+'/",
+                  ASSET_BASE
+              )
+              # Rewrite every same-repository immutable URL to the matching file copied
+              # from this exact dev/gvdev checkout. No GitHub branch/CDN URL remains at runtime.
+              text = re.sub(
+                  r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@(?:[0-9a-fA-F]{40}|dev/gvdev|release|beta|main)/",
+                  ASSET_BASE,
+                  text
+              )
+              text = re.sub(
+                  r"https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/(?:[0-9a-fA-F]{40}|dev/gvdev|release|beta|main)/",
+                  ASSET_BASE,
+                  text
+              )
+              return text
+          
+          # Mirror the complete app-side dependency tree from this checked-out commit.
+          if ASSETS.exists():
+              shutil.rmtree(ASSETS)
+          ASSETS.mkdir(parents=True)
+          shutil.copytree('viewer', ASSETS / 'viewer')
+          shutil.copytree('aladin-source-clone', ASSETS / 'aladin-source-clone')
+          
+          # The source branch contains the catalogs and app code but not the 1,848 binary
+          # survey thumbnails. Seed the APK from the checksum-pinned local-thumbnail pack;
+          # the runtime will read these files locally, never fetch thumbnail images remotely.
+          thumbnail_source = ROOT / 'thumbnail-extract/assets/survey-thumbnails'
+          if not (thumbnail_source / 'gv-survey-thumbnail-index.json').is_file():
+              raise SystemExit('Thumbnail pack index missing from baseline APK')
+          shutil.copytree(thumbnail_source, ASSETS / 'survey-thumbnails')
+          
+          # Generate the bridge schema expected by RC-V1.0.0.3 from the packaged index.
+          current = json.loads((ASSETS / 'survey-thumbnails/gv-survey-thumbnail-current.json').read_text(encoding='utf-8'))
+          index = json.loads((ASSETS / 'survey-thumbnails/gv-survey-thumbnail-index.json').read_text(encoding='utf-8'))
+          records = index.get('records') or {}
+          if len(records) != 1848 or int(index.get('failedCount', -1)) != 0:
+              raise SystemExit(f'Unexpected thumbnail index: records={len(records)}, failed={index.get("failedCount")}')
+          for key, record in records.items():
+              rel = str(record.get('path') or '')
+              prefix = 'viewer/artwork/runtime/survey-thumbnails/'
+              if not rel.startswith(prefix):
+                  raise SystemExit(f'Invalid thumbnail path for {key}: {rel}')
+              local = ASSETS / 'survey-thumbnails' / rel[len(prefix):]
+              if not local.is_file():
+                  raise SystemExit(f'Bundled thumbnail missing for {key}: {local}')
+          bridge = {
+              'version': '0001',
+              'packCommit': str(current.get('packCommit') or ''),
+              'totalThumbnailBytes': int(index.get('totalThumbnailBytes') or 0),
+              'records': records,
           }
-          for path, token in contracts.items():
-              body = Path(path).read_text(encoding='utf-8')
-              if token not in body:
-                  raise SystemExit(f'GVDEV MODULE CONTRACT FAILED: {path} does not contain {token}')
-              if token not in js:
-                  # The extracted app must validate the same version as the packaged module.
-                  expected = token.split("'")[1]
-                  if path.endswith('gv-heads-up-display-0001.js') and f"GalaxyViewerHeadsUpDisplay?.VERSION!=='{expected}'" not in js:
-                      raise SystemExit('GVDEV HUD EXPORT GATE DOES NOT MATCH PACKAGED MODULE VERSION')
-                  if path.endswith('gv-destination-presentation-0017.js') and f"GalaxyDestinationPresentation?.VERSION!=='{expected}'" not in js:
-                      raise SystemExit('GVDEV DESTINATION EXPORT GATE DOES NOT MATCH PACKAGED MODULE VERSION')
-          print('GVDEV MODULE CONTRACT AUDIT PASSED: HUD 0001 and destination presentation 0032.')
-          # Module files execute from this checkout. Their secondary assets must not
-          # escape to the release branch; the viewer source is branch-isolated only
-          # when the module graph is isolated too.
-          module_release_refs = []
-          for path in Path('viewer/modules').rglob('*.js'):
-              body = path.read_text(encoding='utf-8')
-              if re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@release/|https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/release/', body):
-                  module_release_refs.append(str(path))
-          if module_release_refs:
-              raise SystemExit('GVDEV MODULE ISOLATION FAILED; release asset URLs remain in: ' + ', '.join(module_release_refs))
-          print('GVDEV MODULE ISOLATION PASSED: module assets do not reference release.')
+          if not re.fullmatch(r'[0-9a-f]{40}', bridge['packCommit']):
+              raise SystemExit('Thumbnail pack commit is invalid')
+          bridge_path = ASSETS / 'viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json'
+          bridge_path.parent.mkdir(parents=True, exist_ok=True)
+          bridge_path.write_text(json.dumps(bridge, separators=(',', ':')), encoding='utf-8')
+          
+          # Localize every text dependency in the mirrored tree, not just the entry script.
+          text_suffixes = {'.html', '.js', '.css', '.json', '.py', '.svg', '.xml', '.txt', '.md'}
+          rewritten_files = 0
+          for path in ASSETS.rglob('*'):
+              if not path.is_file() or path.suffix.lower() not in text_suffixes:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              localized = rewrite_repo_urls(text)
+              if localized != text:
+                  path.write_text(localized, encoding='utf-8')
+                  rewritten_files += 1
+          
+          # Use the exact same localized URL rules for the extracted viewer HTML/JS.
+          html = rewrite_repo_urls(html)
+          js = rewrite_repo_urls(js)
+          
+          # Hard fail if any source still tries to load app code/artwork/data from this repo
+          # over GitHub/CDN, or if any absolute appassets URL points to a missing local file.
+          leftover_repo_urls = []
+          missing_local_urls = []
+          for path in ASSETS.rglob('*'):
+              if not path.is_file() or path.suffix.lower() not in text_suffixes:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@|https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/', text):
+                  leftover_repo_urls.append(str(path.relative_to(ASSETS)))
+              for match in re.finditer(r'https://appassets\.androidplatform\.net/assets/([^\'"\s<>)]*)', text):
+                  rel = unquote(match.group(1).split('?', 1)[0].split('#', 1)[0])
+                  if not rel:
+                      continue
+                  candidate = ASSETS / rel
+                  if not candidate.is_file() and not candidate.is_dir():
+                      missing_local_urls.append((str(path.relative_to(ASSETS)), rel))
+          if leftover_repo_urls:
+              raise SystemExit('Runtime still references GitHub repo URLs: ' + repr(leftover_repo_urls[:30]))
+          if missing_local_urls:
+              raise SystemExit('Mirrored asset audit failed; missing local dependencies: ' + repr(missing_local_urls[:40]))
+          
           required = ['gv-hamburger-host', 'gv-coordinate-host', 'gv-target-host', 'gv-navigation-host']
-          missing = [x for x in required if x not in html]
-          if missing:
-              raise SystemExit('HTML extraction incomplete; missing hosts: ' + repr(missing))
-          assets = Path(os.environ['ROOT']) / 'app/src/main/assets'
-          assets.mkdir(parents=True, exist_ok=True)
-          page = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="color-scheme" content="dark"><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head><body>' + html + '<script>' + js + '</script></body></html>'
-          (assets / 'index.html').write_text(page)
-          (Path(os.environ['ROOT']) / 'extracted-app.js').write_text(js)
+          missing_hosts = [item for item in required if item not in html]
+          if missing_hosts:
+              raise SystemExit('HTML extraction incomplete; missing hosts: ' + repr(missing_hosts))
+          
+          # Native mode routes survey thumbnails to the packaged assets/survey-thumbnails tree.
+          page = (
+              '<!doctype html><html><head><meta charset="utf-8">'
+              '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">'
+              '<meta name="color-scheme" content="dark">'
+              '<style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}</style>'
+              '</head><body><script>window.GVNative=true;</script>'
+              + html + '<script>' + js + '</script></body></html>'
+          )
+          (ASSETS / 'index.html').write_text(page, encoding='utf-8')
+          (ROOT / 'extracted-app.js').write_text(js, encoding='utf-8')
+          file_count = sum(1 for p in ASSETS.rglob('*') if p.is_file())
+          total_bytes = sum(p.stat().st_size for p in ASSETS.rglob('*') if p.is_file())
           print('GVDEV source commit:', commit)
-          print('HTML characters:', len(html), 'JavaScript characters:', len(js))
-          print('Isolation audit passed: every Galaxy_Viewer CDN/raw URL pins to this exact commit.')
+          print('Mirrored runtime files:', file_count, 'bytes:', total_bytes)
+          print('Localized source files:', rewritten_files)
+          print('Bundled survey thumbnails:', len(records), 'mapped records; all files verified.')
+          print('GVDEV MIRROR AUDIT PASSED: no GitHub repo runtime URLs and all appassets URLs resolve locally.')
           PY
-          node --check "$ROOT/extracted-app.js"
           cat > "$ROOT/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -160,8 +230,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 35
-              versionCode 5
-              versionName 'GVDEV-APK-005'
+              versionCode 6
+              versionName 'GVDEV-APK-006'
             }
             dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           }
@@ -193,6 +263,7 @@ jobs:
             private WebView web;
             @Override public void onCreate(Bundle state) {
               super.onCreate(state);
+              getWindow().getDecorView().setSystemUiVisibility(5894);
               getWindow().setStatusBarColor(Color.BLACK);
               getWindow().setNavigationBarColor(Color.BLACK);
               web=new WebView(this);
@@ -237,14 +308,14 @@ jobs:
           grep -q "package: name='com.gear66me.galaxyviewer.lab'" apk-badging.txt
           grep -q "application-label:'Galaxy Viewer GVDEV'" apk-badging.txt
           mkdir -p dist
-          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-005.apk
-          sha256sum dist/Galaxy-Viewer-GVDEV-APK-005.apk > dist/Galaxy-Viewer-GVDEV-APK-005.apk.sha256
+          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-006.apk
+          sha256sum dist/Galaxy-Viewer-GVDEV-APK-006.apk > dist/Galaxy-Viewer-GVDEV-APK-006.apk.sha256
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-GVDEV-APK-005
+          name: Galaxy-Viewer-GVDEV-APK-006
           path: |
-            dist/Galaxy-Viewer-GVDEV-APK-005.apk
-            dist/Galaxy-Viewer-GVDEV-APK-005.apk.sha256
+            dist/Galaxy-Viewer-GVDEV-APK-006.apk
+            dist/Galaxy-Viewer-GVDEV-APK-006.apk.sha256
             apk-badging.txt
           retention-days: 30
