@@ -1,0 +1,132 @@
+name: Build Galaxy Viewer GVDEV APK
+
+on:
+  push:
+    branches: [dev/gvdev]
+    paths:
+      - 'viewer/**'
+      - '.github/workflows/build-gvdev-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-gvdev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev/gvdev
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Prepare isolated GVDEV Android app
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/gvdev"
+          mkdir -p "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab" "$ROOT/app/src/main/assets" "$ROOT/app/src/main/res/values"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, json
+          src = Path('viewer/RC-V1.0.0.2.py').read_text()
+          def extract(pattern, label):
+              m = re.search(pattern, src, re.S)
+              if not m: raise SystemExit('Could not extract '+label+' from viewer source')
+              return m.group(1)
+          html = extract(r'display\\(HTML\\(\\"\\"\\"([\\s\\S]*?)\\"\\"\\"\\)\\)', 'HTML')
+          js = extract(r'display\\(Javascript\\(r?\\"\\"\\"([\\s\\S]*?)\\"\\"\\"\\)\\)', 'JavaScript')
+          # Development APK pulls runtime modules from the development branch, never release.
+          html = html.replace('gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/', 'gear66me-ui/Galaxy_Viewer@dev/gvdev/')
+          js = js.replace('gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/', 'gear66me-ui/Galaxy_Viewer@dev/gvdev/')
+          # Keep the bundled page independent of Jupyter display wrappers.
+          Path('ROOT/app/src/main/assets/index.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="color-scheme" content="dark"><style>html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}</style></head><body>'+html+'<script>'+js+'</script></body></html>')
+          print('Extracted embedded HTML/JS; development CDN URLs rewritten to @dev/gvdev')
+          PY
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='GalaxyViewerGVDEV'
+          include ':app'
+          EOF
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' version '8.7.3' apply false }
+          EOF
+          cat > "$ROOT/gradle.properties" <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.gear66me.galaxyviewer.lab'
+            compileSdk 35
+            defaultConfig {
+              applicationId 'com.gear66me.galaxyviewer.lab'
+              minSdk 29
+              targetSdk 35
+              versionCode 1
+              versionName 'GVDEV-0001'
+            }
+          }
+          EOF
+          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          <resources><style name="GVDEVTheme" parent="@android:style/Theme.Material.NoActionBar"><item name="android:windowBackground">#000000</item><item name="android:navigationBarColor">#000000</item><item name="android:statusBarColor">#000000</item><item name="android:windowLightStatusBar">false</item></style></resources>
+          EOF
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer GVDEV" android:theme="@style/GVDEVTheme" android:usesCleartextTraffic="false">
+              <activity android:name=".MainActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true" android:screenOrientation="portrait">
+                <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+          cat > "$ROOT/app/src/main/java/com/gear66me/galaxyviewer/lab/MainActivity.java" <<'EOF'
+          package com.gear66me.galaxyviewer.lab;
+          import android.app.Activity; import android.os.Bundle; import android.graphics.Color; import android.view.View; import android.webkit.WebChromeClient; import android.webkit.WebSettings; import android.webkit.WebView; import android.webkit.WebViewClient;
+          public final class MainActivity extends Activity {
+            private WebView web;
+            @Override public void onCreate(Bundle state) { super.onCreate(state); getWindow().setStatusBarColor(Color.BLACK); getWindow().setNavigationBarColor(Color.BLACK); web=new WebView(this); web.setBackgroundColor(Color.BLACK); WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true); s.setMediaPlaybackRequiresUserGesture(false); web.setWebViewClient(new WebViewClient()); web.setWebChromeClient(new WebChromeClient()); setContentView(web); web.loadUrl("file:///android_asset/index.html"); }
+            @Override public void onBackPressed() { if(web!=null && web.canGoBack()) web.goBack(); else super.onBackPressed(); }
+          }
+          EOF
+          echo "ROOT=$ROOT" >> "$GITHUB_ENV"
+
+      - name: Build GVDEV debug APK
+        run: gradle --no-daemon -p "$ROOT" :app:assembleDebug
+
+      - name: Verify APK identity and signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$ROOT/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee apk-badging.txt
+          grep -q "package: name='com.gear66me.galaxyviewer.lab'" apk-badging.txt
+          grep -q "application-label:'Galaxy Viewer GVDEV'" apk-badging.txt
+          mkdir -p dist
+          cp "$APK" dist/Galaxy-Viewer-GVDEV-Build-0001.apk
+          sha256sum dist/Galaxy-Viewer-GVDEV-Build-0001.apk > dist/Galaxy-Viewer-GVDEV-Build-0001.apk.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-GVDEV-Build-0001
+          path: |
+            dist/Galaxy-Viewer-GVDEV-Build-0001.apk
+            dist/Galaxy-Viewer-GVDEV-Build-0001.apk.sha256
+            apk-badging.txt
+          retention-days: 30
