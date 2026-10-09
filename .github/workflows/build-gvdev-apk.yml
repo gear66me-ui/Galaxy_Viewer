@@ -86,6 +86,8 @@ jobs:
               if not m:
                   continue
               path = unquote((m.group(1) or m.group(2)).split('?', 1)[0])
+              if not path and url.endswith('/'):
+                  continue  # pinned repository root used as a base for dynamic resource paths
               if path == 'viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json':
                   print('OPTIONAL RESOURCE NOT PRESENT (fallback expected):', path)
                   continue
