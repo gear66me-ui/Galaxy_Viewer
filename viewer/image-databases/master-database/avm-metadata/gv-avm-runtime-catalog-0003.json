@@ -34822,7 +34822,27 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distance": "6,500 light-years",
+      "science": {
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Hubble_authoritative_object_distance",
+        "distanceEvidence": "NASA Eagle Nebula / Pillars of Creation object distance: 6,500 light-years",
+        "distanceDisplay": "6.5 KLY",
+        "distanceEstimated": false,
+        "sizeKly": [
+          0.00607,
+          0.01229
+        ],
+        "sizeMethod": "derived_from_avm_wcs_fov_and_6500_light_year_distance",
+        "sizeEstimated": true,
+        "sizeDisplay": "EST. 6.1 × 12.3 LY",
+        "ageGyr": 13.4699935,
+        "ageMethod": "cosmic_age_at_emission_from_light_travel_distance",
+        "ageEstimated": true,
+        "ageDisplay": "EST. 13.47 BY",
+        "ageEvidence": "Cosmic age at photon emission; flat ΛCDM model H0=70 km/s/Mpc, Ωm=0.3, ΩΛ=0.7; 6,500 light-year lookback"
+      }
     },
     {
       "providerKey": "hubble",
