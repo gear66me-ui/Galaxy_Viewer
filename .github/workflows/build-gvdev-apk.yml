@@ -80,6 +80,7 @@ jobs:
           print('HTML characters:', len(html), 'JavaScript characters:', len(js))
           print('Isolation audit passed: every Galaxy_Viewer CDN/raw URL pins to this exact commit.')
           PY
+          node --check "$ROOT/extracted-app.js"
           cat > "$ROOT/settings.gradle" <<'EOF'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
