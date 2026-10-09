@@ -230,8 +230,8 @@ jobs:
               applicationId 'com.gear66me.galaxyviewer.lab'
               minSdk 29
               targetSdk 35
-              versionCode 6
-              versionName 'GVDEV-APK-006'
+              versionCode 7
+              versionName 'GVDEV-APK-007'
             }
             dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
           }
@@ -294,6 +294,12 @@ jobs:
           EOF
           echo "ROOT=$ROOT" >> "$GITHUB_ENV"
 
+      - name: Validate extracted JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check "$ROOT/extracted-app.js"
+
       - name: Build GVDEV debug APK
         run: gradle --no-daemon -p "$ROOT" :app:assembleDebug
 
@@ -308,14 +314,14 @@ jobs:
           grep -q "package: name='com.gear66me.galaxyviewer.lab'" apk-badging.txt
           grep -q "application-label:'Galaxy Viewer GVDEV'" apk-badging.txt
           mkdir -p dist
-          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-006.apk
-          sha256sum dist/Galaxy-Viewer-GVDEV-APK-006.apk > dist/Galaxy-Viewer-GVDEV-APK-006.apk.sha256
+          cp "$APK" dist/Galaxy-Viewer-GVDEV-APK-007.apk
+          sha256sum dist/Galaxy-Viewer-GVDEV-APK-007.apk > dist/Galaxy-Viewer-GVDEV-APK-007.apk.sha256
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-GVDEV-APK-006
+          name: Galaxy-Viewer-GVDEV-APK-007
           path: |
-            dist/Galaxy-Viewer-GVDEV-APK-006.apk
-            dist/Galaxy-Viewer-GVDEV-APK-006.apk.sha256
+            dist/Galaxy-Viewer-GVDEV-APK-007.apk
+            dist/Galaxy-Viewer-GVDEV-APK-007.apk.sha256
             apk-badging.txt
           retention-days: 30
