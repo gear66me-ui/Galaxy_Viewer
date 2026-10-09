@@ -1904,7 +1904,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
         const translateStarted=performance.now();let lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
-                const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*20/1000);
+                const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed/20);
                 if(sample!==lastSample){
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
                     if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
@@ -1921,7 +1921,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
-                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed*20/1000);
+                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/20);
                 if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);aladin.setFov(fov);lastSample=sample}
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
             }catch(error){reject(error)}};requestAnimationFrame(frame);
@@ -1933,7 +1933,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
-            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*20/1000);
+            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/20);
             if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{aladin.setFov(55);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 55° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
             if(!zoomInStarted&&t>=zoomInThreshold){
                 zoomInStarted=true;
