@@ -46,7 +46,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import os, re, subprocess
-          src = Path('viewer/RC-V1.0.0.2.py').read_text()
+          src = Path('viewer/RC-V1.0.0.3.py').read_text()
           def extract(pattern, label):
               m = re.search(pattern, src, re.S)
               if not m:
@@ -61,6 +61,16 @@ jobs:
               return text
           # Preserve HTML and JavaScript as separate blocks. Splitting the combined
           # string at its first newline truncated the HTML and removed the app shell.
+          # Correct stale filenames to files that actually exist on this GVDEV branch.
+          module_path_fixes = {
+              '/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js': '/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js',
+              '/viewer/modules/hud/gv-heads-up-display-0002.js': '/viewer/modules/hud/gv-heads-up-display-0001.js',
+              '/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js': '/viewer/modules/random-galaxy/gv-random-travel-presentation.js',
+              '/viewer/modules/destination-presentation/gv-destination-presentation-0031.js': '/viewer/modules/destination-presentation/gv-destination-presentation-0017.js',
+          }
+          for old, new in module_path_fixes.items():
+              html = html.replace(old, new)
+              js = js.replace(old, new)
           html, js = pin_urls(html), pin_urls(js)
           combined = html + '\n' + js
           repo_urls = re.findall(r'https://(?:cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@|raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/)[^\s\"\']+', combined)
