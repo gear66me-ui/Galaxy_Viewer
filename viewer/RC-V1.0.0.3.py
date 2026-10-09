@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0017"
+BUILD_NUMBER = "0018"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0017';
+const GV200001_BUILD='0018';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0017`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0018`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1606,9 +1606,9 @@ let gvAutoZoom=null;
 let gvHdTravelHoldAt=0;
 function gvHoldDirectHdDuringTravel(now){
     if(!directHdOverlay)return;
-    if(Number(now)-gvHdTravelHoldAt<120)return;
-    gvHdTravelHoldAt=Number(now);
-    try{aladin.setOverlayImageLayer(directHdOverlay,directHdLayerName)}catch(_){ }
+    // BUILD 0018: a registered Aladin image layer must not be re-added as a
+    // keep-alive. setOverlayImageLayer() replaces/reprocesses the image layer.
+    // Keep the existing layer registered; only refresh its opacity.
     try{applyDirectHdOpacity()}catch(_){ }
 }
 function gvSetZoomCommand(command){
