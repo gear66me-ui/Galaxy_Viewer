@@ -119,7 +119,7 @@ jobs:
           module_release_refs = []
           for path in Path('viewer/modules').rglob('*.js'):
               body = path.read_text(encoding='utf-8')
-              if re.search(r'https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@release/|https://raw\\.githubusercontent\\.com/gear66me-ui/Galaxy_Viewer/release/', body):
+              if re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@release/|https://raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/release/', body):
                   module_release_refs.append(str(path))
           if module_release_refs:
               raise SystemExit('GVDEV MODULE ISOLATION FAILED; release asset URLs remain in: ' + ', '.join(module_release_refs))
