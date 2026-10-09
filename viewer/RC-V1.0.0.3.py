@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0022"
+BUILD_NUMBER = "0023"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0022';
+const GV200001_BUILD='0023';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1618,18 +1618,21 @@ function gvHoldDirectHdDuringTravel(now){
     // Keep the existing layer registered; only refresh its opacity.
     try{applyDirectHdOpacity()}catch(_){ }
 }
-function gvSetZoomCommand(command){
+function gvSetZoomCommand(command,{moveThumb=true}={}){
     zoomCommand=Math.max(-1,Math.min(1,Number(command)||0));
-    zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
+    // Manual input moves the thumb. Automated travel uses the same command
+    // path invisibly, so the on-screen slider never telegraphs the choreography.
+    if(moveThumb)zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
 }
-// BUILD 0022 EXPERIMENT: travel requests a slider command; zoomStep() remains
-// the sole travel-animation writer of FOV. Positive commands zoom in.
+// BUILD 0023: keep travel zoom on the slider's RAF command loop, but decouple
+// its hidden command from the visible thumb and ease velocity as the target nears.
+// Positive commands zoom in; negative commands zoom out.
 function gvCommandZoomTowardFov(targetFov){
     const target=Number(targetFov),raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
     if(!Number.isFinite(target)||target<=0||!Number.isFinite(current)||current<=0)return false;
     const error=Math.log(current/target);
-    const command=Math.abs(error)<=Math.max(1e-7,target*.001/current)?0:Math.max(-1,Math.min(1,error/.018));
-    gvSetZoomCommand(command);
+    const command=Math.abs(error)<=Math.max(1e-7,target*.001/current)?0:Math.max(-1,Math.min(1,error*12));
+    gvSetZoomCommand(command,{moveThumb:false});
     if(command&&!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
     return true;
 }
@@ -1639,11 +1642,11 @@ function gvFinishSliderZoom(targetFov){
         let frames=0;
         const settle=()=>{
             if(!gvCommandZoomTowardFov(target)||++frames>900){
-                gvSetZoomCommand(0);resolve(false);return;
+                gvSetZoomCommand(0,{moveThumb:false});resolve(false);return;
             }
             const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
             if(Number.isFinite(current)&&Math.abs(current-target)<=Math.max(1e-7,target*.001)){
-                gvSetZoomCommand(0);resolve(true);return;
+                gvSetZoomCommand(0,{moveThumb:false});resolve(true);return;
             }
             requestAnimationFrame(settle);
         };
