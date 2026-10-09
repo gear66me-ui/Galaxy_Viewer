@@ -141,7 +141,7 @@ jobs:
           bridge_path.write_text(json.dumps(bridge, separators=(',', ':')), encoding='utf-8')
           
           # Localize every text dependency in the mirrored tree, not just the entry script.
-          text_suffixes = {'.html', '.js', '.css', '.json', '.py', '.svg', '.xml', '.txt', '.md'}
+          text_suffixes = {'.html', '.js', '.css', '.json', '.svg', '.xml'}
           rewritten_files = 0
           for path in ASSETS.rglob('*'):
               if not path.is_file() or path.suffix.lower() not in text_suffixes:
