@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0024"
+BUILD_NUMBER = "0025"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0024';
+const GV200001_BUILD='0025';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1608,7 +1608,6 @@ setInterval(gvSyncFovReadout,GV_FOV_REPORT_MS);
 let zoomCommand=0;
 let zoomFrame=0;
 let gvAutoZoom=null;
-let gvTravelZoomHidden=false;
 // SINGLE HD TRAVEL AUTHORITY — keep the active raster registered during
 // Random Galaxy travel. Visibility is retired only by the 55° FOV rule below.
 let gvHdTravelHoldAt=0;
@@ -1621,7 +1620,7 @@ function gvHoldDirectHdDuringTravel(now){
 }
 function gvSetZoomCommand(command){
     zoomCommand=Math.max(-1,Math.min(1,Number(command)||0));
-    if(!gvTravelZoomHidden)zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
+    zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
 }
 function zoomStep(){
     zoomFrame=0;
@@ -1636,10 +1635,10 @@ function zoomStep(){
                 const eta=Math.abs(Math.log(current/a.target)/0.018)*(1000/60);
                 if(!a.approachStarted&&eta<=a.approachMs){a.approachStarted=true;try{a.onApproach?.()}catch(error){console.error('GV ZOOM APPROACH CALLBACK FAILED',error)}}
                 let level=attack;
-                if(a.linearLanding&&eta<=a.landingMs)level=Math.min(level,Math.max(0.002,eta/a.landingMs));
-                gvSetZoomCommand(a.direction*Math.max(0.002,Math.min(1,level)));
-                if((a.direction<0&&current>=a.target)||(a.direction>0&&current<=a.target)||Math.abs(a.target-current)<=Math.max(1e-7,a.target*.0001)){
-                    aladin.setFov(a.target);const done=a.resolve;gvAutoZoom=null;gvSetZoomCommand(0);gvTravelZoomHidden=false;done(true);return;
+                if(a.linearLanding&&eta<=a.landingMs)level=Math.min(level,Math.max(0.035,eta/a.landingMs));
+                gvSetZoomCommand(a.direction*Math.max(0.035,Math.min(1,level)));
+                if((a.direction<0&&current>=a.target)||(a.direction>0&&current<=a.target)||Math.abs(a.target-current)<=Math.max(1e-7,a.target*.001)){
+                    aladin.setFov(a.target);const done=a.resolve;gvAutoZoom=null;gvSetZoomCommand(0);done(true);return;
                 }
             }
             aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*.018))));
@@ -1648,8 +1647,8 @@ function zoomStep(){
     zoomFrame=requestAnimationFrame(zoomStep);
 }
 function gvSettleAutoZoom(result=false){
-    if(!gvAutoZoom){gvTravelZoomHidden=false;return}
-    const done=gvAutoZoom.resolve;gvAutoZoom=null;gvTravelZoomHidden=false;
+    if(!gvAutoZoom)return;
+    const done=gvAutoZoom.resolve;gvAutoZoom=null;
     try{done(result)}catch(_){}
 }
 function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,approachMs=500,linearLanding=true,onApproach=null}={}){
@@ -1658,12 +1657,7 @@ function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,a
     const raw=aladin.getFov?.(),start=Number(Array.isArray(raw)?raw[0]:raw);
     if(!Number.isFinite(start)||start<=0)return Promise.resolve(false);
     gvSettleAutoZoom(false);
-    gvTravelZoomHidden=true;
-    return new Promise(resolve=>{
-        gvAutoZoom={target,start,direction,started:performance.now(),attackMs,landingMs,approachMs,linearLanding,onApproach,approachStarted:false,resolve};
-        gvSetZoomCommand(direction*.002);
-        if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep);
-    });
+    return new Promise(resolve=>{gvAutoZoom={target,start,direction,started:performance.now(),attackMs,landingMs,approachMs,linearLanding,onApproach,approachStarted:false,resolve};gvSetZoomCommand(direction*.035);if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep)});
 }
 function gvTimedZoomToTarget(targetFov,{durationMs=null,attackMs=500,releaseMs=500}={}){
     const target=Number(targetFov),raw=aladin.getFov?.(),start=Number(Array.isArray(raw)?raw[0]:raw);
@@ -1936,16 +1930,23 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
         aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
         aladin.setRotation(targetRotation);
         try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
-        gvHoldDirectHdDuringTravel(performance.now());
-        await gvEnergizeZoomJoystick(1,finalFov,{attackMs:350,landingMs:3500,approachMs:2500,linearLanding:true});
+        const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
+        await new Promise((resolve,reject)=>{
+            const frame=now=>{try{
+                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/10);
+                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);aladin.setFov(fov);lastSample=sample}
+                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
+            }catch(error){reject(error)}};requestAnimationFrame(frame);
+        });
+        aladin.setFov(finalFov);
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false,zoomInPromise=null;
+    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
-            if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 55° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
+            if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{aladin.setFov(55);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 55° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
             if(!zoomInStarted&&t>=zoomInThreshold){
                 zoomInStarted=true;
                 try{
@@ -1954,20 +1955,19 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
                     console.info('GV HD HANDOFF REQUESTED — ZOOM-IN START');
                     onZoomInStart?.();
                 }catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
-                zoomInPromise=gvEnergizeZoomJoystick(1,finalFov,{attackMs:350,landingMs:3500,approachMs:2500,linearLanding:true});
             }
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:55,startRotation,targetRotation});
                 if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                 gvHoldDirectHdDuringTravel(now);
-                if(t<zoomInThreshold)aladin.setFov(state.fov);
+                aladin.setFov(state.fov);
                 if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
                 else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
                 aladin.setRotation(state.rotation);lastSample=sample;
             }
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            Promise.resolve(zoomInPromise).then(()=>{aladin.setRotation(targetRotation);resolve(prepared)}).catch(reject);
+            aladin.setFov(finalFov);aladin.setRotation(targetRotation);resolve(prepared);
         }catch(error){reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
