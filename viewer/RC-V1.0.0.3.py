@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0015"
+BUILD_NUMBER = "0016"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0015';
+const GV200001_BUILD='0016';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0016`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1363,7 +1363,7 @@ const DIRECT_HD_LAYER='GV_DIRECT_HD_0056';
 let directHdLayerSequence=0;
 let directHdLayerName=DIRECT_HD_LAYER;
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
-const MAX_BLEND_DIMENSION=2048;
+const MAX_BLEND_DIMENSION=1536;
 const VIGNETTE=Object.freeze({diameter:1.04,core:0.72,mid1:0.42,mid2:0.72,mid3:0.90,alpha1:0.90,alpha2:0.52,alpha3:0.16});
 const GV_VIGNETTE_EXCEPTIONS=Object.freeze({
     potw1947a:Object.freeze({mode:'edge-only',edgeBlend:0.10,decay:1.25})
@@ -1723,14 +1723,14 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                         workingBitmap=await createImageBitmap(bitmap,{resizeWidth:targetW,resizeHeight:targetH,resizeQuality:'high'});
                     }catch(_){
                         const resizeCanvas=document.createElement('canvas');resizeCanvas.width=targetW;resizeCanvas.height=targetH;
-                        const resizeCtx=resizeCanvas.getContext('2d');if(!resizeCtx)throw new Error('HARD 2048 RESIZE CONTEXT UNAVAILABLE');
+                        const resizeCtx=resizeCanvas.getContext('2d');if(!resizeCtx)throw new Error('HARD 1536 RESIZE CONTEXT UNAVAILABLE');
                         resizeCtx.drawImage(bitmap,0,0,targetW,targetH);
                         workingBitmap=await createImageBitmap(resizeCanvas);
                         resizeCanvas.width=0;resizeCanvas.height=0;
                     }
                     try{bitmap.close?.()}catch(_){}
                     w=targetW;h=targetH;
-                    console.info('GV HD HARD 2048 RESIZE',{source:[sourceW,sourceH],target:[w,h]});
+                    console.info('GV HD HARD 1536 RESIZE',{source:[sourceW,sourceH],target:[w,h]});
                 }
                 const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
