@@ -1,14 +1,14 @@
 {
   "release": "RC-V1.0.0.3",
   "sourceBranch": "release",
-  "sourceCommit": "8cb321b1275c0ea072a0189e85505395b84db2e2",
-  "build": "0020",
+  "sourceCommit": "4e715d1b04e5ab1b3551b959d6a81852a16821bc",
+  "build": "0021",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
-    "viewer/modules/target-simbad/gv-target-simbad-0007.js",
+    "viewer/modules/target-simbad/gv-target-simbad-0005.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
     "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
     "viewer/modules/random-galaxy/gv-random-travel-presentation-003.js",
