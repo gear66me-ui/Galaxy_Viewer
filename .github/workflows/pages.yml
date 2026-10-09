@@ -97,6 +97,10 @@ jobs:
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert "const GV200001_BUILD='0023';" in rc
+          assert 'gvSetZoomCommand(command,{moveThumb:false});' in rc
+          assert 'Math.min(1,error*12)' in rc
+          flight=rc[rc.index('async function gvFly130H('):rc.index('// SECTION 034')]
+          assert 'aladin.setFov(' not in flight
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
