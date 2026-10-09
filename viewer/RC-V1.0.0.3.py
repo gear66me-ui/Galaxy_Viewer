@@ -1648,8 +1648,8 @@ function zoomStep(){
     zoomFrame=requestAnimationFrame(zoomStep);
 }
 function gvSettleAutoZoom(result=false){
-    if(!gvAutoZoom)return;
-    const done=gvAutoZoom.resolve;gvAutoZoom=null;
+    if(!gvAutoZoom){gvTravelZoomHidden=false;return}
+    const done=gvAutoZoom.resolve;gvAutoZoom=null;gvTravelZoomHidden=false;
     try{done(result)}catch(_){}
 }
 function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,approachMs=500,linearLanding=true,onApproach=null}={}){
