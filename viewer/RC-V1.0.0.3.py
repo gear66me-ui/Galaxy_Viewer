@@ -1887,77 +1887,61 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
 async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,registeredPromise=null,switchToSphericalAtApex=false}={}){
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
-    const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
-    let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    if(firstHomeTrip){
-        if(registeredPromise){
-            try{
-                const registered=await registeredPromise;
-                const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);
-                if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){
-                    ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation;
-                }
-            }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
-        }
-        const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
-        const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
-        const translateStarted=performance.now();let lastSample=-1;
-        await new Promise((resolve,reject)=>{
-            const frame=now=>{try{
-                const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed*20/1000);
-                if(sample!==lastSample){
-                    const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
-                    if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
-                    aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
-                    aladin.setRotation(rotation);
-                    lastSample=sample;
-                }
-                if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
-            }catch(error){reject(error)}};requestAnimationFrame(frame);
-        });
-        aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
-        aladin.setRotation(targetRotation);
-        try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
-        const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);lastSample=-1;
-        await new Promise((resolve,reject)=>{
-            const frame=now=>{try{
-                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed*20/1000);
-                if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);aladin.setFov(fov);lastSample=sample}
-                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}resolve();
-            }catch(error){reject(error)}};requestAnimationFrame(frame);
-        });
-        aladin.setFov(finalFov);
-        return prepared;
+    if(registeredPromise){
+        try{
+            const registered=await registeredPromise;
+            const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);
+            if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){
+                ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation;
+            }
+        }catch(error){console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error)}
     }
-    if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,projectionSwitchedAtApex=false;
+    const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]);
+    let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
+    const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
+    const zoomOutSeconds=firstHomeTrip?1.5:4.25;
+    const translateSeconds=firstHomeTrip?4.5:8.5;
+    const zoomInSeconds=firstHomeTrip?1.5:4.25;
+    const nativeZoom=(fov,seconds)=>new Promise((resolve,reject)=>{
+        try{
+            if(typeof aladin.zoomToFoV!=='function')throw new Error('GV NATIVE ZOOM API UNAVAILABLE: zoomToFoV');
+            aladin.zoomToFoV(fov,seconds,()=>resolve());
+        }catch(error){reject(error)}
+    });
+    // PHASE 1: one native animated zoom command to the 55-degree bird's-eye view.
+    // Galaxy Viewer does not write FOV during this flight.
+    try{aladin.stopAnimation?.()}catch(error){console.warn('GV PRE-FLIGHT ANIMATION STOP SKIPPED',error)}
+    await nativeZoom(55,zoomOutSeconds);
+    if(switchToSphericalAtApex){
+        try{hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 55° APEX')}
+        catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}
+    }
+    // PHASE 2: hold FOV steady; translate along the great-circle route and rotate.
+    const translateStarted=performance.now();let lastSample=-1;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
-            const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs*20/1000);
-            if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{aladin.setFov(55);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 55° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
-            if(!zoomInStarted&&t>=zoomInThreshold){
-                zoomInStarted=true;
-                try{
-                    // Keep the currently mounted HD raster visible until the incoming layer reports success.
-                    // gvInstallPreparedHd retires the previous layer only after the staged replacement mounts.
-                    console.info('GV HD HANDOFF REQUESTED — ZOOM-IN START');
-                    onZoomInStart?.();
-                }catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
-            }
-            if(t<1&&sample!==lastSample){
-                const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:55,startRotation,targetRotation});
-                if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
+            const elapsed=Math.min(translateSeconds*1000,now-translateStarted);
+            const u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000));
+            const sample=Math.floor(elapsed*20/1000);
+            if(sample!==lastSample){
+                const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u);
+                const rotation=startRotation+rotationDelta*u;
+                if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
+                aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
+                aladin.setRotation(rotation);
                 gvHoldDirectHdDuringTravel(now);
-                aladin.setFov(state.fov);
-                if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
-                else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
-                aladin.setRotation(state.rotation);lastSample=sample;
+                lastSample=sample;
             }
-            if(t<1){requestAnimationFrame(frame);return}
-            if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);aladin.setRotation(targetRotation);resolve(prepared);
-        }catch(error){reject(error)}};requestAnimationFrame(frame);
+            if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}
+            resolve();
+        }catch(error){reject(error)}};
+        requestAnimationFrame(frame);
     });
+    aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
+    aladin.setRotation(targetRotation);
+    try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
+    // PHASE 3: one native animated zoom command to the destination FOV.
+    await nativeZoom(finalFov,zoomInSeconds);
     return prepared;
 }
 
