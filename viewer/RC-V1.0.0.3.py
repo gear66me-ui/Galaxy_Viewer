@@ -2120,10 +2120,11 @@ async function gvPresentationDestination(destination){
             return blankCatalogMetadata();
         }
         const science=source?.science||{};
+        const validNumber=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
         const sizeKly=Array.isArray(science?.sizeKly)
-            ?science.sizeKly.filter(value=>Number.isFinite(Number(value))).map(Number)
-            :(Array.isArray(source?.sizeKly)?source.sizeKly.filter(value=>Number.isFinite(Number(value))).map(Number):[]);
-        const physicalSizeLy=Number.isFinite(Number(source?.physicalSizeLy))
+            ?science.sizeKly.filter(validNumber).map(Number)
+            :(Array.isArray(source?.sizeKly)?source.sizeKly.filter(validNumber).map(Number):[]);
+        const physicalSizeLy=validNumber(source?.physicalSizeLy)
             ?Number(source.physicalSizeLy)
             :(sizeKly.length?Math.max(...sizeKly)*1000:null);
         return Object.freeze({
@@ -2135,11 +2136,11 @@ async function gvPresentationDestination(destination){
             commonName:source?.displayName||source?.name||'',
             pseudonym:source?.pseudonym||source?.commonName||source?.displayName||source?.name||'',
             constellation:source?.constellation||'',
-            distanceMly:Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):null,
+            distanceMly:validNumber(science?.distanceMly)?Number(science.distanceMly):null,
             distance:science?.distanceDisplay||source?.distance||'',
             sizeKly:Object.freeze(sizeKly),
             physicalSizeLy,
-            ageYears:Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:null,
+            ageYears:validNumber(science?.ageGyr)?Number(science.ageGyr)*1e9:null,
             age:science?.ageDisplay||source?.ageDisplay||'',
             imageType:source?.imageType||'',
             title:source?.title||'',
