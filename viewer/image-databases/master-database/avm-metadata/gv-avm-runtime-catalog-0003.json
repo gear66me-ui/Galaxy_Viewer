@@ -1658,7 +1658,35 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 1400,
+      "distance": "1.4 billion light-years",
+      "ageGyr": 1.2581943546098908,
+      "ageYears": 1258194354.6098907,
+      "age": "EST. 1.26 GYR LOOKBACK",
+      "sizeKly": [
+        150.072,
+        109.511
+      ],
+      "physicalSizeLy": 150072,
+      "constellation": "Serpens",
+      "science": {
+        "distanceMly": 1400,
+        "distanceDisplay": "1.4 billion light-years",
+        "distanceEstimated": false,
+        "ageGyr": 1.2581943546098908,
+        "ageYears": 1258194354.6098907,
+        "ageDisplay": "EST. 1.26 GYR LOOKBACK",
+        "ageEstimated": true,
+        "sizeKly": [
+          150.072,
+          109.511
+        ],
+        "sizeDisplay": "EST. 150.1 × 109.5 KLY",
+        "sizeEstimated": true,
+        "redshift": 0.09645,
+        "redshiftDisplay": "z 0.09645"
+      }
     },
     {
       "providerKey": "chandra",

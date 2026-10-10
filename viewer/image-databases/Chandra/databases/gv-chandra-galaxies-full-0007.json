@@ -3313,7 +3313,9 @@
         "distanceDisplay": "1.4 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 150.1 × 109.5 KLY"
+        "sizeDisplay": "EST. 150.1 × 109.5 KLY",
+        "distanceBly": 1.4,
+        "ageYears": 1258194354.609891
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "3C 321",
