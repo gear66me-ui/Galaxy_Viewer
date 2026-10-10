@@ -2125,8 +2125,8 @@ async function gvPresentationDestination(destination){
         // image-specific row carries a conflicting 1.25 BLY / lookback-derived
         // age, so preserve the verified Chandra distance and cosmological age
         // regardless of which telescope supplies the displayed image.
-        const is3C321=/^(?:chandra-2007-)?3c[- ]?321$/i.test(String(source?.archiveId||source?.name||source?.designation||destination?.archiveId||destination?.name||destination?.designation||'').trim())
-            || /3c\s*321/i.test(String(source?.title||destination?.title||''));
+        const is3C321=[source?.archiveId,source?.id,source?.name,source?.designation,source?.displayName,source?.title,destination?.archiveId,destination?.id,destination?.name,destination?.designation,destination?.displayName,destination?.title]
+            .some(value=>/3c\s*[- ]?321/i.test(String(value||'')));
         const canonicalDistanceMly=is3C321?1400:(validNumber(science?.distanceMly)?Number(science.distanceMly):null);
         const canonicalCosmicAgeYears=is3C321?12.1334e9:(validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr)*1e9:(validNumber(science?.ageGyr)?Math.max(0,13.4667-Number(science.ageGyr))*1e9:null));
         const sizeKly=Array.isArray(science?.sizeKly)
