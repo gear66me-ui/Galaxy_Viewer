@@ -2084,41 +2084,70 @@ async function gvPresentationDestination(destination){
     const providerKey=String(destination?.providerKey||destination?.provider||'').trim().toLowerCase();
     const key=GV_PRESENTATION_PROVIDER_BY_CATALOG[rawCatalogKey]?rawCatalogKey:(GV_PRESENTATION_PROVIDER_BY_CATALOG[providerKey]?providerKey:'');
     const provider=GV_PRESENTATION_PROVIDER_BY_CATALOG[key];
-    let enriched=provider&&String(destination?.provider||'').trim().toUpperCase()!==provider
+    const enriched=provider&&String(destination?.provider||'').trim().toUpperCase()!==provider
         ? Object.freeze({...destination,provider})
         : destination;
+    // Display/science metadata must come from the matching individual provider catalog.
+    // Never substitute another row by catalogIndex or fall back to route/runtime values.
+    const blankCatalogMetadata=()=>Object.freeze({
+        ...enriched,
+        designation:'',
+        name:'',
+        commonName:'',
+        pseudonym:'',
+        constellation:'',
+        distanceMly:null,
+        distance:'',
+        sizeKly:Object.freeze([]),
+        physicalSizeLy:null,
+        ageYears:null,
+        age:'',
+        imageType:'',
+        title:'',
+        description:''
+    });
     try{
+        if(!key)throw new Error('PROVIDER CATALOG KEY MISSING');
         const catalog=await gvLoadPresentationCatalog(key);
         const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
         const url=String(destination?.imageUrl||destination?.selectedImageUrl||destination?.hdUrl||'').trim().toLowerCase();
-        const source=(
-            (id&&catalog?.byId.get(id))||
-            (url&&catalog?.byUrl.get(url))||
-            (Number.isInteger(Number(destination?.catalogIndex))&&catalog?.entries[Number(destination.catalogIndex)])
-        )?.entry;
-        if(!source)return enriched;
+        const match=(id&&catalog?.byId.get(id))||(url&&catalog?.byUrl.get(url));
+        const source=match?.entry;
+        if(!source){
+            console.warn('GV PRESENTATION CATALOG IDENTITY MATCH MISSING; SCIENCE METADATA CLEARED',{
+                catalogKey:key,archiveId:id,imageUrl:url,catalogIndex:destination?.catalogIndex
+            });
+            return blankCatalogMetadata();
+        }
         const science=source?.science||{};
+        const sizeKly=Array.isArray(science?.sizeKly)
+            ?science.sizeKly.filter(value=>Number.isFinite(Number(value))).map(Number)
+            :(Array.isArray(source?.sizeKly)?source.sizeKly.filter(value=>Number.isFinite(Number(value))).map(Number):[]);
+        const physicalSizeLy=Number.isFinite(Number(source?.physicalSizeLy))
+            ?Number(source.physicalSizeLy)
+            :(sizeKly.length?Math.max(...sizeKly)*1000:null);
         return Object.freeze({
             ...enriched,
-            sourceUrl:source?.sourceUrl||enriched?.sourceUrl||'',
-            archiveId:source?.archiveId||enriched?.archiveId||enriched?.id||'',
-            designation:source?.designation||enriched?.designation||source?.name||enriched?.name||'',
-            name:source?.displayName||source?.name||enriched?.name||'',
-            commonName:source?.displayName||source?.name||enriched?.commonName||enriched?.name||'',
-            pseudonym:source?.pseudonym||source?.commonName||enriched?.pseudonym||'',
-            constellation:source?.constellation||enriched?.constellation||'',
-            distanceMly:Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):(enriched?.distanceMly??enriched?.distance),
-            distance:source?.distance||enriched?.distance||'',
-            sizeKly:Array.isArray(science?.sizeKly)?science.sizeKly:(Array.isArray(source?.sizeKly)?source.sizeKly:enriched?.sizeKly),
-            ageYears:Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:(enriched?.ageYears??null),
-            age:science?.ageDisplay||source?.ageDisplay||enriched?.age||'',
-            imageType:source?.imageType||enriched?.imageType||'',
-            title:source?.title||enriched?.title||'',
-            description:source?.description||enriched?.description||''
+            sourceUrl:source?.sourceUrl||'',
+            archiveId:source?.archiveId||source?.id||'',
+            designation:source?.designation||source?.name||'',
+            name:source?.displayName||source?.name||'',
+            commonName:source?.displayName||source?.name||'',
+            pseudonym:source?.pseudonym||source?.commonName||source?.displayName||source?.name||'',
+            constellation:source?.constellation||'',
+            distanceMly:Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):null,
+            distance:science?.distanceDisplay||source?.distance||'',
+            sizeKly:Object.freeze(sizeKly),
+            physicalSizeLy,
+            ageYears:Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:null,
+            age:science?.ageDisplay||source?.ageDisplay||'',
+            imageType:source?.imageType||'',
+            title:source?.title||'',
+            description:source?.description||''
         });
     }catch(error){
-        console.warn('GV PRESENTATION METADATA HYDRATION FAILED',key,error);
-        return enriched;
+        console.warn('GV PRESENTATION METADATA HYDRATION FAILED; SCIENCE METADATA CLEARED',key,error);
+        return blankCatalogMetadata();
     }
 }
 
@@ -2257,6 +2286,8 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     };
     activeDestination=v.destination;
     const presentationDestination=await gvPresentationDestination(v.destination);
+    // The destination card, HD info port, and live distance display share the catalog-authoritative record.
+    activeDestination=presentationDestination;
     // Build 0028: show the travel card before starting the FOV-only phase.
     // Provider/HD preparation and pointer work remain deferred until 30%.
     if(firstTrip)startTravelWork();
