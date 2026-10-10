@@ -1642,8 +1642,8 @@
       "fovXDegrees": 0.007155971999999999,
       "fovYDegrees": 0.00522187179,
       "fovPolicy": "X",
-      "spatialRotationDeg": -0.08634360806,
-      "aladinRotation": -0.08634360806,
+      "spatialRotationDeg": 77,
+      "aladinRotation": 77,
       "referencePixel": [
         978.508181021,
         2216.9536779
