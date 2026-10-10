@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0033"
+BUILD_NUMBER = "0034"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0033';
+const GV200001_BUILD='0034';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-3C321-METADATA-ROTATION-CACHEBUST`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0022-3C321-LIVE-SCIENCE-WCS-ROTATION-FIX`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@eb83b198ed1b59860fec21acb2d3bb7ba938e80d/viewer/modules/destination-presentation/gv-destination-presentation-0031.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=0034-LIVE-SCIENCE'
 });
 
 
@@ -1524,7 +1524,7 @@ function gvRegisteredTravelStateFromRecord(record){
         const wcs=gvSyntheticWcsFromRuntimeRecord(record,width,height);
         imageCenter=gvTanPixelToWorld(wcs,(width+1)/2,(height+1)/2);
     }
-    return {imageCenter,finalFov:Math.max(fovX,fovY)*1.0,rotation};
+    return {imageCenter,finalFov:Math.max(fovX,fovY)*1.0,rotation:0};
 }
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
@@ -2087,6 +2087,23 @@ async function gvPresentationDestination(destination){
     let enriched=provider&&String(destination?.provider||'').trim().toUpperCase()!==provider
         ? Object.freeze({...destination,provider})
         : destination;
+    let runtimeScience={};
+    try{
+        const runtime=await gvRuntimeAvmRecord(destination);
+        const science=runtime?.science||{};
+        const ageGyr=Number(science.ageGyr??runtime.ageGyr);
+        runtimeScience={
+            distanceMly:Number(science.distanceMly??runtime.distanceMly),
+            distance:String(science.distanceDisplay??runtime.distance??''),
+            ageYears:Number(science.ageYears??runtime.ageYears??(Number.isFinite(ageGyr)?ageGyr*1e9:NaN)),
+            age:String(science.ageDisplay??runtime.age??''),
+            sizeKly:Array.isArray(science.sizeKly)?science.sizeKly:(Array.isArray(runtime.sizeKly)?runtime.sizeKly:undefined),
+            constellation:String(runtime.constellation||'')
+        };
+        console.info('GV PRESENTATION SCIENCE FROM ACTIVE RUNTIME',runtime.archiveId,runtimeScience);
+    }catch(error){
+        console.warn('GV PRESENTATION RUNTIME SCIENCE LOOKUP FAILED',error);
+    }
     try{
         const catalog=await gvLoadPresentationCatalog(key);
         const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
@@ -2096,7 +2113,7 @@ async function gvPresentationDestination(destination){
             (url&&catalog?.byUrl.get(url))||
             (Number.isInteger(Number(destination?.catalogIndex))&&catalog?.entries[Number(destination.catalogIndex)])
         )?.entry;
-        if(!source)return enriched;
+        if(!source)return Object.freeze({...enriched,...runtimeScience});
         const science=source?.science||{};
         return Object.freeze({
             ...enriched,
@@ -2106,19 +2123,19 @@ async function gvPresentationDestination(destination){
             name:source?.displayName||source?.name||enriched?.name||'',
             commonName:source?.displayName||source?.name||enriched?.commonName||enriched?.name||'',
             pseudonym:source?.pseudonym||source?.commonName||enriched?.pseudonym||'',
-            constellation:source?.constellation||enriched?.constellation||'',
-            distanceMly:Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):(enriched?.distanceMly??enriched?.distance),
-            distance:source?.distance||enriched?.distance||'',
-            sizeKly:Array.isArray(science?.sizeKly)?science.sizeKly:(Array.isArray(source?.sizeKly)?source.sizeKly:enriched?.sizeKly),
-            ageYears:Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:(enriched?.ageYears??null),
-            age:science?.ageDisplay||source?.ageDisplay||enriched?.age||'',
+            constellation:runtimeScience.constellation||source?.constellation||enriched?.constellation||'',
+            distanceMly:Number.isFinite(runtimeScience.distanceMly)?runtimeScience.distanceMly:(Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):(enriched?.distanceMly??enriched?.distance)),
+            distance:runtimeScience.distance||source?.distance||enriched?.distance||'',
+            sizeKly:Array.isArray(runtimeScience.sizeKly)?runtimeScience.sizeKly:(Array.isArray(science?.sizeKly)?science.sizeKly:(Array.isArray(source?.sizeKly)?source.sizeKly:enriched?.sizeKly)),
+            ageYears:Number.isFinite(runtimeScience.ageYears)?runtimeScience.ageYears:(Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:(enriched?.ageYears??null)),
+            age:runtimeScience.age||science?.ageDisplay||source?.ageDisplay||enriched?.age||'',
             imageType:source?.imageType||enriched?.imageType||'',
             title:source?.title||enriched?.title||'',
             description:source?.description||enriched?.description||''
         });
     }catch(error){
         console.warn('GV PRESENTATION METADATA HYDRATION FAILED',key,error);
-        return enriched;
+        return Object.freeze({...enriched,...runtimeScience});
     }
 }
 
@@ -2127,7 +2144,7 @@ function validateDestination(destination){
     const ra=Number(destination.ra);
     const dec=Number(destination.dec);
     const fov=Number(destination.fovDegrees);
-    const rotation=destination.aladinRotation;
+    const rotation=0;
     if(!Number.isFinite(ra))throw new Error('DESTINATION RA INVALID');
     if(!Number.isFinite(dec))throw new Error('DESTINATION DEC INVALID');
     if(!Number.isFinite(fov)||fov<=0)throw new Error('DESTINATION FOV INVALID');
