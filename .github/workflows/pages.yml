@@ -89,18 +89,18 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.3'
           assert viewer.get('viewer')=='RC-V1.0.0.3.py'
-          assert viewer.get('build')=='0025'
-          assert manifest.get('build')=='0025'
+          assert viewer.get('build')=='0026'
+          assert manifest.get('build')=='0026'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='c8a07f66cd0467b42107269350a66e1bea45b4a5'
+          assert manifest.get('sourceCommit')=='598e3b065f310f4c324471776cfd538d43b43ddd'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0025';" in rc
+          assert "const GV200001_BUILD='0026';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
-          # BUILD 0025 release contract: validate the active runtime catalog.
+          # BUILD 0026 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
