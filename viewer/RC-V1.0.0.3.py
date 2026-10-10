@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0027"
+BUILD_NUMBER = "0028"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0027';
+const GV200001_BUILD='0028';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1594,10 +1594,10 @@ function gvSetFovDigits(element,value,digitWidth){
     }));
 }
 let gvDisplayedFov=null;
-const GV_FOV_REPORT_MS=400;
+const GV_FOV_REPORT_MS=100;
 const GV_FOV_REPORT_HYSTERESIS=0.001;
 function gvSyncFovReadout(){
-    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
+    // Keep the FOV readout live during the motion-suspended flight phases.
     try{
         const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(fov)&&fov>=0){
@@ -1948,13 +1948,12 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50,zoomOutCompleteThreshold=.30;let lastSample=-1,destinationCenterApplied=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false;
+    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50,zoomOutCompleteThreshold=.30;let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
-            // BUILD 0027: the first 30% is FOV-only. Suppress app refresh callbacks
-            // and do not issue rotation, translation, pointer, coordinate, or HD-opacity work.
-            // Aladin's own renderer and this RAF remain active because FOV must animate.
+            // BUILD 0028: only FOV changes during 0–30% and 70–100%.
+            // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=(t<zoomOutCompleteThreshold||t>=.70);
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
@@ -1972,10 +1971,24 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:55,startRotation,targetRotation});
                 if(t<zoomOutCompleteThreshold){
-                    // Only one application-level command is allowed in this phase.
+                    // Phase 1 (0–30%): FOV is the only changing view property.
+                    aladin.setFov(state.fov);
+                    lastSample=sample;
+                }else if(t>=.70){
+                    // Phase 3 (70–100%): settle the bird's-eye view once, then
+                    // issue FOV commands only until arrival.
+                    if(!birdseyeSettled){
+                        gvSetEarthPointerPosition(ra1,dec1,true);
+                        aladin.gotoRaDec(ra1,dec1);
+                        coordinate?.update(ra1,dec1);
+                        aladin.setRotation(targetRotation);
+                        destinationCenterApplied=true;
+                        birdseyeSettled=true;
+                    }
                     aladin.setFov(state.fov);
                     lastSample=sample;
                 }else{
+                    // Phase 2 (30–70%): normal travel motion and app updates resume.
                     if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                     aladin.setFov(state.fov);
                     if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
@@ -1986,7 +1999,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);aladin.setRotation(targetRotation);window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
+            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
         }catch(error){window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
@@ -2187,7 +2200,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
-    let recordPromise=null,preparedPromise=null,presentationStarted=false,resolveRegisteredTravel,rejectRegisteredTravel;
+    let recordPromise=null,preparedPromise=null,presentationStarted=false,travelCardStarted=false,resolveRegisteredTravel,rejectRegisteredTravel;
     const registeredTravelPromise=new Promise((resolve,reject)=>{resolveRegisteredTravel=resolve;rejectRegisteredTravel=reject});
     const startRecordLookup=()=>{
         if(!recordPromise){
@@ -2203,20 +2216,31 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         }
         return preparedPromise;
     };
+    const startTravelCard=()=>{
+        if(travelCardStarted)return;
+        travelCardStarted=true;
+        if(!firstTrip){
+            gvHideEarthDistance();
+            destinationPresentation.depart();
+        }
+        travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:11.9});
+    };
     const startTravelWork=()=>{
         if(presentationStarted)return;
         presentationStarted=true;
         gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
-        destinationPresentation.depart();
+        if(firstTrip)destinationPresentation.depart();
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
-        travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:11.9});
+        if(firstTrip)startTravelCard();
         gvPrewarmProviderWebsite(v.destination);
         ensurePrepared();
     };
     activeDestination=v.destination;
     const presentationDestination=await gvPresentationDestination(v.destination);
-    // First-home-trip uses its separate legacy choreography; preserve its timing.
+    // Build 0028: show the travel card before starting the FOV-only phase.
+    // Provider/HD preparation and pointer work remain deferred until 30%.
     if(firstTrip)startTravelWork();
+    else startTravelCard();
     let installed=false;
     const installWhenReady=prepared=>{
         if(!prepared?.imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
