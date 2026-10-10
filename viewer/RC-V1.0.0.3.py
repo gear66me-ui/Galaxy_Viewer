@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0041';
+const GV200001_BUILD='0042';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-FIX3C3210042`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -148,7 +148,7 @@ const gvModuleLoadPromise=Promise.all([
     loadScript(config.galaxyNavigatorUrl).catch(error=>{console.error('GALAXY NAVIGATOR LOAD FAILED',error)}),
     loadScript(config.headsUpDisplayUrl).catch(error=>{console.error('HEADS-UP DISPLAY LOAD FAILED',error)}),
     loadScript(config.travelPresentationUrl).catch(error=>{console.error('TRAVEL PRESENTATION LOAD FAILED',error)}),
-    loadScript(config.destinationPresentationUrl).catch(error=>{console.error('DESTINATION PRESENTATION LOAD FAILED',error)}),
+    loadScript(fresh(config.destinationPresentationUrl)).catch(error=>{console.error('DESTINATION PRESENTATION LOAD FAILED',error)}),
     Promise.resolve()
 ]);
 if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
@@ -2140,7 +2140,7 @@ async function gvPresentationDestination(destination){
             distance:science?.distanceDisplay||source?.distance||'',
             sizeKly:Object.freeze(sizeKly),
             physicalSizeLy,
-            ageYears:validNumber(science?.ageGyr)?Number(science.ageGyr)*1e9:null,
+            ageYears:validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr)*1e9:(validNumber(science?.ageGyr)?Math.max(0,13.4667-Number(science.ageGyr))*1e9:null),
             age:science?.ageDisplay||source?.ageDisplay||'',
             imageType:source?.imageType||'',
             title:source?.title||'',
