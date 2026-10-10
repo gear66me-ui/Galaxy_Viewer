@@ -241,7 +241,7 @@ const HOME=Object.freeze({
     rotation:0
 });
 
-const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
 const gvSpaceAgeFace=new FontFace('GV Space Age',`url("${GV_SPACE_AGE_URL}")`,{style:'normal',weight:'400'});
 const gvSpaceAgeReady=gvSpaceAgeFace.load().then(face=>{
     document.fonts.add(face);
@@ -280,7 +280,7 @@ gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('G
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
 // ECO: GV200-001
 // ============================================================================
-const RETICLE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/compass/compass.png';
+const RETICLE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/compass/compass.png';
 
 function createCenterReticle(root){
     const SIZE=270;
@@ -736,7 +736,7 @@ for(const [name,host] of Object.entries(hosts)){
 // SECTION 023 — HAMBURGER 0007 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const GV_ABOUT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/about/gv-about-presentation-0013.js';
+const GV_ABOUT_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/about/gv-about-presentation-0013.js?v=GV0037-DEPENDENCY-001';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
     hamburger?.close?.();
@@ -1199,7 +1199,7 @@ gvSurveySelectStyle.textContent=`
 }
 `;
 document.head.appendChild(gvSurveySelectStyle);
-const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
+const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
 const gvSurveySelectGroup=document.createElement('div');
 gvSurveySelectGroup.id='gv-survey-select-group';
 const gvSurveySelectButton=document.createElement('button');
