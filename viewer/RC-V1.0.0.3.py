@@ -2000,7 +2000,7 @@ async function gvRunSquareIsolationTest(){
     try{
         // Phase 1: zoom completely out through the existing FOV slider engine.
         gvSettleAutoZoom(false);
-        await gvEnergizeZoomJoystick(-1,360,{attackMs:350,landingMs:900,approachMs:250,linearLanding:true});
+        await gvEnergizeZoomJoystick(-1,55,{attackMs:350,landingMs:900,approachMs:250,linearLanding:true});
         await sleep(500);
 
         // Phase 2: traverse four sides of a deterministic square. FOV is never
