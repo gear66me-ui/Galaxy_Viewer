@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0033"
+BUILD_NUMBER = "0041"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0033';
+const GV200001_BUILD='0041';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -2317,13 +2317,13 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
         const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:registeredTravelPromise,onZoomInStart:()=>{ensurePrepared().then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
         await travelPromise;
-        if(activeDestination!==v.destination)return v.destination;
+        if(activeDestination!==presentationDestination)return v.destination;
         travelPresentation.end();
         destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
         // BUILD 0029: let the arrival presentation paint before noncritical work.
         // The identity guard prevents stale post-arrival work if another trip starts.
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
-            if(activeDestination!==v.destination)return;
+            if(activeDestination!==presentationDestination)return;
             headsUpDisplay.render();
             gvShowEarthDistance(v.destination);
             gvPrewarmProviderWebsite(v.destination);
@@ -2333,13 +2333,13 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
     const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,registeredPromise:registeredTravelPromise,switchToSphericalAtApex,onZoomOutComplete:startTravelWork,onZoomInStart:()=>{ensurePrepared().then(installWhenReady).catch(error=>console.error('GV DIRECT HD ZOOM-IN INSTALL FAILED',error))}});
     await travelPromise;
-    if(activeDestination!==v.destination)return v.destination;
+    if(activeDestination!==presentationDestination)return v.destination;
     travelPresentation.end();
     destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
     // BUILD 0029: let the arrival presentation paint before noncritical work.
     // The identity guard prevents stale post-arrival work if another trip starts.
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        if(activeDestination!==v.destination)return;
+        if(activeDestination!==presentationDestination)return;
         headsUpDisplay.render();
         gvShowEarthDistance(v.destination);
         gvPrewarmProviderWebsite(v.destination);
