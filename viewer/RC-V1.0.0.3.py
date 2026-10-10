@@ -13,6 +13,8 @@ BUILD_NUMBER = "0037"
 # SECTION 002 — ALADIN MIRROR POINTERS
 # ECO: GV200-001
 # ============================================================================
+# Production browser assets use same-origin GitHub Pages URLs so JS is served
+# with a browser-compatible MIME type; do not load production JS from raw GitHub.
 ALADIN_VERSION = "3.8.2"
 ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001"
 ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001"
