@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0049';
+const GV200001_BUILD='0050';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-FIX3C3210042-DESTPRESENTATION0034GATE0049`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1564,7 +1564,11 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=gvHdEffectiveOpacity();
-    const target=directHdOverlay||aladin.getOverlayImageLayer?.(directHdLayerName);
+    // BUILD 0050: the registered layer is authoritative. setOverlayImageLayer()
+    // can reprocess the layer, so the cached A.image() object may be stale.
+    let target=null;
+    try{target=aladin.getOverlayImageLayer?.(directHdLayerName)||null}catch(_){}
+    if(!target)target=directHdOverlay;
     try{target?.setOpacity?.(value)}catch(_){}
     try{target?.setAlpha?.(value)}catch(_){}
     try{target?.setOptions?.({opacity:value})}catch(_){}
