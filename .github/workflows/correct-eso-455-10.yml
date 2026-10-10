@@ -1,0 +1,115 @@
+name: Correct ESO 455-10 catalog metadata
+
+on:
+  push:
+    branches:
+      - release
+
+permissions:
+  contents: write
+
+concurrency:
+  group: eso-455-10-catalog-correction
+  cancel-in-progress: false
+
+jobs:
+  correct-catalogs:
+    if: ${{ startsWith(github.event.head_commit.message, 'BOOTSTRAP ESO 455-10 in-situ catalog correction') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Correct the individual Hubble catalog and AVN runtime catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+
+          individual = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          avn = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json")
+
+          def load(path):
+              return json.loads(path.read_text(encoding="utf-8"))
+
+          def save(path, data):
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          h = load(individual)
+          entries = [x for x in h.get("entries", []) if x.get("archiveId") == "potw2104a" and x.get("name") == "ESO 455-10"]
+          if len(entries) != 1:
+              raise SystemExit(f"Expected exactly one ESO 455-10 individual record; found {len(entries)}")
+          e = entries[0]
+          e["distance"] = "32.0 KLY"
+          e["objectType"] = "Planetary nebula"
+          e["classification"] = "Planetary nebula"
+          science = e.setdefault("science", {})
+          science.update({
+              "distanceMly": 0.0320,
+              "distanceMethod": "statistical_galactic_planetary_nebula_distance_estimate_provisional",
+              "distanceEvidence": "Provisional synthesis of statistical estimates near 9.5–10.1 kpc (~31,000–33,000 light-years); not a direct parallax. Individual Galactic planetary-nebula distances have substantial uncertainty.",
+              "distanceRangeMly": None,
+              "distanceDisplay": "EST. 32.0 KLY",
+              "distanceEstimated": True,
+              "sizeKly": [0.002998, 0.002998],
+              "sizeMethod": "image_footprint_fov_distance_estimate_0036",
+              "sizeEstimated": True,
+              "sizeDisplay": "EST. 3.00 LY",
+              "ageGyr": 13.8,
+              "ageMethod": "cosmic_age_at_emission_from_local_distance_flat_lcdm_H0_70_Om_0.3_0036",
+              "ageMinGyr": None,
+              "ageMaxGyr": None,
+              "ageEstimated": True,
+              "ageDisplay": "EST. 13.80 GYR",
+              "ageEvidence": "Cosmic age of the universe at emission. At an estimated distance of ~32,000 light-years, the ~32,000-year lookback is negligible at Gyr display precision; rounds to 13.80 Gyr. This is not the nebula's physical age.",
+              "redshift": None,
+              "redshiftDisplay": None,
+              "redshiftEstimated": None,
+              "redshiftMethod": None
+          })
+          save(individual, h)
+
+          a = load(avn)
+          records = [x for x in a.get("records", []) if x.get("providerKey") == "hubble" and x.get("archiveId") == "potw2104a"]
+          if len(records) != 1:
+              raise SystemExit(f"Expected exactly one ESO 455-10 AVN record; found {len(records)}")
+          r = records[0]
+          r.update({
+              "distanceKly": 32.0,
+              "distanceMly": 0.0320,
+              "distanceDisplay": "EST. 32.0 KLY",
+              "distanceEstimated": True,
+              "distanceMethod": "statistical_galactic_planetary_nebula_distance_estimate_provisional",
+              "ageGyr": 13.8,
+              "ageDisplay": "EST. 13.80 GYR",
+              "ageEstimated": True,
+              "ageMethod": "cosmic_age_at_emission_from_local_distance_flat_lcdm_H0_70_Om_0.3_0036",
+              "objectType": "Planetary nebula",
+              "scienceCorrection": "ESO 455-10 (Th 3-55) is a planetary nebula, not a galaxy. Distance revised provisionally to 32.0 KLY from statistical PN estimates; cosmic age at emission corrected to 13.80 Gyr."
+          })
+          save(avn, a)
+
+          # Re-open both files and verify the in-situ corrections before committing.
+          h2, a2 = load(individual), load(avn)
+          e2 = next(x for x in h2["entries"] if x.get("archiveId") == "potw2104a" and x.get("name") == "ESO 455-10")
+          r2 = next(x for x in a2["records"] if x.get("providerKey") == "hubble" and x.get("archiveId") == "potw2104a")
+          assert e2["distance"] == "32.0 KLY" and e2["science"]["ageGyr"] == 13.8
+          assert e2["science"]["sizeDisplay"] == "EST. 3.00 LY" and e2["objectType"] == "Planetary nebula"
+          assert r2["distanceKly"] == 32.0 and r2["ageGyr"] == 13.8 and r2["objectType"] == "Planetary nebula"
+          print("VERIFIED: ESO 455-10 distance, cosmic age, physical classification, and image-span estimate corrected in both catalogs.")
+          PY
+
+      - name: Commit corrected catalogs to release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
+          git commit -m "Correct ESO 455-10 distance and cosmic age in both catalogs"
+          git push origin HEAD:release
