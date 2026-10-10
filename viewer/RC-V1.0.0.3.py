@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0049"
+BUILD_NUMBER = "0052"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0050';
+const GV200001_BUILD='0052';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-FIX3C3210042-DESTPRESENTATION0034GATE0049`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1564,15 +1564,22 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=gvHdEffectiveOpacity();
-    // BUILD 0050: the registered layer is authoritative. setOverlayImageLayer()
-    // can reprocess the layer, so the cached A.image() object may be stale.
-    let target=null;
-    try{target=aladin.getOverlayImageLayer?.(directHdLayerName)||null}catch(_){}
-    if(!target)target=directHdOverlay;
-    try{target?.setOpacity?.(value)}catch(_){}
-    try{target?.setAlpha?.(value)}catch(_){}
-    try{target?.setOptions?.({opacity:value})}catch(_){}
-    if(target?.options)try{target.options.opacity=value}catch(_){}
+    // Resolve the registered layer by its exact Aladin layer name, and also
+    // update the retained A.image() object. Aladin 3.8.2 exposes the layer name
+    // on imageLayer.layer; do not blindly trust a lookup that returns another layer.
+    const candidates=[];
+    try{
+        const registered=aladin.getOverlayImageLayer?.(directHdLayerName);
+        if(registered&&registered.layer===directHdLayerName)candidates.push(registered);
+    }catch(_){}
+    if(directHdOverlay&&!candidates.includes(directHdOverlay))candidates.push(directHdOverlay);
+    let applied=false;
+    for(const target of candidates){
+        try{
+            if(typeof target.setOpacity==='function'){target.setOpacity(value);applied=true}
+        }catch(error){console.warn('GV CROSSFADE OPACITY APPLY FAILED',error)}
+    }
+    if(!applied)console.warn('GV CROSSFADE HAS NO VALID IMAGE LAYER',{layer:directHdLayerName,registered:candidates.length,hasOverlay:!!directHdOverlay});
     updateCrossFadeThumb();
     return value;
 }
@@ -1895,7 +1902,7 @@ function gvRestoreDirectHd(){
         const destination=directHdDestination,objectUrl=directHdObjectUrl;
         const layer=A.image(objectUrl,{name:directHdLayerName,imgFormat:'png',wcs:directHdDisplayWcs,opacity:directHdOpacity(),successCallback:()=>{if(directHdObjectUrl!==objectUrl)return;directHdOverlay=layer;gvHdTravelRetired=false;applyDirectHdOpacity();console.info('GV HD RESTORED — EXISTING OBJECT URL REINSTALLED')},errorCallback:error=>console.warn('GV HD RESTORE FAILED',error)});
         directHdOverlay=layer;
-        aladin.setOverlayImageLayer(layer,DIRECT_HD_LAYER);
+        aladin.setOverlayImageLayer(layer,directHdLayerName);
         return true;
     }catch(error){console.warn('GV HD RESTORE SKIPPED',error);return false}
 }
@@ -1978,7 +1985,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=true; // Keep application polling suspended for the entire flight.
-            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<Math.max(0,1-5/durationSeconds)); // BUILD 0033: reopen HiPS fetching exactly 5 seconds before arrival.
+            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<Math.max(0,1-8/durationSeconds)); // BUILD 0052: reopen HiPS tile fetching exactly 8 seconds before arrival.
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
                 zoomOutCompleted=true;
