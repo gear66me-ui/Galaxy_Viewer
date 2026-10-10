@@ -55,7 +55,26 @@ jobs:
           ROOT = Path(os.environ['ROOT'])
           ASSETS = ROOT / 'app/src/main/assets'
           ASSET_BASE = 'https://appassets.androidplatform.net/assets/'
-          src = Path('viewer/RC-V1.0.0.3.py').read_text(encoding='utf-8')
+          pointer_path = Path('viewer/gv-current-viewer.json')
+          pointer = json.loads(pointer_path.read_text(encoding='utf-8'))
+          viewer_name = str(pointer.get('viewer') or '')
+          pointer_version = str(pointer.get('version') or '')
+          pointer_build = str(pointer.get('build') or '')
+          if not re.fullmatch(r'RC-[A-Za-z0-9._-]+\.py', viewer_name):
+              raise SystemExit('Invalid viewer filename in GVDEV current-viewer pointer: ' + repr(viewer_name))
+          source_path = Path('viewer') / viewer_name
+          if not source_path.is_file():
+              raise SystemExit('GVDEV pointer references missing runtime: ' + str(source_path))
+          src = source_path.read_text(encoding='utf-8')
+          source_version = re.search(r'^VIEWER_VERSION\\s*=\\s*["\\']([^"\\']+)["\\']', src, re.M)
+          source_build = re.search(r'^BUILD_NUMBER\\s*=\\s*["\\']([^"\\']+)["\\']', src, re.M)
+          js_build = re.search(r"const GV200001_BUILD=['\\"]([^'\\"]+)['\\"];", src)
+          if not source_version or not source_build or not js_build:
+              raise SystemExit('Could not verify runtime version/build identity from ' + str(source_path))
+          if source_version.group(1) != pointer_version:
+              raise SystemExit(f'GVDEV pointer/runtime version mismatch: pointer={pointer_version}, runtime={source_version.group(1)}')
+          if source_build.group(1) != pointer_build or js_build.group(1) != pointer_build:
+              raise SystemExit(f'GVDEV pointer/runtime build mismatch: pointer={pointer_build}, Python={source_build.group(1)}, JavaScript={js_build.group(1)}')
           
           def extract(pattern, label):
               m = re.search(pattern, src, re.S)
