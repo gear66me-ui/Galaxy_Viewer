@@ -93,7 +93,7 @@ jobs:
           assert manifest.get('build')=='0056'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='8e70e643a5edb5286160dbb59a42a1e8721d73ba'
+          assert manifest.get('sourceCommit')=='ff8cebc049b18fdeb50dd39fc82090f50f20b018'
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert 'BUILD_NUMBER = "0056"' in rc
