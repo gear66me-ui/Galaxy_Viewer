@@ -1986,16 +1986,15 @@ async function gvRunSquareIsolationTest(){
     const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
     const wrapRa=ra=>((ra%360)+360)%360;
     const normalizeRotation=rotation=>((rotation%360)+360)%360;
-    const halfDec=8;
+    const sideDec=Math.min(12,originDec<=73?85-originDec:originDec+85);
+    const verticalSign=originDec<=73?1:-1;
     const cosDec=Math.max(0.2,Math.abs(Math.cos(originDec*Math.PI/180)));
-    const halfRa=Math.min(40,halfDec/cosDec);
-    const d0=Math.max(-80,Math.min(80,originDec-halfDec));
-    const d1=Math.max(-80,Math.min(80,originDec+halfDec));
+    const sideRa=Math.min(40,sideDec/cosDec);
+    const oppositeDec=Math.max(-85,Math.min(85,originDec+verticalSign*sideDec));
     const waypoints=[
-        [wrapRa(originRa-halfRa),d0],
-        [wrapRa(originRa+halfRa),d0],
-        [wrapRa(originRa+halfRa),d1],
-        [wrapRa(originRa-halfRa),d1],
+        [wrapRa(originRa+sideRa),originDec],
+        [wrapRa(originRa+sideRa),oppositeDec],
+        [originRa,oppositeDec],
         [originRa,originDec]
     ];
     try{
