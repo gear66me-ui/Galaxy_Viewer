@@ -108,6 +108,8 @@ jobs:
           assert 'gv-heads-up-display-0002.js' not in rc
           assert 'gv-random-travel-presentation-003.js' not in rc
           assert 'gv-destination-presentation-0017.js?v=GV0037-DEPENDENCY-001' in rc
+          assert 'raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/' not in rc
+          assert 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001' in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0028 release contract: validate the active runtime catalog.
@@ -115,11 +117,13 @@ jobs:
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
           assert pins==['d85d91201ea52aa6524a62394fc81b450b15ac23'], pins
-          assert 'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001' in rc
+          assert 'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001' in rc
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
+              'viewer/vendor/aladin-lite/3.8.2/aladin.js',
+              'aladin-source-clone/src/css/aladin.css',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
               'viewer/Web-Browser/Web-Browser-0026/bottom.html',
