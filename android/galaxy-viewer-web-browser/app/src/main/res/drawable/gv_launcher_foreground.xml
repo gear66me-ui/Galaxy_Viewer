@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- 0054: Android adaptive safe-zone placement; source artwork is app_icon_4.png. -->
+  <item android:gravity="center" android:width="66dp" android:height="66dp">
+    <bitmap android:src="@drawable/app_icon_4" android:gravity="fill"/>
+  </item>
+</layer-list>
