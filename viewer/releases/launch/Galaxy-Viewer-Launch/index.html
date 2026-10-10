@@ -46,12 +46,12 @@ try{
  // The splash animation is the final launch sequence: it starts only after
  // the complete viewer boot, Monte Carlo route selection, and first
  // destination AVM/HD preload are ready.
- const splashReady=new Promise((resolve,reject)=>{
-   const timeout=setTimeout(()=>reject(Error('SPLASH PREP TIMEOUT')),20000);
+ const splashReady=new Promise(resolve=>{
+   // The splash is presentation only: it must never prevent a ready viewer from launching.
+   const finish=ready=>{clearTimeout(timeout);removeEventListener('message',onMessage);resolve(ready)};
+   const timeout=setTimeout(()=>finish(false),10000);
    const onMessage=ev=>{
-     if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready'){
-       clearTimeout(timeout);removeEventListener('message',onMessage);resolve()
-     }
+     if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready')finish(true);
    };
    addEventListener('message',onMessage)
  });
@@ -92,7 +92,19 @@ try{
  // Do not launch the splash until the viewer and its first destination are
  // actually ready. The animation is the final handoff, not the loading mask.
  await viewerReady;
- await splashReady;
+ const splashPrepared=await splashReady;
+ if(!splashPrepared){
+   // A slow/broken splash (poster decode, font prep, or WebGL setup) is non-fatal.
+   // Reveal the already-ready viewer rather than turning presentation into a boot failure.
+   splash.remove();
+   if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
+   await paint2();
+   document.documentElement.dataset.gvSplashComplete='1';
+   window.GalaxyViewerSetSplashComplete?.();
+   curtain.remove();
+   if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
+   return;
+ }
  const identityRemain=Math.max(0,3000-(performance.now()-identityStarted));if(identityRemain)await sleep(identityRemain);
 
  const splashComplete=new Promise((resolve,reject)=>{
