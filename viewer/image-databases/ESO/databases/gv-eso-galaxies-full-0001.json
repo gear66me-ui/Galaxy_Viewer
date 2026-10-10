@@ -2657,12 +2657,12 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 65.6 KLY",
-        "ageGyr": 0.090286,
-        "ageMethod": "lookback_from_NED_redshift_flat_lcdm_H0_70_Om_0.3",
+        "ageGyr": 13.379714,
+        "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 90.3 MYR",
+        "ageDisplay": "EST. 13.38 BY",
         "ageEvidence": null,
         "redshift": null,
         "redshiftDisplay": null,
@@ -2687,7 +2687,7 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 15810,
       "astropixLastUpdated": "2008-07-24T13:55:36+02:00",
-      "age": "EST. 90.3 MYR"
+      "age": "EST. 13.38 BY"
     },
     {
       "archiveId": "eso0825a",
