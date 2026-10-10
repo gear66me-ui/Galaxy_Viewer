@@ -1,1 +1,1 @@
-Build Galaxy Viewer Release 1.0.0 — BUILD 0052 crossfade layer fix and T-minus-eight HiPS prefetch
+Build Galaxy Viewer Release 1.0.0 — BUILD 0053 crossfade opacity targeting correction; retain T-minus-eight HiPS prefetch
