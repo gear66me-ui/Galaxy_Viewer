@@ -14,28 +14,28 @@ BUILD_NUMBER = "0037"
 # ECO: GV200-001
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001"
-ALADIN_JS_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001"
+ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001"
+ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
-HAMBURGER_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
-COORDINATE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001"
-TARGET_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001"
+HAMBURGER_BASE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
+HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
+COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001"
+TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001"
 DIAGNOSTICS_URL = ""
-GALAXY_ROUTE_ENGINE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001"
-GALAXY_NAVIGATOR_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001"
-HEADS_UP_DISPLAY_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001"
+GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001"
+GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001"
+HEADS_UP_DISPLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001" />
+<link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001" />
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -95,18 +95,18 @@ document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:t
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.3',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001',
-    aladinJsUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001',
-    hamburgerBaseUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
-    hamburgerUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
-    coordinateUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001',
-    targetUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001',
-    galaxyRouteEngineUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001',
-    galaxyNavigatorUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001',
-    headsUpDisplayUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001',
-    providerArtworkUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/provider-artwork/gv-provider-artwork-0004.js?v=GV0037-DEPENDENCY-001',
-    travelPresentationUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/random-galaxy/gv-random-travel-presentation.js?v=GV0037-DEPENDENCY-001',
-    destinationPresentationUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=GV0037-DEPENDENCY-001'
+    aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001',
+    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001',
+    hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
+    hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
+    coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001',
+    targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001',
+    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001',
+    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001',
+    headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001',
+    providerArtworkUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/provider-artwork/gv-provider-artwork-0004.js?v=GV0037-DEPENDENCY-001',
+    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation.js?v=GV0037-DEPENDENCY-001',
+    destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=GV0037-DEPENDENCY-001'
 });
 
 
@@ -358,7 +358,7 @@ updateDirectionalReticle();
 // SECTION 041B — EARTH BEARING POINTER / ARRIVAL DISTANCE
 // ECO: GV200-028 BUILD 0001
 // ============================================================================
-const GV_EARTH_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png';
+const GV_EARTH_POINTER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png';
 function gvInstallEarthBearingPointer(){
     if(document.getElementById('gv-earth-bearing-rotor'))return;
     const rotor=document.createElement('div');
@@ -736,7 +736,7 @@ for(const [name,host] of Object.entries(hosts)){
 // SECTION 023 — HAMBURGER 0007 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const GV_ABOUT_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/about/gv-about-presentation-0013.js?v=GV0037-DEPENDENCY-001';
+const GV_ABOUT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/about/gv-about-presentation-0013.js?v=GV0037-DEPENDENCY-001';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
     hamburger?.close?.();
@@ -867,7 +867,7 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
     SPITZER:Object.freeze({label:'SPITZER',icon:globalThis.GVProviderArtwork.icon('SPITZER')})
 });
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
-const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
+const GV_SURVEY_RUNTIME_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
     const provider=[record?.provider,record?.providerKey,record?.catalogKey].filter(Boolean).join(' ').toUpperCase();
@@ -1446,8 +1446,8 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(value)}catch(_){}
     if(directHdObjectUrl===value)directHdObjectUrl=null;
 }
-const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
+const GV_MASTER_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/master-database/gv-master-catalog.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
@@ -2040,7 +2040,7 @@ if(activeRoute.length!==100)throw new Error(`NAVIGATION ACTIVE ROUTE LENGTH INVA
 // ECO: GV200-001
 // ============================================================================
 const GV_PRESENTATION_PROVIDER_BY_CATALOG=Object.freeze({hubble:'HUBBLE',jwst:'JWST',eso:'ESO',chandra:'CHANDRA',spitzer:'SPITZER',noirlab:'NOIRLAB'});
-const GV_PRESENTATION_ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/';
+const GV_PRESENTATION_ROOT='https://gear66me-ui.github.io/Galaxy_Viewer/';
 let gvPresentationMasterPromise=null;
 const gvPresentationCatalogPromises=new Map();
 const gvPresentationCatalogs=new Map();
