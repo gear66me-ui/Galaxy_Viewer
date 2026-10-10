@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0054"
+BUILD_NUMBER = "0055"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0054';
+const GV200001_BUILD='0055';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-FIX3C3210042-DESTPRESENTATION0034GATE0049`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0055`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1556,17 +1556,19 @@ Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',wi
 crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
-function directHdOpacity(){if(gvHdTravelRetired)return 0;return Math.max(0,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
+function directHdSliderOpacity(){
+    const slider=Number(crossFadeInput.value);
+    return 1-(Math.max(0,Math.min(100,Number.isFinite(slider)?slider:0))/100);
+}
+function directHdOpacity(){return gvHdTravelRetired?0:directHdSliderOpacity()}
 function gvHdEffectiveOpacity(){return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
     crossFadeControl.thumb.style.top=`${crossFadeControl.rail.offsetTop+((100-v)/100)*crossFadeControl.rail.offsetHeight}px`;
 }
 function applyDirectHdOpacity(){
-    const value=gvHdEffectiveOpacity();
-    // The registered Aladin Image is authoritative. Keep the retained Image
-    // object synchronized too, but never re-register it during slider movement:
-    // setOverlayImageLayer() can reapply cached layer options and reset opacity.
+    const sliderValue=Math.max(0,Math.min(100,Number(crossFadeInput.value)||0));
+    const value=gvHdTravelRetired?0:directHdSliderOpacity();
     let registered=null;
     try{registered=aladin.getOverlayImageLayer?.(directHdLayerName)||null}
     catch(error){console.warn('GV CROSSFADE LAYER LOOKUP FAILED',error)}
@@ -1577,26 +1579,28 @@ function applyDirectHdOpacity(){
     for(const target of targets){
         if(!target)continue;
         try{
-            if(typeof target.setOpacity==='function')target.setOpacity(value);
-            else if(typeof target.setAlpha==='function')target.setAlpha(value);
-            else if(typeof target.setOptions==='function')target.setOptions({opacity:value});
-            if(target.options&&typeof target.options==='object')target.options.opacity=value;
+            let method='none';
+            if(typeof target.setOpacity==='function'){target.setOpacity(value);method='setOpacity'}
+            else if(typeof target.setAlpha==='function'){target.setAlpha(value);method='setAlpha'}
+            else if(typeof target.setOptions==='function'){target.setOptions({opacity:value});method='setOptions'}
             const readback=typeof target.getOpacity==='function'?target.getOpacity():
-                (typeof target.getAlpha==='function'?target.getAlpha():target.options?.opacity??null);
-            results.push({registered:target===registered,method:typeof target.setOpacity==='function'?'setOpacity':typeof target.setAlpha==='function'?'setAlpha':typeof target.setOptions==='function'?'setOptions':'none',requested:value,readback});
-        }catch(error){console.warn('GV CROSSFADE OPACITY APPLY FAILED',error)}
+                (typeof target.getAlpha==='function'?target.getAlpha():target.opacity??null);
+            results.push({registered:target===registered,method,requested:value,readback,layerName:directHdLayerName});
+        }catch(error){console.warn('GV CROSSFADE OPACITY APPLY FAILED',{layer:directHdLayerName,value,error})}
     }
+    const detail={build:GV200001_BUILD,slider:sliderValue,requestedOpacity:value,travelRetired:gvHdTravelRetired,registeredFound:!!registered,retainedFound:!!directHdOverlay,results};
     if(!results.length||results.some(result=>result.readback!==null&&Math.abs(Number(result.readback)-value)>0.001)){
-        console.warn('GV CROSSFADE OPACITY READBACK MISMATCH',{build:GV200001_BUILD,layer:directHdLayerName,slider:Number(crossFadeInput.value),retired:gvHdTravelRetired,results});
-    }else{
-        console.debug('GV CROSSFADE OPACITY APPLIED',{build:GV200001_BUILD,layer:directHdLayerName,slider:Number(crossFadeInput.value),retired:gvHdTravelRetired,results});
-    }
+        console.warn('GV CROSSFADE OPACITY READBACK MISMATCH',detail);
+    }else{console.info('GV CROSSFADE OPACITY APPLIED',detail)}
     updateCrossFadeThumb();
     return value;
 }
 function setCrossFadeFromY(clientY){
-    const r=crossFadeControl.rail.getBoundingClientRect();if(!r.height)return;
-    crossFadeInput.value=String(Math.max(0,Math.min(100,Math.round(((r.bottom-clientY)/r.height)*100))));
+    const r=crossFadeControl.rail.getBoundingClientRect();
+    if(!r.height)return;
+    const sliderValue=Math.max(0,Math.min(100,Math.round(((r.bottom-clientY)/r.height)*100)));
+    crossFadeInput.value=String(sliderValue);
+    console.info('GV CROSSFADE INPUT',{build:GV200001_BUILD,pointerY:clientY,slider:sliderValue,railTop:r.top,railBottom:r.bottom});
     applyDirectHdOpacity();
 }
 let crossFadePointer=null;
