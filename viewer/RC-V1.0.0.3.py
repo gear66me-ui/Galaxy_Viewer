@@ -2121,6 +2121,14 @@ async function gvPresentationDestination(destination){
         }
         const science=source?.science||{};
         const validNumber=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
+        // 3C 321 has one canonical science record across providers. Hubble's
+        // image-specific row carries a conflicting 1.25 BLY / lookback-derived
+        // age, so preserve the verified Chandra distance and cosmological age
+        // regardless of which telescope supplies the displayed image.
+        const is3C321=/^(?:chandra-2007-)?3c[- ]?321$/i.test(String(source?.archiveId||source?.name||source?.designation||destination?.archiveId||destination?.name||destination?.designation||'').trim())
+            || /3c\s*321/i.test(String(source?.title||destination?.title||''));
+        const canonicalDistanceMly=is3C321?1400:(validNumber(science?.distanceMly)?Number(science.distanceMly):null);
+        const canonicalCosmicAgeYears=is3C321?12.1334e9:(validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr)*1e9:(validNumber(science?.ageGyr)?Math.max(0,13.4667-Number(science.ageGyr))*1e9:null));
         const sizeKly=Array.isArray(science?.sizeKly)
             ?science.sizeKly.filter(validNumber).map(Number)
             :(Array.isArray(source?.sizeKly)?source.sizeKly.filter(validNumber).map(Number):[]);
@@ -2136,12 +2144,12 @@ async function gvPresentationDestination(destination){
             commonName:source?.displayName||source?.name||'',
             pseudonym:source?.pseudonym||source?.commonName||source?.displayName||source?.name||'',
             constellation:source?.constellation||'',
-            distanceMly:validNumber(science?.distanceMly)?Number(science.distanceMly):null,
-            distance:science?.distanceDisplay||source?.distance||'',
+            distanceMly:canonicalDistanceMly,
+            distance:is3C321?'1.4 billion light-years':(science?.distanceDisplay||source?.distance||''),
             sizeKly:Object.freeze(sizeKly),
             physicalSizeLy,
-            ageYears:validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr)*1e9:(validNumber(science?.ageGyr)?Math.max(0,13.4667-Number(science.ageGyr))*1e9:null),
-            age:science?.ageDisplay||source?.ageDisplay||'',
+            ageYears:canonicalCosmicAgeYears,
+            age:is3C321?'EST. 12.13 GYR':(science?.ageDisplay||source?.ageDisplay||''),
             imageType:source?.imageType||'',
             title:source?.title||'',
             description:source?.description||''
