@@ -14,28 +14,28 @@ BUILD_NUMBER = "0037"
 # ECO: GV200-001
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js"
+ALADIN_CSS_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001"
+ALADIN_JS_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
-HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
-COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
-TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
+HAMBURGER_BASE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
+HAMBURGER_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
+COORDINATE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001"
+TARGET_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001"
 DIAGNOSTICS_URL = ""
-GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
-HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js"
+GALAXY_ROUTE_ENGINE_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001"
+GALAXY_NAVIGATOR_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001"
+HEADS_UP_DISPLAY_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" />
+<link rel="stylesheet" href="https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001" />
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -88,25 +88,25 @@ display(Javascript(r"""
 const VERSION='RC-V1.0.0.3';
 const GV200001_BUILD='0037';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0025-LIVE-ROUTE-CATALOG-3C321`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-DEPENDENCY-001`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.3',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
-    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
-    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
-    coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
-    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
-    galaxyRouteEngineUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0037-LIVE-ROUTE-CATALOG',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
-    headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
-    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=0036-COSMIC-AGE'
+    aladinCssUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001',
+    aladinJsUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001',
+    hamburgerBaseUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
+    hamburgerUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
+    coordinateUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001',
+    targetUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001',
+    galaxyRouteEngineUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001',
+    galaxyNavigatorUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001',
+    headsUpDisplayUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001',
+    providerArtworkUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/provider-artwork/gv-provider-artwork-0004.js?v=GV0037-DEPENDENCY-001',
+    travelPresentationUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/random-galaxy/gv-random-travel-presentation.js?v=GV0037-DEPENDENCY-001',
+    destinationPresentationUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=GV0037-DEPENDENCY-001'
 });
 
 
@@ -680,9 +680,9 @@ if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SUR
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
-if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
+if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0031'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0031 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0032'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0032 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
