@@ -1689,7 +1689,8 @@
         "lookbackTimeGyr": 1.258194353934229,
         "lookbackTimeDisplay": "1.26 GYR LOOKBACK"
       },
-      "lookbackTimeGyr": 1.258194353934229
+      "lookbackTimeGyr": 1.258194353934229,
+      "orientation": 282.9985485566087
     },
     {
       "providerKey": "chandra",

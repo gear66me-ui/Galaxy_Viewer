@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0035"
+BUILD_NUMBER = "0036"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0035';
+const GV200001_BUILD='0036';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0023-COSMIC-AGE-12GY-WCS-NORTHUP`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0024-COSMIC-AGE-12GY-ORIENTATION-WCS-CAM0`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=0035-COSMIC-AGE'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=0036-COSMIC-AGE'
 });
 
 
@@ -1482,7 +1482,7 @@ function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     const ra=Number(record?.ra),dec=Number(record?.dec);
     const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
     const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
-    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
+    const rotation=Number(record?.orientation??record?.spatialRotationDeg??record?.aladinRotation);
     if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
     if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
     if(!Number.isFinite(rotation))throw new Error('GV JSON WCS ROTATION INVALID');
@@ -1516,7 +1516,7 @@ function gvRegisteredTravelStateFromRecord(record){
     const ra=Number(record?.ra),dec=Number(record?.dec);
     const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
     const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
-    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
+    const rotation=Number(record?.orientation??record?.spatialRotationDeg??record?.aladinRotation);
     if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0||!Number.isFinite(rotation))throw new Error('GV REGISTERED TRAVEL METADATA INVALID');
     let imageCenter=[ra,dec];
     const dims=record?.referenceDimension,width=Number(dims?.[0]),height=Number(dims?.[1]);
@@ -1823,7 +1823,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     if(!url)throw new Error('GV DESTINATION IMAGE URL MISSING');
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
-    const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
+    const rotation=Number(record.orientation??record.spatialRotationDeg??record.aladinRotation);
     const prepStarted=performance.now();
     const raster=await gvLoadGate2MImage(url,destination,record);
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
