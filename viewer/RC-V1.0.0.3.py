@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0055"
+BUILD_NUMBER = "0056"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0055';
+const GV200001_BUILD='0056';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0055`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0056`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1556,42 +1556,33 @@ Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',wi
 crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
-function directHdSliderOpacity(){
-    const slider=Number(crossFadeInput.value);
-    return 1-(Math.max(0,Math.min(100,Number.isFinite(slider)?slider:0))/100);
+function gvCrossfadeOpacity(){
+    const raw=Number(crossFadeInput.value);
+    const slider=Math.max(0,Math.min(100,Number.isFinite(raw)?raw:0));
+    return 1-slider/100;
 }
-function directHdOpacity(){return gvHdTravelRetired?0:directHdSliderOpacity()}
-function gvHdEffectiveOpacity(){return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
     crossFadeControl.thumb.style.top=`${crossFadeControl.rail.offsetTop+((100-v)/100)*crossFadeControl.rail.offsetHeight}px`;
 }
 function applyDirectHdOpacity(){
-    const sliderValue=Math.max(0,Math.min(100,Number(crossFadeInput.value)||0));
-    const value=gvHdTravelRetired?0:directHdSliderOpacity();
-    let registered=null;
-    try{registered=aladin.getOverlayImageLayer?.(directHdLayerName)||null}
-    catch(error){console.warn('GV CROSSFADE LAYER LOOKUP FAILED',error)}
-    const targets=[];
-    if(registered)targets.push(registered);
-    if(directHdOverlay&&directHdOverlay!==registered)targets.push(directHdOverlay);
-    const results=[];
-    for(const target of targets){
-        if(!target)continue;
+    const raw=Number(crossFadeInput.value);
+    const sliderValue=Math.max(0,Math.min(100,Number.isFinite(raw)?raw:0));
+    const value=gvCrossfadeOpacity();
+    const target=directHdOverlay;
+    let method='none',readback=null;
+    if(target){
         try{
-            let method='none';
             if(typeof target.setOpacity==='function'){target.setOpacity(value);method='setOpacity'}
             else if(typeof target.setAlpha==='function'){target.setAlpha(value);method='setAlpha'}
             else if(typeof target.setOptions==='function'){target.setOptions({opacity:value});method='setOptions'}
-            const readback=typeof target.getOpacity==='function'?target.getOpacity():
+            readback=typeof target.getOpacity==='function'?target.getOpacity():
                 (typeof target.getAlpha==='function'?target.getAlpha():target.opacity??null);
-            results.push({registered:target===registered,method,requested:value,readback,layerName:directHdLayerName});
         }catch(error){console.warn('GV CROSSFADE OPACITY APPLY FAILED',{layer:directHdLayerName,value,error})}
     }
-    const detail={build:GV200001_BUILD,slider:sliderValue,requestedOpacity:value,travelRetired:gvHdTravelRetired,registeredFound:!!registered,retainedFound:!!directHdOverlay,results};
-    if(!results.length||results.some(result=>result.readback!==null&&Math.abs(Number(result.readback)-value)>0.001)){
-        console.warn('GV CROSSFADE OPACITY READBACK MISMATCH',detail);
-    }else{console.info('GV CROSSFADE OPACITY APPLIED',detail)}
+    const detail={build:GV200001_BUILD,slider:sliderValue,requestedOpacity:value,layerName:directHdLayerName,activeLayerFound:!!target,method,readback};
+    if(!target||(readback!==null&&Math.abs(Number(readback)-value)>0.001))console.warn('GV CROSSFADE OPACITY READBACK MISMATCH',detail);
+    else console.info('GV CROSSFADE OPACITY APPLIED',detail);
     updateCrossFadeThumb();
     return value;
 }
@@ -1873,7 +1864,7 @@ function gvInstallPreparedHd(prepared){
         if(previous.objectUrl&&previous.objectUrl!==imageObjectUrl)gvReleaseHdObjectUrl(previous.objectUrl);
     };
     const layer=A.image(imageObjectUrl,{
-        name:layerName,imgFormat:'png',wcs:displayWcs,opacity:directHdOpacity(),
+        name:layerName,imgFormat:'png',wcs:displayWcs,opacity:1,
         successCallback:()=>{
             if(settled)return;settled=true;
             if(activeDestination!==destination){
@@ -1915,7 +1906,7 @@ function gvRestoreDirectHd(){
         }
         if(!directHdDisplayWcs)return false;
         const destination=directHdDestination,objectUrl=directHdObjectUrl;
-        const layer=A.image(objectUrl,{name:directHdLayerName,imgFormat:'png',wcs:directHdDisplayWcs,opacity:directHdOpacity(),successCallback:()=>{if(directHdObjectUrl!==objectUrl)return;directHdOverlay=layer;gvHdTravelRetired=false;applyDirectHdOpacity();console.info('GV HD RESTORED — EXISTING OBJECT URL REINSTALLED')},errorCallback:error=>console.warn('GV HD RESTORE FAILED',error)});
+        const layer=A.image(objectUrl,{name:directHdLayerName,imgFormat:'png',wcs:directHdDisplayWcs,opacity:1,successCallback:()=>{if(directHdObjectUrl!==objectUrl)return;directHdOverlay=layer;gvHdTravelRetired=false;applyDirectHdOpacity();console.info('GV HD RESTORED — EXISTING OBJECT URL REINSTALLED')},errorCallback:error=>console.warn('GV HD RESTORE FAILED',error)});
         directHdOverlay=layer;
         aladin.setOverlayImageLayer(layer,directHdLayerName);
         return true;
@@ -2335,7 +2326,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             return Promise.resolve(false);
         }
         try{
-            const ready=gvInstallPreparedHd(prepared);
+            const ready=gvInstallPreparedHd({...prepared,destination:presentationDestination});
             installed=true;
             return ready;
         }catch(error){
