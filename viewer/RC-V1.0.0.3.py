@@ -2186,11 +2186,20 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // ============================================================================
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
     gvHdTravelRetired=false;
-    const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination),registeredTravelPromise=recordPromise.then(gvRegisteredTravelStateFromRecord),sourceDestination=activeDestination;
-    let preparedPromise=null,presentationStarted=false;
+    const v=validateDestination(destination),sourceDestination=activeDestination;
+    let recordPromise=null,preparedPromise=null,presentationStarted=false,resolveRegisteredTravel,rejectRegisteredTravel;
+    const registeredTravelPromise=new Promise((resolve,reject)=>{resolveRegisteredTravel=resolve;rejectRegisteredTravel=reject});
+    const startRecordLookup=()=>{
+        if(!recordPromise){
+            recordPromise=gvRuntimeAvmRecord(v.destination);
+            recordPromise.then(gvRegisteredTravelStateFromRecord).then(resolveRegisteredTravel,rejectRegisteredTravel);
+        }
+        return recordPromise;
+    };
     const ensurePrepared=()=>{
+        const record=startRecordLookup();
         if(!preparedPromise){
-            preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,recordPromise)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination,recordPromise);
+            preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,record)):preloadedPrepared?Promise.resolve(preloadedPrepared):gvPrepareDirectHd(v.destination,record);
         }
         return preparedPromise;
     };
