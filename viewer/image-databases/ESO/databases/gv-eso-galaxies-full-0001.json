@@ -47,7 +47,7 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -134,7 +134,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 12 × 12 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -193,7 +193,7 @@
         "ERIS"
       ],
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "45 million light-years",
         "distanceRangeMly": null,
@@ -265,7 +265,7 @@
         "DFOSC"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light years",
         "distanceRangeMly": null,
@@ -350,7 +350,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 7 × 7 LY",
-        "ageGyr": 4e-06,
+        "ageGyr": 0.000004,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -409,7 +409,7 @@
         "DFOSC"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -494,7 +494,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2.38 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -784,7 +784,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 12 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -844,7 +844,7 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -916,7 +916,7 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -988,7 +988,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 7.0,
+        "distanceMly": 7,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -1132,7 +1132,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -1204,7 +1204,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -1361,7 +1361,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 9.68 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -1435,7 +1435,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 14.6 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -1566,7 +1566,7 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -1710,7 +1710,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light-years",
         "distanceRangeMly": null,
@@ -1854,7 +1854,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 160.0,
+        "distanceMly": 160,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "160 million light-years",
         "distanceRangeMly": null,
@@ -1939,7 +1939,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 113 LY",
-        "ageGyr": 1.3e-05,
+        "ageGyr": 0.000013,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -2142,7 +2142,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million light-years",
         "distanceRangeMly": null,
@@ -2214,7 +2214,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 155.0,
+        "distanceMly": 155,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "155 million light-years",
         "distanceRangeMly": null,
@@ -2286,7 +2286,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 70.0,
+        "distanceMly": 70,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -2464,10 +2464,10 @@
       "avmReferenceDec": -33.2431687781,
       "avmHorizontalFovDegrees": 0.109304997011584,
       "avmVerticalFovDegrees": 0.1124645945814501,
-      "avmRotation": -90.0,
+      "avmRotation": -90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1124645945814501,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -2576,7 +2576,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 106.0,
+        "distanceMly": 106,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "106 million light-years",
         "distanceRangeMly": null,
@@ -2644,7 +2644,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 90.0,
+        "distanceMly": 90,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -2716,7 +2716,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light-years",
         "distanceRangeMly": null,
@@ -2790,7 +2790,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 12.0,
+        "distanceMly": 12,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "12 million light years",
         "distanceRangeMly": null,
@@ -2875,7 +2875,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2.96 LY",
-        "ageGyr": 2.5e-05,
+        "ageGyr": 0.000025,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -2968,10 +2968,10 @@
       "avmReferenceDec": 3.35843966482,
       "avmHorizontalFovDegrees": 0.028395458368512,
       "avmVerticalFovDegrees": 0.028395458368512,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.028395458368512,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -3006,7 +3006,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 3e-05,
+        "distanceMly": 0.00003,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "30 light-years",
         "distanceRangeMly": null,
@@ -3165,7 +3165,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 669 × 606 LY",
-        "ageGyr": 7e-05,
+        "ageGyr": 0.00007,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -3237,7 +3237,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 72.8 LY",
-        "ageGyr": 7e-06,
+        "ageGyr": 0.000007,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -3309,7 +3309,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 5.71 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -3402,10 +3402,10 @@
       "avmReferenceDec": -10.1712461,
       "avmHorizontalFovDegrees": 0.0939094598,
       "avmVerticalFovDegrees": 0.11346821153999999,
-      "avmRotation": -1.0,
+      "avmRotation": -1,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.11346821153999999,
-      "aladinRotation": -1.0,
+      "aladinRotation": -1,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -3585,20 +3585,20 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "cross_catalog_exact_identity",
         "distanceEvidence": null,
         "distanceRangeMly": null,
         "distanceDisplay": "0 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          9.3e-05,
-          9.3e-05
+          0.000093,
+          0.000093
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 0.0933 LY",
-        "ageGyr": 0.0,
+        "ageGyr": 0,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -3670,7 +3670,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 28.9 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -3729,7 +3729,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 13.0,
+        "distanceMly": 13,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "13 million light-years",
         "distanceRangeMly": null,
@@ -3801,7 +3801,7 @@
         "SOFI"
       ],
       "science": {
-        "distanceMly": 12.0,
+        "distanceMly": 12,
         "distanceMethod": "cross_catalog:chandra:Chandra fast facts or standard catalog distance",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -3885,7 +3885,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 18.7 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -3957,7 +3957,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 31.2 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -4029,7 +4029,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 49 × 51 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -4101,7 +4101,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 28 × 35 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -4245,7 +4245,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 6 × 6 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -4304,7 +4304,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light-years",
         "distanceRangeMly": null,
@@ -4376,7 +4376,7 @@
         "VIRCAM"
       ],
       "science": {
-        "distanceMly": 13.0,
+        "distanceMly": 13,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "13 million light-years",
         "distanceRangeMly": null,
@@ -4461,7 +4461,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 27.3 LY",
-        "ageGyr": 0.0,
+        "ageGyr": 0,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -4520,7 +4520,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -4592,7 +4592,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 7.0,
+        "distanceMly": 7,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -4664,7 +4664,7 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -4736,12 +4736,12 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description_range_midpoint",
         "distanceEvidence": "60–70 million light-years",
         "distanceRangeMly": [
-          60.0,
-          70.0
+          60,
+          70
         ],
         "distanceDisplay": "65.0 million light-years",
         "distanceEstimated": true,
@@ -4811,7 +4811,7 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -4883,7 +4883,7 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million light-years",
         "distanceRangeMly": null,
@@ -4955,7 +4955,7 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 75.0,
+        "distanceMly": 75,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "75 million light-years",
         "distanceRangeMly": null,
@@ -5027,7 +5027,7 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 30.0,
+        "distanceMly": 30,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "30 million light-years",
         "distanceRangeMly": null,
@@ -5099,7 +5099,7 @@
         "HAWK-I"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million light-years",
         "distanceRangeMly": null,
@@ -5171,7 +5171,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 220.0,
+        "distanceMly": 220,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -5243,7 +5243,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 22.0,
+        "distanceMly": 22,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "22 million light-years",
         "distanceRangeMly": null,
@@ -5328,7 +5328,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 14 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -5387,7 +5387,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 11.0,
+        "distanceMly": 11,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "11 million light-years",
         "distanceRangeMly": null,
@@ -5472,7 +5472,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 0.836 LY",
-        "ageGyr": 0.0,
+        "ageGyr": 0,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -5546,7 +5546,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 95.2 LY",
-        "ageGyr": 1e-05,
+        "ageGyr": 0.00001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -5822,7 +5822,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 30.0,
+        "distanceMly": 30,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -6000,10 +6000,10 @@
       "avmReferenceDec": 13.3102144251,
       "avmHorizontalFovDegrees": 0.8619630487539199,
       "avmVerticalFovDegrees": 0.697651342585204,
-      "avmRotation": 90.0,
+      "avmRotation": 90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.697651342585204,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -6038,7 +6038,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
@@ -6110,7 +6110,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -6256,7 +6256,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 70.0,
+        "distanceMly": 70,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "70 million light-years",
         "distanceRangeMly": null,
@@ -6413,7 +6413,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 8 × 8 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6485,7 +6485,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 50.7 LY",
-        "ageGyr": 7e-06,
+        "ageGyr": 0.000007,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6558,7 +6558,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 15.6 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6617,7 +6617,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -6702,7 +6702,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 7.72 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6774,7 +6774,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 148 LY",
-        "ageGyr": 4e-06,
+        "ageGyr": 0.000004,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6846,7 +6846,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 31 × 32 LY",
-        "ageGyr": 1.5e-05,
+        "ageGyr": 0.000015,
         "ageMethod": "lookback_from_light_travel_distance_no_redshift_available",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6907,7 +6907,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -6920,7 +6920,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 0.103 LY",
-        "ageGyr": 0.0,
+        "ageGyr": 0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -6979,7 +6979,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
@@ -7064,7 +7064,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 19.4 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7137,7 +7137,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 66.5 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7282,7 +7282,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2.96 LY",
-        "ageGyr": 3e-06,
+        "ageGyr": 0.000003,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7341,7 +7341,7 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -7428,7 +7428,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 110 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7502,7 +7502,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 150 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7576,7 +7576,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 50.8 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7648,7 +7648,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2 × 2 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7707,7 +7707,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 30.0,
+        "distanceMly": 30,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -7864,7 +7864,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 82.5 LY",
-        "ageGyr": 3e-06,
+        "ageGyr": 0.000003,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7936,7 +7936,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 84.5 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -7995,7 +7995,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 150.0,
+        "distanceMly": 150,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8067,7 +8067,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8139,7 +8139,7 @@
         "OmegaCAM"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8224,7 +8224,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 72.2 LY",
-        "ageGyr": 4e-06,
+        "ageGyr": 0.000004,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -8296,7 +8296,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 6.12 LY",
-        "ageGyr": 7e-06,
+        "ageGyr": 0.000007,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -8368,7 +8368,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 56.7 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -8389,10 +8389,10 @@
       "avmReferenceDec": -16.1874792101,
       "avmHorizontalFovDegrees": 0.59066267714625,
       "avmVerticalFovDegrees": 0.551945861843375,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.551945861843375,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -8427,7 +8427,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 200.0,
+        "distanceMly": 200,
         "distanceMethod": "cross_catalog:noirlab:astropix_structured_distance_ly",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8512,7 +8512,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 5.65 LY",
-        "ageGyr": 0.0,
+        "ageGyr": 0,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -8584,7 +8584,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 11.9 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -8643,7 +8643,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 600.0,
+        "distanceMly": 600,
         "distanceMethod": "cross_catalog:hubble:restored_exact_archiveId_from_gv-hubble-galaxies-full-0018::esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8728,7 +8728,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 29.6 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -8821,10 +8821,10 @@
       "avmReferenceDec": 0.440589846849,
       "avmHorizontalFovDegrees": 0.1223346799439306,
       "avmVerticalFovDegrees": 0.1194286185714789,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1194286185714789,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -8859,7 +8859,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8944,7 +8944,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2.02 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9016,7 +9016,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 0.894 LY",
-        "ageGyr": 3.033e-06,
+        "ageGyr": 0.000003033,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9037,10 +9037,10 @@
       "avmReferenceDec": -33.868550409,
       "avmHorizontalFovDegrees": 0.0168791943816768,
       "avmVerticalFovDegrees": 0.0169902417131352,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0169902417131352,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9088,7 +9088,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 1.05 LY",
-        "ageGyr": 3e-06,
+        "ageGyr": 0.000003,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9109,10 +9109,10 @@
       "avmReferenceDec": -23.75967,
       "avmHorizontalFovDegrees": 0.0171417926580208,
       "avmVerticalFovDegrees": 0.017308758170923602,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.017308758170923602,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9181,10 +9181,10 @@
       "avmReferenceDec": -41.5771010054,
       "avmHorizontalFovDegrees": 0.0171615183723192,
       "avmVerticalFovDegrees": 0.0144956514406968,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0144956514406968,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9253,10 +9253,10 @@
       "avmReferenceDec": 21.1504126065,
       "avmHorizontalFovDegrees": 0.017407162600666,
       "avmVerticalFovDegrees": 0.017129978482821,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.017129978482821,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9304,7 +9304,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 1.32 LY",
-        "ageGyr": 3.764e-06,
+        "ageGyr": 0.000003764,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9325,10 +9325,10 @@
       "avmReferenceDec": -11.3634994364,
       "avmHorizontalFovDegrees": 0.02014430296473,
       "avmVerticalFovDegrees": 0.020445782328828,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.020445782328828,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9363,7 +9363,7 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light-years",
         "distanceRangeMly": null,
@@ -9546,10 +9546,10 @@
       "avmReferenceDec": -19.8947222382,
       "avmHorizontalFovDegrees": 0.1202629961023803,
       "avmVerticalFovDegrees": 0.1241808133110675,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1241808133110675,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9597,7 +9597,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 9.44 LY",
-        "ageGyr": 4e-06,
+        "ageGyr": 0.000004,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9618,10 +9618,10 @@
       "avmReferenceDec": -26.4408748709,
       "avmHorizontalFovDegrees": 0.12022442253975,
       "avmVerticalFovDegrees": 0.12357952270365001,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.12357952270365001,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9741,7 +9741,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2.75 LY",
-        "ageGyr": 1.4e-06,
+        "ageGyr": 0.0000014,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9762,10 +9762,10 @@
       "avmReferenceDec": -19.8852048556,
       "avmHorizontalFovDegrees": 0.1127228445812207,
       "avmVerticalFovDegrees": 0.1226710384473073,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1226710384473073,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -9813,7 +9813,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 6.17 LY",
-        "ageGyr": 3e-06,
+        "ageGyr": 0.000003,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9885,7 +9885,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 9.44 LY",
-        "ageGyr": 4e-06,
+        "ageGyr": 0.000004,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9957,7 +9957,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 3.66 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -9978,10 +9978,10 @@
       "avmReferenceDec": -11.8718983057,
       "avmHorizontalFovDegrees": 0.11658416590755899,
       "avmVerticalFovDegrees": 0.1180545968289156,
-      "avmRotation": 180.0,
+      "avmRotation": 180,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1180545968289156,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -10016,7 +10016,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -10050,10 +10050,10 @@
       "avmReferenceDec": 4.47357646823,
       "avmHorizontalFovDegrees": 0.0493938198852072,
       "avmVerticalFovDegrees": 0.0491713252010396,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0491713252010396,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -10088,7 +10088,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 31.0,
+        "distanceMly": 31,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "31 million light-years",
         "distanceRangeMly": null,
@@ -10160,7 +10160,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -10194,10 +10194,10 @@
       "avmReferenceDec": -0.498961136021,
       "avmHorizontalFovDegrees": 0.049228440308507995,
       "avmVerticalFovDegrees": 0.033097086987076,
-      "avmRotation": 90.0,
+      "avmRotation": 90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.033097086987076,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -10232,7 +10232,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 61.0,
+        "distanceMly": 61,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "61 million light-years",
         "distanceRangeMly": null,
@@ -10306,7 +10306,7 @@
         "Band 6"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -10340,10 +10340,10 @@
       "avmReferenceDec": 4.47357646823,
       "avmHorizontalFovDegrees": 0.0493938198852072,
       "avmVerticalFovDegrees": 0.0491713252010396,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0491713252010396,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -10380,7 +10380,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "45 million light-years",
         "distanceRangeMly": null,
@@ -10454,7 +10454,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 31.0,
+        "distanceMly": 31,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "31 million light-years",
         "distanceRangeMly": null,
@@ -10529,7 +10529,7 @@
         "MOSAIC"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -10563,10 +10563,10 @@
       "avmReferenceDec": -0.498961136021,
       "avmHorizontalFovDegrees": 0.049228440308507995,
       "avmVerticalFovDegrees": 0.033097086987076,
-      "avmRotation": 90.0,
+      "avmRotation": 90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.033097086987076,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -10601,7 +10601,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 89.0,
+        "distanceMly": 89,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -10686,7 +10686,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 5 × 5 LY",
-        "ageGyr": 3e-06,
+        "ageGyr": 0.000003,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -10760,7 +10760,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 614 MLY",
-        "ageGyr": 3.0,
+        "ageGyr": 3,
         "ageMethod": "astropix_description_explicit",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -10781,10 +10781,10 @@
       "avmReferenceDec": -26.4857277399,
       "avmHorizontalFovDegrees": 0.0166591381329,
       "avmVerticalFovDegrees": 0.0166591381329,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0166591381329,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -10831,7 +10831,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 21.4 LY",
-        "ageGyr": 0.0,
+        "ageGyr": 0,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -10903,7 +10903,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 1.66 LY",
-        "ageGyr": 4e-06,
+        "ageGyr": 0.000004,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -10962,7 +10962,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 165.0,
+        "distanceMly": 165,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "165 million light-years",
         "distanceRangeMly": null,
@@ -11034,7 +11034,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "300 million light-years",
         "distanceRangeMly": null,
@@ -11119,7 +11119,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2 × 2 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -11140,10 +11140,10 @@
       "avmReferenceDec": 22.721112,
       "avmHorizontalFovDegrees": 0.11262968222,
       "avmVerticalFovDegrees": 0.11360591208000001,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.11360591208000001,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -11178,7 +11178,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 6.2e-05,
+        "distanceMly": 0.000062,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "62 light-years",
         "distanceRangeMly": null,
@@ -11250,7 +11250,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "300 million light-years",
         "distanceRangeMly": null,
@@ -11394,7 +11394,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 170.0,
+        "distanceMly": 170,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "170 million light-years",
         "distanceRangeMly": null,
@@ -11479,7 +11479,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 12 × 12 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -11551,7 +11551,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 5 × 5 LY",
-        "ageGyr": 6e-06,
+        "ageGyr": 0.000006,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -11610,7 +11610,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -11644,10 +11644,10 @@
       "avmReferenceDec": -26.3386838965,
       "avmHorizontalFovDegrees": 0.119113948211904,
       "avmVerticalFovDegrees": 0.053911469268825306,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.053911469268825306,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -11695,7 +11695,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 10 × 7 LY",
-        "ageGyr": 1e-06,
+        "ageGyr": 0.000001,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -11754,7 +11754,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light-years",
         "distanceRangeMly": null,
@@ -11825,7 +11825,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -11859,10 +11859,10 @@
       "avmReferenceDec": -0.498961136021,
       "avmHorizontalFovDegrees": 0.049228440308507995,
       "avmVerticalFovDegrees": 0.033097086987076,
-      "avmRotation": 90.0,
+      "avmRotation": 90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.033097086987076,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -11897,7 +11897,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -11969,7 +11969,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -12003,10 +12003,10 @@
       "avmReferenceDec": -20.5727578338,
       "avmHorizontalFovDegrees": 0.22587061371391998,
       "avmVerticalFovDegrees": 0.22234138537464,
-      "avmRotation": -45.0,
+      "avmRotation": -45,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.22234138537464,
-      "aladinRotation": -45.0,
+      "aladinRotation": -45,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -12041,7 +12041,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 61.0,
+        "distanceMly": 61,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "61 million light-years",
         "distanceRangeMly": null,
@@ -12113,7 +12113,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 61.0,
+        "distanceMly": 61,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "61 million light-years",
         "distanceRangeMly": null,
@@ -12185,7 +12185,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -12257,7 +12257,7 @@
         "DFOSC"
       ],
       "science": {
-        "distanceMly": 70.0,
+        "distanceMly": 70,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "70 million light-years",
         "distanceRangeMly": null,
@@ -12329,7 +12329,7 @@
         "EFOSC2"
       ],
       "science": {
-        "distanceMly": 75.0,
+        "distanceMly": 75,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "75 million light-years",
         "distanceRangeMly": null,
@@ -12401,7 +12401,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -12473,7 +12473,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 31.0,
+        "distanceMly": 31,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "31 million light-years",
         "distanceRangeMly": null,
@@ -12545,7 +12545,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 31.0,
+        "distanceMly": 31,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "31 million light-years",
         "distanceRangeMly": null,
@@ -12617,7 +12617,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -12651,10 +12651,10 @@
       "avmReferenceDec": 4.47357646823,
       "avmHorizontalFovDegrees": 0.0493938198852072,
       "avmVerticalFovDegrees": 0.0491713252010396,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0491713252010396,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -12691,7 +12691,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -12725,10 +12725,10 @@
       "avmReferenceDec": 4.4735769585,
       "avmHorizontalFovDegrees": 0.0491480767352205,
       "avmVerticalFovDegrees": 0.048870403985304,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.048870403985304,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -12776,7 +12776,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 3.14 LY",
-        "ageGyr": 2.329e-06,
+        "ageGyr": 0.000002329,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -12835,7 +12835,7 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 450.0,
+        "distanceMly": 450,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "450 million light-years",
         "distanceRangeMly": null,
@@ -12907,7 +12907,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 13.0,
+        "distanceMly": 13,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "13 million light-years",
         "distanceRangeMly": null,
@@ -12941,10 +12941,10 @@
       "avmReferenceDec": -49.4667635908,
       "avmHorizontalFovDegrees": 0.32559934382336003,
       "avmVerticalFovDegrees": 0.19739460219291202,
-      "avmRotation": -45.0,
+      "avmRotation": -45,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.19739460219291202,
-      "aladinRotation": -45.0,
+      "aladinRotation": -45,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -12979,7 +12979,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -13051,7 +13051,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -13136,7 +13136,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 2.82 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -13208,7 +13208,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 31.6 LY",
-        "ageGyr": 8e-06,
+        "ageGyr": 0.000008,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -13280,7 +13280,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 19.4 LY",
-        "ageGyr": 5e-06,
+        "ageGyr": 0.000005,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -13339,7 +13339,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 13.0,
+        "distanceMly": 13,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "13 million light-years",
         "distanceRangeMly": null,
@@ -13373,10 +13373,10 @@
       "avmReferenceDec": -25.2837951518,
       "avmHorizontalFovDegrees": 0.50286484709248,
       "avmVerticalFovDegrees": 0.26321831839997,
-      "avmRotation": 135.0,
+      "avmRotation": 135,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.26321831839997,
-      "aladinRotation": -45.0,
+      "aladinRotation": -45,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -13411,7 +13411,7 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 80.0,
+        "distanceMly": 80,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "80 million light-years",
         "distanceRangeMly": null,
@@ -13483,7 +13483,7 @@
         "EFOSC2"
       ],
       "science": {
-        "distanceMly": 75.0,
+        "distanceMly": 75,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "75 million light-years",
         "distanceRangeMly": null,
@@ -13558,7 +13558,7 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "300 million light-years",
         "distanceRangeMly": null,
@@ -13630,7 +13630,7 @@
         "EFOSC2"
       ],
       "science": {
-        "distanceMly": 90.0,
+        "distanceMly": 90,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "90 million light-years",
         "distanceRangeMly": null,
@@ -13702,7 +13702,7 @@
         "DFOSC"
       ],
       "science": {
-        "distanceMly": 61.0,
+        "distanceMly": 61,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "61 million light-years",
         "distanceRangeMly": null,
@@ -13918,7 +13918,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 90.0,
+        "distanceMly": 90,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "90 million light years",
         "distanceRangeMly": null,
@@ -14006,7 +14006,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 3 × 4 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -14137,7 +14137,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 22.0,
+        "distanceMly": 22,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -14209,7 +14209,7 @@
         "EFOSC"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -14294,7 +14294,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 4 × 4 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -14366,7 +14366,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 4 × 4 LY",
-        "ageGyr": 3e-06,
+        "ageGyr": 0.000003,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -14425,7 +14425,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -14497,7 +14497,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -14569,7 +14569,7 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "300 million light-years",
         "distanceRangeMly": null,
@@ -14650,7 +14650,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 18 × 18 LY",
-        "ageGyr": 8e-06,
+        "ageGyr": 0.000008,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -14709,7 +14709,7 @@
         "EFOSC"
       ],
       "science": {
-        "distanceMly": 25.0,
+        "distanceMly": 25,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -14794,7 +14794,7 @@
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 33.8 LY",
-        "ageGyr": 8e-06,
+        "ageGyr": 0.000008,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -14925,7 +14925,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 56.0,
+        "distanceMly": 56,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "56 million light-years",
         "distanceRangeMly": null,
@@ -14959,10 +14959,10 @@
       "avmReferenceDec": -39.0465580045,
       "avmHorizontalFovDegrees": 0.1206148190321555,
       "avmVerticalFovDegrees": 0.1206148190321555,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1206148190321555,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -15069,7 +15069,7 @@
         "EMMI"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -15141,7 +15141,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 75.0,
+        "distanceMly": 75,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "75 million light-years",
         "distanceRangeMly": null,
@@ -15287,7 +15287,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 95.0,
+        "distanceMly": 95,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "95 million light-years",
         "distanceRangeMly": null,
@@ -15321,10 +15321,10 @@
       "avmReferenceDec": -75.1111483215,
       "avmHorizontalFovDegrees": 0.12017435070962551,
       "avmVerticalFovDegrees": 0.1237778319681674,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1237778319681674,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -15359,7 +15359,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 70.0,
+        "distanceMly": 70,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "70 million light-years",
         "distanceRangeMly": null,
@@ -15393,10 +15393,10 @@
       "avmReferenceDec": -21.9420934979,
       "avmHorizontalFovDegrees": 0.28245996253721756,
       "avmVerticalFovDegrees": 0.28245996253721756,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.28245996253721756,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -15431,7 +15431,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million light-years",
         "distanceRangeMly": null,
@@ -15465,10 +15465,10 @@
       "avmReferenceDec": -26.3370257903,
       "avmHorizontalFovDegrees": 0.1194636314245192,
       "avmVerticalFovDegrees": 0.1211073055102781,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1211073055102781,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -15503,7 +15503,7 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 220.0,
+        "distanceMly": 220,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -15575,7 +15575,7 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 120.0,
+        "distanceMly": 120,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -15609,10 +15609,10 @@
       "avmReferenceDec": -6.05043649933,
       "avmHorizontalFovDegrees": 0.132870089074274,
       "avmVerticalFovDegrees": 0.1062391675810148,
-      "avmRotation": 90.0,
+      "avmRotation": 90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.1062391675810148,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -15647,7 +15647,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -15681,10 +15681,10 @@
       "avmReferenceDec": 4.47364345595,
       "avmHorizontalFovDegrees": 0.1019009814384628,
       "avmVerticalFovDegrees": 0.10392920962083439,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.10392920962083439,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -15719,7 +15719,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 120.0,
+        "distanceMly": 120,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "120 million light-years",
         "distanceRangeMly": null,
@@ -15804,7 +15804,7 @@
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 3 × 3 LY",
-        "ageGyr": 2e-06,
+        "ageGyr": 0.000002,
         "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
@@ -15863,7 +15863,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 100.0,
+        "distanceMly": 100,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "100 million light-years",
         "distanceRangeMly": null,
@@ -15935,7 +15935,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 120.0,
+        "distanceMly": 120,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "120 million light years",
         "distanceRangeMly": null,
@@ -15969,10 +15969,10 @@
       "avmReferenceDec": -6.06050947502,
       "avmHorizontalFovDegrees": 0.11518275264879599,
       "avmVerticalFovDegrees": 0.10075865110128719,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.10075865110128719,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -16007,7 +16007,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 56.0,
+        "distanceMly": 56,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "56 million light-years",
         "distanceRangeMly": null,
@@ -16041,10 +16041,10 @@
       "avmReferenceDec": -36.1403891807,
       "avmHorizontalFovDegrees": 0.0170826836208844,
       "avmVerticalFovDegrees": 0.0168601079385276,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0168601079385276,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -16079,7 +16079,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light-years",
         "distanceRangeMly": null,
@@ -16130,7 +16130,7 @@
       "title": "Eyes in the sky",
       "ra": 174.120783591,
       "dec": 21.5950304342,
-      "distance": "30165.7 million light-years",
+      "distance": "425 million light-years",
       "constellation": "Leo",
       "fieldOfView": "0.9794 x 0.9150 arcminutes",
       "orientation": "AVM/WCS rotation -0.000000 degrees",
@@ -16151,26 +16151,26 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 30165.718511,
-        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
-        "distanceEvidence": null,
+        "distanceMly": 425,
+        "distanceMethod": "NASA_GSFC_SVS_10795",
+        "distanceEvidence": "https://svs.gsfc.nasa.gov/10795/",
         "distanceRangeMly": null,
-        "distanceDisplay": "30165.7 million light-years",
+        "distanceDisplay": "425 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          8594.453,
-          8594.453
+          121.1,
+          113.1
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 8.59 MLY",
-        "ageGyr": 0.407031,
-        "ageMethod": "lookback_from_NED_redshift_flat_lcdm_H0_70_Om_0.3",
+        "sizeDisplay": "EST. 121.1 × 113.1 KLY (image footprint; not intrinsic galaxy diameter)",
+        "ageGyr": null,
+        "ageMethod": "not_available_no_quantitative_stellar_age_source",
         "ageMinGyr": null,
         "ageMaxGyr": null,
-        "ageEstimated": true,
-        "ageDisplay": "EST. 407.0 MYR",
-        "ageEvidence": null,
+        "ageEstimated": null,
+        "ageDisplay": null,
+        "ageEvidence": "No quantitative age for the galaxy/system is given by the catalog source; lookback time from redshift is not galaxy age.",
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -16185,16 +16185,16 @@
       "avmReferenceDec": 21.5950304342,
       "avmHorizontalFovDegrees": 0.016324022869963203,
       "avmVerticalFovDegrees": 0.015250561048582401,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.015250561048582401,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 24209,
       "astropixLastUpdated": "2021-03-23T14:41:02+01:00",
-      "age": "EST. 407.0 MYR"
+      "age": null
     },
     {
       "archiveId": "potw2123a",
@@ -16295,7 +16295,7 @@
         "OmegaCAM"
       ],
       "science": {
-        "distanceMly": 140.0,
+        "distanceMly": 140,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "140 million light-years",
         "distanceRangeMly": null,
@@ -16367,7 +16367,7 @@
         "OmegaCAM"
       ],
       "science": {
-        "distanceMly": 89.0,
+        "distanceMly": 89,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "89 million light-years",
         "distanceRangeMly": null,
@@ -16439,7 +16439,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -16587,7 +16587,7 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 31.0,
+        "distanceMly": 31,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "31 million light-years",
         "distanceRangeMly": null,
@@ -16661,7 +16661,7 @@
         "Band 6"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light-years",
         "distanceRangeMly": null,
@@ -16695,10 +16695,10 @@
       "avmReferenceDec": 4.47357646823,
       "avmHorizontalFovDegrees": 0.0493938198852072,
       "avmVerticalFovDegrees": 0.0491713252010396,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0491713252010396,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -16733,7 +16733,7 @@
         "FORS2"
       ],
       "science": {
-        "distanceMly": 120.0,
+        "distanceMly": 120,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
