@@ -2296,7 +2296,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     let installed=false;
     const installWhenReady=prepared=>{
         if(!prepared?.imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
-        if(activeDestination!==v.destination||installed){
+        if(activeDestination!==presentationDestination||installed){
             gvReleaseHdObjectUrl(prepared.imageObjectUrl);
             return Promise.resolve(false);
         }
