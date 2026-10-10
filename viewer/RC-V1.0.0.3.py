@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0025"
+BUILD_NUMBER = "0026"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -322,7 +322,9 @@ aladin.on('rotationChanged',rotation=>{
     setNorthMarker(-liveRotation);
 });
 
+window.GV_NAV_BACKGROUND_SUSPENDED=false;
 const updateDirectionalReticle=()=>{
+    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
     const state=reticle.gvDirectional;
     if(!state)return;
     const northBearing=readCelestialNorthBearing(aladin,compassRoot);
@@ -375,6 +377,7 @@ function gvEarthScreenBearing(){
     }catch(_){return gvEarthLastValidBearing}
 }
 function gvUpdateEarthBearingPointer(){
+    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
     const rotor=document.getElementById('gv-earth-bearing-rotor');if(!rotor)return;
     try{
         const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
@@ -520,6 +523,7 @@ function gvChooseLiveScaleValue(lyPerPx){
     return candidates[0]||null;
 }
 function gvUpdateLivePhysicalScale(){
+    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
     const s=document.getElementById('gv-live-physical-scale'),line=s?.querySelector('.gv-live-scale-line'),label=s?.querySelector('.gv-live-scale-label'),b=document.getElementById('gv-earth-distance-banner');
     if(!s||!line||!label||!b||!b.classList.contains('gv-visible')||!activeDestination){s?.classList.remove('gv-visible');return}
     const distanceMly=Number(activeDestination?.distanceMly??activeDestination?.distance),rawFov=aladin.getFov?.(),fovX=Number(Array.isArray(rawFov)?rawFov[0]:rawFov),viewportWidth=Number(document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth);
@@ -766,6 +770,7 @@ try{
     }
 }catch(error){console.error('COORDINATE OVERLAY MOUNT FAILED',error)}
 function gvSyncCoordinateFromAladin(){
+    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
     try{
         const size=aladin.getSize?.(),center=Array.isArray(size)&&size.length>=2?aladin.pix2world?.(Number(size[0])/2,Number(size[1])/2):aladin.getRaDec?.();
         if(coordinate&&Array.isArray(center)&&Number.isFinite(Number(center[0]))&&Number.isFinite(Number(center[1])))coordinate.update(Number(center[0]),Number(center[1]));
@@ -1592,6 +1597,7 @@ let gvDisplayedFov=null;
 const GV_FOV_REPORT_MS=400;
 const GV_FOV_REPORT_HYSTERESIS=0.001;
 function gvSyncFovReadout(){
+    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
     try{
         const raw=aladin.getFov?.(),fov=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(fov)&&fov>=0){
@@ -1946,6 +1952,10 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
+            // BUILD 0026: freeze nonessential background refreshes during the existing zoom-only windows.
+            // Keep the flight RAF itself running so the original FOV choreography remains unchanged.
+            window.GV_NAV_BACKGROUND_SUSPENDED=(t<.30||t>=.70);
+
             if(switchToSphericalAtApex&&!projectionSwitchedAtApex&&t>=zoomInThreshold){projectionSwitchedAtApex=true;try{aladin.setFov(55);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 55° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}}
             if(!zoomInStarted&&t>=zoomInThreshold){
                 zoomInStarted=true;
@@ -1967,8 +1977,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
             }
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);aladin.setRotation(targetRotation);resolve(prepared);
-        }catch(error){reject(error)}};requestAnimationFrame(frame);
+            aladin.setFov(finalFov);aladin.setRotation(targetRotation);window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
+        }catch(error){window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
 }
