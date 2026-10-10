@@ -186,6 +186,9 @@ public final class MainActivity extends Activity {
   }
   private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
+  // Browser 0057 navigation contract: cover the outgoing page immediately, blank it before waiting,
+  // then start/reveal only the requested destination after a minimum 2,000 ms from the button action.
+  // Keep WebView cache/cookies/storage intact; the cover is visual isolation, not cache clearing.
   private void openProvider(String u,String icon){
     browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u;
     if(pendingProviderLaunch!=null){new Handler(Looper.getMainLooper()).removeCallbacks(pendingProviderLaunch);pendingProviderLaunch=null;}
