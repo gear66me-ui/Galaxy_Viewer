@@ -1,1 +1,1 @@
-Build Galaxy Viewer Release 1.0.0 — BUILD 0194 deployment trigger
+Build Galaxy Viewer Release 1.0.0 — BUILD 0050 deployment trigger
