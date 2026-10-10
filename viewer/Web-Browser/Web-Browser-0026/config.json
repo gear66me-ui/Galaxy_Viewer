@@ -1,7 +1,7 @@
 {
   "schema": "gv-web-browser-config-0001",
   "version": "0026",
-  "sourceUrl": "https://www.spitzer.caltech.edu/image/ssc2009-03a1-nasas-great-observatories-celebrate-the-international-year-of-astronomy",
+  "sourceUrl": "about:blank",
   "provider": "Spitzer",
   "providerIcon": "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Spitzer/Spitzer.jpg",
   "topShell": "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/Web-Browser-0026/top.html",
