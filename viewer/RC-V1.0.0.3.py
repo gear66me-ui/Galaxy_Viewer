@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0029"
+BUILD_NUMBER = "0030"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0029';
+const GV200001_BUILD='0030';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -323,6 +323,24 @@ aladin.on('rotationChanged',rotation=>{
 });
 
 window.GV_NAV_BACKGROUND_SUSPENDED=false;
+// BUILD 0030: reject new HiPS tile fetches during protected travel.
+// Restrict the gate to standard HiPS tile paths; survey metadata and app APIs remain available.
+(function gvInstallTravelHiPSFetchGate(){
+    if(window.__GV_TRAVEL_HIPS_FETCH_GATE__)return;
+    const nativeFetch=window.fetch.bind(window);
+    const tilePath=/\/Norder\d+\/Dir\d+\/Npix\d+(?:\.[a-z0-9]+)?(?:[?#]|$)/i;
+    window.__GV_TRAVEL_HIPS_FETCH_GATE__={nativeFetch,blocked:0,lastBlocked:null};
+    window.fetch=function(input,init){
+        let url='';
+        try{url=typeof input==='string'?input:(input?.url||'')}catch(_){}
+        if(window.GV_NAV_BACKGROUND_SUSPENDED&&tilePath.test(url)){
+            const state=window.__GV_TRAVEL_HIPS_FETCH_GATE__;
+            state.blocked++;state.lastBlocked={url,at:performance.now()};
+            return Promise.reject(new DOMException('HiPS tile fetch suspended during Galaxy Viewer travel','AbortError'));
+        }
+        return nativeFetch(input,init);
+    };
+})();
 const updateDirectionalReticle=()=>{
     if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
     const state=reticle.gvDirectional;
@@ -1954,7 +1972,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
-            window.GV_NAV_BACKGROUND_SUSPENDED=(t<zoomOutCompleteThreshold||t>=.70);
+            window.GV_NAV_BACKGROUND_SUSPENDED=true; // BUILD 0030: suspend application background polling for the entire flight.
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
                 zoomOutCompleted=true;
