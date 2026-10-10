@@ -6,38 +6,36 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0037"
+BUILD_NUMBER = "0033"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
 # ECO: GV200-001
 # ============================================================================
-# Production browser assets use same-origin GitHub Pages URLs so JS is served
-# with a browser-compatible MIME type; do not load production JS from raw GitHub.
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001"
-ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001"
+ALADIN_CSS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css"
+ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
-HAMBURGER_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001"
-COORDINATE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001"
-TARGET_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001"
+HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
+HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
+COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
+TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
-GALAXY_ROUTE_ENGINE_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001"
-GALAXY_NAVIGATOR_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001"
-HEADS_UP_DISPLAY_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001"
+GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
+HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" />
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -88,27 +86,27 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0037';
+const GV200001_BUILD='0033';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-DEPENDENCY-001`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.3',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css?v=GV0037-DEPENDENCY-001',
-    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js?v=GV0037-DEPENDENCY-001',
-    hamburgerBaseUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
-    hamburgerUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hamburger-menu/gv-hamburger-menu-0009.js?v=GV0037-DEPENDENCY-001',
-    coordinateUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js?v=GV0037-DEPENDENCY-001',
-    targetUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/target-simbad/gv-target-simbad-0007.js?v=GV0037-DEPENDENCY-001',
-    galaxyRouteEngineUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV0037-DEPENDENCY-001',
-    galaxyNavigatorUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js?v=GV0037-DEPENDENCY-001',
-    headsUpDisplayUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/hud/gv-heads-up-display-0001.js?v=GV0037-DEPENDENCY-001',
-    providerArtworkUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/provider-artwork/gv-provider-artwork-0004.js?v=GV0037-DEPENDENCY-001',
-    travelPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/random-galaxy/gv-random-travel-presentation.js?v=GV0037-DEPENDENCY-001',
-    destinationPresentationUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0017.js?v=GV0037-DEPENDENCY-001'
+    aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
+    aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
+    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
+    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
+    coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
+    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
+    galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
+    headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
+    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@eb83b198ed1b59860fec21acb2d3bb7ba938e80d/viewer/modules/destination-presentation/gv-destination-presentation-0031.js'
 });
 
 
@@ -243,7 +241,7 @@ const HOME=Object.freeze({
     rotation:0
 });
 
-const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
 const gvSpaceAgeFace=new FontFace('GV Space Age',`url("${GV_SPACE_AGE_URL}")`,{style:'normal',weight:'400'});
 const gvSpaceAgeReady=gvSpaceAgeFace.load().then(face=>{
     document.fonts.add(face);
@@ -282,7 +280,7 @@ gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('G
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
 // ECO: GV200-001
 // ============================================================================
-const RETICLE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/compass/compass.png';
+const RETICLE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/compass/compass.png';
 
 function createCenterReticle(root){
     const SIZE=270;
@@ -360,7 +358,7 @@ updateDirectionalReticle();
 // SECTION 041B — EARTH BEARING POINTER / ARRIVAL DISTANCE
 // ECO: GV200-028 BUILD 0001
 // ============================================================================
-const GV_EARTH_POINTER_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png';
+const GV_EARTH_POINTER_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png';
 function gvInstallEarthBearingPointer(){
     if(document.getElementById('gv-earth-bearing-rotor'))return;
     const rotor=document.createElement('div');
@@ -682,9 +680,9 @@ if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SUR
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
-if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0001'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0001 EXPORT MISSING');
+if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0032'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0032 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0031'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0031 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -738,7 +736,7 @@ for(const [name,host] of Object.entries(hosts)){
 // SECTION 023 — HAMBURGER 0007 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const GV_ABOUT_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/about/gv-about-presentation-0013.js?v=GV0037-DEPENDENCY-001';
+const GV_ABOUT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/about/gv-about-presentation-0013.js';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
     hamburger?.close?.();
@@ -869,7 +867,7 @@ const GV_SURVEY_PROVIDER_META=Object.freeze({
     SPITZER:Object.freeze({label:'SPITZER',icon:globalThis.GVProviderArtwork.icon('SPITZER')})
 });
 const GV_SURVEY_PROVIDER_ORDER=Object.freeze(['HUBBLE','JWST','CHANDRA','ESO','NOIRLAB','SPITZER']);
-const GV_SURVEY_RUNTIME_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
+const GV_SURVEY_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 const gvSurveyCatalog=new Map();
 function gvSurveyProviderKey(record){
     const provider=[record?.provider,record?.providerKey,record?.catalogKey].filter(Boolean).join(' ').toUpperCase();
@@ -1201,7 +1199,7 @@ gvSurveySelectStyle.textContent=`
 }
 `;
 document.head.appendChild(gvSurveySelectStyle);
-const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
+const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
 const gvSurveySelectGroup=document.createElement('div');
 gvSurveySelectGroup.id='gv-survey-select-group';
 const gvSurveySelectButton=document.createElement('button');
@@ -1448,8 +1446,8 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(value)}catch(_){}
     if(directHdObjectUrl===value)directHdObjectUrl=null;
 }
-const GV_MASTER_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/master-database/gv-master-catalog.json';
-const GV_AVM_RUNTIME_CATALOG_URL='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
+const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
+const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
@@ -1484,7 +1482,7 @@ function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     const ra=Number(record?.ra),dec=Number(record?.dec);
     const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
     const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
-    const rotation=Number(record?.orientation??record?.spatialRotationDeg??record?.aladinRotation);
+    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
     if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
     if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
     if(!Number.isFinite(rotation))throw new Error('GV JSON WCS ROTATION INVALID');
@@ -1518,7 +1516,7 @@ function gvRegisteredTravelStateFromRecord(record){
     const ra=Number(record?.ra),dec=Number(record?.dec);
     const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
     const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
-    const rotation=Number(record?.orientation??record?.spatialRotationDeg??record?.aladinRotation);
+    const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
     if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0||!Number.isFinite(rotation))throw new Error('GV REGISTERED TRAVEL METADATA INVALID');
     let imageCenter=[ra,dec];
     const dims=record?.referenceDimension,width=Number(dims?.[0]),height=Number(dims?.[1]);
@@ -1526,7 +1524,7 @@ function gvRegisteredTravelStateFromRecord(record){
         const wcs=gvSyntheticWcsFromRuntimeRecord(record,width,height);
         imageCenter=gvTanPixelToWorld(wcs,(width+1)/2,(height+1)/2);
     }
-    return {imageCenter,finalFov:Math.max(fovX,fovY)*1.0,rotation:0};
+    return {imageCenter,finalFov:Math.max(fovX,fovY)*1.0,rotation};
 }
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
@@ -1825,7 +1823,7 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     if(!url)throw new Error('GV DESTINATION IMAGE URL MISSING');
     const fovX=Number(record.fovXDegrees??record.fovDegrees);
     const fovY=Number(record.fovYDegrees??record.fovDegrees);
-    const rotation=Number(record.orientation??record.spatialRotationDeg??record.aladinRotation);
+    const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
     const prepStarted=performance.now();
     const raster=await gvLoadGate2MImage(url,destination,record);
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
@@ -2042,7 +2040,7 @@ if(activeRoute.length!==100)throw new Error(`NAVIGATION ACTIVE ROUTE LENGTH INVA
 // ECO: GV200-001
 // ============================================================================
 const GV_PRESENTATION_PROVIDER_BY_CATALOG=Object.freeze({hubble:'HUBBLE',jwst:'JWST',eso:'ESO',chandra:'CHANDRA',spitzer:'SPITZER',noirlab:'NOIRLAB'});
-const GV_PRESENTATION_ROOT='https://gear66me-ui.github.io/Galaxy_Viewer/';
+const GV_PRESENTATION_ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/';
 let gvPresentationMasterPromise=null;
 const gvPresentationCatalogPromises=new Map();
 const gvPresentationCatalogs=new Map();
@@ -2089,23 +2087,6 @@ async function gvPresentationDestination(destination){
     let enriched=provider&&String(destination?.provider||'').trim().toUpperCase()!==provider
         ? Object.freeze({...destination,provider})
         : destination;
-    let runtimeScience={};
-    try{
-        const runtime=await gvRuntimeAvmRecord(destination);
-        const science=runtime?.science||{};
-        const ageGyr=Number(science.ageGyr??runtime.ageGyr);
-        runtimeScience={
-            distanceMly:Number(science.distanceMly??runtime.distanceMly),
-            distance:String(science.distanceDisplay??runtime.distance??''),
-            ageYears:Number(science.ageYears??runtime.ageYears??(Number.isFinite(ageGyr)?ageGyr*1e9:NaN)),
-            age:String(science.ageDisplay??runtime.age??''),
-            sizeKly:Array.isArray(science.sizeKly)?science.sizeKly:(Array.isArray(runtime.sizeKly)?runtime.sizeKly:undefined),
-            constellation:String(runtime.constellation||'')
-        };
-        console.info('GV PRESENTATION SCIENCE FROM ACTIVE RUNTIME',runtime.archiveId,runtimeScience);
-    }catch(error){
-        console.warn('GV PRESENTATION RUNTIME SCIENCE LOOKUP FAILED',error);
-    }
     try{
         const catalog=await gvLoadPresentationCatalog(key);
         const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
@@ -2115,7 +2096,7 @@ async function gvPresentationDestination(destination){
             (url&&catalog?.byUrl.get(url))||
             (Number.isInteger(Number(destination?.catalogIndex))&&catalog?.entries[Number(destination.catalogIndex)])
         )?.entry;
-        if(!source)return Object.freeze({...enriched,...runtimeScience});
+        if(!source)return enriched;
         const science=source?.science||{};
         return Object.freeze({
             ...enriched,
@@ -2125,19 +2106,19 @@ async function gvPresentationDestination(destination){
             name:source?.displayName||source?.name||enriched?.name||'',
             commonName:source?.displayName||source?.name||enriched?.commonName||enriched?.name||'',
             pseudonym:source?.pseudonym||source?.commonName||enriched?.pseudonym||'',
-            constellation:runtimeScience.constellation||source?.constellation||enriched?.constellation||'',
-            distanceMly:Number.isFinite(runtimeScience.distanceMly)?runtimeScience.distanceMly:(Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):(enriched?.distanceMly??enriched?.distance)),
-            distance:runtimeScience.distance||source?.distance||enriched?.distance||'',
-            sizeKly:Array.isArray(runtimeScience.sizeKly)?runtimeScience.sizeKly:(Array.isArray(science?.sizeKly)?science.sizeKly:(Array.isArray(source?.sizeKly)?source.sizeKly:enriched?.sizeKly)),
-            ageYears:Number.isFinite(runtimeScience.ageYears)?runtimeScience.ageYears:(Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:(enriched?.ageYears??null)),
-            age:runtimeScience.age||science?.ageDisplay||source?.ageDisplay||enriched?.age||'',
+            constellation:source?.constellation||enriched?.constellation||'',
+            distanceMly:Number.isFinite(Number(science?.distanceMly))?Number(science.distanceMly):(enriched?.distanceMly??enriched?.distance),
+            distance:source?.distance||enriched?.distance||'',
+            sizeKly:Array.isArray(science?.sizeKly)?science.sizeKly:(Array.isArray(source?.sizeKly)?source.sizeKly:enriched?.sizeKly),
+            ageYears:Number.isFinite(Number(science?.ageGyr))?Number(science.ageGyr)*1e9:(enriched?.ageYears??null),
+            age:science?.ageDisplay||source?.ageDisplay||enriched?.age||'',
             imageType:source?.imageType||enriched?.imageType||'',
             title:source?.title||enriched?.title||'',
             description:source?.description||enriched?.description||''
         });
     }catch(error){
         console.warn('GV PRESENTATION METADATA HYDRATION FAILED',key,error);
-        return Object.freeze({...enriched,...runtimeScience});
+        return enriched;
     }
 }
 
@@ -2146,7 +2127,7 @@ function validateDestination(destination){
     const ra=Number(destination.ra);
     const dec=Number(destination.dec);
     const fov=Number(destination.fovDegrees);
-    const rotation=0;
+    const rotation=destination.aladinRotation;
     if(!Number.isFinite(ra))throw new Error('DESTINATION RA INVALID');
     if(!Number.isFinite(dec))throw new Error('DESTINATION DEC INVALID');
     if(!Number.isFinite(fov)||fov<=0)throw new Error('DESTINATION FOV INVALID');

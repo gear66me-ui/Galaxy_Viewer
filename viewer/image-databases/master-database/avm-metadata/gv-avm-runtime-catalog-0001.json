@@ -1636,14 +1636,14 @@
       "sourceIndex": 49,
       "imageUrl": "https://chandra.harvard.edu/photo/2007/3c321/3c321.jpg",
       "authority": "PRECOMPUTED_IMAGE_AVM",
-      "ra": 232.931105,
-      "dec": 24.071943,
+      "ra": 232.930603027,
+      "dec": 24.0713329315,
       "fovDegrees": 0.007155971999999999,
       "fovXDegrees": 0.007155971999999999,
       "fovYDegrees": 0.00522187179,
       "fovPolicy": "X",
-      "spatialRotationDeg": 77.00145099999997,
-      "aladinRotation": 77.00145099999997,
+      "spatialRotationDeg": -0.08634360806,
+      "aladinRotation": -0.08634360805999108,
       "referencePixel": [
         978.508181021,
         2216.9536779

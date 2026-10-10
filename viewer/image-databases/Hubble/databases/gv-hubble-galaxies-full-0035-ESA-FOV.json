@@ -102180,7 +102180,7 @@
       "title": "An Interstellar Distributor",
       "ra": 262.745234411,
       "dec": -31.0182522321,
-      "distance": "32.0 KLY",
+      "distance": "26.84 KLY",
       "constellation": "Scorpius",
       "fieldOfView": "0.3220 x 0.3035 arcminutes",
       "orientation": "AVM/WCS rotation 42.780000 degrees",
@@ -102201,26 +102201,26 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 0.032,
-        "distanceMethod": "statistical_galactic_planetary_nebula_distance_estimate_provisional",
-        "distanceEvidence": "Provisional synthesis of statistical estimates near 9.5–10.1 kpc (~31,000–33,000 light-years); not a direct parallax. Individual Galactic planetary-nebula distances have substantial uncertainty.",
+        "distanceMly": 0.02684,
+        "distanceMethod": "Likely Galactic-bulge PN distance scale — approximate",
+        "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "EST. 32.0 KLY",
+        "distanceDisplay": "26.84 KLY",
         "distanceEstimated": true,
         "sizeKly": [
-          0.002998,
-          0.002998
+          0.002514,
+          0.002514
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0036",
+        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3.00 LY",
-        "ageGyr": 13.47,
-        "ageMethod": "cosmic_age_at_emission_from_local_distance_flat_lcdm_H0_70_Om_0.3_0036",
+        "sizeDisplay": "EST. 2.51 LY",
+        "ageGyr": 2.684e-05,
+        "ageMethod": "Distance light-travel fallback",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 13.47 BY",
-        "ageEvidence": "Cosmic age of the universe at emission. At an estimated distance of ~32,000 light-years, the ~32,000-year lookback is negligible at Gyr display precision; rounds to 13.47 BY. This is not the nebula's physical age.",
+        "ageDisplay": "EST. 26.84 KYR",
+        "ageEvidence": null,
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -102258,9 +102258,7 @@
       "avmProfile": "AVM",
       "avmStatus": "ASTROPIX_SPATIAL_AVM",
       "catalogRollup": "HUBBLE-0034-ASTROPIX-MERGE",
-      "age": "EST. 26.84 KYR",
-      "objectType": "Planetary nebula",
-      "classification": "Planetary nebula"
+      "age": "EST. 26.84 KYR"
     },
     {
       "archiveId": "potw2119a",
