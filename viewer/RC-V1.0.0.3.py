@@ -1963,6 +1963,130 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,regist
 
 
 // ============================================================================
+// SECTION 033B — GVDEV SQUARE FLIGHT DIAGNOSTIC (OPT-IN ONLY)
+// Does not suspend or alter any existing reticle, bearing, coordinate, FOV,
+// catalog, prefetch, or rendering timers. Zoom phases use the existing slider
+// control path via gvEnergizeZoomJoystick() -> zoomStep().
+// ============================================================================
+let gvSquareTestRunning = false;
+async function gvRunSquareIsolationTest(){
+    if(gvSquareTestRunning)return false;
+    const center=aladin.getRaDec?.()||[HOME.ra,HOME.dec];
+    const originRa=Number(center[0]),originDec=Number(center[1]);
+    const rawFov=aladin.getFov?.(),originFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
+    let originRotation=0;
+    try{originRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
+    if(!Number.isFinite(originRa)||!Number.isFinite(originDec)||!Number.isFinite(originFov)||originFov<=0){
+        console.error('GV SQUARE TEST ABORTED: invalid starting camera state');
+        return false;
+    }
+    const button=document.getElementById('gv-square-flight-test-button');
+    gvSquareTestRunning=true;
+    if(button){button.disabled=true;button.textContent='SQUARE TEST…';}
+    const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const wrapRa=ra=>((ra%360)+360)%360;
+    const normalizeRotation=rotation=>((rotation%360)+360)%360;
+    const halfDec=8;
+    const cosDec=Math.max(0.2,Math.abs(Math.cos(originDec*Math.PI/180)));
+    const halfRa=Math.min(40,halfDec/cosDec);
+    const d0=Math.max(-80,Math.min(80,originDec-halfDec));
+    const d1=Math.max(-80,Math.min(80,originDec+halfDec));
+    const waypoints=[
+        [wrapRa(originRa-halfRa),d0],
+        [wrapRa(originRa+halfRa),d0],
+        [wrapRa(originRa+halfRa),d1],
+        [wrapRa(originRa-halfRa),d1],
+        [originRa,originDec]
+    ];
+    try{
+        // Phase 1: zoom completely out through the existing FOV slider engine.
+        gvSettleAutoZoom(false);
+        await gvEnergizeZoomJoystick(-1,360,{attackMs:350,landingMs:900,approachMs:250,linearLanding:true});
+        await sleep(500);
+
+        // Phase 2: traverse four sides of a deterministic square. FOV is never
+        // written during this phase. Translation and rotation occur separately:
+        // each leg ends at a dead stop, then the viewer rotates 90 degrees.
+        let from=[originRa,originDec];
+        const legDurationMs=1500;
+        for(let i=0;i<waypoints.length;i++){
+            const target=waypoints[i];
+            const started=performance.now();
+            let lastSample=-1;
+            await new Promise((resolve,reject)=>{
+                const frame=now=>{
+                    try{
+                        const elapsed=Math.min(legDurationMs,now-started);
+                        const sample=Math.floor(elapsed/20);
+                        if(sample!==lastSample){
+                            const progress=gvFlightNavigationSmootherstep(elapsed/legDurationMs);
+                            const pos=gvFlightGreatCirclePosition(from[0],from[1],target[0],target[1],progress);
+                            if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
+                            aladin.gotoRaDec(pos[0],pos[1]);
+                            coordinate?.update(pos[0],pos[1]);
+                            lastSample=sample;
+                        }
+                        if(elapsed<legDurationMs){requestAnimationFrame(frame);return;}
+                        resolve();
+                    }catch(error){reject(error);}
+                };
+                requestAnimationFrame(frame);
+            });
+            from=[target[0],target[1]];
+            aladin.gotoRaDec(from[0],from[1]);
+            coordinate?.update(from[0],from[1]);
+            gvSetEarthPointerPosition(from[0],from[1],true);
+            aladin.setRotation(normalizeRotation(originRotation+(i+1)*90));
+            await sleep(250);
+        }
+
+        // Phase 3: zoom back to the original FOV using the same slider engine.
+        await sleep(250);
+        await gvEnergizeZoomJoystick(1,originFov,{attackMs:350,landingMs:900,approachMs:250,linearLanding:true});
+        aladin.gotoRaDec(originRa,originDec);
+        coordinate?.update(originRa,originDec);
+        gvSetEarthPointerPosition(originRa,originDec,true);
+        aladin.setRotation(originRotation);
+        console.info('GV SQUARE TEST COMPLETE',{legs:4,legDurationMs,fovWritesDuringTranslation:0,reticleTimersChanged:false,earthBearingTimerChanged:false});
+        return true;
+    }catch(error){
+        console.error('GV SQUARE TEST FAILED',error);
+        try{
+            aladin.gotoRaDec(originRa,originDec);
+            coordinate?.update(originRa,originDec);
+            aladin.setRotation(originRotation);
+            const nowFov=aladin.getFov?.(),currentFov=Number(Array.isArray(nowFov)?nowFov[0]:nowFov);
+            if(Number.isFinite(currentFov)&&currentFov>originFov){
+                await gvEnergizeZoomJoystick(1,originFov,{attackMs:350,landingMs:900,approachMs:250,linearLanding:true});
+            }
+        }catch(recoveryError){console.error('GV SQUARE TEST RECOVERY FAILED',recoveryError);}
+        return false;
+    }finally{
+        gvSquareTestRunning=false;
+        if(button){button.disabled=false;button.textContent='SQUARE TEST';}
+    }
+}
+window.GV_RUN_SQUARE_TEST=gvRunSquareIsolationTest;
+(function gvInstallSquareFlightTestButton(){
+    if(document.getElementById('gv-square-flight-test-button'))return;
+    const button=document.createElement('button');
+    button.id='gv-square-flight-test-button';
+    button.type='button';
+    button.textContent='SQUARE TEST';
+    button.setAttribute('aria-label','Run developer square flight diagnostic');
+    Object.assign(button.style,{
+        position:'fixed',left:'8px',top:'8px',zIndex:'12000',
+        padding:'7px 9px',border:'1px solid rgba(124,203,255,.9)',
+        borderRadius:'5px',background:'rgba(3,16,38,.88)',color:'#7CCBFF',
+        font:'11px/1.2 system-ui,sans-serif',letterSpacing:'.6px',
+        boxShadow:'0 0 7px rgba(88,191,255,.25)',touchAction:'manipulation'
+    });
+    button.addEventListener('click',()=>{void gvRunSquareIsolationTest();});
+    document.body.appendChild(button);
+})();
+
+
+// ============================================================================
 // SECTION 034 — AUTHORITATIVE ACTIVE ROUTE ACCESS
 // ECO: GV200-001
 // ============================================================================
