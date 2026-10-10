@@ -166,7 +166,11 @@ public final class MainActivity extends Activity {
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
         bottom.loadUrl(bh+(bh.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
-        if(!browserMode&&(web.getUrl()==null||web.getUrl().isEmpty()||"about:blank".equals(web.getUrl()))) web.loadUrl(sourceUrl);
+        // Do not load the last configured provider into the hidden WebView during app startup.
+        // The provider display stays blank until an explicit openProvider() action; this prevents
+        // a previous-session galaxy/page from flashing on first browser entry. Do not clear cache,
+        // cookies, DOM storage, or pre-warmed content here.
+        // Provider navigation and prewarming still load their requested URLs through their own paths.
       });
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
