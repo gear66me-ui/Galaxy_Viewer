@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0028"
+BUILD_NUMBER = "0029"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0028';
+const GV200001_BUILD='0029';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -2182,8 +2182,8 @@ function gvStartFirstDestinationPreload(){
     const destination=activeRoute[0];
     if(!destination)return Promise.reject(new Error('GV FIRST DESTINATION MISSING'));
     const started=performance.now();
-    // BUILD 0005: provider warm-up and HD preparation begin together for the first destination.
-    gvPrewarmProviderWebsite(destination);
+    // BUILD 0029: prepare the first HD image without warming its provider website.
+    // Provider prewarming is strictly post-arrival.
     gvFirstDestinationPreload=gvPrepareDirectHd(destination).then(prepared=>{
         console.info('GV FIRST DESTINATION PREPARED',{ms:Math.round(performance.now()-started),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
         return {destination,prepared};
@@ -2232,7 +2232,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         if(firstTrip)destinationPresentation.depart();
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
         if(firstTrip)startTravelCard();
-        gvPrewarmProviderWebsite(v.destination);
+        // Provider prewarming is deferred until after 100% arrival.
         ensurePrepared();
     };
     activeDestination=v.destination;
@@ -2268,10 +2268,14 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         if(activeDestination!==v.destination)return v.destination;
         travelPresentation.end();
         destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
-        gvPrewarmProviderWebsite(v.destination);
-
-        headsUpDisplay.render();
-        gvShowEarthDistance(v.destination);
+        // BUILD 0029: let the arrival presentation paint before noncritical work.
+        // The identity guard prevents stale post-arrival work if another trip starts.
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+            if(activeDestination!==v.destination)return;
+            headsUpDisplay.render();
+            gvShowEarthDistance(v.destination);
+            gvPrewarmProviderWebsite(v.destination);
+        }));
         return v.destination;
     }
     const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
@@ -2280,10 +2284,14 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     if(activeDestination!==v.destination)return v.destination;
     travelPresentation.end();
     destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
-    gvPrewarmProviderWebsite(v.destination);
-
-    headsUpDisplay.render();
-    gvShowEarthDistance(v.destination);
+    // BUILD 0029: let the arrival presentation paint before noncritical work.
+    // The identity guard prevents stale post-arrival work if another trip starts.
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(activeDestination!==v.destination)return;
+        headsUpDisplay.render();
+        gvShowEarthDistance(v.destination);
+        gvPrewarmProviderWebsite(v.destination);
+    }));
     return v.destination;
 }
 // ============================================================================
