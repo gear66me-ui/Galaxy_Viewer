@@ -148,6 +148,11 @@
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
   ],
   "dependencySnapshot": "d85d91201ea52aa6524a62394fc81b450b15ac23",
-  "catalogSnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43"
+  "catalogSnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43",
+  "dependencyPins": [
+    "1dd058e42334ea880b309a9a435e09c1f1a2656d",
+    "5781bcedd8faaaa81b7eb3df1cda6ce586765181",
+    "d85d91201ea52aa6524a62394fc81b450b15ac23",
+    "e197403c8525b90f21c95967f11ab0bd01c3d0c4"
+  ]
 }
-
