@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0053"
+BUILD_NUMBER = "0054"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0053';
+const GV200001_BUILD='0054';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-FIX3C3210042-DESTPRESENTATION0034GATE0049`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1564,25 +1564,33 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=gvHdEffectiveOpacity();
-    // Update both Aladin's currently registered image layer and the retained
-    // A.image() object. Do not assume undocumented properties on the lookup result.
-    const candidates=[];
-    try{
-        const registered=aladin.getOverlayImageLayer?.(directHdLayerName);
-        if(registered)candidates.push(registered);
-    }catch(error){console.warn('GV CROSSFADE LAYER LOOKUP FAILED',error)}
-    if(directHdOverlay&&!candidates.includes(directHdOverlay))candidates.push(directHdOverlay);
-    let applied=0;
-    for(const target of candidates){
+    // The registered Aladin Image is authoritative. Keep the retained Image
+    // object synchronized too, but never re-register it during slider movement:
+    // setOverlayImageLayer() can reapply cached layer options and reset opacity.
+    let registered=null;
+    try{registered=aladin.getOverlayImageLayer?.(directHdLayerName)||null}
+    catch(error){console.warn('GV CROSSFADE LAYER LOOKUP FAILED',error)}
+    const targets=[];
+    if(registered)targets.push(registered);
+    if(directHdOverlay&&directHdOverlay!==registered)targets.push(directHdOverlay);
+    const results=[];
+    for(const target of targets){
         if(!target)continue;
         try{
-            if(typeof target.setOpacity==='function'){target.setOpacity(value);applied++}
-            else if(typeof target.setAlpha==='function'){target.setAlpha(value);applied++}
-            else if(typeof target.setOptions==='function'){target.setOptions({opacity:value});applied++}
+            if(typeof target.setOpacity==='function')target.setOpacity(value);
+            else if(typeof target.setAlpha==='function')target.setAlpha(value);
+            else if(typeof target.setOptions==='function')target.setOptions({opacity:value});
             if(target.options&&typeof target.options==='object')target.options.opacity=value;
+            const readback=typeof target.getOpacity==='function'?target.getOpacity():
+                (typeof target.getAlpha==='function'?target.getAlpha():target.options?.opacity??null);
+            results.push({registered:target===registered,method:typeof target.setOpacity==='function'?'setOpacity':typeof target.setAlpha==='function'?'setAlpha':typeof target.setOptions==='function'?'setOptions':'none',requested:value,readback});
         }catch(error){console.warn('GV CROSSFADE OPACITY APPLY FAILED',error)}
     }
-    if(!applied)console.warn('GV CROSSFADE HAS NO OPACITY TARGET',{layer:directHdLayerName,registered:!!candidates[0],hasOverlay:!!directHdOverlay});
+    if(!results.length||results.some(result=>result.readback!==null&&Math.abs(Number(result.readback)-value)>0.001)){
+        console.warn('GV CROSSFADE OPACITY READBACK MISMATCH',{build:GV200001_BUILD,layer:directHdLayerName,slider:Number(crossFadeInput.value),retired:gvHdTravelRetired,results});
+    }else{
+        console.debug('GV CROSSFADE OPACITY APPLIED',{build:GV200001_BUILD,layer:directHdLayerName,slider:Number(crossFadeInput.value),retired:gvHdTravelRetired,results});
+    }
     updateCrossFadeThumb();
     return value;
 }
