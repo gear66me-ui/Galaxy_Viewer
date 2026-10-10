@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0031"
+BUILD_NUMBER = "0032"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0031';
+const GV200001_BUILD='0032';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0020`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1974,7 +1974,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=true; // Keep application polling suspended for the entire flight.
-            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<Math.max(0,1-2/durationSeconds)); // BUILD 0031: reopen HiPS fetching exactly 2 seconds before arrival.
+            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<Math.max(0,1-3/durationSeconds)); // BUILD 0032: reopen HiPS fetching exactly 3 seconds before arrival.
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
                 zoomOutCompleted=true;
