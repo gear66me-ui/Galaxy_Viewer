@@ -2200,7 +2200,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
         destinationPresentation.depart();
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
-        travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:17});
+        travelPresentation.begin(presentationDestination,{source:sourceDestination,firstHomeTrip:firstTrip,durationSeconds:firstTrip?9:11.9});
         gvPrewarmProviderWebsite(v.destination);
         ensurePrepared();
     };
