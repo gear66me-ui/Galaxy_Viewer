@@ -2186,9 +2186,6 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // ============================================================================
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
     gvHdTravelRetired=false;
-    gvHideEarthDistance();
-    gvEarthPointerActive=true;
-    gvUpdateEarthBearingPointer();
     const v=validateDestination(destination),recordPromise=gvRuntimeAvmRecord(v.destination),registeredTravelPromise=recordPromise.then(gvRegisteredTravelStateFromRecord),sourceDestination=activeDestination;
     let preparedPromise=null,presentationStarted=false;
     const ensurePrepared=()=>{
