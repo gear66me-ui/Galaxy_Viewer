@@ -1,7 +1,7 @@
 {
   "schema": "gv-avm-runtime-catalog-0001",
-  "sourceBranch": "beta",
-  "sourceMasterCatalog": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/beta/viewer/image-databases/master-database/gv-master-catalog.json",
+  "sourceBranch": "release",
+  "sourceMasterCatalog": "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json",
   "fovPolicy": "X",
   "contract": {
     "fovDegrees": "fovXDegrees",
@@ -8881,7 +8881,24 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 425,
+      "distanceDisplay": "425 million light-years",
+      "distanceMethod": "NASA_GSFC_SVS_10795",
+      "distanceEvidence": "https://svs.gsfc.nasa.gov/10795/",
+      "distanceEstimated": true,
+      "sizeKly": [
+        121.1,
+        113.1
+      ],
+      "sizeDisplay": "EST. 121.1 × 113.1 KLY (image footprint; not intrinsic galaxy diameter)",
+      "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+      "sizeEstimated": true,
+      "ageGyr": null,
+      "ageDisplay": null,
+      "ageMethod": "not_available_no_quantitative_stellar_age_source",
+      "ageEstimated": null,
+      "ageEvidence": "No quantitative age for the galaxy/system is given by the catalog source; lookback time from redshift is not galaxy age."
     },
     {
       "providerKey": "eso",
