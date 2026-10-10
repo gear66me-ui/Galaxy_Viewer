@@ -1,1 +1,1 @@
-Build Galaxy Viewer Release 1.0.0 — BUILD 0050 deployment validation retry
+Build Galaxy Viewer Release 1.0.0 — BUILD 0052 crossfade layer fix and T-minus-eight HiPS prefetch
