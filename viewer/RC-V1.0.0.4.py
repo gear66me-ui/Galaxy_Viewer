@@ -5,8 +5,8 @@ import json
 # SECTION 001 — FILE IDENTITY / PYTHON IMPORTS
 # ECO: GV200-001
 # ============================================================================
-VIEWER_VERSION = "RC-V1.0.0.5"
-BUILD_NUMBER = "0058"
+VIEWER_VERSION = "RC-V1.0.0.4"
+BUILD_NUMBER = "0057"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -85,15 +85,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
-const VERSION='RC-V1.0.0.5';
-const GV200001_BUILD='0058';
+const VERSION='RC-V1.0.0.4';
+const GV200001_BUILD='0057';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0058`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0057`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
-    viewerVersion:'RC-V1.0.0.5',
+    viewerVersion:'RC-V1.0.0.4',
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1dd058e42334ea880b309a9a435e09c1f1a2656d/viewer/modules/destination-presentation/gv-destination-presentation-0035.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@becf6505e865477c9550302e30b3ffb01392d571/viewer/modules/destination-presentation/gv-destination-presentation-0034.js'
 });
 
 
