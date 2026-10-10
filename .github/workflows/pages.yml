@@ -89,8 +89,8 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.3'
           assert viewer.get('viewer')=='RC-V1.0.0.3.py'
-          assert viewer.get('build')=='0033'
-          assert manifest.get('build')=='0033'
+          assert viewer.get('build')=='0041'
+          assert manifest.get('build')=='0041'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert manifest.get('sourceCommit')=='d70caa61f37fe9025346603217847d2e0bdf5091'
@@ -124,7 +124,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0033')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.3 BUILD 0041')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
