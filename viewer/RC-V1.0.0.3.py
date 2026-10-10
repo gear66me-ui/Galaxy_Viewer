@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
-BUILD_NUMBER = "0052"
+BUILD_NUMBER = "0053"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.3';
-const GV200001_BUILD='0052';
+const GV200001_BUILD='0053';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-COSMICAGE0058-CANCELSCOPE0059-SPHERICALAPEX0060-DEPENDENCYCHAIN0063-WRAPPER0064-SHELL0076-SURVEYLOCAL-0021-FIX3C3210042-DESTPRESENTATION0034GATE0049`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1556,7 +1556,7 @@ Object.assign(crossFadeInput.style,{position:'absolute',left:'9px',top:'14px',wi
 crossFadeControl.panel.appendChild(crossFadeInput);
 
 function directHdUrl(destination){return String(destination?.selectedImageUrl??destination?.imageUrl??destination?.hdUrl??'').trim()}
-function directHdOpacity(){if(gvHdTravelRetired)return 0;return Math.max(0.01,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
+function directHdOpacity(){if(gvHdTravelRetired)return 0;return Math.max(0,Math.min(1,1-(Number(crossFadeInput.value||0)/100)))}
 function gvHdEffectiveOpacity(){return directHdOpacity()}
 function updateCrossFadeThumb(){
     const v=Math.max(0,Math.min(100,Number(crossFadeInput.value||0)));
@@ -1564,22 +1564,25 @@ function updateCrossFadeThumb(){
 }
 function applyDirectHdOpacity(){
     const value=gvHdEffectiveOpacity();
-    // Resolve the registered layer by its exact Aladin layer name, and also
-    // update the retained A.image() object. Aladin 3.8.2 exposes the layer name
-    // on imageLayer.layer; do not blindly trust a lookup that returns another layer.
+    // Update both Aladin's currently registered image layer and the retained
+    // A.image() object. Do not assume undocumented properties on the lookup result.
     const candidates=[];
     try{
         const registered=aladin.getOverlayImageLayer?.(directHdLayerName);
-        if(registered&&registered.layer===directHdLayerName)candidates.push(registered);
-    }catch(_){}
+        if(registered)candidates.push(registered);
+    }catch(error){console.warn('GV CROSSFADE LAYER LOOKUP FAILED',error)}
     if(directHdOverlay&&!candidates.includes(directHdOverlay))candidates.push(directHdOverlay);
-    let applied=false;
+    let applied=0;
     for(const target of candidates){
+        if(!target)continue;
         try{
-            if(typeof target.setOpacity==='function'){target.setOpacity(value);applied=true}
+            if(typeof target.setOpacity==='function'){target.setOpacity(value);applied++}
+            else if(typeof target.setAlpha==='function'){target.setAlpha(value);applied++}
+            else if(typeof target.setOptions==='function'){target.setOptions({opacity:value});applied++}
+            if(target.options&&typeof target.options==='object')target.options.opacity=value;
         }catch(error){console.warn('GV CROSSFADE OPACITY APPLY FAILED',error)}
     }
-    if(!applied)console.warn('GV CROSSFADE HAS NO VALID IMAGE LAYER',{layer:directHdLayerName,registered:candidates.length,hasOverlay:!!directHdOverlay});
+    if(!applied)console.warn('GV CROSSFADE HAS NO OPACITY TARGET',{layer:directHdLayerName,registered:!!candidates[0],hasOverlay:!!directHdOverlay});
     updateCrossFadeThumb();
     return value;
 }
@@ -1985,7 +1988,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=true; // Keep application polling suspended for the entire flight.
-            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<Math.max(0,1-8/durationSeconds)); // BUILD 0052: reopen HiPS tile fetching exactly 8 seconds before arrival.
+            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<Math.max(0,1-8/durationSeconds)); // BUILD 0053: preserve T-minus-eight HiPS tile fetching.
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
                 zoomOutCompleted=true;
