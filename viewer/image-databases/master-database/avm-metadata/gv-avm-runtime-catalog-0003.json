@@ -1661,9 +1661,9 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 1400,
       "distance": "1.4 billion light-years",
-      "ageGyr": 1.2581943546098908,
-      "ageYears": 1258194354.6098907,
-      "age": "EST. 1.26 GYR LOOKBACK",
+      "ageGyr": 12.208789583751242,
+      "ageYears": 12208789583.751242,
+      "age": "EST. 12.21 GYR COSMIC AGE",
       "sizeKly": [
         150.072,
         109.511
@@ -1674,9 +1674,9 @@
         "distanceMly": 1400,
         "distanceDisplay": "1.4 billion light-years",
         "distanceEstimated": false,
-        "ageGyr": 1.2581943546098908,
-        "ageYears": 1258194354.6098907,
-        "ageDisplay": "EST. 1.26 GYR LOOKBACK",
+        "ageGyr": 12.208789583751242,
+        "ageYears": 12208789583.751242,
+        "ageDisplay": "EST. 12.21 GYR COSMIC AGE",
         "ageEstimated": true,
         "sizeKly": [
           150.072,
@@ -1685,8 +1685,11 @@
         "sizeDisplay": "EST. 150.1 × 109.5 KLY",
         "sizeEstimated": true,
         "redshift": 0.09645,
-        "redshiftDisplay": "z 0.09645"
-      }
+        "redshiftDisplay": "z 0.09645",
+        "lookbackTimeGyr": 1.258194353934229,
+        "lookbackTimeDisplay": "1.26 GYR LOOKBACK"
+      },
+      "lookbackTimeGyr": 1.258194353934229
     },
     {
       "providerKey": "chandra",

@@ -3300,12 +3300,12 @@
           109.511
         ],
         "sizeMethod": "image_span_from_runtime_AVM_fovX_fovY_and_angular_diameter_distance_from_spectroscopic_redshift_flat_LCDM_H0_70_Om_0.3",
-        "ageGyr": 1.2581943546098908,
-        "ageMethod": "lookback_time_from_spectroscopic_redshift_flat_LCDM_H0_70_Om_0.3",
+        "ageGyr": 12.208789583751242,
+        "ageMethod": "cosmic_age_at_spectroscopic_redshift_flat_LCDM_H0_70_Om_0.3",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 1.26 GYR LOOKBACK",
+        "ageDisplay": "EST. 12.21 GYR COSMIC AGE",
         "redshift": 0.09645,
         "redshiftDisplay": "z 0.09645",
         "redshiftEstimated": false,
@@ -3315,7 +3315,9 @@
         "sizeEstimated": true,
         "sizeDisplay": "EST. 150.1 × 109.5 KLY",
         "distanceBly": 1.4,
-        "ageYears": 1258194354.609891
+        "ageYears": 12208789583.751242,
+        "lookbackTimeGyr": 1.258194353934229,
+        "lookbackTimeDisplay": "1.26 GYR LOOKBACK"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "3C 321",
