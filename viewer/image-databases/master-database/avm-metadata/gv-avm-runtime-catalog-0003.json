@@ -43951,7 +43951,18 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceKly": 32.0,
+      "distanceMly": 0.032,
+      "distanceDisplay": "EST. 32.0 KLY",
+      "distanceEstimated": true,
+      "distanceMethod": "statistical_galactic_planetary_nebula_distance_estimate_provisional",
+      "ageGyr": 13.8,
+      "ageDisplay": "EST. 13.80 GYR",
+      "ageEstimated": true,
+      "ageMethod": "cosmic_age_at_emission_from_local_distance_flat_lcdm_H0_70_Om_0.3_0036",
+      "objectType": "Planetary nebula",
+      "scienceCorrection": "ESO 455-10 (Th 3-55) is a planetary nebula, not a galaxy. Distance revised provisionally to 32.0 KLY from statistical PN estimates; cosmic age at emission corrected to 13.80 Gyr."
     },
     {
       "providerKey": "hubble",
