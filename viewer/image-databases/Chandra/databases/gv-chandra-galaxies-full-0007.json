@@ -3305,7 +3305,7 @@
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 1.33 GYR",
+        "ageDisplay": "EST. 12.13 GYR",
         "redshift": 0.102643,
         "redshiftDisplay": "EST. z 0.1026",
         "redshiftEstimated": true,
@@ -3313,7 +3313,10 @@
         "distanceDisplay": "1.4 billion light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 166.2 × 117.0 KLY"
+        "sizeDisplay": "EST. 166.2 × 117.0 KLY",
+        "cosmicAgeGyr": 12.1334,
+        "cosmicAgeMethod": "universe_age_13.4667_Gyr_minus_lookback_time_ageGyr_flat_LCDM_H0_70_Om_0.3",
+        "lookbackDisplay": "EST. 1.33 GYR"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "3C 321",
