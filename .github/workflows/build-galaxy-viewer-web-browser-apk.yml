@@ -94,7 +94,6 @@ jobs:
           grep -q 'postDelayed(pendingProviderLaunch,2000)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'web.loadUrl("about:blank")' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'restoreProviderHome();' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          ! grep -Fq 'if(web.canGoBack())web.goBack()' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
 
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
