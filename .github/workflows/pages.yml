@@ -10,6 +10,13 @@ on:
       - release
   # PRODUCTION FROZEN after this restoration: manual dispatch remains available. Restoration trigger is temporary.
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Correct ESO 455-10 catalog metadata
+    types:
+      - completed
+    branches:
+      - release
 
 permissions:
   contents: read
