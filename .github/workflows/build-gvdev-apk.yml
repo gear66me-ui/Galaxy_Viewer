@@ -66,9 +66,9 @@ jobs:
           if not source_path.is_file():
               raise SystemExit('GVDEV pointer references missing runtime: ' + str(source_path))
           src = source_path.read_text(encoding='utf-8')
-          source_version = re.search(r'^VIEWER_VERSION\\s*=\\s*["\\']([^"\\']+)["\\']', src, re.M)
-          source_build = re.search(r'^BUILD_NUMBER\\s*=\\s*["\\']([^"\\']+)["\\']', src, re.M)
-          js_build = re.search(r"const GV200001_BUILD=['\\"]([^'\\"]+)['\\"];", src)
+          source_version = re.search("^VIEWER_VERSION\\s*=\\s*['\"]([^'\"]+)['\"]", src, re.M)
+          source_build = re.search("^BUILD_NUMBER\\s*=\\s*['\"]([^'\"]+)['\"]", src, re.M)
+          js_build = re.search("const GV200001_BUILD=['\"]([^'\"]+)['\"];", src)
           if not source_version or not source_build or not js_build:
               raise SystemExit('Could not verify runtime version/build identity from ' + str(source_path))
           if source_version.group(1) != pointer_version:
