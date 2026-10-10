@@ -3272,7 +3272,7 @@
       "distance": "1.4 billion light-years",
       "constellation": "Serpens",
       "fieldOfView": 0.007155971999999999,
-      "orientation": 283,
+      "orientation": 282.9985485566087,
       "imageType": "Observation",
       "releaseDate": "2007",
       "pixelSize": null,
@@ -3325,7 +3325,7 @@
       "displayName": "3C 321",
       "imageReview": "PASS_USER_SELECTED",
       "fovDegrees": 0.007155971999999999,
-      "aladinRotation": 77
+      "aladinRotation": 77.00145099999997
     },
     {
       "archiveId": "chandra-2001-1138",
