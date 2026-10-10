@@ -87,17 +87,18 @@ jobs:
           rc_path=root/'viewer'/str(viewer.get('viewer',''))
           rc=rc_path.read_text()
 
-          assert viewer.get('version')=='RC-V1.0.0.4'
-          assert viewer.get('viewer')=='RC-V1.0.0.4.py'
-          assert viewer.get('build')=='0057'
-          assert manifest.get('build')=='0057'
+          assert viewer.get('version')=='RC-V1.0.0.5'
+          assert viewer.get('viewer')=='RC-V1.0.0.5.py'
+          assert viewer.get('build')=='0058'
+          assert manifest.get('build')=='0058'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='60179fdcc8203d5ef792fb298b71d135779f7894'
+          assert manifest.get('sourceCommit')=='65a75ef2dd76609380a53fbebe7ad584cc302e85'
+          assert manifest.get('dependencyPins')==['1dd058e42334ea880b309a9a435e09c1f1a2656d','5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4']
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0057"' in rc
-          assert "const GV200001_BUILD='0057';" in rc
+          assert 'BUILD_NUMBER = "0058"' in rc
+          assert "const GV200001_BUILD='0058';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
@@ -105,7 +106,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','becf6505e865477c9550302e30b3ffb01392d571']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','1dd058e42334ea880b309a9a435e09c1f1a2656d']), pins
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
@@ -125,7 +126,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.4 BUILD 0057')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.5 BUILD 0058')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
