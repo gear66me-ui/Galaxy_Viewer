@@ -2162,7 +2162,19 @@ async function gvPresentationDestination(destination){
         const is3C321=[source?.archiveId,source?.id,source?.name,source?.designation,source?.displayName,source?.title,destination?.archiveId,destination?.id,destination?.name,destination?.designation,destination?.displayName,destination?.title]
             .some(value=>/3c\s*[- ]?321/i.test(String(value||'')));
         const canonicalDistanceMly=is3C321?1400:(validNumber(science?.distanceMly)?Number(science.distanceMly):null);
-        const canonicalCosmicAgeYears=is3C321?12.1334e9:(validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr)*1e9:(validNumber(science?.ageGyr)?Math.max(0,13.4667-Number(science.ageGyr))*1e9:null));
+        // Canonical convention for all six provider catalogs:
+        // science.ageGyr means cosmic age at emission, never lookback time or stellar age.
+        // Legacy rows are normalized by their explicit ageMethod; never guess from the number.
+        const ageMethod=String(science?.ageMethod||'').toLowerCase();
+        const presentCosmicAgeGyr=13.8;
+        const rawAgeGyr=validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr):(validNumber(science?.ageGyr)?Number(science.ageGyr):null);
+        const ageIsStellar=/stellar|population/.test(ageMethod);
+        const ageIsLookback=/lookback|light.?travel/.test(ageMethod);
+        const ageIsCosmic=/cosmic.?age|age.?at.?emission/.test(ageMethod)||validNumber(science?.cosmicAgeGyr);
+        const canonicalCosmicAgeGyr=is3C321?12.1334:(ageIsStellar||rawAgeGyr===null?null:(ageIsCosmic?rawAgeGyr:(ageIsLookback?Math.max(0,presentCosmicAgeGyr-rawAgeGyr):null)));
+        const canonicalCosmicAgeYears=canonicalCosmicAgeGyr===null?null:canonicalCosmicAgeGyr*1e9;
+        const formatDistanceMly=value=>value===null?'':(value>=1000?((value/1000).toFixed(2).replace(/\\.?0+$/,'')+' billion light-years'):(value.toLocaleString('en-US',{maximumFractionDigits:3})+' million light-years'));
+        const formatCosmicAgeGyr=value=>value===null?'':('EST. '+value.toFixed(2)+' GYR');
         const sizeKly=Array.isArray(science?.sizeKly)
             ?science.sizeKly.filter(validNumber).map(Number)
             :(Array.isArray(source?.sizeKly)?source.sizeKly.filter(validNumber).map(Number):[]);
@@ -2179,11 +2191,11 @@ async function gvPresentationDestination(destination){
             pseudonym:source?.pseudonym||source?.commonName||source?.displayName||source?.name||'',
             constellation:source?.constellation||'',
             distanceMly:canonicalDistanceMly,
-            distance:is3C321?'1.4 billion light-years':(science?.distanceDisplay||source?.distance||''),
+            distance:formatDistanceMly(canonicalDistanceMly),
             sizeKly:Object.freeze(sizeKly),
             physicalSizeLy,
             ageYears:canonicalCosmicAgeYears,
-            age:is3C321?'EST. 12.13 GYR':(science?.ageDisplay||source?.ageDisplay||''),
+            age:formatCosmicAgeGyr(canonicalCosmicAgeGyr),
             imageType:source?.imageType||'',
             title:source?.title||'',
             description:source?.description||''
