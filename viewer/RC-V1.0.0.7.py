@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0081"
+BUILD_NUMBER = "0082"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0081';
+const GV200001_BUILD='0082';
 const GV_RUNTIME='0082';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-HDDIRECT0081`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@79fa7d0a8328462400ee9e7c9f96e69bbf8ad34a/viewer/modules/destination-presentation/gv-destination-presentation-0040.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f24fa21f1271bc1aa5771fb27e0df9a652111f21/viewer/modules/destination-presentation/gv-destination-presentation-0040.js'
 });
 
 
@@ -2332,6 +2332,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const presentationDestination=await gvPresentationDestination(v.destination);
     // The destination card, HD info port, and live distance display share the catalog-authoritative record.
     activeDestination=presentationDestination;
+    headsUpDisplay.render();
     // Build 0028: show the travel card before starting the FOV-only phase.
     // Provider/HD preparation and pointer work remain deferred until 30%.
     if(firstTrip)startTravelWork();
