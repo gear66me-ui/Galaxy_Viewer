@@ -87,33 +87,33 @@ jobs:
           rc_path=root/'viewer'/str(viewer.get('viewer',''))
           rc=rc_path.read_text()
 
-          assert viewer.get('version')=='RC-V1.0.0.5'
-          assert viewer.get('viewer')=='RC-V1.0.0.5.py'
-          assert viewer.get('build')=='0059'
-          assert manifest.get('build')=='0059'
+          assert viewer.get('version')=='RC-V1.0.0.6'
+          assert viewer.get('viewer')=='RC-V1.0.0.6.py'
+          assert viewer.get('build')=='0060'
+          assert manifest.get('build')=='0060'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='668af6c76b672fc81b1879f2c043da147c69795a'
+          assert manifest.get('sourceCommit')=='f86327b49e574776188c3834f6231c596565c3f6'
           assert manifest.get('dependencyPins')==['dfe8e487cf27fa26483fdd79ad87c7004c7873bb','5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4']
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0059"' in rc
-          assert "const GV200001_BUILD='0059';" in rc
+          assert 'BUILD_NUMBER = "0060"' in rc
+          assert "const GV200001_BUILD='0060';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
-          assert 'gv-destination-presentation-0037.js' in rc
+          assert 'gv-destination-presentation-0038.js' in rc
           assert "GalaxyDestinationPresentation?.VERSION!=='0036'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0028 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','668af6c76b672fc81b1879f2c043da147c69795a']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','f86327b49e574776188c3834f6231c596565c3f6']), pins
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0037.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0038.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -129,7 +129,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.5 BUILD 0059')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.6 BUILD 0060')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
