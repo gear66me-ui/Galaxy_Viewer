@@ -28,3 +28,4 @@ $('export').onclick=()=>{const obj={schema:'gv-herschel-review-catalog-0002',cre
 $('import').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text()),incoming=Array.isArray(j)?j:j.records;if(!Array.isArray(incoming))throw Error('JSON must contain records');const map=new Map(records.map(r=>[r.id,r]));for(const x of incoming){if(x.id&&x.name)map.set(x.id,{...map.get(x.id),...x,decision:x.decision||'pending'})}records=[...map.values()];for(const r of records)if(r.decision)decisions[r.id]=r.decision;localStorage.setItem(STORE,JSON.stringify(decisions));render();$('status').textContent='Imported '+incoming.length+' records.'}catch(e){alert('Import failed: '+e.message)}e.target.value=''};
 loadAll();
 </script></body></html>
+<!-- GALAXY VIEWER PUBLIC SITE: Herschel bulk curator deployment -->
