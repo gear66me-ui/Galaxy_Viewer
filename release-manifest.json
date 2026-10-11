@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.7",
   "sourceBranch": "release",
-  "sourceCommit": "2277e5d397803b00e34695e01654758f30fa81b0",
-  "build": "0077",
+  "sourceCommit": "4aa86ce2bcaa6d3a443151d665b5c0b6170fa02f",
+  "build": "0078",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
@@ -153,6 +153,6 @@
     "5781bcedd8faaaa81b7eb3df1cda6ce586765181",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
-    "ba1d64080cf42c71daba748ac328e78c4ed1be50"
+    "79fa7d0a8328462400ee9e7c9f96e69bbf8ad34a"
   ]
 }
