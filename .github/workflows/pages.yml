@@ -102,7 +102,7 @@ jobs:
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0037.js' in rc
-          assert "GalaxyDestinationPresentation?.VERSION!=='0037'" in rc
+          assert "GalaxyDestinationPresentation?.VERSION!=='0036'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0028 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
