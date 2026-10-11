@@ -108,7 +108,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','dfe8e487cf27fa26483fdd79ad87c7004c7873bb']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','dfe8e487cf27fa26483fdd79ad87c7004c7873bb','668af6c76b672fc81b1879f2c043da147c69795a']), pins
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
 
           required=[
