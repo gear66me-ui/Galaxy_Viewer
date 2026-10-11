@@ -2348,7 +2348,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         await travelPromise;
         if(activeDestination!==presentationDestination)return v.destination;
         travelPresentation.end();
-        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdPresentationObjectUrl});
+        const arrivedPrepared=await ensurePrepared();
+        directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
+        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
         // BUILD 0029: let the arrival presentation paint before noncritical work.
         // The identity guard prevents stale post-arrival work if another trip starts.
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -2364,7 +2366,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     await travelPromise;
     if(activeDestination!==presentationDestination)return v.destination;
     travelPresentation.end();
-    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdPresentationObjectUrl});
+    const arrivedPrepared=await ensurePrepared();
+        directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
+        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
     // BUILD 0029: let the arrival presentation paint before noncritical work.
     // The identity guard prevents stale post-arrival work if another trip starts.
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
