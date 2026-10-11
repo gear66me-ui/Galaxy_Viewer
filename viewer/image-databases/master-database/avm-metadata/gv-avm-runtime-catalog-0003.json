@@ -16015,7 +16015,7 @@
         24900
       ],
       "imageType": "Observation",
-      "scienceSource": "ESA/Hubble potw2314a description; physical span calculated from 3.31 × 2.86 arcmin at ~30 Mly"
+      "scienceSource": "ESA/Hubble potw2314a: around 30 million light-years; physical span estimated from published 3.31 × 2.86 arcmin field"
     },
     {
       "providerKey": "hubble",
