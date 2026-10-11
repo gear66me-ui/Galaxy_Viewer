@@ -1785,19 +1785,44 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                 canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(workingBitmap,0,0,w,h);
-                // BUILD 0065: vignette belongs on the Aladin overlay only; the HD portal displays its original image.
-                ctx.save();
-                ctx.translate(w/2,h/2);
-                ctx.scale(w,h);
-                const vignette=ctx.createRadialGradient(0,0,0,0,0,VIGNETTE.diameter/2);
-                vignette.addColorStop(0,'rgba(0,0,0,0)');
-                vignette.addColorStop(VIGNETTE.core,'rgba(0,0,0,0)');
-                vignette.addColorStop(0.82,'rgba(0,0,0,0.16)');
-                vignette.addColorStop(0.92,'rgba(0,0,0,0.52)');
-                vignette.addColorStop(1,'rgba(0,0,0,0.90)');
-                ctx.fillStyle=vignette;
-                ctx.fillRect(-0.5,-0.5,1,1);
-                ctx.restore();
+                const exception=gvVignetteException(destination,record);
+                const p=VIGNETTE,cx=w/2,cy=h/2,actualAspect=Math.max(w/h,h/w),highAspect=actualAspect>1.3;
+                if(exception?.mode==='edge-only'){
+                    const imageData=ctx.getImageData(0,0,w,h),d=imageData.data;
+                    const edgePixels=Math.max(1,Math.min(w,h)*Number(exception.edgeBlend||0));
+                    const decay=Math.max(.1,Number(exception.decay||1));
+                    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+                        const i=(yy*w+xx)*4,edgePx=Math.min(xx,yy,w-1-xx,h-1-yy);
+                        const t=Math.max(0,Math.min(1,edgePx/edgePixels));
+                        const smooth=t*t*(3-2*t);
+                        const expTail=(1-Math.exp(-decay*t))/(1-Math.exp(-decay));
+                        const alpha=.72*smooth+.28*expTail;
+                        d[i+3]=Math.round(d[i+3]*Math.max(0,Math.min(1,alpha)));
+                    }
+                    ctx.putImageData(imageData,0,0);
+                }else if(highAspect){
+                    const imageData=ctx.getImageData(0,0,w,h),d=imageData.data,dia=1.31,rx=w*.5*dia,ry=h*.5*dia;
+                    const core=0.68,blend=0.24,decay=1.75;
+                    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+                        const i=(yy*w+xx)*4,ex=(xx-cx)/rx,ey=(yy-cy)/ry,er=Math.hypot(ex,ey);
+                        const edgePx=Math.min(xx,yy,w-1-xx,h-1-yy),edgeNorm=edgePx/Math.max(1,Math.min(w,h)*.5);
+                        const rectFade=Math.max(0,Math.min(1,edgeNorm/Math.max(.01,blend)));
+                        const ellipseFade=er<=core?1:Math.max(0,1-(er-core)/Math.max(.001,1-core));
+                        const t=Math.min(rectFade,ellipseFade),smooth=t*t*(3-2*t);
+                        const expTail=(1-Math.exp(-Math.max(.1,decay)*t))/(1-Math.exp(-Math.max(.1,decay)));
+                        const mix=Math.max(0,Math.min(1,blend*1.8)),alpha=(1-mix)*smooth+mix*expTail;
+                        d[i+3]=Math.round(d[i+3]*Math.max(0,Math.min(1,alpha)));
+                    }
+                    ctx.putImageData(imageData,0,0);
+                }else{
+                    const r=Math.min(w,h)*.5*.96,core=0.68,mid1=0.78,mid2=0.88,mid3=0.95;
+                    ctx.save();ctx.globalCompositeOperation='destination-in';
+                    const mask=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+                    mask.addColorStop(0,'rgba(0,0,0,1)');mask.addColorStop(core,'rgba(0,0,0,1)');
+                    mask.addColorStop(mid1,'rgba(0,0,0,0.88)');mask.addColorStop(mid2,'rgba(0,0,0,0.48)');
+                    mask.addColorStop(mid3,'rgba(0,0,0,0.12)');mask.addColorStop(1,'rgba(0,0,0,0)');
+                    ctx.fillStyle=mask;ctx.fillRect(0,0,w,h);ctx.restore();
+                }
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
                 return {blob:vignetteBlob,width:w,height:h};
             }finally{
