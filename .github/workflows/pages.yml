@@ -89,16 +89,16 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.7'
           assert viewer.get('viewer')=='RC-V1.0.0.7.py'
-          assert viewer.get('build')=='0074'
-          assert manifest.get('build')=='0074'
+          assert viewer.get('build')=='0075'
+          assert manifest.get('build')=='0075'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='f0156513e527be15e9d2e9aefc316f82b601d4e3'
-          assert manifest.get('dependencyPins')==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','02626e0617e31dc507d723974a8d353e29ef689b']
+          assert manifest.get('sourceCommit')=='f8f8c441aa53825c593fbb812d5d3d45bb09f404'
+          assert manifest.get('dependencyPins')==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','0362568c724a763e93d3bf62bf6c83c00652832d']
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0074"' in rc
-          assert "const GV200001_BUILD='0074';" in rc
+          assert 'BUILD_NUMBER = "0075"' in rc
+          assert "const GV200001_BUILD='0075';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0040.js' in rc
