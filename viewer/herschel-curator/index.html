@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Herschel AVM Curator</title>
+<style>
+:root{color-scheme:dark;--bg:#080d18;--panel:#111a2b;--line:#283851;--muted:#a9b8cf;--blue:#78c7ff;--green:#45d483;--red:#ff6d79}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172641,#080d18 60%);color:#eef5ff;font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:22px clamp(16px,4vw,48px);border-bottom:1px solid var(--line)}h1{margin:0 0 7px;font-size:clamp(23px,4vw,36px)}p{color:var(--muted);line-height:1.45;margin:7px 0}
+main{padding:18px clamp(12px,3vw,36px) 60px;max-width:1600px;margin:auto}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:16px}
+button,.btn{background:#1a2b43;border:1px solid #3b5679;color:#eef5ff;padding:10px 13px;border-radius:9px;cursor:pointer;text-decoration:none;font-weight:650}
+button:hover,.btn:hover{border-color:var(--blue)}button.keep{background:#123d2b;border-color:#287d51}button.delete{background:#421d29;border-color:#94404d}button.active{outline:2px solid var(--blue)}
+input,select{background:#080f1d;border:1px solid var(--line);color:#eef5ff;padding:10px;border-radius:8px;max-width:100%}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-left:auto;color:var(--muted)}.stats strong{color:white}
+.notice{border:1px solid #66552c;background:#302817;color:#ffe5a6;border-radius:10px;padding:12px;margin-bottom:16px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.card{background:linear-gradient(160deg,#142139,#0e1626);border:1px solid var(--line);border-radius:13px;overflow:hidden;min-width:0}
+.preview{height:185px;background:#080d16;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview img{width:100%;height:100%;object-fit:contain}.placeholder{color:#7285a2;text-align:center;padding:20px}
+.body{padding:12px}.body h2{font-size:17px;margin:0 0 5px}.meta{font-size:12px;color:var(--muted);overflow-wrap:anywhere;line-height:1.45}
+.actions{display:flex;gap:7px;margin-top:11px}.actions button{flex:1;padding:9px 5px}
+.state{font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.08em;margin:9px 0 0}.state.keep{color:var(--green)}.state.delete{color:var(--red)}.state.pending{color:#c0cce0}
+footer{margin-top:20px;color:var(--muted);font-size:13px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.preview{height:145px}.stats{margin-left:0;width:100%}}@media(max-width:420px){.grid{grid-template-columns:1fr}.preview{height:220px}}
+</style></head>
+<body>
+<header><h1>🔭 Herschel AVM Catalog Curator</h1><p>Galaxy Viewer · independent curation workspace · review first, export later</p></header>
+<main>
+<div class="notice"><strong>AVM-only gate:</strong> an archive preview or FITS WCS header is not proof of embedded AVM/XMP. This workspace labels source candidates as <em>unverified</em> until the original image file has been checked. Do not import a candidate into the runtime catalog until its embedded AVM spatial metadata is validated.</div>
+<div class="toolbar">
+<input id="search" placeholder="Filter by target / instrument…" aria-label="Search candidates">
+<select id="filter"><option value="all">All decisions</option><option value="pending">Pending</option><option value="keep">KEEP</option><option value="delete">DELETE</option></select>
+<button id="prev">← Previous</button><span id="pageLabel">Page 1</span><button id="next">Next →</button>
+<button id="export">Export review JSON</button><label class="btn" for="importFile">Import candidate JSON</label><input id="importFile" type="file" accept=".json,application/json" hidden>
+<button id="reset">Reset decisions</button>
+<div class="stats"><span>Total <strong id="total">0</strong></span><span>Keep <strong id="keeps">0</strong></span><span>Delete <strong id="deletes">0</strong></span><span>Pending <strong id="pending">0</strong></span></div>
+</div>
+<div class="toolbar"><label>Cards per page <select id="perPage"><option>50</option><option>100</option><option selected>200</option></select></label><span class="meta">Decision state stays in this browser. Export regularly for backup.</span></div>
+<div id="grid" class="grid"></div>
+<footer>Sources: ESA Herschel Science Archive and ESA Sky Herschel HiPS. Candidate metadata and source links remain attached to each review record. This tool never modifies Galaxy Viewer runtime catalogs automatically.</footer>
+</main>
+<script>
+const STORAGE='gv-herschel-curator-decisions-v1';
+const seeds=[
+{id:'NGC1097',name:'NGC 1097',instrument:'PACS / SPIRE candidate',source:'https://archives.esac.esa.int/hsa/whsa/',image:'https://www.herschel.caltech.edu/image/nhsc2017-004b',status:'unverified'},
+{id:'M101',name:'M101 — Pinwheel Galaxy',instrument:'Far-infrared candidate',source:'https://archives.esac.esa.int/hsa/whsa/',image:'https://www.herschel.caltech.edu/images',status:'unverified'},
+{id:'M31',name:'M31 — Andromeda Galaxy',instrument:'Far-infrared candidate',source:'https://archives.esac.esa.int/hsa/whsa/',image:'https://www.herschel.caltech.edu/images',status:'unverified'},
+{id:'NGC4559',name:'NGC 4559',instrument:'PACS candidate',source:'https://archives.esac.esa.int/hsa/whsa/',image:'https://archives.esac.esa.int/hsa/whsa/',status:'unverified'},
+{id:'LOCKMAN',name:'Lockman Hole / HerMES',instrument:'SPIRE deep-field candidate',source:'https://archives.esac.esa.int/hsa/whsa/',image:'https://www.herschel.caltech.edu/image/nhsc2011-003a',status:'unverified'},
+{id:'M33',name:'M33 — Triangulum Galaxy',instrument:'Multi-mission image; Herschel component',source:'https://archives.esac.esa.int/hsa/whsa/',image:'https://photojournal.jpl.nasa.gov/catalog/PIA25165',status:'unverified'}
+];
+let records=seeds.map(x=>({...x,decision:'pending'}));let page=0;
+try{const old=JSON.parse(localStorage.getItem(STORAGE)||'{}');records=records.map(r=>({...r,decision:old[r.id]||'pending'}))}catch(e){}
+const $=id=>document.getElementById(id);
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(Object.fromEntries(records.map(r=>[r.id,r.decision]))))}catch(e){}}
+function visible(){const q=$('search').value.toLowerCase(),f=$('filter').value;return records.filter(r=>(r.name+' '+r.instrument+' '+r.id).toLowerCase().includes(q)&&(f==='all'||r.decision===f))}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function render(){const list=visible(),n=+$('perPage').value,pages=Math.max(1,Math.ceil(list.length/n));page=Math.min(page,pages-1);$('pageLabel').textContent='Page '+(page+1)+' / '+pages;$('total').textContent=records.length;$('keeps').textContent=records.filter(r=>r.decision==='keep').length;$('deletes').textContent=records.filter(r=>r.decision==='delete').length;$('pending').textContent=records.filter(r=>r.decision==='pending').length;
+$('grid').innerHTML=list.slice(page*n,(page+1)*n).map(r=>'<article class="card"><div class="preview"><div class="placeholder">Herschel candidate<br><small>Preview loads from source page</small></div></div><div class="body"><h2>'+esc(r.name)+'</h2><div class="meta">ID: '+esc(r.id)+'<br>'+esc(r.instrument)+'<br>AVM status: '+esc(r.status||'unverified')+'<br><a target="_blank" rel="noopener" href="'+esc(r.image||r.source)+'" style="color:#78c7ff">Open image / source ↗</a></div><div class="actions"><button class="keep '+(r.decision==='keep'?'active':'')+'" data-id="'+esc(r.id)+'" data-choice="keep">✓ KEEP</button><button class="delete '+(r.decision==='delete'?'active':'')+'" data-id="'+esc(r.id)+'" data-choice="delete">✕ DELETE</button></div><div class="state '+esc(r.decision)+'">'+esc(r.decision)+'</div></div></article>').join('')||'<p>No candidates match this filter.</p>';
+$('grid').querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=records.find(x=>x.id===b.dataset.id);if(r){r.decision=b.dataset.choice;persist();render()}})}
+$('search').oninput=()=>{page=0;render()};$('filter').onchange=()=>{page=0;render()};$('perPage').onchange=()=>{page=0;render()};$('prev').onclick=()=>{page=Math.max(0,page-1);render()};$('next').onclick=()=>{page++;render()};
+$('export').onclick=()=>{const out={schema:'gv-herschel-curation-review-0001',created:new Date().toISOString(),rule:'AVM-only; decisions are human review and do not certify AVM presence',counts:{total:records.length,keep:records.filter(r=>r.decision==='keep').length,delete:records.filter(r=>r.decision==='delete').length,pending:records.filter(r=>r.decision==='pending').length},records};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));a.download='gv-herschel-curation-review.json';a.click();URL.revokeObjectURL(a.href)};
+$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text()),incoming=Array.isArray(d)?d:d.records;if(!Array.isArray(incoming))throw Error('JSON must contain a records array');const map=new Map(records.map(r=>[String(r.id),r]));for(const x of incoming){if(!x.id||!x.name)continue;const old=map.get(String(x.id));map.set(String(x.id),{...(old||{}),...x,decision:(old&&old.decision)||x.decision||'pending'})}records=[...map.values()];persist();page=0;render()}catch(err){alert('Could not import JSON: '+err.message)}e.target.value=''};
+$('reset').onclick=()=>{if(confirm('Reset every KEEP/DELETE decision to pending?')){records=records.map(r=>({...r,decision:'pending'}));persist();render()}};
+render();
+</script></body></html>
