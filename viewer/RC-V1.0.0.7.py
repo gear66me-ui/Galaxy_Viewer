@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0064"
+BUILD_NUMBER = "0065"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0064';
+const GV200001_BUILD='0065';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-HDPORTALVIGNETTE0064`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-ALADINVIGNETTE0065`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@82a0b1f99e29c0f414ba82cc0e306428f0ead5b5/viewer/modules/destination-presentation/gv-destination-presentation-0039.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b4a13680115c095f30875c2c55e0845fae2ca05a/viewer/modules/destination-presentation/gv-destination-presentation-0039.js'
 });
 
 
@@ -1785,7 +1785,19 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                 canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(workingBitmap,0,0,w,h);
-                // BUILD 0064: keep the Aladin overlay raster untouched; vignette is confined to the HD portal CSS.
+                // BUILD 0065: vignette belongs on the Aladin overlay only; the HD portal displays its original image.
+                ctx.save();
+                ctx.translate(w/2,h/2);
+                ctx.scale(w,h);
+                const vignette=ctx.createRadialGradient(0,0,0,0,0,VIGNETTE.diameter/2);
+                vignette.addColorStop(0,'rgba(0,0,0,0)');
+                vignette.addColorStop(VIGNETTE.core,'rgba(0,0,0,0)');
+                vignette.addColorStop(0.82,'rgba(0,0,0,0.16)');
+                vignette.addColorStop(0.92,'rgba(0,0,0,0.52)');
+                vignette.addColorStop(1,'rgba(0,0,0,0.90)');
+                ctx.fillStyle=vignette;
+                ctx.fillRect(-0.5,-0.5,1,1);
+                ctx.restore();
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
                 return {blob:vignetteBlob,width:w,height:h};
             }finally{
