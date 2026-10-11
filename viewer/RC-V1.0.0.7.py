@@ -88,7 +88,7 @@ display(Javascript(r"""
 const VERSION='RC-V1.0.0.7';
 const GV200001_BUILD='0063';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0062`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-CROSSFADE0063`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
