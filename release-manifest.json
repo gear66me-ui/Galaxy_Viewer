@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.7",
   "sourceBranch": "release",
-  "sourceCommit": "7453a24a573a731f6aa042526756fddc8f4e543c",
-  "build": "0072",
+  "sourceCommit": "f873d4727a575e4baf9c5a615ba26b874f6d6ad7",
+  "build": "0073",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js",
@@ -12,7 +12,7 @@
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
     "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
     "viewer/modules/random-galaxy/gv-random-travel-presentation-003.js",
-    "viewer/modules/destination-presentation/gv-destination-presentation-0039.js",
+    "viewer/modules/destination-presentation/gv-destination-presentation-0040.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
     "viewer/modules/hud/gv-heads-up-display-0002.js",
     "viewer/RC-V1.0.0.7.py",
@@ -153,6 +153,6 @@
     "5781bcedd8faaaa81b7eb3df1cda6ce586765181",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
-    "df8baf6c63ea325f1431c5c3907d43fb18ed66e1"
+    "02626e0617e31dc507d723974a8d353e29ef689b"
   ]
 }
