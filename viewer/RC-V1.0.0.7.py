@@ -2364,7 +2364,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     await travelPromise;
     if(activeDestination!==presentationDestination)return v.destination;
     travelPresentation.end();
-    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
+    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdPresentationObjectUrl});
     // BUILD 0029: let the arrival presentation paint before noncritical work.
     // The identity guard prevents stale post-arrival work if another trip starts.
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
