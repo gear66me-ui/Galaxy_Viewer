@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0073"
+BUILD_NUMBER = "0074"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0073';
+const GV200001_BUILD='0074';
 const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-HDDIRECT0073`;
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-HDDIRECT0074`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1412,6 +1412,7 @@ function gvVignetteException(destination,record){
 let directHdOverlay=null;
 let directHdDestination=null;
 let directHdObjectUrl=null;
+let directHdPresentationObjectUrl=null;
 const GV_HD_RETIRE_FOV=50;
 let gvHdTravelRetired=false;
 // BUILD 0004 — bounded HD resource ownership: maximum three tracked object URLs; stale resources are explicitly revoked.
@@ -1758,9 +1759,9 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
         try{
             const response=await fetch(source,{mode:'cors',credentials:'omit',cache:'no-store',redirect:'follow'});
             if(!response.ok)throw new Error('HTTP '+response.status);
-            let blob=await response.blob();
-            if(!blob||blob.size<=0)throw new Error('EMPTY IMAGE BLOB');
-            let bitmap=await createImageBitmap(blob);blob=null;
+            const originalBlob=await response.blob();
+            if(!originalBlob||originalBlob.size<=0)throw new Error('EMPTY IMAGE BLOB');
+            let bitmap=await createImageBitmap(originalBlob);
             let workingBitmap=null,canvas=null,resizeCanvas=null;
             try{
                 const sourceW=bitmap.width,sourceH=bitmap.height,sourceMax=Math.max(sourceW,sourceH);
@@ -1824,7 +1825,7 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                     ctx.fillStyle=mask;ctx.fillRect(0,0,w,h);ctx.restore();
                 }
                 const vignetteBlob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('VIGNETTE PNG ENCODE FAILED')),'image/png'));
-                return {blob:vignetteBlob,width:w,height:h};
+                return {blob:vignetteBlob,originalBlob,width:w,height:h};
             }finally{
                 if(workingBitmap&&workingBitmap!==bitmap){try{workingBitmap.close?.()}catch(_){}}
                 if(bitmap){try{bitmap.close?.()}catch(_){}}
@@ -1844,13 +1845,15 @@ async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(de
     const prepStarted=performance.now();
     const raster=await gvLoadGate2MImage(url,destination,record);
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
+    const cleanImageObjectUrl=URL.createObjectURL(raster.originalBlob);
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-    const prepared={destination,record,imageUrl:url,imageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
+    const prepared={destination,record,imageUrl:url,imageObjectUrl,cleanImageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
     console.info('GV HD PREPARED',{ms:Math.round(performance.now()-prepStarted),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
     return prepared;
 }
 function gvInstallPreparedHd(prepared){
+    if(prepared?.cleanImageObjectUrl)directHdPresentationObjectUrl=prepared.cleanImageObjectUrl;
     const {destination,imageObjectUrl,displayWcs}=prepared;
     if(!imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
     gvHdTravelRetired=false;
@@ -2305,6 +2308,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         presentationStarted=true;
         gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
         if(firstTrip)destinationPresentation.depart();
+        if(directHdPresentationObjectUrl){try{URL.revokeObjectURL(directHdPresentationObjectUrl)}catch(_){}directHdPresentationObjectUrl=null}
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
         if(firstTrip)startTravelCard();
         // Provider prewarming is deferred until after 100% arrival.
@@ -2344,7 +2348,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         await travelPromise;
         if(activeDestination!==presentationDestination)return v.destination;
         travelPresentation.end();
-        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdObjectUrl});
+        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:directHdPresentationObjectUrl});
         // BUILD 0029: let the arrival presentation paint before noncritical work.
         // The identity guard prevents stale post-arrival work if another trip starts.
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
