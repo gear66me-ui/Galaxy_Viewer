@@ -2173,7 +2173,7 @@ async function gvPresentationDestination(destination){
         const ageIsCosmic=/cosmic.?age|age.?at.?emission/.test(ageMethod)||validNumber(science?.cosmicAgeGyr);
         const canonicalCosmicAgeGyr=is3C321?12.1334:(ageIsStellar||rawAgeGyr===null?null:(ageIsCosmic?rawAgeGyr:(ageIsLookback?Math.max(0,presentCosmicAgeGyr-rawAgeGyr):null)));
         const canonicalCosmicAgeYears=canonicalCosmicAgeGyr===null?null:canonicalCosmicAgeGyr*1e9;
-        const formatDistanceMly=value=>value===null?'':(value>=1000?((value/1000).toFixed(2).replace(/\\.?0+$/,'')+' billion light-years'):(value.toLocaleString('en-US',{maximumFractionDigits:3})+' million light-years'));
+        const formatDistanceMly=value=>value===null?'':(value>=1000?(String(Number((value/1000).toFixed(2)))+' billion light-years'):(value.toLocaleString('en-US',{maximumFractionDigits:3})+' million light-years'));
         const formatCosmicAgeGyr=value=>value===null?'':('EST. '+value.toFixed(2)+' GYR');
         const sizeKly=Array.isArray(science?.sizeKly)
             ?science.sizeKly.filter(validNumber).map(Number)
