@@ -50,7 +50,7 @@ jobs:
             print(f"{f}: valid JSON; {len(d['entries'])} entries")
           PY
       - name: Commit changes
-        if: ${{ inputs.apply }}
+        if: ${{ github.event_name == 'push' || inputs.apply }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
