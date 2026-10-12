@@ -1,0 +1,176 @@
+name: Repair Catalog Redshift Estimates
+
+on:
+  workflow_dispatch:
+    inputs:
+      archive_id:
+        description: "Exact catalog archive ID"
+        required: true
+        type: string
+        default: "heic2505i"
+      designation:
+        description: "Exact catalog designation"
+        required: true
+        type: string
+        default: "NGC 5335"
+      redshift:
+        description: "Published spectroscopic redshift"
+        required: true
+        type: string
+        default: "0.015451"
+  push:
+    branches:
+      - release
+    paths:
+      - viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+      - .github/workflows/repair-catalog-redshift-estimates.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: catalog-redshift-repair-release
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the triggering release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Derive consistent cosmological estimates and validate catalog
+        shell: bash
+        env:
+          ARCHIVE_ID: ${{ inputs.archive_id || 'heic2505i' }}
+          DESIGNATION: ${{ inputs.designation || 'NGC 5335' }}
+          REDSHIFT: ${{ inputs.redshift || '0.015451' }}
+          CATALOG: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, math, os
+          from pathlib import Path
+
+          path = Path(os.environ["CATALOG"])
+          archive_id = os.environ["ARCHIVE_ID"].strip()
+          designation = os.environ["DESIGNATION"].strip()
+          z = float(os.environ["REDSHIFT"])
+          if not archive_id or not designation or not (0 < z < 20):
+              raise SystemExit("FAIL: archive ID/designation must be non-empty and redshift must be between 0 and 20")
+
+          data = json.loads(path.read_text(encoding="utf-8"))
+          matches = [
+              e for e in data.get("entries", [])
+              if e.get("archiveId") == archive_id and e.get("designation") == designation
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"FAIL: expected exactly one entry for {archive_id} / {designation}; found {len(matches)}")
+          entry = matches[0]
+          fov = entry.get("fieldOfViewDegrees") or {}
+          if not isinstance(fov.get("widthDegrees"), (int, float)) or not isinstance(fov.get("heightDegrees"), (int, float)):
+              raise SystemExit("FAIL: target entry lacks numeric image width/height FOV")
+
+          # Flat LCDM, H0=70 km/s/Mpc, Omega_m=0.3.
+          H0, omega_m, c, n = 70.0, 0.3, 299792.458, 4000
+          dz = z / n
+          integral = sum(
+              (1 if i in (0, n) else 4 if i % 2 else 2)
+              / math.sqrt(omega_m * (1 + i * dz)**3 + 1 - omega_m)
+              for i in range(n + 1)
+          ) * dz / 3
+          dc_mpc = (c / H0) * integral
+          mpc_to_mly = 3.26156
+          luminosity_distance_mly = dc_mpc * (1 + z) * mpc_to_mly
+          angular_diameter_distance_mly = dc_mpc / (1 + z) * mpc_to_mly
+          size_x_kly = angular_diameter_distance_mly * 1000 * math.tan(math.radians(fov["widthDegrees"]))
+          size_y_kly = angular_diameter_distance_mly * 1000 * math.tan(math.radians(fov["heightDegrees"]))
+          hubble_time_gyr = 9.778 / (H0 / 100)
+          age_gyr = (
+              2 * hubble_time_gyr / (3 * math.sqrt(1 - omega_m))
+              * math.asinh(math.sqrt((1 - omega_m) / omega_m) / (1 + z)**1.5)
+          )
+
+          science = entry.get("science")
+          if not isinstance(science, dict):
+              raise SystemExit("FAIL: target entry has no science object")
+          entry["distance"] = f"EST. {luminosity_distance_mly:.0f} million light-years"
+          science.update({
+              "distanceMly": round(luminosity_distance_mly, 2),
+              "distanceMethod": "redshift_flat_lcdm_H0_70_Om_0.3",
+              "distanceDisplay": f"EST. {luminosity_distance_mly:.0f} million light-years",
+              "distanceEstimated": True,
+              "redshift": z,
+              "redshiftDisplay": f"z {z:.6f}",
+              "redshiftEstimated": False,
+              "redshiftMethod": "published_spectroscopic_redshift",
+              "sizeKly": [round(size_x_kly, 3), round(size_y_kly, 3)],
+              "sizeMethod": "angular_diameter_distance_from_redshift_flat_lcdm",
+              "sizeEstimated": True,
+              "sizeDisplay": f"EST. {size_x_kly:.1f} x {size_y_kly:.1f} KLY",
+              "ageGyr": round(age_gyr, 3),
+              "ageMethod": "cosmic_age_at_emission_from_redshift_flat_lcdm_H0_70_Om_0.3",
+              "ageEstimated": True,
+              "ageMinGyr": None,
+              "ageMaxGyr": None,
+              "ageDisplay": f"EST. {age_gyr:.2f} GYR",
+          })
+          for key in ("distanceMinMly", "distanceMaxMly", "redshiftEstMin", "redshiftEstMax"):
+              science.pop(key, None)
+
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          # Read-after-write validation and sanity checks before Git can commit.
+          checked = json.loads(path.read_text(encoding="utf-8"))
+          target = [e for e in checked["entries"] if e.get("archiveId") == archive_id and e.get("designation") == designation]
+          assert len(target) == 1
+          s = target[0]["science"]
+          assert abs(s["redshift"] - z) < 1e-12
+          assert 0 < s["distanceMly"] < 1e6 and 0 < s["ageGyr"] < 14.0
+          assert len(s["sizeKly"]) == 2 and all(v > 0 for v in s["sizeKly"])
+          print(json.dumps({
+              "archiveId": archive_id, "designation": designation,
+              "redshift": s["redshift"], "distanceMly": s["distanceMly"],
+              "ageGyr": s["ageGyr"], "sizeKly": s["sizeKly"]
+          }, indent=2))
+          PY
+
+      - name: Enforce single-file diff and commit only if changed
+        id: commit
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CATALOG: viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+        run: |
+          set -euo pipefail
+          python3 -m json.tool "$CATALOG" >/dev/null
+          git diff --check
+          changed="$(git diff --name-only)"
+          if [[ -n "$changed" && "$changed" != "$CATALOG" ]]; then
+            echo "FAIL: unexpected changed paths:"
+            printf '%s\n' "$changed"
+            exit 1
+          fi
+          if git diff --quiet -- "$CATALOG"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Catalog already matches the requested redshift-derived values; no commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$CATALOG"
+          git diff --cached --check
+          staged="$(git diff --cached --name-only)"
+          [[ "$staged" == "$CATALOG" ]] || { echo "FAIL: staged paths exceeded allowlist"; exit 1; }
+          git commit -m "Fix_catalog_redshift_derived_estimates"
+          git push origin HEAD:release
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch production Pages validation and deployment
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref release
