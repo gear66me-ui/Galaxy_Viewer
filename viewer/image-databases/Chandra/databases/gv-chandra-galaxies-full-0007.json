@@ -497,7 +497,7 @@
       "dec": -21.372722222199986,
       "raText": "06 16 22.10",
       "decText": "-21 22 21.80",
-      "distance": "130 million light-years",
+      "distance": "54.794 million light-years",
       "constellation": "Canis Major",
       "fieldOfView": 0.09739557245756249,
       "orientation": 350.1,
@@ -521,8 +521,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 130,
-        "distanceMethod": "Chandra fast facts or standard catalog distance",
+        "distanceMly": 54.794271,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           187.33,
           187.33
@@ -538,10 +538,11 @@
         "redshiftDisplay": "EST. z 0.009326",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "130 million light-years",
+        "distanceDisplay": "54.794 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 187.3 × 187.3 KLY"
+        "sizeDisplay": "EST. 187.3 × 187.3 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 2207 / IC 2163",
@@ -629,7 +630,7 @@
       "dec": -20.57930000000015,
       "raText": "03 09 45.51",
       "decText": "-20 34 45.48",
-      "distance": "60 million light-years",
+      "distance": "47.293 million light-years",
       "constellation": "Eridanus",
       "fieldOfView": 0.14762408267869132,
       "orientation": 14.699999999999989,
@@ -653,8 +654,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 60,
-        "distanceMethod": "Chandra fast facts or standard catalog distance",
+        "distanceMly": 47.292675,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           118.174,
           118.174
@@ -670,10 +671,11 @@
         "redshiftDisplay": "EST. z 0.0043",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "60 million light-years",
+        "distanceDisplay": "47.293 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 118.2 × 118.2 KLY"
+        "sizeDisplay": "EST. 118.2 × 118.2 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 1232",
@@ -959,7 +961,7 @@
       "dec": -18.877472247355914,
       "raText": "12 01 53.0",
       "decText": "-18 52 10",
-      "distance": "45 million light-years",
+      "distance": "70.124 million light-years",
       "constellation": "Corvus",
       "fieldOfView": 0.10294887715844665,
       "orientation": 327.0010787954707,
@@ -983,8 +985,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 45,
-        "distanceMethod": "Chandra fast facts or standard catalog distance",
+        "distanceMly": 70.123621,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           44.363,
           44.363
@@ -1000,10 +1002,11 @@
         "redshiftDisplay": "EST. z 0.003224",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "45 million light-years",
+        "distanceDisplay": "70.124 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 44.4 × 44.4 KLY"
+        "sizeDisplay": "EST. 44.4 × 44.4 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 4038 / NGC 4039",
@@ -1619,7 +1622,7 @@
       "dec": 39.4058333333,
       "raText": "12 10 32.6",
       "decText": "+39 24 21",
-      "distance": "62 million light-years",
+      "distance": "16.438 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": 0.09087328233251941,
       "orientation": 327,
@@ -1643,8 +1646,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 62,
-        "distanceMethod": "Chandra fast facts or standard catalog distance",
+        "distanceMly": 16.438281,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           53.866,
           53.866
@@ -1660,10 +1663,11 @@
         "redshiftDisplay": "EST. z 0.004443",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "62 million light-years",
+        "distanceDisplay": "16.438 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 53.9 × 53.9 KLY"
+        "sizeDisplay": "EST. 53.9 × 53.9 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 4151",
@@ -1685,7 +1689,7 @@
       "dec": -0.013333333300002973,
       "raText": "02 42 40.7",
       "decText": "-00 00 48",
-      "distance": "47 million light-years",
+      "distance": "32.942 million light-years",
       "constellation": "Cetus",
       "fieldOfView": 0.23004691265621877,
       "orientation": 23.5,
@@ -1709,8 +1713,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 47,
-        "distanceMethod": "Chandra fast facts or standard catalog distance",
+        "distanceMly": 32.941794,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           13.626,
           13.626
@@ -1726,10 +1730,11 @@
         "redshiftDisplay": "EST. z 0.003367",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "47 million light-years",
+        "distanceDisplay": "32.942 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 13.6 × 13.6 KLY"
+        "sizeDisplay": "EST. 13.6 × 13.6 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "M77 / NGC 1068",
@@ -3338,7 +3343,7 @@
       "dec": 32.541388888900045,
       "raText": "12 42 08.0",
       "decText": "+32 32 29",
-      "distance": "25 million light-years",
+      "distance": "14.123 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": 0.27547627896915267,
       "orientation": 350.9,
@@ -3362,8 +3367,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 25,
-        "distanceMethod": "Chandra fast facts or standard catalog distance",
+        "distanceMly": 14.122571,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           18.148,
           18.148
@@ -3379,10 +3384,11 @@
         "redshiftDisplay": "EST. z 0.00179",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "25 million light-years",
+        "distanceDisplay": "14.123 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 18.1 × 18.1 KLY"
+        "sizeDisplay": "EST. 18.1 × 18.1 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 4631",
