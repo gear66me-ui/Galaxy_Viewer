@@ -38,6 +38,7 @@ public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
   private WebView top, web, bottom, viewerWeb;
   private LinearLayout browserLayer;
+  private FrameLayout providerFrame;
   private View navigationCover=null;
   private Runnable pendingProviderLaunch=null;
   private WebViewAssetLoader assetLoader;
@@ -56,15 +57,12 @@ public final class MainActivity extends Activity {
     root.addView(viewerWeb,new FrameLayout.LayoutParams(-1,-1));
 
     browserLayer=new LinearLayout(this); browserLayer.setOrientation(LinearLayout.VERTICAL); browserLayer.setBackgroundColor(Color.BLACK); browserLayer.setPadding(0,dp(12),0,dp(12));
-    top=shell(); web=provider(); bottom=shell();
+    top=shell(); bottom=shell();
     LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(-1,dp(70)); browserLayer.addView(top,tp); top.setTag(tp);
-    FrameLayout frame=new FrameLayout(this); frame.setPadding(0,0,0,0);
+    FrameLayout frame=new FrameLayout(this); frame.setPadding(0,0,0,0); providerFrame=frame;
     GradientDrawable fg=new GradientDrawable(); fg.setColor(Color.rgb(2,7,15)); fg.setStroke(dp(2),Color.rgb(8,45,96)); fg.setCornerRadius(dp(10)); frame.setBackground(fg);
     frame.setOutlineProvider(ViewOutlineProvider.BACKGROUND); frame.setClipToOutline(true);
-    web.setBackgroundColor(Color.TRANSPARENT);
-    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
-    GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8)); web.setBackground(webClip); web.setOutlineProvider(ViewOutlineProvider.BACKGROUND); web.setClipToOutline(true);
-    frame.addView(web,wp);
+    web=createProviderWebView();
     TextView test57=new TextView(this); test57.setText("◉ 57 TEST"); test57.setTextColor(Color.WHITE); test57.setTextSize(11); test57.setGravity(Gravity.CENTER); test57.setPadding(dp(7),dp(3),dp(7),dp(3));
     GradientDrawable test57Bg=new GradientDrawable(); test57Bg.setColor(Color.rgb(150,0,0)); test57Bg.setStroke(dp(1),Color.WHITE); test57Bg.setCornerRadius(dp(10)); test57.setBackground(test57Bg);
     FrameLayout.LayoutParams test57p=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.RIGHT); test57p.setMargins(0,dp(8),dp(8),0); frame.addView(test57,test57p);
@@ -86,7 +84,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0057");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0058");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -119,6 +117,38 @@ public final class MainActivity extends Activity {
   }
   private void fitTopShell(){
     top.evaluateJavascript("(function(){return Math.ceil(document.documentElement.getBoundingClientRect().height)})()", value->{ try{ int css=(int)Math.ceil(Double.parseDouble(value.replace("\\\"",""))); LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams)top.getLayoutParams(); lp.height=dp(css); top.setLayoutParams(lp); }catch(Exception ignored){} });
+  }
+  private WebView createProviderWebView(){
+    WebView v=provider();
+    v.setBackgroundColor(Color.TRANSPARENT);
+    GradientDrawable webClip=new GradientDrawable(); webClip.setColor(Color.TRANSPARENT); webClip.setCornerRadius(dp(8));
+    v.setBackground(webClip); v.setOutlineProvider(ViewOutlineProvider.BACKGROUND); v.setClipToOutline(true);
+    FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(-1,-1); wp.setMargins(dp(2),dp(2),dp(2),dp(2));
+    if(providerFrame!=null)providerFrame.addView(v,wp);
+    return v;
+  }
+  // Retire the previous provider page before warming a different galaxy. Cache clearing is
+  // app-wide for WebView, so do it deliberately at this boundary, then destroy the old view.
+  // Cookies and DOM storage are intentionally preserved.
+  private void retireProviderWebView(){
+    if(pendingProviderLaunch!=null&&web!=null)web.removeCallbacks(pendingProviderLaunch);
+    pendingProviderLaunch=null;
+    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}
+    WebView old=web;
+    web=null;
+    if(old!=null){
+      try{old.stopLoading();}catch(Exception ignored){}
+      try{old.clearHistory();}catch(Exception ignored){}
+      try{old.clearCache(true);}catch(Exception ignored){}
+      try{ViewGroup parent=(ViewGroup)old.getParent();if(parent!=null)parent.removeView(old);}catch(Exception ignored){}
+      try{old.removeAllViews();}catch(Exception ignored){}
+      try{old.destroy();}catch(Exception ignored){}
+    }
+    pageReadyUrl="";
+    loadingProviderUrl="";
+    prewarmReadyUrl="";
+    providerHandoffElapsed=false;
+    web=createProviderWebView();
   }
   private WebView provider(){
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
@@ -197,11 +227,12 @@ public final class MainActivity extends Activity {
   }
   private boolean launchPrewarm(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); return d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())&&"prewarm".equalsIgnoreCase(d.getQueryParameter("mode")); }catch(Exception ignored){} return false; }
   private void prewarmProvider(String u){
-    if(u==null||!u.startsWith("https://")||u.equals(prewarmedUrl))return;
+    if(u==null||!u.startsWith("https://"))return;
+    if(u.equals(prewarmedUrl)&&web!=null&&(u.equals(web.getUrl())||u.equals(prewarmReadyUrl)))return;
     if(prerenderSignal!=null){ try{prerenderSignal.cancel();}catch(Exception ignored){} prerenderSignal=null; }
-    // A newer galaxy supersedes any background load for the previous destination.
-    // stopLoading() does not clear HTTP cache, cookies, or DOM storage.
-    if(web!=null&&!browserMode){ try{web.stopLoading();}catch(Exception ignored){} }
+    // A newer galaxy supersedes the previous page. Recreate the hidden provider WebView,
+    // clear the shared HTTP resource cache, and release the old page/renderer resources before warming.
+    if(web!=null&&!browserMode)retireProviderWebView();
     prewarmedUrl=u;
     prewarmReadyUrl="";
     if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
