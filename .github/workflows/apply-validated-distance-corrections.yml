@@ -1,4 +1,4 @@
-name: Apply validated distance corrections
+name: Apply validated distance corrections # execute reviewed fixes
 
 on:
   push:
