@@ -42,7 +42,7 @@ public final class MainActivity extends Activity {
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
-  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="";
+  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -152,7 +152,7 @@ public final class MainActivity extends Activity {
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target,u.getQueryParameter("icon")); return true; } } return false; }
-      @Override public void onPageFinished(WebView view,String url){ if(browserMode){ if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; } sourceUrl=url; syncShell(); } }
+      @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){ if(browserMode&&url!=null&&!"about:blank".equals(url))loadingProviderUrl=url; }\n      @Override public void onPageFinished(WebView view,String url){\n        if(url!=null){pageReadyUrl=url;if(!browserMode&&url.equals(prewarmedUrl))prewarmReadyUrl=url;}\n        if(browserMode){\n          if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; }\n          sourceUrl=url; syncShell();\n          if(url!=null&&url.equals(loadingProviderUrl)){\n            if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);\n            if(navigationCover!=null)navigationCover.setVisibility(View.GONE);\n            loadingProviderUrl="";\n          }\n        }\n      }
     }); return v;
   }
   private void fetchPointer(){
@@ -175,43 +175,12 @@ public final class MainActivity extends Activity {
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
   private boolean launchPrewarm(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); return d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())&&"prewarm".equalsIgnoreCase(d.getQueryParameter("mode")); }catch(Exception ignored){} return false; }
-  private void prewarmProvider(String u){
-    if(u==null||!u.startsWith("https://")||u.equals(prewarmedUrl))return;
-    prewarmedUrl=u;
-    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
-    try{
-      if(WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){
-        WebViewCompat.prerenderUrlAsync(web,u,null,getMainExecutor(),new PrerenderOperationCallback(){
-          @Override public void onPrerenderActivated(){}
-          @Override public void onError(PrerenderException e){ if(u.equals(prewarmedUrl))web.loadUrl(u); }
-        });
-      }else web.loadUrl(u);
-    }catch(Exception e){ web.loadUrl(u); }
-  }
-  private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
+  private void prewarmProvider(String u){\n    if(u==null||!u.startsWith("https://")||u.equals(prewarmedUrl))return;\n    prewarmedUrl=u; prewarmReadyUrl="";\n    if(browserLayer!=null)browserLayer.setVisibility(View.GONE);\n    try{\n      if(WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){\n        WebViewCompat.prerenderUrlAsync(web,u,null,getMainExecutor(),new PrerenderOperationCallback(){\n          @Override public void onPrerenderActivated(){ if(u.equals(prewarmedUrl))prewarmReadyUrl=u; }\n          @Override public void onError(PrerenderException e){ if(u.equals(prewarmedUrl))web.loadUrl(u); }\n        });\n      }else web.loadUrl(u);\n    }catch(Exception e){ if(u.equals(prewarmedUrl))web.loadUrl(u); }\n  }\n  private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
   // Browser 0057 navigation contract: cover the outgoing page immediately, blank it before waiting,
   // then start/reveal only the requested destination after a minimum 2,000 ms from the button action.
   // Keep WebView cache/cookies/storage intact; the cover is visual isolation, not cache clearing.
-  private void openProvider(String u,String icon){
-    browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u;
-    if(pendingProviderLaunch!=null){new Handler(Looper.getMainLooper()).removeCallbacks(pendingProviderLaunch);pendingProviderLaunch=null;}
-    boolean prepared=web!=null&&u.equals(prewarmedUrl)&&u.equals(web.getUrl());
-    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);
-    if(navigationCover!=null)navigationCover.setVisibility(View.VISIBLE);
-    if(web!=null&&!prepared){web.stopLoading();web.loadUrl("about:blank");}
-    fetchPointer();
-    pendingProviderLaunch=()->{
-      pendingProviderLaunch=null;
-      if(!browserMode||!u.equals(sourceUrl))return;
-      if(web!=null&&!prepared)web.loadUrl(u);
-      if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);
-      if(navigationCover!=null)navigationCover.setVisibility(View.GONE);
-      immersive();
-    };
-    new Handler(Looper.getMainLooper()).postDelayed(pendingProviderLaunch,2000);
-  }
-  private void notifyViewerResumed(){
+  private void openProvider(String u,String icon){\n    browserMode=true; clearProviderEntryHistory=true; pendingProviderUrl=u; pendingProviderIcon=icon==null?"":icon; providerIcon=pendingProviderIcon; sourceUrl=u; providerHomeUrl=u;\n    if(pendingProviderLaunch!=null){new Handler(Looper.getMainLooper()).removeCallbacks(pendingProviderLaunch);pendingProviderLaunch=null;}\n    loadingProviderUrl=u;\n    if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);\n    if(navigationCover!=null)navigationCover.setVisibility(View.VISIBLE);\n    fetchPointer();\n    if(web!=null){\n      if(u.equals(web.getUrl())&&u.equals(pageReadyUrl)){\n        loadingProviderUrl="";\n        if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);\n        if(navigationCover!=null)navigationCover.setVisibility(View.GONE);\n        immersive();\n      }else{\n        // Keep the previous page and WebView cache intact, but covered. Loading the requested\n        // URL activates its pre-render when available; reveal only after that URL finishes.\n        web.loadUrl(u);\n      }\n    }\n  }\n  private void notifyViewerResumed(){
     if(viewerWeb!=null)viewerWeb.evaluateJavascript("window.dispatchEvent(new CustomEvent('gv-native-viewer-resumed'))",null);
   }
   private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); notifyViewerResumed(); }
