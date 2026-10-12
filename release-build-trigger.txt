@@ -1,1 +1,1 @@
-Build Galaxy Viewer Release 1.0.0 — BUILD 0083 emission-age label clarification; preserve existing catalog values and runtime behavior
+Build Galaxy Viewer Release 1.0.0 — BUILD 0083 emission-age label clarification; release manifest and dependency pin audit
