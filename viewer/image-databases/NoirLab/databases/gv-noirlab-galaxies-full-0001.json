@@ -81,10 +81,10 @@
       "avmReferenceDec": -11.363194939,
       "avmHorizontalFovDegrees": 0.01093279277008,
       "avmVerticalFovDegrees": 0.01093279277008,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.01093279277008,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -170,7 +170,7 @@
       "title": "A Graceful Spiral in a Blizzard of Galaxies",
       "ra": 353.6508432,
       "dec": -36.06244685,
-      "distance": "10.0 million light-years",
+      "distance": "14.057 million light-years",
       "constellation": "Sculptor",
       "fieldOfView": "39.0161 x 21.8681 arcminutes",
       "orientation": "AVM/WCS rotation -115.103487 degrees",
@@ -191,19 +191,19 @@
         "None"
       ],
       "science": {
-        "distanceMly": 10.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "10 million light years",
+        "distanceMly": 14.05734,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "10.0 million light-years",
+        "distanceDisplay": "14.057 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          113.49439444567112,
-          63.61188068332964
+          159.54292908169106,
+          89.4213834804997
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 113.5 × 63.6 KLY",
+        "sizeDisplay": "EST. 160 × 89 LY",
         "ageGyr": 13.456983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -297,10 +297,10 @@
       "avmReferenceDec": -45.81691758,
       "avmHorizontalFovDegrees": 0.147246534210633,
       "avmVerticalFovDegrees": 0.08451927254506099,
-      "avmRotation": 65.0,
+      "avmRotation": 65,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.08451927254506099,
-      "aladinRotation": 65.0,
+      "aladinRotation": 65,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -335,7 +335,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "300 million light years",
         "distanceRangeMly": null,
@@ -550,7 +550,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "20 million light years",
         "distanceRangeMly": null,
@@ -601,7 +601,7 @@
       "title": "Galactic Waltz NGC 1532-31",
       "ra": 63.0172593158,
       "dec": -32.8708294079,
-      "distance": "55.0 million light-years",
+      "distance": "42.4 million light-years",
       "constellation": "Eridanus",
       "fieldOfView": "5.0301 x 4.6533 arcminutes",
       "orientation": "AVM/WCS rotation 94.000000 degrees",
@@ -622,19 +622,19 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 55.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "55 million light-years",
+        "distanceMly": 42.400329,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "55.0 million light-years",
+        "distanceDisplay": "42.4 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          80.47590931013409,
-          74.44702100353986
+          62.0400914786154,
+          57.39233061127274
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 80.5 × 74.4 KLY",
+        "sizeDisplay": "EST. 62 × 57 LY",
         "ageGyr": 13.411701947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -659,7 +659,7 @@
       "avmRotation": 94.00000000000003,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0775545354465354,
-      "aladinRotation": -86.0,
+      "aladinRotation": -86,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -673,7 +673,7 @@
       "title": "Interacting Galaxies NGC 520",
       "ra": 21.1432792808,
       "dec": 3.79073062143,
-      "distance": "100.0 million light-years",
+      "distance": "77.788 million light-years",
       "constellation": "Pisces",
       "fieldOfView": "5.5849 x 4.5164 arcminutes",
       "orientation": "AVM/WCS rotation 9.040000 degrees",
@@ -694,19 +694,19 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 100.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "100 million light-years",
+        "distanceMly": 77.788296,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "100.0 million light-years",
+        "distanceDisplay": "77.788 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          162.45678087529342,
-          131.37808236214656
+          126.37236157934464,
+          102.19677158699037
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 162.5 × 131.4 KLY",
+        "sizeDisplay": "EST. 126 × 102 LY",
         "ageGyr": 13.366983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -910,7 +910,7 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 120.0,
+        "distanceMly": 120,
         "distanceMethod": "cross_catalog:eso:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -947,7 +947,7 @@
       "avmRotation": 127.99999999999999,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.07809291782852551,
-      "aladinRotation": -52.0,
+      "aladinRotation": -52,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -982,7 +982,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 49.0,
+        "distanceMly": 49,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "49 million light-years",
         "distanceRangeMly": null,
@@ -1053,7 +1053,7 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light years",
         "distanceRangeMly": null,
@@ -1125,7 +1125,7 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 200.0,
+        "distanceMly": 200,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "200 million light-years",
         "distanceRangeMly": null,
@@ -1248,7 +1248,7 @@
       "title": "NGC 660",
       "ra": 25.7217966,
       "dec": 13.68936125,
-      "distance": "40,000 light-years",
+      "distance": "43.868 million light-years",
       "constellation": "Pisces",
       "fieldOfView": "9.3179 x 5.5890 arcminutes",
       "orientation": "AVM/WCS rotation -81.881275 degrees",
@@ -1269,19 +1269,19 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 0.04,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "40,000 light years",
+        "distanceMly": 43.868033,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "40,000 light-years",
+        "distanceDisplay": "43.868 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.1084182439929381,
-          0.06503098225315133
+          118.90237763210648,
+          71.31953188759144
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 108 × 65 LY",
+        "sizeDisplay": "EST. 119 × 71 LY",
         "ageGyr": 13.466943947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -1320,7 +1320,7 @@
       "title": "NGC 7582",
       "ra": 349.599420717,
       "dec": -42.3704048394,
-      "distance": "60.0 million light-years",
+      "distance": "72.081 million light-years",
       "constellation": "Grus",
       "fieldOfView": "2.4612 x 1.6617 arcminutes",
       "orientation": "AVM/WCS rotation 89.780000 degrees",
@@ -1341,19 +1341,19 @@
         "FLAMINGOS 2"
       ],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light-years",
+        "distanceMly": 72.080559,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "72.081 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          42.956869566867674,
-          29.00239490009641
+          51.60591952116516,
+          34.8418139456283
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 43.0 × 29.0 KLY",
+        "sizeDisplay": "EST. 52 × 35 LY",
         "ageGyr": 13.391703947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -1485,7 +1485,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 300.0,
+        "distanceMly": 300,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "300 million light years",
         "distanceRangeMly": null,
@@ -1557,7 +1557,7 @@
         "CCD"
       ],
       "science": {
-        "distanceMly": 13.0,
+        "distanceMly": 13,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -1773,7 +1773,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "20 million light-years",
         "distanceRangeMly": null,
@@ -1845,7 +1845,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 37.0,
+        "distanceMly": 37,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "37 million light-years",
         "distanceRangeMly": null,
@@ -1917,7 +1917,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 47.0,
+        "distanceMly": 47,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "47 million light-years",
         "distanceRangeMly": null,
@@ -2061,7 +2061,7 @@
         "CFCCD"
       ],
       "science": {
-        "distanceMly": 200.0,
+        "distanceMly": 200,
         "distanceMethod": "astropix_structured_distance_ly",
         "distanceEvidence": "200000000.0",
         "distanceRangeMly": null,
@@ -2133,7 +2133,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -2349,7 +2349,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million light-years",
         "distanceRangeMly": null,
@@ -2853,7 +2853,7 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 270.0,
+        "distanceMly": 270,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "270 million light-years",
         "distanceRangeMly": null,
@@ -2887,10 +2887,10 @@
       "avmReferenceDec": -47.074504656,
       "avmHorizontalFovDegrees": 0.0913437169373832,
       "avmVerticalFovDegrees": 0.0806403253388616,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.0806403253388616,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -3120,7 +3120,7 @@
       "title": "NGC 1808",
       "ra": 76.9266766107,
       "dec": -37.5032928117,
-      "distance": "40 million light-years",
+      "distance": "30.316 million light-years",
       "constellation": "Columba",
       "fieldOfView": "24.2182 x 21.8550 arcminutes",
       "orientation": "AVM/WCS rotation -0.980000 degrees",
@@ -3141,11 +3141,11 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 40.0,
-        "distanceMethod": "cross_catalog:hubble:esa",
-        "distanceEvidence": null,
+        "distanceMly": 30.316235,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "40 million light-years",
+        "distanceDisplay": "30.316 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           281.792,
@@ -3264,7 +3264,7 @@
       "title": "Gentle Giant Galaxy",
       "ra": 13.176026218754851,
       "dec": -31.204979213345684,
-      "distance": "75.0 million light-years",
+      "distance": "59.36 million light-years",
       "constellation": "Sculptor",
       "fieldOfView": "13.0956 x 13.0956 arcminutes",
       "orientation": "AVM/WCS rotation -0.000000 degrees",
@@ -3285,19 +3285,19 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 75.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "75 million light-years",
+        "distanceMly": 59.360461,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "75.0 million light-years",
+        "distanceDisplay": "59.36 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          285.7025890522175,
-          285.7025890522175
+          226.1258319337758,
+          226.1258319337758
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 285.7 × 285.7 KLY",
+        "sizeDisplay": "EST. 226 × 226 LY",
         "ageGyr": 13.391376947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -3319,10 +3319,10 @@
       "avmReferenceDec": -31.204979213345684,
       "avmHorizontalFovDegrees": 0.21826043671236842,
       "avmVerticalFovDegrees": 0.21826043671236842,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.21826043671236842,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -3357,7 +3357,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 160.0,
+        "distanceMly": 160,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -3552,7 +3552,7 @@
       "title": "A Grand Design of Imperfections",
       "ra": 208.984413351,
       "dec": 5.11507998922,
-      "distance": "1000 million light-years",
+      "distance": "55.773 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "22.0838 x 20.6966 arcminutes",
       "orientation": "AVM/WCS rotation -89.911708 degrees",
@@ -3573,11 +3573,11 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 1000.0,
-        "distanceMethod": "cross_catalog:hubble:light_travel_distance_backfilled_from_age_range_0010",
-        "distanceEvidence": null,
+        "distanceMly": 55.772741,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "1000 million light-years",
+        "distanceDisplay": "55.773 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           6423.918,
@@ -3624,7 +3624,7 @@
       "title": "Hidden Among Supernovae",
       "ra": 40.86366822282981,
       "dec": 37.34186630644255,
-      "distance": "30.0 million light-years",
+      "distance": "7.73 million light-years",
       "constellation": "Perseus",
       "fieldOfView": "4.9314 x 4.5965 arcminutes",
       "orientation": "AVM/WCS rotation 270.060000 degrees",
@@ -3645,19 +3645,19 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 30.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "30 million light-years",
+        "distanceMly": 7.729906,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "30.0 million light-years",
+        "distanceDisplay": "7.73 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          43.03431699944782,
-          40.11170992274785
+          11.088374172664455,
+          10.335324906736938
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 43.0 × 40.1 KLY",
+        "sizeDisplay": "EST. 11 × 10 LY",
         "ageGyr": 13.442778947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -3717,7 +3717,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 40.0,
+        "distanceMly": 40,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "40 million light-years",
         "distanceRangeMly": null,
@@ -3789,7 +3789,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light-years",
         "distanceRangeMly": null,
@@ -3840,7 +3840,7 @@
       "title": "The Value of Being Metal-Poor",
       "ra": 150.784692596,
       "dec": -26.1626576061,
-      "distance": "40,000 light-years",
+      "distance": "4.207 million light-years",
       "constellation": "Hydra",
       "fieldOfView": "31.5406 x 17.4874 arcminutes",
       "orientation": "AVM/WCS rotation 0.787452 degrees",
@@ -3861,19 +3861,19 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 0.04,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "40,000 light-years",
+        "distanceMly": 4.207417,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "40,000 light-years",
+        "distanceDisplay": "4.207 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.36699394878632513,
-          0.203475547755865
+          38.60241447551784,
+          21.402661967808452
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 367 × 203 LY",
+        "sizeDisplay": "EST. 39 × 21 LY",
         "ageGyr": 13.448228947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -3912,7 +3912,7 @@
       "title": "A Cluster of Interacting Galaxies",
       "ra": 207.040843254,
       "dec": -30.44001731,
-      "distance": "200.0 million light-years",
+      "distance": "291.91 million light-years",
       "constellation": "Centaurus",
       "fieldOfView": "34.4255 x 24.4284 arcminutes",
       "orientation": "AVM/WCS rotation 0.282973 degrees",
@@ -3933,19 +3933,19 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 200.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "200 million light-years",
+        "distanceMly": 291.909958,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "200.0 million light-years",
+        "distanceDisplay": "291.91 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          2002.8087429309649,
-          1421.1914597112516
+          2923.199080155054,
+          2074.2996965713505
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 2002.8 × 1421.2 KLY",
+        "sizeDisplay": "EST. 2,923 × 2,074 LY",
         "ageGyr": 13.251694947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -4052,7 +4052,7 @@
       "title": "The Cosmic Steering Wheel NGC 1269",
       "ra": 49.325179287,
       "dec": -41.1138654196,
-      "distance": "33.0 million light-years",
+      "distance": "11.549 million light-years",
       "constellation": "Eridanus",
       "fieldOfView": "29.3107 x 29.3278 arcminutes",
       "orientation": "AVM/WCS rotation 89.791805 degrees",
@@ -4073,19 +4073,19 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 33.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "33 million light-years",
+        "distanceMly": 11.549197,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "33.0 million light-years",
+        "distanceDisplay": "11.549 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          281.3642968764319,
-          281.5279541777649
+          98.47065737552718,
+          98.52793344866605
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 281.4 × 281.5 KLY",
+        "sizeDisplay": "EST. 98 × 99 LY",
         "ageGyr": 13.427964947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -4387,10 +4387,10 @@
       "avmReferenceDec": 22.7221654894,
       "avmHorizontalFovDegrees": 0.2063493840988855,
       "avmVerticalFovDegrees": 0.16535509911096002,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.16535509911096002,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -4425,7 +4425,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "cross_catalog:spitzer:published_distance_via_hubble_0018_crosscheck",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -5066,15 +5066,15 @@
         "T1KA"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
         "distanceDisplay": "10 light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          1.4139278870563423e-05,
-          1.4523017261124225e-05
+          0.000014139278870563423,
+          0.000014523017261124225
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
@@ -5333,7 +5333,7 @@
       "title": "NGC 7320 Stephan’s Quintet",
       "ra": 339.003718686,
       "dec": 33.9606147141,
-      "distance": "300.0 million light-years",
+      "distance": "43.053 million light-years",
       "constellation": "Pegasus",
       "fieldOfView": "4.8725 x 4.0786 arcminutes",
       "orientation": "AVM/WCS rotation -179.940000 degrees",
@@ -5354,19 +5354,19 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 300.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "300 million light years",
+        "distanceMly": 43.052642,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "300.0 million light-years",
+        "distanceDisplay": "43.053 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          425.2070041584607,
-          355.92811718584943
+          61.02094975308905,
+          51.07881935645474
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 425.2 × 355.9 KLY",
+        "sizeDisplay": "EST. 61 × 51 LY",
         "ageGyr": 13.430942947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -5498,15 +5498,15 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 4.2999999999999995e-06,
+        "distanceMly": 0.0000042999999999999995,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "4.3 light-years",
         "distanceRangeMly": null,
         "distanceDisplay": "4 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          1.5647411166075474e-06,
-          1.5002494233547163e-06
+          0.0000015647411166075474,
+          0.0000015002494233547163
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
@@ -5714,12 +5714,12 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description_range_midpoint",
         "distanceEvidence": "30-40 million light years",
         "distanceRangeMly": [
-          30.0,
-          40.0
+          30,
+          40
         ],
         "distanceDisplay": "35.0 million light-years",
         "distanceEstimated": true,
@@ -5768,7 +5768,7 @@
       "title": "IC 342",
       "ra": 56.442150251,
       "dec": 68.1122550531,
-      "distance": "14.0 million light-years",
+      "distance": "11.057 million light-years",
       "constellation": "Camelopardalis",
       "fieldOfView": "17.5869 x 11.7256 arcminutes",
       "orientation": "AVM/WCS rotation -177.670750 degrees",
@@ -5789,19 +5789,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 14.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "14 million light years",
+        "distanceMly": 11.056701,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "14.0 million light-years",
+        "distanceDisplay": "11.057 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          71.62154222577095,
-          47.75187583878489
+          56.564141253516006,
+          37.71272952418349
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 71.6 × 47.8 KLY",
+        "sizeDisplay": "EST. 57 × 38 LY",
         "ageGyr": 13.452983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -6368,7 +6368,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 56.0,
+        "distanceMly": 56,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "56 million light years",
         "distanceRangeMly": null,
@@ -6440,7 +6440,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 27.0,
+        "distanceMly": 27,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "27 million light years",
         "distanceRangeMly": null,
@@ -6512,7 +6512,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "20 million light years",
         "distanceRangeMly": null,
@@ -6584,7 +6584,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "20 million light years",
         "distanceRangeMly": null,
@@ -6656,7 +6656,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 25.0,
+        "distanceMly": 25,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "25 million light-years",
         "distanceRangeMly": null,
@@ -6707,7 +6707,7 @@
       "title": "M108, NGC 3556",
       "ra": 168.0046551,
       "dec": 55.66049067,
-      "distance": "45.0 million light-years",
+      "distance": "27.935 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "11.6244 x 7.7534 arcminutes",
       "orientation": "AVM/WCS rotation 1.225410 degrees",
@@ -6724,22 +6724,22 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 45.0,
-        "distanceMethod": "astropix_description_range_midpoint",
-        "distanceEvidence": "40 to 50 million light-years",
+        "distanceMly": 27.935294,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": [
-          40.0,
-          50.0
+          40,
+          50
         ],
-        "distanceDisplay": "45.0 million light-years",
+        "distanceDisplay": "27.935 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          152.16381348150784,
-          101.49202112945818
+          94.46090812815744,
+          63.00465442012503
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 152.2 × 101.5 KLY",
+        "sizeDisplay": "EST. 94 × 63 LY",
         "ageGyr": 13.434603947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -6778,7 +6778,7 @@
       "title": "M109, NGC 3992",
       "ra": 179.528688,
       "dec": 53.37179787,
-      "distance": "45.0 million light-years",
+      "distance": "62.785 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "11.6244 x 7.7452 arcminutes",
       "orientation": "AVM/WCS rotation 1.214506 degrees",
@@ -6795,22 +6795,22 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 45.0,
-        "distanceMethod": "astropix_description_range_midpoint",
-        "distanceEvidence": "40 to 50 million light-years",
+        "distanceMly": 62.785103,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": [
-          40.0,
-          50.0
+          40,
+          50
         ],
-        "distanceDisplay": "45.0 million light-years",
+        "distanceDisplay": "62.785 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          152.16381348150784,
-          101.38473560404928
+          212.30268227353906,
+          141.45446816728892
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 152.2 × 101.4 KLY",
+        "sizeDisplay": "EST. 212 × 141 LY",
         "ageGyr": 13.418338947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -6849,7 +6849,7 @@
       "title": "M109",
       "ra": 179.434907071,
       "dec": 53.3730216597,
-      "distance": "50.0 million light-years",
+      "distance": "62.785 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "22.2875 x 14.8018 arcminutes",
       "orientation": "AVM/WCS rotation -3.002599 degrees",
@@ -6870,19 +6870,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 50.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "50 million light years",
+        "distanceMly": 62.785103,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "50.0 million light-years",
+        "distanceDisplay": "62.785 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          324.16014462081444,
-          215.28431985435063
+          407.04856137025456,
+          270.3329639268069
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 324.2 × 215.3 KLY",
+        "sizeDisplay": "EST. 407 × 270 LY",
         "ageGyr": 13.418338947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -7302,7 +7302,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -7374,7 +7374,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -7446,7 +7446,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "3 million light years",
         "distanceRangeMly": null,
@@ -7518,7 +7518,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -7658,7 +7658,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -7730,7 +7730,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light years",
         "distanceRangeMly": null,
@@ -7781,7 +7781,7 @@
       "title": "M61, NGC 4303",
       "ra": 185.4924642,
       "dec": 4.489163754,
-      "distance": "100,000 light-years",
+      "distance": "39.954 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "8.9040 x 8.9880 arcminutes",
       "orientation": "AVM/WCS rotation 0.930916 degrees",
@@ -7798,19 +7798,19 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 0.1,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "100000 light-years",
+        "distanceMly": 39.954156,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "100,000 light-years",
+        "distanceDisplay": "39.954 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.25900700579072033,
-          0.26145047088026085
+          103.48406314455343,
+          104.460328998234
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 259 × 261 LY",
+        "sizeDisplay": "EST. 103 × 104 LY",
         "ageGyr": 13.466883947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -7849,7 +7849,7 @@
       "title": "M61",
       "ra": 185.439881243,
       "dec": 4.41640323734,
-      "distance": "60.0 million light-years",
+      "distance": "39.954 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "12.4237 x 8.3701 arcminutes",
       "orientation": "AVM/WCS rotation 89.797262 degrees",
@@ -7870,19 +7870,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light years",
+        "distanceMly": 39.954156,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "39.954 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          216.83410518856294,
-          146.08529996875222
+          144.39039441373754,
+          97.27858107097202
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 216.8 × 146.1 KLY",
+        "sizeDisplay": "EST. 144 × 97 LY",
         "ageGyr": 13.406983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -7921,7 +7921,7 @@
       "title": "M63, NGC 5055",
       "ra": 199.0850074,
       "dec": 42.08855378,
-      "distance": "35 million light-years",
+      "distance": "23.614 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "20.4120 x 15.4904 arcminutes",
       "orientation": "AVM/WCS rotation 1.228346 degrees",
@@ -7938,11 +7938,11 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 35.0,
-        "distanceMethod": "cross_catalog:noirlab:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 23.613722,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "35 million light-years",
+        "distanceDisplay": "23.614 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           207.816,
@@ -7989,7 +7989,7 @@
       "title": "M63 (Sunflower Galaxy)",
       "ra": 198.926337889,
       "dec": 42.0828492029,
-      "distance": "35.0 million light-years",
+      "distance": "23.614 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "8.1810 x 12.2691 arcminutes",
       "orientation": "AVM/WCS rotation 16.357949 degrees",
@@ -8010,19 +8010,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "35 million light-years",
+        "distanceMly": 23.613722,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "35.0 million light-years",
+        "distanceDisplay": "23.614 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          83.29169276407372,
-          124.91306560138905
+          56.195053652578515,
+          84.2760687222561
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 83.3 × 124.9 KLY",
+        "sizeDisplay": "EST. 56 × 84 LY",
         "ageGyr": 13.443712947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -8078,7 +8078,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "20 million light-years",
         "distanceRangeMly": null,
@@ -8129,7 +8129,7 @@
       "title": "M64 (The Black Eye Galaxy)",
       "ra": 194.203626608,
       "dec": 21.6754466688,
-      "distance": "6,000 light-years",
+      "distance": "18.069 million light-years",
       "constellation": "Coma Berenices",
       "fieldOfView": "23.2608 x 15.5049 arcminutes",
       "orientation": "AVM/WCS rotation -177.420037 degrees",
@@ -8150,19 +8150,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 0.006,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "6,000 light years",
+        "distanceMly": 18.069063,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "6,000 light-years",
+        "distanceDisplay": "18.069 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.04059797889026986,
-          0.02706124927938892
+          122.26123970682602,
+          81.49523634799718
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 41 × 27 LY",
+        "sizeDisplay": "EST. 122 × 81 LY",
         "ageGyr": 13.447949947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -8218,7 +8218,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
@@ -8291,7 +8291,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
@@ -8363,7 +8363,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -8431,7 +8431,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
@@ -8503,7 +8503,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light years",
         "distanceRangeMly": null,
@@ -8571,7 +8571,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 30.0,
+        "distanceMly": 30,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "30 million light-years",
         "distanceRangeMly": null,
@@ -8643,7 +8643,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light years",
         "distanceRangeMly": null,
@@ -8762,7 +8762,7 @@
       "title": "M77",
       "ra": 40.6526928214,
       "dec": -0.0215228635502,
-      "distance": "170,000 light-years",
+      "distance": "32.942 million light-years",
       "constellation": "Cetus",
       "fieldOfView": "10.1458 x 8.2041 arcminutes",
       "orientation": "AVM/WCS rotation -120.472877 degrees",
@@ -8783,19 +8783,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 0.17,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "170,000 light years",
+        "distanceMly": 32.941794,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "170,000 light-years",
+        "distanceDisplay": "32.942 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.5017216834816625,
-          0.4057023665098057
+          97.22124907403604,
+          78.615081075756
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 502 × 406 LY",
+        "sizeDisplay": "EST. 97 × 79 LY",
         "ageGyr": 13.466813947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -9063,7 +9063,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 12.0,
+        "distanceMly": 12,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -9135,7 +9135,7 @@
         "S2KB"
       ],
       "science": {
-        "distanceMly": 12.0,
+        "distanceMly": 12,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -9207,7 +9207,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light years",
         "distanceRangeMly": null,
@@ -9258,7 +9258,7 @@
       "title": "M90, NGC 4569",
       "ra": 189.199112,
       "dec": 13.17964568,
-      "distance": "60.0 million light-years",
+      "distance": "37.345 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "11.3520 x 14.1750 arcminutes",
       "orientation": "AVM/WCS rotation 0.751787 degrees",
@@ -9275,19 +9275,19 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light-years",
+        "distanceMly": 37.344905,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "37.345 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          198.12995672514126,
-          247.40077199463047
+          123.31907352590851,
+          153.98597211776894
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 198.1 × 247.4 KLY",
+        "sizeDisplay": "EST. 123 × 154 LY",
         "ageGyr": 13.406983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -9326,7 +9326,7 @@
       "title": "M90",
       "ra": 189.220726423,
       "dec": 13.1461532625,
-      "distance": "60.0 million light-years",
+      "distance": "37.345 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "8.3633 x 12.4003 arcminutes",
       "orientation": "AVM/WCS rotation -82.240202 degrees",
@@ -9347,19 +9347,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light years",
+        "distanceMly": 37.344905,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "37.345 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          145.9666862805451,
-          216.42688343090404
+          90.85186720519599,
+          134.70735668621975
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 146.0 × 216.4 KLY",
+        "sizeDisplay": "EST. 91 × 135 LY",
         "ageGyr": 13.406983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -9415,7 +9415,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -9487,7 +9487,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 52.0,
+        "distanceMly": 52,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "52 million light years",
         "distanceRangeMly": null,
@@ -9623,7 +9623,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 38.0,
+        "distanceMly": 38,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "38 million light-years",
         "distanceRangeMly": null,
@@ -9767,7 +9767,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 38.0,
+        "distanceMly": 38,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "38 million light years",
         "distanceRangeMly": null,
@@ -9818,7 +9818,7 @@
       "title": "M98, NGC 4192",
       "ra": 183.4094201,
       "dec": 14.95227171,
-      "distance": "60.0 million light-years",
+      "distance": "44.194 million light-years",
       "constellation": "Coma Berenices",
       "fieldOfView": "9.6300 x 12.1980 arcminutes",
       "orientation": "AVM/WCS rotation 0.933013 degrees",
@@ -9835,19 +9835,19 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light-years",
+        "distanceMly": 44.194189,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "44.194 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          168.07531687461184,
-          212.89548552309714
+          123.79920533652476,
+          156.81238874090863
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 168.1 × 212.9 KLY",
+        "sizeDisplay": "EST. 124 × 157 LY",
         "ageGyr": 13.406983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -9886,7 +9886,7 @@
       "title": "M99; NGC 4254",
       "ra": 184.7073842,
       "dec": 14.367234,
-      "distance": "60.0 million light-years",
+      "distance": "46.967 million light-years",
       "constellation": "Coma Berenices",
       "fieldOfView": "7.6896 x 7.6752 arcminutes",
       "orientation": "AVM/WCS rotation 0.993675 degrees",
@@ -9903,19 +9903,19 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light-years",
+        "distanceMly": 46.966518,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "46.967 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          134.20889411905142,
-          133.95756639298347
+          105.05540735670873,
+          104.85867422053754
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 134.2 × 134.0 KLY",
+        "sizeDisplay": "EST. 105 × 105 LY",
         "ageGyr": 13.355521947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -9954,7 +9954,7 @@
       "title": "M99",
       "ra": 184.629514961,
       "dec": 14.4910281901,
-      "distance": "60.0 million light-years",
+      "distance": "46.967 million light-years",
       "constellation": "Coma Berenices",
       "fieldOfView": "8.2435 x 12.3070 arcminutes",
       "orientation": "AVM/WCS rotation 22.275765 degrees",
@@ -9975,19 +9975,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "60 million light years",
+        "distanceMly": 46.966518,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "60.0 million light-years",
+        "distanceDisplay": "46.967 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          143.87566788411638,
-          214.79835337694482
+          112.62231909068954,
+          168.13884550414397
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 143.9 × 214.8 KLY",
+        "sizeDisplay": "EST. 113 × 168 LY",
         "ageGyr": 13.355521947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -10026,7 +10026,7 @@
       "title": "NGC 1058",
       "ra": 40.9019740799,
       "dec": 37.3829412645,
-      "distance": "23.0 million light-years",
+      "distance": "7.73 million light-years",
       "constellation": "Perseus",
       "fieldOfView": "9.2525 x 7.6965 arcminutes",
       "orientation": "AVM/WCS rotation 37.970848 degrees",
@@ -10047,19 +10047,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 23.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "23 million light years",
+        "distanceMly": 7.729906,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "23.0 million light-years",
+        "distanceDisplay": "7.73 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          61.90313232073859,
-          51.493195636581234
+          20.804582345429182,
+          17.30598095262535
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 61.9 × 51.5 KLY",
+        "sizeDisplay": "EST. 21 × 17 LY",
         "ageGyr": 13.442778947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -10098,7 +10098,7 @@
       "title": "NGC 1232",
       "ra": 47.3647667528,
       "dec": -20.534808993,
-      "distance": "70.0 million light-years",
+      "distance": "47.293 million light-years",
       "constellation": "Eridanus",
       "fieldOfView": "14.3536 x 9.6789 arcminutes",
       "orientation": "AVM/WCS rotation -74.648064 degrees",
@@ -10119,19 +10119,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 70.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "70 million light years",
+        "distanceMly": 47.292675,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "70.0 million light-years",
+        "distanceDisplay": "47.293 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          292.27136859320046,
-          197.08276710297378
+          197.46135495262055,
+          133.15101789573757
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 292.3 × 197.1 KLY",
+        "sizeDisplay": "EST. 197 × 133 LY",
         "ageGyr": 13.396983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -10170,7 +10170,7 @@
       "title": "NGC 1255",
       "ra": 48.4348941464,
       "dec": -25.7294769179,
-      "distance": "73.0 million light-years",
+      "distance": "57.73 million light-years",
       "constellation": "Fornax",
       "fieldOfView": "12.0949 x 7.9049 arcminutes",
       "orientation": "AVM/WCS rotation -16.104744 degrees",
@@ -10191,19 +10191,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 73.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "73 million light years",
+        "distanceMly": 57.729679,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "73.0 million light-years",
+        "distanceDisplay": "57.73 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          256.83300571266915,
-          167.8593833510973
+          203.10804077256924,
+          132.7461413424218
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 256.8 × 167.9 KLY",
+        "sizeDisplay": "EST. 203 × 133 LY",
         "ageGyr": 13.388744947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -10263,7 +10263,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 230.0,
+        "distanceMly": 230,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "230 million light-years",
         "distanceRangeMly": null,
@@ -10314,7 +10314,7 @@
       "title": "NGC 1300",
       "ra": 49.8890628729,
       "dec": -19.4688654899,
-      "distance": "150,000 light-years",
+      "distance": "47.293 million light-years",
       "constellation": "Eridanus",
       "fieldOfView": "7.8351 x 12.0278 arcminutes",
       "orientation": "AVM/WCS rotation -28.818896 degrees",
@@ -10335,19 +10335,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 0.15,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "150,000 light years",
+        "distanceMly": 47.292675,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "150,000 light-years",
+        "distanceDisplay": "47.293 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.34187161476956385,
-          0.5248120358224693
+          107.78682112681454,
+          165.4651003082693
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 342 × 525 LY",
+        "sizeDisplay": "EST. 108 × 165 LY",
         "ageGyr": 13.466833947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -10479,7 +10479,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million light years",
         "distanceRangeMly": null,
@@ -10695,7 +10695,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 160.0,
+        "distanceMly": 160,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "160 million light years",
         "distanceRangeMly": null,
@@ -10911,7 +10911,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million lightyears",
         "distanceRangeMly": null,
@@ -10962,7 +10962,7 @@
       "title": "NGC 1961",
       "ra": 85.4342540596,
       "dec": 69.4439173636,
-      "distance": "171.0 million light-years",
+      "distance": "105.675 million light-years",
       "constellation": "Camelopardalis",
       "fieldOfView": "8.0312 x 12.2833 arcminutes",
       "orientation": "AVM/WCS rotation 19.633511 degrees",
@@ -10983,19 +10983,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 171.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "171 million light years",
+        "distanceMly": 105.674666,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "171.0 million light-years",
+        "distanceDisplay": "105.675 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          399.48620462985906,
-          610.9928078346594
+          246.87468564835095,
+          377.58164266859535
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 399.5 × 611.0 KLY",
+        "sizeDisplay": "EST. 247 × 378 LY",
         "ageGyr": 13.295983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -11055,7 +11055,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
@@ -11134,8 +11134,8 @@
         "distanceDisplay": "1500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          3.5e-05,
-          3.5e-05
+          0.000035,
+          0.000035
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
@@ -11250,7 +11250,7 @@
       "title": "NGC 2146",
       "ra": 94.6699055604,
       "dec": 78.3299295208,
-      "distance": "90 million light-years",
+      "distance": "56.751 million light-years",
       "constellation": "Camelopardalis",
       "fieldOfView": "11.0351 x 8.1103 arcminutes",
       "orientation": "AVM/WCS rotation -87.475594 degrees",
@@ -11271,11 +11271,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 90.0,
-        "distanceMethod": "cross_catalog:hubble:esa",
-        "distanceEvidence": null,
+        "distanceMly": 56.75121,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "90 million light-years",
+        "distanceDisplay": "56.751 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           288.899,
@@ -11538,7 +11538,7 @@
       "title": "NGC 2207",
       "ra": 94.1497821423,
       "dec": -21.4244701888,
-      "distance": "114.0 million light-years",
+      "distance": "54.794 million light-years",
       "constellation": "Canis Major",
       "fieldOfView": "11.1424 x 7.4335 arcminutes",
       "orientation": "AVM/WCS rotation 170.650793 degrees",
@@ -11559,19 +11559,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 114.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "114 million light years",
+        "distanceMly": 54.794271,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "114.0 million light-years",
+        "distanceDisplay": "54.794 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          369.4975848801312,
-          246.50468295118895
+          177.5995684190124,
+          118.48284561751342
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 369.5 × 246.5 KLY",
+        "sizeDisplay": "EST. 178 × 118 LY",
         "ageGyr": 13.352983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -11703,7 +11703,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 100.0,
+        "distanceMly": 100,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "100 million light years",
         "distanceRangeMly": null,
@@ -12045,7 +12045,7 @@
       "title": "NGC 2523",
       "ra": 123.566131224,
       "dec": 73.5621716835,
-      "distance": "150.0 million light-years",
+      "distance": "110.567 million light-years",
       "constellation": "Camelopardalis",
       "fieldOfView": "12.3353 x 8.1935 arcminutes",
       "orientation": "AVM/WCS rotation -3.779597 degrees",
@@ -12066,19 +12066,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 150.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "150 million light years",
+        "distanceMly": 110.567012,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "150.0 million light-years",
+        "distanceDisplay": "110.567 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          538.2304462174042,
-          357.50742526561396
+          396.73688137123395,
+          263.5235185295483
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 538.2 × 357.5 KLY",
+        "sizeDisplay": "EST. 397 × 264 LY",
         "ageGyr": 13.306604947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12117,7 +12117,7 @@
       "title": "NGC 253",
       "ra": 11.8173115944,
       "dec": -25.3305278896,
-      "distance": "8.0 million light-years",
+      "distance": "10.095 million light-years",
       "constellation": "Sculptor",
       "fieldOfView": "22.2114 x 14.1326 arcminutes",
       "orientation": "AVM/WCS rotation -178.427943 degrees",
@@ -12138,19 +12138,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 8.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "8 million light years",
+        "distanceMly": 10.09454,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "8.0 million light-years",
+        "distanceDisplay": "10.095 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          51.688520864605955,
-          32.88799008190425
+          65.22148017607492,
+          41.49864142517322
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 51.7 × 32.9 KLY",
+        "sizeDisplay": "EST. 65 × 41 LY",
         "ageGyr": 13.458983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12189,7 +12189,7 @@
       "title": "NGC 2541",
       "ra": 123.631549048,
       "dec": 49.0592579463,
-      "distance": "24.0 million light-years",
+      "distance": "38.813 million light-years",
       "constellation": "Lynx",
       "fieldOfView": "8.3009 x 12.2315 arcminutes",
       "orientation": "AVM/WCS rotation -74.134028 degrees",
@@ -12210,19 +12210,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 24.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "24 million light years",
+        "distanceMly": 38.812609,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "24.0 million light-years",
+        "distanceDisplay": "38.813 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          57.951268330761266,
-          85.3917667800675
+          93.71832994899667,
+          138.0948856605812
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 58.0 × 85.4 KLY",
+        "sizeDisplay": "EST. 94 × 138 LY",
         "ageGyr": 13.441482947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12261,7 +12261,7 @@
       "title": "NGC 2683",
       "ra": 133.221492457,
       "dec": 33.4433810286,
-      "distance": "16.0 million light-years",
+      "distance": "31.36 million light-years",
       "constellation": "Lynx",
       "fieldOfView": "11.9212 x 8.1021 arcminutes",
       "orientation": "AVM/WCS rotation -176.237858 degrees",
@@ -12282,19 +12282,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 16.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "16 million light years",
+        "distanceMly": 31.359936,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "16.0 million light-years",
+        "distanceDisplay": "31.36 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          55.48373439494675,
-          37.70902310382731
+          108.74789747915806,
+          73.90953444740911
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 55.5 × 37.7 KLY",
+        "sizeDisplay": "EST. 109 × 74 LY",
         "ageGyr": 13.450983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12401,7 +12401,7 @@
       "title": "NGC 2841",
       "ra": 140.509229632,
       "dec": 51.0070647651,
-      "distance": "130,000 light-years",
+      "distance": "48.434 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "14.3329 x 9.6650 arcminutes",
       "orientation": "AVM/WCS rotation 118.552454 degrees",
@@ -12422,19 +12422,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 0.13,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "130,000 light years",
+        "distanceMly": 48.434222,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "130,000 light-years",
+        "distanceDisplay": "48.434 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.5420051951221665,
-          0.3654855087903644
+          201.93538419769482,
+          136.1692790041189
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 542 × 365 LY",
+        "sizeDisplay": "EST. 202 × 136 LY",
         "ageGyr": 13.466853947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12494,7 +12494,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million light years",
         "distanceRangeMly": null,
@@ -12638,7 +12638,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 47.0,
+        "distanceMly": 47,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -12761,7 +12761,7 @@
       "title": "NGC 3294",
       "ra": 159.014753645,
       "dec": 37.2936774892,
-      "distance": "70.0 million light-years",
+      "distance": "93.444 million light-years",
       "constellation": "Leo Minor",
       "fieldOfView": "12.4262 x 7.6903 arcminutes",
       "orientation": "AVM/WCS rotation 87.655409 degrees",
@@ -12782,19 +12782,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 70.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "70 million light years",
+        "distanceMly": 93.443802,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "70.0 million light-years",
+        "distanceDisplay": "93.444 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          253.0247909697417,
-          156.59148627938347
+          337.76569240668476,
+          209.03576912537753
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 253.0 × 156.6 KLY",
+        "sizeDisplay": "EST. 338 × 209 LY",
         "ageGyr": 13.394537947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12901,7 +12901,7 @@
       "title": "NGC 3319",
       "ra": 159.825783431,
       "dec": 41.7035180914,
-      "distance": "32.0 million light-years",
+      "distance": "43.053 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "12.3921 x 8.3437 arcminutes",
       "orientation": "AVM/WCS rotation 0.890845 degrees",
@@ -12922,19 +12922,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 32.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "32 million light years",
+        "distanceMly": 43.052642,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "32.0 million light-years",
+        "distanceDisplay": "43.053 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          115.35061601389195,
-          77.66687974688925
+          155.19214924142366,
+          104.49263653124603
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 115.4 × 77.7 KLY",
+        "sizeDisplay": "EST. 155 × 104 LY",
         "ageGyr": 13.432612947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -12973,7 +12973,7 @@
       "title": "NGC 3344",
       "ra": 160.777488881,
       "dec": 24.8965085507,
-      "distance": "22.5 million light-years",
+      "distance": "31.523 million light-years",
       "constellation": "Leo Minor",
       "fieldOfView": "14.3627 x 9.6652 arcminutes",
       "orientation": "AVM/WCS rotation -167.389485 degrees",
@@ -12994,19 +12994,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 22.5,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "22.5 million lightyears",
+        "distanceMly": 31.523014,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "22.5 million light-years",
+        "distanceDisplay": "31.523 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          94.00402578961015,
-          63.258746806228146
+          131.70178760098852,
+          88.62694938645267
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 94.0 × 63.3 KLY",
+        "sizeDisplay": "EST. 132 × 89 LY",
         "ageGyr": 13.444483947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13066,7 +13066,7 @@
         "S2KB"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light years",
         "distanceRangeMly": null,
@@ -13117,7 +13117,7 @@
       "title": "NGC 3718",
       "ra": 173.164141994,
       "dec": 53.0239155894,
-      "distance": "300.0 million light-years",
+      "distance": "52.511 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "14.3507 x 9.6744 arcminutes",
       "orientation": "AVM/WCS rotation 64.018500 degrees",
@@ -13138,19 +13138,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 300.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "300 million light years",
+        "distanceMly": 52.511177,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "300.0 million light-years",
+        "distanceDisplay": "52.511 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          1252.333379043237,
-          844.2552115916137
+          219.20499909982505,
+          147.7761161635323
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1252.3 × 844.3 KLY",
+        "sizeDisplay": "EST. 219 × 148 LY",
         "ageGyr": 13.420830947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13210,7 +13210,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million lightyears",
         "distanceRangeMly": null,
@@ -13261,7 +13261,7 @@
       "title": "NGC 3953",
       "ra": 178.359627491,
       "dec": 52.3777418172,
-      "distance": "46.0 million light-years",
+      "distance": "57.077 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "8.3320 x 12.3307 arcminutes",
       "orientation": "AVM/WCS rotation 75.424690 degrees",
@@ -13282,19 +13282,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 46.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "46 million light years",
+        "distanceMly": 57.077366,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "46.0 million light-years",
+        "distanceDisplay": "57.077 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          111.4893686471369,
-          164.9956722689579
+          138.3373804213382,
+          204.72866031546437
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 111.5 × 165.0 KLY",
+        "sizeDisplay": "EST. 138 × 205 LY",
         "ageGyr": 13.418189947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13333,7 +13333,7 @@
       "title": "NGC 4013",
       "ra": 179.56699154,
       "dec": 44.008836389,
-      "distance": "36.0 million light-years",
+      "distance": "58.219 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "12.3171 x 8.2015 arcminutes",
       "orientation": "AVM/WCS rotation 138.959652 degrees",
@@ -13354,19 +13354,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 36.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "36 million light years",
+        "distanceMly": 58.218913,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "36.0 million light-years",
+        "distanceDisplay": "58.219 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          128.98417460858468,
-          85.88643986901373
+          208.5921788865,
+          138.8948658503845
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 129.0 × 85.9 KLY",
+        "sizeDisplay": "EST. 209 × 139 LY",
         "ageGyr": 13.430983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13426,7 +13426,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 45.0,
+        "distanceMly": 45,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -13498,7 +13498,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million lightyears",
         "distanceRangeMly": null,
@@ -13570,7 +13570,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million lightyears",
         "distanceRangeMly": null,
@@ -13621,7 +13621,7 @@
       "title": "NGC 4216",
       "ra": 183.973539845,
       "dec": 13.1774265464,
-      "distance": "40.0 million light-years",
+      "distance": "50.554 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "12.3971 x 8.3928 arcminutes",
       "orientation": "AVM/WCS rotation 100.871211 degrees",
@@ -13642,19 +13642,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 40.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "40 million light years",
+        "distanceMly": 50.554239,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "40.0 million light-years",
+        "distanceDisplay": "50.554 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          144.24669324615957,
-          97.65507354715591
+          182.30704513315092,
+          123.42194819163743
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 144.2 × 97.7 KLY",
+        "sizeDisplay": "EST. 182 × 123 LY",
         "ageGyr": 13.460881947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13693,7 +13693,7 @@
       "title": "NGC 428",
       "ra": 18.271938474,
       "dec": 0.98186840626,
-      "distance": "70.0 million light-years",
+      "distance": "36.856 million light-years",
       "constellation": "Cetus",
       "fieldOfView": "11.9284 x 7.7400 arcminutes",
       "orientation": "AVM/WCS rotation -19.437884 degrees",
@@ -13714,19 +13714,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 70.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "70 million light years",
+        "distanceMly": 36.855671,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "70.0 million light-years",
+        "distanceDisplay": "36.856 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          242.88874138854055,
-          157.60257299190758
+          127.88325060314476,
+          82.97926541347472
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 242.9 × 157.6 KLY",
+        "sizeDisplay": "EST. 128 × 83 LY",
         "ageGyr": 13.396983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13930,7 +13930,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 40.0,
+        "distanceMly": 40,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "40 million light years",
         "distanceRangeMly": null,
@@ -14002,7 +14002,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 12.0,
+        "distanceMly": 12,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "12 million light years",
         "distanceRangeMly": null,
@@ -14125,7 +14125,7 @@
       "title": "NGC 4490",
       "ra": 187.573165698,
       "dec": 41.6286564191,
-      "distance": "45.0 million light-years",
+      "distance": "19.667 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "12.3758 x 8.3619 arcminutes",
       "orientation": "AVM/WCS rotation -101.642451 degrees",
@@ -14146,22 +14146,22 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 45.0,
-        "distanceMethod": "astropix_description_range_midpoint",
-        "distanceEvidence": "40-50 million light years",
+        "distanceMly": 19.66723,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": [
-          40.0,
-          50.0
+          40,
+          50
         ],
-        "distanceDisplay": "45.0 million light-years",
+        "distanceDisplay": "19.667 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          161.99888754694175,
-          109.45770953482662
+          70.80154180288531,
+          47.83844330432507
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 162.0 × 109.5 KLY",
+        "sizeDisplay": "EST. 71 × 48 LY",
         "ageGyr": 13.421983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14221,12 +14221,12 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 25.0,
+        "distanceMly": 25,
         "distanceMethod": "astropix_description_range_midpoint",
         "distanceEvidence": "20-30 million light years",
         "distanceRangeMly": [
-          20.0,
-          30.0
+          20,
+          30
         ],
         "distanceDisplay": "25.0 million light-years",
         "distanceEstimated": true,
@@ -14275,7 +14275,7 @@
       "title": "NGC 4618 and NGC 4625",
       "ra": 190.471050201,
       "dec": 41.2458977111,
-      "distance": "31.0 million light-years",
+      "distance": "23.809 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "17.8127 x 12.0018 arcminutes",
       "orientation": "AVM/WCS rotation -119.540332 degrees",
@@ -14296,19 +14296,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 31.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "31 million lightyears",
+        "distanceMly": 23.809416,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "31.0 million light-years",
+        "distanceDisplay": "23.809 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          160.62735025117783,
-          108.22682974860017
+          123.36914203574182,
+          83.12314876921279
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 160.6 × 108.2 KLY",
+        "sizeDisplay": "EST. 123 × 83 LY",
         "ageGyr": 13.435983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14347,7 +14347,7 @@
       "title": "NGC 4631: The Whale",
       "ra": 190.546623581,
       "dec": 32.6048041123,
-      "distance": "27.5 million light-years",
+      "distance": "14.123 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "12.3291 x 8.3436 arcminutes",
       "orientation": "AVM/WCS rotation 29.323592 degrees",
@@ -14368,22 +14368,22 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 27.5,
-        "distanceMethod": "astropix_description_range_midpoint",
-        "distanceEvidence": "25-30 million light years",
+        "distanceMly": 14.122571,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": [
-          25.0,
-          30.0
+          25,
+          30
         ],
-        "distanceDisplay": "27.5 million light-years",
+        "distanceDisplay": "14.123 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          98.62594602907936,
-          66.74415141765647
+          50.64916091773969,
+          34.2763278992947
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 98.6 × 66.7 KLY",
+        "sizeDisplay": "EST. 51 × 34 LY",
         "ageGyr": 13.439483947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14443,7 +14443,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "55 million lightyears",
         "distanceRangeMly": null,
@@ -14494,7 +14494,7 @@
       "title": "NGC 4656: The Hockey Stick",
       "ra": 191.01640753,
       "dec": 32.1109760111,
-      "distance": "25.0 million light-years",
+      "distance": "16.471 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "12.3991 x 8.3396 arcminutes",
       "orientation": "AVM/WCS rotation -105.943232 degrees",
@@ -14515,19 +14515,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 25.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "25 million light years",
+        "distanceMly": 16.470897,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "25.0 million light-years",
+        "distanceDisplay": "16.471 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          90.16912048481852,
-          60.64713854397772
+          59.40665184344144,
+          39.95651089210347
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 90.2 × 60.6 KLY",
+        "sizeDisplay": "EST. 59 × 40 LY",
         "ageGyr": 13.441983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14566,7 +14566,7 @@
       "title": "NGC 4698",
       "ra": 192.120224862,
       "dec": 8.47213365136,
-      "distance": "55.0 million light-years",
+      "distance": "72.244 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "12.4157 x 8.3724 arcminutes",
       "orientation": "AVM/WCS rotation -96.458867 degrees",
@@ -14587,19 +14587,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 55.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "55 million lightyears",
+        "distanceMly": 72.243638,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "55.0 million light-years",
+        "distanceDisplay": "72.244 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          198.6368741481631,
-          133.94808643505428
+          260.91364417111737,
+          175.94358304012312
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 198.6 × 133.9 KLY",
+        "sizeDisplay": "EST. 261 × 176 LY",
         "ageGyr": 13.420080947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14659,7 +14659,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light years",
         "distanceRangeMly": null,
@@ -14731,7 +14731,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 40.0,
+        "distanceMly": 40,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "40 million lightyears",
         "distanceRangeMly": null,
@@ -14782,7 +14782,7 @@
       "title": "NGC 488",
       "ra": 20.4055063182,
       "dec": 5.24974721257,
-      "distance": "90.0 million light-years",
+      "distance": "306.098 million light-years",
       "constellation": "Pisces",
       "fieldOfView": "14.2950 x 9.6275 arcminutes",
       "orientation": "AVM/WCS rotation -86.898549 degrees",
@@ -14803,19 +14803,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 90.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "90 million light years",
+        "distanceMly": 306.09776,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "90.0 million light-years",
+        "distanceDisplay": "306.098 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          374.2430538185863,
-          252.04818122561636
+          1272.8328941047632,
+          857.2375965026137
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 374.2 × 252.0 KLY",
+        "sizeDisplay": "EST. 1,273 × 857 LY",
         "ageGyr": 13.376983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14947,7 +14947,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light years",
         "distanceRangeMly": null,
@@ -14998,7 +14998,7 @@
       "title": "NGC 4941",
       "ra": 196.080019198,
       "dec": -5.537044652,
-      "distance": "64.0 million light-years",
+      "distance": "31.001 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "12.3977 x 8.3535 arcminutes",
       "orientation": "AVM/WCS rotation -111.998880 degrees",
@@ -15019,19 +15019,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 64.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "64 million lightyears",
+        "distanceMly": 31.001164,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "64.0 million light-years",
+        "distanceDisplay": "31.001 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          230.80694768977872,
-          155.515946153515
+          111.80131308859768,
+          75.33086486437949
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 230.8 × 155.5 KLY",
+        "sizeDisplay": "EST. 112 × 75 LY",
         "ageGyr": 13.402983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -15091,7 +15091,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million lightyears",
         "distanceRangeMly": null,
@@ -15142,7 +15142,7 @@
       "title": "NGC 5033",
       "ra": 198.304863674,
       "dec": 36.599031053,
-      "distance": "37.0 million light-years",
+      "distance": "57.077 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "12.3313 x 8.3127 arcminutes",
       "orientation": "AVM/WCS rotation -58.955085 degrees",
@@ -15163,19 +15163,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 37.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "37 million light years",
+        "distanceMly": 57.077366,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "37.0 million light-years",
+        "distanceDisplay": "57.077 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          132.72060528656323,
-          89.46843946545047
+          204.73898820764063,
+          138.01683418428001
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 132.7 × 89.5 KLY",
+        "sizeDisplay": "EST. 205 × 138 LY",
         "ageGyr": 13.429983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -15235,7 +15235,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 95.0,
+        "distanceMly": 95,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "95 million lightyears",
         "distanceRangeMly": null,
@@ -15286,7 +15286,7 @@
       "title": "NGC 5170",
       "ra": 21.1910595857,
       "dec": 3.84486245594,
-      "distance": "100.0 million light-years",
+      "distance": "78.114 million light-years",
       "constellation": "Pisces",
       "fieldOfView": "12.2501 x 8.2664 arcminutes",
       "orientation": "AVM/WCS rotation -3.337510 degrees",
@@ -15307,19 +15307,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 100.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "100 million light years",
+        "distanceMly": 78.114452,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "100.0 million light-years",
+        "distanceDisplay": "78.114 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          356.34256175022455,
-          240.46129566924688
+          278.35503935394956,
+          187.83502338413194
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 356.3 × 240.5 KLY",
+        "sizeDisplay": "EST. 278 × 188 LY",
         "ageGyr": 13.397310947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -15358,7 +15358,7 @@
       "title": "NGC 5216 and NGC 5218",
       "ra": 203.051315625,
       "dec": 62.736427429,
-      "distance": "22,000 light-years",
+      "distance": "185.909 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "12.2205 x 8.0834 arcminutes",
       "orientation": "AVM/WCS rotation -21.216196 degrees",
@@ -15379,19 +15379,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 0.022,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "22,000 lightyears",
+        "distanceMly": 185.909135,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "22,000 light-years",
+        "distanceDisplay": "185.909 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.07820578166511408,
-          0.051730041650235155
+          660.8713282436463,
+          437.14033166859963
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 78 × 52 LY",
+        "sizeDisplay": "EST. 661 × 437 LY",
         "ageGyr": 13.331711947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -15430,7 +15430,7 @@
       "title": "NGC 5248",
       "ra": 204.352476278,
       "dec": 8.8011674236,
-      "distance": "50.0 million light-years",
+      "distance": "38.486 million light-years",
       "constellation": "Boötes",
       "fieldOfView": "8.3552 x 12.4130 arcminutes",
       "orientation": "AVM/WCS rotation -33.173068 degrees",
@@ -15451,19 +15451,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 50.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "50 million light years",
+        "distanceMly": 38.486453,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "50.0 million light-years",
+        "distanceDisplay": "38.486 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          121.52175678891221,
-          180.54059443293747
+          93.53882762267801,
+          138.96734204470616
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 121.5 × 180.5 KLY",
+        "sizeDisplay": "EST. 94 × 139 LY",
         "ageGyr": 13.416983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -15502,7 +15502,7 @@
       "title": "NGC 5364",
       "ra": 209.080625882,
       "dec": 5.07559735039,
-      "distance": "1000 million light-years",
+      "distance": "55.773 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "14.3527 x 9.6742 arcminutes",
       "orientation": "AVM/WCS rotation -107.442747 degrees",
@@ -15523,11 +15523,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 1000.0,
-        "distanceMethod": "cross_catalog:hubble:light_travel_distance_backfilled_from_age_range_0010",
-        "distanceEvidence": null,
+        "distanceMly": 55.772741,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "1000 million light-years",
+        "distanceDisplay": "55.773 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           4175.044,
@@ -15595,7 +15595,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 220.0,
+        "distanceMly": 220,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "220 million light years",
         "distanceRangeMly": null,
@@ -15718,7 +15718,7 @@
       "title": "NGC 5394 and NGC 5395",
       "ra": 209.707741554,
       "dec": 37.5011299416,
-      "distance": "160.0 million light-years",
+      "distance": "107.305 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "12.1978 x 8.1341 arcminutes",
       "orientation": "AVM/WCS rotation -131.384546 degrees",
@@ -15739,19 +15739,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 160.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "160 million lightyears",
+        "distanceMly": 107.305448,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "160.0 million light-years",
+        "distanceDisplay": "107.305 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          567.7127545987859,
-          378.57785630969397
+          380.7416966721048,
+          253.89666546369583
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 567.7 × 378.6 KLY",
+        "sizeDisplay": "EST. 381 × 254 LY",
         "ageGyr": 13.307566947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -15811,7 +15811,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -15955,7 +15955,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 95.0,
+        "distanceMly": 95,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "95 million light years",
         "distanceRangeMly": null,
@@ -16027,7 +16027,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 73.0,
+        "distanceMly": 73,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "73 million light years",
         "distanceRangeMly": null,
@@ -16099,7 +16099,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 70.0,
+        "distanceMly": 70,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "70 million light years",
         "distanceRangeMly": null,
@@ -16171,7 +16171,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 83.0,
+        "distanceMly": 83,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "83 million lightyears",
         "distanceRangeMly": null,
@@ -16315,7 +16315,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "50 million lightyears",
         "distanceRangeMly": null,
@@ -16366,7 +16366,7 @@
       "title": "NGC 5921",
       "ra": 230.441421355,
       "dec": 5.10110339729,
-      "distance": "80 million light-years",
+      "distance": "56.425 million light-years",
       "constellation": "Serpens",
       "fieldOfView": "12.4197 x 8.3666 arcminutes",
       "orientation": "AVM/WCS rotation 131.688351 degrees",
@@ -16387,11 +16387,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 80.0,
-        "distanceMethod": "cross_catalog:hubble:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 56.425053,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "80 million light-years",
+        "distanceDisplay": "56.425 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           289.019,
@@ -16459,7 +16459,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 150.0,
+        "distanceMly": 150,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "150 million lightyears",
         "distanceRangeMly": null,
@@ -16510,7 +16510,7 @@
       "title": "NGC 5985",
       "ra": 234.773342589,
       "dec": 59.3491934123,
-      "distance": "100.0 million light-years",
+      "distance": "129.81 million light-years",
       "constellation": "Draco",
       "fieldOfView": "12.4233 x 8.0849 arcminutes",
       "orientation": "AVM/WCS rotation -53.858222 degrees",
@@ -16531,19 +16531,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 100.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "100 million lightyears",
+        "distanceMly": 129.810238,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "100.0 million light-years",
+        "distanceDisplay": "129.81 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          361.38002578685985,
-          235.17979424968544
+          469.1082715583842,
+          305.287450643427
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 361.4 × 235.2 KLY",
+        "sizeDisplay": "EST. 469 × 305 LY",
         "ageGyr": 13.350233947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -16747,7 +16747,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 100.0,
+        "distanceMly": 100,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "100 million lightyears",
         "distanceRangeMly": null,
@@ -16819,7 +16819,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 64.0,
+        "distanceMly": 64,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "64 million light years",
         "distanceRangeMly": null,
@@ -16870,7 +16870,7 @@
       "title": "NGC 6140",
       "ra": 245.348969429,
       "dec": 65.3703011797,
-      "distance": "37.57 million light-years",
+      "distance": "26.517 million light-years",
       "constellation": "Draco",
       "fieldOfView": "11.3599 x 6.9529 arcminutes",
       "orientation": "AVM/WCS rotation 16.162616 degrees",
@@ -16891,11 +16891,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 37.573215,
-        "distanceMethod": "NED_OverviewOfObject_redshift_independent_mean_distance",
-        "distanceEvidence": null,
+        "distanceMly": 26.516514,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "37.57 million light-years",
+        "distanceDisplay": "26.517 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           124.159,
@@ -16963,7 +16963,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light years",
         "distanceRangeMly": null,
@@ -17014,7 +17014,7 @@
       "title": "NGC 6621",
       "ra": 273.083073032,
       "dec": 68.391409737,
-      "distance": "300.0 million light-years",
+      "distance": "202.217 million light-years",
       "constellation": "Draco",
       "fieldOfView": "12.3774 x 8.3447 arcminutes",
       "orientation": "AVM/WCS rotation -2.918927 degrees",
@@ -17035,19 +17035,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 300.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "300 million lightyears",
+        "distanceMly": 202.216954,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "300.0 million light-years",
+        "distanceDisplay": "202.217 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          1080.1340174580316,
-          728.2164302340657
+          728.0713697404865,
+          490.8590279156208
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1080.1 × 728.2 KLY",
+        "sizeDisplay": "EST. 728 × 491 LY",
         "ageGyr": 13.166983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -17158,7 +17158,7 @@
       "title": "NGC 6814",
       "ra": 295.664484146,
       "dec": -10.3380462758,
-      "distance": "68.0 million light-years",
+      "distance": "29.191 million light-years",
       "constellation": "Aquila",
       "fieldOfView": "11.3531 x 7.0331 arcminutes",
       "orientation": "AVM/WCS rotation 48.932818 degrees",
@@ -17179,19 +17179,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 68.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "68 million light years",
+        "distanceMly": 29.190996,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "68.0 million light-years",
+        "distanceDisplay": "29.191 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          224.56876031536393,
-          139.1179255533729
+          96.40273211898156,
+          59.72045306407069
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 224.6 × 139.1 KLY",
+        "sizeDisplay": "EST. 96 × 60 LY",
         "ageGyr": 13.398983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -17590,7 +17590,7 @@
       "title": "NGC 7217",
       "ra": 331.941851493,
       "dec": 31.3296906396,
-      "distance": "41.0 million light-years",
+      "distance": "57.73 million light-years",
       "constellation": "Pegasus",
       "fieldOfView": "12.3285 x 8.3087 arcminutes",
       "orientation": "AVM/WCS rotation 169.966228 degrees",
@@ -17611,19 +17611,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 41.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "41 million light years",
+        "distanceMly": 57.729679,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "41.0 million light-years",
+        "distanceDisplay": "57.73 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          147.03516623128755,
-          99.09343486006287
+          207.03153532302127,
+          139.5276142799717
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 147.0 × 99.1 KLY",
+        "sizeDisplay": "EST. 207 × 140 LY",
         "ageGyr": 13.423052947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -17683,7 +17683,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 49.0,
+        "distanceMly": 49,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "49 million light years",
         "distanceRangeMly": null,
@@ -17823,7 +17823,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 100.0,
+        "distanceMly": 100,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "100 million lightyears",
         "distanceRangeMly": null,
@@ -17967,7 +17967,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light years",
         "distanceRangeMly": null,
@@ -18018,7 +18018,7 @@
       "title": "NGC 7814",
       "ra": 0.826370337721,
       "dec": 16.2140797274,
-      "distance": "40 million light-years",
+      "distance": "56.099 million light-years",
       "constellation": "Pegasus",
       "fieldOfView": "12.2989 x 8.3031 arcminutes",
       "orientation": "AVM/WCS rotation -66.508772 degrees",
@@ -18039,11 +18039,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 40.0,
-        "distanceMethod": "cross_catalog:hubble:esa",
-        "distanceEvidence": null,
+        "distanceMly": 56.098897,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "40 million light-years",
+        "distanceDisplay": "56.099 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           143.104,
@@ -18111,7 +18111,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 69.0,
+        "distanceMly": 69,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "69 million light years",
         "distanceRangeMly": null,
@@ -18183,7 +18183,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -18220,7 +18220,7 @@
       "avmRotation": 20.999999999999968,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.086481298142078,
-      "aladinRotation": 21.0,
+      "aladinRotation": 21,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -18255,7 +18255,7 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -18323,7 +18323,7 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 10.0,
+        "distanceMly": 10,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 million light years",
         "distanceRangeMly": null,
@@ -18395,7 +18395,7 @@
         "Mosaic II"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light-years",
         "distanceRangeMly": null,
@@ -18446,7 +18446,7 @@
       "title": "Barred Spiral Galaxy NGC 1365",
       "ra": 53.48901787,
       "dec": -36.12519091,
-      "distance": "200,000 light-years",
+      "distance": "58.056 million light-years",
       "constellation": "Fornax",
       "fieldOfView": "10.0762 x 10.1376 arcminutes",
       "orientation": "AVM/WCS rotation -73.024631 degrees",
@@ -18463,19 +18463,19 @@
       "facility": [],
       "instrument": [],
       "science": {
-        "distanceMly": 0.2,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "200,000 light years",
+        "distanceMly": 58.055835,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "200,000 light-years",
+        "distanceDisplay": "58.056 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.5862076462003954,
-          0.5897820882323639
+          170.16387191774265,
+          171.2014580018678
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 586 × 590 LY",
+        "sizeDisplay": "EST. 170 × 171 LY",
         "ageGyr": 13.466783947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -18514,7 +18514,7 @@
       "title": "Interacting galaxy Pair NGC 1532 and NGC 1531",
       "ra": 63.015899638,
       "dec": -32.8723518583,
-      "distance": "55.0 million light-years",
+      "distance": "42.4 million light-years",
       "constellation": "Eridanus",
       "fieldOfView": "5.2047 x 4.9445 arcminutes",
       "orientation": "AVM/WCS rotation 94.000000 degrees",
@@ -18535,19 +18535,19 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 55.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "55 million light-years",
+        "distanceMly": 42.400329,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "55.0 million light-years",
+        "distanceDisplay": "42.4 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          83.26855213447338,
-          79.10706767339317
+          64.19298192464225,
+          60.984830828675186
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 83.3 × 79.1 KLY",
+        "sizeDisplay": "EST. 64 × 61 LY",
         "ageGyr": 13.411701947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -18569,10 +18569,10 @@
       "avmReferenceDec": -32.8723518583,
       "avmHorizontalFovDegrees": 0.08674428531228319,
       "avmVerticalFovDegrees": 0.08240909683567679,
-      "avmRotation": 94.0,
+      "avmRotation": 94,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.08240909683567679,
-      "aladinRotation": -86.0,
+      "aladinRotation": -86,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -18658,7 +18658,7 @@
       "title": "Peculiar Barred Spiral Galaxy NGC 2146",
       "ra": 95.5395807355,
       "dec": 78.2447066889,
-      "distance": "90 million light-years",
+      "distance": "56.751 million light-years",
       "constellation": "Camelopardalis",
       "fieldOfView": "27.4542 x 24.0594 arcminutes",
       "orientation": "AVM/WCS rotation 0.092217 degrees",
@@ -18679,11 +18679,11 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 90.0,
-        "distanceMethod": "cross_catalog:hubble:esa",
-        "distanceEvidence": null,
+        "distanceMly": 56.75121,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "90 million light-years",
+        "distanceDisplay": "56.751 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           718.75,
@@ -18798,7 +18798,7 @@
       "title": "The Sculptor Galaxy, NGC 253",
       "ra": 11.85794033,
       "dec": -25.38648291,
-      "distance": "8.0 million light-years",
+      "distance": "10.095 million light-years",
       "constellation": "Sculptor",
       "fieldOfView": "25.3680 x 18.2650 arcminutes",
       "orientation": "AVM/WCS rotation -139.991440 degrees",
@@ -18819,19 +18819,19 @@
         "Mosaic II"
       ],
       "science": {
-        "distanceMly": 8.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "8 million light-years",
+        "distanceMly": 10.09454,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "8.0 million light-years",
+        "distanceDisplay": "10.095 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          59.03428450430088,
-          42.504591953228754
+          74.49049328750567,
+          53.63303795694323
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 59.0 × 42.5 KLY",
+        "sizeDisplay": "EST. 74 × 54 LY",
         "ageGyr": 13.458983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -19035,7 +19035,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -19086,7 +19086,7 @@
       "title": "Twisted Spiral Galaxy NGC 3718",
       "ra": 173.2127094,
       "dec": 53.08154924,
-      "distance": "300 million light-years",
+      "distance": "52.511 million light-years",
       "constellation": "Ursa Major",
       "fieldOfView": "20.4250 x 15.7600 arcminutes",
       "orientation": "AVM/WCS rotation 34.996349 degrees",
@@ -19107,11 +19107,11 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 300.0,
-        "distanceMethod": "cross_catalog:noirlab:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 52.511177,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "300 million light-years",
+        "distanceDisplay": "52.511 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           1782.414,
@@ -19179,7 +19179,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 10.0,
+        "distanceMly": 10,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -19395,7 +19395,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 30.0,
+        "distanceMly": 30,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -19539,7 +19539,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -19899,7 +19899,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 20.0,
+        "distanceMly": 20,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "20 million light-years",
         "distanceRangeMly": null,
@@ -20008,7 +20008,7 @@
       "avmRotation": 90.00000000000004,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.2716833887474291,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -20812,7 +20812,7 @@
       "title": "Stephanʼs Quintet",
       "ra": 338.989022883,
       "dec": 34.0108213921,
-      "distance": "130.8 million light-years",
+      "distance": "56.425 million light-years",
       "constellation": "Pegasus",
       "fieldOfView": "7.6375 x 7.3114 arcminutes",
       "orientation": "AVM/WCS rotation 8.426600 degrees",
@@ -20833,11 +20833,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 130.835301,
-        "distanceMethod": "NED_OverviewOfObject_redshift_independent_mean_distance",
-        "distanceEvidence": null,
+        "distanceMly": 56.425053,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "130.8 million light-years",
+        "distanceDisplay": "56.425 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           290.67,
@@ -21028,7 +21028,7 @@
       "title": "The Andromeda Galaxy",
       "ra": 10.6730656328,
       "dec": 40.6107803278,
-      "distance": "2.2 million light-years",
+      "distance": "2.653 million light-years",
       "constellation": "Andromeda",
       "fieldOfView": "132.0449 x 131.9990 arcminutes",
       "orientation": "AVM/WCS rotation 0.024580 degrees",
@@ -21049,19 +21049,19 @@
         "CCD"
       ],
       "science": {
-        "distanceMly": 2.2,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "2.2 million light-years",
+        "distanceMly": 2.653282,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "2.2 million light-years",
+        "distanceDisplay": "2.653 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          84.51306747470478,
-          84.48370337007138
+          101.92590940700893,
+          101.8904952023408
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 84.5 × 84.5 KLY",
+        "sizeDisplay": "EST. 102 × 102 LY",
         "ageGyr": 13.464783947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -21265,7 +21265,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 3.0,
+        "distanceMly": 3,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -21411,7 +21411,7 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 12.0,
+        "distanceMly": 12,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -21483,7 +21483,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 55.0,
+        "distanceMly": 55,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -21627,7 +21627,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 11.0,
+        "distanceMly": 11,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "11 million light-years",
         "distanceRangeMly": null,
@@ -21733,10 +21733,10 @@
       "avmReferenceDec": 31.28422352,
       "avmHorizontalFovDegrees": 0.58,
       "avmVerticalFovDegrees": 0.593344,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.593344,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -21915,7 +21915,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
@@ -21987,7 +21987,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light years",
         "distanceRangeMly": null,
@@ -22131,7 +22131,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 65.0,
+        "distanceMly": 65,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "65 million light years",
         "distanceRangeMly": null,
@@ -22312,10 +22312,10 @@
       "avmReferenceDec": -23.0339801187,
       "avmHorizontalFovDegrees": 0.08629740337248361,
       "avmVerticalFovDegrees": 0.08629740337248361,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.08629740337248361,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -22403,7 +22403,7 @@
       "title": "Big Galaxy Collisions Can Stunt Star Formation",
       "ra": 186.70089633,
       "dec": 12.9965244672,
-      "distance": "400,000 light-years",
+      "distance": "54.794 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "40.9493 x 19.2476 arcminutes",
       "orientation": "AVM/WCS rotation 0.020000 degrees",
@@ -22424,19 +22424,19 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 0.4,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "400,000 light-years",
+        "distanceMly": 54.794271,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "400,000 light-years",
+        "distanceDisplay": "54.794 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          4.764729510625734,
-          2.2395702087570717
+          652.6997001173097,
+          306.7890423554038
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 4.8 × 2.2 KLY",
+        "sizeDisplay": "EST. 653 × 307 LY",
         "ageGyr": 13.466583947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -22674,10 +22674,10 @@
       "avmReferenceDec": -13.3464033,
       "avmHorizontalFovDegrees": 0.319338,
       "avmVerticalFovDegrees": 0.23052,
-      "avmRotation": 90.0,
+      "avmRotation": 90,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.23052,
-      "aladinRotation": 90.0,
+      "aladinRotation": 90,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -23002,7 +23002,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 10000.0,
+        "distanceMly": 10000,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 billion light years",
         "distanceRangeMly": null,
@@ -23108,10 +23108,10 @@
       "avmReferenceDec": -2.13421181695,
       "avmHorizontalFovDegrees": 0.077090478817014,
       "avmVerticalFovDegrees": 0.059300368320780006,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.059300368320780006,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -23125,7 +23125,7 @@
       "title": "Galactic Dance",
       "ra": 209.646836635,
       "dec": 37.4369251504,
-      "distance": "160 million light-years",
+      "distance": "107.305 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": "5.0782 x 4.6420 arcminutes",
       "orientation": "AVM/WCS rotation -99.960000 degrees",
@@ -23146,11 +23146,11 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 160.0,
-        "distanceMethod": "cross_catalog:noirlab:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 107.305448,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "160 million light-years",
+        "distanceDisplay": "107.305 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           236.352,
@@ -23197,7 +23197,7 @@
       "title": "Portrait of a Starburst Galaxy",
       "ra": 5.07435230537,
       "dec": 59.3008935902,
-      "distance": "2.0 million light-years",
+      "distance": "2.603 million light-years",
       "constellation": "Cassiopeia",
       "fieldOfView": "17.3295 x 11.1511 arcminutes",
       "orientation": "AVM/WCS rotation 0.060000 degrees",
@@ -23218,19 +23218,19 @@
         "Mosaic II"
       ],
       "science": {
-        "distanceMly": 2.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "2 million light-years",
+        "distanceMly": 2.602728,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "2.0 million light-years",
+        "distanceDisplay": "2.603 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          10.081936827637547,
-          6.4874463879060755
+          13.120269637761709,
+          8.442529181151002
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 10.1 × 6.5 KLY",
+        "sizeDisplay": "EST. 13 × 8 LY",
         "ageGyr": 13.464983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -23866,7 +23866,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 100.0,
+        "distanceMly": 100,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "100 million light-years",
         "distanceRangeMly": null,
@@ -23938,7 +23938,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 15.0,
+        "distanceMly": 15,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "15 million light-years",
         "distanceRangeMly": null,
@@ -24010,7 +24010,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 24.0,
+        "distanceMly": 24,
         "distanceMethod": "cross_catalog:chandra:Chandra fast facts or standard catalog distance",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -24082,7 +24082,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 60.0,
+        "distanceMly": 60,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "60 million light-years",
         "distanceRangeMly": null,
@@ -24116,10 +24116,10 @@
       "avmReferenceDec": -35.4951571705,
       "avmHorizontalFovDegrees": 0.7299508268470001,
       "avmVerticalFovDegrees": 0.36497541342350004,
-      "avmRotation": -0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.36497541342350004,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -24133,7 +24133,7 @@
       "title": "Spiral galaxy NGC 1566",
       "ra": 65.0104494655,
       "dec": -54.9417124982,
-      "distance": "31.27 million light-years",
+      "distance": "23.451 million light-years",
       "constellation": "Dorado",
       "fieldOfView": "19.1473 x 15.3932 arcminutes",
       "orientation": "AVM/WCS rotation 89.680000 degrees",
@@ -24154,11 +24154,11 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 31.269336,
-        "distanceMethod": "NED_OverviewOfObject_redshift_independent_mean_distance",
-        "distanceEvidence": null,
+        "distanceMly": 23.450644,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "31.27 million light-years",
+        "distanceDisplay": "23.451 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           174.162,
@@ -24226,7 +24226,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 110.0,
+        "distanceMly": 110,
         "distanceMethod": "cross_catalog:hubble:esa",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -24874,7 +24874,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 70.0,
+        "distanceMly": 70,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "70 million light-years",
         "distanceRangeMly": null,
@@ -25069,7 +25069,7 @@
       "title": "NGC 520",
       "ra": 21.146188174738107,
       "dec": 3.792363374414042,
-      "distance": "100 million light-years",
+      "distance": "77.788 million light-years",
       "constellation": "Pisces",
       "fieldOfView": "12.2922 x 12.2922 arcminutes",
       "orientation": "AVM/WCS rotation 0.020000 degrees",
@@ -25090,11 +25090,11 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 100.0,
-        "distanceMethod": "cross_catalog:hubble:esa",
-        "distanceEvidence": null,
+        "distanceMly": 77.788296,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "100 million light-years",
+        "distanceDisplay": "77.788 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           357.565,
@@ -25196,10 +25196,10 @@
       "avmReferenceDec": -6.99315508134,
       "avmHorizontalFovDegrees": 0.11047759790915374,
       "avmVerticalFovDegrees": 0.11048927593081241,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.11048927593081241,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -25213,7 +25213,7 @@
       "title": "Gemini South Reveals Tangled Spiral Arms of the Peculiar Galaxy NGC 7727",
       "ra": 354.97624200982574,
       "dec": -12.292005791700454,
-      "distance": "89 million light-years",
+      "distance": "64.905 million light-years",
       "constellation": "Aquarius",
       "fieldOfView": "5.3085 x 5.1350 arcminutes",
       "orientation": "AVM/WCS rotation 98.960000 degrees",
@@ -25234,11 +25234,11 @@
         "GMOS-S"
       ],
       "science": {
-        "distanceMly": 89.0,
-        "distanceMethod": "cross_catalog:eso:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 64.905119,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "89 million light-years",
+        "distanceDisplay": "64.905 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           137.432,
@@ -25306,7 +25306,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
@@ -25340,10 +25340,10 @@
       "avmReferenceDec": 13.5992732475,
       "avmHorizontalFovDegrees": 0.7466972689804285,
       "avmVerticalFovDegrees": 0.39460061787504774,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.39460061787504774,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -25450,7 +25450,7 @@
         "GMOS-N"
       ],
       "science": {
-        "distanceMly": 240.0,
+        "distanceMly": 240,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "240 million light-years",
         "distanceRangeMly": null,
@@ -25501,7 +25501,7 @@
       "title": "The Outskirts of the Southern Pinwheel Galaxy",
       "ra": 204.24613077,
       "dec": -29.8752398117,
-      "distance": "21.23 million light-years",
+      "distance": "15.9 million light-years",
       "constellation": "Hydra",
       "fieldOfView": "32.7056 x 27.5268 arcminutes",
       "orientation": "AVM/WCS rotation 0.000000 degrees",
@@ -25522,11 +25522,11 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 21.23278,
-        "distanceMethod": "NED_OverviewOfObject_redshift_independent_mean_distance",
-        "distanceEvidence": null,
+        "distanceMly": 15.900123,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "21.23 million light-years",
+        "distanceDisplay": "15.9 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           202.001,
@@ -25556,10 +25556,10 @@
       "avmReferenceDec": -29.8752398117,
       "avmHorizontalFovDegrees": 0.5450926022180299,
       "avmVerticalFovDegrees": 0.45878019141043164,
-      "avmRotation": 0.0,
+      "avmRotation": 0,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.45878019141043164,
-      "aladinRotation": 0.0,
+      "aladinRotation": 0,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
@@ -25573,7 +25573,7 @@
       "title": "The Southern Pinwheel Galaxy (rotated)",
       "ra": 204.245831731,
       "dec": -29.8753823594,
-      "distance": "21.23 million light-years",
+      "distance": "15.9 million light-years",
       "constellation": "Hydra",
       "fieldOfView": "41.8585 x 33.4887 arcminutes",
       "orientation": "AVM/WCS rotation -90.006619 degrees",
@@ -25594,11 +25594,11 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 21.23278,
-        "distanceMethod": "NED_OverviewOfObject_redshift_independent_mean_distance",
-        "distanceEvidence": null,
+        "distanceMly": 15.900123,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
         "distanceRangeMly": null,
-        "distanceDisplay": "21.23 million light-years",
+        "distanceDisplay": "15.9 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
           258.533,
@@ -25668,7 +25668,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light-years",
         "distanceRangeMly": null,
@@ -25742,7 +25742,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light-years",
         "distanceRangeMly": null,
@@ -25816,7 +25816,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 130.0,
+        "distanceMly": 130,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "130 million light-years",
         "distanceRangeMly": null,
@@ -25960,7 +25960,7 @@
         "LSSTCam"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -26032,7 +26032,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 50.0,
+        "distanceMly": 50,
         "distanceMethod": "cross_catalog:noirlab:astropix_description",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -26248,7 +26248,7 @@
         "DECam"
       ],
       "science": {
-        "distanceMly": 35.0,
+        "distanceMly": 35,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "35 million light-years",
         "distanceRangeMly": null,
