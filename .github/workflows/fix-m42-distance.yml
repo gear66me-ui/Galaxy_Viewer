@@ -21,35 +21,53 @@ jobs:
           ref: release
           fetch-depth: 0
 
-      - name: Update only the primary M42 distance field
-        id: fix
+      - name: Fix the second M42 distance without touching age fields
         shell: bash
         run: |
           python3 - <<'PY'
           import json
+          import re
           from pathlib import Path
 
           path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
           data = json.loads(path.read_text(encoding="utf-8"))
-          matches = [entry for entry in data.get("entries", []) if entry.get("archiveId") == "heic0601a"]
-          if len(matches) != 1:
-              raise SystemExit(f"STOP: expected exactly one primary M42 record (heic0601a), found {len(matches)}")
-          entry = matches[0]
+          entries = data.get("entries", [])
+
+          def is_m42(entry):
+              # Identify M42 in the catalog's descriptive fields, not in unrelated metadata.
+              fields = ("name", "designation", "objectName", "object_name", "title", "target", "id")
+              return any(
+                  isinstance(entry.get(key), str)
+                  and re.search(r"(?<![A-Za-z0-9])M\s*42(?![A-Za-z0-9])", entry[key], re.I)
+                  for key in fields
+              )
+
+          all_m42 = [e for e in entries if is_m42(e)]
+          print("M42 records found:")
+          for e in all_m42:
+              print(json.dumps({
+                  "archiveId": e.get("archiveId"),
+                  "name": e.get("name"),
+                  "designation": e.get("designation"),
+                  "distance": e.get("distance"),
+                  "age": e.get("age")
+              }, ensure_ascii=False))
+
+          # heic0601a is the first record already corrected. Fix only the other M42 record.
+          targets = [e for e in all_m42 if e.get("archiveId") != "heic0601a"]
+          if len(targets) != 1:
+              raise SystemExit(f"STOP: expected exactly one other M42 record besides heic0601a; found {len(targets)}")
+
+          entry = targets[0]
           old_distance = entry.get("distance")
           old_age = entry.get("age")
-          if old_distance == "1500 light-years":
-              print("M42 distance is already normalized to 1500 light-years; no catalog edit needed.")
-              print(f"Emission age preserved: {old_age!r}")
-              raise SystemExit(0)
-          if old_distance not in ("1,500 light-years", "1500 light-years", "1,500 light years", "1500 light years"):
-              raise SystemExit(f"STOP: unexpected existing distance {old_distance!r}; refusing to overwrite.")
           entry["distance"] = "1500 light-years"
           if entry.get("age") != old_age:
-              raise SystemExit("STOP: emission-age field changed unexpectedly.")
+              raise SystemExit("STOP: age field changed unexpectedly.")
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          print(f"Record: {entry.get('archiveId')} — {entry.get('name')}")
+          print(f"UPDATED second M42: archiveId={entry.get('archiveId')!r}, name={entry.get('name')!r}")
           print(f"Distance: {old_distance!r} -> {entry['distance']!r}")
-          print(f"Emission age unchanged: {old_age!r}")
+          print(f"Age field preserved exactly: {old_age!r}")
           PY
 
       - name: Commit the surgical catalog change
@@ -62,5 +80,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
-          git commit -m "Fix M42 distance parsing in Hubble catalog"
+          git commit -m "Fix second M42 distance in Hubble catalog"
           git push origin HEAD:release
