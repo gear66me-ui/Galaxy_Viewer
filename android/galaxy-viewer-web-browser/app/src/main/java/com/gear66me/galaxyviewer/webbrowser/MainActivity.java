@@ -41,7 +41,7 @@ public final class MainActivity extends Activity {
   private View navigationCover=null;
   private Runnable pendingProviderLaunch=null;
   private WebViewAssetLoader assetLoader;
-  private boolean browserMode=false, clearProviderEntryHistory=false;
+  private boolean browserMode=false, clearProviderEntryHistory=false, providerHandoffElapsed=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
   private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
   private CancellationSignal prerenderSignal=null;
@@ -166,14 +166,15 @@ public final class MainActivity extends Activity {
           if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; }
           sourceUrl=url;
           syncShell();
-          if(url!=null&&url.equals(loadingProviderUrl)){
+          if(url!=null&&url.equals(loadingProviderUrl)&&providerHandoffElapsed){
             if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);
             if(navigationCover!=null)navigationCover.setVisibility(View.GONE);
             loadingProviderUrl="";
+            pendingProviderLaunch=null;
           }
         }
       }
-    }); return v;    }); return v;
+    }); return v;
   }
   private void fetchPointer(){
     new Thread(()->{try{
@@ -223,9 +224,9 @@ public final class MainActivity extends Activity {
   }
   private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
-  // Browser 0057 navigation contract: cover the outgoing page immediately, blank it before waiting,
-  // then start/reveal only the requested destination after a minimum 2,000 ms from the button action.
-  // Keep WebView cache/cookies/storage intact; the cover is visual isolation, not cache clearing.
+  // Cover the outgoing page immediately and load the requested destination behind the cover.
+  // Reveal no earlier than 2,000 ms after the button action, and only after the destination finishes.
+  // Preserve WebView cache, cookies, and storage.
   private void openProvider(String u,String icon){
     browserMode=true;
     clearProviderEntryHistory=true;
@@ -234,23 +235,28 @@ public final class MainActivity extends Activity {
     providerIcon=pendingProviderIcon;
     sourceUrl=u;
     providerHomeUrl=u;
-    if(pendingProviderLaunch!=null){
-      new Handler(Looper.getMainLooper()).removeCallbacks(pendingProviderLaunch);
-      pendingProviderLaunch=null;
-    }
+    if(pendingProviderLaunch!=null&&web!=null)web.removeCallbacks(pendingProviderLaunch);
+    pendingProviderLaunch=null;
+    providerHandoffElapsed=false;
     loadingProviderUrl=u;
     if(browserLayer!=null)browserLayer.setVisibility(View.INVISIBLE);
     if(navigationCover!=null)navigationCover.setVisibility(View.VISIBLE);
     fetchPointer();
-    if(web!=null){
-      if(u.equals(web.getUrl())&&u.equals(pageReadyUrl)){
-        loadingProviderUrl="";
+    pendingProviderLaunch=()->{
+      providerHandoffElapsed=true;
+      if(browserMode&&web!=null&&!loadingProviderUrl.isEmpty()&&pageReadyUrl.equals(loadingProviderUrl)){
         if(browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);
         if(navigationCover!=null)navigationCover.setVisibility(View.GONE);
+        loadingProviderUrl="";
+        pendingProviderLaunch=null;
         immersive();
-      }else{
-        // Keep the previous page and WebView cache intact, but covered. Loading the requested
-        // URL activates its pre-render when available; reveal only after that URL finishes.
+      }
+    };
+    if(web!=null){
+      web.postDelayed(pendingProviderLaunch,2000);
+      if(!u.equals(web.getUrl())||!u.equals(pageReadyUrl)){
+        // Keep the previous page covered while the current destination loads immediately.
+        // Do not navigate to about:blank or clear cache, cookies, or DOM storage.
         web.loadUrl(u);
       }
     }
