@@ -3006,7 +3006,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 0.00003,
+        "distanceMly": 3e-05,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "30 light-years",
         "distanceRangeMly": null,
@@ -3592,8 +3592,8 @@
         "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.000093,
-          0.000093
+          9.3e-05,
+          9.3e-05
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
@@ -9219,19 +9219,19 @@
         "MUSE"
       ],
       "science": {
-        "distanceMly": 52599.931465,
-        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
-        "distanceEvidence": null,
+        "distanceMly": 800.0,
+        "distanceMethod": "NASA_ESA_verified_distance_20261012",
+        "distanceEvidence": "NASA/ESA Hubble release: JW100 is over 800 million light-years away; IC 5337/JW100 redshift z≈0.054988 and distance 245.2 Mpc.",
         "distanceRangeMly": null,
-        "distanceDisplay": "52599.9 million light-years",
+        "distanceDisplay": "over 800 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          15980.506,
-          15980.506
+          243.04984064931244,
+          239.1796202568075
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_verified_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 16 MLY",
+        "sizeDisplay": "EST. 243.0498 × 239.1796 KLY",
         "ageGyr": 12.728530947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
