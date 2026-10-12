@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0088"
+BUILD_NUMBER = "0089"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0088';
-const GV_RUNTIME='0088';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-INFO30PX0087`;
+const GV200001_BUILD='0089';
+const GV_RUNTIME='0089';
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-INFO30PX0089`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -2264,10 +2264,11 @@ function gvPrewarmProviderWebsite(destination){
     try{
         const origin=new URL(url).origin;
         gvTrackProviderPortal(origin);
-        if(window.GVNative&&typeof window.GVNative.prewarm==='function'){
-            window.GVNative.prewarm(url);
-            console.info('GV PROVIDER NATIVE PRERENDER REQUESTED',url);
-        }
+        // BUILD 0089 MEMORY MITIGATION:
+        // The installed native bridge has no cache-clear or WebView-destroy method.
+        // Do not load provider pages into the hidden native WebView on every galaxy arrival;
+        // keep only lightweight DNS/preconnect hints. This is NOT an HTTP-cache clear.
+        console.info('GV PROVIDER PAGE PREWARM SKIPPED FOR MEMORY TEST',url);
         for(const rel of ['dns-prefetch','preconnect']){
             const selector='link[data-gv-provider-warm="'+rel+'"][href="'+CSS.escape(origin)+'"]';
             if(!document.querySelector(selector)){
