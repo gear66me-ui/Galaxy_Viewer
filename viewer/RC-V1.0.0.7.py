@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0091"
+BUILD_NUMBER = "0092"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -14,28 +14,28 @@ BUILD_NUMBER = "0091"
 # ECO: GV200-001
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/vendor/aladin-lite/3.8.2/aladin.js"
+ALADIN_CSS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css"
+ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
-HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
-COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
+HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
+HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js"
+COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
-GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0001"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
-HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/hud/gv-heads-up-display-0002.js"
+GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0002"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
+HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js"
 
 # ============================================================================
 # SECTION 004 — HTML APPLICATION ROOT
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/aladin-source-clone/src/css/aladin.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" />
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -86,26 +86,26 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0091';
-const GV_RUNTIME='0091';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-MEMORY0091`;
+const GV200001_BUILD='0092';
+const GV_RUNTIME='0092';
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-MEMORY0092`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.7',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/vendor/aladin-lite/3.8.2/aladin.js',
-    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
-    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
-    coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
+    aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
+    aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
+    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
+    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js',
+    coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
-    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
-    headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/hud/gv-heads-up-display-0002.js',
+    galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
+    headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
-    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
+    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1ac5bd2ae74f8d72686ccb58e29cde4d8c874e59/viewer/modules/destination-presentation/gv-destination-presentation-0045.js'
 });
 
@@ -255,7 +255,7 @@ const HOME=Object.freeze({
     rotation:0
 });
 
-const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
 const gvSpaceAgeFace=new FontFace('GV Space Age',`url("${GV_SPACE_AGE_URL}")`,{style:'normal',weight:'400'});
 const gvSpaceAgeReady=gvSpaceAgeFace.load().then(face=>{
     document.fonts.add(face);
@@ -294,7 +294,7 @@ gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('G
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
 // ECO: GV200-001
 // ============================================================================
-const RETICLE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/artwork/compass/compass.png';
+const RETICLE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/compass/compass.png';
 
 function createCenterReticle(root){
     const SIZE=270;
@@ -750,7 +750,7 @@ for(const [name,host] of Object.entries(hosts)){
 // SECTION 023 — HAMBURGER 0007 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
-const GV_ABOUT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/about/gv-about-presentation-0013.js';
+const GV_ABOUT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/about/gv-about-presentation-0013.js';
 let gvAboutPromise=null;
 async function gvOpenAbout(){
     hamburger?.close?.();
@@ -1071,7 +1071,7 @@ if(gvSearchPanel&&!gvSearchPanel.querySelector('#gv-catalog-search-tile')){
 // In GVNative mode, thumbnail candidates are rewritten to the WebViewAssetLoader appassets
 // origin and therefore resolve directly from assets/survey-thumbnails/* inside the APK.
 // Browser mode continues to use the immutable jsDelivr pack URLs.
-const GV_SURVEY_THUMBNAIL_BRIDGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json';
+const GV_SURVEY_THUMBNAIL_BRIDGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json';
 let gvSurveyThumbnailPack=null;
 let gvSurveyThumbnailWarmPromise=null;
 let gvSurveyThumbnailWarmState={phase:'BRIDGE',loaded:0,failed:0,total:0,bytes:0,packCommit:''};
@@ -1213,7 +1213,7 @@ gvSurveySelectStyle.textContent=`
 }
 `;
 document.head.appendChild(gvSurveySelectStyle);
-const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
+const GV_SURVEY_SATELLITE_ICON_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png';
 const gvSurveySelectGroup=document.createElement('div');
 gvSurveySelectGroup.id='gv-survey-select-group';
 const gvSurveySelectButton=document.createElement('button');
