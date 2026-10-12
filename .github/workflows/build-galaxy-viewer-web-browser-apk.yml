@@ -93,7 +93,7 @@ jobs:
           grep -q 'navigationCover=new View(this)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'private CancellationSignal prerenderSignal=null;' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'prerenderSignal.cancel()' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          grep -q 'if(url!=null&&url.equals(loadingProviderUrl))' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'if(url!=null&&url.equals(loadingProviderUrl)&&providerHandoffElapsed)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'web.postDelayed(pendingProviderLaunch,2000)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'providerHandoffElapsed' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'web.loadUrl("about:blank")' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
