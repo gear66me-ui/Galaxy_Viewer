@@ -95117,19 +95117,19 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 9.96832,
-        "distanceMethod": "NED_redshift_to_light_travel_distance_flat_lcdm_H0_70_Om_0.3",
+        "distanceMly": 0.0025,
+        "distanceMethod": "esa_hubble_object_page_2500_light_years",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "9.97 million light-years",
-        "distanceEstimated": true,
+        "distanceDisplay": "2500 light-years",
+        "distanceEstimated": false,
         "sizeKly": [
-          1.611,
-          1.611
+          0.000404042,
+          0.000404042
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "distance_fov_estimate",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1.61 KLY",
+        "sizeDisplay": "EST. 0.0004040 × 0.0004040 KLY",
         "ageGyr": 0.009968,
         "ageMethod": "lookback_from_NED_redshift_flat_lcdm_H0_70_Om_0.3",
         "ageMinGyr": null,
@@ -95203,19 +95203,19 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 9.96832,
-        "distanceMethod": "NED_redshift_to_light_travel_distance_flat_lcdm_H0_70_Om_0.3",
+        "distanceMly": 0.0025,
+        "distanceMethod": "esa_hubble_object_page_2500_light_years",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "9.97 million light-years",
-        "distanceEstimated": true,
+        "distanceDisplay": "2500 light-years",
+        "distanceEstimated": false,
         "sizeKly": [
-          1.625,
-          1.625
+          0.000360266,
+          0.000407641
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "distance_fov_estimate",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1.63 KLY",
+        "sizeDisplay": "EST. 0.0003603 × 0.0004076 KLY",
         "ageGyr": 0.009968,
         "ageMethod": "lookback_from_NED_redshift_flat_lcdm_H0_70_Om_0.3",
         "ageMinGyr": null,
