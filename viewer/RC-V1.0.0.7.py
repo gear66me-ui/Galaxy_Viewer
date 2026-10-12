@@ -1821,23 +1821,8 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
                     if(w>MAX_BLEND_DIMENSION||h>MAX_BLEND_DIMENSION)throw new Error('DECODE RESIZE LIMIT NOT HONORED');
                     console.info('GV HD DECODE-BOUNDED',{source:[sourceW,sourceH],target:[w,h]});
                 }
-                if(sourceMax>MAX_BLEND_DIMENSION){
-                    const scale=MAX_BLEND_DIMENSION/sourceMax;
-                    const targetW=Math.max(1,Math.round(sourceW*scale));
-                    const targetH=Math.max(1,Math.round(sourceH*scale));
-                    try{
-                        workingBitmap=await createImageBitmap(bitmap,{resizeWidth:targetW,resizeHeight:targetH,resizeQuality:'high'});
-                    }catch(_){
-                        resizeCanvas=document.createElement('canvas');resizeCanvas.width=targetW;resizeCanvas.height=targetH;
-                        const resizeCtx=resizeCanvas.getContext('2d');if(!resizeCtx)throw new Error('HARD 1536 RESIZE CONTEXT UNAVAILABLE');
-                        resizeCtx.drawImage(bitmap,0,0,targetW,targetH);
-                        workingBitmap=await createImageBitmap(resizeCanvas);
-                        resizeCanvas.width=0;resizeCanvas.height=0;
-                    }
-                    try{bitmap.close?.()}catch(_){}
-                    w=targetW;h=targetH;
-                    console.info('GV HD HARD 1536 RESIZE',{source:[sourceW,sourceH],target:[w,h]});
-                }
+                // Decode-time resize already enforced the pixel budget; no second bitmap copy.
+
                 canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
                 const ctx=canvas.getContext('2d');if(!ctx)throw new Error('VIGNETTE 2D CONTEXT UNAVAILABLE');
                 ctx.drawImage(workingBitmap,0,0,w,h);
