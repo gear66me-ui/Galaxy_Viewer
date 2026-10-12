@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0082"
+BUILD_NUMBER = "0083"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0082';
-const GV_RUNTIME='0082';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-HDDIRECT0081`;
+const GV200001_BUILD='0083';
+const GV_RUNTIME='0083';
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-HDDIRECT0083`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f24fa21f1271bc1aa5771fb27e0df9a652111f21/viewer/modules/destination-presentation/gv-destination-presentation-0040.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@bf1d3ee5342648f8b04795df03534f79e9c760c0/viewer/modules/destination-presentation/gv-destination-presentation-0041.js'
 });
 
 
@@ -696,7 +696,7 @@ if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGI
 if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0002'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0002 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0037'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0036 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0041'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0041 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
