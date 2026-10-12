@@ -86983,7 +86983,7 @@
       "title": "Hubble view of green filament in galaxy 2MASX J22014163+1151237",
       "ra": 330.422977782,
       "dec": 11.8577219436,
-      "distance": "28017.5 million light-years",
+      "distance": "about 374 million light-years",
       "constellation": "Pegasus",
       "fieldOfView": "0.8391 x 0.8441 arcminutes",
       "orientation": "AVM/WCS rotation -89.900000 degrees",
@@ -87005,19 +87005,19 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 28017.450387,
-        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
-        "distanceEvidence": null,
+        "distanceMly": 374.0,
+        "distanceMethod": "curated_object_distance_2MASX_J22014163+1151237_20261012",
+        "distanceEvidence": "Catalog identity matched to 2MASX J22014163+1151237; published summaries report approximately 374 million light-years. This supersedes the erroneous 28-billion-light-year value.",
         "distanceRangeMly": null,
-        "distanceDisplay": "28017.5 million light-years",
+        "distanceDisplay": "about 374 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          6879.489,
-          6879.489
+          91.28263204950049,
+          91.83308008747443
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "derived_from_catalog_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 6.88 MLY",
+        "sizeDisplay": "EST. 91.28 × 91.83 KLY",
         "ageGyr": 0.407835,
         "ageMethod": "lookback_from_NED_redshift_flat_lcdm_H0_70_Om_0.3",
         "ageMinGyr": null,
