@@ -1,0 +1,58 @@
+name: Repair 2MASX J22014163+1151237 distance
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/scripts/repair_2masx_j22014163_distance.py"
+      - ".github/workflows/repair-2masx-j22014163-distance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply identity-guarded correction
+        run: python .github/scripts/repair_2masx_j22014163_distance.py
+      - name: Validate all six catalogs
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          files = [
+            "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
+            "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+            "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+            "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+            "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
+            "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+          ]
+          for f in files:
+            d = json.loads(Path(f).read_text(encoding="utf-8"))
+            assert isinstance(d.get("entries"), list), f"Invalid entries: {f}"
+            for i, e in enumerate(d["entries"]):
+              v = (e.get("science") or {}).get("distanceMly")
+              if v is not None:
+                assert isinstance(v, (int, float)) and v > 0, f"Invalid distance {f}[{i}]"
+            print(f"{f}: valid JSON; {len(d['entries'])} records")
+          PY
+      - name: Commit repaired catalog data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases
+          if git diff --cached --quiet; then
+            echo "No catalog changes were needed."
+          else
+            git commit -m "Correct 2MASX J22014163+1151237 distance across catalogs"
+            git push origin release
+          fi
