@@ -272,7 +272,7 @@
       },
       "orientationDegrees": 331.99277061834414,
       "fovDegrees": 0.07147044541464254,
-      "aladinRotation": 21.0,
+      "aladinRotation": 21,
       "screenUrl": "https://cdn.esawebb.org/archives/images/screen/weic2211b.jpg",
       "largeUrl": "https://cdn.esawebb.org/archives/images/large/weic2211b.jpg",
       "hdUrl": "https://cdn.esawebb.org/archives/images/screen/weic2211b.jpg",
@@ -387,7 +387,7 @@
       "dec": -14.805744444400005,
       "raText": "19 44 58.17",
       "decText": "-14 48 20.68",
-      "distance": "2 million light-years",
+      "distance": "1.562 million light-years",
       "constellation": "Sagittarius",
       "fieldOfView": "6.77 x 1.85 arcminutes",
       "orientation": null,
@@ -412,8 +412,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 2,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 1.562289,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           3.939,
           1.076
@@ -429,10 +429,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "2 million light-years",
+        "distanceDisplay": "1.562 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3.9 × 1.1 KLY"
+        "sizeDisplay": "EST. 3.9 × 1.1 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 6822 / Caldwell 57",
@@ -448,7 +449,7 @@
       },
       "orientationDegrees": 9.999999999999886,
       "fovDegrees": 0.8383611115929595,
-      "aladinRotation": 10.0,
+      "aladinRotation": 10,
       "screenUrl": "https://cdn.esawebb.org/archives/images/screen/potm2307b.jpg",
       "largeUrl": "https://cdn.esawebb.org/archives/images/large/potm2307b.jpg",
       "hdUrl": "https://cdn.esawebb.org/archives/images/screen/potm2307b.jpg",
@@ -475,7 +476,7 @@
       "dec": 0.5019325369869195,
       "raText": "2 46 25.37",
       "decText": "0 29 57.34",
-      "distance": "80 million light-years",
+      "distance": "41.748 million light-years",
       "constellation": "Cetus",
       "fieldOfView": "2.06 x 2.20 arcminutes",
       "orientation": "North is 17.8° left of vertical",
@@ -500,8 +501,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 80,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 41.748016,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           47.938,
           51.196
@@ -517,10 +518,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "80 million light-years",
+        "distanceDisplay": "41.748 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 47.9 × 51.2 KLY"
+        "sizeDisplay": "EST. 47.9 × 51.2 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 1087",
@@ -651,7 +653,7 @@
       "dec": -43.42890555559997,
       "raText": "23 9 47.06",
       "decText": "-43 25 44.06",
-      "distance": "24 million light-years",
+      "distance": "32.616 million light-years",
       "constellation": "Grus",
       "fieldOfView": "1.92 x 2.17 arcminutes",
       "orientation": null,
@@ -676,8 +678,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 24,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 32.615638,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           13.404,
           15.149
@@ -693,10 +695,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "24 million light-years",
+        "distanceDisplay": "32.616 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 13.4 × 15.1 KLY"
+        "sizeDisplay": "EST. 13.4 × 15.1 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 7496",
@@ -739,7 +742,7 @@
       "dec": -25.499858333299514,
       "raText": "8 18 45.92",
       "decText": "-25 29 59.49",
-      "distance": "76 million light-years",
+      "distance": "26.06 million light-years",
       "constellation": "Puppis",
       "fieldOfView": "2.05 x 2.25 arcminutes",
       "orientation": null,
@@ -764,8 +767,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 76,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 26.059895,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           45.33,
           49.752
@@ -781,10 +784,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "76 million light-years",
+        "distanceDisplay": "26.06 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 45.3 × 49.8 KLY"
+        "sizeDisplay": "EST. 45.3 × 49.8 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2566",
@@ -997,7 +1001,8 @@
     },
     {
       "archiveId": "potm2403b",
-      "name": "I Zw 18",      "title": "I Zwicky 18 (wide-field view)",
+      "name": "I Zw 18",
+      "title": "I Zwicky 18 (wide-field view)",
       "ra": 143.51,
       "dec": 55.240911111100004,
       "raText": "9 34 2.40",
@@ -1090,7 +1095,7 @@
       "dec": -0.012373060436923605,
       "raText": "2 42 40.57",
       "decText": "0 0 44.55",
-      "distance": "45 million light-years",
+      "distance": "32.942 million light-years",
       "constellation": "Cetus",
       "fieldOfView": "2.10 x 2.13 arcminutes",
       "orientation": null,
@@ -1115,8 +1120,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 45,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 32.941794,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           27.489,
           27.882
@@ -1132,10 +1137,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "45 million light-years",
+        "distanceDisplay": "32.942 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 27.5 × 27.9 KLY"
+        "sizeDisplay": "EST. 27.5 × 27.9 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M77 / NGC 1068",
@@ -1266,7 +1272,7 @@
       "dec": -21.133888888899822,
       "raText": "13 25 18.67",
       "decText": "-21 8 2.00",
-      "distance": "65 million light-years",
+      "distance": "23.532 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "2.16 x 2.15 arcminutes",
       "orientation": null,
@@ -1291,8 +1297,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 65,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 23.532183,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           40.841,
           40.652
@@ -1308,10 +1314,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "65 million light-years",
+        "distanceDisplay": "23.532 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 40.8 × 40.7 KLY"
+        "sizeDisplay": "EST. 40.8 × 40.7 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 5134",
@@ -1707,7 +1714,7 @@
       "dec": -62.78484166670013,
       "raText": "4 17 35.78",
       "decText": "-62 47 5.43",
-      "distance": "35 million light-years",
+      "distance": "47.945 million light-years",
       "constellation": "Reticulum",
       "fieldOfView": "2.22 x 2.25 arcminutes",
       "orientation": null,
@@ -1732,8 +1739,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 35,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 47.944988,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           22.603,
           22.907
@@ -1749,10 +1756,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "35 million light-years",
+        "distanceDisplay": "47.945 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 22.6 × 22.9 KLY"
+        "sizeDisplay": "EST. 22.6 × 22.9 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 1559",
@@ -1996,7 +2004,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 4700,        "distanceMethod": "ESA/Webb",
+        "distanceMly": 4700,
+        "distanceMethod": "ESA/Webb",
         "sizeKly": [
           1640.609,
           2009.746
@@ -2995,7 +3004,8 @@
       "displayName": "Centaurus A",
       "imageReview": "PASS",
       "fieldOfViewDegrees": {
-        "effectiveDegrees": 0.21884783242356598      },
+        "effectiveDegrees": 0.21884783242356598
+      },
       "orientationDegrees": 59.778090426161725,
       "fovDegrees": 0.21884783242356598,
       "aladinRotation": 127.5,
@@ -3174,7 +3184,7 @@
       },
       "orientationDegrees": 106.39999999999998,
       "fovDegrees": 0.02584448026385205,
-      "aladinRotation": 250.0,
+      "aladinRotation": 250,
       "screenUrl": "https://cdn.esawebb.org/archives/images/screen/potm2211a.jpg",
       "largeUrl": "https://cdn.esawebb.org/archives/images/large/potm2211a.jpg",
       "hdUrl": "https://cdn.esawebb.org/archives/images/screen/potm2211a.jpg",
@@ -3289,7 +3299,7 @@
       "dec": 24.078373154464764,
       "raText": "14 23 47.47",
       "decText": "24 4 36.00",
-      "distance": "5.2 billion light-years",
+      "distance": "7,322.211 million light-years",
       "constellation": "Boötes",
       "fieldOfView": "2.42 x 2.40 arcminutes",
       "orientation": "North is 9.6° left of vertical",
@@ -3314,8 +3324,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 5200,
-        "distanceMethod": "ESA/Webb_or_literature",
+        "distanceMly": 7322.210679,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           3660.537,
           3630.285
@@ -3331,10 +3341,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "5.2 billion light-years",
+        "distanceDisplay": "7,322.211 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3660.5 × 3630.3 KLY"
+        "sizeDisplay": "EST. 3660.5 × 3630.3 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "MACS J1423.8+2404",
@@ -3465,7 +3476,7 @@
       "dec": -21.372733333300236,
       "raText": "6 16 24.32",
       "decText": "-21 22 21.84",
-      "distance": "120 million light-years",
+      "distance": "54.794 million light-years",
       "constellation": "Canis Major",
       "fieldOfView": "4.68 x 3.59 arcminutes",
       "orientation": "North is 49.9° right of vertical",
@@ -3490,8 +3501,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 120,
-        "distanceMethod": "ESA/Webb_or_literature",
+        "distanceMly": 54.794271,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           163.363,
           125.315
@@ -3507,10 +3518,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "120 million light-years",
+        "distanceDisplay": "54.794 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 163.4 × 125.3 KLY"
+        "sizeDisplay": "EST. 163.4 × 125.3 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "IC 2163 / NGC 2207",
@@ -3526,7 +3538,7 @@
       },
       "orientationDegrees": 49.90000000000015,
       "fovDegrees": 0.09766598502153968,
-      "aladinRotation": 312.0,
+      "aladinRotation": 312,
       "screenUrl": "https://cdn.esawebb.org/archives/images/screen/weic2426b.jpg",
       "largeUrl": "https://cdn.esawebb.org/archives/images/large/weic2426b.jpg",
       "hdUrl": "https://cdn.esawebb.org/archives/images/screen/weic2426b.jpg",
@@ -3553,7 +3565,7 @@
       "dec": -36.10121388890002,
       "raText": "23 34 27.29",
       "decText": "-36 6 4.37",
-      "distance": "30 million light-years",
+      "distance": "14.057 million light-years",
       "constellation": "Sculptor",
       "fieldOfView": "1.86 x 1.98 arcminutes",
       "orientation": null,
@@ -3578,8 +3590,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 30,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 14.05734,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           16.232,
           17.279
@@ -3595,10 +3607,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "30 million light-years",
+        "distanceDisplay": "14.057 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 16.2 × 17.3 KLY"
+        "sizeDisplay": "EST. 16.2 × 17.3 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "IC 5332",
@@ -3817,7 +3830,7 @@
       "dec": -43.42783781604027,
       "raText": "23 9 47.06",
       "decText": "-43 25 44.06",
-      "distance": "24 million light-years",
+      "distance": "32.616 million light-years",
       "constellation": "Grus",
       "fieldOfView": "1.92 x 2.17 arcminutes",
       "orientation": null,
@@ -3842,8 +3855,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 24,
-        "distanceMethod": "ESA/Webb",
+        "distanceMly": 32.615638,
+        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
         "sizeKly": [
           13.404,
           15.149
@@ -3859,10 +3872,11 @@
         "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null,
-        "distanceDisplay": "24 million light-years",
+        "distanceDisplay": "32.616 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 13.4 × 15.1 KLY"
+        "sizeDisplay": "EST. 13.4 × 15.1 KLY",
+        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 7496",
@@ -3994,7 +4008,8 @@
       "raText": "1 36 41.85",
       "decText": "15 46 50.21",
       "distance": "32 million light-years",
-      "constellation": "Pisces",      "fieldOfView": "3.28 x 2.06 arcminutes",
+      "constellation": "Pisces",
+      "fieldOfView": "3.28 x 2.06 arcminutes",
       "orientation": null,
       "imageType": "Observation",
       "releaseDate": null,
