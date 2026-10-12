@@ -1,4 +1,4 @@
-name: Audit IRAS 23234+4215 and Restore NGC 7662
+name: Audit IRAS 23234+4215 Across Catalogs
 
 on:
   push:
@@ -9,10 +9,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  audit-and-restore:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,69 +20,51 @@ jobs:
           ref: release
           fetch-depth: 0
 
-      - name: Find the exact IRAS record and restore the unrelated NGC 7662 edit
+      - name: Locate every matching IRAS or NGC 7662 record
         shell: bash
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          paths = [
-            "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
-            "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
-            "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
-            "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
-            "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
-            "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
-          ]
-
-          def walk(obj, trail="$"):
-            if isinstance(obj, dict):
-              yield trail, obj
-              for k, v in obj.items():
-                yield from walk(v, f"{trail}.{k}")
-            elif isinstance(obj, list):
-              for i, v in enumerate(obj):
-                yield from walk(v, f"{trail}[{i}]")
-
-          found = []
-          changed = False
-          for name in paths:
-            p = Path(name)
-            data = json.loads(p.read_text(encoding="utf-8"))
-            for trail, obj in walk(data):
-              if not isinstance(obj, dict):
+          roots = [Path("viewer/image-databases")]
+          matches = []
+          for root in roots:
+            for p in root.rglob("*.json"):
+              try:
+                data = json.loads(p.read_text(encoding="utf-8"))
+              except Exception:
                 continue
-              values = [v for v in obj.values() if isinstance(v, str)]
-              if any("IRAS 23234+4215" in v.upper() or "23234+4215" in v.upper() for v in values):
-                record = {k: obj.get(k) for k in ("archiveId", "id", "name", "designation", "title", "distance", "constellation", "ra", "dec", "age", "url", "imageUrl") if k in obj}
-                found.append({"file": name, "path": trail, "record": record})
-            if "Hubble" in name:
-              for _, obj in walk(data):
-                if isinstance(obj, dict) and obj.get("archiveId") in ("opo9738c20", "opo9738c21"):
-                  if obj.get("distance") == "2500 light-years":
-                    obj["distance"] = "9.97 million light-years"
-                    changed = True
-                    print(f"RESTORED NGC 7662 {obj.get('archiveId')} distance to 9.97 million light-years")
-              if changed:
-                p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-          print("EXACT IRAS 23234+4215 MATCHES:")
-          print(json.dumps(found, ensure_ascii=False, indent=2))
-          print(f"MATCH COUNT: {len(found)}")
-          if not found:
-            raise SystemExit("STOP: exact IRAS record not found in the six provider catalogs; no IRAS distance was changed.")
+              def walk(obj, trail="$"):
+                if isinstance(obj, dict):
+                  yield trail, obj
+                  for k, v in obj.items():
+                    yield from walk(v, f"{trail}.{k}")
+                elif isinstance(obj, list):
+                  for i, v in enumerate(obj):
+                    yield from walk(v, f"{trail}[{i}]")
+              for trail, obj in walk(data):
+                if not isinstance(obj, dict):
+                  continue
+                vals = [v for v in obj.values() if isinstance(v, str)]
+                text = " ".join(vals).upper()
+                if "23234+4215" in text or "NGC 7662" in text or "NGC7662" in text:
+                  if any(k in obj for k in ("distance", "archiveId", "designation", "name", "title")):
+                    matches.append({
+                      "file": str(p),
+                      "path": trail,
+                      "archiveId": obj.get("archiveId"),
+                      "id": obj.get("id"),
+                      "name": obj.get("name"),
+                      "designation": obj.get("designation"),
+                      "title": obj.get("title"),
+                      "distance": obj.get("distance"),
+                      "ra": obj.get("ra"),
+                      "dec": obj.get("dec"),
+                      "source": obj.get("source"),
+                      "provider": obj.get("provider")
+                    })
+          print("ALL IRAS 23234+4215 / NGC 7662 MATCHES:")
+          print(json.dumps(matches, ensure_ascii=False, indent=2))
+          print(f"TOTAL MATCHES: {len(matches)}")
           PY
-
-      - name: Commit NGC 7662 restoration only if needed
-        shell: bash
-        run: |
-          if git diff --quiet -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json; then
-            echo "No NGC 7662 restoration needed."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
-          git commit -m "Restore original NGC 7662 catalog distances"
-          git push origin HEAD:release
