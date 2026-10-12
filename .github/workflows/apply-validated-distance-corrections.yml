@@ -1,4 +1,4 @@
-name: Apply validated distance corrections # execute reviewed fixes
+name: Apply validated distance corrections # JW100 distance repair
 
 on:
   push:
