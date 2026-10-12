@@ -7,6 +7,7 @@ import android.graphics.Outline;
 import android.view.ViewOutlineProvider;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.CancellationSignal;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -43,6 +44,7 @@ public final class MainActivity extends Activity {
   private boolean browserMode=false, clearProviderEntryHistory=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
   private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
+  private CancellationSignal prerenderSignal=null;
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); immersive();
@@ -195,17 +197,29 @@ public final class MainActivity extends Activity {
   private boolean launchPrewarm(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); return d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())&&"prewarm".equalsIgnoreCase(d.getQueryParameter("mode")); }catch(Exception ignored){} return false; }
   private void prewarmProvider(String u){
     if(u==null||!u.startsWith("https://")||u.equals(prewarmedUrl))return;
+    if(prerenderSignal!=null){ try{prerenderSignal.cancel();}catch(Exception ignored){} prerenderSignal=null; }
+    // A newer galaxy supersedes any background load for the previous destination.
+    // stopLoading() does not clear HTTP cache, cookies, or DOM storage.
+    if(web!=null&&!browserMode){ try{web.stopLoading();}catch(Exception ignored){} }
     prewarmedUrl=u;
     prewarmReadyUrl="";
     if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
     try{
       if(WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){
-        WebViewCompat.prerenderUrlAsync(web,u,null,getMainExecutor(),new PrerenderOperationCallback(){
-          @Override public void onPrerenderActivated(){ if(u.equals(prewarmedUrl))prewarmReadyUrl=u; }
-          @Override public void onError(PrerenderException e){ if(u.equals(prewarmedUrl))web.loadUrl(u); }
+        final CancellationSignal signal=new CancellationSignal();
+        prerenderSignal=signal;
+        WebViewCompat.prerenderUrlAsync(web,u,signal,getMainExecutor(),new PrerenderOperationCallback(){
+          @Override public void onPrerenderActivated(){
+            if(u.equals(prewarmedUrl)){ prewarmReadyUrl=u; prerenderSignal=null; }
+          }
+          @Override public void onError(PrerenderException e){
+            if(u.equals(prewarmedUrl)){ prerenderSignal=null; web.loadUrl(u); }
+          }
         });
       }else web.loadUrl(u);
-    }catch(Exception e){ if(u.equals(prewarmedUrl))web.loadUrl(u); }
+    }catch(Exception e){
+      if(u.equals(prewarmedUrl)){ prerenderSignal=null; web.loadUrl(u); }
+    }
   }
   private String launchProviderIcon(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); if(d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())){ String icon=d.getQueryParameter("icon"); if(icon!=null&&icon.startsWith("https://"))return icon; } }catch(Exception ignored){} return ""; }
   private void launchGalaxyViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); if(viewerWeb!=null)viewerWeb.loadUrl("https://gear66me-ui.github.io/Galaxy_Viewer/viewer/releases/launch/Galaxy-Viewer-Launch/index.html?gv="+System.currentTimeMillis()); }
