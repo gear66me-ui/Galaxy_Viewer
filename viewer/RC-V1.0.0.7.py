@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0090"
+BUILD_NUMBER = "0091"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0090';
-const GV_RUNTIME='0090';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-INFO30PX0090`;
+const GV200001_BUILD='0091';
+const GV_RUNTIME='0091';
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-MEMORY0091`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -1430,7 +1430,7 @@ let directHdPresentationObjectUrl=null;
 const GV_HD_RETIRE_FOV=50;
 let gvHdTravelRetired=false;
 // BUILD 0004 — bounded HD resource ownership: maximum three tracked object URLs; stale resources are explicitly revoked.
-// Navigation/catalog history remains unlimited and lightweight; this bank never retains blobs or Aladin layers.
+// BUILD 0091: HD URLs are bounded and navigation history is capped below.
 const GV_HD_RESOURCE_WINDOW=2;
 let directHdDisplayWcs=null;
 const gvHdObjectUrls=[];
@@ -1765,6 +1765,37 @@ function releaseZoom(){
 for(const ev of ['pointerdown','pointermove'])zoomControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
 for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.hit.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
 
+// Parse common raster dimensions from headers before allocating decoded pixels.
+async function gvEncodedImageDimensions(blob){
+    const buffer=await blob.slice(0,Math.min(blob.size,2*1024*1024)).arrayBuffer();
+    const b=new Uint8Array(buffer),n=b.length;
+    if(n>=24&&b[0]===137&&b[1]===80&&b[2]===78&&b[3]===71){
+        const v=new DataView(buffer);return {width:v.getUint32(16),height:v.getUint32(20)};
+    }
+    if(n>=30&&b[0]===82&&b[1]===73&&b[2]===70&&b[3]===70&&b[8]===87&&b[9]===69&&b[10]===66&&b[11]===80){
+        const tag=String.fromCharCode(b[12],b[13],b[14],b[15]);
+        if(tag==='VP8X')return {width:1+b[24]+(b[25]<<8)+(b[26]<<16),height:1+b[27]+(b[28]<<8)+(b[29]<<16)};
+        if(tag==='VP8L'&&n>=25){const bits=(b[21]|(b[22]<<8)|(b[23]<<16)|(b[24]<<24))>>>0;return {width:(bits&0x3fff)+1,height:((bits>>>14)&0x3fff)+1};}
+        if(tag==='VP8 '&&n>=30){for(let i=20;i<n-9;i++)if(b[i]===0x9d&&b[i+1]===0x01&&b[i+2]===0x2a)return {width:((b[i+3]|(b[i+4]<<8))&0x3fff),height:((b[i+5]|(b[i+6]<<8))&0x3fff)};}
+    }
+    if(n>=4&&b[0]===0xff&&b[1]===0xd8){
+        let i=2;
+        while(i+4<n){
+            if(b[i]!==0xff){i++;continue;}
+            while(i<n&&b[i]===0xff)i++;
+            if(i>=n)break;
+            const marker=b[i++];
+            if(marker===0xd8||marker===0xd9||(marker>=0xd0&&marker<=0xd7))continue;
+            if(i+2>n)break;
+            const length=(b[i]<<8)|b[i+1];
+            if(length<2||i+length>n)break;
+            if([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker)&&length>=7)
+                return {height:(b[i+3]<<8)|b[i+4],width:(b[i+5]<<8)|b[i+6]};
+            i+=length;
+        }
+    }
+    throw new Error('UNSUPPORTED OR UNREADABLE IMAGE DIMENSIONS; refusing full-size decode');
+}
 async function gvLoadGate2MImage(url,destination=null,record=null){
     if(typeof createImageBitmap!=='function')throw new Error('createImageBitmap unavailable');
     const attempts=[url,CANVAS_IMAGE_PROXY+encodeURIComponent(url)+'&consumer=gv0037'];
@@ -1775,11 +1806,21 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
             if(!response.ok)throw new Error('HTTP '+response.status);
             const originalBlob=await response.blob();
             if(!originalBlob||originalBlob.size<=0)throw new Error('EMPTY IMAGE BLOB');
-            let bitmap=await createImageBitmap(originalBlob);
+            const encoded=await gvEncodedImageDimensions(originalBlob);
+            const sourceW=Number(encoded.width),sourceH=Number(encoded.height);
+            if(!(sourceW>0&&sourceH>0))throw new Error('INVALID ENCODED IMAGE DIMENSIONS');
+            const sourceMax=Math.max(sourceW,sourceH);
+            const scale=Math.min(1,MAX_BLEND_DIMENSION/sourceMax);
+            const targetW=Math.max(1,Math.round(sourceW*scale)),targetH=Math.max(1,Math.round(sourceH*scale));
+            // Decode directly to the bounded dimensions; never create a full-size RGBA bitmap first.
+            let bitmap=await createImageBitmap(originalBlob,scale<1?{resizeWidth:targetW,resizeHeight:targetH,resizeQuality:'high'}:undefined);
             let workingBitmap=null,canvas=null,resizeCanvas=null;
             try{
-                const sourceW=bitmap.width,sourceH=bitmap.height,sourceMax=Math.max(sourceW,sourceH);
-                workingBitmap=bitmap;let w=sourceW,h=sourceH;
+                workingBitmap=bitmap;let w=bitmap.width,h=bitmap.height;
+                if(sourceMax>MAX_BLEND_DIMENSION){
+                    if(w>MAX_BLEND_DIMENSION||h>MAX_BLEND_DIMENSION)throw new Error('DECODE RESIZE LIMIT NOT HONORED');
+                    console.info('GV HD DECODE-BOUNDED',{source:[sourceW,sourceH],target:[w,h]});
+                }
                 if(sourceMax>MAX_BLEND_DIMENSION){
                     const scale=MAX_BLEND_DIMENSION/sourceMax;
                     const targetW=Math.max(1,Math.round(sourceW*scale));
@@ -1849,7 +1890,14 @@ async function gvLoadGate2MImage(url,destination=null,record=null){
     }
     throw new Error('GATE 2M IMAGE SOURCE FAILED: '+last);
 }
+let gvHdPreparationQueue=Promise.resolve();
 async function gvPrepareDirectHd(destination,recordPromise=gvRuntimeAvmRecord(destination)){
+    const run=()=>gvPrepareDirectHdUnlocked(destination,recordPromise);
+    const pending=gvHdPreparationQueue.then(run,run);
+    gvHdPreparationQueue=pending.then(()=>undefined,()=>undefined);
+    return pending;
+}
+async function gvPrepareDirectHdUnlocked(destination,recordPromise=gvRuntimeAvmRecord(destination)){
     const record=await recordPromise;
     const url=directHdUrl(destination);
     if(!url)throw new Error('GV DESTINATION IMAGE URL MISSING');
@@ -2497,7 +2545,7 @@ async function gvNavigateSearchResult(destination){
         gvSearchInput.value='';gvSearchRender('');
         gvExitSurveyMode();
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
-        history.push(prepared);historyIndex=history.length-1;
+        history.push(prepared);if(history.length>130)history.shift();historyIndex=history.length-1;
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
@@ -2591,7 +2639,7 @@ async function navigateRandom(){
             gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
         }
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
-        history.push(destination);
+        history.push(destination);if(history.length>130)history.shift();
         historyIndex=history.length-1;
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
