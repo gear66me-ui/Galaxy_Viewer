@@ -1,0 +1,69 @@
+name: Fix IRAS 23234+4215 Distance
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - ".github/workflows/fix-iras-23234-distance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Correct the Hubble distance and preserve age metadata
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          entries = data.get("entries", [])
+          target_ids = {"opo9738c20", "opo9738c21"}
+          found = {e.get("archiveId"): e for e in entries if e.get("archiveId") in target_ids}
+          missing = sorted(target_ids - set(found))
+          if missing:
+              raise SystemExit(f"STOP: expected ESA/Hubble NGC 7662 records not found: {missing}")
+
+          for archive_id, entry in found.items():
+              old_distance = entry.get("distance")
+              old_age = entry.get("age")
+              entry["distance"] = "2500 light-years"
+              if entry.get("age") != old_age:
+                  raise SystemExit(f"STOP: age metadata changed unexpectedly for {archive_id}")
+              print(json.dumps({
+                  "archiveId": archive_id,
+                  "name": entry.get("name"),
+                  "designation": entry.get("designation"),
+                  "oldDistance": old_distance,
+                  "newDistance": entry["distance"],
+                  "agePreserved": old_age
+              }, ensure_ascii=False))
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Commit the catalog correction
+        shell: bash
+        run: |
+          if git diff --quiet -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json; then
+            echo "No catalog change required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+          git commit -m "Correct NGC 7662 distance in Hubble catalog"
+          git push origin HEAD:release
