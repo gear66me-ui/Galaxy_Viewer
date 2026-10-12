@@ -93,7 +93,7 @@ jobs:
           assert manifest.get('build')=='0084'
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
-          assert manifest.get('sourceCommit')=='3cbdaf00e78a8e9f1e139a5008aeec96be7d9244'
+          assert manifest.get('sourceCommit')=='85d47a584e8b8bfe4fbb6e393617d0976a8f0eac'
           assert manifest.get('dependencyPins')==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9a97462d64d44f8402b4bfaaba3c63d921026ce2']
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
