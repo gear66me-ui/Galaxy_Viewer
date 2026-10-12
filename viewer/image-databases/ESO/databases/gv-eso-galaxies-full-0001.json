@@ -3006,7 +3006,7 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 3e-05,
+        "distanceMly": 0.00003,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "30 light-years",
         "distanceRangeMly": null,
@@ -3592,8 +3592,8 @@
         "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          9.3e-05,
-          9.3e-05
+          0.000093,
+          0.000093
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
@@ -11178,19 +11178,19 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 6.2e-05,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "62 light-years",
+        "distanceMly": 13,
+        "distanceMethod": "independently_verified_distance_correction_20261012",
+        "distanceEvidence": "ESO image description states 13 million light-years; the 62 light-years refers to resolution.",
         "distanceRangeMly": null,
-        "distanceDisplay": "62 light-years",
+        "distanceDisplay": "13 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.0005744277019796538,
-          0.0005658497666354741
+          120.44365659296626,
+          118.64509527002501
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1 × 1 LY",
+        "sizeDisplay": "EST. 120.44 × 118.65 KLY",
         "ageGyr": 13.440786947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13990,22 +13990,22 @@
         "VIMOS"
       ],
       "science": {
-        "distanceMly": 0.0016250000000000001,
-        "distanceMethod": "astropix_description_range_midpoint",
-        "distanceEvidence": "750–2500 light-years",
+        "distanceMly": 50,
+        "distanceMethod": "independently_verified_distance_correction_20261012",
+        "distanceEvidence": "ESO image description states NGC 1097 is about 50 million light-years away; 750–2500 light-years describes star-forming knots.",
         "distanceRangeMly": [
           0.00075,
           0.0025
         ],
-        "distanceDisplay": "1,625 light-years",
+        "distanceDisplay": "about 50 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.0033683883960347206,
-          0.003802640932287676
+          103.6426827676568,
+          117.00428298508987
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 3 × 4 LY",
+        "sizeDisplay": "EST. 103.64 × 117.00 KLY",
         "ageGyr": 13.466981947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14281,19 +14281,19 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 0.002,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "2000 light-years",
+        "distanceMly": 33,
+        "distanceMethod": "independently_verified_distance_correction_20261012",
+        "distanceEvidence": "Independent NASA reference for Messier 95 gives about 33 million light-years.",
         "distanceRangeMly": null,
-        "distanceDisplay": "2,000 light-years",
-        "distanceEstimated": false,
+        "distanceDisplay": "about 33 million light-years",
+        "distanceEstimated": true,
         "sizeKly": [
-          0.0039572177479048195,
-          0.003960309326289933
+          65.29407153882603,
+          65.34508253221574
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 4 × 4 LY",
+        "sizeDisplay": "EST. 65.29 × 65.35 KLY",
         "ageGyr": 13.466981947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
