@@ -1,0 +1,55 @@
+name: Apply validated distance corrections
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply only the reviewed correction allowlist"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  correct-distances:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply allowlisted corrections with guards
+        env:
+          APPLY: ${{ inputs.apply }}
+        run: |
+          python .github/scripts/apply_validated_distance_corrections.py
+      - name: Validate JSON catalogs
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          files = [
+            "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+            "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+          ]
+          for f in files:
+            p = Path(f)
+            d = json.loads(p.read_text())
+            assert isinstance(d.get("entries"), list), f"Missing entries in {f}"
+            for i, e in enumerate(d["entries"]):
+              v = e.get("science", {}).get("distanceMly")
+              assert isinstance(v, (int, float)) and v > 0, f"Invalid distance: {f} entry {i}"
+            print(f"{f}: valid JSON; {len(d['entries'])} entries")
+          PY
+      - name: Commit changes
+        if: ${{ inputs.apply }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases
+          git diff --cached --quiet || git commit -m "Apply independently validated distance corrections"
+          git push
