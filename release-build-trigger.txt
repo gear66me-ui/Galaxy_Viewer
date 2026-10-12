@@ -1,1 +1,1 @@
-Build Galaxy Viewer Release 1.0.0 — BUILD 0084 precise physical scale and FOV display; release manifest and dependency pin audit
+Build Galaxy Viewer Release 1.0.0 — BUILD 0084 retry: corrected release gate source commit assertion
