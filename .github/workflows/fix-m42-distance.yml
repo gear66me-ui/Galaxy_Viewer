@@ -38,7 +38,7 @@ jobs:
               fields = ("name", "designation", "objectName", "object_name", "title", "target", "id")
               return any(
                   isinstance(entry.get(key), str)
-                  and re.search(r"(?<![A-Za-z0-9])M\s*42(?![A-Za-z0-9])", entry[key], re.I)
+                  and re.search(r"(?<![A-Za-z0-9])(?:M\s*42|Messier\s*42)(?![A-Za-z0-9])", entry[key], re.I)
                   for key in fields
               )
 
