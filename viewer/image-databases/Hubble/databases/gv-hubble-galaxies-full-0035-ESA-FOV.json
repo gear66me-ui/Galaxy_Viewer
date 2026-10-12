@@ -2222,17 +2222,17 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/opo9941a.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
-        "distanceMly": 68.655838,
-        "distanceMethod": "esa",
+        "distanceMly": 54.794271,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
         "sizeKly": [
-          154.23,
-          79.03
+          76.82601532925234,
+          39.36934815262324
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "ageGyr": 13.357091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 154 x 79 KLY",
+        "sizeDisplay": "EST. 76.8260 × 39.3693 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -2240,7 +2240,10 @@
         "redshift": 0.007654,
         "redshiftDisplay": "EST. z 0.00765",
         "redshiftEstimated": true,
-        "redshiftMethod": "inverted_lcdm_from_age_0011"
+        "redshiftMethod": "inverted_lcdm_from_age_0011",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
+        "distanceEstimated": true,
+        "distanceDisplay": "54.7943 million light-years"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2207 / IC 2163",
@@ -14226,17 +14229,17 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/heic2414a.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
-        "distanceMly": 68.655838,
-        "distanceMethod": "esa",
+        "distanceMly": 54.794271,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
         "sizeKly": [
-          153.91,
-          72.31
+          76.66662531964502,
+          36.022156611993076
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "ageGyr": 13.357091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 154 x 72 KLY",
+        "sizeDisplay": "EST. 76.6666 × 36.0222 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -14244,7 +14247,10 @@
         "redshift": 0.007654,
         "redshiftDisplay": "EST. z 0.00765",
         "redshiftEstimated": true,
-        "redshiftMethod": "inverted_lcdm_from_age_0011"
+        "redshiftMethod": "inverted_lcdm_from_age_0011",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
+        "distanceEstimated": true,
+        "distanceDisplay": "54.7943 million light-years"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2207 / IC 2163",
@@ -25328,17 +25334,17 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/heic1202a.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
-        "distanceMly": 55,
-        "distanceMethod": "esa",
+        "distanceMly": 17.840754,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
         "sizeKly": [
-          51.84,
-          40.96
+          16.814514510270815,
+          13.285542339482198
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "ageGyr": 13.412091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 52 x 41 KLY",
+        "sizeDisplay": "EST. 16.8145 × 13.2855 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -25346,7 +25352,10 @@
         "redshift": 0.003816,
         "redshiftDisplay": "EST. z 0.00382",
         "redshiftEstimated": true,
-        "redshiftMethod": "inverted_lcdm_from_age_0011"
+        "redshiftMethod": "inverted_lcdm_from_age_0011",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
+        "distanceEstimated": true,
+        "distanceDisplay": "17.8408 million light-years"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 1073 / VV 96 / PKS 0241+011",
@@ -63630,17 +63639,17 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/heic2414b.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
-        "distanceMly": 68.655838,
-        "distanceMethod": "esa",
+        "distanceMly": 54.794271,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
         "sizeKly": [
-          149.75,
-          114.87
+          74.59455433404356,
+          57.22103630556139
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "ageGyr": 13.357091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 150 x 115 KLY",
+        "sizeDisplay": "EST. 74.5946 × 57.2210 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -63648,7 +63657,10 @@
         "redshift": 0.007654,
         "redshiftDisplay": "EST. z 0.00765",
         "redshiftEstimated": true,
-        "redshiftMethod": "inverted_lcdm_from_age_0011"
+        "redshiftMethod": "inverted_lcdm_from_age_0011",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
+        "distanceEstimated": true,
+        "distanceDisplay": "54.7943 million light-years"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2207 / IC 2163",
@@ -66900,20 +66912,20 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/heic0710j.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
-        "distanceMly": 5000,
-        "distanceMethod": "light_travel_distance_backfilled_from_age_range_0010",
+        "distanceMly": 11.839477,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
         "sizeKly": [
-          1978.04,
-          1512.619
+          4.683791395141785,
+          3.5817228194238435
         ],
-        "sizeMethod": "estimated_from_fov_and_light_travel_distance_0011",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "ageGyr": 8.467091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "ageMinGyr": 0,
         "ageMaxGyr": 10,
         "ageEstimated": true,
         "ageDisplay": "EST. 8.47 GYR",
-        "distanceDisplay": "EST. 0 million–10 billion light-years",
+        "distanceDisplay": "11.8395 million light-years",
         "distanceEstimated": true,
         "distanceMinMly": 0,
         "distanceMaxMly": 10000,
@@ -66923,7 +66935,8 @@
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_range_0011",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1978.0 × 1512.6 KLY"
+        "sizeDisplay": "EST. 4.6838 × 3.5817 KLY",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified."
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "M 81",
@@ -74221,17 +74234,17 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-b/sci26004b.jpg",
       "releaseTag": "hubble-galaxies-0001-b",
       "science": {
-        "distanceMly": 45,
-        "distanceMethod": "esa",
+        "distanceMly": 32.941794,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
         "sizeKly": [
-          25.66,
-          31.15
+          18.78146373507938,
+          22.806063102775372
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "ageGyr": 13.422091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 26 x 31 KLY",
+        "sizeDisplay": "EST. 18.7815 × 22.8061 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
@@ -74241,7 +74254,10 @@
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_0011",
         "designationMethod0014": "targeted_web_research_authoritative_release",
-        "designationReference0014": "ESA/Hubble sci26004b: Messier 77 (M77), commonly catalogued as NGC 1068"
+        "designationReference0014": "ESA/Hubble sci26004b: Messier 77 (M77), commonly catalogued as NGC 1068",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
+        "distanceEstimated": true,
+        "distanceDisplay": "32.9418 million light-years"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "Messier 77 / M77 / NGC 1068",
@@ -90192,19 +90208,19 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 0.0002,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "200 light-years",
+        "distanceMly": 1.562289,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
         "distanceRangeMly": null,
-        "distanceDisplay": "200 light-years",
+        "distanceDisplay": "1.56229 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          6.468571824521598e-05,
-          6.853605869019568e-05
+          0.5052889259533112,
+          0.5353656477362463
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 0 × 0 LY",
+        "sizeDisplay": "EST. 0.5053 × 0.5354 KLY",
         "ageGyr": 0.0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
@@ -91484,19 +91500,19 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 1000.0,
-        "distanceMethod": "restored_exact_archiveId_from_gv-hubble-galaxies-full-0018::light_travel_distance_backfilled_from_age_range_0010",
-        "distanceEvidence": null,
+        "distanceMly": 11.839477,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
         "distanceRangeMly": null,
-        "distanceDisplay": "EST. 0 million–2 billion light-years",
+        "distanceDisplay": "11.8395 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          161.853,
-          161.853
+          1.916256076358533,
+          1.916256076358533
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 162 KLY",
+        "sizeDisplay": "EST. 1.9163 × 1.9163 KLY",
         "ageGyr": 1.0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
@@ -91656,19 +91672,19 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 5000.0,
-        "distanceMethod": "restored_exact_archiveId_from_gv-hubble-galaxies-full-0018::light_travel_distance_backfilled_from_age_range_0010",
-        "distanceEvidence": null,
+        "distanceMly": 11.839477,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
         "distanceRangeMly": null,
-        "distanceDisplay": "EST. 0 million–10 billion light-years",
+        "distanceDisplay": "11.8395 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          1316.739,
-          1316.739
+          3.117900027181821,
+          3.117900027181821
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1.32 MLY",
+        "sizeDisplay": "EST. 3.1179 × 3.1179 KLY",
         "ageGyr": 5.0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
@@ -93480,19 +93496,19 @@
         "Other"
       ],
       "science": {
-        "distanceMly": 2400.0,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "2.4 billion light-years",
+        "distanceMly": 1810.167896,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
         "distanceRangeMly": null,
-        "distanceDisplay": "2.40 billion light-years",
-        "distanceEstimated": false,
+        "distanceDisplay": "1,810.17 million light-years",
+        "distanceEstimated": true,
         "sizeKly": [
-          5910.4196810991,
-          3800.4808775748515
+          4457.852729769276,
+          2866.4612651552256
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 5910.4 × 3800.5 KLY",
+        "sizeDisplay": "EST. 4457.8527 × 2866.4613 KLY",
         "ageGyr": 2.4,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
@@ -93739,19 +93755,19 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 4000.0,
-        "distanceMethod": "restored_exact_archiveId_from_gv-hubble-galaxies-full-0018::esa",
-        "distanceEvidence": null,
+        "distanceMly": 5772.967885,
+        "distanceMethod": "provisional_NED_match_batch_20261012",
+        "distanceEvidence": "Supplied distance-fix-157 log; NED object match marked provisional and not independently verified.",
         "distanceRangeMly": null,
-        "distanceDisplay": "4 billion light-years",
+        "distanceDisplay": "5,772.97 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          1348.754,
-          1348.754
+          1740.564966872857,
+          1946.5777821504453
         ],
-        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_provisional_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 1.35 MLY",
+        "sizeDisplay": "EST. 1740.5650 × 1946.5778 KLY",
         "ageGyr": 4.0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
