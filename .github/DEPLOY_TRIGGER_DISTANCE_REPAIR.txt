@@ -1,4 +1,9 @@
-Production deployment trigger for validated distance corrections.
+Production deployment trigger for Galaxy Viewer distance corrections.
 
-Verified correction commit: 32e580a (Cone Nebula and M 42 repaired; all 5 reviewed corrections passed guards).
-The 157-row provisional NED proposal list remains unapplied because it contains unsafe name matches/composite records and must not be bulk-written without identity validation.
+Release branch updates from 2026-10-12:
+- Applied guarded provisional distance proposals to 83 NOIRLab, 39 ESO, 11 JWST, 6 Chandra, and 4 Spitzer entries.
+- Three ESO entries were already at their proposed corrected values.
+- Hubble batch workflow is applying eight identifiable records; three generic 'Galaxies' rows were intentionally excluded because the target object is not identified.
+- CSV proposals are marked provisional in each corrected record's evidence metadata; the batch is guarded by exact catalog index and prior distance.
+
+This file exists to trigger the production Pages deployment after the catalog commits.
