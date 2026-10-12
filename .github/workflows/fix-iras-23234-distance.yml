@@ -1,4 +1,5 @@
 name: Fix IRAS 23234+4215 Distance
+# Catalog correction: NGC 7662 / Blue Snowball Nebula = 2500 light-years.
 
 on:
   push:
