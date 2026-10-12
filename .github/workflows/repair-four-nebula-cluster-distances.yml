@@ -46,14 +46,14 @@ jobs:
                   "display": "6500 light-years",
                   "method": "NASA_Eagle_Nebula_6500_light_years",
                   "url": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
-                  "pattern": re.compile(r"(?<![a-z0-9])(?:eagle nebula|messier\\s*16|m\\s*16|ic\\s*4703|ngc\\s*6611)(?![a-z0-9])", re.I),
+                  "pattern": re.compile(r"(?<![a-z0-9])(?:eagle nebula|messier *16|m *16|ic *4703|ngc *6611)(?![a-z0-9])", re.I),
               },
               "ngc1999": {
                   "mly": 0.0015,
                   "display": "1500 light-years",
                   "method": "NASA_Hubble_NGC_1999_460_pc",
                   "url": "https://science.nasa.gov/asset/hubble/reflection-nebula-ngc-1999/",
-                  "pattern": re.compile(r"(?<![a-z0-9])ngc\\s*1999(?![a-z0-9])", re.I),
+                  "pattern": re.compile(r"(?<![a-z0-9])ngc *1999(?![a-z0-9])", re.I),
               },
               "cone": {
                   "mly": 0.0025,
@@ -109,7 +109,7 @@ jobs:
                   # Cone classification precedes generic NGC 2264 identity because
                   # the Cone Nebula is a feature within the NGC 2264 star-forming region.
                   category = None
-                  for key in ("ngc1999", "cone", "christmas_tree", "eagle"):
+                  for key in ("christmas_tree", "ngc1999", "cone", "eagle"):
                       if targets[key]["pattern"].search(text):
                           category = key
                           break
