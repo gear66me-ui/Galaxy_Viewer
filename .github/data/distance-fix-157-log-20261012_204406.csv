@@ -1,0 +1,158 @@
+catalog_file,entry_index,name,before_Mly,after_Mly,NED_percent_difference,note
+gv-hubble-galaxies-full-0035-ESA-FOV.json,21,"IC 2163 , NGC 2207",68.655838,54.794271,20.189931330238814,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,145,"IC 2163 , NGC 2207",68.655838,54.794271,20.189931330238814,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,260,"IXO 5 , J024333.6+012222 , NGC 1073 , PKS 0241+011 , QSO B0240+011 , VV96",55.0,17.840754,67.56226570874544,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,652,"IC 2163 , NGC 2207",68.655838,54.794271,20.189931330238814,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,686,Galaxies,5000.0,11.839477,99.7632104697898,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,762,A beacon of light in swirls of dust,45.0,32.941794,26.796013005111107,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,946,Barnard's Galaxy,0.0002,1.562289,781044.5245914999,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,961,Galaxies,1000.0,11.839477,98.816052348949,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,963,Galaxies,5000.0,11.839477,99.7632104697898,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,984,Abell 520,2400.0,1810.167896,24.576337656875,Provisional NED-based replacement; source match not independently verified
+gv-hubble-galaxies-full-0035-ESA-FOV.json,987,Abell 370,4000.0,5772.967885,44.32419713225002,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,4,NGC 6822,2.0,1.562289,21.88554754085,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,5,NGC 1087,80.0,41.748016,47.81497956799999,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,7,NGC 7496,24.0,32.615638,35.898490708333334,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,8,NGC 2566,76.0,26.059895,65.71066502864474,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,12,Messier 77,45.0,32.941794,26.796013005111107,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,14,NGC 5134,65.0,23.532183,63.796642075300014,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,19,NGC 1559,35.0,47.944988,36.98567863400001,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,37,MACS J1423.8+2404,5200.0,7322.210679,40.81174383394231,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,39,IC 2163 / NGC 2207,120.0,54.794271,54.338107122,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,40,IC 5332,30.0,14.05734,53.142200403766665,Provisional NED-based replacement; source match not independently verified
+gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json,43,NGC 7496,24.0,32.615638,35.898490708333334,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,8,M 83,21.23278,15.900123,25.115206709272176,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,16,NGC 1792,50.0,36.855671,26.28865863979999,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,29,NGC 908,65.0,51.532708,20.718911266769226,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,43,NGC 253,0.07,10.09454,14320.771271164283,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,57,Messier 83,21.23278,15.900123,25.115206709272176,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,58,30 Doradus,0.001,0.171232,17023.209829249998,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,60,NGC 253,13.0,10.09454,22.34969315526924,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,62,NGC 4666,80.0,55.120428,31.099465210875003,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,65,NGC 5247,65.0,24.967271,61.588814287792296,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,67,NGC 1300,65.0,47.292675,27.24203882076923,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,70,NGC 1232,65.0,47.292675,27.24203882076923,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,78,NGC 2442,55.77,69.471308,24.56752456535773,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,122,Messier 77,45.0,32.941794,26.796013005111107,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,133,M 83,21.23278,15.900123,25.115206709272176,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,138,Messier 61,55.0,39.954156,27.35607951227272,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,140,NGC 1087,80.0,41.748016,47.81497956799999,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,141,NGC 1300,61.0,47.292675,22.471024972950826,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,142,NGC 4303,55.0,39.954156,27.35607951227272,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,145,NGC 1087,80.0,41.748016,47.81497956799999,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,146,NGC 7727,89.0,64.905119,27.07289981764045,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,152,NGC 1232,300.0,47.292675,84.23577507783334,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,154,NGC 4945,6.2e-05,12.654867,20410976.539935485,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,163,NGC 1087,80.0,41.748016,47.81497956799999,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,164,NGC 1087,80.0,41.748016,47.81497956799999,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,165,NGC 1232,60.0,47.292675,21.178875389166667,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,166,NGC 1300,61.0,47.292675,22.471024972950826,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,167,NGC 1300,61.0,47.292675,22.471024972950826,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,169,NGC 1531,70.0,42.400329,39.42810128428572,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,171,NGC 2442,50.0,69.471308,38.94261690020002,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,174,NGC 4303,55.0,39.954156,27.35607951227272,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,175,NGC 4303,55.0,39.954156,27.35607951227272,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,184,NGC 253,13.0,10.09454,22.34969315526924,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,186,NGC 4027,75.0,30.593468,59.208709028986654,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,190,Arp 157,0.1,77.788296,77688.29608145001,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,193,NGC 1097,0.0016250000000000001,52.021942,3201250.2918861536,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,194,Messier 96,0.1,35.224889,35124.8887916,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,197,Messier 95,0.002,32.044864,1602143.2054512496,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,206,NGC 986,56.0,16.503513,70.52944158639285,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,216,Messier 61,50.0,39.954156,20.091687463499994,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,225,NGC 3314a,140.0,92.302255,34.06981793635715,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,226,NGC 7727,89.0,64.905119,27.07289981764045,Provisional NED-based replacement; source match not independently verified
+gv-eso-galaxies-full-0001.json,230,NGC 4303,55.0,39.954156,27.35607951227272,Provisional NED-based replacement; source match not independently verified
+gv-chandra-galaxies-full-0007.json,7,NGC 2207,130.0,54.794271,57.85056042030769,Provisional NED-based replacement; source match not independently verified
+gv-chandra-galaxies-full-0007.json,9,NGC 1232,60.0,47.292675,21.178875389166667,Provisional NED-based replacement; source match not independently verified
+gv-chandra-galaxies-full-0007.json,14,Antennae Galaxies,45.0,70.123621,55.83026934555557,Provisional NED-based replacement; source match not independently verified
+gv-chandra-galaxies-full-0007.json,24,NGC 4151,62.0,16.438281,73.48664284503225,Provisional NED-based replacement; source match not independently verified
+gv-chandra-galaxies-full-0007.json,25,NGC 1068,47.0,32.941794,29.91107628148936,Provisional NED-based replacement; source match not independently verified
+gv-chandra-galaxies-full-0007.json,50,NGC 4631,25.0,14.122571,43.50971538236,Provisional NED-based replacement; source match not independently verified
+gv-spitzer-galaxies-full-0011.json,8,NGC 2207 and IC 2163,110.0,54.794271,50.18702595127273,Provisional NED-based replacement; source match not independently verified
+gv-spitzer-galaxies-full-0011.json,9,NGC 2207 and IC 2163,110.0,54.794271,50.18702595127273,Provisional NED-based replacement; source match not independently verified
+gv-spitzer-galaxies-full-0011.json,32,Southern Pinwheel Galaxy,21.233,15.900123,25.115982607850984,Provisional NED-based replacement; source match not independently verified
+gv-spitzer-galaxies-full-0011.json,34,Spanish Dancer Galaxy,31.278,23.450644,25.0251181129548,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,2,IC 5332,10.0,14.05734,40.5733987887,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,8,NGC 1531,55.0,42.400329,22.908492543636367,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,9,NGC 520,100.0,77.788296,22.211703918549983,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,17,NGC 660,0.04,43.868033,109570.082001625,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,18,NGC 7582,60.0,72.080559,20.134265786166686,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,43,NGC 1808,40.0,30.316235,24.2094117319625,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,45,NGC 289,75.0,59.360461,20.85271901146665,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,49,NGC 5364,1000.0,55.772741,94.42272594133,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,50,NGC 1058,30.0,7.729906,74.23364616170001,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,53,NGC 3109,0.04,4.207417,10418.543180825,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,54,ACO 3574,200.0,291.909958,45.95497902075002,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,56,NGC 1269,33.0,11.549197,65.00243232013031,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,74,NGC 7320,300.0,43.052642,85.6491193812,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,80,IC 342,14.0,11.056701,21.02356282835714,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,93,M108,45.0,27.935294,37.92156944443333,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,94,M109,45.0,62.785103,39.52245046055557,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,95,M109,50.0,62.785103,25.57020541450001,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,108,M61,0.1,39.954156,39854.15626825,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,109,M61,60.0,39.954156,33.40973955291666,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,110,M63,35.0,23.613722,32.53222358434285,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,111,M63,35.0,23.613722,32.53222358434285,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,113,M64,0.006,18.069063,301051.0554096667,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,122,M77,0.17,32.941794,19277.52596923529,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,129,M90,60.0,37.344905,37.75849125558333,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,130,M90,60.0,37.344905,37.75849125558333,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,137,M98,60.0,44.194189,26.34301803608333,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,138,M99,60.0,46.966518,21.722469352000005,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,139,M99,60.0,46.966518,21.722469352000005,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,140,NGC 1058,23.0,7.729906,66.39171238482608,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,141,NGC 1232,70.0,47.292675,32.439036047857144,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,142,NGC 1255,73.0,57.729679,20.91824814671233,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,144,NGC 1300,0.15,47.292675,31428.449844333336,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,153,NGC 1961,171.0,105.674666,38.20194948842105,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,157,NGC 2146,90.0,56.75121,36.94310031133333,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,161,NGC 2207,114.0,54.794271,51.93484960210527,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,168,NGC 2523,150.0,110.567012,26.2886586398,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,169,NGC 253,8.0,10.09454,26.181748622687493,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,170,NGC 2541,24.0,38.812609,61.71920394291667,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,171,NGC 2683,16.0,31.359936,95.99959822409376,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,173,NGC 2841,0.13,48.434222,37157.0939141923,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,178,NGC 3294,70.0,93.443802,33.49114601578571,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,180,NGC 3319,32.0,43.052642,34.53950580125,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,181,NGC 3344,22.5,31.523014,40.10228402091112,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,183,NGC 3718,300.0,52.511177,82.49627439676667,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,185,NGC 3953,46.0,57.077366,24.08123064673912,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,186,NGC 4013,36.0,58.218913,61.71920394291666,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,190,NGC 4216,40.0,50.554239,26.38559635875,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,191,NGC 428,70.0,36.855671,47.34904188557142,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,197,NGC 4490,45.0,19.66723,56.2950453882,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,199,NGC 4618,31.0,23.809416,23.19543363838709,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,200,NGC 4631,27.5,14.122571,48.64519580214545,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,202,NGC 4656,25.0,16.470897,34.1164117046,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,203,NGC 4698,55.0,72.243638,31.35206847372726,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,206,NGC 4889,90.0,306.09776,240.10862274605557,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,209,NGC 4941,64.0,31.001164,51.56068171814843,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,211,NGC 5033,37.0,57.077366,54.26315161486485,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,213,NGC 5170,100.0,78.114452,21.88554754085,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,214,NGC 5216,0.022,185.909135,844941.5240409091,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,215,NGC 5248,50.0,38.486453,23.0270948628,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,216,NGC 5364,1000.0,55.772741,94.42272594133,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,219,NGC 5394,160.0,107.305448,32.934094835437506,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,228,NGC 5921,80.0,56.425053,29.46868332237499,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,230,NGC 5985,100.0,129.810238,29.8102383246,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,235,NGC 6140,37.573215,26.516514,29.427083876080324,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,237,NGC 6621,300.0,202.216954,32.594348608666664,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,239,NGC 6814,68.0,29.190996,57.072064993897065,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,245,NGC 7217,41.0,57.729679,40.80409476317074,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,251,NGC 7814,40.0,56.098897,40.247242411,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,257,NGC 1365,0.2,58.055835,28927.9176153,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,258,NGC 1531,55.0,42.400329,22.908492543636367,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,260,NGC 2146,90.0,56.75121,36.94310031133333,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,262,NGC 253,8.0,10.09454,26.181748622687493,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,266,NGC 3718,300.0,52.511177,82.49627439676667,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,290,NGC 7319,130.835301,56.425053,56.87321929874262,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,293,M110,2.2,2.653282,20.603733299522727,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,312,M86,0.4,54.794271,13598.567863399998,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,322,NGC 5394,160.0,107.305448,32.934094835437506,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,323,IC 10,2.0,2.602728,30.13639470230001,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,336,NGC 1566,31.269336,23.450644,25.00434433072068,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,349,NGC 520,100.0,77.788296,22.211703918549983,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,351,NGC 7727,89.0,64.905119,27.07289981764045,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,355,M83,21.23278,15.900123,25.115206709272176,Provisional NED-based replacement; source match not independently verified
+gv-noirlab-galaxies-full-0001.json,356,M83,21.23278,15.900123,25.115206709272176,Provisional NED-based replacement; source match not independently verified
