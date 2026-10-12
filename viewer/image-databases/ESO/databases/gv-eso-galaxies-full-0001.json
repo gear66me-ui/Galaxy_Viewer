@@ -997,7 +997,8 @@
         "sizeKly": [
           69.715,
           69.715
-        ],        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
+        ],
+        "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 69.7 KLY",
         "ageGyr": 13.460127947,
@@ -1996,7 +1997,8 @@
       "instrument": [
         "FORS1"
       ],
-      "science": {        "distanceMly": 79.928697,
+      "science": {
+        "distanceMly": 79.928697,
         "distanceMethod": "NED_OverviewOfObject_redshift_independent_mean_distance",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -2995,7 +2997,8 @@
       ],
       "selectedImageUrl": "https://www.eso.org/public/archives/images/screen/eso0848a.jpg",
       "hdUrl": "https://www.eso.org/public/archives/images/screen/eso0848a.jpg",
-      "provider": "ESO",      "telescope": "MPG/ESO 2.2-metre telescope",
+      "provider": "ESO",
+      "telescope": "MPG/ESO 2.2-metre telescope",
       "facility": [
         "MPG/ESO 2.2-metre telescope"
       ],
@@ -3561,7 +3564,7 @@
       "title": "The Eagle Nebula",
       "ra": 274.70004,
       "dec": -13.819953,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "32.0755 x 32.0755 arcminutes",
       "orientation": "AVM/WCS rotation 0.005433 degrees",
@@ -3582,11 +3585,11 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog_exact_identity",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           9.3e-05,
@@ -3994,7 +3997,8 @@
       "dec": -35.963071,
       "distance": "5,500 light-years",
       "constellation": "Scorpius",
-      "fieldOfView": "30.7144 x 31.9052 arcminutes",      "orientation": "AVM/WCS rotation -0.003988 degrees",
+      "fieldOfView": "30.7144 x 31.9052 arcminutes",
+      "orientation": "AVM/WCS rotation -0.003988 degrees",
       "imageType": "Observation",
       "credit": "ESO",
       "sourceUrl": "https://www.eso.org/public/images/eso1003a/",
@@ -4993,7 +4997,8 @@
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 28528,
-      "astropixLastUpdated": "2010-10-18T17:40:06+02:00",      "age": "EST. 13.40 GYR"
+      "astropixLastUpdated": "2010-10-18T17:40:06+02:00",
+      "age": "EST. 13.40 GYR"
     },
     {
       "archiveId": "eso1042f",
@@ -5992,7 +5997,8 @@
       "description": "Triplet  of bright galaxies in the constellation of Leo (The Lion), together  with a multitude of fainter objects: distant background galaxies and  much closer Milky Way stars. The image hints at the power of the VST and  OmegaCAM for surveying the extragalactic Universe and for mapping the  low brightness objects of the galactic halo. This image is a composite  created by combining exposures taken through three different filters.  Light that passed through a near-infrared filter was coloured red, light  in the red part of the spectrum is coloured green, and green light is  coloured magenta.",
       "infoCandidate14": "Triplet of bright galaxies in the constellation of Leo (The Lion), together with a",
       "avmReferenceRa": 169.931274856,
-      "avmReferenceDec": 13.3102144251,      "avmHorizontalFovDegrees": 0.8619630487539199,
+      "avmReferenceDec": 13.3102144251,
+      "avmHorizontalFovDegrees": 0.8619630487539199,
       "avmVerticalFovDegrees": 0.697651342585204,
       "avmRotation": 90,
       "avmWcsQuality": "Full",
@@ -6878,7 +6884,7 @@
       "title": "Setting the dark on fire",
       "ra": 84.104138,
       "dec": -6.711996,
-      "distance": "0 million light-years",
+      "distance": "1500 light-years",
       "constellation": "Orion",
       "fieldOfView": "35.5019 x 44.4487 arcminutes",
       "orientation": "AVM/WCS rotation -0.216754 degrees",
@@ -6901,11 +6907,11 @@
         "None"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:noirlab:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0015,
+        "distanceMethod": "NASA_Hubble_NGC_1999_460_pc",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/reflection-nebula-ngc-1999/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "1500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           0.000103,
@@ -6991,7 +6997,8 @@
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 13.43 GYR",        "ageEvidence": null,
+        "ageDisplay": "EST. 13.43 GYR",
+        "ageEvidence": null,
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -7990,7 +7997,8 @@
       "science": {
         "distanceMly": 150,
         "distanceMethod": "cross_catalog:hubble:esa",
-        "distanceEvidence": null,        "distanceRangeMly": null,
+        "distanceEvidence": null,
+        "distanceRangeMly": null,
         "distanceDisplay": "150 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
@@ -8989,7 +8997,8 @@
       "provider": "ESO",
       "telescope": "Very Large Telescope",
       "facility": [
-        "Very Large Telescope"      ],
+        "Very Large Telescope"
+      ],
       "instrument": [
         "MUSE"
       ],
@@ -9988,7 +9997,8 @@
       "dec": 4.47357646823,
       "distance": "55.0 million light-years",
       "constellation": "Virgo",
-      "fieldOfView": "2.9636 x 2.9503 arcminutes",      "orientation": "AVM/WCS rotation -0.000000 degrees",
+      "fieldOfView": "2.9636 x 2.9503 arcminutes",
+      "orientation": "AVM/WCS rotation -0.000000 degrees",
       "imageType": "Observation",
       "credit": "ESO/PHANGS",
       "sourceUrl": "https://www.eso.org/public/images/eso2110b/",
@@ -10987,7 +10997,8 @@
       "avmHorizontalFovDegrees": 0.020563769196398077,
       "avmVerticalFovDegrees": 0.02346868826503424,
       "avmRotation": 45.76913011945004,
-      "avmWcsQuality": "Full",      "fovDegrees": 0.02346868826503424,
+      "avmWcsQuality": "Full",
+      "fovDegrees": 0.02346868826503424,
       "aladinRotation": 45.76913011944998,
       "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
@@ -11986,7 +11997,8 @@
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "NGC 1232",
       "displayName": "NGC 1232",
-      "description": "The striking, large spiral galaxy NGC 1232, and its distorted companion shaped like the greek letter \"theta\". The pair is located roughly 60 million light-years away in the constellation Eridanus (The River). Billions of stars and dark dust are caught up in this beautiful gravitational swirl. The blue spiral arms with their many young stars and star-forming regions make a striking contrast with the yellow-reddish core of older stars. This image is based on data acquired with the 1.5 m Danish telescope at the ESO La Silla Observatory in Chile, through three filters (B: 900 s, V: 400 s, R: 400 s).",      "infoCandidate14": "The striking, large spiral galaxy NGC 1232, and its distorted companion shaped like the",
+      "description": "The striking, large spiral galaxy NGC 1232, and its distorted companion shaped like the greek letter \"theta\". The pair is located roughly 60 million light-years away in the constellation Eridanus (The River). Billions of stars and dark dust are caught up in this beautiful gravitational swirl. The blue spiral arms with their many young stars and star-forming regions make a striking contrast with the yellow-reddish core of older stars. This image is based on data acquired with the 1.5 m Danish telescope at the ESO La Silla Observatory in Chile, through three filters (B: 900 s, V: 400 s, R: 400 s).",
+      "infoCandidate14": "The striking, large spiral galaxy NGC 1232, and its distorted companion shaped like the",
       "avmReferenceRa": 47.4680938784,
       "avmReferenceDec": -20.5727578338,
       "avmHorizontalFovDegrees": 0.22587061371391998,
@@ -12985,7 +12997,8 @@
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
-        "ageDisplay": "EST. 13.37 GYR",        "ageEvidence": null,
+        "ageDisplay": "EST. 13.37 GYR",
+        "ageEvidence": null,
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
@@ -13984,7 +13997,8 @@
           0.00075,
           0.0025
         ],
-        "distanceDisplay": "1,625 light-years",        "distanceEstimated": true,
+        "distanceDisplay": "1,625 light-years",
+        "distanceEstimated": true,
         "sizeKly": [
           0.0033683883960347206,
           0.003802640932287676
@@ -14983,7 +14997,8 @@
         "WFI"
       ],
       "science": {
-        "distanceMly": 15612.505381,        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
+        "distanceMly": 15612.505381,
+        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
         "distanceEvidence": null,
         "distanceRangeMly": null,
         "distanceDisplay": "15612.5 million light-years",
@@ -15982,7 +15997,8 @@
         "https://www.eso.org/public/archives/images/screen/potw2034a.jpg"
       ],
       "selectedImageUrl": "https://www.eso.org/public/archives/images/screen/potw2034a.jpg",
-      "hdUrl": "https://www.eso.org/public/archives/images/screen/potw2034a.jpg",      "provider": "ESO",
+      "hdUrl": "https://www.eso.org/public/archives/images/screen/potw2034a.jpg",
+      "provider": "ESO",
       "telescope": "Very Large Telescope",
       "facility": [
         "Very Large Telescope"

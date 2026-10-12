@@ -76471,7 +76471,7 @@
       "title": "Cone Nebula/NGC 2264 (ACS Full Field Image)",
       "ra": 100.3007658,
       "dec": 9.4205753,
-      "distance": "0 million light-years",
+      "distance": "2500 light-years",
       "constellation": "Monoceros",
       "fieldOfView": "3.6841 x 3.5366 arcminutes",
       "orientation": "AVM/WCS rotation -4.700000 degrees",
@@ -76492,11 +76492,11 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 3e-05,
-        "distanceMethod": "cross_catalog_exact_identity",
-        "distanceEvidence": null,
+        "distanceMly": 0.0025,
+        "distanceMethod": "NASA_Hubble_Cone_Nebula_2500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/the-cone-nebula-ngc-2264/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "2500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           3.2e-05,
@@ -85603,7 +85603,7 @@
       "title": "New view of the Pillars of Creation  visible",
       "ra": 274.719656784,
       "dec": -13.8394365494,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "4.5290 x 4.7234 arcminutes",
       "orientation": "AVM/WCS rotation 34.980000 degrees",
@@ -85624,11 +85624,11 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:hubble:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           1.4e-05,
@@ -85689,7 +85689,7 @@
       "title": "New view of the Pillars of Creation  infrared",
       "ra": 274.717058739,
       "dec": -13.8347924699,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "4.3372 x 4.0649 arcminutes",
       "orientation": "AVM/WCS rotation 35.060000 degrees",
@@ -85710,11 +85710,11 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:hubble:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           1.3e-05,
@@ -85775,7 +85775,7 @@
       "title": "Digitized Sky Survey Image of the Eagle Nebula",
       "ra": 274.696238539,
       "dec": -13.8529216192,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "231.2926 x 198.0345 arcminutes",
       "orientation": "AVM/WCS rotation 5.740000 degrees",
@@ -85796,11 +85796,11 @@
         "None"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:hubble:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           0.000673,
@@ -89655,7 +89655,7 @@
       "title": "A reflection nebula in Orion",
       "ra": 84.1038859081,
       "dec": -6.71529312082,
-      "distance": "0 million light-years",
+      "distance": "1500 light-years",
       "constellation": "Orion",
       "fieldOfView": "1.2411 x 1.2626 arcminutes",
       "orientation": "AVM/WCS rotation -24.620000 degrees",
@@ -89676,11 +89676,11 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:noirlab:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0015,
+        "distanceMethod": "NASA_Hubble_NGC_1999_460_pc",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/reflection-nebula-ngc-1999/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "1500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           4e-06,
@@ -94322,7 +94322,7 @@
       "title": "The Eagle Nebula",
       "ra": 274.7117904,
       "dec": -13.8164847,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "1.2701 x 1.2418 arcminutes",
       "orientation": "AVM/WCS rotation 42.700000 degrees",
@@ -94343,11 +94343,11 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:hubble:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           4e-06,
@@ -97590,7 +97590,7 @@
       "title": "Hubble peers deeply into the Eagle Nebula",
       "ra": 274.61249191,
       "dec": -13.7164828417,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "3.2296 x 3.3611 arcminutes",
       "orientation": "AVM/WCS rotation -99.020000 degrees",
@@ -97611,11 +97611,11 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog_exact_identity",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           1e-05,

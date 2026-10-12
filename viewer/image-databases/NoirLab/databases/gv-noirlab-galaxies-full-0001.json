@@ -997,7 +997,8 @@
         "sizeDisplay": "EST. 60.6 × 75.2 KLY",
         "ageGyr": 13.417983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
-        "ageMinGyr": null,        "ageMaxGyr": null,
+        "ageMinGyr": null,
+        "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 13.42 GYR",
         "ageEvidence": "500 million years old",
@@ -1996,7 +1997,8 @@
         "distanceEstimated": true,
         "sizeKly": [
           0.00949,
-          0.00949        ],
+          0.00949
+        ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
         "sizeDisplay": "EST. 9.49 LY",
@@ -2995,7 +2997,8 @@
         "Mosaic-3"
       ],
       "science": {
-        "distanceMly": 0.0065,        "distanceMethod": "Published source — web research pass 1",
+        "distanceMly": 0.0065,
+        "distanceMethod": "Published source — web research pass 1",
         "distanceEvidence": null,
         "distanceRangeMly": null,
         "distanceDisplay": "0.0065 million light-years",
@@ -3994,7 +3997,8 @@
       "selectedImageUrl": "https://storage.noirlab.edu/media/archives/images/screen/iotw2547a.jpg",
       "hdUrl": "https://storage.noirlab.edu/media/archives/images/screen/iotw2547a.jpg",
       "provider": "NOIRLAB",
-      "telescope": "NSF's NOIRLab",      "facility": [],
+      "telescope": "NSF's NOIRLab",
+      "facility": [],
       "instrument": [],
       "science": {
         "distanceMly": 0.16,
@@ -4680,7 +4684,7 @@
       "title": "The Eagle Nebula, M16",
       "ra": 274.745781385,
       "dec": -13.8303826832,
-      "distance": "0 million light-years",
+      "distance": "6500 light-years",
       "constellation": "Serpens",
       "fieldOfView": "38.8152 x 39.7577 arcminutes",
       "orientation": "AVM/WCS rotation 89.800000 degrees",
@@ -4701,11 +4705,11 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:hubble:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0065,
+        "distanceMethod": "NASA_Eagle_Nebula_6500_light_years",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/eagle-nebula/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "6500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           0.000113,
@@ -4752,7 +4756,7 @@
       "title": "NGC 2264, Cone Nebula, Fox Fur Nebula",
       "ra": 100.267407019,
       "dec": 9.72647946855,
-      "distance": "0 million light-years",
+      "distance": "2500 light-years",
       "constellation": "Monoceros",
       "fieldOfView": "55.7441 x 57.2589 arcminutes",
       "orientation": "AVM/WCS rotation -0.180000 degrees",
@@ -4773,12 +4777,12 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 3e-05,
-        "distanceMethod": "cross_catalog:eso:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0025,
+        "distanceMethod": "NASA_NGC_2264_Christmas_Tree_Cluster_2500_light_years",
+        "distanceEvidence": "https://www.nasa.gov/centers-and-facilities/marshall/the-marshall-star-for-december-20-2023/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
-        "distanceEstimated": true,
+        "distanceDisplay": "2500 light-years",
+        "distanceEstimated": false,
         "sizeKly": [
           0.000486,
           0.000486
@@ -4993,7 +4997,8 @@
         "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "6476.2 million light-years",        "distanceEstimated": true,
+        "distanceDisplay": "6476.2 million light-years",
+        "distanceEstimated": true,
         "sizeKly": [
           24775.228,
           24775.228
@@ -5992,7 +5997,8 @@
       "selectedImageUrl": "https://storage.noirlab.edu/media/archives/images/screen/noao-ic4955block.jpg",
       "hdUrl": "https://storage.noirlab.edu/media/archives/images/screen/noao-ic4955block.jpg",
       "provider": "NOIRLAB",
-      "telescope": "Visitor Center 0.5-meter Telescope",      "facility": [
+      "telescope": "Visitor Center 0.5-meter Telescope",
+      "facility": [
         "Visitor Center 0.5-meter Telescope"
       ],
       "instrument": [
@@ -6991,7 +6997,8 @@
       "constellation": "Vulpecula",
       "fieldOfView": "8.9040 x 7.6320 arcminutes",
       "orientation": "AVM/WCS rotation 2.060000 degrees",
-      "imageType": "Observation",      "credit": "REU program/NOIRLab/NSF/AURA",
+      "imageType": "Observation",
+      "credit": "REU program/NOIRLab/NSF/AURA",
       "sourceUrl": "https://noirlab.edu/public/images/noao-m27/",
       "jpegCandidates": [
         "https://storage.noirlab.edu/media/archives/images/screen/noao-m27.jpg"
@@ -7990,7 +7997,8 @@
       "credit": "KPNO/NOIRLab/NSF/AURA/Bruce Hugo and Leslie Gaul/Adam Block",
       "sourceUrl": "https://noirlab.edu/public/images/noao-m63hugo/",
       "jpegCandidates": [
-        "https://storage.noirlab.edu/media/archives/images/screen/noao-m63hugo.jpg"      ],
+        "https://storage.noirlab.edu/media/archives/images/screen/noao-m63hugo.jpg"
+      ],
       "selectedImageUrl": "https://storage.noirlab.edu/media/archives/images/screen/noao-m63hugo.jpg",
       "hdUrl": "https://storage.noirlab.edu/media/archives/images/screen/noao-m63hugo.jpg",
       "provider": "NOIRLAB",
@@ -8989,7 +8997,8 @@
       "science": {
         "distanceMly": 11.97,
         "distanceMethod": "cross_catalog:spitzer:S4G/CS4G redshift-independent distance",
-        "distanceEvidence": null,        "distanceRangeMly": null,
+        "distanceEvidence": null,
+        "distanceRangeMly": null,
         "distanceDisplay": "11.97 million light-years",
         "distanceEstimated": false,
         "sizeKly": [
@@ -9988,7 +9997,8 @@
         "ageEvidence": null,
         "redshift": null,
         "redshiftDisplay": null,
-        "redshiftEstimated": null,        "redshiftMethod": null
+        "redshiftEstimated": null,
+        "redshiftMethod": null
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "M99",
@@ -10987,7 +10997,8 @@
         "sizeEstimated": true,
         "sizeDisplay": "EST. 399.5 × 611.0 KLY",
         "ageGyr": 13.295983947,
-        "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",        "ageMinGyr": null,
+        "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
+        "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 13.30 GYR",
@@ -11095,7 +11106,7 @@
       "title": "NGC 1999",
       "ra": 84.1424224342,
       "dec": -6.68452475285,
-      "distance": "0 million light-years",
+      "distance": "1500 light-years",
       "constellation": "Orion",
       "fieldOfView": "11.9027 x 7.9736 arcminutes",
       "orientation": "AVM/WCS rotation -150.557079 degrees",
@@ -11116,11 +11127,11 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 1e-05,
-        "distanceMethod": "cross_catalog:noirlab:astropix_description",
-        "distanceEvidence": null,
+        "distanceMly": 0.0015,
+        "distanceMethod": "NASA_Hubble_NGC_1999_460_pc",
+        "distanceEvidence": "https://science.nasa.gov/asset/hubble/reflection-nebula-ngc-1999/",
         "distanceRangeMly": null,
-        "distanceDisplay": "0 million light-years",
+        "distanceDisplay": "1500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           3.5e-05,
@@ -11986,7 +11997,8 @@
         "distanceMly": 0.0018,
         "distanceMethod": "Published source — web research pass 1",
         "distanceEvidence": null,
-        "distanceRangeMly": null,        "distanceDisplay": "0.0018 million light-years",
+        "distanceRangeMly": null,
+        "distanceDisplay": "0.0018 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           0.006404,
@@ -12985,7 +12997,8 @@
         "distanceMly": 22.5,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "22.5 million lightyears",
-        "distanceRangeMly": null,        "distanceDisplay": "22.5 million light-years",
+        "distanceRangeMly": null,
+        "distanceDisplay": "22.5 million light-years",
         "distanceEstimated": true,
         "sizeKly": [
           94.00402578961015,
@@ -13984,7 +13997,8 @@
       "telescope": "Visitor Center 0.5-meter Telescope",
       "facility": [
         "Visitor Center 0.5-meter Telescope"
-      ],      "instrument": [
+      ],
+      "instrument": [
         "Other CCD"
       ],
       "science": {
@@ -14983,7 +14997,8 @@
       "name": "NGC 4941",
       "title": "NGC 4941",
       "ra": 196.080019198,
-      "dec": -5.537044652,      "distance": "64.0 million light-years",
+      "dec": -5.537044652,
+      "distance": "64.0 million light-years",
       "constellation": "Virgo",
       "fieldOfView": "12.3977 x 8.3535 arcminutes",
       "orientation": "AVM/WCS rotation -111.998880 degrees",
@@ -15982,7 +15997,8 @@
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 28977,
-      "astropixLastUpdated": "2021-08-30T16:43:33+02:00",      "age": "EST. 13.39 GYR"
+      "astropixLastUpdated": "2021-08-30T16:43:33+02:00",
+      "age": "EST. 13.39 GYR"
     },
     {
       "archiveId": "noao-n5775matthews",
@@ -16981,7 +16997,8 @@
       "avmReferenceDec": 7.04162597652,
       "avmHorizontalFovDegrees": 0.205799722386895,
       "avmVerticalFovDegrees": 0.138724569072596,
-      "avmRotation": 178.53715150327,      "avmWcsQuality": "Full",
+      "avmRotation": 178.53715150327,
+      "avmWcsQuality": "Full",
       "fovDegrees": 0.138724569072596,
       "aladinRotation": -1.4628484967299755,
       "fovAuthority": "PENDING_R21_CURATED_Y",
@@ -17980,7 +17997,8 @@
       "displayName": "NGC 6772",
       "description": "NGC 772 is a spiral galaxy located in the constellation Aries. It is located about 130 million light years away from Earth and it is about twice the size of our Milky Way Galaxy. This image was taken as part of Advanced Observing Program (AOP) program at Kitt Peak Visitor Center during 2014.",
       "infoCandidate14": "NGC 772 is a spiral galaxy located in the constellation Aries. It is located",
-      "avmReferenceRa": 29.7833060267,      "avmReferenceDec": 19.0215727094,
+      "avmReferenceRa": 29.7833060267,
+      "avmReferenceDec": 19.0215727094,
       "avmHorizontalFovDegrees": 0.191741953578052,
       "avmVerticalFovDegrees": 0.13116553399449302,
       "avmRotation": -170.14306519414,
@@ -18979,7 +18997,8 @@
       "avmReferenceDec": 3.482649773,
       "avmHorizontalFovDegrees": 0.379246,
       "avmVerticalFovDegrees": 0.32445,
-      "avmRotation": -30.07156756,      "avmWcsQuality": "Full",
+      "avmRotation": -30.07156756,
+      "avmWcsQuality": "Full",
       "fovDegrees": 0.32445,
       "aladinRotation": -30.071567560000005,
       "fovAuthority": "PENDING_R21_CURATED_Y",
@@ -19978,7 +19997,8 @@
         "redshiftMethod": null
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
-      "designation": "NGC 6946",      "displayName": "NGC 6946",
+      "designation": "NGC 6946",
+      "displayName": "NGC 6946",
       "description": "This image was obtained with the wide-field view of the Mosaic Camera on the Nicholas U. Mayall 4-meter Telescope at Kitt Peak National Observatory on September 5th, 2008. The face-on spiral galaxy NGC 6946 is fueled by the births and deaths of brilliant, massive stars. Over the past century, eight supernovae have exploded in the arms of this galaxy, making NGC 6946 the most prolific known galaxy for supernovae during the past 100 years. It was observed in the filters U (violet), B (blue), V (green), I (orange) and H-alpha (red). North is left, East is down.",
       "infoCandidate14": "This image was obtained with the wide-field view of the Mosaic Camera on the",
       "avmReferenceRa": 308.736601253,
@@ -20977,7 +20997,8 @@
         "ageEstimated": true,
         "ageDisplay": "EST. 13.47 GYR",
         "ageEvidence": null,
-        "redshift": null,        "redshiftDisplay": null,
+        "redshift": null,
+        "redshiftDisplay": null,
         "redshiftEstimated": null,
         "redshiftMethod": null
       },
@@ -21976,7 +21997,8 @@
           153.328968716831,
           103.81883893228334
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",        "sizeEstimated": true,
+        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeEstimated": true,
         "sizeDisplay": "EST. 153.3 × 103.8 KLY",
         "ageGyr": 13.406983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
@@ -22975,7 +22997,8 @@
         "Spitzer Space Telescope",
         "Hubble Space Telescope",
         "Chandra X-ray Observatory"
-      ],      "instrument": [
+      ],
+      "instrument": [
         "None"
       ],
       "science": {
@@ -23974,7 +23997,8 @@
       "credit": "KPNO/NOIRLab/NSF/AURAAcknowledgment: PI: M.T. Patterson (New Mexico State University)Image processing: T.A. Rector (University of Alaska Anchorage), M. Zamani & D. de Martin",
       "sourceUrl": "https://noirlab.edu/public/images/noirlab2112b/",
       "jpegCandidates": [
-        "https://storage.noirlab.edu/media/archives/images/screen/noirlab2112b.jpg"      ],
+        "https://storage.noirlab.edu/media/archives/images/screen/noirlab2112b.jpg"
+      ],
       "selectedImageUrl": "https://storage.noirlab.edu/media/archives/images/screen/noirlab2112b.jpg",
       "hdUrl": "https://storage.noirlab.edu/media/archives/images/screen/noirlab2112b.jpg",
       "provider": "NOIRLAB",
@@ -24973,7 +24997,8 @@
       "title": "Face-on spiral galaxy ESO 440-11",
       "ra": 177.18743040351927,
       "dec": -28.29621946170453,
-      "distance": "53 million light-years",      "constellation": "Hydra",
+      "distance": "53 million light-years",
+      "constellation": "Hydra",
       "fieldOfView": "6.6686 x 6.6686 arcminutes",
       "orientation": "AVM/WCS rotation -0.320000 degrees",
       "imageType": "Observation",
@@ -25972,7 +25997,8 @@
       "avmRotation": -0.04000000000000013,
       "avmWcsQuality": "Full",
       "fovDegrees": 0.14206931721488722,
-      "aladinRotation": -0.03999999999996362,      "fovAuthority": "PENDING_R21_CURATED_Y",
+      "aladinRotation": -0.03999999999996362,
+      "fovAuthority": "PENDING_R21_CURATED_Y",
       "rotationAuthority": "PENDING_R21_CURATED_CAMERA",
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29763,
