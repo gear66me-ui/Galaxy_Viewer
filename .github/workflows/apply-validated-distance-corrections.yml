@@ -1,6 +1,10 @@
 name: Apply validated distance corrections
 
 on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/apply-validated-distance-corrections.yml
   workflow_dispatch:
     inputs:
       apply:
@@ -24,7 +28,7 @@ jobs:
           python-version: "3.12"
       - name: Apply allowlisted corrections with guards
         env:
-          APPLY: ${{ inputs.apply }}
+          APPLY: ${{ github.event_name == 'push' || inputs.apply }}
         run: |
           python .github/scripts/apply_validated_distance_corrections.py
       - name: Validate JSON catalogs
