@@ -1,6 +1,9 @@
 name: Fix IRAS 23234+4215 Distance
-# IRAS 23234+4215 is an alias of NGC 7662; update the two Hubble image records for this same object.
-# Catalog correction: NGC 7662 / Blue Snowball Nebula = 2500 light-years.
+
+# ESA/Hubble's own pages for opo9738c20 and opo9738c21 identify the target as
+# "IRAS 23234+4215, NGC 7662" and explicitly give Distance: 2500 light years.
+# Source: https://esahubble.org/images/opo9738c20/
+# This workflow updates only those two exact archive IDs on release.
 
 on:
   push:
@@ -23,41 +26,80 @@ jobs:
           ref: release
           fetch-depth: 0
 
-      - name: Correct the Hubble distance and preserve age metadata
+      - name: Correct distance and distance-derived image span
         shell: bash
         run: |
           python3 - <<'PY'
           import json
+          import math
           from pathlib import Path
 
           path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
           data = json.loads(path.read_text(encoding="utf-8"))
-          entries = data.get("entries", [])
           target_ids = {"opo9738c20", "opo9738c21"}
-          found = {e.get("archiveId"): e for e in entries if e.get("archiveId") in target_ids}
+          found = {e.get("archiveId"): e for e in data.get("entries", []) if e.get("archiveId") in target_ids}
           missing = sorted(target_ids - set(found))
           if missing:
-              raise SystemExit(f"STOP: expected ESA/Hubble NGC 7662 records not found: {missing}")
+              raise SystemExit(f"STOP: expected ESA/Hubble records not found: {missing}")
 
           for archive_id, entry in found.items():
-              old_distance = entry.get("distance")
-              old_age = entry.get("age")
+              if entry.get("title") != "NGC 7662" or "23234+4215" not in str(entry.get("name", "")):
+                  raise SystemExit(f"STOP: unexpected target identity for {archive_id}: {entry.get('name')!r}, {entry.get('title')!r}")
+
+              old = {
+                  "distance": entry.get("distance"),
+                  "scienceDistanceMly": (entry.get("science") or {}).get("distanceMly"),
+                  "scienceDistanceDisplay": (entry.get("science") or {}).get("distanceDisplay"),
+                  "sizeKly": (entry.get("science") or {}).get("sizeKly"),
+                  "sizeDisplay": (entry.get("science") or {}).get("sizeDisplay"),
+                  "ageGyr": (entry.get("science") or {}).get("ageGyr"),
+                  "age": entry.get("age"),
+              }
+
+              # Official ESA/Hubble object page states 2,500 light-years.
               entry["distance"] = "2500 light-years"
-              if entry.get("age") != old_age:
-                  raise SystemExit(f"STOP: age metadata changed unexpectedly for {archive_id}")
+              science = entry.setdefault("science", {})
+              science["distanceMly"] = 0.0025
+              science["distanceDisplay"] = "2500 light-years"
+              science["distanceEstimated"] = False
+              science["distanceMethod"] = "esa_hubble_object_page_2500_light_years"
+
+              # Recompute the physical image span from this record's own FOV.
+              fov = entry.get("fieldOfViewDegrees") or {}
+              width = fov.get("widthDegrees")
+              height = fov.get("heightDegrees")
+              if width is None or height is None:
+                  # Fallback: parse the catalog's "X x Y degrees" field.
+                  import re
+                  m = re.search(r"([0-9.]+)\\s*x\\s*([0-9.]+)\\s*degrees", str(entry.get("fieldOfView", "")), re.I)
+                  if not m:
+                      raise SystemExit(f"STOP: no parseable FOV for {archive_id}")
+                  width, height = map(float, m.groups())
+
+              # distanceMly * angle(rad) = span in Mly; convert Mly to Kly.
+              size_x_kly = 0.0025 * math.radians(float(width)) * 1000
+              size_y_kly = 0.0025 * math.radians(float(height)) * 1000
+              science["sizeKly"] = [round(size_x_kly, 9), round(size_y_kly, 9)]
+              science["sizeMethod"] = "distance_fov_estimate"
+              science["sizeDisplay"] = f"EST. {size_x_kly:.7f} × {size_y_kly:.7f} KLY"
+              science["sizeEstimated"] = True
+
               print(json.dumps({
                   "archiveId": archive_id,
                   "name": entry.get("name"),
-                  "designation": entry.get("designation"),
-                  "oldDistance": old_distance,
+                  "title": entry.get("title"),
+                  "old": old,
                   "newDistance": entry["distance"],
-                  "agePreserved": old_age
+                  "newScienceDistanceMly": science["distanceMly"],
+                  "newSizeKly": science["sizeKly"],
+                  "newSizeDisplay": science["sizeDisplay"],
+                  "emissionAgeMetadataPreserved": science.get("ageGyr") == old["ageGyr"] and entry.get("age") == old["age"],
               }, ensure_ascii=False))
 
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           PY
 
-      - name: Commit the catalog correction
+      - name: Commit catalog correction
         shell: bash
         run: |
           if git diff --quiet -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json; then
@@ -67,5 +109,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
-          git commit -m "Correct NGC 7662 distance in Hubble catalog"
+          git commit -m "Correct NGC 7662 distance and image span"
           git push origin HEAD:release
