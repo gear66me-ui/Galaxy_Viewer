@@ -11180,7 +11180,7 @@
       "science": {
         "distanceMly": 13,
         "distanceMethod": "independently_verified_distance_correction_20261012",
-        "distanceEvidence": "13 million light-years (ESO source description)",
+        "distanceEvidence": "ESO image description states 13 million light-years; the 62 light-years refers to resolution.",
         "distanceRangeMly": null,
         "distanceDisplay": "13 million light-years",
         "distanceEstimated": true,
@@ -11190,7 +11190,7 @@
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 120 × 119 KLY",
+        "sizeDisplay": "EST. 120.44 × 118.65 KLY",
         "ageGyr": 13.440786947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -13992,7 +13992,7 @@
       "science": {
         "distanceMly": 50,
         "distanceMethod": "independently_verified_distance_correction_20261012",
-        "distanceEvidence": "about 50 million light-years (ESO source description)",
+        "distanceEvidence": "ESO image description states NGC 1097 is about 50 million light-years away; 750–2500 light-years describes star-forming knots.",
         "distanceRangeMly": [
           0.00075,
           0.0025
@@ -14005,7 +14005,7 @@
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 104 × 117 KLY",
+        "sizeDisplay": "EST. 103.64 × 117.00 KLY",
         "ageGyr": 13.466981947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -14283,7 +14283,7 @@
       "science": {
         "distanceMly": 33,
         "distanceMethod": "independently_verified_distance_correction_20261012",
-        "distanceEvidence": "about 33 million light-years (independent NASA reference)",
+        "distanceEvidence": "Independent NASA reference for Messier 95 gives about 33 million light-years.",
         "distanceRangeMly": null,
         "distanceDisplay": "about 33 million light-years",
         "distanceEstimated": true,
@@ -14293,7 +14293,7 @@
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 65 × 65 KLY",
+        "sizeDisplay": "EST. 65.29 × 65.35 KLY",
         "ageGyr": 13.466981947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
