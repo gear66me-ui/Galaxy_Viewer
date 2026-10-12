@@ -91,7 +91,11 @@ jobs:
           ! grep -q 'file:///android_asset/index.html' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'GalaxyViewerWebBrowser/0057' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -q 'navigationCover=new View(this)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
-          grep -Fq 'postDelayed(pendingProviderLaunch,2000)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'private CancellationSignal prerenderSignal=null;' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'prerenderSignal.cancel()' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          grep -q 'if(url!=null&&url.equals(loadingProviderUrl))' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          ! grep -Fq 'postDelayed(pendingProviderLaunch,2000)' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
+          ! grep -Fq 'web.loadUrl("about:blank")' app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
 
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
