@@ -2385,7 +2385,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
             if(activeDestination!==presentationDestination)return;
             headsUpDisplay.render();
-            gvShowEarthDistance(v.destination);
+            gvShowEarthDistance(presentationDestination);
             gvPrewarmProviderWebsite(v.destination);
         }));
         return v.destination;
@@ -2403,7 +2403,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
         if(activeDestination!==presentationDestination)return;
         headsUpDisplay.render();
-        gvShowEarthDistance(v.destination);
+        gvShowEarthDistance(presentationDestination);
         gvPrewarmProviderWebsite(v.destination);
     }));
     return v.destination;
