@@ -53,17 +53,23 @@ jobs:
                   "age": e.get("age")
               }, ensure_ascii=False))
 
-          # heic0601a is the first record already corrected. Fix only the other M42 record.
-          targets = [e for e in all_m42 if e.get("archiveId") != "heic0601a"]
-          if len(targets) != 1:
-              raise SystemExit(f"STOP: expected exactly one other M42 record besides heic0601a; found {len(targets)}")
+          # These are the two M42 records that were showing the bad distance.
+          # opo9229a had "1 light-years"; opo9229b had a comma that can fail parsing.
+          by_id = {e.get("archiveId"): e for e in all_m42}
+          required_ids = ("opo9229a", "opo9229b")
+          missing = [rid for rid in required_ids if rid not in by_id]
+          if missing:
+              raise SystemExit(f"STOP: expected M42 record IDs not found: {missing}")
 
-          entry = targets[0]
-          old_distance = entry.get("distance")
-          old_age = entry.get("age")
-          entry["distance"] = "1500 light-years"
-          if entry.get("age") != old_age:
-              raise SystemExit("STOP: age field changed unexpectedly.")
+          for rid in required_ids:
+              entry = by_id[rid]
+              old_distance = entry.get("distance")
+              old_age = entry.get("age")
+              entry["distance"] = "1500 light-years"
+              if entry.get("age") != old_age:
+                  raise SystemExit(f"STOP: age field changed unexpectedly for {rid}.")
+              print(f"UPDATED {rid}: distance {old_distance!r} -> {entry['distance']!r}; age preserved {old_age!r}")
+
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           print(f"UPDATED second M42: archiveId={entry.get('archiveId')!r}, name={entry.get('name')!r}")
           print(f"Distance: {old_distance!r} -> {entry['distance']!r}")
