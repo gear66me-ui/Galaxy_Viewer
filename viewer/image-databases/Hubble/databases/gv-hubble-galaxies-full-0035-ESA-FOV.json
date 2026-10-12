@@ -76406,19 +76406,19 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 2.5e-06,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "2.5 light-years",
+        "distanceMly": 0.0025,
+        "distanceMethod": "independently_verified_distance_correction_20261012",
+        "distanceEvidence": "NASA/ESA Hubble description: Cone Nebula resides 2,500 light-years away; 2.5 light-years is pillar height.",
         "distanceRangeMly": null,
-        "distanceDisplay": "2 light-years",
-        "distanceEstimated": false,
+        "distanceDisplay": "2,500 light-years",
+        "distanceEstimated": true,
         "sizeKly": [
-          2.497819127292617e-06,
-          1.8733642772888376e-06
+          0.0024978189195040577,
+          0.001873364189628043
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 0 × 0 LY",
+        "sizeDisplay": "EST. 0.0025 × 0.0019 KLY",
         "ageGyr": 0.0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
@@ -93825,19 +93825,19 @@
         "WFPC1"
       ],
       "science": {
-        "distanceMly": 1.29e-06,
-        "distanceMethod": "astropix_description",
-        "distanceEvidence": "1.29 light-years",
+        "distanceMly": 0.0015,
+        "distanceMethod": "independently_verified_distance_correction_20261012",
+        "distanceEvidence": "Hubble record source states 1,500 light-years; 1.29 light-years is image width.",
         "distanceRangeMly": null,
-        "distanceDisplay": "1 light-years",
-        "distanceEstimated": false,
+        "distanceDisplay": "1,500 light-years",
+        "distanceEstimated": true,
         "sizeKly": [
-          1.0109398489315362e-06,
-          9.78315561411583e-07
+          0.001175511392084731,
+          0.0011375761796767678
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_avm_wcs_fov_and_corrected_distance",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 0 × 0 LY",
+        "sizeDisplay": "EST. 0.0012 × 0.0011 KLY",
         "ageGyr": 0.0,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
