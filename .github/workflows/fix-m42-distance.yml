@@ -1,0 +1,66 @@
+name: Surgical M42 Distance Fix
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - ".github/workflows/fix-m42-distance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-m42-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Update only the primary M42 distance field
+        id: fix
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          matches = [entry for entry in data.get("entries", []) if entry.get("archiveId") == "heic0601a"]
+          if len(matches) != 1:
+              raise SystemExit(f"STOP: expected exactly one primary M42 record (heic0601a), found {len(matches)}")
+          entry = matches[0]
+          old_distance = entry.get("distance")
+          old_age = entry.get("age")
+          if old_distance == "1500 light-years":
+              print("M42 distance is already normalized to 1500 light-years; no catalog edit needed.")
+              print(f"Emission age preserved: {old_age!r}")
+              raise SystemExit(0)
+          if old_distance not in ("1,500 light-years", "1500 light-years", "1,500 light years", "1500 light years"):
+              raise SystemExit(f"STOP: unexpected existing distance {old_distance!r}; refusing to overwrite.")
+          entry["distance"] = "1500 light-years"
+          if entry.get("age") != old_age:
+              raise SystemExit("STOP: emission-age field changed unexpectedly.")
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"Record: {entry.get('archiveId')} — {entry.get('name')}")
+          print(f"Distance: {old_distance!r} -> {entry['distance']!r}")
+          print(f"Emission age unchanged: {old_age!r}")
+          PY
+
+      - name: Commit the surgical catalog change
+        shell: bash
+        run: |
+          if git diff --quiet -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json; then
+            echo "No catalog change required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+          git commit -m "Fix M42 distance parsing in Hubble catalog"
+          git push origin HEAD:release
