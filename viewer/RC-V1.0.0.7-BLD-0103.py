@@ -562,24 +562,24 @@ function gvUpdateLivePhysicalScale(){
     const s=document.getElementById('gv-live-physical-scale'),line=s?.querySelector('.gv-live-scale-line'),label=s?.querySelector('.gv-live-scale-label'),b=document.getElementById('gv-earth-distance-banner');
     if(!s||!line||!label||!b||!b.classList.contains('gv-visible')){s?.classList.remove('gv-visible');return}
     const size=aladin.getSize?.(),viewportWidth=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),viewportHeight=Number(size?.[1]||document.getElementById('aladin-cosmic-command-test')?.clientHeight||innerHeight),distanceMly=Number(activeDestination?.distanceMly??activeDestination?.distance);
-    if(!(viewportWidth>0)||!(viewportHeight>0)||!(distanceMly>0)||typeof aladin.pix2world!=='function'){s.classList.remove('gv-visible');return}
-    // Use Aladin's actual sky coordinates at both endpoints of the visible bar.
-    // Iterate the endpoint separation until the transverse-plane width at the active
-    // destination's distance matches the chosen physical scale. The wide-angle conversion uses 2D·tan(θ/2), not the spherical chord 2D·sin(θ/2). This avoids
-    // extrapolating a small local pixel sample over wide/distorted fields.
+    if(!(viewportWidth>0)||!(viewportHeight>0)||!(distanceMly>0)||typeof aladin.angularDist!=='function'){
+        s.classList.remove('gv-visible');
+        console.error('GV104 SCALE API MISSING',{angularDist:typeof aladin.angularDist,pix2world:typeof aladin.pix2world});
+        return;
+    }
+    // ROLL 0104: use Aladin's documented pixel-to-sky angular-distance API.
+    // Its result is degrees. Convert to radians only for the physical-width calculation.
+    const fov=aladin.getFov?.(),distanceLy=distanceMly*1e6,centerX=viewportWidth/2,centerY=viewportHeight/2;
     const angularDistanceRad=(x1,y1,x2,y2)=>{
-        const a=aladin.pix2world(x1,y1),c=aladin.pix2world(x2,y2);
-        if(!Array.isArray(a)||!Array.isArray(c)||a.length<2||c.length<2||![a[0],a[1],c[0],c[1]].every(Number.isFinite))return NaN;
-        const rad=Math.PI/180,dec1=a[1]*rad,dec2=c[1]*rad,dra=(c[0]-a[0])*rad;
-        const cos=Math.sin(dec1)*Math.sin(dec2)+Math.cos(dec1)*Math.cos(dec2)*Math.cos(dra);
-        return Math.acos(Math.max(-1,Math.min(1,cos)));
+        const degrees=Number(aladin.angularDist(x1,y1,x2,y2));
+        return Number.isFinite(degrees)&&degrees>=0?degrees*Math.PI/180:NaN;
     };
-    const distanceLy=distanceMly*1e6,centerX=viewportWidth/2,centerY=viewportHeight/2;
     const measureLy=widthPx=>{
         const half=Math.max(0.5,Math.min(viewportWidth/2,widthPx/2));
         const theta=angularDistanceRad(centerX-half,centerY,centerX+half,centerY);
         return Number.isFinite(theta)&&theta>=0?2*distanceLy*Math.tan(theta/2):NaN;
     };
+    console.info('GV104 SCALE INPUT',{fov,viewportWidth,viewportHeight,distanceMly,angularDist:typeof aladin.angularDist});
     const probePx=Math.max(4,Math.min(24,viewportWidth*.02)),probeLy=measureLy(probePx);
     if(!(probeLy>0)||!Number.isFinite(probeLy)){s.classList.remove('gv-visible');return}
     const localLyPerPx=probeLy/probePx;
