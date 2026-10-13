@@ -734,7 +734,7 @@ if(window.GVProviderArtwork?.VERSION!=='0004')throw new Error('PROVIDER ARTWORK 
 // SECTION 019 — REQUIRED MODULE EXPORT VALIDATION
 // ECO: GV200-001
 // ============================================================================
-if(window.GalaxyViewerHamburgerMenu?.version!=='0010')throw new Error('HAMBURGER 0010 EXPORT MISSING');
+if(window.GalaxyViewerHamburgerMenu?.version!=='0012')throw new Error('HAMBURGER 0012 EXPORT MISSING');
 if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0001')throw new Error('CONSTELLATION OVERLAY 0001 EXPORT MISSING');
 if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='0006')console.error('COORDINATE 0006 EXPORT INVALID');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
