@@ -88,27 +88,27 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.7'
-          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0100.py'
-          assert viewer.get('build')=='0100'
+          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0101.py'
+          assert viewer.get('build')=='0101'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert re.fullmatch(r'[0-9a-f]{40}',str(manifest.get('sourceCommit',''))), 'manifest sourceCommit must be a full commit SHA'
-          assert manifest.get('dependencyPins')==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','1ac5bd2ae74f8d72686ccb58e29cde4d8c874e59','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']
+          assert manifest.get('dependencyPins')==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','e8c6ebb5759dea3e5c2a9f46126d0998161efe73','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0100"' in rc
-          assert "const GV200001_BUILD='0100';" in rc
+          assert 'BUILD_NUMBER = "0101"' in rc
+          assert "const GV200001_BUILD='0101';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
-          assert 'gv-destination-presentation-0045.js' in rc
-          assert "GalaxyDestinationPresentation?.VERSION!=='0045'" in rc
+          assert 'gv-destination-presentation-0046.js' in rc
+          assert "GalaxyDestinationPresentation?.VERSION!=='0046'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0028 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','1ac5bd2ae74f8d72686ccb58e29cde4d8c874e59','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','e8c6ebb5759dea3e5c2a9f46126d0998161efe73','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']), pins
           assert 'Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
@@ -117,7 +117,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0045.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0046.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -133,7 +133,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0100 — TWO-OCTAVE ROUTE ENGINE')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0101 — HD RULER GEOMETRY FIX')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
