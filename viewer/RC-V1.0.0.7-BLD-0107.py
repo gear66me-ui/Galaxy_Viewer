@@ -561,24 +561,28 @@ function gvUpdateLivePhysicalScale(){
  if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
  const s=document.getElementById('gv-live-physical-scale'),line=s?.querySelector('.gv-live-scale-line'),label=s?.querySelector('.gv-live-scale-label'),banner=document.getElementById('gv-earth-distance-banner');
  if(!s||!line||!label||!banner||!banner.classList.contains('gv-visible')){s?.classList.remove('gv-visible');return}
- const size=aladin.getSize?.(),width=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),fov=aladin.getFov?.(),fovWidth=Number(fov?.[0]);
- if(!(width>0)||!(fovWidth>0)||!Number.isFinite(fovWidth)){s.classList.remove('gv-visible');console.error('GV0107 invalid horizontal scale input',{fov,width});return}
- // Horizontal-only, metadata-independent app convention:
- // 180 degrees of horizontal FOV maps to 100 billion light-years.
- // Ruler length is proportional to its fraction of viewport width.
- const lyPerPx=100e9*(fovWidth/180)/width;
- if(!(lyPerPx>0)||!Number.isFinite(lyPerPx)){s.classList.remove('gv-visible');console.error('GV0107 scale model invalid',{fovWidth,width,lyPerPx});return}
- // Pick a readable 1/2/5 scale value near the nominal ruler width.
+ const size=aladin.getSize?.(),width=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),height=Number(size?.[1]||innerHeight),fov=aladin.getFov?.(),distanceMly=Number(activeDestination?.distanceMly??activeDestination?.distance);
+ if(!(width>0)||!(height>0)||!(distanceMly>0)||!Number.isFinite(distanceMly)||typeof aladin.angularDist!=='function'){s.classList.remove('gv-visible');console.error('GV0107 invalid physical scale inputs',{width,height,distanceMly});return}
+ const distanceLy=distanceMly*1e6,midY=height/2;
+ const physicalSpanForPixels=(x0,x1)=>{
+  const angleDeg=Number(aladin.angularDist(x0,midY,x1,midY));
+  if(!(angleDeg>=0)||!Number.isFinite(angleDeg))return NaN;
+  const theta=angleDeg*Math.PI/180;
+  return 2*distanceLy*Math.tan(theta/2);
+ };
+ const fullSpanLy=physicalSpanForPixels(0,width-1);
+ if(!(fullSpanLy>0)||!Number.isFinite(fullSpanLy)){s.classList.remove('gv-visible');console.error('GV0107 angular-to-linear conversion failed',{width,distanceMly,fov,fullSpanLy});return}
+ const lyPerPx=fullSpanLy/(width-1);
  gvLiveScaleValueLy=gvChooseLiveScaleValue(lyPerPx);
  if(!(gvLiveScaleValueLy>0)||!Number.isFinite(gvLiveScaleValueLy)){s.classList.remove('gv-visible');return}
  let barPx=gvLiveScaleValueLy/lyPerPx;
  if(!Number.isFinite(barPx)||barPx<8||barPx>width*.9){
-  gvLiveScaleValueLy=lyPerPx* Math.min(width*.8,Math.max(8,gvLiveScaleNominalPx));
-  barPx=gvLiveScaleValueLy/lyPerPx;
+  barPx=Math.min(width*.8,Math.max(8,gvLiveScaleNominalPx));
+  gvLiveScaleValueLy=physicalSpanForPixels(barPx,0);
+  if(!(gvLiveScaleValueLy>0)||!Number.isFinite(gvLiveScaleValueLy)){s.classList.remove('gv-visible');return}
  }
- line.style.width=`${barPx}px`;
- label.textContent=gvFormatLiveScale(gvLiveScaleValueLy);
- console.info('GV0107 HORIZONTAL SCALE CALIBRATION',{fovWidth,viewportWidth:width,lyPerPx,scaleValueLy:gvLiveScaleValueLy,widthPx:barPx,model:'horizontal-global-convention'});
+ line.style.width=`${barPx}px`;label.textContent=gvFormatLiveScale(gvLiveScaleValueLy);
+ console.info('GV0107 DISTANCE-BASED HORIZONTAL SCALE',{fov,viewportWidth:width,viewportHeight:height,distanceMly,fullSpanLy,lyPerPx,scaleValueLy:gvLiveScaleValueLy,widthPx:barPx,model:'aladin-angular-distance-plus-target-distance'});
  const br=banner.getBoundingClientRect();s.style.bottom=`${Math.max(0,innerHeight-br.top+8)}px`;s.classList.add('gv-visible');
 }
 function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null}
