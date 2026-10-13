@@ -313,7 +313,6 @@
         item.row.style.gridTemplateColumns = `${itemWidth.toFixed(3)}px ${S.toFixed(3)}px`;
         item.row.style.columnGap = `${G.toFixed(3)}px`;
         item.row.style.width = `${groupWidth.toFixed(3)}px`;
-        const itemWidth = item.row.dataset.gvMenuAction === "CONSTELLATIONS" ? labelWidth : W;
         item.label.style.width = `${itemWidth.toFixed(3)}px`;
         item.label.style.minWidth = `${itemWidth.toFixed(3)}px`;
         item.label.style.maxWidth = `${itemWidth.toFixed(3)}px`;
