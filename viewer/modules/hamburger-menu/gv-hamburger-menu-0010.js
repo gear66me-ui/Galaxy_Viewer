@@ -299,7 +299,7 @@
       const G = TILE_GAP;
       const C = G;
       const A = Math.max(0, width - (LEFT_INSET * 2));
-      const W = Math.max(72, (A - (2 * S) - (2 * G) - C) / 2);
+      const W = Math.min(210, Math.max(72, A - S - G - C));
       const labelWidth = W;
       const groupWidth = W + G + S;
       const rightLeft = LEFT_INSET + groupWidth + C;
