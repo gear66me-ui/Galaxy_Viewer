@@ -88,8 +88,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.7'
-          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0099.py'
-          assert viewer.get('build')=='0099'
+          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0100.py'
+          assert viewer.get('build')=='0100'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -97,8 +97,8 @@ jobs:
           assert manifest.get('dependencyPins')==['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','1ac5bd2ae74f8d72686ccb58e29cde4d8c874e59','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0099"' in rc
-          assert "const GV200001_BUILD='0099';" in rc
+          assert 'BUILD_NUMBER = "0100"' in rc
+          assert "const GV200001_BUILD='0100';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0045.js' in rc
@@ -133,7 +133,7 @@ jobs:
           missing=[p for p in required if not (root/p).is_file() or (root/p).stat().st_size==0]
           assert not missing, missing
 
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0099 — TWO-OCTAVE ROUTE ENGINE')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0100 — TWO-OCTAVE ROUTE ENGINE')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
