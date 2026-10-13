@@ -88,8 +88,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.7'
-          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0093.py'
-          assert viewer.get('build')=='0093'
+          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0094.py'
+          assert viewer.get('build')=='0094'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -98,7 +98,7 @@ jobs:
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert 'BUILD_NUMBER = "0093"' in rc
-          assert "const GV200001_BUILD='0093';" in rc
+          assert "const GV200001_BUILD='0094';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0045.js' in rc
