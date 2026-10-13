@@ -11,7 +11,6 @@
   const DEFAULT_ROOT_CLASS = "gv-hamburger-module-root";
   const FONT_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf";
   const ROW_HEIGHT = 36;
-  const CONSTELLATION_LABEL_MIN_WIDTH = 178;
   const TILE_GAP = 2;
   const LEFT_INSET = 12;
   const TOP_INSET = 12;
@@ -85,7 +84,7 @@
 .${DEFAULT_ROOT_CLASS} .gv-viewer-menu-label,.${DEFAULT_ROOT_CLASS} .gv-projection-option-label{justify-content:flex-start;padding:0 10px;font:400 12px/1.15 "Space Age",sans-serif;letter-spacing:.55px;text-shadow:0 0 2px rgba(234,248,255,.58);text-align:left;white-space:nowrap;overflow:hidden}
 .${DEFAULT_ROOT_CLASS} .gv-viewer-menu-icon,.${DEFAULT_ROOT_CLASS} .gv-projection-option-icon{width:${ROW_HEIGHT}px;min-width:${ROW_HEIGHT}px;max-width:${ROW_HEIGHT}px;justify-content:center;padding:0;overflow:hidden;box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35);filter:drop-shadow(0 0 4px rgba(143,234,255,.55));isolation:isolate}
 .${DEFAULT_ROOT_CLASS} .gv-static-inset{position:absolute;inset:2px;border-radius:6px;pointer-events:none;z-index:0;opacity:1;background:linear-gradient(145deg,rgba(8,27,58,.28),rgba(20,132,219,.10));box-shadow:inset 0 0 0 1px rgba(124,203,255,.34),inset 0 0 7px rgba(88,191,255,.20),inset 0 0 11px rgba(41,109,189,.16)}
-.${DEFAULT_ROOT_CLASS} .gv-reticle-mini{position:absolute;right:10px;top:50%;width:34px;height:12px;transform:translateY(-50%);border:1px solid #7CCBFF;border-radius:8px;background:#061a35;box-shadow:inset 0 0 5px rgba(0,0,0,.7),0 0 5px rgba(67,207,255,.55);pointer-events:none}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-mini-knob{position:absolute;top:50%;left:2px;width:8px;height:8px;border-radius:50%;transform:translateY(-50%);background:#6f8290;box-shadow:0 0 4px rgba(158,220,255,.45);transition:left .18s ease,background .18s ease,box-shadow .18s ease}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-mini.gv-on .gv-reticle-mini-knob{left:22px;background:#78FFAB;box-shadow:0 0 4px #DFFFF0,0 0 9px rgba(120,255,171,.95)}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-icon{color:#73899a;transition:color .18s ease,filter .18s ease}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-icon.gv-on{color:#78FFAB;filter:drop-shadow(0 0 4px #DFFFF0) drop-shadow(0 0 9px rgba(120,255,171,.9))}\n.${DEFAULT_ROOT_CLASS} .gv-viewer-menu-icon>svg,.${DEFAULT_ROOT_CLASS} .gv-projection-option-icon>svg{position:relative;z-index:2;display:block;overflow:visible;pointer-events:none;margin:0;filter:brightness(1.22) saturate(1.12) drop-shadow(0 0 3px rgba(224,252,255,.76)) drop-shadow(0 0 7px rgba(98,216,255,.70)) drop-shadow(0 0 11px rgba(157,124,255,.36))}
+.${DEFAULT_ROOT_CLASS} .gv-reticle-mini{position:absolute;right:10px;top:50%;width:34px;height:12px;transform:translateY(-50%);border:1px solid #7CCBFF;border-radius:8px;background:#061a35;box-shadow:inset 0 0 5px rgba(0,0,0,.7),0 0 5px rgba(67,207,255,.55);pointer-events:none}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-mini-knob{position:absolute;top:50%;left:2px;width:8px;height:8px;border-radius:50%;transform:translateY(-50%);background:#6f8290;box-shadow:0 0 4px rgba(158,220,255,.45);transition:left .18s ease,background .18s ease,box-shadow .18s ease}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-mini.gv-on .gv-reticle-mini-knob{left:22px;background:#78FFAB;box-shadow:0 0 4px #DFFFF0,0 0 9px rgba(120,255,171,.95)}\n.${DEFAULT_ROOT_CLASS} .gv-constellation-mini{position:absolute;right:10px;top:50%;width:34px;height:12px;transform:translateY(-50%);border:1px solid #7CCBFF;border-radius:8px;background:#061a35;box-shadow:inset 0 0 5px rgba(0,0,0,.7),0 0 5px rgba(67,207,255,.55);pointer-events:none}\n.${DEFAULT_ROOT_CLASS} .gv-constellation-mini-knob{position:absolute;top:50%;left:2px;width:8px;height:8px;border-radius:50%;transform:translateY(-50%);background:#6f8290;box-shadow:0 0 4px rgba(158,220,255,.45);transition:left .18s ease,background .18s ease,box-shadow .18s ease}\n.${DEFAULT_ROOT_CLASS} .gv-constellation-mini.gv-on .gv-constellation-mini-knob{left:22px;background:#78FFAB;box-shadow:0 0 4px #DFFFF0,0 0 9px rgba(120,255,171,.95)}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-icon{color:#73899a;transition:color .18s ease,filter .18s ease}\n.${DEFAULT_ROOT_CLASS} .gv-reticle-icon.gv-on{color:#78FFAB;filter:drop-shadow(0 0 4px #DFFFF0) drop-shadow(0 0 9px rgba(120,255,171,.9))}\n.${DEFAULT_ROOT_CLASS} .gv-viewer-menu-icon>svg,.${DEFAULT_ROOT_CLASS} .gv-projection-option-icon>svg{position:relative;z-index:2;display:block;overflow:visible;pointer-events:none;margin:0;filter:brightness(1.22) saturate(1.12) drop-shadow(0 0 3px rgba(224,252,255,.76)) drop-shadow(0 0 7px rgba(98,216,255,.70)) drop-shadow(0 0 11px rgba(157,124,255,.36))}
 .${DEFAULT_ROOT_CLASS} .gv-viewer-menu-icon.gv-projection-icon>svg{width:30px;height:30px}
 .${DEFAULT_ROOT_CLASS} .gv-projection-option-icon>svg{width:24px;height:24px}
 .${DEFAULT_ROOT_CLASS} .gv-proj-sphere,.${DEFAULT_ROOT_CLASS} .gv-proj-grid,.${DEFAULT_ROOT_CLASS} .gv-proj-bridge{fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -170,7 +169,7 @@
       const artwork=name==="PROJECTION"?PROJECTION_MAIN_SVG:name==="GRID"?GRID_MAIN_SVG:name==="RETICLE"?RETICLE_MAIN_SVG:name==="CONSTELLATIONS"?CONSTELLATIONS_MAIN_SVG:name==="ABOUT"?ABOUT_MAIN_SVG:"";
       const icon = createIconButton("gv-viewer-menu-icon" + (name==="PROJECTION" ? " gv-projection-icon" : name==="RETICLE" ? " gv-reticle-icon gv-on" : name==="CONSTELLATIONS" ? " gv-constellations-icon" : ""), name, artwork);
       icon.setAttribute("role","menuitem");
-      if(name==="RETICLE"){const slider=document.createElement("span");slider.className="gv-reticle-mini gv-on";slider.innerHTML='<i class="gv-reticle-mini-knob"></i>';label.appendChild(slider);}
+      if(name==="RETICLE"){const slider=document.createElement("span");slider.className="gv-reticle-mini gv-on";slider.innerHTML='<i class="gv-reticle-mini-knob"></i>';label.appendChild(slider);}\n      if(name==="CONSTELLATIONS"){const slider=document.createElement("span");slider.className="gv-constellation-mini";slider.innerHTML='<i class="gv-constellation-mini-knob"></i>';label.appendChild(slider);label.style.paddingRight="52px";label.style.fontSize="clamp(8px, 2.1vw, 11px)";label.style.letterSpacing="0.2px";}
       row.append(label,icon);
       leftMenu.appendChild(row);
       return { row, label, icon };
@@ -300,8 +299,8 @@
       const C = G;
       const A = Math.max(0, width - (LEFT_INSET * 2));
       const W = Math.max(72, (A - (2 * S) - (2 * G) - C) / 2);
-      const labelWidth = Math.min(Math.max(W, CONSTELLATION_LABEL_MIN_WIDTH), Math.max(72, A - S - G));
-      const groupWidth = Math.max(W, labelWidth) + G + S;
+      const labelWidth = W;
+      const groupWidth = W + G + S;
       const rightLeft = LEFT_INSET + groupWidth + C;
 
       leftMenu.style.width = `${groupWidth.toFixed(3)}px`;
@@ -309,14 +308,13 @@
       rightMenu.style.width = `${groupWidth.toFixed(3)}px`;
 
       [...leftRows, ...projectionRows].forEach(item => {
-        const itemWidth = item.row.dataset.gvMenuAction === "CONSTELLATIONS" ? labelWidth : W;
+        const itemWidth = W;
         item.row.style.gridTemplateColumns = `${itemWidth.toFixed(3)}px ${S.toFixed(3)}px`;
         item.row.style.columnGap = `${G.toFixed(3)}px`;
         item.row.style.width = `${groupWidth.toFixed(3)}px`;
         item.label.style.width = `${itemWidth.toFixed(3)}px`;
         item.label.style.minWidth = `${itemWidth.toFixed(3)}px`;
         item.label.style.maxWidth = `${itemWidth.toFixed(3)}px`;
-        if (item.row.dataset.gvMenuAction === "CONSTELLATIONS") { item.label.style.fontSize = "clamp(8px, 2.45vw, 12px)"; item.label.style.letterSpacing = "0.2px"; }
       });
 
       return { width, A, S, G, C, W, groupWidth, leftStart: LEFT_INSET, rightLeft, rightBoundary: width - LEFT_INSET };
@@ -397,6 +395,9 @@
       if (action === "CONSTELLATIONS") {
         const enabled = !root.__gvConstellationsEnabled;
         root.__gvConstellationsEnabled = enabled;
+        const slider = item.label.querySelector(".gv-constellation-mini");
+        slider?.classList.toggle("gv-on", enabled);
+        item.icon.classList.toggle("gv-on", enabled);
         const toggleAction = enabled ? "CONSTELLATIONS ON" : "CONSTELLATIONS OFF";
         options.onMenuAction?.(toggleAction, { sourceEvent: event, root });
         emit("gv-menu-action", { action: toggleAction });
