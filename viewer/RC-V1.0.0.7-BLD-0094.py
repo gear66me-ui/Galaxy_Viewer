@@ -21,8 +21,8 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7553757efd132a4a978c14e0773cbf3686662660/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE"
-HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7553757efd132a4a978c14e0773cbf3686662660/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE"
+HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@06b2e4e855ddacdc4a7d1a8868cc63a367ac1105/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE"
+HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@06b2e4e855ddacdc4a7d1a8868cc63a367ac1105/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
@@ -97,8 +97,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
-    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7553757efd132a4a978c14e0773cbf3686662660/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE',
-    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7553757efd132a4a978c14e0773cbf3686662660/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE',
+    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@06b2e4e855ddacdc4a7d1a8868cc63a367ac1105/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE',
+    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@06b2e4e855ddacdc4a7d1a8868cc63a367ac1105/viewer/modules/hamburger-menu/gv-hamburger-menu-0010.js?v=GV200001-0094-HAMBURGER-TOGGLE',
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
