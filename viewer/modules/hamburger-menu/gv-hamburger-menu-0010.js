@@ -11,6 +11,7 @@
   const DEFAULT_ROOT_CLASS = "gv-hamburger-module-root";
   const FONT_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf";
   const ROW_HEIGHT = 36;
+  const CONSTELLATION_LABEL_MIN_WIDTH = 178;
   const TILE_GAP = 2;
   const LEFT_INSET = 12;
   const TOP_INSET = 12;
@@ -299,7 +300,8 @@
       const C = G;
       const A = Math.max(0, width - (LEFT_INSET * 2));
       const W = Math.max(72, (A - (2 * S) - (2 * G) - C) / 2);
-      const groupWidth = W + G + S;
+      const labelWidth = Math.min(Math.max(W, CONSTELLATION_LABEL_MIN_WIDTH), Math.max(72, A - S - G));
+      const groupWidth = Math.max(W, labelWidth) + G + S;
       const rightLeft = LEFT_INSET + groupWidth + C;
 
       leftMenu.style.width = `${groupWidth.toFixed(3)}px`;
@@ -307,12 +309,15 @@
       rightMenu.style.width = `${groupWidth.toFixed(3)}px`;
 
       [...leftRows, ...projectionRows].forEach(item => {
-        item.row.style.gridTemplateColumns = `${W.toFixed(3)}px ${S.toFixed(3)}px`;
+        const itemWidth = item.row.dataset.gvMenuAction === "CONSTELLATIONS" ? labelWidth : W;
+        item.row.style.gridTemplateColumns = `${itemWidth.toFixed(3)}px ${S.toFixed(3)}px`;
         item.row.style.columnGap = `${G.toFixed(3)}px`;
         item.row.style.width = `${groupWidth.toFixed(3)}px`;
-        item.label.style.width = `${W.toFixed(3)}px`;
-        item.label.style.minWidth = `${W.toFixed(3)}px`;
-        item.label.style.maxWidth = `${W.toFixed(3)}px`;
+        const itemWidth = item.row.dataset.gvMenuAction === "CONSTELLATIONS" ? labelWidth : W;
+        item.label.style.width = `${itemWidth.toFixed(3)}px`;
+        item.label.style.minWidth = `${itemWidth.toFixed(3)}px`;
+        item.label.style.maxWidth = `${itemWidth.toFixed(3)}px`;
+        if (item.row.dataset.gvMenuAction === "CONSTELLATIONS") { item.label.style.fontSize = "clamp(8px, 2.45vw, 12px)"; item.label.style.letterSpacing = "0.2px"; }
       });
 
       return { width, A, S, G, C, W, groupWidth, leftStart: LEFT_INSET, rightLeft, rightBoundary: width - LEFT_INSET };
@@ -390,6 +395,16 @@
       if (item === leftRows[0]) return toggleProjection(event);
       flashRow(item);
       const action = item.row.dataset.gvMenuAction;
+      if (action === "CONSTELLATIONS") {
+        const enabled = !root.__gvConstellationsEnabled;
+        root.__gvConstellationsEnabled = enabled;
+        const toggleAction = enabled ? "CONSTELLATIONS ON" : "CONSTELLATIONS OFF";
+        options.onMenuAction?.(toggleAction, { sourceEvent: event, root });
+        emit("gv-menu-action", { action: toggleAction });
+        item.label.setAttribute("aria-pressed", enabled ? "true" : "false");
+        item.icon.setAttribute("aria-pressed", enabled ? "true" : "false");
+        return;
+      }
       options.onMenuAction?.(action, { sourceEvent: event, root });
       emit("gv-menu-action", { action });
     }
