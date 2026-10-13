@@ -108,7 +108,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','eb7c32362066cc77cf5b1d45db4f658082093fb9','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','be58f9fd876da026760b68bd2af8ad9828ee18a1','373de63d264588f524aed2b999e61f7da7558b42','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','1adfad8b2052f76997d0e29fd88931e692ddc6a3']), pins
           assert 'Galaxy_Viewer@373de63d264588f524aed2b999e61f7da7558b42/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
@@ -117,7 +117,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0046.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0047.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
