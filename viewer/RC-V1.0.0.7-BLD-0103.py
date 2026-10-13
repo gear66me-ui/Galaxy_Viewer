@@ -21,8 +21,8 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
 # ECO: GV200-001
 # ============================================================================
-HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@69ba115d2d82c10239019b7cdc4746de525303eb/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js?v=GV200001-0103-HAMBURGER-RESPONSIVE-CONST"
-HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@69ba115d2d82c10239019b7cdc4746de525303eb/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js?v=GV200001-0103-HAMBURGER-RESPONSIVE-CONST"
+HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0103-HAMBURGER-CONST-FOV-TEST"
+HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0103-HAMBURGER-CONST-FOV-TEST"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
@@ -97,8 +97,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinVersion:'3.8.2',
     aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
-    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@69ba115d2d82c10239019b7cdc4746de525303eb/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js?v=GV200001-0103-HAMBURGER-RESPONSIVE-CONST',
-    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@69ba115d2d82c10239019b7cdc4746de525303eb/viewer/modules/hamburger-menu/gv-hamburger-menu-0011.js?v=GV200001-0103-HAMBURGER-RESPONSIVE-CONST',
+    hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0103-HAMBURGER-CONST-FOV-TEST',
+    hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0103-HAMBURGER-CONST-FOV-TEST',
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
@@ -564,8 +564,8 @@ function gvUpdateLivePhysicalScale(){
     const size=aladin.getSize?.(),viewportWidth=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),viewportHeight=Number(size?.[1]||document.getElementById('aladin-cosmic-command-test')?.clientHeight||innerHeight),distanceMly=Number(activeDestination?.distanceMly??activeDestination?.distance);
     if(!(viewportWidth>0)||!(viewportHeight>0)||!(distanceMly>0)||typeof aladin.pix2world!=='function'){s.classList.remove('gv-visible');return}
     // Use Aladin's actual sky coordinates at both endpoints of the visible bar.
-    // Iterate the endpoint separation until the spherical chord at the active
-    // destination's distance matches the chosen physical scale. This avoids
+    // Iterate the endpoint separation until the transverse-plane width at the active
+    // destination's distance matches the chosen physical scale. The wide-angle conversion uses 2D·tan(θ/2), not the spherical chord 2D·sin(θ/2). This avoids
     // extrapolating a small local pixel sample over wide/distorted fields.
     const angularDistanceRad=(x1,y1,x2,y2)=>{
         const a=aladin.pix2world(x1,y1),c=aladin.pix2world(x2,y2);
@@ -578,7 +578,7 @@ function gvUpdateLivePhysicalScale(){
     const measureLy=widthPx=>{
         const half=Math.max(0.5,Math.min(viewportWidth/2,widthPx/2));
         const theta=angularDistanceRad(centerX-half,centerY,centerX+half,centerY);
-        return Number.isFinite(theta)&&theta>=0?2*distanceLy*Math.sin(theta/2):NaN;
+        return Number.isFinite(theta)&&theta>=0?2*distanceLy*Math.tan(theta/2):NaN;
     };
     const probePx=Math.max(4,Math.min(24,viewportWidth*.02)),probeLy=measureLy(probePx);
     if(!(probeLy>0)||!Number.isFinite(probeLy)){s.classList.remove('gv-visible');return}
