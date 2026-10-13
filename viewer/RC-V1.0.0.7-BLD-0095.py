@@ -798,6 +798,11 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
+// BUILD 0095: constellation overlay is enabled on first launch by default.
+hamburger.root.__gvConstellationsEnabled=true;
+hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-reticle-mini')?.classList.add('gv-on');
+hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-viewer-menu-label')?.setAttribute('aria-pressed','true');
+gvSetConstellationsEnabled(true);
 
 // ============================================================================
 // SECTION 024 — COORDINATE OVERLAY 0006 INITIALIZATION
