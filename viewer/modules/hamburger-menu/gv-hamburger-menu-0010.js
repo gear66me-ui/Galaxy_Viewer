@@ -169,7 +169,7 @@
       const artwork=name==="PROJECTION"?PROJECTION_MAIN_SVG:name==="GRID"?GRID_MAIN_SVG:name==="RETICLE"?RETICLE_MAIN_SVG:name==="CONSTELLATIONS"?CONSTELLATIONS_MAIN_SVG:name==="ABOUT"?ABOUT_MAIN_SVG:"";
       const icon = createIconButton("gv-viewer-menu-icon" + (name==="PROJECTION" ? " gv-projection-icon" : name==="RETICLE" ? " gv-reticle-icon gv-on" : name==="CONSTELLATIONS" ? " gv-constellations-icon" : ""), name, artwork);
       icon.setAttribute("role","menuitem");
-      if(name==="RETICLE"){const slider=document.createElement("span");slider.className="gv-reticle-mini gv-on";slider.innerHTML='<i class="gv-reticle-mini-knob"></i>';label.appendChild(slider);}\n      if(name==="CONSTELLATIONS"){const slider=document.createElement("span");slider.className="gv-constellation-mini";slider.innerHTML='<i class="gv-constellation-mini-knob"></i>';label.appendChild(slider);label.style.paddingRight="52px";label.style.fontSize="clamp(8px, 2.1vw, 11px)";label.style.letterSpacing="0.2px";}
+      if(name==="RETICLE"){const slider=document.createElement("span");slider.className="gv-reticle-mini gv-on";slider.innerHTML='<i class="gv-reticle-mini-knob"></i>';label.appendChild(slider);}\n      if(name==="CONSTELLATIONS"){const slider=document.createElement("span");slider.className="gv-constellation-mini";slider.innerHTML='<i class="gv-constellation-mini-knob"></i>';label.appendChild(slider);label.style.paddingRight="52px";}
       row.append(label,icon);
       leftMenu.appendChild(row);
       return { row, label, icon };
