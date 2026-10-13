@@ -2388,6 +2388,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         if(directHdPresentationObjectUrl){try{URL.revokeObjectURL(directHdPresentationObjectUrl)}catch(_){}directHdPresentationObjectUrl=null}
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
         if(firstTrip)startTravelCard();
+        // BUILD 0097: catalog-record lookup drives navigation registration; HD preparation stays deferred.
         // Preserve the catalog-record/navigation handshake without preparing HD during translation.
         startRecordLookup();
         // HD image preparation starts at zoom-in, not during the translation phase.
