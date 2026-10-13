@@ -157,5 +157,5 @@
     "1ac5bd2ae74f8d72686ccb58e29cde4d8c874e59",
     "373de63d264588f524aed2b999e61f7da7558b42"
   ],
-  "validationProfile": "production-release-gate-0093"
+  "validationProfile": "production-release-gate-0093-pinned-runtime-v2"
 }
