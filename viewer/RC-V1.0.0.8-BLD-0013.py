@@ -680,10 +680,11 @@ async function gvSyncEarthDistanceToCenter(){
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         if(!nearest){
-            gvEarthDistanceTarget=null;
-            gvEarthDistanceTargetKey='';
-            gvHideEarthDistance();
-            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            // Sparse catalog fields are normal. Keep the last valid catalog distance
+            // visible instead of blanking the banner whenever the current FOV has no match.
+            const lastValid=gvEarthDistanceTarget||gvEarthDistanceArrivalDestination;
+            if(lastValid)gvShowEarthDistance(lastValid);
+            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — PRESERVED LAST VALID DISTANCE',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY,retained:!!lastValid});
             gvUpdateLivePhysicalScale();
             return;
         }
@@ -707,25 +708,26 @@ function gvInstallEarthDistanceInteractionListeners(){
     const host=document.getElementById('aladin-cosmic-command-test');
     if(!host)return;
     gvEarthDistanceInteractionListenersInstalled=true;
-    const userChangedView=()=>{
-        if(gvNavigationTravelActive)return;
+    const isHdViewport=event=>!!event?.target?.closest?.('.gvdp-viewport');
+    const userChangedView=event=>{
+        if(gvNavigationTravelActive||isHdViewport(event))return;
         gvEarthDistanceUserAdjustedView=true;
         gvSyncEarthDistanceToCenter();
         gvUpdateLivePhysicalScale();
     };
+    // Start live matching on first contact, then sample throughout an actual drag.
+    // The HD viewport is excluded: it has its own transform and scale equation.
+    host.addEventListener('pointerdown',userChangedView,{passive:true});
+    host.addEventListener('pointermove',event=>{if(event.buttons>0||event.pointerType==='touch')userChangedView(event)},{passive:true});
     host.addEventListener('pointerup',userChangedView,{passive:true});
     host.addEventListener('touchend',userChangedView,{passive:true});
     host.addEventListener('wheel',userChangedView,{passive:true});
-    // HD image pan/pinch changes its physical ruler, not the sky coordinates or catalog distance.
-    window.addEventListener('gv-hd-viewport-changed',()=>{
-        gvSyncEarthDistanceToCenter();
-        gvUpdateLivePhysicalScale();
-    },{passive:true});
 }
-// Update immediately on sky position/zoom events as well as the 300 ms safety poll.
+// Update immediately on Aladin sky position/zoom events and poll every 100 ms.
+// HD pan/pinch is intentionally isolated in the destination module.
 try{aladin.on('positionChanged',()=>{if(!gvNavigationTravelActive&&gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
 try{aladin.on('zoomChanged',()=>{if(!gvNavigationTravelActive&&gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
-setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},300);
+setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
