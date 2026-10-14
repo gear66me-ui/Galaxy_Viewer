@@ -159,7 +159,7 @@ jobs:
           assert 'const distanceSource=gvEarthDistanceTarget||activeDestination;' in rc, 'physical scale must use the live centered galaxy distance'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
-          assert '.gv-search-result-match{' in rc and 'font:400 8px/10px Arial,sans-serif' in rc, 'search match detail must be small-font secondary text'
+          assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
           print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0132 — SPACE AGE SEARCH MATCH FONT / COORDINATE-AWARE EARTH DISTANCE / LIVE FOV / ZERO-STUTTER')
