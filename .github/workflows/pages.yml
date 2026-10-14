@@ -88,8 +88,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.7'
-          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0131.py'
-          assert viewer.get('build')=='0131'
+          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0132.py'
+          assert viewer.get('build')=='0132'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -97,8 +97,8 @@ jobs:
           assert manifest.get('dependencyPins')==["24e7242ecd0726245ea025c6e9807568046f5bc0","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0131"' in rc
-          assert "const GV200001_BUILD='0131';" in rc
+          assert 'BUILD_NUMBER = "0132"' in rc
+          assert "const GV200001_BUILD='0132';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0050.js' in rc
@@ -108,7 +108,7 @@ jobs:
           assert 'function gvSearchDisplayName(record)' in rc, 'search result sort/display helper missing'
           assert 'GV SEARCH RENDER FAILED' in rc, 'search renderer errors must be visible, not silently blank'
           assert 'gvSearchCoordinatePairMatches' in rc, 'coordinate-pair search helper missing'
-          # BUILD 0131 search-match tile details, retaining BUILD 0130 coordinate/FOV and BUILD 0129 travel gates.
+          # BUILD 0132 Space Age search-match font, retaining BUILD 0130 coordinate/FOV and BUILD 0129 travel gates.
           assert 'GV TRAVEL PREFLIGHT HD READY' in rc, 'HD image must be prepared before camera motion'
           assert 'GV TRAVEL AVM LAYER REGISTERED BEFORE MOTION' in rc, 'AVM layer must be registered before camera motion'
           assert 'GV HD LAYER STAGED BEFORE TRAVEL' in rc, 'staged AVM layer must load while hidden'
@@ -162,7 +162,7 @@ jobs:
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px Arial,sans-serif' in rc, 'search match detail must be small-font secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0131 — SEARCH MATCH STRINGS / COORDINATE-AWARE EARTH DISTANCE / LIVE FOV / ZERO-STUTTER')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0132 — SPACE AGE SEARCH MATCH FONT / COORDINATE-AWARE EARTH DISTANCE / LIVE FOV / ZERO-STUTTER')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
