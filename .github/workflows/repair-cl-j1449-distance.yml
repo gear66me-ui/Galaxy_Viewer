@@ -1,6 +1,10 @@
 name: Repair CL J1449+0856 Distance
 on:
   workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/repair-cl-j1449-distance.yml"
 permissions:
   contents: write
 jobs:
@@ -44,7 +48,6 @@ jobs:
               if any(norm(v) == target for v in values):
                   matches.append((trail, obj))
 
-          # Deduplicate the same object if it is reachable more than once.
           unique = []
           seen = set()
           for trail, obj in matches:
@@ -59,14 +62,14 @@ jobs:
           if not isinstance(science, dict):
               raise SystemExit(f"Record at {trail} has no science object; refusing an unsafe schema change.")
 
-          # Canonical catalog convention: distance values are in millions of light-years.
+          # Canonical catalog unit: millions of light-years.
           science["distanceMly"] = 10240
           if "distanceMly" in record:
               record["distanceMly"] = 10240
           if "distance_mly" in record:
               record["distance_mly"] = 10240
 
-          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           print(f"Updated {trail}: science.distanceMly=10240 Mly (10.24 billion light-years)")
           PY
       - name: Validate and commit only the catalog
