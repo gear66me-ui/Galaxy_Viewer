@@ -54,19 +54,21 @@
       if(!found){console.info("GV CONSTELLATION GLOW: no matching constellation",name);return false;}
       startGlow(found);return true;
     }
-    function applyGlow(found,opacity){
-      // Aladin GraphicOverlay versions differ: prefer their dedicated opacity setter,
-      // then alpha, then options as a compatibility fallback.
+    function applyGlow(found,brightness){
+      // Aladin Lite 3.8.2 GraphicOverlay does not reliably apply opacity to
+      // existing primitives. Animate the supported overlay stroke color instead.
+      // Blend dark navy into cyan so the pulse remains visible without thick lines.
+      const t=Math.max(0,Math.min(1,brightness));
+      const rgb=[142,220,255].map(v=>Math.round(8+(v-8)*t));
+      const color="#"+rgb.map(v=>v.toString(16).padStart(2,"0")).join("");
       try{
-        if(typeof found.glow.setOpacity==="function")found.glow.setOpacity(opacity);
-        else if(typeof found.glow.setAlpha==="function")found.glow.setAlpha(opacity);
-        else if(typeof found.glow.setOptions==="function")found.glow.setOptions({opacity,color:"#8EDCFF",lineWidth:0.75});
-      }catch(error){console.warn("GV CONSTELLATION GLOW OPACITY UPDATE FAILED",error)}
+        if(typeof found.glow.setOptions==="function")found.glow.setOptions({color,lineWidth:0.75});
+      }catch(error){console.warn("GV CONSTELLATION GLOW COLOR UPDATE FAILED",error)}
     }
     function startGlow(found){
       stopGlow();glowEntry=found;
       if(!enabled)return false;
-      found.glow.setOptions?.({color:"#8EDCFF",lineWidth:0.75});
+      found.glow.setOptions?.({color:"#080808",lineWidth:0.75});
       applyGlow(found,0);
       found.glow.show();
       // A true 2-second triangular brightness ramp: 0→100% in 1s, then 100→0% in 1s.
