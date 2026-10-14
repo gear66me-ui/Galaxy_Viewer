@@ -2574,6 +2574,19 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     // The destination card, HD info port, and live distance display share the catalog-authoritative record.
     activeDestination=presentationDestination;
     headsUpDisplay.render();
+    // BUILD 0129: finish expensive HD fetch/decode/WCS preparation before camera motion.
+    // This keeps image preparation out of the 17-second flight, eliminating late arrival
+    // handoff and avoiding CPU/network decode work during the smooth FOV choreography.
+    // If preflight fails, retry at T-minus-eight rather than aborting navigation.
+    try{
+        const preflightStarted=performance.now();
+        await ensurePrepared();
+        console.info('GV TRAVEL PREFLIGHT HD READY',{ms:Math.round(performance.now()-preflightStarted),name:presentationDestination?.name||presentationDestination?.objectName||''});
+    }catch(error){
+        preparedPromise=null;
+        recordPromise=null;
+        console.warn('GV TRAVEL PREFLIGHT HD FAILED; RETRYING AT T-MINUS-EIGHT',error);
+    }
     // Build 0028: show the travel card before starting the FOV-only phase.
     // Provider/HD preparation and pointer work remain deferred until 30%.
     startTravelCard();
