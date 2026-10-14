@@ -620,9 +620,10 @@ setInterval(gvUpdateLivePhysicalScale,80);
 // Distance comes from that galaxy's catalog record; the physical ruler then
 // recomputes from its distance and Aladin's current FOV. Never mutate activeDestination.
 let gvEarthDistanceSyncBusy=false;
+let gvEarthDistanceSyncGeneration=0;
 let gvEarthDistanceSyncLastError='';
 async function gvSyncEarthDistanceToCenter(){
-    if(gvEarthDistanceSyncBusy)return;
+    const syncGeneration=++gvEarthDistanceSyncGeneration;
     const banner=document.getElementById('gv-earth-distance-banner');
     if(!banner)return;
     if(gvNavigationTravelActive){gvHideEarthDistance();return;}
@@ -640,9 +641,8 @@ async function gvSyncEarthDistanceToCenter(){
         const fovX=Number(Array.isArray(rawFov)?rawFov[0]:(rawFov?.x??rawFov?.fovX));
         const fovY=Number(Array.isArray(rawFov)?rawFov[1]:(rawFov?.y??rawFov?.fovY));
         const catalog=await gvLoadAvmRuntimeCatalog();
-        // A catalog load may finish after a trip starts; never let that stale async
-        // result resurrect the banner during travel.
-        if(gvNavigationTravelActive)return;
+        // Reject stale asynchronous work after any newer pan/zoom refresh.
+        if(syncGeneration!==gvEarthDistanceSyncGeneration||gvNavigationTravelActive)return;
         const rad=Math.PI/180,ra0=centerRa*rad,dec0=centerDec*rad;
         const safeFovX=Number.isFinite(fovX)&&fovX>0?fovX:0;
         const safeFovY=Number.isFinite(fovY)&&fovY>0?fovY:(safeFovX>0?safeFovX*height/width:0);
@@ -666,6 +666,7 @@ async function gvSyncEarthDistanceToCenter(){
         }
         // On pan/zoom, resolve the closest galaxy inside the live RA/Dec field,
         // rather than requiring a match inside a fixed-radius center tolerance.
+        if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         if(!nearest){
             // Preserve the arrival-selected destination banner when the runtime
             // catalog has no match in this field. Hiding here made it flash off
@@ -1765,13 +1766,14 @@ if(gvSkyRoot){
 }
 document.addEventListener('touchstart',event=>{
     if(!gvSkyTouchIsContent(event.target)||event.touches.length<2)return;
+    event.preventDefault();event.stopImmediatePropagation();
     const gap=gvSkyTouchGap(event.touches),fov=gvSkyReadFov();
     if(gap<=0||!Number.isFinite(fov)||fov<=0){console.warn('GV0007 PINCH START REJECTED',{gapPx:gap,fovDegrees:fov});return}
     gvSkyPinch.startGap=gap;
     gvSkyPinch.startFov=fov;
     gvSkyPinch.active=true;
     console.info('GV0007 PINCH START',{gapPx:gap,fovDegrees:fov,target:event.target?.tagName});
-},{capture:true,passive:true});
+},{capture:true,passive:false});
 document.addEventListener('touchmove',event=>{
     if(!gvSkyPinch.active||event.touches.length<2)return;
     const gap=gvSkyTouchGap(event.touches);
@@ -2728,6 +2730,50 @@ function gvPrewarmProviderWebsite(destination){
 }
 
 let gvFirstDestinationPreload=null;
+let gvNextTripPrewarm=null;
+let gvNextTripPrewarmGeneration=0;
+function gvDisposeNextTripPrewarm(warm,reason='invalidated'){
+    if(!warm)return;
+    console.info('GV NEXT DESTINATION PREWARM INVALIDATED',{reason,name:warm.destination?.name||warm.destination?.designation||''});
+    const prepared=warm.preparedValue;
+    if(prepared?.imageObjectUrl&&prepared.imageObjectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(prepared.imageObjectUrl);
+    if(prepared?.cleanImageObjectUrl&&prepared.cleanImageObjectUrl!==directHdPresentationObjectUrl){try{URL.revokeObjectURL(prepared.cleanImageObjectUrl)}catch(_){}}
+}
+function gvInvalidateNextTripPrewarm(reason='navigation mode changed'){
+    const old=gvNextTripPrewarm;gvNextTripPrewarm=null;gvNextTripPrewarmGeneration++;gvDisposeNextTripPrewarm(old,reason);
+}
+function gvStartNextTripPrewarm(){
+    if(gvSurveyMode||navigationInFlight||gvNavigationTravelActive||gvNextTripPrewarm)return;
+    const generation=++gvNextTripPrewarmGeneration;
+    const warm={destination:null,presentationReady:false,prepared:null,preparedValue:null,generation};gvNextTripPrewarm=warm;
+    console.info('GV NEXT DESTINATION PREWARM START');
+    warm.prepared=(async()=>{
+        try{
+            const selected=await navigationRuntime.nextDestination();
+            if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED AFTER DESTINATION SELECTION');
+            warm.destination=selected;
+            const presentation=await gvPresentationDestination(selected);
+            if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED BEFORE METADATA READY');
+            warm.destination=presentation;warm.presentationReady=true;
+            console.info('GV NEXT DESTINATION METADATA READY',{name:presentation?.name||presentation?.designation||''});
+            const record=await gvRuntimeAvmRecord(presentation);
+            if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED BEFORE IMAGE PREPARATION');
+            const prepared=await gvPrepareDirectHd(presentation,Promise.resolve(record));
+            if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm){
+                if(prepared.imageObjectUrl)gvReleaseHdObjectUrl(prepared.imageObjectUrl);
+                if(prepared.cleanImageObjectUrl)try{URL.revokeObjectURL(prepared.cleanImageObjectUrl)}catch(_){}
+                throw new Error('PREWARM INVALIDATED AFTER IMAGE PREPARATION');
+            }
+            warm.preparedValue=prepared;
+            console.info('GV NEXT DESTINATION IMAGE READY',{name:presentation?.name||presentation?.designation||'',resources:gvHdResourceSnapshot()});
+            return prepared;
+        }catch(error){
+            if(gvNextTripPrewarm===warm)console.warn('GV NEXT DESTINATION PREWARM FAILED; SAFE FALLBACK ENABLED',String(error?.message||error));
+            throw error;
+        }
+    })();
+    warm.prepared.catch(()=>{});
+}
 function gvStartFirstDestinationPreload(){
     if(gvFirstDestinationPreload)return gvFirstDestinationPreload;
     const destination=activeRoute[0];
@@ -2748,7 +2794,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
 // ============================================================================
-async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
+async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null}={}){
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
     if(directHdStaged){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
@@ -2792,7 +2838,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         // Provider prewarming is deferred until after 100% arrival.
     };
     activeDestination=v.destination;
-    const presentationDestination=await gvPresentationDestination(v.destination);
+    const presentationDestination=prewarmedPresentationDestination||await gvPresentationDestination(v.destination);
     // The destination card, HD info port, and live distance display share the catalog-authoritative record.
     activeDestination=presentationDestination;
     headsUpDisplay.render();
@@ -2852,6 +2898,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             headsUpDisplay.render();
             gvShowEarthDistance(presentationDestination);
             gvPrewarmProviderWebsite(v.destination);
+            gvStartNextTripPrewarm();
         }));
         return v.destination;
     }
@@ -2872,6 +2919,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         headsUpDisplay.render();
         gvShowEarthDistance(presentationDestination);
         gvPrewarmProviderWebsite(v.destination);
+        gvStartNextTripPrewarm();
     }));
     return v.destination;
 }
@@ -2912,6 +2960,7 @@ function gvSurveyThumbnailCandidates(record,provider=''){
 }
 async function gvSelectSurveyProvider(provider){
     if(navigationInFlight)return false;
+    gvInvalidateNextTripPrewarm('survey provider selected');
     const key=String(provider||'').toUpperCase();
     await gvSurveyThumbnailPackReady;
     const records=gvSurveyCatalog.get(key);
@@ -2937,6 +2986,7 @@ async function gvSelectSurveyProvider(provider){
 }
 function gvExitSurveyMode(){
     if(navigationInFlight)return false;
+    gvInvalidateNextTripPrewarm('survey mode exited');
     gvSurveyMode=null;
     history.length=0;historyIndex=-1;
     target.setActiveProvider('',{index:0,total:0});
@@ -2949,6 +2999,7 @@ function gvExitSurveyMode(){
 
 async function gvNavigateSearchResult(destination){
     if(navigationInFlight||!destination)return false;
+    gvInvalidateNextTripPrewarm('search result selected');
     gvCancelProviderAll();
     document.getElementById('gv-universe-context')?.remove();
     document.getElementById('gv-we-are-here')?.remove();
@@ -3052,8 +3103,14 @@ async function navigateRandom(){
     galaxyNavigator.setTraveling?.(true);
     updateNavigationAvailability();
     try{
-        const destination=await navigationRuntime.nextDestination();
-        let preloadedPrepared=null;
+        let nextWarm=gvNextTripPrewarm;gvNextTripPrewarm=null;
+        let destination,preloadedPrepared=null,prewarmedPresentationDestination=null;
+        if(nextWarm){
+            try{preloadedPrepared=nextWarm.prepared?await nextWarm.prepared:null}catch(error){console.warn('GV NEXT DESTINATION PREWARM FALLBACK',String(error?.message||error));preloadedPrepared=null}
+            destination=nextWarm.destination;
+            if(!destination){console.warn('GV NEXT DESTINATION PREWARM DESTINATION MISSING; SELECTING FRESH');destination=await navigationRuntime.nextDestination()}
+            else {prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''})}
+        }else destination=await navigationRuntime.nextDestination();
         if(routeIndex===0&&gvFirstDestinationPreload){
             gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
         }
@@ -3063,7 +3120,7 @@ async function navigateRandom(){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
-        await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex});
+        await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex,prewarmedPresentationDestination});
     }finally{
         navigationInFlight=false;
         gvSetTripCycle(false);
