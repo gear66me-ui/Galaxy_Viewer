@@ -1,1 +1,2 @@
 Galaxy Viewer Release RC-V1.0.0.8 — BUILD 0009 deployment retry after clearing stale GitHub Pages deployment lock.
+Retry Build 0009 after correcting Pages deployment cancellation to use the numeric deployment ID.
