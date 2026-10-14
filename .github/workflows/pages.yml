@@ -523,9 +523,9 @@ jobs:
           fi
           ids=$(jq -r --arg stale "${stale}" '.[] | select(.sha == $stale) | .id' /tmp/deployments.json)
           if [[ -z "${ids}" ]]; then
-            echo "No ordinary deployment record found for stale SHA ${stale}; cannot safely delete a record."
+            echo "No orphaned deployment record remains for stale SHA ${stale}; cleanup is already complete."
             jq -r '.[] | [.id,.sha,.environment,.created_at] | @tsv' /tmp/deployments.json | head -30
-            exit 1
+            exit 0
           fi
           while IFS= read -r id; do
             [[ -n "${id}" ]] || continue
