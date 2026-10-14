@@ -1,14 +1,13 @@
 {
   "release": "RC-V1.0.0.7",
   "sourceBranch": "release",
-  "sourceCommit": "1bd41cc99b87c70fe5a8f901f8d4ca1f65015203",
-  "build": "0120",
-
+  "sourceCommit": "5efcc40cad387d30cd4ca3edc57124131b5f260a",
+  "build": "0122",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.7-BLD-0120.py",
+    "viewer/RC-V1.0.0.7-BLD-0122.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -162,4 +161,3 @@
   ],
   "validationProfile": "production-release-gate-0100-pinned-runtime-v1"
 }
-
