@@ -642,7 +642,8 @@ async function gvSyncEarthDistanceToCenter(){
         const fovY=Number(Array.isArray(rawFov)?rawFov[1]:(rawFov?.y??rawFov?.fovY));
         const catalog=await gvLoadAvmRuntimeCatalog();
         // Reject stale asynchronous work after any newer pan/zoom refresh.
-        if(syncGeneration!==gvEarthDistanceSyncGeneration||gvNavigationTravelActive)return;
+        if(gvNavigationTravelActive)return;
+        if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         const rad=Math.PI/180,ra0=centerRa*rad,dec0=centerDec*rad;
         const safeFovX=Number.isFinite(fovX)&&fovX>0?fovX:0;
         const safeFovY=Number.isFinite(fovY)&&fovY>0?fovY:(safeFovX>0?safeFovX*height/width:0);
@@ -3141,6 +3142,7 @@ async function navigateBack(){
         return gvNavigateSurveyIndex(gvSurveyMode.index-1);
     }
     if(navigationInFlight||historyIndex<=0)return;
+    gvInvalidateNextTripPrewarm('back navigation');
     gvCancelProviderAll();
     navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex--;updateNavigationAvailability();
     try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
@@ -3157,6 +3159,7 @@ async function navigateForward(){
         return gvNavigateSurveyIndex(gvSurveyMode.index+1);
     }
     if(navigationInFlight||historyIndex>=history.length-1)return;
+    gvInvalidateNextTripPrewarm('forward navigation');
     gvCancelProviderAll();
     navigationInFlight=true;gvSetTripCycle(true);galaxyNavigator.setBusy(true);galaxyNavigator.setTraveling?.(true);historyIndex++;updateNavigationAvailability();
     try{await showDestination(history[historyIndex])}finally{navigationInFlight=false;gvSetTripCycle(false);galaxyNavigator.setTraveling?.(false);galaxyNavigator.setBusy(false);updateNavigationAvailability()}
