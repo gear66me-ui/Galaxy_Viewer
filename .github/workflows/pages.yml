@@ -89,22 +89,22 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.8'
-          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0016.py'
-          assert viewer.get('build')=='0016'
+          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0017.py'
+          assert viewer.get('build')=='0017'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert re.fullmatch(r'[0-9a-f]{40}',str(manifest.get('sourceCommit',''))), 'manifest sourceCommit must be a full commit SHA'
-          assert manifest.get('dependencyPins')==["a5aa48b607ca1c45b568979415d7f956df54c2ef","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
+          assert manifest.get('dependencyPins')==["f31a2349640c358ebb6af6f75e4185c799e0423a","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
-          assert 'gv-destination-presentation-0051.js' in rc
+          assert 'gv-destination-presentation-0052.js' in rc
           assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
           assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
           assert 'const GV200001_BUILD=\'0016\';' in rc, 'runtime cache-busting build identity must match pointer'
-          assert "GalaxyDestinationPresentation?.VERSION!=='0051'" in rc
+          assert "GalaxyDestinationPresentation?.VERSION!=='0052'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.
           assert 'function gvSearchDisplayName(record)' in rc, 'search result sort/display helper missing'
@@ -125,7 +125,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','a5aa48b607ca1c45b568979415d7f956df54c2ef','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','f31a2349640c358ebb6af6f75e4185c799e0423a','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
           assert 'Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
@@ -134,7 +134,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0051.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0052.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -174,6 +174,7 @@ jobs:
           assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — RETAINED LAST VALID DISTANCE' in rc and 'const catalog=await gvLoadAvmRuntimeCatalog();' in rc and 'if(gvNavigationTravelActive)return;' in rc, 'Earth banner must retain last valid distance without unauthorized status text when current FOV has no catalog match'
           assert 'NO CATALOG TARGET IN FIELD' not in rc, 'Do not inject unauthorized no-match status into Earth-distance banner'
           assert 'width:min(50vw,60%);max-width:60%;overflow:hidden' in rc, 'Aladin-port Earth-distance ruler must stay bounded between side icons'
+          assert 'BUILD_NUMBER = "0017"' in rc and "const GV200001_BUILD='0017'" in rc, 'Build identity must match release pointer 0017'
           assert 'const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);' in rc and 'if(selectionChanged||!b.querySelector(\'.gv-earth-distance-icon\'))' in rc, 'Earth banner must share destination-card distance formatting and avoid rebuilding the banner on every poll'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
@@ -186,8 +187,8 @@ jobs:
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
-          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0051.js').read_text()
-          assert "const VERSION='0051'" in module and 'lyPerPx:g.lyPerPx/hdScale' in module, 'HD viewport scale equation/version missing'
+          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0052.js').read_text()
+          assert "const VERSION='0052'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
@@ -215,7 +216,7 @@ jobs:
           if(a<0||b<a)throw new Error('VIEWER JAVASCRIPT EXTRACTION FAILED');
           const js=py.slice(a+start.length,b);
           new Function(js);
-          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0051.js';
+          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0052.js';
           const moduleSource=fs.readFileSync(modulePath,'utf8');
           new Function(moduleSource);
           console.log('VIEWER JAVASCRIPT SYNTAX PASSED:',viewer.viewer);
