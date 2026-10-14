@@ -11,69 +11,86 @@ jobs:
   repair-distance:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout release
+      - name: Checkout release history
         uses: actions/checkout@v4
         with:
           ref: release
-          fetch-depth: 1
-      - name: Repair every release runtime-catalog copy
+          fetch-depth: 0
+      - name: Patch target records without reformatting catalogs
         shell: bash
         run: |
           python - <<'PY'
           import json
+          import re
           from pathlib import Path
 
-          aliases = {"clj14490856", "clgj14490856", "clg14490856", "ann1105a"}
-          identifier_keys = {
-              "designation", "name", "title", "id", "object", "objectname",
-              "target", "pseudonym", "nickname", "identifier", "displayname",
-              "commonname", "common_name", "archiveid", "archive_id"
-          }
+          BASE = "b6abfd83b7cc64141ae55e07141059d76ad63099"
+          files = [
+              Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json"),
+              Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json"),
+              Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json"),
+          ]
 
-          def norm(value):
-              return "".join(ch.lower() for ch in str(value) if ch.isalnum())
+          def find_record_bounds(text):
+              marker = re.search(r'"archiveId"\s*:\s*"ann1105a"', text)
+              if not marker:
+                  raise SystemExit("STOP: ann1105a not found in original catalog.")
+              stack = []
+              in_string = False
+              escaped = False
+              for i, ch in enumerate(text[:marker.start()]):
+                  if in_string:
+                      if escaped:
+                          escaped = False
+                      elif ch == "\\":
+                          escaped = True
+                      elif ch == '"':
+                          in_string = False
+                  else:
+                      if ch == '"':
+                          in_string = True
+                      elif ch == "{":
+                          stack.append(i)
+                      elif ch == "}":
+                          if stack:
+                              stack.pop()
+              if not stack:
+                  raise SystemExit("STOP: could not locate containing record object.")
+              start = stack[-1]
+              depth = 0
+              in_string = False
+              escaped = False
+              end = None
+              for i in range(start, len(text)):
+                  ch = text[i]
+                  if in_string:
+                      if escaped:
+                          escaped = False
+                      elif ch == "\\":
+                          escaped = True
+                      elif ch == '"':
+                          in_string = False
+                  else:
+                      if ch == '"':
+                          in_string = True
+                      elif ch == "{":
+                          depth += 1
+                      elif ch == "}":
+                          depth -= 1
+                          if depth == 0:
+                              end = i + 1
+                              break
+              if end is None:
+                  raise SystemExit("STOP: unterminated target record.")
+              return start, end
 
-          def walk(node, trail="$"):
-              if isinstance(node, dict):
-                  yield trail, node
-                  for key, value in node.items():
-                      yield from walk(value, f"{trail}.{key}")
-              elif isinstance(node, list):
-                  for i, value in enumerate(node):
-                      yield from walk(value, f"{trail}[{i}]")
+          def patch_record_text(original):
+              start, end = find_record_bounds(original)
+              raw_record = original[start:end]
+              record = json.loads(raw_record)
+              if record.get("archiveId") != "ann1105a" or record.get("name") != "CL J1449+0856":
+                  raise SystemExit("STOP: located object is not the expected cluster record.")
 
-          found = []
-          parsed = 0
-          for path in Path("viewer/image-databases").rglob("*.json"):
-              try:
-                  data = json.loads(path.read_text(encoding="utf-8"))
-                  parsed += 1
-              except Exception:
-                  continue
-              for trail, record in walk(data):
-                  values = [value for key, value in record.items()
-                            if key.lower() in identifier_keys
-                            and isinstance(value, (str, int, float))]
-                  if any(norm(value) in aliases for value in values):
-                      found.append((path, trail, record, data))
-
-          unique_files = {str(item[0]) for item in found}
-          print("JSON FILES PARSED:", parsed)
-          print("MATCHES:", len(found))
-          print("DISTINCT MATCHING FILES:", sorted(unique_files))
-          for path, trail, record, _ in found:
-              print("FOUND:", path, trail, "keys=", sorted(record.keys()))
-
-          if len(found) != 3 or len(unique_files) != 3:
-              raise SystemExit(
-                  "STOP: expected exactly one CL J1449+0856 record in each of three runtime catalogs; "
-                  "no files changed."
-              )
-
-          changed = {}
-          for path, trail, record, data in found:
-              # Runtime catalog records are flattened and do not have a science object.
-              # Set both flattened runtime fields and the canonical science fields.
               science = record.get("science")
               if not isinstance(science, dict):
                   science = {}
@@ -84,31 +101,52 @@ jobs:
               record["distance_mly"] = 10240
               record["distanceDisplay"] = "10.24 billion light-years"
               record["distance"] = "10.24 billion light-years"
-              changed[path] = data
 
-          for path, data in changed.items():
-              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n",
-                              encoding="utf-8")
-              reread = json.loads(path.read_text(encoding="utf-8"))
-              matches = [obj for _, obj in walk(reread)
-                         if norm(obj.get("archiveId", "")) == "ann1105a"
-                         or norm(obj.get("designation", "")) == "clj14490856"
-                         or norm(obj.get("name", "")) == "clj14490856"]
-              if len(matches) != 1:
-                  raise SystemExit(f"STOP: verification found {len(matches)} target records in {path}.")
-              record = matches[0]
-              science = record.get("science") or {}
-              if (record.get("distanceMly") != 10240
-                      or record.get("distance_mly") != 10240
-                      or record.get("distanceDisplay") != "10.24 billion light-years"
-                      or record.get("distance") != "10.24 billion light-years"
-                      or science.get("distanceMly") != 10240
-                      or science.get("distanceDisplay") != "10.24 billion light-years"):
-                  raise SystemExit(f"STOP: distance verification failed in {path}.")
-              print("VERIFIED:", path, "distanceMly=10240", "display=10.24 billion light-years")
-          print("RESULT: all three runtime catalog copies repaired and verified.")
+              line_start = original.rfind("\n", 0, start) + 1
+              base_indent = len(original[line_start:start])
+              first_child = re.search(r"\n([ \t]+)\S", raw_record)
+              unit = (len(first_child.group(1)) - base_indent) if first_child else 2
+              if unit <= 0:
+                  unit = 2
+              rendered = json.dumps(record, ensure_ascii=False, indent=unit)
+              lines = rendered.splitlines()
+              rendered = lines[0] + "".join("\n" + (" " * base_indent) + line for line in lines[1:])
+              updated = original[:start] + rendered + original[end:]
+
+              check = json.loads(updated)
+              def walk(node):
+                  if isinstance(node, dict):
+                      if node.get("archiveId") == "ann1105a":
+                          yield node
+                      for value in node.values():
+                          yield from walk(value)
+                  elif isinstance(node, list):
+                      for value in node:
+                          yield from walk(value)
+              hits = list(walk(check))
+              if len(hits) != 1:
+                  raise SystemExit(f"STOP: verification found {len(hits)} ann1105a records.")
+              result = hits[0]
+              sci = result.get("science") or {}
+              assert sci.get("distanceMly") == 10240
+              assert sci.get("distanceDisplay") == "10.24 billion light-years"
+              assert result.get("distanceMly") == 10240
+              assert result.get("distance_mly") == 10240
+              assert result.get("distanceDisplay") == "10.24 billion light-years"
+              assert result.get("distance") == "10.24 billion light-years"
+              return updated
+
+          for path in files:
+              import subprocess
+              original = subprocess.check_output(
+                  ["git", "show", f"{BASE}:{path.as_posix()}"], text=True
+              )
+              updated = patch_record_text(original)
+              path.write_text(updated, encoding="utf-8")
+              print("PATCHED WITH ORIGINAL FORMATTING:", path)
+          print("RESULT: all three runtime catalogs patched; unrelated records and formatting preserved.")
           PY
-      - name: Validate and commit only changed catalog data
+      - name: Validate and commit catalog data
         shell: bash
         run: |
           git diff --check
@@ -117,5 +155,5 @@ jobs:
             echo "Catalog already has the verified distance; no new data commit needed."
             exit 0
           fi
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 distance in runtime catalogs"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Restore catalog formatting and retain CL J1449 distance fix"
           git push origin HEAD:release
