@@ -101,6 +101,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@64d55c4c61399635d58e18154caca5111b287361/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
+    constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/64d55c4c61399635d58e18154caca5111b287361/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
@@ -143,7 +144,7 @@ function loadScript(url){
 const config=window.GV_BOOT_CONFIG;
 const gvModuleLoadPromise=Promise.all([
     loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
-    loadScript(config.constellationOverlayUrl).catch(error=>console.error('CONSTELLATION MODULE LOAD FAILED',error)),
+    loadScript(config.constellationOverlayUrl).catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)}).catch(error=>{console.error('CONSTELLATION MODULE LOAD FAILED ON BOTH SOURCES',error)}),
     loadScript(config.providerArtworkUrl).catch(error=>{console.error('PROVIDER ARTWORK LOAD FAILED',error)}),
     loadScript(config.coordinateUrl).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
     loadScript(fresh(config.targetUrl)).catch(error=>{console.error('TARGET MODULE LOAD FAILED',error)}),
