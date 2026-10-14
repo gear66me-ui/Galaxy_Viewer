@@ -1610,6 +1610,7 @@ function gvVignetteException(destination,record){
 let directHdOverlay=null;
 let directHdDestination=null;
 let directHdObjectUrl=null;
+let directHdStaged=null;
 let directHdPresentationObjectUrl=null;
 const GV_HD_RETIRE_FOV=50;
 let gvHdTravelRetired=false;
@@ -2083,8 +2084,13 @@ async function gvPrepareDirectHdUnlocked(destination,recordPromise=gvRuntimeAvmR
     console.info('GV HD PREPARED',{ms:Math.round(performance.now()-prepStarted),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
     return prepared;
 }
-function gvInstallPreparedHd(prepared){
+function gvInstallPreparedHd(prepared,{stage=false}={}){
     if(prepared?.cleanImageObjectUrl)directHdPresentationObjectUrl=prepared.cleanImageObjectUrl;
+    if(stage&&directHdStaged&&directHdStaged.destination!==prepared?.destination){
+        const stale=directHdStaged;directHdStaged=null;
+        try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}
+        if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl);
+    }
     const {destination,imageObjectUrl,displayWcs}=prepared;
     if(!imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
     gvHdTravelRetired=false;
@@ -2098,7 +2104,7 @@ function gvInstallPreparedHd(prepared){
         if(previous.objectUrl&&previous.objectUrl!==imageObjectUrl)gvReleaseHdObjectUrl(previous.objectUrl);
     };
     const layer=A.image(imageObjectUrl,{
-        name:layerName,imgFormat:'png',wcs:displayWcs,opacity:1,
+        name:layerName,imgFormat:'png',wcs:displayWcs,opacity:stage?0:1,
         successCallback:()=>{
             if(settled)return;settled=true;
             if(activeDestination!==destination){
@@ -2106,6 +2112,11 @@ function gvInstallPreparedHd(prepared){
                 gvReleaseHdObjectUrl(imageObjectUrl);
                 resolveReady(false);
                 return;
+            }
+            if(stage){
+                directHdStaged={overlay:layer,destination,objectUrl:imageObjectUrl,displayWcs,layerName,previous};
+                console.info('GV HD LAYER STAGED BEFORE TRAVEL',{layer:layerName,previousLayer:previous.layerName||null});
+                resolveReady(true);return;
             }
             directHdOverlay=layer;
             directHdDestination=destination;
@@ -2127,6 +2138,27 @@ function gvInstallPreparedHd(prepared){
     });
     aladin.setOverlayImageLayer(layer,layerName);
     return ready;
+}
+function gvActivateStagedHd(destination){
+    const staged=directHdStaged;
+    if(!staged||staged.destination!==destination)return false;
+    try{
+        if(typeof staged.overlay?.setOpacity==='function')staged.overlay.setOpacity(1);
+        else if(typeof staged.overlay?.setAlpha==='function')staged.overlay.setAlpha(1);
+        directHdOverlay=staged.overlay;
+        directHdDestination=staged.destination;
+        directHdObjectUrl=staged.objectUrl;
+        directHdDisplayWcs=staged.displayWcs;
+        directHdLayerName=staged.layerName;
+        directHdStaged=null;
+        gvHdTravelRetired=false;
+        applyDirectHdOpacity();
+        const previous=staged.previous;
+        if(previous?.layerName&&previous?.overlay&&previous.layerName!==staged.layerName){try{aladin.removeImageLayer?.(previous.layerName)}catch(_){}}
+        if(previous?.objectUrl&&previous.objectUrl!==staged.objectUrl)gvReleaseHdObjectUrl(previous.objectUrl);
+        console.info('GV HD STAGED LAYER ACTIVATED AT ARRIVAL',{layer:staged.layerName,previousLayer:previous?.layerName||null});
+        return true;
+    }catch(error){console.error('GV HD STAGED LAYER ACTIVATION FAILED',error);return false}
 }
 function gvRestoreDirectHd(){
     if(!directHdObjectUrl||!directHdDestination||activeDestination!==directHdDestination)return false;
@@ -2172,7 +2204,7 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
-async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,registeredPromise=null,switchToSphericalAtApex=false}={}){
+async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,onArrival=null,registeredPromise=null,switchToSphericalAtApex=false}={}){
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
@@ -2218,6 +2250,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }catch(error){window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
         });
         aladin.setFov(finalFov);
+        try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
@@ -2227,7 +2260,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
-            window.GV_NAV_BACKGROUND_SUSPENDED=(t<tMinusEightThreshold);
+            window.GV_NAV_BACKGROUND_SUSPENDED=true; // Preserve the verified zero-stutter rule: app polling stays paused through arrival.
             window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<tMinusEightThreshold);
             if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:false});onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
 
@@ -2274,7 +2307,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
+            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
         }catch(error){window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
@@ -2530,6 +2563,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false}={}){
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
+    if(directHdStaged){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
     let recordPromise=null,preparedPromise=null,presentationStarted=false,travelCardStarted=false,resolveRegisteredTravel,rejectRegisteredTravel;
     const registeredTravelPromise=new Promise((resolve,reject)=>{resolveRegisteredTravel=resolve;rejectRegisteredTravel=reject});
     const startRecordLookup=()=>{
@@ -2578,43 +2612,46 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     // This keeps image preparation out of the 17-second flight, eliminating late arrival
     // handoff and avoiding CPU/network decode work during the smooth FOV choreography.
     // If preflight fails, retry at T-minus-eight rather than aborting navigation.
-    try{
-        const preflightStarted=performance.now();
-        await ensurePrepared();
-        console.info('GV TRAVEL PREFLIGHT HD READY',{ms:Math.round(performance.now()-preflightStarted),name:presentationDestination?.name||presentationDestination?.objectName||''});
-    }catch(error){
-        preparedPromise=null;
-        recordPromise=null;
-        console.warn('GV TRAVEL PREFLIGHT HD FAILED; RETRYING AT T-MINUS-EIGHT',error);
-    }
-    // Build 0028: show the travel card before starting the FOV-only phase.
-    // Provider/HD preparation and pointer work remain deferred until 30%.
-    startTravelCard();
-    let installed=false;
-    const installWhenReady=prepared=>{
+    let preflightPrepared=null,installed=false,stagedInstallPromise=null;
+    const installWhenReady=(prepared,{stage=true}={})=>{
         if(!prepared?.imageObjectUrl)return Promise.reject(new Error('GV PREPARED HD OBJECT URL MISSING'));
-        if(activeDestination!==presentationDestination||installed){
-            gvReleaseHdObjectUrl(prepared.imageObjectUrl);
-            return Promise.resolve(false);
-        }
+        if(activeDestination!==presentationDestination||installed)return Promise.resolve(false);
         try{
-            const ready=gvInstallPreparedHd({...prepared,destination:presentationDestination});
+            stagedInstallPromise=gvInstallPreparedHd({...prepared,destination:presentationDestination},{stage});
             installed=true;
-            return ready;
+            return stagedInstallPromise;
         }catch(error){
             gvReleaseHdObjectUrl(prepared.imageObjectUrl);
-            console.error('GV DIRECT HD INSTALL START FAILED',error);
+            console.error('GV DIRECT HD STAGE START FAILED',error);
             return Promise.reject(error);
         }
     };
+    try{
+        const preflightStarted=performance.now();
+        preflightPrepared=await ensurePrepared();
+        console.info('GV TRAVEL PREFLIGHT HD READY',{ms:Math.round(performance.now()-preflightStarted),name:presentationDestination?.name||presentationDestination?.objectName||''});
+        await installWhenReady(preflightPrepared,{stage:true});
+        console.info('GV TRAVEL AVM LAYER REGISTERED BEFORE MOTION',{name:presentationDestination?.name||presentationDestination?.objectName||''});
+    }catch(error){
+        installed=false;stagedInstallPromise=null;
+        preparedPromise=null;
+        recordPromise=null;
+        console.warn('GV TRAVEL PREFLIGHT/STAGING FAILED; RETRYING AT T-MINUS-EIGHT',error);
+    }
+    // Register the image and prepare presentation artwork before camera motion.
+    // This keeps image decode, Aladin layer registration, provider icons, and constellation work out of the flight.
+    startTravelCard();
+    startTravelWork();
     // BUILD 0011: the current galaxy HD remains visible through zoom-out,
     // translation and rotation. At zoom-in start the current HD is retired,
     // then the next galaxy HD is installed and activated.
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:registeredTravelPromise,onTMinusEight:()=>{startTravelWork();ensurePrepared().catch(error=>console.error('GV FIRST-TRIP T-MINUS-EIGHT PREPARE FAILED',error))},onZoomInStart:()=>{ensurePrepared().then(installWhenReady).catch(error=>console.error('GV FIRST-TRIP HD PREPARE FAILED',error))}});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,registeredPromise:registeredTravelPromise,onTMinusEight:()=>{if(!installed)ensurePrepared().then(prepared=>installWhenReady(prepared,{stage:true})).catch(error=>console.error('GV FIRST-TRIP T-MINUS-EIGHT STAGE FAILED',error))},onArrival:()=>gvActivateStagedHd(presentationDestination)});
         await travelPromise;
         if(activeDestination!==presentationDestination)return v.destination;
+        if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV FIRST-TRIP STAGED LAYER SETTLE FAILED',error));
+        gvActivateStagedHd(presentationDestination);
         travelPresentation.end();
         const arrivedPrepared=await ensurePrepared();
         directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
@@ -2630,9 +2667,11 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         return v.destination;
     }
     const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,registeredPromise:registeredTravelPromise,switchToSphericalAtApex,onTMinusEight:()=>{startTravelWork();ensurePrepared().then(installWhenReady).catch(error=>console.error('GV DIRECT HD T-MINUS-EIGHT PREPARE/INSTALL FAILED',error))}});
+    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,registeredPromise:registeredTravelPromise,switchToSphericalAtApex,onTMinusEight:()=>{if(!installed)ensurePrepared().then(prepared=>installWhenReady(prepared,{stage:true})).catch(error=>console.error('GV DIRECT HD T-MINUS-EIGHT STAGE FAILED',error))},onArrival:()=>gvActivateStagedHd(presentationDestination)});
     await travelPromise;
     if(activeDestination!==presentationDestination)return v.destination;
+    if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV STAGED LAYER SETTLE FAILED',error));
+    gvActivateStagedHd(presentationDestination);
     travelPresentation.end();
     const arrivedPrepared=await ensurePrepared();
         directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
