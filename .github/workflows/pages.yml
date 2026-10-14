@@ -522,7 +522,7 @@ jobs:
           ids=$(jq -r --arg stale "${stale}" '.[] | select(.sha == $stale) | .id' /tmp/deployments.json)
           if [[ -z "${ids}" ]]; then
             echo "No orphaned deployment record remains for stale SHA ${stale}; cleanup is already complete."
-            jq -r '.[] | [.id,.sha,.environment,.created_at] | @tsv' /tmp/deployments.json | head -30
+            jq -r '.[] | [.id,.sha,.environment,.created_at] | @tsv' /tmp/deployments.json | sed -n '1,30p'
             exit 0
           fi
           while IFS= read -r id; do
