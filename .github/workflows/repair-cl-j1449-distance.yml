@@ -41,7 +41,7 @@ jobs:
               for i, ch in enumerate(text[:marker.start()]):
                   if in_string:
                       if escaped: escaped = False
-                      elif ch == "\\\\": escaped = True
+                      elif ch == "\\": escaped = True
                       elif ch == '"': in_string = False
                   else:
                       if ch == '"': in_string = True
@@ -55,7 +55,7 @@ jobs:
                   ch = text[i]
                   if in_string:
                       if escaped: escaped = False
-                      elif ch == "\\\\": escaped = True
+                      elif ch == "\\": escaped = True
                       elif ch == '"': in_string = False
                   else:
                       if ch == '"': in_string = True
@@ -88,14 +88,14 @@ jobs:
               record["distanceDisplay"] = TARGET_DISPLAY
               record["distance"] = TARGET_DISPLAY
 
-              line_start = original.rfind("\\n", 0, start) + 1
+              line_start = original.rfind("\n", 0, start) + 1
               base_indent = len(original[line_start:start])
-              first_child = re.search(r"\\n([ \\t]+)\\S", record_text)
+              first_child = re.search(r"\n([ \t]+)\S", record_text)
               unit = (len(first_child.group(1)) - base_indent) if first_child else 2
               if unit <= 0: unit = 2
               rendered = json.dumps(record, ensure_ascii=False, indent=unit)
               lines = rendered.splitlines()
-              rendered = lines[0] + "".join("\\n" + (" " * base_indent) + line for line in lines[1:])
+              rendered = lines[0] + "".join("\n" + (" " * base_indent) + line for line in lines[1:])
               updated = original[:start] + rendered + original[end:]
               parsed = json.loads(updated)
 
@@ -124,9 +124,9 @@ jobs:
               print(f"VERIFIED {kind}: {path} -> {TARGET_MLY} Mly / {TARGET_DISPLAY}")
 
           # The canonical source is repaired first and is the required acceptance check.
-          patch_one(source, r'"designation"\\s*:\\s*"CL J1449\\+0856"', "hubble")
+          patch_one(source, r'"designation"\s*:\s*"CL J1449\+0856"', "hubble")
           for path in runtime_files:
-              patch_one(path, r'"archiveId"\\s*:\\s*"ann1105a"', "runtime")
+              patch_one(path, r'"archiveId"\s*:\s*"ann1105a"', "runtime")
 
           print("SUCCESS: Hubble source record and all three runtime copies are corrected.")
           PY
