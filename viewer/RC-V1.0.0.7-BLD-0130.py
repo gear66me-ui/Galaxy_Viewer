@@ -568,7 +568,8 @@ function gvUpdateLivePhysicalScale(){
  if(!s||!line||!label)return;
  const size=aladin.getSize?.(),width=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),fov=aladin.getFov?.();
  const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);
- const distanceSource=gvEarthDistanceTarget||activeDestination;\n  const distanceMly=Number(distanceSource?.distanceMly??distanceSource?.distance??distanceSource?.science?.distanceMly);
+ const distanceSource=gvEarthDistanceTarget||activeDestination;
+  const distanceMly=Number(distanceSource?.distanceMly??distanceSource?.distance??distanceSource?.science?.distanceMly);
  if(!(width>1)||!(fovX>0)||!Number.isFinite(fovX)||!(distanceMly>0)||!Number.isFinite(distanceMly)){
   s.classList.remove('gv-visible');console.error('GV0120 AVM FOV ruler needs viewport, live FOV, and catalog distance',{width,fovX,distanceMly});return;
  }
