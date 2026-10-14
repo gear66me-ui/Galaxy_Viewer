@@ -637,7 +637,8 @@ async function gvSyncEarthDistanceToCenter(){
         // Tolerance tracks the live FOV but is bounded to avoid distant false matches.
         const tolerance=Number.isFinite(fovX)&&fovX>0?Math.max(0.02,Math.min(1.5,fovX*0.5)):0.1;
         if(!nearest||nearestDeg>tolerance){
-            if(banner.classList.contains('gv-visible'))gvHideEarthDistance();
+            // Keep the last valid arrival metadata through temporary center-match misses.
+            // A brief catalog/coordinate mismatch must not hide the distance banner or ruler.
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
