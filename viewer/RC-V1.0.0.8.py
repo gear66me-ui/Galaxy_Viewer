@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0001"
+BUILD_NUMBER = "0002"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0001';
+const GV200001_BUILD='0002';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-0001`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -606,7 +606,7 @@ setInterval(gvUpdateLivePhysicalScale,80);
 let gvEarthDistanceSyncBusy=false;
 let gvEarthDistanceSyncLastError='';
 async function gvSyncEarthDistanceToCenter(){
-    if(window.GV_NAV_BACKGROUND_SUSPENDED||gvEarthDistanceSyncBusy)return;
+    if(gvEarthDistanceSyncBusy)return;
     const banner=document.getElementById('gv-earth-distance-banner');
     if(!banner)return;
     gvEarthDistanceSyncBusy=true;
@@ -651,16 +651,19 @@ async function gvSyncEarthDistanceToCenter(){
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
-        if(key!==gvEarthDistanceTargetKey){
-            gvShowEarthDistance(nearest);
-            console.info('GV0130 EARTH DISTANCE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX});
-        }
+        // Always refresh from the live center match; don't let destination-card
+        // metadata or a stale identity cache pin the Earth banner to an old target.
+        gvShowEarthDistance(nearest);
+        console.info('GV0002 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
         gvEarthDistanceSyncLastError='';
     }catch(error){
         const message=String(error?.message||error);
         if(message!==gvEarthDistanceSyncLastError){console.warn('GV0130 EARTH DISTANCE COORDINATE SYNC FAILED',error);gvEarthDistanceSyncLastError=message}
     }finally{gvEarthDistanceSyncBusy=false}
 }
+// Update immediately on sky position/zoom events as well as the safety poll.
+try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0002 EARTH POSITION EVENT REGISTRATION FAILED',error)}
+try{aladin.on('zoomChanged',()=>{gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0002 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
 setInterval(gvSyncEarthDistanceToCenter,300);
 
 // ============================================================================
@@ -1717,30 +1720,41 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
-// BUILD 0001 — restore two-finger pinch zoom while the HD raster is active.
-// One-finger gestures continue through Aladin's existing pan handlers.
+// BUILD 0002 — use Pointer Events for two-finger pinch, which are more reliable
+// on Android WebViews than touch events. Only activate while an HD image is present.
+const gvHdPointers=new Map();
 let gvHdPinchStart=null;
-function gvHdTouchGap(touches){
-    if(!touches||touches.length<2)return 0;
-    return Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
+function gvHdReadFov(){
+    const raw=aladin.getFov?.();
+    return Number(Array.isArray(raw)?raw[0]:(raw?.x??raw?.fovX??raw));
 }
-gvSkyRoot?.addEventListener('touchstart',event=>{
-    if(!directHdOverlay||event.touches?.length!==2)return;
-    const gap=gvHdTouchGap(event.touches),raw=aladin.getFov?.();
-    const fov=Number(Array.isArray(raw)?raw[0]:raw);
+function gvHdPointerGap(){
+    const points=[...gvHdPointers.values()].filter(p=>p.pointerType==='touch');
+    if(points.length<2)return 0;
+    return Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y);
+}
+function gvHdBeginPinch(){
+    const gap=gvHdPointerGap(),fov=gvHdReadFov();
     if(gap>0&&Number.isFinite(fov)&&fov>0)gvHdPinchStart={gap,fov};
-},{passive:false});
-gvSkyRoot?.addEventListener('touchmove',event=>{
-    if(!directHdOverlay||event.touches?.length!==2||!gvHdPinchStart)return;
+}
+gvSkyRoot?.addEventListener('pointerdown',event=>{
+    if(event.pointerType!=='touch'||!(directHdOverlay||directHdPresentationObjectUrl))return;
+    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY,pointerType:event.pointerType});
+    if(gvHdPointers.size>=2)gvHdBeginPinch();
+},{passive:true});
+gvSkyRoot?.addEventListener('pointermove',event=>{
+    if(!gvHdPointers.has(event.pointerId)||!gvHdPinchStart||!(directHdOverlay||directHdPresentationObjectUrl))return;
+    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY,pointerType:event.pointerType});
+    const gap=gvHdPointerGap();
+    if(!(gap>0))return;
     event.preventDefault();
     event.stopPropagation();
-    const gap=gvHdTouchGap(event.touches);
-    if(!(gap>0))return;
     const nextFov=Math.max(0.0001,Math.min(360,gvHdPinchStart.fov*gvHdPinchStart.gap/gap));
-    try{aladin.setFov(nextFov)}catch(error){console.warn('GV0001 HD PINCH ZOOM FAILED',error)}
+    try{aladin.setFov(nextFov);gvUpdateLivePhysicalScale()}catch(error){console.warn('GV0002 HD POINTER PINCH ZOOM FAILED',error)}
 },{passive:false});
-for(const eventName of ['touchend','touchcancel'])gvSkyRoot?.addEventListener(eventName,event=>{
-    if(!event.touches||event.touches.length<2)gvHdPinchStart=null;
+for(const eventName of ['pointerup','pointercancel','pointerleave'])gvSkyRoot?.addEventListener(eventName,event=>{
+    gvHdPointers.delete(event.pointerId);
+    if(gvHdPointers.size<2)gvHdPinchStart=null;
 },{passive:true});
 let directHdObjectUrl=null;
 let directHdStaged=null;
