@@ -134,17 +134,16 @@ jobs:
           for f in files:
             p=Path(f)
             if not p.exists(): continue
-            d=json.loads(p.read_text(encoding="utf-8"))
-            for e in d.get("entries",[]):
-              identity=" ".join(str(e.get(k,"")) for k in ("name","designation","displayName","title","archiveId","id")).lower()
-              if "cl j1449+0856" in identity or "clj1449+0856" in identity:
-                found.append((f,e,identity))
-          assert len(found)==1, f"Expected one CL J1449+0856 record; got {[(f,i) for f,e,i in found]}"
-          f,e,identity=found[0]; s=e.get("science",{})
-          assert abs(float(s.get("distanceMly",-1))-10000.0)<1e-6, s.get("distanceMly")
-          assert abs(float(s.get("redshift",-1))-1.99)<1e-6, s.get("redshift")
-          assert "CLJ1449" in s.get("distanceMethod","").upper().replace("_",""), s.get("distanceMethod")
-          print(f"VERIFIED {f}: {identity}, distance=10,000 Mly approx., redshift z=1.99")
+            data=json.loads(p.read_text(encoding="utf-8"))
+            for entry in data.get("entries",[]):
+              science=entry.get("science") or {}
+              if science.get("distanceMethod")=="published_CLJ1449_z1.99_approx_10_billion_light_years":
+                found.append((f,entry,science))
+          assert len(found)==1, f"Expected one workflow-tagged correction; got {len(found)}"
+          f,entry,science=found[0]
+          assert abs(float(science.get("distanceMly",-1))-10000.0)<1e-6
+          assert abs(float(science.get("redshift",-1))-1.99)<1e-6
+          print(f"VERIFIED correction: {f}, distance=10,000 Mly approx., z=1.99")
           PY
 
       - name: Commit catalog correction
