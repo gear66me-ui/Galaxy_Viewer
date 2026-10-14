@@ -154,7 +154,11 @@ jobs:
           for term in ('andromeda','water','orion'):
               assert term in catalog_text, f'release catalog smoke test failed: {term}'
           print('SEARCH CATALOG SMOKE TESTS PASSED: Andromeda / water / Orion')
-          assert 'GV0130 EARTH DISTANCE CENTER MATCH' in rc, 'Earth-distance banner must follow the live centered catalog coordinate'\n          assert 'setInterval(gvSyncEarthDistanceToCenter,300)' in rc, 'Earth distance must resync after manual pan'\n          assert 'const distanceSource=gvEarthDistanceTarget||activeDestination;' in rc, 'physical scale must use the live centered galaxy distance'\n          assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'\n          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0130 — COORDINATE-AWARE EARTH DISTANCE / LIVE FOV / ZERO-STUTTER')
+          assert 'GV0130 EARTH DISTANCE CENTER MATCH' in rc, 'Earth-distance banner must follow the live centered catalog coordinate'
+          assert 'setInterval(gvSyncEarthDistanceToCenter,300)' in rc, 'Earth distance must resync after manual pan'
+          assert 'const distanceSource=gvEarthDistanceTarget||activeDestination;' in rc, 'physical scale must use the live centered galaxy distance'
+          assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0130 — COORDINATE-AWARE EARTH DISTANCE / LIVE FOV / ZERO-STUTTER')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
