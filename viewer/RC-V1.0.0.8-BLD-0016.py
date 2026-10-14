@@ -532,7 +532,7 @@ function gvInstallEarthDistanceBanner(){
 #gv-earth-distance-banner .gv-earth-distance-icon{display:inline-block;font:11px/1 system-ui,sans-serif;letter-spacing:0;filter:drop-shadow(0 0 2px rgba(88,191,255,.55))}
 #gv-earth-distance-banner.gv-visible{opacity:1;visibility:visible}
 #gv-earth-distance-banner .gv-earth-distance-tick{display:inline-block;margin-left:7px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid #FFD84A;filter:drop-shadow(0 0 4px rgba(255,216,74,.9));vertical-align:-1px}
-#gv-live-physical-scale{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear;font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1px;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);white-space:nowrap}
+#gv-live-physical-scale{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear;font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1px;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);white-space:normal;width:min(50vw,60%);max-width:60%;overflow:hidden}
 #gv-live-physical-scale.gv-visible{opacity:1;visibility:visible}
 #gv-live-physical-scale .gv-live-scale-label{margin-bottom:4px}
 #gv-live-physical-scale .gv-live-scale-line{position:relative;height:1px;background:#FFD84A;box-shadow:0 0 4px rgba(255,216,74,.9);min-width:4px}
@@ -686,18 +686,16 @@ async function gvSyncEarthDistanceToCenter(){
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         if(!nearest){
-            // Never present a stale galaxy distance as if it belonged to the new sky field.
-            // There is no defensible physical distance without a catalog target in this FOV.
-            const statusBanner=document.getElementById('gv-earth-distance-banner');
-            gvEarthDistanceTarget=null;
-            gvEarthDistanceTargetKey='';
-            gvLiveScaleValueLy=null;
-            if(statusBanner){
-                statusBanner.innerHTML='<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>NO CATALOG TARGET IN FIELD</span>';
-                statusBanner.classList.add('gv-visible');
+            // Keep the last catalog-authoritative distance visible when this field has no catalog match.
+            // Never inject a status message into the user's Earth-distance banner.
+            if(gvEarthDistanceArrivalDestination){
+                gvShowEarthDistance(gvEarthDistanceArrivalDestination);
+                gvUpdateLivePhysicalScale();
+            }else if(gvEarthDistanceTarget){
+                gvShowEarthDistance(gvEarthDistanceTarget);
+                gvUpdateLivePhysicalScale();
             }
-            document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');
-            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — STALE DISTANCE CLEARED',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — RETAINED LAST VALID DISTANCE',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
