@@ -89,8 +89,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.8'
-          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0013.py'
-          assert viewer.get('build')=='0013'
+          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0014.py'
+          assert viewer.get('build')=='0014'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -101,6 +101,9 @@ jobs:
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0050.js' in rc
+          assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
+          assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
+          assert 'const GV200001_BUILD=\'0014\';' in rc, 'runtime cache-busting build identity must match pointer'
           assert "GalaxyDestinationPresentation?.VERSION!=='0050'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.

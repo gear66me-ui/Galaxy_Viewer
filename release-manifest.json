@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "31e7badc616374244464b42bff7c0591bd76db16",
-  "build": "0013",
+  "sourceCommit": "33cbabf8a403974a9295343cbb0c654920be171a",
+  "build": "0014",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0013.py",
+    "viewer/RC-V1.0.0.8-BLD-0014.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0013-live-earth-distance-100ms-known-good-destination-module"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0014-capture-phase-live-earth-distance-queued-refresh"
 }
