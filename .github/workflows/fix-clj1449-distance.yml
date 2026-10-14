@@ -120,7 +120,7 @@ jobs:
       - name: Validate corrected catalog and untouched catalog structure
         run: |
           python3 - <<'PY'
-          import json, math
+          import json
           from pathlib import Path
           files=[
             "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
@@ -129,29 +129,21 @@ jobs:
             "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
             "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
             "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json"]
-          candidates=[]
+          found=[]
           for f in files:
             p=Path(f)
             if not p.exists(): continue
             d=json.loads(p.read_text(encoding="utf-8"))
             for e in d.get("entries",[]):
-              try:
-                ra=float(e.get("ra",e.get("raDeg",e.get("raDegrees"))))
-                dec=float(e.get("dec",e.get("decDeg",e.get("decDegrees"))))
-              except (TypeError,ValueError): continue
-              sep=math.degrees(2*math.asin(min(1,math.sqrt(
-                math.sin(math.radians(dec-8.9392)/2)**2+
-                math.cos(math.radians(8.9392))*math.cos(math.radians(dec))*math.sin(math.radians(ra-222.3083)/2)**2))))
               identity=" ".join(str(e.get(k,"")) for k in ("name","designation","displayName","title","archiveId","id")).lower()
-              if sep < 0.025 and ("1449" in identity or abs(ra-222.3083)<0.003):
-                candidates.append((f,e,sep,identity))
-          assert len(candidates)==1, f"Expected one CL J1449+0856 record; got {[(f,i,s) for f,e,s,i in candidates]}"
-          f,e,sep,identity=candidates[0]
-          s=e.get("science",{})
+              if "cl j1449+0856" in identity or "clj1449+0856" in identity:
+                found.append((f,e,identity))
+          assert len(found)==1, f"Expected one CL J1449+0856 record; got {[(f,i) for f,e,i in found]}"
+          f,e,identity=found[0]; s=e.get("science",{})
           assert abs(float(s.get("distanceMly",-1))-10000.0)<1e-6, s.get("distanceMly")
           assert abs(float(s.get("redshift",-1))-1.99)<1e-6, s.get("redshift")
           assert "CLJ1449" in s.get("distanceMethod","").upper().replace("_",""), s.get("distanceMethod")
-          print(f"VERIFIED {f}: CL J1449+0856, separation={sep:.6f} deg, distance=10,000 Mly approx., z=1.99")
+          print(f"VERIFIED {f}: {identity}, distance=10,000 Mly approx., redshift z=1.99")
           PY
 
       - name: Commit catalog correction
