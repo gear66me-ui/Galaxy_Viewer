@@ -190,7 +190,7 @@ jobs:
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
           module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0054.js').read_text()
           assert "const VERSION='0054'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
-          assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'const y=finite(d?.avmVerticalFovDegrees??d?.fovYDegrees??d?.fovDegrees??x)' in module, 'HD destination card must show horizontal × vertical image FOV in arcminutes beneath image span'
+          assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'avmHorizontalFovDegrees' in module and 'avmVerticalFovDegrees' in module and '× ${(y*60).toFixed(2)}' in module, 'HD destination card must show horizontal × vertical image FOV in arcminutes beneath image span'
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
