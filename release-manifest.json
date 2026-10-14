@@ -2,12 +2,12 @@
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
   "sourceCommit": "253a6942e58dcef42ddc72f4e048f381f11fbe3d",
-  "build": "0024",
+  "build": "0025",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0024.py",
+    "viewer/RC-V1.0.0.8-BLD-0025.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -156,8 +156,8 @@
     "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
-    "829b2e02d03b7f49c70241a8fb3fd53f35997f05",
+    "10aa4d43a0a97ca4be02a0d50697cca6de87e573",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0024-constellation-pulse-syntax-fix"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0025-constellation-export-boot-fix"
 }
