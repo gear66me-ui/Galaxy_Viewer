@@ -183,7 +183,7 @@ jobs:
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
-          assert "host.addEventListener('pointermove',event=>{if(event.buttons>0||event.pointerType==='touch')userChangedView(event)},{passive:true})" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
+          assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
           module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0050.js').read_text()
           assert "const VERSION='0050'" in module and 'lyPerPx:g.lyPerPx/hdScale' in module, 'HD viewport scale equation/version missing'
           print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0014 — CAPTURE-PHASE LIVE EARTH-DISTANCE MATCHING')
