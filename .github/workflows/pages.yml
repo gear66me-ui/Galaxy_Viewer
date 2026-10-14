@@ -159,6 +159,10 @@ jobs:
           assert 'const dx=deltaRa*Math.cos(dec0),dy=dec-centerDec;' in rc, 'Earth-distance matcher must account for RA wrap and declination'
           assert 'if(fieldX>1||fieldY>1)continue;' in rc and 'if(separation<nearestDeg)' in rc, 'Earth-distance matcher must choose the nearest catalog galaxy inside the live FOV'
           assert "addEventListener('touchstart'" in rc and "addEventListener('touchmove'" in rc and 'GV0006 PINCH START' in rc and 'GV0006 PINCH MOVE' in rc and 'gvHdPointers' not in rc, 'Build 0006 must use native Android touch events for pinch zoom'
+          assert 'let gvNavigationTravelActive=false;' in rc and 'gvNavigationTravelActive=true;' in rc, 'Distance display lifecycle must track active navigation travel'
+          assert 'if(gvNavigationTravelActive){gvHideEarthDistance();return;}' in rc, 'Earth-distance banner must remain hidden during travel'
+          assert "if(gvNavigationTravelActive){s.classList.remove('gv-visible');return;}" in rc, 'Physical scale must remain hidden during travel'
+          assert 'gvNavigationTravelActive=false;' in rc, 'Distance display lifecycle must reopen on arrival and reset on navigation failure'
           assert "aladin.on('positionChanged'" in rc and "aladin.on('zoomChanged'" in rc, 'Earth-distance banner must refresh on pan and zoom events'
           assert 'if(window.GV_NAV_BACKGROUND_SUSPENDED||gvEarthDistanceSyncBusy)return;' not in rc, 'Earth-distance refresh must not be blocked by background suspension'
           assert 'gvShowEarthDistance(nearest);' in rc, 'Earth-distance banner must refresh from live center selection'
@@ -171,7 +175,7 @@ jobs:
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0006 — TRAVEL-CARD DISTANCE EQUATION / LIVE CENTER MATCH / ANDROID TOUCH PINCH')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0006 — TRAVEL-CARD DISTANCE EQUATION / LIVE CENTER MATCH / ANDROID TOUCH PINCH / ARRIVAL-ONLY DISTANCE')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
