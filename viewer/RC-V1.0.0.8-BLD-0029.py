@@ -1919,7 +1919,6 @@ function gvReleaseHdObjectUrl(url){
     try{URL.revokeObjectURL(value)}catch(_){}
     if(directHdObjectUrl===value)directHdObjectUrl=null;
 }
-gvStartMemoryDiagnostics();
 const GV_MASTER_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/gv-master-catalog.json';
 const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json';
 let gvAvmRuntimePromise=null;
@@ -2838,6 +2837,7 @@ function gvPrewarmProviderWebsite(destination){
 let gvFirstDestinationPreload=null;
 let gvNextTripPrewarm=null;
 let gvNextTripPrewarmGeneration=0;
+gvStartMemoryDiagnostics();
 function gvDisposeNextTripPrewarm(warm,reason='invalidated'){
     if(!warm)return;
     console.info('GV NEXT DESTINATION PREWARM INVALIDATED',{reason,name:warm.destination?.name||warm.destination?.designation||''});
