@@ -6,3 +6,4 @@ Retry Build 0009 after cleaning orphaned deployment record via deployments API.
 Build 0010 release pointer; retry Pages deployment after idempotent orphan cleanup.
 Build 0010 metadata and release validation aligned; redeploy.
 Retry Build 0010 after removing stale internal build assertion.
+Retry Build 0010 after fixing jq broken pipe: c7b80b66ac4f2b41684712d1314e0f589ca782d1
