@@ -623,6 +623,10 @@ setInterval(gvUpdateLivePhysicalScale,80);
 let gvEarthDistanceSyncBusy=false;
 let gvEarthDistanceSyncGeneration=0;
 let gvEarthDistanceSyncLastError='';
+// Preserve the catalog-authoritative arrival distance until the user actually changes the sky view.
+let gvEarthDistanceArrivalDestination=null;
+let gvEarthDistanceUserAdjustedView=false;
+let gvEarthDistanceInteractionListenersInstalled=false;
 async function gvSyncEarthDistanceToCenter(){
     // Do not invalidate an in-flight catalog match on every 300 ms poll.
     // A busy request is allowed to finish; the next poll then samples the latest center.
@@ -631,6 +635,11 @@ async function gvSyncEarthDistanceToCenter(){
     const banner=document.getElementById('gv-earth-distance-banner');
     if(!banner)return;
     if(gvNavigationTravelActive){gvHideEarthDistance();return;}
+    if(!gvEarthDistanceUserAdjustedView&&gvEarthDistanceArrivalDestination){
+        gvShowEarthDistance(gvEarthDistanceArrivalDestination);
+        gvUpdateLivePhysicalScale();
+        return;
+    }
     gvEarthDistanceSyncBusy=true;
     try{
         const size=aladin.getSize?.();
@@ -659,9 +668,8 @@ async function gvSyncEarthDistanceToCenter(){
             if(!Number.isFinite(ra)||!Number.isFinite(dec)||!(distanceMly>0)||!Number.isFinite(distanceMly))continue;
             // Wrap RA across 0/360 and scale horizontal offset by cos(declination).
             let deltaRa=((ra-centerRa+540)%360)-180;
-            const dx=deltaRa*Math.cos(dec0),dy=dec-centerDec;
-            const fieldX=Math.abs(dx)/(safeFovX/2),fieldY=Math.abs(dy)/(safeFovY/2);
-            if(fieldX>1||fieldY>1)continue;
+            // Resolve the closest known catalog galaxy to the live sky center even when
+            // the center is blank sky or the field is zoomed out beyond that galaxy.
             const r=ra*rad,d=dec*rad,sd=Math.sin((d-dec0)/2),sr=Math.sin((r-ra0)/2);
             const h=Math.max(0,Math.min(1,sd*sd+Math.cos(dec0)*Math.cos(d)*sr*sr));
             const separation=2*Math.asin(Math.sqrt(h))/rad;
@@ -673,18 +681,6 @@ async function gvSyncEarthDistanceToCenter(){
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         if(!nearest){
-            // BUILD 0012: while the HD destination card is visible, its selected
-            // destination remains the authoritative distance source. Do not let
-            // a catalog miss at the viewport center hide the Earth banner/ruler.
-            const card=document.querySelector('.gvdp-card.gvdp-visible');
-            if(card&&gvEarthDistanceTarget&&gvFormatEarthDistance(gvEarthDistanceTarget)){
-                gvShowEarthDistance(gvEarthDistanceTarget);
-                gvUpdateLivePhysicalScale();
-                console.info('GV0012 EARTH DISTANCE: preserving selected HD destination on center-catalog miss',{
-                    destination:gvEarthDistanceIdentity(gvEarthDistanceTarget),ra:centerRa,dec:centerDec
-                });
-                return;
-            }
             gvEarthDistanceTarget=null;
             gvEarthDistanceTargetKey='';
             gvHideEarthDistance();
@@ -705,10 +701,27 @@ async function gvSyncEarthDistanceToCenter(){
         if(message!==gvEarthDistanceSyncLastError){console.warn('GV0130 EARTH DISTANCE COORDINATE SYNC FAILED',error);gvEarthDistanceSyncLastError=message}
     }finally{gvEarthDistanceSyncBusy=false}
 }
-// Update immediately on sky position/zoom events as well as the safety poll.
+// Arrival keeps the destination's catalog distance. The first deliberate sky-view gesture
+// switches to the nearest catalog distance at the live center. Zoom also refreshes the ruler.
+function gvInstallEarthDistanceInteractionListeners(){
+    if(gvEarthDistanceInteractionListenersInstalled)return;
+    const host=document.getElementById('aladin-cosmic-command-test');
+    if(!host)return;
+    gvEarthDistanceInteractionListenersInstalled=true;
+    const userChangedView=()=>{
+        if(gvNavigationTravelActive)return;
+        gvEarthDistanceUserAdjustedView=true;
+        gvSyncEarthDistanceToCenter();
+        gvUpdateLivePhysicalScale();
+    };
+    host.addEventListener('pointerup',userChangedView,{passive:true});
+    host.addEventListener('touchend',userChangedView,{passive:true});
+    host.addEventListener('wheel',userChangedView,{passive:true});
+}
+// Update immediately on sky position/zoom events as well as the 300 ms safety poll.
 try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
 try{aladin.on('zoomChanged',()=>{gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
-setInterval(gvSyncEarthDistanceToCenter,300);
+setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},300);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
@@ -2891,6 +2904,8 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             if(activeDestination!==presentationDestination)return;
             headsUpDisplay.render();
             gvShowEarthDistance(presentationDestination);
+            gvEarthDistanceArrivalDestination=presentationDestination;
+            gvEarthDistanceUserAdjustedView=false;
             gvPrewarmProviderWebsite(v.destination);
             gvStartNextTripPrewarm();
         }));
