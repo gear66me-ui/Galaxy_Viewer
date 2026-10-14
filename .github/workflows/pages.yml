@@ -103,7 +103,7 @@ jobs:
           assert 'gv-destination-presentation-0051.js' in rc
           assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
           assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
-          assert 'const GV200001_BUILD=\'0015\';' in rc, 'runtime cache-busting build identity must match pointer'
+          assert 'const GV200001_BUILD=\'0016\';' in rc, 'runtime cache-busting build identity must match pointer'
           assert "GalaxyDestinationPresentation?.VERSION!=='0051'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.
