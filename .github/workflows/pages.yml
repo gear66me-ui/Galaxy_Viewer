@@ -157,7 +157,7 @@ jobs:
           assert 'const fovY=Number(Array.isArray(rawFov)?rawFov[1]' in rc, 'Earth-distance matcher must read both live FOV axes'
           assert 'const dx=deltaRa*Math.cos(dec0),dy=dec-centerDec;' in rc, 'Earth-distance matcher must account for RA wrap and declination'
           assert 'if(fieldX>1||fieldY>1)continue;' in rc and 'if(separation<nearestDeg)' in rc, 'Earth-distance matcher must choose the nearest catalog galaxy inside the live FOV'
-          assert "document.addEventListener('touchstart'" in rc and "document.addEventListener('touchmove'" in rc and 'GV0007 PINCH START' in rc and 'GV0007 PINCH MOVE' in rc and 'gvHdPointers' not in rc, 'Build 0007 must capture native Android pinch events at document level'
+          assert "GV0012 PINCH HANDLER: delegated to Aladin Lite native touch implementation" in rc and "gvSkyRoot.style.touchAction='none'" in rc and "document.addEventListener('touchstart'" not in rc, 'Build 0012 must leave pinch gestures to Aladin Lite native touch handling'
           assert 'let gvNavigationTravelActive=false;' in rc and 'gvNavigationTravelActive=true;' in rc, 'Distance display lifecycle must track active navigation travel'
           assert 'if(gvNavigationTravelActive){gvHideEarthDistance();return;}' in rc, 'Earth-distance banner must remain hidden during travel'
           assert "if(gvNavigationTravelActive){s.classList.remove('gv-visible');return;}" in rc, 'Physical scale must remain hidden during travel'
@@ -175,7 +175,7 @@ jobs:
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0011 — NEXT-DESTINATION PREWARM / LIVE CENTER DISTANCE / ANDROID PINCH')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0012 — HD DESTINATION DISTANCE / NATIVE ANDROID PINCH')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
