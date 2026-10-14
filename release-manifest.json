@@ -1,7 +1,7 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "1e60171bf0d79d7c0a77fceba781fcd30322faee",
+  "sourceCommit": "16d4fd07797420c7afb13b74ecab5a206afcc8fc",
   "build": "0006",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0006-android-native-touch-pinch"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0006-android-touch-pinch-arrival-only-distance"
 }
