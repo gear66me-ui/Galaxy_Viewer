@@ -2564,22 +2564,25 @@ async function gvPresentationDestination(destination){
         : destination;
     // Display/science metadata must come from the matching individual provider catalog.
     // Never substitute another row by catalogIndex or fall back to route/runtime values.
+    // If provider-catalog identity matching fails, preserve metadata already
+    // present on the selected destination. Clearing every science field here
+    // caused both the travel destination label and HD science card to go blank.
     const blankCatalogMetadata=()=>Object.freeze({
         ...enriched,
-        designation:'',
-        name:'',
-        commonName:'',
-        pseudonym:'',
-        constellation:'',
-        distanceMly:null,
-        distance:'',
-        sizeKly:Object.freeze([]),
-        physicalSizeLy:null,
-        ageYears:null,
-        age:'',
-        imageType:'',
-        title:'',
-        description:''
+        designation:String(enriched?.designation||enriched?.name||enriched?.displayName||enriched?.title||'').trim(),
+        name:String(enriched?.name||enriched?.commonName||enriched?.pseudonym||enriched?.designation||enriched?.displayName||'').trim(),
+        commonName:String(enriched?.commonName||enriched?.pseudonym||enriched?.name||enriched?.designation||'').trim(),
+        pseudonym:String(enriched?.pseudonym||enriched?.commonName||enriched?.name||enriched?.designation||'').trim(),
+        constellation:String(enriched?.constellation||'').trim(),
+        distanceMly:(enriched?.distanceMly!==undefined&&enriched?.distanceMly!==null&&enriched?.distanceMly!==''?enriched.distanceMly:(enriched?.distance!==undefined&&enriched?.distance!==null&&enriched?.distance!==''?enriched.distance:null)),
+        distance:enriched?.distance??'',
+        sizeKly:Array.isArray(enriched?.sizeKly)?enriched.sizeKly:Object.freeze([]),
+        physicalSizeLy:enriched?.physicalSizeLy??null,
+        ageYears:enriched?.ageYears??null,
+        age:enriched?.age??'',
+        imageType:String(enriched?.imageType||'').trim(),
+        title:String(enriched?.title||enriched?.designation||enriched?.name||'').trim(),
+        description:String(enriched?.description||'').trim()
     });
     try{
         if(!key)throw new Error('PROVIDER CATALOG KEY MISSING');
