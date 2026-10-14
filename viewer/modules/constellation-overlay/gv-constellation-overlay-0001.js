@@ -52,7 +52,7 @@
       const wanted=canon(name);let found=null;
       for(const [key,e] of overlays){const k=canon(key);if(k===wanted||k.includes(wanted)||wanted.includes(k)){found=e;break;}}
       if(!found){console.info("GV CONSTELLATION GLOW: no matching constellation",name);return false;}
-      startGlow(found);return true;
+      startGlow(found,{travel:true});return true;
     }
     function applyGlow(found,brightness){
       // Aladin Lite 3.8.2 GraphicOverlay does not reliably apply opacity to
@@ -65,9 +65,10 @@
         if(typeof found.glow.setOptions==="function")found.glow.setOptions({color,lineWidth:0.75});
       }catch(error){console.warn("GV CONSTELLATION GLOW COLOR UPDATE FAILED",error)}
     }
-    function startGlow(found){
+    function startGlow(found,{travel=false}={}){
       stopGlow();glowEntry=found;
-      if(!enabled)return false;
+      // Destination glow is independent of the user-facing constellation-line toggle.
+      if(!enabled&&!travel)return false;
       found.glow.setOptions?.({color:"#080808",lineWidth:0.75});
       applyGlow(found,0);
       found.glow.show();
@@ -75,7 +76,7 @@
       // Only opacity animates; line width is fixed and never exceeds 0.75px.
       const started=performance.now(),period=2000;
       const animate=now=>{
-        if(!enabled||glowEntry!==found){frameHandle=null;return;}
+        if((!enabled&&!travel)||glowEntry!==found){frameHandle=null;return;}
         const phase=((now-started)%period)/period;
         const brightness=phase<0.5?phase*2:(1-phase)*2;
         applyGlow(found,brightness);
@@ -95,7 +96,7 @@
       }
       if(!best){console.warn("GV CONSTELLATION GLOW: no destination constellation available");return false;}
       console.info("GV CONSTELLATION GLOW: destination matched",best.name,{ra:targetRa,dec:targetDec,separationDeg:Math.acos(Math.max(-1,Math.min(1,bestDot)))/rad});
-      return startGlow(best);
+      return startGlow(best,{travel:true});
     }
     const result=Object.freeze({VERSION,get enabled(){return enabled;},setEnabled,setTravelGlow,setTravelGlowAt,clearTravelGlow:stopGlow,toggle(){return setEnabled(!enabled);},constellationCount:overlays.size,segmentCount:[...overlays.values()].reduce((n,e)=>n+e.segments,0)});
     window.GalaxyViewerConstellations=result;return result;
