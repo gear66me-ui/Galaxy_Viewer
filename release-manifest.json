@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "5ff1c9e42c30fd23154ae4858d20f83ab6b9ab80",
-  "build": "0003",
+  "sourceCommit": "7ff1415ccda86bbaa6f39bbb5f8c966f1a17c238",
+  "build": "0004",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0003-travel-card-distance-equation-live-center-android-pointer-pinch"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0004-startup-tdz-physical-scale-live-center-distance-equation-pointer-pinch"
 }
