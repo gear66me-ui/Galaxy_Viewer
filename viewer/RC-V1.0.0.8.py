@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0009';
+const GV200001_BUILD='0011';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -623,6 +623,9 @@ let gvEarthDistanceSyncBusy=false;
 let gvEarthDistanceSyncGeneration=0;
 let gvEarthDistanceSyncLastError='';
 async function gvSyncEarthDistanceToCenter(){
+    // Do not invalidate an in-flight catalog match on every 300 ms poll.
+    // A busy request is allowed to finish; the next poll then samples the latest center.
+    if(gvEarthDistanceSyncBusy)return;
     const syncGeneration=++gvEarthDistanceSyncGeneration;
     const banner=document.getElementById('gv-earth-distance-banner');
     if(!banner)return;
@@ -669,10 +672,13 @@ async function gvSyncEarthDistanceToCenter(){
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         if(!nearest){
-            // Preserve the arrival-selected destination banner when the runtime
-            // catalog has no match in this field. Hiding here made it flash off
-            // immediately after arrival and also cleared the scale's distance.
-            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — PRESERVING ARRIVAL BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            // Do not leave a stale destination-card distance on screen after the
+            // user pans to a field with no catalog galaxy match.
+            gvEarthDistanceTarget=null;
+            gvEarthDistanceTargetKey='';
+            gvHideEarthDistance();
+            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            gvUpdateLivePhysicalScale();
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
