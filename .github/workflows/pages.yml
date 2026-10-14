@@ -154,7 +154,7 @@ jobs:
           for term in ('andromeda','water','orion'):
               assert term in catalog_text, f'release catalog smoke test failed: {term}'
           print('SEARCH CATALOG SMOKE TESTS PASSED: Andromeda / water / Orion')
-          assert 'GV0130 EARTH DISTANCE CENTER MATCH' in rc, 'Earth-distance banner must follow the live centered catalog coordinate'
+          assert 'GV0002 EARTH DISTANCE LIVE CENTER MATCH' in rc, 'Earth-distance banner must follow the live centered catalog coordinate'
           assert 'const fovY=Number(Array.isArray(rawFov)?rawFov[1]' in rc, 'Earth-distance matcher must read both live FOV axes'
           assert 'const dx=deltaRa*Math.cos(dec0),dy=dec-centerDec;' in rc, 'Earth-distance matcher must account for RA wrap and declination'
           assert 'if(fieldX>1||fieldY>1)continue;' in rc and 'if(separation<nearestDeg)' in rc, 'Earth-distance matcher must choose the nearest catalog galaxy inside the live FOV'
