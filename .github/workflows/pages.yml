@@ -509,39 +509,20 @@ jobs:
         run: |
           set -euo pipefail
           stale="009dd51fd7f8229c7831c53770a1e6eedcade890"
-          echo "Attempting to cancel stale Pages deployment: ${stale}"
-          api="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments"
-          list_code=$(curl -sS -o /tmp/pages-deployments.json -w '%{http_code}' \
+          echo "Attempting to cancel stale Pages deployment by its documented SHA identifier: ${stale}"
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments/${stale}"
+          code=$(curl -sS -o /tmp/pages-cancel.json -w '%{http_code}' -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" "${api}?per_page=100")
-          if [[ "${list_code}" != "200" ]]; then
-            cat /tmp/pages-deployments.json
-            echo "Unable to list Pages deployments (HTTP ${list_code})."
+            -H "X-GitHub-Api-Version: 2022-11-28" "${api}/cancel")
+          if [[ "${code}" != "204" ]]; then
+            cat /tmp/pages-cancel.json
+            echo "Unable to cancel stale Pages deployment SHA ${stale} (HTTP ${code})."
+            echo "The Pages deployment cancellation endpoint accepts the deployment SHA directly; listing /pages/deployments is not a supported endpoint."
             exit 1
           fi
-          ids=$(jq -r --arg stale "${stale}" '.[] | select(.sha == $stale) | .id' /tmp/pages-deployments.json)
-          if [[ -z "${ids}" ]]; then
-            echo "No Pages deployment record found for stale SHA ${stale}; refusing to claim it was cancelled."
-            jq -r '.[] | [.id,.sha,.environment,.created_at] | @tsv' /tmp/pages-deployments.json | head -20
-            exit 1
-          fi
-          while IFS= read -r deployment_id; do
-            [[ -n "${deployment_id}" ]] || continue
-            echo "Cancelling Pages deployment ID ${deployment_id} (SHA ${stale})"
-            code=$(curl -sS -o /tmp/pages-cancel.json -w '%{http_code}' -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer ${GH_TOKEN}" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "${api}/${deployment_id}/cancel")
-            if [[ "${code}" != "204" ]]; then
-              cat /tmp/pages-cancel.json
-              echo "Unable to cancel Pages deployment ID ${deployment_id} (HTTP ${code})."
-              exit 1
-            fi
-            echo "Cancelled Pages deployment ID ${deployment_id}."
-          done <<< "${ids}"
-
+          echo "Cancelled stale Pages deployment SHA ${stale}."
+          
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
