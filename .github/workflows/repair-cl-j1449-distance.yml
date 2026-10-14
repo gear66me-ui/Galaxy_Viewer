@@ -16,16 +16,19 @@ jobs:
         with:
           ref: release
           fetch-depth: 1
-      - name: Inject destination-banner distance
+      - name: Find and repair the actual release record
         shell: bash
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
-          data = json.loads(path.read_text(encoding="utf-8"))
           aliases = {"clj14490856", "clgj14490856", "clg14490856", "ann1105a"}
+          identifier_keys = {
+              "designation", "name", "title", "id", "object", "objectname",
+              "target", "pseudonym", "nickname", "identifier", "displayname",
+              "commonname", "common_name", "archiveid", "archive_id"
+          }
 
           def norm(value):
               return "".join(ch.lower() for ch in str(value) if ch.isalnum())
@@ -40,31 +43,40 @@ jobs:
                       yield from walk(value, f"{trail}[{i}]")
 
           matches = []
-          seen = set()
-          identifier_keys = (
-              "designation", "name", "title", "id", "object", "objectName",
-              "target", "pseudonym", "nickname", "identifier", "displayName",
-              "commonName", "common_name"
-          )
-          for trail, obj in walk(data):
-              values = [obj.get(k) for k in identifier_keys if obj.get(k) is not None]
-              if any(norm(v) in aliases for v in values):
-                  if id(obj) not in seen:
-                      seen.add(id(obj))
-                      matches.append((trail, obj))
+          parsed = 0
+          for path in Path(".").rglob("*.json"):
+              if any(part in {".git", "node_modules"} for part in path.parts):
+                  continue
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+                  parsed += 1
+              except Exception:
+                  continue
+              for trail, obj in walk(data):
+                  values = [value for key, value in obj.items()
+                            if key.lower() in identifier_keys
+                            and isinstance(value, (str, int, float))]
+                  if any(norm(value) in aliases for value in values):
+                      matches.append((path, trail, obj, data))
+
+          print("JSON FILES PARSED:", parsed)
+          print("MATCHING RECORDS ACROSS RELEASE:", len(matches))
+          for path, trail, record, _ in matches:
+              print("CANDIDATE:", path, trail,
+                    {k: v for k, v in record.items()
+                     if k.lower() in identifier_keys and isinstance(v, (str, int, float))})
 
           if len(matches) != 1:
-              print(f"CATALOG CHECK: expected exactly one CL J1449+0856 record; found {len(matches)}")
-              for trail, obj in matches:
-                  print("candidate:", trail, {k: obj.get(k) for k in identifier_keys if obj.get(k) is not None})
-              raise SystemExit("No catalog changes made; record must be uniquely identified.")
+              raise SystemExit(
+                  "STOP: expected exactly one CL J1449+0856/ann1105a record across release; "
+                  f"found {len(matches)}. No files changed."
+              )
 
-          trail, record = matches[0]
+          path, trail, record, data = matches[0]
           science = record.get("science")
           if not isinstance(science, dict):
-              raise SystemExit(f"Record at {trail} has no science object; refusing an unsafe schema change.")
+              raise SystemExit(f"STOP: record at {path}:{trail} has no science object.")
 
-          # Store in the catalog's canonical unit: millions of light-years.
           science["distanceMly"] = 10240
           science["distanceDisplay"] = "10.24 billion light-years"
           if "distanceMly" in record:
@@ -76,16 +88,24 @@ jobs:
           if "distanceDisplay" in record:
               record["distanceDisplay"] = "10.24 billion light-years"
 
-          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          print("VERIFIED TARGET:", trail)
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+                          encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [obj for _, obj in walk(check)
+                      if obj.get("designation") == record.get("designation")
+                      and isinstance(obj.get("science"), dict)]
+          if len(verified) != 1 or verified[0]["science"].get("distanceMly") != 10240:
+              raise SystemExit("STOP: post-write verification failed.")
+          print("PATCHED FILE:", path)
+          print("VERIFIED RECORD:", record.get("designation") or record.get("name"))
           print("VERIFIED science.distanceMly:", science["distanceMly"])
           print("VERIFIED science.distanceDisplay:", science["distanceDisplay"])
           PY
-      - name: Validate and commit only the catalog
+      - name: Validate and commit only changed catalog data
         shell: bash
         run: |
           git diff --check
-          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+          git add -u -- '*.json'
           git diff --cached --quiet && { echo "No catalog change detected"; exit 1; }
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 destination distance to 10.24 billion ly"
           git push origin HEAD:release
