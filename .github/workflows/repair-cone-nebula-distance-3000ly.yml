@@ -1,0 +1,94 @@
+name: Repair Cone Nebula Distance (3000 ly)
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/repair-cone-nebula-distance-3000ly.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+      - name: Repair Hubble and runtime catalogs
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, re, sys
+          paths = [
+            pathlib.Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json"),
+            pathlib.Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json"),
+          ]
+          targets = {"ngc 2264", "cone nebula"}
+          def is_target(obj):
+              vals=[]
+              for k in ("name","designation","displayName","commonName","common_name","title","objectName","id","object"):
+                  v=obj.get(k)
+                  if isinstance(v,str): vals.append(v.lower())
+              aliases=obj.get("aliases")
+              if isinstance(aliases,list): vals += [str(v).lower() for v in aliases]
+              return any(("ngc 2264" in v) or ("cone nebula" in v) for v in vals)
+          def patch(obj):
+              count=0
+              if isinstance(obj,dict):
+                  if is_target(obj):
+                      # Preserve existing schema; update fields already used by the catalog/viewer.
+                      obj["distanceMly"]=0.003
+                      obj["distance"]="3,000 light-years"
+                      if isinstance(obj.get("science"),dict):
+                          obj["science"]["distanceMly"]=0.003
+                          obj["science"]["distanceDisplay"]="3,000 light-years"
+                      elif "science" not in obj:
+                          obj["science"]={"distanceMly":0.003,"distanceDisplay":"3,000 light-years"}
+                      if "distance_mly" in obj: obj["distance_mly"]=0.003
+                      if "distanceKly" in obj: obj["distanceKly"]=3
+                      if "distanceKly" in obj.get("science",{}): obj["science"]["distanceKly"]=3
+                      count += 1
+                  for v in obj.values(): count += patch(v)
+              elif isinstance(obj,list):
+                  for v in obj: count += patch(v)
+              return count
+          total=0
+          for p in paths:
+              if not p.is_file(): raise SystemExit(f"Missing required catalog: {p}")
+              data=json.loads(p.read_text(encoding="utf-8"))
+              n=patch(data)
+              if n < 1:
+                  raise SystemExit(f"No NGC 2264/Cone Nebula record found in {p}; refusing to guess or write.")
+              p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+              # Re-parse and assert all matching records use 0.003 Mly.
+              check=json.loads(p.read_text(encoding="utf-8"))
+              seen=[]
+              def verify(x):
+                  if isinstance(x,dict):
+                      if is_target(x): seen.append(x)
+                      for v in x.values(): verify(v)
+                  elif isinstance(x,list):
+                      for v in x: verify(v)
+              verify(check)
+              if not seen or any(float(x.get("science",{}).get("distanceMly",x.get("distanceMly",-1))) != 0.003 for x in seen):
+                  raise SystemExit(f"Post-write validation failed for {p}")
+              print(f"{p}: repaired {n} matching object record(s); verified 0.003 Mly")
+              total += n
+          if total < 2: print(f"WARNING: total target matches across catalogs={total}")
+          PY
+      - name: Commit catalog repairs
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
+          if git diff --cached --quiet; then
+            echo "No catalog diff produced; refusing an empty repair commit."
+            exit 1
+          fi
+          git commit -m "Fix Cone Nebula distance to 3000 light-years"
+          git push origin HEAD:release
