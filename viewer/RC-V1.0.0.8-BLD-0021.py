@@ -108,7 +108,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@994c2e39bdc9caeb5a333240ff89be1281e9faca/viewer/modules/destination-presentation/gv-destination-presentation-0054.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1732aa60a871e16d71df4700aed75d9085c6b8c5/viewer/modules/destination-presentation/gv-destination-presentation-0054.js'
 });
 
 
@@ -2859,6 +2859,9 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
 // ECO: GV200-001
 // ============================================================================
+// Keep image objects alive while their constellation artwork warms in parallel.
+const gvConstellationArtworkPrewarm=new Map();
+
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null}={}){
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
@@ -2904,6 +2907,21 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     };
     activeDestination=v.destination;
     const presentationBase=prewarmedPresentationDestination||await gvPresentationDestination(v.destination);
+    // Warm the selected constellation art while the AVM record and HD image are
+    // being prepared, so the travel banner can reveal it from cache at takeoff.
+    try{
+        const constellationName=String(presentationBase?.constellation||'').trim();
+        const constellationUrls=window.GVProviderArtwork?.constellationSources?.(constellationName)||[];
+        for(const url of constellationUrls){
+            if(!url||gvConstellationArtworkPrewarm.has(url))continue;
+            const image=new Image();
+            image.decoding='async';
+            image.onload=()=>console.info('GV CONSTELLATION ART PREWARMED',{name:constellationName,url});
+            image.onerror=()=>console.warn('GV CONSTELLATION ART PREWARM MISSED',{name:constellationName,url});
+            gvConstellationArtworkPrewarm.set(url,image);
+            image.src=url;
+        }
+    }catch(error){console.warn('GV CONSTELLATION ART PREWARM SKIPPED',error)}
     // ROLL 0021: propagate the image-matched AVM FOV axes to every presentation surface.
     // The exact same AVM runtime record drives HD WCS construction; never collapse Y to X when Y exists.
     const presentationAvmRecord=await gvRuntimeAvmRecord(v.destination);
