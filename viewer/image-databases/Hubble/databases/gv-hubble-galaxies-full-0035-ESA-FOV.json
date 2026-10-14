@@ -4756,7 +4756,7 @@
       "title": "NGC 2264, Cone Nebula, Fox Fur Nebula",
       "ra": 100.267407019,
       "dec": 9.72647946855,
-      "distance": "2500 light-years",
+      "distance": "3,000 light-years",
       "constellation": "Monoceros",
       "fieldOfView": "55.7441 x 57.2589 arcminutes",
       "orientation": "AVM/WCS rotation -0.180000 degrees",
@@ -4777,11 +4777,11 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 0.0025,
+        "distanceMly": 0.003,
         "distanceMethod": "NASA_NGC_2264_Christmas_Tree_Cluster_2500_light_years",
         "distanceEvidence": "https://www.nasa.gov/centers-and-facilities/marshall/the-marshall-star-for-december-20-2023/",
         "distanceRangeMly": null,
-        "distanceDisplay": "2500 light-years",
+        "distanceDisplay": "3,000 light-years",
         "distanceEstimated": false,
         "sizeKly": [
           0.000486,
@@ -4820,7 +4820,8 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29112,
       "astropixLastUpdated": "2024-10-02T11:52:25.470559",
-      "age": "EST. 9.19 GYR"
+      "age": "EST. 9.19 GYR",
+      "distanceMly": 0.003
     },
     {
       "archiveId": "noao-04494",
