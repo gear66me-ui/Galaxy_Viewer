@@ -1084,11 +1084,15 @@ function gvClearSearchResultImages(){
     gvSearchResults.replaceChildren();
 }
 
-function gvSearchRender(query){
+async function gvSearchRender(query){
     const q=String(query||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
     gvClearSearchResultImages();
     if(!q){gvSearchResults.style.display='none';return}
-    const tokens=q.split(/\\s+/).filter(Boolean);
+    gvSearchResults.style.display='block';
+    const loading=document.createElement('div');loading.className='gv-search-empty';loading.textContent='SEARCHING ALL SURVEY CATALOGS…';gvSearchResults.appendChild(loading);
+    await gvEnsureFullSearchIndex();
+    gvClearSearchResultImages();
+    const tokens=q.split(/\s+/).filter(Boolean);
     const matches=gvSearchIndex
         .filter(item=>tokens.every(token=>item.text.includes(token)))
         .sort((a,b)=>{
