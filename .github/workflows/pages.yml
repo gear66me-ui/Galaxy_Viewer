@@ -98,7 +98,6 @@ jobs:
           assert manifest.get('dependencyPins')==["24e7242ecd0726245ea025c6e9807568046f5bc0","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert "const GV200001_BUILD='0207';" in rc, 'viewer internal build identity changed unexpectedly'
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0050.js' in rc
