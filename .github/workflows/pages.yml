@@ -164,7 +164,7 @@ jobs:
           assert 'gvShowEarthDistance(nearest);' in rc, 'Earth-distance banner must refresh from live center selection'
           assert "String(Math.round(v/10)/100)+' BLY'" in rc and "String(Math.round(v))+' MLY'" in rc and "Number((v*1000).toFixed(1)).toString()+' KLY'" in rc, 'Earth banner must use the exact travel-card distance rounding equation'
           assert 'setInterval(gvSyncEarthDistanceToCenter,300)' in rc, 'Earth distance must resync after manual pan'
-          assert 'const distanceSource=gvEarthDistanceTarget||activeDestination;' in rc, 'physical scale must use the live centered galaxy distance'
+          assert 'const distanceSource=gvEarthDistanceTarget;' in rc and 'const distanceSource=gvEarthDistanceTarget||activeDestination;' not in rc, 'physical scale must avoid the activeDestination temporal-dead-zone and use the live Earth-distance target'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
