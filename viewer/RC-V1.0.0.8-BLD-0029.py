@@ -1867,6 +1867,25 @@ console.info('GV0012 PINCH HANDLER: delegated to Aladin Lite native touch implem
 let directHdObjectUrl=null;
 let directHdStaged=null;
 let directHdPresentationObjectUrl=null;
+// BUILD 0029: separately bound clean-presentation image URLs; these are not in the HD overlay URL registry.
+const gvCleanImageObjectUrls=[];
+function gvTrackCleanImageObjectUrl(url){
+    const value=String(url||'').trim();if(!value||gvCleanImageObjectUrls.includes(value))return value;
+    gvCleanImageObjectUrls.push(value);
+    while(gvCleanImageObjectUrls.length>2){
+        const staleIndex=gvCleanImageObjectUrls.findIndex(item=>item!==directHdPresentationObjectUrl);
+        if(staleIndex<0)break;
+        const [stale]=gvCleanImageObjectUrls.splice(staleIndex,1);
+        try{URL.revokeObjectURL(stale)}catch(_){}
+    }
+    return value;
+}
+function gvReleaseCleanImageObjectUrl(url){
+    const value=String(url||'').trim();if(!value)return;
+    const index=gvCleanImageObjectUrls.indexOf(value);if(index>=0)gvCleanImageObjectUrls.splice(index,1);
+    try{URL.revokeObjectURL(value)}catch(_){}
+    if(directHdPresentationObjectUrl===value)directHdPresentationObjectUrl=null;
+}
 const GV_HD_RETIRE_FOV=50;
 let gvHdTravelRetired=false;
 // BUILD 0004 — bounded HD resource ownership: maximum three tracked object URLs; stale resources are explicitly revoked.
@@ -2357,7 +2376,7 @@ async function gvPrepareDirectHdUnlocked(destination,recordPromise=gvRuntimeAvmR
     const prepStarted=performance.now();
     const raster=await gvLoadGate2MImage(url,destination,record);
     const imageObjectUrl=URL.createObjectURL(raster.blob);gvTrackHdObjectUrl(imageObjectUrl);
-    const cleanImageObjectUrl=URL.createObjectURL(raster.originalBlob);
+    const cleanImageObjectUrl=gvTrackCleanImageObjectUrl(URL.createObjectURL(raster.originalBlob));
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
     const prepared={destination,record,imageUrl:url,imageObjectUrl,cleanImageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
@@ -2843,7 +2862,7 @@ function gvDisposeNextTripPrewarm(warm,reason='invalidated'){
     console.info('GV NEXT DESTINATION PREWARM INVALIDATED',{reason,name:warm.destination?.name||warm.destination?.designation||''});
     const prepared=warm.preparedValue;
     if(prepared?.imageObjectUrl&&prepared.imageObjectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(prepared.imageObjectUrl);
-    if(prepared?.cleanImageObjectUrl&&prepared.cleanImageObjectUrl!==directHdPresentationObjectUrl){try{URL.revokeObjectURL(prepared.cleanImageObjectUrl)}catch(_){}}
+    if(prepared?.cleanImageObjectUrl&&prepared.cleanImageObjectUrl!==directHdPresentationObjectUrl){gvReleaseCleanImageObjectUrl(prepared.cleanImageObjectUrl)}
 }
 function gvInvalidateNextTripPrewarm(reason='navigation mode changed'){
     const old=gvNextTripPrewarm;gvNextTripPrewarm=null;gvNextTripPrewarmGeneration++;gvDisposeNextTripPrewarm(old,reason);
@@ -2867,7 +2886,7 @@ function gvStartNextTripPrewarm(){
             const prepared=await gvPrepareDirectHd(presentation,Promise.resolve(record));
             if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm){
                 if(prepared.imageObjectUrl)gvReleaseHdObjectUrl(prepared.imageObjectUrl);
-                if(prepared.cleanImageObjectUrl)try{URL.revokeObjectURL(prepared.cleanImageObjectUrl)}catch(_){}
+                if(prepared.cleanImageObjectUrl)gvReleaseCleanImageObjectUrl(prepared.cleanImageObjectUrl)
                 throw new Error('PREWARM INVALIDATED AFTER IMAGE PREPARATION');
             }
             warm.preparedValue=prepared;
@@ -2937,7 +2956,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         presentationStarted=true;
         gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
         if(firstTrip)destinationPresentation.depart();
-        if(directHdPresentationObjectUrl){try{URL.revokeObjectURL(directHdPresentationObjectUrl)}catch(_){}directHdPresentationObjectUrl=null}
+        if(directHdPresentationObjectUrl)gvReleaseCleanImageObjectUrl(directHdPresentationObjectUrl)
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
         if(firstTrip)startTravelCard();
         // BUILD 0100: catalog-record lookup drives navigation registration; HD preparation stays deferred.
