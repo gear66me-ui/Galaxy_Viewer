@@ -110,11 +110,15 @@ jobs:
           assert 'gvSearchCoordinatePairMatches' in rc, 'coordinate-pair search helper missing'
           # BUILD 0129 travel-stutter and AVM-at-arrival regression gate.
           assert 'GV TRAVEL PREFLIGHT HD READY' in rc, 'HD image must be prepared before camera motion'
+          assert 'GV TRAVEL AVM LAYER REGISTERED BEFORE MOTION' in rc, 'AVM layer must be registered before camera motion'
+          assert 'GV HD LAYER STAGED BEFORE TRAVEL' in rc, 'staged AVM layer must load while hidden'
+          assert 'GV HD STAGED LAYER ACTIVATED AT ARRIVAL' in rc, 'staged AVM layer must activate at arrival'
           assert 'GV T-MINUS-EIGHT WORK WINDOW OPEN' in rc, 'T-minus-eight transition must be instrumented'
-          assert 'window.GV_NAV_BACKGROUND_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'background work must remain suspended until T-8'
+          assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true; // Preserve the verified zero-stutter rule' in rc, 'application polling must stay suspended through travel'
+          assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<tMinusEightThreshold;' in rc, 'first-trip polling must stay suspended through arrival'
           assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'HiPS traffic must remain suspended until T-8'
           assert 'onZoomOutComplete:startTravelWork' not in rc, 'destination work must not begin at T-11.9'
-          assert 'GV DIRECT HD T-MINUS-EIGHT PREPARE/INSTALL FAILED' in rc, 'T-8 fallback must be logged'
+          assert 'GV DIRECT HD T-MINUS-EIGHT STAGE FAILED' in rc, 'T-8 staging fallback must be logged'
           # BUILD 0028 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
@@ -150,7 +154,7 @@ jobs:
           for term in ('andromeda','water','orion'):
               assert term in catalog_text, f'release catalog smoke test failed: {term}'
           print('SEARCH CATALOG SMOKE TESTS PASSED: Andromeda / water / Orion')
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0129 — T-MINUS-EIGHT TRAVEL PREP')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0129 — AVM PRE-STAGE / ZERO-STUTTER')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
