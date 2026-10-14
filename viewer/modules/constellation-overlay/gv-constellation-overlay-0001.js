@@ -1,4 +1,4 @@
-/* Galaxy Viewer constellation overlay module 0002.
+/* Galaxy Viewer constellation overlay module 0004.
  * Adds destination-only soft pulsing star points during navigation.
  */
 (() => {
@@ -30,7 +30,7 @@
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.glows.forEach((g,i)=>g.add(window.A.circle([ra,dec],i===0?0.055:i===1?0.045:i===2?0.035:0.025,{color:i===0?"#FFFFFF":"#8EDCFF",lineWidth:1.2,fillColor:"#8EDCFF",fillOpacity:i===0?0.95:0.65}));}catch(_){}
+        try{e.glows.forEach((g,i)=>g.add(window.A.circle([ra,dec],i===0?0.055:i===1?0.045:i===2?0.035:0.025,{color:i===0?"#FFFFFF":"#8EDCFF",lineWidth:1.2,fillColor:"#8EDCFF",fillOpacity:i===0?0.95:0.65})));}catch(_){}
       }
       e.obj.hide();e.glows.forEach(g=>g.hide());
     }
