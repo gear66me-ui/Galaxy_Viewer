@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.7",
   "sourceBranch": "release",
-  "sourceCommit": "2f1651fce55de2246e6333692a79d27b6494ae44",
-  "build": "0129",
+  "sourceCommit": "5ff84f30fb290e8bf8bb5463dcb50c032cb2bbdf",
+  "build": "0130",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.7-BLD-0129.py",
+    "viewer/RC-V1.0.0.7-BLD-0130.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-0129-avm-staging-zero-stutter-v2"
+  "validationProfile": "production-release-gate-0130-coordinate-aware-earth-distance-live-fov"
 }
