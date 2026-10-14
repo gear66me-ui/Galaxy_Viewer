@@ -5,7 +5,7 @@ import json
 # SECTION 001 — FILE IDENTITY / PYTHON IMPORTS
 # ECO: GV200-001
 # ============================================================================
-VIEWER_VERSION = "RC-V1.0.0.9"
+VIEWER_VERSION = "RC-V1.0.0.8"
 BUILD_NUMBER = "0009"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
@@ -85,7 +85,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
 display(Javascript(r"""
 (async()=>{
 'use strict';
-const VERSION='RC-V1.0.0.9';
+const VERSION='RC-V1.0.0.8';
 const GV200001_BUILD='0009';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
