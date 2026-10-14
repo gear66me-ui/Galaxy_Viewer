@@ -95,7 +95,7 @@ jobs:
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert re.fullmatch(r'[0-9a-f]{40}',str(manifest.get('sourceCommit',''))), 'manifest sourceCommit must be a full commit SHA'
-          assert manifest.get('dependencyPins')==["d5e698aecf44b9f08f385ba9a80cf64b21724036","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
+          assert manifest.get('dependencyPins')==["994c2e39bdc9caeb5a333240ff89be1281e9faca","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert 'Galaxy_Viewer@release/' not in rc
@@ -125,7 +125,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','d5e698aecf44b9f08f385ba9a80cf64b21724036','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','994c2e39bdc9caeb5a333240ff89be1281e9faca','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
           assert 'Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
@@ -190,7 +190,7 @@ jobs:
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
           module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0054.js').read_text()
           assert "const VERSION='0054'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
-          assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'avmHorizontalFovDegrees' in module and 'avmVerticalFovDegrees' in module and '× ${(y*60).toFixed(2)}' in module, 'HD destination card must show horizontal × vertical image FOV in arcminutes beneath image span'
+          assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'd?.fovXDegrees??d?.avmHorizontalFovDegrees??d?.imageFovXDeg' in module and 'd?.fovYDegrees??d?.avmVerticalFovDegrees??d?.imageFovYDeg' in module and 'hydrateAvmFov(d)' in module and 'AVM runtime catalog' in module, 'HD destination card must use AVM FOVX/FOVY metadata without fabricating missing axes'
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
