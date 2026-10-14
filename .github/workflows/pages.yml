@@ -89,7 +89,7 @@ jobs:
 
           assert viewer.get('version')=='RC-V1.0.0.8'
           assert viewer.get('viewer')=='RC-V1.0.0.8.py'
-          assert viewer.get('build')=='0007'
+          assert viewer.get('build')=='0008'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -97,8 +97,8 @@ jobs:
           assert manifest.get('dependencyPins')==["24e7242ecd0726245ea025c6e9807568046f5bc0","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0007"' in rc
-          assert "const GV200001_BUILD='0007';" in rc
+          assert 'BUILD_NUMBER = "0008"' in rc
+          assert "const GV200001_BUILD='0008';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0050.js' in rc
@@ -154,7 +154,7 @@ jobs:
           for term in ('andromeda','water','orion'):
               assert term in catalog_text, f'release catalog smoke test failed: {term}'
           print('SEARCH CATALOG SMOKE TESTS PASSED: Andromeda / water / Orion')
-          assert 'GV0005 EARTH DISTANCE LIVE CENTER MATCH' in rc, 'Earth-distance banner must follow the live centered catalog coordinate'
+          assert 'GV0008 EARTH DISTANCE LIVE CENTER MATCH' in rc, 'Earth-distance banner must follow the live centered catalog coordinate'
           assert 'const fovY=Number(Array.isArray(rawFov)?rawFov[1]' in rc, 'Earth-distance matcher must read both live FOV axes'
           assert 'const dx=deltaRa*Math.cos(dec0),dy=dec-centerDec;' in rc, 'Earth-distance matcher must account for RA wrap and declination'
           assert 'if(fieldX>1||fieldY>1)continue;' in rc and 'if(separation<nearestDeg)' in rc, 'Earth-distance matcher must choose the nearest catalog galaxy inside the live FOV'
@@ -170,12 +170,13 @@ jobs:
           assert 'setInterval(gvSyncEarthDistanceToCenter,300)' in rc, 'Earth distance must resync after manual pan'
           assert 'const distanceSource=gvEarthDistanceTarget;' in rc and 'const distanceSource=gvEarthDistanceTarget||activeDestination;' not in rc, 'physical scale must avoid the activeDestination temporal-dead-zone and use the live Earth-distance target'
           assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — PRESERVING ARRIVAL BANNER' in rc and 'const catalog=await gvLoadAvmRuntimeCatalog();' in rc and 'if(gvNavigationTravelActive)return;' in rc, 'Earth banner must survive no-match fields and reject stale async catalog results during travel'
+          assert 'const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);' in rc and 'if(selectionChanged||!b.querySelector(\'.gv-earth-distance-icon\'))' in rc, 'Earth banner must share destination-card distance formatting and avoid rebuilding the banner on every poll'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0007 — TRAVEL-CARD DISTANCE EQUATION / LIVE CENTER MATCH / DOCUMENT-CAPTURE PINCH / ARRIVAL BANNER RACE')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0008 — SHARED DISTANCE FORMAT / STABLE LIVE CENTER BANNER / DOCUMENT-CAPTURE PINCH')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
