@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0002";
+  const VERSION = "0003";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -24,29 +24,53 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);overlays.set(name,e);}
-      const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:2.6}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);overlays.set(name,e);}
+      const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2]));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
     }
-    // Draw each star as a tiny sky-coordinate circle; its angular radius is animated for a soft halo.
+    // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.obj.add(window.A.circle([ra,dec],0.035,{color:"#D8F6FF",lineWidth:1,fillColor:"#8EDCFF",fillOpacity:0.85}));}catch(_){}
+        try{e.glow.add(window.A.circle([ra,dec],0.055,{color:"#EAFBFF",lineWidth:1.5,fillColor:"#8EDCFF",fillOpacity:0.95}));}catch(_){}
       }
-      e.obj.hide();
+      e.obj.hide();e.glow.hide();
     }
     let enabled=false,glowTimer=null,glowEntry=null,phase=0;
-    function stopGlow(){if(glowTimer!==null){clearInterval(glowTimer);glowTimer=null;}if(glowEntry){glowEntry.obj.setOptions?.({color:COLOR,lineWidth:WIDTH});}glowEntry=null;}
-    function setEnabled(next){enabled=!!next;for(const e of overlays.values())enabled?e.obj.show():e.obj.hide();return enabled;}
+    function stopGlow(){
+      if(glowTimer!==null){clearInterval(glowTimer);glowTimer=null;}
+      if(glowEntry){glowEntry.glow.hide();glowEntry.glow.setOptions?.({color:"#8EDCFF",lineWidth:2.6});}
+      glowEntry=null;
+    }
+    function setEnabled(next){enabled=!!next;for(const e of overlays.values()){enabled?e.obj.show():e.obj.hide();if(!enabled)e.glow.hide();}if(!enabled)stopGlow();return enabled;}
     function setTravelGlow(name,active){
       stopGlow();if(!active||!name)return false;
       const wanted=canon(name);let found=null;
       for(const [key,e] of overlays){const k=canon(key);if(k===wanted||k.includes(wanted)||wanted.includes(k)){found=e;break;}}
       if(!found){console.info("GV CONSTELLATION GLOW: no matching constellation",name);return false;}
-      glowEntry=found;if(enabled)found.obj.show();
-      glowTimer=setInterval(()=>{phase=(phase+1)%4;const widths=[0.25,0.8,1.35,0.8];found.obj.setOptions?.({color:phase===2?"#EAFBFF":"#8EDCFF",lineWidth:widths[phase]});},220);
+      startGlow(found);return true;
+    }
+    function startGlow(found){
+      stopGlow();glowEntry=found;
+      // Respect the master ON/OFF switch; a hidden layer must never be forced on.
+      if(!enabled)return false;
+      found.glow.show();
+      const colors=["#8EDCFF","#C9F3FF","#FFFFFF","#C9F3FF"],widths=[2.6,3.2,3.8,3.2];
+      glowTimer=setInterval(()=>{if(!enabled){stopGlow();return;}phase=(phase+1)%colors.length;found.glow.setOptions?.({color:colors[phase],lineWidth:widths[phase]});},180);
       return true;
     }
-    const result=Object.freeze({VERSION,get enabled(){return enabled;},setEnabled,setTravelGlow,toggle(){return setEnabled(!enabled);},constellationCount:overlays.size,segmentCount:[...overlays.values()].reduce((n,e)=>n+e.segments,0)});
+    function setTravelGlowAt(ra,dec,active=true){
+      const targetRa=Number(ra),targetDec=Number(dec);
+      if(!active||!Number.isFinite(targetRa)||!Number.isFinite(targetDec)){stopGlow();return false;}
+      // Select the constellation whose line endpoint is closest to the destination on the celestial sphere.
+      const rad=Math.PI/180;let best=null,bestDot=-Infinity;
+      for(const e of overlays.values())for(const [sra,sdec] of e.points){
+        const dot=Math.sin(targetDec*rad)*Math.sin(sdec*rad)+Math.cos(targetDec*rad)*Math.cos(sdec*rad)*Math.cos((targetRa-sra)*rad);
+        if(dot>bestDot){bestDot=dot;best=e;}
+      }
+      if(!best){console.warn("GV CONSTELLATION GLOW: no destination constellation available");return false;}
+      console.info("GV CONSTELLATION GLOW: destination matched",best.name,{ra:targetRa,dec:targetDec,separationDeg:Math.acos(Math.max(-1,Math.min(1,bestDot)))/rad});
+      return startGlow(best);
+    }
+    const result=Object.freeze({VERSION,get enabled(){return enabled;},setEnabled,setTravelGlow,setTravelGlowAt,clearTravelGlow:stopGlow,toggle(){return setEnabled(!enabled);},constellationCount:overlays.size,segmentCount:[...overlays.values()].reduce((n,e)=>n+e.segments,0)});
     window.GalaxyViewerConstellations=result;return result;
   }
   window.GalaxyViewerConstellationOverlay=Object.freeze({VERSION,mount});
