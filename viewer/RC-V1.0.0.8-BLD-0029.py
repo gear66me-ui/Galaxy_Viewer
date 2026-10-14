@@ -1913,7 +1913,7 @@ function gvMemoryDiagnosticSnapshot(reason='periodic'){
     let imageNodes=0,canvasNodes=0;
     try{imageNodes=document.querySelectorAll('img').length;canvasNodes=document.querySelectorAll('canvas').length}catch(_){}
     let pendingPrewarm=!!gvNextTripPrewarm;
-    const snapshot={build:GV200001_BUILD,reason,at:Math.round(performance.now()),heap,hd:typeof gvHdResourceSnapshot==='function'?gvHdResourceSnapshot():null,prewarm:pendingPrewarm,objectUrls:typeof gvHdObjectUrls!=='undefined'?gvHdObjectUrls.length:null,images:imageNodes,canvases:canvasNodes,travel:!!gvNavigationTravelActive,hipsSuspended:!!window.GV_NAV_HIPS_FETCH_SUSPENDED};
+    const snapshot={build:GV200001_BUILD,reason,at:Math.round(performance.now()),heap,hd:typeof gvHdResourceSnapshot==='function'?gvHdResourceSnapshot():null,prewarm:pendingPrewarm,objectUrls:typeof gvHdObjectUrls!=='undefined'?gvHdObjectUrls.length:null,cleanObjectUrls:typeof gvCleanImageObjectUrls!=='undefined'?gvCleanImageObjectUrls.length:null,images:imageNodes,canvases:canvasNodes,travel:!!gvNavigationTravelActive,hipsSuspended:!!window.GV_NAV_HIPS_FETCH_SUSPENDED};
     console.info('GV MEMORY WORKLOAD SNAPSHOT',snapshot);
     return snapshot;
 }
