@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.7"
-BUILD_NUMBER = "0092"
+BUILD_NUMBER = "0093"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,9 +86,9 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.7';
-const GV200001_BUILD='0092';
-const GV_RUNTIME='0092';
-const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-MEMORY0092`;
+const GV200001_BUILD='0093';
+const GV_RUNTIME='0093';
+const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-MEMORY0093`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
@@ -570,15 +570,25 @@ function gvUpdateLivePhysicalScale(){
     line.style.width=`${Math.max(4,widthPx)}px`;label.textContent=gvFormatLiveScale(gvLiveScaleValueLy);
     const br=b.getBoundingClientRect();s.style.bottom=`${Math.max(0,innerHeight-br.top+8)}px`;s.classList.add('gv-visible');
 }
-function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null}
+let gvEarthDistancePinnedDestination=null;
+function gvHideEarthDistance(){gvEarthDistancePinnedDestination=null;document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null}
 function gvShowEarthDistance(destination){
     gvInstallEarthDistanceBanner();const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);if(!b||!text)return;
+    gvEarthDistancePinnedDestination=destination;
     b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
-    const card=document.querySelector('.gvdp-card');const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};place();requestAnimationFrame(place);
+    const card=document.querySelector('.gvdp-card');const place=()=>{if(gvEarthDistancePinnedDestination!==destination||activeDestination!==destination)return;const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};place();requestAnimationFrame(place);
     b.classList.add('gv-visible');gvLiveScaleValueLy=null;gvUpdateLivePhysicalScale();
 }
 gvInstallEarthDistanceBanner();
-setInterval(gvUpdateLivePhysicalScale,80);
+setInterval(()=>{
+    // Keep arrival metadata visible if a late card/layout refresh clears its
+    // visibility class. Explicit travel/HD hide calls clear the pinned target.
+    if(gvEarthDistancePinnedDestination&&activeDestination===gvEarthDistancePinnedDestination&&!navigationInFlight){
+        const banner=document.getElementById('gv-earth-distance-banner');
+        if(banner&&!banner.classList.contains('gv-visible'))banner.classList.add('gv-visible');
+    }
+    gvUpdateLivePhysicalScale();
+},80);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
