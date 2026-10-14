@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0020"
+BUILD_NUMBER = "0021"
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0020';
+const GV200001_BUILD='0021';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1119,7 +1119,11 @@ for(const provider of GV_SURVEY_PROVIDER_ORDER){
             selectedImageUrl:String(record?.imageUrl||'').trim(),
             catalogKey:String(record?.sourceCatalog||'').trim(),
             catalogIndex:Number.isFinite(Number(record?.sourceIndex))?Number(record.sourceIndex):index,
+            fovXDegrees:Number(record?.fovXDegrees??record?.fovDegrees),
+            fovYDegrees:Number(record?.fovYDegrees??record?.fovDegrees),
             fovDegrees:Number(record?.fovXDegrees??record?.fovDegrees),
+            avmHorizontalFovDegrees:Number(record?.fovXDegrees??record?.fovDegrees),
+            avmVerticalFovDegrees:Number(record?.fovYDegrees??record?.fovDegrees),
             aladinRotation:Number(record?.aladinRotation??record?.spatialRotationDeg)
         }))
         .filter(record=>gvSurveyProviderKey(record)===provider&&Number.isFinite(Number(record?.ra))&&Number.isFinite(Number(record?.dec))&&Number.isFinite(Number(record?.fovDegrees))&&Number(record?.fovDegrees)>0&&String(record?.imageUrl||'').trim())
@@ -2899,8 +2903,15 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         // Provider prewarming is deferred until after 100% arrival.
     };
     activeDestination=v.destination;
-    const presentationDestination=prewarmedPresentationDestination||await gvPresentationDestination(v.destination);
-    // The destination card, HD info port, and live distance display share the catalog-authoritative record.
+    const presentationBase=prewarmedPresentationDestination||await gvPresentationDestination(v.destination);
+    // ROLL 0021: propagate the image-matched AVM FOV axes to every presentation surface.
+    // The exact same AVM runtime record drives HD WCS construction; never collapse Y to X when Y exists.
+    const presentationAvmRecord=await gvRuntimeAvmRecord(v.destination);
+    const presentationFovX=Number(presentationAvmRecord?.fovXDegrees??presentationAvmRecord?.fovDegrees);
+    const presentationFovY=Number(presentationAvmRecord?.fovYDegrees??presentationAvmRecord?.fovDegrees);
+    if(!(presentationFovX>0&&presentationFovX<360&&presentationFovY>0&&presentationFovY<360))throw new Error('GV ROLL 0021 AVM FOVX/FOVY INVALID');
+    const presentationDestination=Object.freeze({...presentationBase,fovXDegrees:presentationFovX,fovYDegrees:presentationFovY,avmHorizontalFovDegrees:presentationFovX,avmVerticalFovDegrees:presentationFovY});
+    // The destination card, HD banner, HD viewport and live distance display share the AVM-authoritative FOV record.
     activeDestination=presentationDestination;
     headsUpDisplay.render();
     // BUILD 0130: preserve BUILD 0129 travel behavior; make Earth distance coordinate-aware and ruler FOV-live.
