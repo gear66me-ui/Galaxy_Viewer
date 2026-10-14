@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "16d4fd07797420c7afb13b74ecab5a206afcc8fc",
-  "build": "0006",
+  "sourceCommit": "92408417c76a0e5b3b8350f1e38c1b72473b2e1c",
+  "build": "0007",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0006-android-touch-pinch-arrival-only-distance"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0007-document-capture-pinch-arrival-banner-race"
 }
