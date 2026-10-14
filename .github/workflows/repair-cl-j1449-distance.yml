@@ -25,7 +25,7 @@ jobs:
 
           path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
           data = json.loads(path.read_text(encoding="utf-8"))
-          target = "clj14490856"
+          aliases = {"clj14490856", "clgj14490856", "clg14490856", "ann1105a"}
 
           def norm(value):
               return "".join(ch.lower() for ch in str(value) if ch.isalnum())
@@ -40,37 +40,46 @@ jobs:
                       yield from walk(value, f"{trail}[{i}]")
 
           matches = []
-          for trail, obj in walk(data):
-              values = [obj.get(k) for k in (
-                  "designation", "name", "title", "id", "object", "objectName",
-                  "target", "pseudonym", "nickname", "identifier"
-              ) if obj.get(k) is not None]
-              if any(norm(v) == target for v in values):
-                  matches.append((trail, obj))
-
-          unique = []
           seen = set()
-          for trail, obj in matches:
-              if id(obj) not in seen:
-                  seen.add(id(obj))
-                  unique.append((trail, obj))
-          if len(unique) != 1:
-              raise SystemExit(f"Expected exactly one CL J1449+0856 record; found {len(unique)}. No changes made.")
+          identifier_keys = (
+              "designation", "name", "title", "id", "object", "objectName",
+              "target", "pseudonym", "nickname", "identifier", "displayName",
+              "commonName", "common_name"
+          )
+          for trail, obj in walk(data):
+              values = [obj.get(k) for k in identifier_keys if obj.get(k) is not None]
+              if any(norm(v) in aliases for v in values):
+                  if id(obj) not in seen:
+                      seen.add(id(obj))
+                      matches.append((trail, obj))
 
-          trail, record = unique[0]
+          if len(matches) != 1:
+              print(f"CATALOG CHECK: expected exactly one CL J1449+0856 record; found {len(matches)}")
+              for trail, obj in matches:
+                  print("candidate:", trail, {k: obj.get(k) for k in identifier_keys if obj.get(k) is not None})
+              raise SystemExit("No catalog changes made; record must be uniquely identified.")
+
+          trail, record = matches[0]
           science = record.get("science")
           if not isinstance(science, dict):
               raise SystemExit(f"Record at {trail} has no science object; refusing an unsafe schema change.")
 
-          # Canonical catalog unit: millions of light-years.
+          # Store in the catalog's canonical unit: millions of light-years.
           science["distanceMly"] = 10240
+          science["distanceDisplay"] = "10.24 billion light-years"
           if "distanceMly" in record:
               record["distanceMly"] = 10240
           if "distance_mly" in record:
               record["distance_mly"] = 10240
+          if "distance" in record:
+              record["distance"] = "10.24 billion light-years"
+          if "distanceDisplay" in record:
+              record["distanceDisplay"] = "10.24 billion light-years"
 
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          print(f"Updated {trail}: science.distanceMly=10240 Mly (10.24 billion light-years)")
+          print("VERIFIED TARGET:", trail)
+          print("VERIFIED science.distanceMly:", science["distanceMly"])
+          print("VERIFIED science.distanceDisplay:", science["distanceDisplay"])
           PY
       - name: Validate and commit only the catalog
         shell: bash
