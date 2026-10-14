@@ -2085,7 +2085,7 @@ async function gvPrepareDirectHdUnlocked(destination,recordPromise=gvRuntimeAvmR
     return prepared;
 }
 function gvInstallPreparedHd(prepared,{stage=false}={}){
-    if(prepared?.cleanImageObjectUrl)directHdPresentationObjectUrl=prepared.cleanImageObjectUrl;
+    if(!stage&&prepared?.cleanImageObjectUrl)directHdPresentationObjectUrl=prepared.cleanImageObjectUrl;
     if(stage&&directHdStaged&&directHdStaged.destination!==prepared?.destination){
         const stale=directHdStaged;directHdStaged=null;
         try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}
@@ -2114,7 +2114,7 @@ function gvInstallPreparedHd(prepared,{stage=false}={}){
                 return;
             }
             if(stage){
-                directHdStaged={overlay:layer,destination,objectUrl:imageObjectUrl,displayWcs,layerName,previous};
+                directHdStaged={overlay:layer,destination,objectUrl:imageObjectUrl,cleanImageObjectUrl:prepared?.cleanImageObjectUrl||null,displayWcs,layerName,previous};
                 console.info('GV HD LAYER STAGED BEFORE TRAVEL',{layer:layerName,previousLayer:previous.layerName||null});
                 resolveReady(true);return;
             }
@@ -2146,6 +2146,7 @@ function gvActivateStagedHd(destination){
         if(typeof staged.overlay?.setOpacity==='function')staged.overlay.setOpacity(1);
         else if(typeof staged.overlay?.setAlpha==='function')staged.overlay.setAlpha(1);
         directHdOverlay=staged.overlay;
+        directHdPresentationObjectUrl=staged.cleanImageObjectUrl||directHdPresentationObjectUrl;
         directHdDestination=staged.destination;
         directHdObjectUrl=staged.objectUrl;
         directHdDisplayWcs=staged.displayWcs;
@@ -2636,6 +2637,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         installed=false;stagedInstallPromise=null;
         preparedPromise=null;
         recordPromise=null;
+        if(firstTrip)gvFirstDestinationPreload=null;
         console.warn('GV TRAVEL PREFLIGHT/STAGING FAILED; RETRYING AT T-MINUS-EIGHT',error);
     }
     // Register the image and prepare presentation artwork before camera motion.
