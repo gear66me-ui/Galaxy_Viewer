@@ -88,8 +88,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.7'
-          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0128.py'
-          assert viewer.get('build')=='0128'
+          assert viewer.get('viewer')=='RC-V1.0.0.7-BLD-0129.py'
+          assert viewer.get('build')=='0129'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -97,8 +97,8 @@ jobs:
           assert manifest.get('dependencyPins')==["24e7242ecd0726245ea025c6e9807568046f5bc0","5781bcedd8faaaa81b7eb3df1cda6ce586765181","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","e4905fc5bdcbda854a66b9e93efec53ce1adfcb3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
-          assert 'BUILD_NUMBER = "0128"' in rc
-          assert "const GV200001_BUILD='0128';" in rc
+          assert 'BUILD_NUMBER = "0129"' in rc
+          assert "const GV200001_BUILD='0129';" in rc
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
           assert 'gv-destination-presentation-0050.js' in rc
@@ -108,6 +108,13 @@ jobs:
           assert 'function gvSearchDisplayName(record)' in rc, 'search result sort/display helper missing'
           assert 'GV SEARCH RENDER FAILED' in rc, 'search renderer errors must be visible, not silently blank'
           assert 'gvSearchCoordinatePairMatches' in rc, 'coordinate-pair search helper missing'
+          # BUILD 0129 travel-stutter and AVM-at-arrival regression gate.
+          assert 'GV TRAVEL PREFLIGHT HD READY' in rc, 'HD image must be prepared before camera motion'
+          assert 'GV T-MINUS-EIGHT WORK WINDOW OPEN' in rc, 'T-minus-eight transition must be instrumented'
+          assert 'window.GV_NAV_BACKGROUND_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'background work must remain suspended until T-8'
+          assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'HiPS traffic must remain suspended until T-8'
+          assert 'onZoomOutComplete:startTravelWork' not in rc, 'destination work must not begin at T-11.9'
+          assert 'GV DIRECT HD T-MINUS-EIGHT PREPARE/INSTALL FAILED' in rc, 'T-8 fallback must be logged'
           # BUILD 0028 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
@@ -143,7 +150,7 @@ jobs:
           for term in ('andromeda','water','orion'):
               assert term in catalog_text, f'release catalog smoke test failed: {term}'
           print('SEARCH CATALOG SMOKE TESTS PASSED: Andromeda / water / Orion')
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0128 — CATALOG SEARCH RENDERER FIX')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.7 BUILD 0129 — T-MINUS-EIGHT TRAVEL PREP')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
