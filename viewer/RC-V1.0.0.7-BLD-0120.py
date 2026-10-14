@@ -986,7 +986,7 @@ let gvSearchIndex=Object.freeze(gvSurveyRuntimeRecords.map(record=>Object.freeze
         if(Array.isArray(value))return [key,...value.map(item=>String(item??''))];
         if(typeof value==='object')return [key,JSON.stringify(value)];
         return [key,String(value)];
-    }).join(' ').normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase()
+    }).join(' ').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
 })));
 let gvFullSearchIndexPromise=null;
 function gvSearchFlatten(value,keyPath=''){
@@ -1040,7 +1040,7 @@ async function gvEnsureFullSearchIndex(){
                     aladinRotation:Number(entry?.aladinRotation??entry?.spatialRotationDeg)
                 });
                 const allText=gvSearchFlatten(entry).concat(gvSearchFlatten(record||{})).join(' ')
-                    .normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+                    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                 return Object.freeze({record:navigable,displayRecord:entry,provider,text:allText});
             });
         }));
