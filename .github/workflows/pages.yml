@@ -87,6 +87,7 @@ jobs:
           avm=json.loads((root/'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json').read_text())
           rc_path=root/'viewer'/str(viewer.get('viewer',''))
           rc=rc_path.read_text()
+          active_build=str(viewer.get('build',''))
 
           assert viewer.get('version')=='RC-V1.0.0.8'
           assert re.fullmatch(r'\d{4}',str(viewer.get('build',''))), 'viewer build must be four digits'
@@ -175,14 +176,14 @@ jobs:
           assert 'NO CATALOG TARGET IN FIELD' not in rc, 'Do not inject unauthorized no-match status into Earth-distance banner'
           assert 'Poll the actual Aladin sky center before trusting event handlers' in rc and 'gvEarthDistanceLastObservedCenter' in rc, 'Earth-distance must detect live sky-center movement independently of event callbacks'
           assert 'width:min(50vw,60%);max-width:60%;overflow:hidden' in rc, 'Aladin-port Earth-distance ruler must stay bounded between side icons'
-          assert f'BUILD_NUMBER = "{viewer.get(\"build\")}"' in rc and f"const GV200001_BUILD='{viewer.get('build')}'" in rc, 'Build identity must match release pointer'
+          assert f'BUILD_NUMBER = "{active_build}"' in rc and f"const GV200001_BUILD='{active_build}'" in rc, 'Build identity must match release pointer'
           assert 'const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);' in rc and 'if(selectionChanged||!b.querySelector(\'.gv-earth-distance-icon\'))' in rc, 'Earth banner must share destination-card distance formatting and avoid rebuilding the banner on every poll'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          assert f'BUILD_NUMBER = "{viewer.get(\"build\")}"' in rc and f"const GV200001_BUILD='{viewer.get('build')}'" in rc, 'Build identity must agree with release pointer'
+          assert f'BUILD_NUMBER = "{active_build}"' in rc and f"const GV200001_BUILD='{active_build}'" in rc, 'Build identity must agree with release pointer'
           assert "if(fieldX>1||fieldY>1)continue;" in rc, 'Earth-distance matcher must reject records outside the live FOV'
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
