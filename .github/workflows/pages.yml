@@ -96,7 +96,7 @@ jobs:
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert re.fullmatch(r'[0-9a-f]{40}',str(manifest.get('sourceCommit',''))), 'manifest sourceCommit must be a full commit SHA'
-          assert manifest.get('dependencyPins')==["10ae327ec7ab126627cc1e482e27828075bbf4f4","1732aa60a871e16d71df4700aed75d9085c6b8c5","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","5aa4db4cf7505200e1e438cb23a4eeb32a7860b8","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
+          assert manifest.get('dependencyPins')==["10ae327ec7ab126627cc1e482e27828075bbf4f4","1732aa60a871e16d71df4700aed75d9085c6b8c5","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","66a244d3de7fac8ff87ff528b1ea3fa5b7adcdf8","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026'
           assert avm.get('sourceBranch')=='release'
           assert 'Galaxy_Viewer@release/' not in rc
@@ -126,9 +126,9 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','1732aa60a871e16d71df4700aed75d9085c6b8c5','5aa4db4cf7505200e1e438cb23a4eeb32a7860b8','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
+          assert pins==sorted(['10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','1732aa60a871e16d71df4700aed75d9085c6b8c5','66a244d3de7fac8ff87ff528b1ea3fa5b7adcdf8','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
           assert 'Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
-          assert 'Galaxy_Viewer@5aa4db4cf7505200e1e438cb23a4eeb32a7860b8/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
+          assert 'Galaxy_Viewer@66a244d3de7fac8ff87ff528b1ea3fa5b7adcdf8/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
           assert re.search(r'MAX_FOV_OCTAVES\s*:\s*2',engine), 'Route engine FoV limit is not two octaves'
           assert 'Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js' in rc
