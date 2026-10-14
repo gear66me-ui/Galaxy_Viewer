@@ -2933,6 +2933,10 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         if(activeDestination!==presentationDestination)return;
         headsUpDisplay.render();
         gvShowEarthDistance(presentationDestination);
+        gvEarthDistanceArrivalDestination=presentationDestination;
+        gvEarthDistanceUserAdjustedView=false;
+        gvEarthDistanceTarget=presentationDestination;
+        gvEarthDistanceTargetKey=gvEarthDistanceIdentity(presentationDestination);
         gvPrewarmProviderWebsite(v.destination);
         gvStartNextTripPrewarm();
     }));
