@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     branches: [release]
+    paths:
+      - ".github/workflows/repair-cl-j1449-distance.yml"
 permissions:
   contents: write
 jobs:
@@ -111,6 +113,9 @@ jobs:
         run: |
           git diff --check
           git add -u -- '*.json'
-          git diff --cached --quiet && { echo "No catalog change detected"; exit 1; }
+          if git diff --cached --quiet; then
+            echo "Catalog already has the verified distance; no new data commit needed."
+            exit 0
+          fi
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 distance in runtime catalogs"
           git push origin HEAD:release
