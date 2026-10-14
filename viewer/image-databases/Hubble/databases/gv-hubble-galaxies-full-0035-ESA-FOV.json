@@ -79345,19 +79345,19 @@
         "ACS"
       ],
       "science": {
-        "distanceMly": 0.05,
-        "distanceMethod": "astropix_description",
+        "distanceMly": 412.7,
+        "distanceMethod": "SIMBAD_126.5_Mpc_ref_2000ApJ...529..786M_converted_to_Mly",
         "distanceEvidence": "50,000 light-years",
         "distanceRangeMly": null,
         "distanceDisplay": "50,000 light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.03261195941692609,
-          0.03261197120662643
+          269.179,
+          269.179
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "image_footprint_fov_distance_estimate_NGC6670_repair",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 33 × 33 LY",
+        "sizeDisplay": "EST. 269.2 × 269.2 KLY",
         "ageGyr": 5e-05,
         "ageMethod": "lookback_from_light_travel_distance",
         "ageMinGyr": null,
@@ -79368,7 +79368,9 @@
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshiftMethod": null,
+        "distanceSource": "SIMBAD NGC 6670 distance collection; 126.5 Mpc; 2000ApJ...529..786M",
+        "distanceVerified": true
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "NGC 6670",
