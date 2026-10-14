@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0007";
+  const VERSION = "0008";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -54,23 +54,31 @@
       if(!found){console.info("GV CONSTELLATION GLOW: no matching constellation",name);return false;}
       startGlow(found);return true;
     }
+    function applyGlow(found,opacity){
+      // Aladin GraphicOverlay versions differ: prefer their dedicated opacity setter,
+      // then alpha, then options as a compatibility fallback.
+      try{
+        if(typeof found.glow.setOpacity==="function")found.glow.setOpacity(opacity);
+        else if(typeof found.glow.setAlpha==="function")found.glow.setAlpha(opacity);
+        else if(typeof found.glow.setOptions==="function")found.glow.setOptions({opacity,color:"#8EDCFF",lineWidth:0.75});
+      }catch(error){console.warn("GV CONSTELLATION GLOW OPACITY UPDATE FAILED",error)}
+    }
     function startGlow(found){
       stopGlow();glowEntry=found;
       if(!enabled)return false;
+      found.glow.setOptions?.({color:"#8EDCFF",lineWidth:0.75});
+      applyGlow(found,0);
       found.glow.show();
-      // Two-second breathing cycle: one second fade up, one second fade down.
-      // Keep the actual constellation stroke capped at 0.75 CSS pixels.
+      // A true 2-second triangular brightness ramp: 0→100% in 1s, then 100→0% in 1s.
+      // Only opacity animates; line width is fixed and never exceeds 0.75px.
       const started=performance.now(),period=2000;
       const animate=now=>{
         if(!enabled||glowEntry!==found){frameHandle=null;return;}
-        const t=((now-started)%period)/period;
-        const wave=(1-Math.cos(2*Math.PI*t))/2;
-        const opacity=0.08+0.82*wave;
-        const color=wave>0.82?"#EAFBFF":"#8EDCFF";
-        found.glow.setOptions?.({color,lineWidth:0.25+0.5*wave,opacity});
+        const phase=((now-started)%period)/period;
+        const brightness=phase<0.5?phase*2:(1-phase)*2;
+        applyGlow(found,brightness);
         frameHandle=requestAnimationFrame(animate);
       };
-      found.glow.setOptions?.({color:"#8EDCFF",lineWidth:0.25,opacity:0.08});
       frameHandle=requestAnimationFrame(animate);
       return true;
     }
