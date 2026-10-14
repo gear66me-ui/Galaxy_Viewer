@@ -1,13 +1,13 @@
 {
-  "release": "RC-V1.0.0.7",
+  "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "f8501ee255e62f565b4cc9596cc275054ed27088",
-  "build": "0132",
+  "sourceCommit": "ecd5064222b1d889fc73ba80d978c6fda3233b5f",
+  "build": "0001",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.7-BLD-0132.py",
+    "viewer/RC-V1.0.0.8.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-0132-space-age-search-match-font"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0001-live-earth-distance-hd-pinch"
 }
