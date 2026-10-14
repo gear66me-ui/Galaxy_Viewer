@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0002"
+BUILD_NUMBER = "0003"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0002';
+const GV200001_BUILD='0003';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-0001`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -517,12 +517,12 @@ window.addEventListener('focus',gvRecoverViewerAfterNativeReturn);
 window.addEventListener('pageshow',gvRecoverViewerAfterNativeReturn);
 
 function gvFormatEarthDistance(destination){
-    // Runtime catalog distance is Earth-relative MLY, matching destinationPresentation.distance().
+    // Match the exact distance equation/rounding used by destination-presentation-0050.js.
     const v=Number(destination?.distanceMly??destination?.distance);
     if(!(v>0))return '';
-    if(v>=1000)return `${(v/1000).toLocaleString('en-US',{maximumFractionDigits:2})} BLY`;
-    if(v>=1)return `${v.toLocaleString('en-US',{maximumFractionDigits:v<10?1:0})} MLY`;
-    return `${(v*1000).toLocaleString('en-US',{maximumFractionDigits:v<0.01?2:1})} KLY`;
+    if(v>=1000)return String(Math.round(v/10)/100)+' BLY';
+    if(v>=1)return String(Math.round(v))+' MLY';
+    return Number((v*1000).toFixed(1)).toString()+' KLY';
 }
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner')&&document.getElementById('gv-live-physical-scale'))return;
@@ -654,7 +654,7 @@ async function gvSyncEarthDistanceToCenter(){
         // Always refresh from the live center match; don't let destination-card
         // metadata or a stale identity cache pin the Earth banner to an old target.
         gvShowEarthDistance(nearest);
-        console.info('GV0002 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
+        console.info('GV0003 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
         gvEarthDistanceSyncLastError='';
     }catch(error){
         const message=String(error?.message||error);
@@ -662,8 +662,8 @@ async function gvSyncEarthDistanceToCenter(){
     }finally{gvEarthDistanceSyncBusy=false}
 }
 // Update immediately on sky position/zoom events as well as the safety poll.
-try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0002 EARTH POSITION EVENT REGISTRATION FAILED',error)}
-try{aladin.on('zoomChanged',()=>{gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0002 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
+try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0003 EARTH POSITION EVENT REGISTRATION FAILED',error)}
+try{aladin.on('zoomChanged',()=>{gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0003 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
 setInterval(gvSyncEarthDistanceToCenter,300);
 
 // ============================================================================
@@ -1750,7 +1750,7 @@ gvSkyRoot?.addEventListener('pointermove',event=>{
     event.preventDefault();
     event.stopPropagation();
     const nextFov=Math.max(0.0001,Math.min(360,gvHdPinchStart.fov*gvHdPinchStart.gap/gap));
-    try{aladin.setFov(nextFov);gvUpdateLivePhysicalScale()}catch(error){console.warn('GV0002 HD POINTER PINCH ZOOM FAILED',error)}
+    try{aladin.setFov(nextFov);gvUpdateLivePhysicalScale()}catch(error){console.warn('GV0003 HD POINTER PINCH ZOOM FAILED',error)}
 },{passive:false});
 for(const eventName of ['pointerup','pointercancel','pointerleave'])gvSkyRoot?.addEventListener(eventName,event=>{
     gvHdPointers.delete(event.pointerId);
