@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0005"
+BUILD_NUMBER = "0006"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0005';
+const GV200001_BUILD='0006';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -1723,54 +1723,48 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
-// BUILD 0005 — global Android two-pointer pinch. Track pointers on the sky surface,
-// not only while an HD overlay is present. One-finger pan remains Aladin-owned.
-const gvHdPointers=new Map();
-let gvHdPinchStart=null;
-function gvHdReadFov(){
-    const raw=aladin.getFov?.();
-    return Number(Array.isArray(raw)?raw[0]:(raw?.x??raw?.fovX??raw));
+// BUILD 0006 — native Touch Events for Android WebView multi-touch zoom.
+const gvSkyPinch={startGap:0,startFov:0,active:false};
+function gvSkyTouchGap(touches){
+    if(!touches||touches.length<2)return 0;
+    return Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
 }
-function gvHdPointerGap(){
-    const points=[...gvHdPointers.values()];
-    if(points.length<2)return 0;
-    return Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y);
+function gvSkyReadFov(){
+    const value=aladin.getFov?.();
+    return Number(Array.isArray(value)?value[0]:(value?.x??value?.fovX??value));
 }
-function gvHdBeginPinch(){
-    const gap=gvHdPointerGap(),fov=gvHdReadFov();
-    if(gap>0&&Number.isFinite(fov)&&fov>0)gvHdPinchStart={gap,fov};
+function gvSkyTouchIsContent(target){
+    return target instanceof Element&&!target.closest('#gv-navigation-host,#gv-hamburger-host,#gv-coordinate-host,#gv-target-host,#gv-earth-distance-banner,#gv-live-physical-scale,.gvdp-card,#gv-search-panel,#gv-survey-select-group');
 }
-function gvIsSkyGestureTarget(target){
-    if(!(target instanceof Element))return false;
-    return !target.closest('#gv-navigation-host,#gv-hamburger-host,#gv-coordinate-host,#gv-target-host,#gv-earth-distance-banner,#gv-live-physical-scale,.gvdp-card,#gv-search-panel,#gv-survey-select-group');
-}
-gvSkyRoot?.addEventListener('pointerdown',event=>{
-    if(event.pointerType!=='touch'||!gvIsSkyGestureTarget(event.target))return;
-    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-    if(gvHdPointers.size===2)gvHdBeginPinch();
-}, {capture:true,passive:true});
-gvSkyRoot?.addEventListener('pointermove',event=>{
-    if(!gvHdPointers.has(event.pointerId)||gvHdPointers.size<2)return;
-    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-    const gap=gvHdPointerGap();
-    if(!(gap>0))return;
-    if(!gvHdPinchStart)gvHdBeginPinch();
-    if(!gvHdPinchStart)return;
+gvSkyRoot.style.touchAction='none';
+gvSkyRoot.addEventListener('touchstart',event=>{
+    if(!gvSkyTouchIsContent(event.target)||event.touches.length<2)return;
+    const gap=gvSkyTouchGap(event.touches),fov=gvSkyReadFov();
+    if(gap<=0||!Number.isFinite(fov)||fov<=0)return;
+    gvSkyPinch.startGap=gap;
+    gvSkyPinch.startFov=fov;
+    gvSkyPinch.active=true;
+    console.info('GV0006 PINCH START',{gapPx:gap,fovDegrees:fov});
+},{capture:true,passive:true});
+gvSkyRoot.addEventListener('touchmove',event=>{
+    if(!gvSkyPinch.active||event.touches.length<2)return;
+    const gap=gvSkyTouchGap(event.touches);
+    if(gap<=0||gvSkyPinch.startGap<=0||gvSkyPinch.startFov<=0)return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    const nextFov=Math.max(0.0001,Math.min(360,gvHdPinchStart.fov*gvHdPinchStart.gap/gap));
+    const nextFov=Math.max(0.0001,Math.min(360,gvSkyPinch.startFov*gvSkyPinch.startGap/gap));
     try{
         aladin.setFov(nextFov);
         gvUpdateLivePhysicalScale();
         gvSyncEarthDistanceToCenter();
-    }catch(error){console.warn('GV0005 ANDROID POINTER PINCH ZOOM FAILED',error)}
-}, {capture:true,passive:false});
-function gvEndSkyPointer(event){
-    gvHdPointers.delete(event.pointerId);
-    if(gvHdPointers.size<2)gvHdPinchStart=null;
-}
-window.addEventListener('pointerup',gvEndSkyPointer,{passive:true});
-window.addEventListener('pointercancel',gvEndSkyPointer,{passive:true});
+        console.info('GV0006 PINCH MOVE',{gapPx:gap,startFovDegrees:gvSkyPinch.startFov,nextFovDegrees:nextFov});
+    }catch(error){console.error('GV0006 PINCH FAILED',error)}
+},{capture:true,passive:false});
+const gvSkyTouchEnd=event=>{
+    if(event.touches.length<2){gvSkyPinch.active=false;gvSkyPinch.startGap=0;gvSkyPinch.startFov=0}
+};
+gvSkyRoot.addEventListener('touchend',gvSkyTouchEnd,{capture:true,passive:true});
+gvSkyRoot.addEventListener('touchcancel',gvSkyTouchEnd,{capture:true,passive:true});
 
 let directHdObjectUrl=null;
 let directHdStaged=null;
