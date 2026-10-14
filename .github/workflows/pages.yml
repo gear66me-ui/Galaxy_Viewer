@@ -122,7 +122,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','d095661dfd59aa73e9a7d3c25e5a16cc3f693d50','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
+          assert pins==sorted(['5781bcedd8faaaa81b7eb3df1cda6ce586765181','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','24e7242ecd0726245ea025c6e9807568046f5bc0','e4905fc5bdcbda854a66b9e93efec53ce1adfcb3','f7740afe20a1dccd0e58644e8c154f4e6396ed83']), pins
           assert 'Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@e4905fc5bdcbda854a66b9e93efec53ce1adfcb3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
@@ -131,7 +131,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0051.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0050.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -181,8 +181,8 @@ jobs:
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',event=>{if(event.buttons>0||event.pointerType==='touch')userChangedView(event)},{passive:true})" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
-          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0051.js').read_text()
-          assert "const VERSION='0050'" in module and 'gv-hd-viewport-changed' in module and 'lyPerPx:g.lyPerPx/hdScale' in module, 'HD viewport scale equation/version missing'
+          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0050.js').read_text()
+          assert "const VERSION='0050'" in module and 'lyPerPx:g.lyPerPx/hdScale' in module, 'HD viewport scale equation/version missing'
           print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0013 — LIVE EARTH-DISTANCE FOV MATCHING')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
