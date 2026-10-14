@@ -11,12 +11,12 @@ jobs:
   repair-distance:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout release history
+      - name: Checkout release
         uses: actions/checkout@v4
         with:
           ref: release
           fetch-depth: 0
-      - name: Patch target records without reformatting catalogs
+      - name: Repair Hubble source record and synchronize runtime copies
         shell: bash
         run: |
           python - <<'PY'
@@ -24,136 +24,120 @@ jobs:
           import re
           from pathlib import Path
 
-          BASE = "b6abfd83b7cc64141ae55e07141059d76ad63099"
-          files = [
+          TARGET_MLY = 10240
+          TARGET_DISPLAY = "10.24 billion light-years"
+          source = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          runtime_files = [
               Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json"),
               Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json"),
               Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json"),
           ]
 
-          def find_record_bounds(text):
-              marker = re.search(r'"archiveId"\s*:\s*"ann1105a"', text)
+          def record_bounds(text, marker_pattern):
+              marker = re.search(marker_pattern, text)
               if not marker:
-                  raise SystemExit("STOP: ann1105a not found in original catalog.")
-              stack = []
-              in_string = False
-              escaped = False
+                  raise SystemExit(f"STOP: target marker not found: {marker_pattern}")
+              stack, in_string, escaped = [], False, False
               for i, ch in enumerate(text[:marker.start()]):
                   if in_string:
-                      if escaped:
-                          escaped = False
-                      elif ch == "\\":
-                          escaped = True
-                      elif ch == '"':
-                          in_string = False
+                      if escaped: escaped = False
+                      elif ch == "\\\\": escaped = True
+                      elif ch == '"': in_string = False
                   else:
-                      if ch == '"':
-                          in_string = True
-                      elif ch == "{":
-                          stack.append(i)
-                      elif ch == "}":
-                          if stack:
-                              stack.pop()
+                      if ch == '"': in_string = True
+                      elif ch == "{": stack.append(i)
+                      elif ch == "}" and stack: stack.pop()
               if not stack:
-                  raise SystemExit("STOP: could not locate containing record object.")
+                  raise SystemExit("STOP: could not locate containing JSON object.")
               start = stack[-1]
-              depth = 0
-              in_string = False
-              escaped = False
-              end = None
+              depth, in_string, escaped = 0, False, False
               for i in range(start, len(text)):
                   ch = text[i]
                   if in_string:
-                      if escaped:
-                          escaped = False
-                      elif ch == "\\":
-                          escaped = True
-                      elif ch == '"':
-                          in_string = False
+                      if escaped: escaped = False
+                      elif ch == "\\\\": escaped = True
+                      elif ch == '"': in_string = False
                   else:
-                      if ch == '"':
-                          in_string = True
-                      elif ch == "{":
-                          depth += 1
+                      if ch == '"': in_string = True
+                      elif ch == "{": depth += 1
                       elif ch == "}":
                           depth -= 1
-                          if depth == 0:
-                              end = i + 1
-                              break
-              if end is None:
-                  raise SystemExit("STOP: unterminated target record.")
-              return start, end
+                          if depth == 0: return start, i + 1
+              raise SystemExit("STOP: unterminated target JSON object.")
 
-          def patch_record_text(original):
-              start, end = find_record_bounds(original)
-              raw_record = original[start:end]
-              record = json.loads(raw_record)
-              if record.get("archiveId") != "ann1105a" or record.get("name") != "CL J1449+0856":
-                  raise SystemExit("STOP: located object is not the expected cluster record.")
+          def patch_one(path, marker_pattern, kind):
+              original = path.read_text(encoding="utf-8")
+              start, end = record_bounds(original, marker_pattern)
+              record_text = original[start:end]
+              record = json.loads(record_text)
+              if kind == "hubble":
+                  if record.get("designation") != "CL J1449+0856":
+                      raise SystemExit("STOP: Hubble marker matched an unexpected record.")
+              else:
+                  if record.get("archiveId") != "ann1105a" or record.get("name") != "CL J1449+0856":
+                      raise SystemExit("STOP: runtime marker matched an unexpected record.")
 
               science = record.get("science")
               if not isinstance(science, dict):
                   science = {}
                   record["science"] = science
-              science["distanceMly"] = 10240
-              science["distanceDisplay"] = "10.24 billion light-years"
-              record["distanceMly"] = 10240
-              record["distance_mly"] = 10240
-              record["distanceDisplay"] = "10.24 billion light-years"
-              record["distance"] = "10.24 billion light-years"
+              science["distanceMly"] = TARGET_MLY
+              science["distanceDisplay"] = TARGET_DISPLAY
+              record["distanceMly"] = TARGET_MLY
+              record["distance_mly"] = TARGET_MLY
+              record["distanceDisplay"] = TARGET_DISPLAY
+              record["distance"] = TARGET_DISPLAY
 
-              line_start = original.rfind("\n", 0, start) + 1
+              line_start = original.rfind("\\n", 0, start) + 1
               base_indent = len(original[line_start:start])
-              first_child = re.search(r"\n([ \t]+)\S", raw_record)
+              first_child = re.search(r"\\n([ \\t]+)\\S", record_text)
               unit = (len(first_child.group(1)) - base_indent) if first_child else 2
-              if unit <= 0:
-                  unit = 2
+              if unit <= 0: unit = 2
               rendered = json.dumps(record, ensure_ascii=False, indent=unit)
               lines = rendered.splitlines()
-              rendered = lines[0] + "".join("\n" + (" " * base_indent) + line for line in lines[1:])
+              rendered = lines[0] + "".join("\\n" + (" " * base_indent) + line for line in lines[1:])
               updated = original[:start] + rendered + original[end:]
+              parsed = json.loads(updated)
 
-              check = json.loads(updated)
               def walk(node):
                   if isinstance(node, dict):
-                      if node.get("archiveId") == "ann1105a":
+                      if kind == "hubble" and node.get("designation") == "CL J1449+0856":
                           yield node
-                      for value in node.values():
-                          yield from walk(value)
+                      if kind == "runtime" and node.get("archiveId") == "ann1105a":
+                          yield node
+                      for value in node.values(): yield from walk(value)
                   elif isinstance(node, list):
-                      for value in node:
-                          yield from walk(value)
-              hits = list(walk(check))
+                      for value in node: yield from walk(value)
+
+              hits = list(walk(parsed))
               if len(hits) != 1:
-                  raise SystemExit(f"STOP: verification found {len(hits)} ann1105a records.")
+                  raise SystemExit(f"STOP: expected exactly one {kind} record, found {len(hits)}")
               result = hits[0]
               sci = result.get("science") or {}
-              assert sci.get("distanceMly") == 10240
-              assert sci.get("distanceDisplay") == "10.24 billion light-years"
-              assert result.get("distanceMly") == 10240
-              assert result.get("distance_mly") == 10240
-              assert result.get("distanceDisplay") == "10.24 billion light-years"
-              assert result.get("distance") == "10.24 billion light-years"
-              return updated
-
-          for path in files:
-              import subprocess
-              original = subprocess.check_output(
-                  ["git", "show", f"{BASE}:{path.as_posix()}"], text=True
-              )
-              updated = patch_record_text(original)
+              assert sci.get("distanceMly") == TARGET_MLY
+              assert sci.get("distanceDisplay") == TARGET_DISPLAY
+              assert result.get("distanceMly") == TARGET_MLY
+              assert result.get("distance_mly") == TARGET_MLY
+              assert result.get("distanceDisplay") == TARGET_DISPLAY
+              assert result.get("distance") == TARGET_DISPLAY
               path.write_text(updated, encoding="utf-8")
-              print("PATCHED WITH ORIGINAL FORMATTING:", path)
-          print("RESULT: all three runtime catalogs patched; unrelated records and formatting preserved.")
+              print(f"VERIFIED {kind}: {path} -> {TARGET_MLY} Mly / {TARGET_DISPLAY}")
+
+          # The canonical source is repaired first and is the required acceptance check.
+          patch_one(source, r'"designation"\\s*:\\s*"CL J1449\\+0856"', "hubble")
+          for path in runtime_files:
+              patch_one(path, r'"archiveId"\\s*:\\s*"ann1105a"', "runtime")
+
+          print("SUCCESS: Hubble source record and all three runtime copies are corrected.")
           PY
-      - name: Validate and commit catalog data
+      - name: Validate and commit only these catalog files
         shell: bash
         run: |
           git diff --check
-          git add -u -- '*.json'
+          git add -- viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0001.json viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0002.json viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
           if git diff --cached --quiet; then
-            echo "Catalog already has the verified distance; no new data commit needed."
+            echo "All target records already have the verified values."
             exit 0
           fi
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Restore catalog formatting and retain CL J1449 distance fix"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 distance in Hubble source catalog"
           git push origin HEAD:release
