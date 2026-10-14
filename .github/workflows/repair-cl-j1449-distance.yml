@@ -1,0 +1,79 @@
+name: Repair CL J1449+0856 Distance
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  repair-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+      - name: Inject destination-banner distance
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          target = "clj14490856"
+
+          def norm(value):
+              return "".join(ch.lower() for ch in str(value) if ch.isalnum())
+
+          def walk(node, trail="$"):
+              if isinstance(node, dict):
+                  yield trail, node
+                  for key, value in node.items():
+                      yield from walk(value, f"{trail}.{key}")
+              elif isinstance(node, list):
+                  for i, value in enumerate(node):
+                      yield from walk(value, f"{trail}[{i}]")
+
+          matches = []
+          for trail, obj in walk(data):
+              values = [obj.get(k) for k in (
+                  "designation", "name", "title", "id", "object", "objectName",
+                  "target", "pseudonym", "nickname", "identifier"
+              ) if obj.get(k) is not None]
+              if any(norm(v) == target for v in values):
+                  matches.append((trail, obj))
+
+          # Deduplicate the same object if it is reachable more than once.
+          unique = []
+          seen = set()
+          for trail, obj in matches:
+              if id(obj) not in seen:
+                  seen.add(id(obj))
+                  unique.append((trail, obj))
+          if len(unique) != 1:
+              raise SystemExit(f"Expected exactly one CL J1449+0856 record; found {len(unique)}. No changes made.")
+
+          trail, record = unique[0]
+          science = record.get("science")
+          if not isinstance(science, dict):
+              raise SystemExit(f"Record at {trail} has no science object; refusing an unsafe schema change.")
+
+          # Canonical catalog convention: distance values are in millions of light-years.
+          science["distanceMly"] = 10240
+          if "distanceMly" in record:
+              record["distanceMly"] = 10240
+          if "distance_mly" in record:
+              record["distance_mly"] = 10240
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          print(f"Updated {trail}: science.distanceMly=10240 Mly (10.24 billion light-years)")
+          PY
+      - name: Validate and commit only the catalog
+        shell: bash
+        run: |
+          git diff --check
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+          git diff --cached --quiet && { echo "No catalog change detected"; exit 1; }
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 destination distance to 10.24 billion ly"
+          git push origin HEAD:release
