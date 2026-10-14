@@ -2,19 +2,19 @@
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
   "sourceCommit": "957b860293de552fcc036498aa43a93ab9fbaf8e",
-  "build": "0017",
+  "build": "0018",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0017.py",
+    "viewer/RC-V1.0.0.8-BLD-0018.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
     "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
     "viewer/modules/random-galaxy/gv-random-travel-presentation-003.js",
-    "viewer/modules/destination-presentation/gv-destination-presentation-0052.js",
+    "viewer/modules/destination-presentation/gv-destination-presentation-0053.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
     "viewer/modules/hud/gv-heads-up-display-0002.js",
     "viewer/gv-current-viewer.json"
@@ -151,7 +151,7 @@
   "dependencySnapshot": "373de63d264588f524aed2b999e61f7da7558b42",
   "catalogSnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43",
   "dependencyPins": [
-    "f31a2349640c358ebb6af6f75e4185c799e0423a",
+    "dd7de770949748e7c5d4473156cec2ee8151b768",
     "5781bcedd8faaaa81b7eb3df1cda6ce586765181",
     "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0016-hd-transform-helpers-spherical-scale-and-build-0017-live-hd-scale-recalculation-and-aladin-ruler-bounded"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0016-hd-transform-helpers-spherical-scale-and-build-0018-polled-earth-center-and-image-fov-arcminutes"
 }
