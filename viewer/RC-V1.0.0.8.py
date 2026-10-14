@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0004"
+BUILD_NUMBER = "0005"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0004';
+const GV200001_BUILD='0005';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -518,7 +518,7 @@ window.addEventListener('pageshow',gvRecoverViewerAfterNativeReturn);
 
 function gvFormatEarthDistance(destination){
     // Match the exact distance equation/rounding used by destination-presentation-0050.js.
-    const v=Number(destination?.distanceMly??destination?.distance);
+    const v=Number(destination?.distanceMly??destination?.distance??destination?.science?.distanceMly);
     if(!(v>0))return '';
     if(v>=1000)return String(Math.round(v/10)/100)+' BLY';
     if(v>=1)return String(Math.round(v))+' MLY';
@@ -647,14 +647,17 @@ async function gvSyncEarthDistanceToCenter(){
         // On pan/zoom, resolve the closest galaxy inside the live RA/Dec field,
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(!nearest){
-            console.info('GV0001 EARTH DISTANCE NO CATALOG MATCH IN LIVE FOV',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            // Never leave a previous galaxy's distance displayed while the center
+            // has moved to a field with no distance-bearing catalog match.
+            gvHideEarthDistance();
+            console.info('GV0005 EARTH DISTANCE NO CATALOG MATCH IN LIVE FOV',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
         // Always refresh from the live center match; don't let destination-card
         // metadata or a stale identity cache pin the Earth banner to an old target.
         gvShowEarthDistance(nearest);
-        console.info('GV0004 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
+        console.info('GV0005 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
         gvEarthDistanceSyncLastError='';
     }catch(error){
         const message=String(error?.message||error);
@@ -662,8 +665,8 @@ async function gvSyncEarthDistanceToCenter(){
     }finally{gvEarthDistanceSyncBusy=false}
 }
 // Update immediately on sky position/zoom events as well as the safety poll.
-try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0004 EARTH POSITION EVENT REGISTRATION FAILED',error)}
-try{aladin.on('zoomChanged',()=>{gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0004 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
+try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
+try{aladin.on('zoomChanged',()=>{gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
 setInterval(gvSyncEarthDistanceToCenter,300);
 
 // ============================================================================
@@ -1720,8 +1723,8 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
-// BUILD 0002 — use Pointer Events for two-finger pinch, which are more reliable
-// on Android WebViews than touch events. Only activate while an HD image is present.
+// BUILD 0005 — global Android two-pointer pinch. Track pointers on the sky surface,
+// not only while an HD overlay is present. One-finger pan remains Aladin-owned.
 const gvHdPointers=new Map();
 let gvHdPinchStart=null;
 function gvHdReadFov(){
@@ -1729,7 +1732,7 @@ function gvHdReadFov(){
     return Number(Array.isArray(raw)?raw[0]:(raw?.x??raw?.fovX??raw));
 }
 function gvHdPointerGap(){
-    const points=[...gvHdPointers.values()].filter(p=>p.pointerType==='touch');
+    const points=[...gvHdPointers.values()];
     if(points.length<2)return 0;
     return Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y);
 }
@@ -1737,25 +1740,38 @@ function gvHdBeginPinch(){
     const gap=gvHdPointerGap(),fov=gvHdReadFov();
     if(gap>0&&Number.isFinite(fov)&&fov>0)gvHdPinchStart={gap,fov};
 }
+function gvIsSkyGestureTarget(target){
+    if(!(target instanceof Element))return false;
+    return !target.closest('#gv-navigation-host,#gv-hamburger-host,#gv-coordinate-host,#gv-target-host,#gv-earth-distance-banner,#gv-live-physical-scale,.gvdp-card,#gv-search-panel,#gv-survey-select-group');
+}
 gvSkyRoot?.addEventListener('pointerdown',event=>{
-    if(event.pointerType!=='touch'||!(directHdOverlay||directHdPresentationObjectUrl))return;
-    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY,pointerType:event.pointerType});
-    if(gvHdPointers.size>=2)gvHdBeginPinch();
-},{passive:true});
+    if(event.pointerType!=='touch'||!gvIsSkyGestureTarget(event.target))return;
+    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+    if(gvHdPointers.size===2)gvHdBeginPinch();
+}, {capture:true,passive:true});
 gvSkyRoot?.addEventListener('pointermove',event=>{
-    if(!gvHdPointers.has(event.pointerId)||!gvHdPinchStart||!(directHdOverlay||directHdPresentationObjectUrl))return;
-    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY,pointerType:event.pointerType});
+    if(!gvHdPointers.has(event.pointerId)||gvHdPointers.size<2)return;
+    gvHdPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
     const gap=gvHdPointerGap();
     if(!(gap>0))return;
+    if(!gvHdPinchStart)gvHdBeginPinch();
+    if(!gvHdPinchStart)return;
     event.preventDefault();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
     const nextFov=Math.max(0.0001,Math.min(360,gvHdPinchStart.fov*gvHdPinchStart.gap/gap));
-    try{aladin.setFov(nextFov);gvUpdateLivePhysicalScale()}catch(error){console.warn('GV0004 HD POINTER PINCH ZOOM FAILED',error)}
-},{passive:false});
-for(const eventName of ['pointerup','pointercancel','pointerleave'])gvSkyRoot?.addEventListener(eventName,event=>{
+    try{
+        aladin.setFov(nextFov);
+        gvUpdateLivePhysicalScale();
+        gvSyncEarthDistanceToCenter();
+    }catch(error){console.warn('GV0005 ANDROID POINTER PINCH ZOOM FAILED',error)}
+}, {capture:true,passive:false});
+function gvEndSkyPointer(event){
     gvHdPointers.delete(event.pointerId);
     if(gvHdPointers.size<2)gvHdPinchStart=null;
-},{passive:true});
+}
+window.addEventListener('pointerup',gvEndSkyPointer,{passive:true});
+window.addEventListener('pointercancel',gvEndSkyPointer,{passive:true});
+
 let directHdObjectUrl=null;
 let directHdStaged=null;
 let directHdPresentationObjectUrl=null;
