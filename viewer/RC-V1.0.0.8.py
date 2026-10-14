@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0007"
+BUILD_NUMBER = "0008"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0007';
+const GV200001_BUILD='0008';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -593,11 +593,25 @@ function gvUpdateLivePhysicalScale(){
 }
 function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null;gvEarthDistanceTarget=null;gvEarthDistanceTargetKey=''}
 function gvShowEarthDistance(destination){
-    gvInstallEarthDistanceBanner();const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);if(!b||!text)return;
-    gvEarthDistanceTarget=destination;gvEarthDistanceTargetKey=gvEarthDistanceIdentity(destination);
-    b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
-    const card=document.querySelector('.gvdp-card');const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};place();requestAnimationFrame(place);
-    b.classList.add('gv-visible');gvLiveScaleValueLy=null;gvUpdateLivePhysicalScale();
+    gvInstallEarthDistanceBanner();
+    const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);
+    if(!b||!text||gvNavigationTravelActive)return;
+    const key=gvEarthDistanceIdentity(destination);
+    const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);
+    const selectionChanged=key!==gvEarthDistanceTargetKey||text!==previousDistance;
+    gvEarthDistanceTarget=destination;
+    gvEarthDistanceTargetKey=key;
+    // Keep the existing DOM stable. Only replace the text when the centered
+    // galaxy really changes, so the banner cannot blink on every poll.
+    if(selectionChanged||!b.querySelector('.gv-earth-distance-icon')){
+        b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
+        gvLiveScaleValueLy=null;
+        console.info('GV0008 EARTH DISTANCE SELECTION UPDATED',{key,distance:text});
+    }
+    const card=document.querySelector('.gvdp-card');
+    const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};
+    place();
+    if(!b.classList.contains('gv-visible'))b.classList.add('gv-visible');
 }
 gvInstallEarthDistanceBanner();
 setInterval(gvUpdateLivePhysicalScale,80);
@@ -660,10 +674,12 @@ async function gvSyncEarthDistanceToCenter(){
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
-        // Always refresh from the live center match; don't let destination-card
-        // metadata or a stale identity cache pin the Earth banner to an old target.
+        // Destination-card distance formatting is shared by gvFormatEarthDistance.
+        // Only switch the displayed value when the live-center galaxy changes.
+        const matchedDistance=gvFormatEarthDistance(nearest);
+        const selectionChanged=key!==gvEarthDistanceTargetKey||matchedDistance!==gvFormatEarthDistance(gvEarthDistanceTarget);
         gvShowEarthDistance(nearest);
-        console.info('GV0005 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
+        if(selectionChanged)console.info('GV0008 EARTH DISTANCE LIVE CENTER MATCH',{designation:nearest.designation||nearest.name||nearest.archiveId||nearest.id||'',ra:centerRa,dec:centerDec,matchedRa:Number(nearest.ra),matchedDec:Number(nearest.dec),separationDeg:nearestDeg,distanceMly:Number(nearest.distanceMly??nearest.distance??nearest.science?.distanceMly),fovXDegrees:fovX,fovYDegrees:fovY});
         gvEarthDistanceSyncLastError='';
     }catch(error){
         const message=String(error?.message||error);
