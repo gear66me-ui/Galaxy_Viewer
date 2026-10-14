@@ -3,8 +3,6 @@ on:
   workflow_dispatch:
   push:
     branches: [release]
-    paths:
-      - ".github/workflows/repair-cl-j1449-distance.yml"
 permissions:
   contents: write
 jobs:
