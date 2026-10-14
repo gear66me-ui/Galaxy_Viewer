@@ -1185,7 +1185,7 @@ async function gvEnsureFullSearchIndex(){
 }
 
 function gvSearchNormalizeMatchText(value){
-    return String(value??'').normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+    return String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 }
 function gvSearchMatchedStrings(item,tokens){
     const found=new Map(),records=item?.matchRecords||[item?.displayRecord,item?.record];
