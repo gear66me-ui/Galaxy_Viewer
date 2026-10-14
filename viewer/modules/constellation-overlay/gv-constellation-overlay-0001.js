@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0006";
+  const VERSION = "0007";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -24,13 +24,13 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:2.6}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);overlays.set(name,e);}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:0.75,opacity:0.18}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);overlays.set(name,e);}
       const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2]));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
     }
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.glow.add(window.A.circle([ra,dec],0.055,{color:"#EAFBFF",lineWidth:1.2,fillColor:"#8EDCFF",fillOpacity:0.85}));}catch(_){}
+        try{e.glow.add(window.A.circle([ra,dec],0.035,{color:"#EAFBFF",lineWidth:0.75,fillColor:"#8EDCFF",fillOpacity:0.35}));}catch(_){}
       }
       e.obj.hide();e.glow.hide();
     }
@@ -38,7 +38,7 @@
     function stopGlow(){
       if(glowTimer!==null){clearInterval(glowTimer);glowTimer=null;}
       if(frameHandle!==null){cancelAnimationFrame(frameHandle);frameHandle=null;}
-      if(glowEntry){glowEntry.glow.hide();glowEntry.glow.setOptions?.({color:"#8EDCFF",lineWidth:2.6});}
+      if(glowEntry){glowEntry.glow.hide();glowEntry.glow.setOptions?.({color:"#8EDCFF",lineWidth:0.75,opacity:0.18});}
       glowEntry=null;phase=0;
     }
     function setEnabled(next){
@@ -58,20 +58,19 @@
       stopGlow();glowEntry=found;
       if(!enabled)return false;
       found.glow.show();
-      // Smooth sine-wave breathing: continuously animate line width and luminance,
-      // reaching 0.25 px at the trough and 2.6 px at the peak.
-      const started=performance.now(),period=5200;
+      // Two-second breathing cycle: one second fade up, one second fade down.
+      // Keep the actual constellation stroke capped at 0.75 CSS pixels.
+      const started=performance.now(),period=2000;
       const animate=now=>{
         if(!enabled||glowEntry!==found){frameHandle=null;return;}
         const t=((now-started)%period)/period;
-        const wave=(1-Math.cos(2*Math.PI*t))/2; // smooth ease-in/ease-out, no hard steps
-        const width=0.25+(2.6-0.25)*wave;
-        const brightness=0.42+0.58*wave;
-        const channel=Math.round(142+113*wave);
-        const color=wave>0.82?"#EAFBFF":`rgb(${Math.round(90+channel*0.35)},${Math.round(175+80*wave)},255)`;
-        found.glow.setOptions?.({color,lineWidth:width,opacity:brightness});
+        const wave=(1-Math.cos(2*Math.PI*t))/2;
+        const opacity=0.08+0.82*wave;
+        const color=wave>0.82?"#EAFBFF":"#8EDCFF";
+        found.glow.setOptions?.({color,lineWidth:0.25+0.5*wave,opacity});
         frameHandle=requestAnimationFrame(animate);
       };
+      found.glow.setOptions?.({color:"#8EDCFF",lineWidth:0.25,opacity:0.08});
       frameHandle=requestAnimationFrame(animate);
       return true;
     }
