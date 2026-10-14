@@ -43,8 +43,6 @@ jobs:
           found = []
           parsed = 0
           for path in Path("viewer/image-databases").rglob("*.json"):
-              if any(part in {".git", "node_modules"} for part in path.parts):
-                  continue
               try:
                   data = json.loads(path.read_text(encoding="utf-8"))
                   parsed += 1
@@ -57,39 +55,33 @@ jobs:
                   if any(norm(value) in aliases for value in values):
                       found.append((path, trail, record, data))
 
-          # The release currently contains three versioned runtime catalogs.
-          # Each has its own copy of this record; patch all copies, not the
-          # stale Hubble source JSON that is absent from the current release.
           unique_files = {str(item[0]) for item in found}
           print("JSON FILES PARSED:", parsed)
           print("MATCHES:", len(found))
           print("DISTINCT MATCHING FILES:", sorted(unique_files))
           for path, trail, record, _ in found:
-              print("FOUND:", path, trail,
-                    {k: v for k, v in record.items()
-                     if k.lower() in identifier_keys and isinstance(v, (str, int, float))})
+              print("FOUND:", path, trail, "keys=", sorted(record.keys()))
 
           if len(found) != 3 or len(unique_files) != 3:
               raise SystemExit(
-                  "STOP: expected exactly one CL J1449+0856 record in each of the "
-                  "three release runtime catalogs; no files changed."
+                  "STOP: expected exactly one CL J1449+0856 record in each of three runtime catalogs; "
+                  "no files changed."
               )
 
           changed = {}
           for path, trail, record, data in found:
+              # Runtime catalog records are flattened and do not have a science object.
+              # Set both flattened runtime fields and the canonical science fields.
               science = record.get("science")
               if not isinstance(science, dict):
-                  raise SystemExit(f"STOP: {path}:{trail} has no science object; no files changed.")
+                  science = {}
+                  record["science"] = science
               science["distanceMly"] = 10240
               science["distanceDisplay"] = "10.24 billion light-years"
-              if "distanceMly" in record:
-                  record["distanceMly"] = 10240
-              if "distance_mly" in record:
-                  record["distance_mly"] = 10240
-              if "distance" in record:
-                  record["distance"] = "10.24 billion light-years"
-              if "distanceDisplay" in record:
-                  record["distanceDisplay"] = "10.24 billion light-years"
+              record["distanceMly"] = 10240
+              record["distance_mly"] = 10240
+              record["distanceDisplay"] = "10.24 billion light-years"
+              record["distance"] = "10.24 billion light-years"
               changed[path] = data
 
           for path, data in changed.items():
@@ -102,11 +94,16 @@ jobs:
                          or norm(obj.get("name", "")) == "clj14490856"]
               if len(matches) != 1:
                   raise SystemExit(f"STOP: verification found {len(matches)} target records in {path}.")
-              science = matches[0].get("science") or {}
-              if (science.get("distanceMly") != 10240
+              record = matches[0]
+              science = record.get("science") or {}
+              if (record.get("distanceMly") != 10240
+                      or record.get("distance_mly") != 10240
+                      or record.get("distanceDisplay") != "10.24 billion light-years"
+                      or record.get("distance") != "10.24 billion light-years"
+                      or science.get("distanceMly") != 10240
                       or science.get("distanceDisplay") != "10.24 billion light-years"):
                   raise SystemExit(f"STOP: distance verification failed in {path}.")
-              print("VERIFIED:", path, science["distanceMly"], science["distanceDisplay"])
+              print("VERIFIED:", path, "distanceMly=10240", "display=10.24 billion light-years")
           print("RESULT: all three runtime catalog copies repaired and verified.")
           PY
       - name: Validate and commit only changed catalog data
