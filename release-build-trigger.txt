@@ -9,3 +9,4 @@ Retry Build 0010 after removing stale internal build assertion.
 Retry Build 0010 after fixing jq broken pipe: c7b80b66ac4f2b41684712d1314e0f589ca782d1
 Release repair: next-destination prewarm, Earth-distance generation guard, Android pinch start cancellation; source commit ebbd84c9aa1ec8b82011de57e857b3ed5acd1547
 Retry interaction repair after preserving Earth-distance gate: d449eea6d8e8ab3632d2071dd255b23d128a64ea
+Release Build 0011: align pointer, manifest and gate for next-destination prewarm and interaction repair.
