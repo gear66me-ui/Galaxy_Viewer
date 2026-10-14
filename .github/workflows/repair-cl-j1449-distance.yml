@@ -16,7 +16,7 @@ jobs:
         with:
           ref: release
           fetch-depth: 1
-      - name: Find and repair the actual release record
+      - name: Repair every release runtime-catalog copy
         shell: bash
         run: |
           python - <<'PY'
@@ -42,9 +42,9 @@ jobs:
                   for i, value in enumerate(node):
                       yield from walk(value, f"{trail}[{i}]")
 
-          matches = []
+          found = []
           parsed = 0
-          for path in Path(".").rglob("*.json"):
+          for path in Path("viewer/image-databases").rglob("*.json"):
               if any(part in {".git", "node_modules"} for part in path.parts):
                   continue
               try:
@@ -52,54 +52,64 @@ jobs:
                   parsed += 1
               except Exception:
                   continue
-              for trail, obj in walk(data):
-                  values = [value for key, value in obj.items()
+              for trail, record in walk(data):
+                  values = [value for key, value in record.items()
                             if key.lower() in identifier_keys
                             and isinstance(value, (str, int, float))]
                   if any(norm(value) in aliases for value in values):
-                      matches.append((path, trail, obj, data))
+                      found.append((path, trail, record, data))
 
+          # The release currently contains three versioned runtime catalogs.
+          # Each has its own copy of this record; patch all copies, not the
+          # stale Hubble source JSON that is absent from the current release.
+          unique_files = {str(item[0]) for item in found}
           print("JSON FILES PARSED:", parsed)
-          print("MATCHING RECORDS ACROSS RELEASE:", len(matches))
-          for path, trail, record, _ in matches:
-              print("CANDIDATE:", path, trail,
+          print("MATCHES:", len(found))
+          print("DISTINCT MATCHING FILES:", sorted(unique_files))
+          for path, trail, record, _ in found:
+              print("FOUND:", path, trail,
                     {k: v for k, v in record.items()
                      if k.lower() in identifier_keys and isinstance(v, (str, int, float))})
 
-          if len(matches) != 1:
+          if len(found) != 3 or len(unique_files) != 3:
               raise SystemExit(
-                  "STOP: expected exactly one CL J1449+0856/ann1105a record across release; "
-                  f"found {len(matches)}. No files changed."
+                  "STOP: expected exactly one CL J1449+0856 record in each of the "
+                  "three release runtime catalogs; no files changed."
               )
 
-          path, trail, record, data = matches[0]
-          science = record.get("science")
-          if not isinstance(science, dict):
-              raise SystemExit(f"STOP: record at {path}:{trail} has no science object.")
+          changed = {}
+          for path, trail, record, data in found:
+              science = record.get("science")
+              if not isinstance(science, dict):
+                  raise SystemExit(f"STOP: {path}:{trail} has no science object; no files changed.")
+              science["distanceMly"] = 10240
+              science["distanceDisplay"] = "10.24 billion light-years"
+              if "distanceMly" in record:
+                  record["distanceMly"] = 10240
+              if "distance_mly" in record:
+                  record["distance_mly"] = 10240
+              if "distance" in record:
+                  record["distance"] = "10.24 billion light-years"
+              if "distanceDisplay" in record:
+                  record["distanceDisplay"] = "10.24 billion light-years"
+              changed[path] = data
 
-          science["distanceMly"] = 10240
-          science["distanceDisplay"] = "10.24 billion light-years"
-          if "distanceMly" in record:
-              record["distanceMly"] = 10240
-          if "distance_mly" in record:
-              record["distance_mly"] = 10240
-          if "distance" in record:
-              record["distance"] = "10.24 billion light-years"
-          if "distanceDisplay" in record:
-              record["distanceDisplay"] = "10.24 billion light-years"
-
-          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n",
-                          encoding="utf-8")
-          check = json.loads(path.read_text(encoding="utf-8"))
-          verified = [obj for _, obj in walk(check)
-                      if obj.get("designation") == record.get("designation")
-                      and isinstance(obj.get("science"), dict)]
-          if len(verified) != 1 or verified[0]["science"].get("distanceMly") != 10240:
-              raise SystemExit("STOP: post-write verification failed.")
-          print("PATCHED FILE:", path)
-          print("VERIFIED RECORD:", record.get("designation") or record.get("name"))
-          print("VERIFIED science.distanceMly:", science["distanceMly"])
-          print("VERIFIED science.distanceDisplay:", science["distanceDisplay"])
+          for path, data in changed.items():
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+                              encoding="utf-8")
+              reread = json.loads(path.read_text(encoding="utf-8"))
+              matches = [obj for _, obj in walk(reread)
+                         if norm(obj.get("archiveId", "")) == "ann1105a"
+                         or norm(obj.get("designation", "")) == "clj14490856"
+                         or norm(obj.get("name", "")) == "clj14490856"]
+              if len(matches) != 1:
+                  raise SystemExit(f"STOP: verification found {len(matches)} target records in {path}.")
+              science = matches[0].get("science") or {}
+              if (science.get("distanceMly") != 10240
+                      or science.get("distanceDisplay") != "10.24 billion light-years"):
+                  raise SystemExit(f"STOP: distance verification failed in {path}.")
+              print("VERIFIED:", path, science["distanceMly"], science["distanceDisplay"])
+          print("RESULT: all three runtime catalog copies repaired and verified.")
           PY
       - name: Validate and commit only changed catalog data
         shell: bash
@@ -107,5 +117,5 @@ jobs:
           git diff --check
           git add -u -- '*.json'
           git diff --cached --quiet && { echo "No catalog change detected"; exit 1; }
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 destination distance to 10.24 billion ly"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Fix CL J1449+0856 distance in runtime catalogs"
           git push origin HEAD:release
