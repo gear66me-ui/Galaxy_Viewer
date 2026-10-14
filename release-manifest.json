@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0001-live-earth-distance-hd-pinch"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0001-live-earth-distance-ra-dec-fov-hd-pinch-zoom"
 }
