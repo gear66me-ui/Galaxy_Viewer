@@ -30558,10 +30558,10 @@
         "distanceMly": 73.3851,
         "distanceMethod": "light_travel_distance_backfilled_from_age_range_0010",
         "sizeKly": [
-          887.209,
-          826.123
+          65.108,
+          60.625
         ],
-        "sizeMethod": "estimated_from_fov_and_light_travel_distance_0011",
+        "sizeMethod": "image_footprint_fov_distance_estimate_0035_corrected_Arp283",
         "ageGyr": 12.467091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "ageMinGyr": 0,
@@ -30578,7 +30578,7 @@
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_range_0011",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 887.2 × 826.1 KLY"
+        "sizeDisplay": "EST. 65.1 × 60.6 KLY"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2798 / NGC 2799 / Arp 283",
