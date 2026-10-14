@@ -89,8 +89,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.8'
-          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0015.py'
-          assert viewer.get('build')=='0015'
+          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0016.py'
+          assert viewer.get('build')=='0016'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -171,14 +171,14 @@ jobs:
           assert "String(Math.round(v/10)/100)+' BLY'" in rc and "String(Math.round(v))+' MLY'" in rc and "Number((v*1000).toFixed(1)).toString()+' KLY'" in rc and 'destination?.science?.distanceMly' in rc, 'Earth banner must use travel-card rounding and support science.distanceMly catalog records'
           assert 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100)' in rc, 'Earth distance must resync every 100 ms'
           assert 'const distanceSource=gvEarthDistanceTarget;' in rc and 'const distanceSource=gvEarthDistanceTarget||activeDestination;' not in rc, 'physical scale must avoid the activeDestination temporal-dead-zone and use the live Earth-distance target'
-          assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — PRESERVED LAST VALID DISTANCE' in rc and 'const catalog=await gvLoadAvmRuntimeCatalog();' in rc and 'if(gvNavigationTravelActive)return;' in rc, 'Earth banner must preserve last valid catalog distance when the current FOV has no match'
+          assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — STALE DISTANCE CLEARED' in rc and 'const catalog=await gvLoadAvmRuntimeCatalog();' in rc and 'if(gvNavigationTravelActive)return;' in rc, 'Earth banner must not show a stale galaxy distance when the current FOV has no catalog match'
           assert 'const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);' in rc and 'if(selectionChanged||!b.querySelector(\'.gv-earth-distance-icon\'))' in rc, 'Earth banner must share destination-card distance formatting and avoid rebuilding the banner on every poll'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          assert 'BUILD_NUMBER = "0015"' in rc and "const GV200001_BUILD='0015'" in rc, 'Build identity must agree with release pointer'
+          assert 'BUILD_NUMBER = "0016"' in rc and "const GV200001_BUILD='0016'" in rc, 'Build identity must agree with release pointer'
           assert "if(fieldX>1||fieldY>1)continue;" in rc, 'Earth-distance matcher must reject records outside the live FOV'
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
@@ -189,7 +189,7 @@ jobs:
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0015 — HD TRANSFORM HELPERS AND SPHERICAL SCALE')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0016 — HD TRANSFORM HELPERS, SPHERICAL SCALE, AND NO-STALE-DISTANCE')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
