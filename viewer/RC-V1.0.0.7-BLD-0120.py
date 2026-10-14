@@ -1054,15 +1054,24 @@ async function gvEnsureFullSearchIndex(){
             console.error('GV FULL CATALOG SEARCH INDEX FAILED; using runtime index',failed);
             return;
         }
-        // Prefer one result per provider + archive identifier, while retaining records without identifiers.
-        const seen=new Set();
-        const unique=full.filter(item=>{
+        // Merge duplicate identifiers so no searchable metadata is lost.
+        const uniqueById=new Map(),unique=[];
+        for(const item of full){
             const id=gvSearchRecordId(item.displayRecord);
-            if(!id)return true;
+            if(!id){unique.push(item);continue}
             const key=item.provider+'|'+id;
-            if(seen.has(key))return false;
-            seen.add(key);return true;
-        });
+            const prior=uniqueById.get(key);
+            if(prior){
+                uniqueById.set(key,Object.freeze({...prior,text:prior.text+' '+item.text}));
+            }else{
+                uniqueById.set(key,item);
+                unique.push(item);
+            }
+        }
+        for(let index=0;index<unique.length;index++){
+            const item=unique[index],id=gvSearchRecordId(item.displayRecord);
+            if(id)unique[index]=uniqueById.get(item.provider+'|'+id);
+        }
         gvSearchIndex=Object.freeze(unique);
         console.info('GV FULL CATALOG SEARCH INDEX READY',{records:unique.length,catalogsLoaded:catalogKeys.length,failures:failed});
         if(failed.length)console.warn('GV FULL CATALOG SEARCH PARTIAL',failed);
