@@ -688,7 +688,7 @@ async function gvSyncEarthDistanceToCenter(){
             gvEarthDistanceTarget=null;
             gvEarthDistanceTargetKey='';
             gvHideEarthDistance();
-            console.info('GV0012 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
             gvUpdateLivePhysicalScale();
             return;
         }
