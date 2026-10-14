@@ -621,24 +621,34 @@ async function gvSyncEarthDistanceToCenter(){
         if(!Number.isFinite(centerRa)||!Number.isFinite(centerDec))return;
         const rawFov=aladin.getFov?.();
         const fovX=Number(Array.isArray(rawFov)?rawFov[0]:(rawFov?.x??rawFov?.fovX));
+        const fovY=Number(Array.isArray(rawFov)?rawFov[1]:(rawFov?.y??rawFov?.fovY));
         const catalog=await gvLoadAvmRuntimeCatalog();
         const rad=Math.PI/180,ra0=centerRa*rad,dec0=centerDec*rad;
-        let nearest=null,nearestDeg=Infinity;
+        const safeFovX=Number.isFinite(fovX)&&fovX>0?fovX:0;
+        const safeFovY=Number.isFinite(fovY)&&fovY>0?fovY:(safeFovX>0?safeFovX*height/width:0);
+        if(!(safeFovX>0)||!(safeFovY>0))return;
+        let nearest=null,nearestDeg=Infinity,nearestFieldScore=Infinity;
         for(const record of catalog.records){
             const ra=Number(record?.ra),dec=Number(record?.dec);
             const distanceMly=Number(record?.distanceMly??record?.science?.distanceMly);
             if(!Number.isFinite(ra)||!Number.isFinite(dec)||!(distanceMly>0)||!Number.isFinite(distanceMly))continue;
+            // Wrap RA across 0/360 and scale horizontal offset by cos(declination).
+            let deltaRa=((ra-centerRa+540)%360)-180;
+            const dx=deltaRa*Math.cos(dec0),dy=dec-centerDec;
+            const fieldX=Math.abs(dx)/(safeFovX/2),fieldY=Math.abs(dy)/(safeFovY/2);
+            if(fieldX>1||fieldY>1)continue;
+            const fieldScore=fieldX*fieldX+fieldY*fieldY;
             const r=ra*rad,d=dec*rad,sd=Math.sin((d-dec0)/2),sr=Math.sin((r-ra0)/2);
             const h=Math.max(0,Math.min(1,sd*sd+Math.cos(dec0)*Math.cos(d)*sr*sr));
             const separation=2*Math.asin(Math.sqrt(h))/rad;
-            if(separation<nearestDeg){nearestDeg=separation;nearest=record}
+            if(fieldScore<nearestFieldScore||(fieldScore===nearestFieldScore&&separation<nearestDeg)){
+                nearestFieldScore=fieldScore;nearestDeg=separation;nearest=record;
+            }
         }
-        // Require the matched catalog position to be reasonably close to center.
-        // Tolerance tracks the live FOV but is bounded to avoid distant false matches.
-        const tolerance=Number.isFinite(fovX)&&fovX>0?Math.max(0.02,Math.min(1.5,fovX*0.5)):0.1;
-        if(!nearest||nearestDeg>tolerance){
-            // Keep the last valid arrival metadata through temporary center-match misses.
-            // A brief catalog/coordinate mismatch must not hide the distance banner or ruler.
+        // On pan/zoom, resolve the closest galaxy inside the live RA/Dec field,
+        // rather than requiring a match inside a fixed-radius center tolerance.
+        if(!nearest){
+            console.info('GV0134 EARTH DISTANCE NO CATALOG MATCH IN LIVE FOV',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
