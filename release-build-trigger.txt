@@ -5,3 +5,4 @@ Retry Build 0009 after adding cancellation retries and lock-settle delay.
 Retry Build 0009 after cleaning orphaned deployment record via deployments API.
 Build 0010 release pointer; retry Pages deployment after idempotent orphan cleanup.
 Build 0010 metadata and release validation aligned; redeploy.
+Retry Build 0010 after removing stale internal build assertion.
