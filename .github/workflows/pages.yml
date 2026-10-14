@@ -181,7 +181,7 @@ jobs:
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          assert 'BUILD_NUMBER = "0016"' in rc and "const GV200001_BUILD='0016'" in rc, 'Build identity must agree with release pointer'
+          assert 'BUILD_NUMBER = "0017"' in rc and "const GV200001_BUILD='0017'" in rc, 'Build identity must agree with release pointer'
           assert "if(fieldX>1||fieldY>1)continue;" in rc, 'Earth-distance matcher must reject records outside the live FOV'
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
@@ -192,7 +192,7 @@ jobs:
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0016 — HD TRANSFORM HELPERS, SPHERICAL SCALE, AND NO-STALE-DISTANCE')
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0017 — HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
@@ -580,4 +580,4 @@ jobs:
         with:
           artifact_name: galaxy-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
-# BUILD 0016 RELEASE VALIDATION
+# BUILD 0017 RELEASE VALIDATION
