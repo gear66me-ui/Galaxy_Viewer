@@ -1,8 +1,8 @@
 {
-  "release": "RC-V1.0.0.8",
+  "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "5e610e170c40c36676ad825f304aabb7c92dcc74",
-  "build": "0008",
+  "sourceCommit": "f8f5be33b1ac7431cd65d7075da2ab8a22d2302f",
+  "build": "0009",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0008-stable-live-earth-distance-banner"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0009-preserve-destination-metadata"
 }
