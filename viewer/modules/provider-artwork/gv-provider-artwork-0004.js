@@ -84,23 +84,29 @@ function loadImage(img,sources,onReady,onFail){
   const active=()=>imageRequestTokens.get(img)===token;
   img.onload=null;
   img.onerror=null;
-  let attempt=0;
+  let round=0;
   const next=()=>{
     if(!active())return;
-    if(attempt>=urls.length*3){onFail?.();return}
-    const base=urls[attempt%urls.length],round=Math.floor(attempt/urls.length);
-    attempt++;
-    const sep=base.includes('?')?'&':'?';
-    const url=round?base+sep+'gv_art_retry='+attempt+'&t='+Date.now():base;
-    loadSource(url).then(readyUrl=>{
+    if(round>=3){onFail?.();return}
+    const currentRound=round++;
+    // Race the CDN, Pages, and raw GitHub copies together. Serial fallback
+    // made one slow host delay an icon even when another copy was available.
+    const candidates=urls.map((base,index)=>{
+      const sep=base.includes('?')?'&':'?';
+      const url=currentRound?base+sep+'gv_art_retry='+(currentRound*urls.length+index+1)+'&t='+Date.now():base;
+      return loadSource(url).then(readyUrl=>({readyUrl}));
+    });
+    Promise.any(candidates).then(({readyUrl})=>{
       if(!active())return;
       let fired=false;
       const ready=()=>{if(!active()||fired)return;fired=true;onReady?.()};
       img.onload=ready;
-      img.onerror=()=>{if(active())setTimeout(next,120*attempt)};
+      img.onerror=()=>{if(active())setTimeout(next,120*round)};
       img.src=readyUrl;
       if(active()&&img.complete&&img.naturalWidth>0)Promise.resolve().then(ready);
-    }).catch(()=>{if(active())setTimeout(next,120*attempt)});
+    }).catch(()=>{
+      if(active())setTimeout(next,120*round);
+    });
   };
   next();
 }
