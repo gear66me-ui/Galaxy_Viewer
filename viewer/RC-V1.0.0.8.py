@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0006"
+BUILD_NUMBER = "0007"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0006';
+const GV200001_BUILD='0007';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -626,6 +626,9 @@ async function gvSyncEarthDistanceToCenter(){
         const fovX=Number(Array.isArray(rawFov)?rawFov[0]:(rawFov?.x??rawFov?.fovX));
         const fovY=Number(Array.isArray(rawFov)?rawFov[1]:(rawFov?.y??rawFov?.fovY));
         const catalog=await gvLoadAvmRuntimeCatalog();
+        // A catalog load may finish after a trip starts; never let that stale async
+        // result resurrect the banner during travel.
+        if(gvNavigationTravelActive)return;
         const rad=Math.PI/180,ra0=centerRa*rad,dec0=centerDec*rad;
         const safeFovX=Number.isFinite(fovX)&&fovX>0?fovX:0;
         const safeFovY=Number.isFinite(fovY)&&fovY>0?fovY:(safeFovX>0?safeFovX*height/width:0);
@@ -650,10 +653,10 @@ async function gvSyncEarthDistanceToCenter(){
         // On pan/zoom, resolve the closest galaxy inside the live RA/Dec field,
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(!nearest){
-            // Never leave a previous galaxy's distance displayed while the center
-            // has moved to a field with no distance-bearing catalog match.
-            gvHideEarthDistance();
-            console.info('GV0005 EARTH DISTANCE NO CATALOG MATCH IN LIVE FOV',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            // Preserve the arrival-selected destination banner when the runtime
+            // catalog has no match in this field. Hiding here made it flash off
+            // immediately after arrival and also cleared the scale's distance.
+            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — PRESERVING ARRIVAL BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
             return;
         }
         const key=gvEarthDistanceIdentity(nearest);
@@ -1726,7 +1729,8 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
-// BUILD 0006 — native Touch Events for Android WebView multi-touch zoom.
+// BUILD 0007 — capture Android touch gestures at document level so Aladin's
+// canvas handlers cannot swallow the second pointer before Galaxy Viewer sees it.
 const gvSkyPinch={startGap:0,startFov:0,active:false};
 function gvSkyTouchGap(touches){
     if(!touches||touches.length<2)return 0;
@@ -1737,19 +1741,22 @@ function gvSkyReadFov(){
     return Number(Array.isArray(value)?value[0]:(value?.x??value?.fovX??value));
 }
 function gvSkyTouchIsContent(target){
-    return target instanceof Element&&!target.closest('#gv-navigation-host,#gv-hamburger-host,#gv-coordinate-host,#gv-target-host,#gv-earth-distance-banner,#gv-live-physical-scale,.gvdp-card,#gv-search-panel,#gv-survey-select-group');
+    return target instanceof Element&&!!gvSkyRoot?.contains(target)&&!target.closest('#gv-navigation-host,#gv-hamburger-host,#gv-coordinate-host,#gv-target-host,#gv-earth-distance-banner,#gv-live-physical-scale,.gvdp-card,#gv-search-panel,#gv-survey-select-group');
 }
-gvSkyRoot.style.touchAction='none';
-gvSkyRoot.addEventListener('touchstart',event=>{
+if(gvSkyRoot){
+    gvSkyRoot.style.touchAction='none';
+    gvSkyRoot.querySelectorAll('canvas').forEach(canvas=>{canvas.style.touchAction='none'});
+}
+document.addEventListener('touchstart',event=>{
     if(!gvSkyTouchIsContent(event.target)||event.touches.length<2)return;
     const gap=gvSkyTouchGap(event.touches),fov=gvSkyReadFov();
-    if(gap<=0||!Number.isFinite(fov)||fov<=0)return;
+    if(gap<=0||!Number.isFinite(fov)||fov<=0){console.warn('GV0007 PINCH START REJECTED',{gapPx:gap,fovDegrees:fov});return}
     gvSkyPinch.startGap=gap;
     gvSkyPinch.startFov=fov;
     gvSkyPinch.active=true;
-    console.info('GV0006 PINCH START',{gapPx:gap,fovDegrees:fov});
+    console.info('GV0007 PINCH START',{gapPx:gap,fovDegrees:fov,target:event.target?.tagName});
 },{capture:true,passive:true});
-gvSkyRoot.addEventListener('touchmove',event=>{
+document.addEventListener('touchmove',event=>{
     if(!gvSkyPinch.active||event.touches.length<2)return;
     const gap=gvSkyTouchGap(event.touches);
     if(gap<=0||gvSkyPinch.startGap<=0||gvSkyPinch.startFov<=0)return;
@@ -1758,16 +1765,14 @@ gvSkyRoot.addEventListener('touchmove',event=>{
     const nextFov=Math.max(0.0001,Math.min(360,gvSkyPinch.startFov*gvSkyPinch.startGap/gap));
     try{
         aladin.setFov(nextFov);
-        gvUpdateLivePhysicalScale();
-        gvSyncEarthDistanceToCenter();
-        console.info('GV0006 PINCH MOVE',{gapPx:gap,startFovDegrees:gvSkyPinch.startFov,nextFovDegrees:nextFov});
-    }catch(error){console.error('GV0006 PINCH FAILED',error)}
+        console.info('GV0007 PINCH MOVE',{gapPx:gap,startGapPx:gvSkyPinch.startGap,startFovDegrees:gvSkyPinch.startFov,nextFovDegrees:nextFov,actualFov:gvSkyReadFov()});
+    }catch(error){console.error('GV0007 PINCH FAILED',error)}
 },{capture:true,passive:false});
 const gvSkyTouchEnd=event=>{
     if(event.touches.length<2){gvSkyPinch.active=false;gvSkyPinch.startGap=0;gvSkyPinch.startFov=0}
 };
-gvSkyRoot.addEventListener('touchend',gvSkyTouchEnd,{capture:true,passive:true});
-gvSkyRoot.addEventListener('touchcancel',gvSkyTouchEnd,{capture:true,passive:true});
+document.addEventListener('touchend',gvSkyTouchEnd,{capture:true,passive:true});
+document.addEventListener('touchcancel',gvSkyTouchEnd,{capture:true,passive:true});
 
 let directHdObjectUrl=null;
 let directHdStaged=null;
