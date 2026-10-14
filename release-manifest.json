@@ -1,20 +1,20 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "ae467c447c9c1d1fb51dded84450987af137523c",
-  "build": "0012",
+  "sourceCommit": "58b9d45616ca6deb8d7fb6cbe7db3b0a45234485",
+  "build": "0013",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8.py",
+    "viewer/RC-V1.0.0.8-BLD-0013.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
     "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
     "viewer/modules/random-galaxy/gv-random-travel-presentation-003.js",
-    "viewer/modules/destination-presentation/gv-destination-presentation-0050.js",
+    "viewer/modules/destination-presentation/gv-destination-presentation-0051.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
     "viewer/modules/hud/gv-heads-up-display-0002.js",
     "viewer/gv-current-viewer.json"
@@ -151,7 +151,7 @@
   "dependencySnapshot": "373de63d264588f524aed2b999e61f7da7558b42",
   "catalogSnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43",
   "dependencyPins": [
-    "24e7242ecd0726245ea025c6e9807568046f5bc0",
+    "d095661dfd59aa73e9a7d3c25e5a16cc3f693d50",
     "5781bcedd8faaaa81b7eb3df1cda6ce586765181",
     "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0012-hd-distance-and-native-pinch"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0013-live-earth-distance-100ms"
 }
