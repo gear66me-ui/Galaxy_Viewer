@@ -7,6 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
 BUILD_NUMBER = "0012"
+# BUILD 0012 — HD destination distance persistence and native Aladin pinch
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
