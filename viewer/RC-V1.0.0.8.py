@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0009"
+BUILD_NUMBER = "0012"
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
 # ============================================================================
@@ -86,7 +86,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0011';
+const GV200001_BUILD='0012';
 const GV_RUNTIME='0128';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -672,12 +672,22 @@ async function gvSyncEarthDistanceToCenter(){
         // rather than requiring a match inside a fixed-radius center tolerance.
         if(syncGeneration!==gvEarthDistanceSyncGeneration)return;
         if(!nearest){
-            // Do not leave a stale destination-card distance on screen after the
-            // user pans to a field with no catalog galaxy match.
+            // BUILD 0012: while the HD destination card is visible, its selected
+            // destination remains the authoritative distance source. Do not let
+            // a catalog miss at the viewport center hide the Earth banner/ruler.
+            const card=document.querySelector('.gvdp-card.gvdp-visible');
+            if(card&&gvEarthDistanceTarget&&gvFormatEarthDistance(gvEarthDistanceTarget)){
+                gvShowEarthDistance(gvEarthDistanceTarget);
+                gvUpdateLivePhysicalScale();
+                console.info('GV0012 EARTH DISTANCE: preserving selected HD destination on center-catalog miss',{
+                    destination:gvEarthDistanceIdentity(gvEarthDistanceTarget),ra:centerRa,dec:centerDec
+                });
+                return;
+            }
             gvEarthDistanceTarget=null;
             gvEarthDistanceTargetKey='';
             gvHideEarthDistance();
-            console.info('GV0007 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
+            console.info('GV0012 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE BANNER',{ra:centerRa,dec:centerDec,fovXDegrees:safeFovX,fovYDegrees:safeFovY});
             gvUpdateLivePhysicalScale();
             return;
         }
@@ -1764,40 +1774,16 @@ function gvSkyReadFov(){
     const value=aladin.getFov?.();
     return Number(Array.isArray(value)?value[0]:(value?.x??value?.fovX??value));
 }
-function gvSkyTouchIsContent(target){
-    return target instanceof Element&&!!gvSkyRoot?.contains(target)&&!target.closest('#gv-navigation-host,#gv-hamburger-host,#gv-coordinate-host,#gv-target-host,#gv-earth-distance-banner,#gv-live-physical-scale,.gvdp-card,#gv-search-panel,#gv-survey-select-group');
-}
+// BUILD 0012 ROOT-CAUSE FIX: do not capture and stopImmediatePropagation on
+// touchstart/touchmove. Aladin Lite 3.8.2 already implements native pinch zoom;
+// the previous document-capture handler intercepted both touch events before
+// Aladin could process them, and the custom path did not reliably reach the
+// active HD image surface. Keep touch gestures enabled for Aladin's own handler.
 if(gvSkyRoot){
     gvSkyRoot.style.touchAction='none';
     gvSkyRoot.querySelectorAll('canvas').forEach(canvas=>{canvas.style.touchAction='none'});
 }
-document.addEventListener('touchstart',event=>{
-    if(!gvSkyTouchIsContent(event.target)||event.touches.length<2)return;
-    event.preventDefault();event.stopImmediatePropagation();
-    const gap=gvSkyTouchGap(event.touches),fov=gvSkyReadFov();
-    if(gap<=0||!Number.isFinite(fov)||fov<=0){console.warn('GV0007 PINCH START REJECTED',{gapPx:gap,fovDegrees:fov});return}
-    gvSkyPinch.startGap=gap;
-    gvSkyPinch.startFov=fov;
-    gvSkyPinch.active=true;
-    console.info('GV0007 PINCH START',{gapPx:gap,fovDegrees:fov,target:event.target?.tagName});
-},{capture:true,passive:false});
-document.addEventListener('touchmove',event=>{
-    if(!gvSkyPinch.active||event.touches.length<2)return;
-    const gap=gvSkyTouchGap(event.touches);
-    if(gap<=0||gvSkyPinch.startGap<=0||gvSkyPinch.startFov<=0)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    const nextFov=Math.max(0.0001,Math.min(360,gvSkyPinch.startFov*gvSkyPinch.startGap/gap));
-    try{
-        aladin.setFov(nextFov);
-        console.info('GV0007 PINCH MOVE',{gapPx:gap,startGapPx:gvSkyPinch.startGap,startFovDegrees:gvSkyPinch.startFov,nextFovDegrees:nextFov,actualFov:gvSkyReadFov()});
-    }catch(error){console.error('GV0007 PINCH FAILED',error)}
-},{capture:true,passive:false});
-const gvSkyTouchEnd=event=>{
-    if(event.touches.length<2){gvSkyPinch.active=false;gvSkyPinch.startGap=0;gvSkyPinch.startFov=0}
-};
-document.addEventListener('touchend',gvSkyTouchEnd,{capture:true,passive:true});
-document.addEventListener('touchcancel',gvSkyTouchEnd,{capture:true,passive:true});
+console.info('GV0012 PINCH HANDLER: delegated to Aladin Lite native touch implementation');
 
 let directHdObjectUrl=null;
 let directHdStaged=null;
