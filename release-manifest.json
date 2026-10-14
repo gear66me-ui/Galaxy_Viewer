@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "ecd5064222b1d889fc73ba80d978c6fda3233b5f",
-  "build": "0001",
+  "sourceCommit": "404e26d52cd0d48a62fdd13194d0a19bac713be9",
+  "build": "0002",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
@@ -159,5 +159,5 @@
     "e4905fc5bdcbda854a66b9e93efec53ce1adfcb3",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0001-live-earth-distance-ra-dec-fov-hd-pinch-zoom"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0002-live-earth-distance-events-android-pointer-pinch"
 }
