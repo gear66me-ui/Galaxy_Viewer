@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0004";
+  const VERSION = "0005";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -30,7 +30,7 @@
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.glows.forEach((g,i)=>g.add(window.A.circle([ra,dec],i===0?0.055:i===1?0.045:i===2?0.035:0.025,{color:i===0?"#FFFFFF":"#8EDCFF",lineWidth:1.2,fillColor:"#8EDCFF",fillOpacity:i===0?0.95:0.65})));}catch(_){}
+        try{e.glows.forEach((g,i)=>{ const radius=[0.055,0.045,0.035,0.025][i]; const options={color:i===0?"#FFFFFF":"#8EDCFF",lineWidth:1.2,fillColor:"#8EDCFF",fillOpacity:i===0?0.95:0.65}; g.add(window.A.circle([ra,dec],radius,options)); });}catch(_){}
       }
       e.obj.hide();e.glows.forEach(g=>g.hide());
     }
