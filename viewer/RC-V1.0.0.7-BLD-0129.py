@@ -2227,7 +2227,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
                 const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed/10),t=Math.min(1,(now-translateStarted)/(durationSeconds*1000)),tMinusEightThreshold=Math.max(0,1-8/durationSeconds);
-                window.GV_NAV_BACKGROUND_SUSPENDED=t<tMinusEightThreshold;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<tMinusEightThreshold;
+                window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<tMinusEightThreshold;
                 if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:true});onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
                 if(sample!==lastSample){
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
