@@ -64,7 +64,7 @@ jobs:
           arp = [e for e in d["entries"] if e.get("archiveId") == "potw2042a"]
           assert len(arp) == 1, f"Expected one Arp 283 record, found {len(arp)}"
           s = arp[0]["science"]
-          assert all(abs(a-b) < 0.01 for a,b in zip(s["sizeKly"], [65.13, 60.65])), f"Arp 283 size mismatch: {s['sizeKly']}"
+          assert all(abs(a-b) < 0.001 for a,b in zip(s["sizeKly"], [65.108, 60.625])), f"Arp 283 size mismatch: {s['sizeKly']}"
           assert s["sizeMethod"] == "image_footprint_fov_distance_estimate_0035_corrected_Arp283"
           print("Arp 283 physical footprint verified:", s["sizeKly"], "Kly")
           print("Hubble JSON valid:", len(d["entries"]), "entries")
