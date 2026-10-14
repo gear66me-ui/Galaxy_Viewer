@@ -89,8 +89,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.8'
-          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0014.py'
-          assert viewer.get('build')=='0014'
+          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0015.py'
+          assert viewer.get('build')=='0015'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -100,11 +100,11 @@ jobs:
           assert avm.get('sourceBranch')=='release'
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
-          assert 'gv-destination-presentation-0050.js' in rc
+          assert 'gv-destination-presentation-0051.js' in rc
           assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
           assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
-          assert 'const GV200001_BUILD=\'0014\';' in rc, 'runtime cache-busting build identity must match pointer'
-          assert "GalaxyDestinationPresentation?.VERSION!=='0050'" in rc
+          assert 'const GV200001_BUILD=\'0015\';' in rc, 'runtime cache-busting build identity must match pointer'
+          assert "GalaxyDestinationPresentation?.VERSION!=='0051'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.
           assert 'function gvSearchDisplayName(record)' in rc, 'search result sort/display helper missing'
@@ -134,7 +134,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0050.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0051.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -178,15 +178,18 @@ jobs:
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          assert 'BUILD_NUMBER = "0014"' in rc and "const GV200001_BUILD='0014'" in rc, 'Build identity must agree with release pointer'
+          assert 'BUILD_NUMBER = "0015"' in rc and "const GV200001_BUILD='0015'" in rc, 'Build identity must agree with release pointer'
           assert "if(fieldX>1||fieldY>1)continue;" in rc, 'Earth-distance matcher must reject records outside the live FOV'
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
-          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0050.js').read_text()
-          assert "const VERSION='0050'" in module and 'lyPerPx:g.lyPerPx/hdScale' in module, 'HD viewport scale equation/version missing'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0014 — CAPTURE-PHASE LIVE EARTH-DISTANCE MATCHING')
+          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0051.js').read_text()
+          assert "const VERSION='0051'" in module and 'lyPerPx:g.lyPerPx/hdScale' in module, 'HD viewport scale equation/version missing'
+          assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
+          assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
+          assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
+          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0015 — HD TRANSFORM HELPERS AND SPHERICAL SCALE')
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
@@ -210,7 +213,7 @@ jobs:
           if(a<0||b<a)throw new Error('VIEWER JAVASCRIPT EXTRACTION FAILED');
           const js=py.slice(a+start.length,b);
           new Function(js);
-          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0050.js';
+          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0051.js';
           const moduleSource=fs.readFileSync(modulePath,'utf8');
           new Function(moduleSource);
           console.log('VIEWER JAVASCRIPT SYNTAX PASSED:',viewer.viewer);
