@@ -541,6 +541,7 @@ function gvInstallEarthDistanceBanner(){
     const b=document.createElement('div');b.id='gv-earth-distance-banner';document.body.appendChild(b);
     const s=document.createElement('div');s.id='gv-live-physical-scale';s.innerHTML='<span class="gv-live-scale-label"></span><span class="gv-live-scale-line"></span>';document.body.appendChild(s);
 }
+let gvNavigationTravelActive=false;
 let gvLiveScaleValueLy=null;
 let gvEarthDistanceTarget=null;
 let gvEarthDistanceTargetKey='';
@@ -566,6 +567,7 @@ function gvUpdateLivePhysicalScale(){
  // Keep the physical ruler live during travel too; other background polling remains suspended.
  const s=document.getElementById('gv-live-physical-scale'),line=s?.querySelector('.gv-live-scale-line'),label=s?.querySelector('.gv-live-scale-label'),banner=document.getElementById('gv-earth-distance-banner');
  if(!s||!line||!label)return;
+ if(gvNavigationTravelActive){s.classList.remove('gv-visible');return;}
  const size=aladin.getSize?.(),width=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),fov=aladin.getFov?.();
  const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);
  const distanceSource=gvEarthDistanceTarget;
@@ -609,6 +611,7 @@ async function gvSyncEarthDistanceToCenter(){
     if(gvEarthDistanceSyncBusy)return;
     const banner=document.getElementById('gv-earth-distance-banner');
     if(!banner)return;
+    if(gvNavigationTravelActive){gvHideEarthDistance();return;}
     gvEarthDistanceSyncBusy=true;
     try{
         const size=aladin.getSize?.();
@@ -2365,6 +2368,8 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
 async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,onArrival=null,registeredPromise=null,switchToSphericalAtApex=false}={}){
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
+    gvNavigationTravelActive=true;
+    gvHideEarthDistance();
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
     if(firstHomeTrip){
@@ -2394,7 +2399,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     lastSample=sample;
                 }
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
-            }catch(error){window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+            }catch(error){gvNavigationTravelActive=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
         });
         aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
         aladin.setRotation(targetRotation);
@@ -2404,10 +2409,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             const frame=now=>{try{
                 const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/10);
                 if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);aladin.setFov(fov);lastSample=sample}
-                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve();
-            }catch(error){window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;gvNavigationTravelActive=false;resolve();
+            }catch(error){gvNavigationTravelActive=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
         });
         aladin.setFov(finalFov);
+        gvNavigationTravelActive=false;
         try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}
         return prepared;
     }
@@ -2465,8 +2471,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
-        }catch(error){window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();gvNavigationTravelActive=false;try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
+        }catch(error){gvNavigationTravelActive=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
 }
