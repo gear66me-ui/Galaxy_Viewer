@@ -108,7 +108,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@24e7242ecd0726245ea025c6e9807568046f5bc0/viewer/modules/destination-presentation/gv-destination-presentation-0050.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@86c15f3378d38e67ea5354b41da1a11c7480a4d8/viewer/modules/destination-presentation/gv-destination-presentation-0050.js'
 });
 
 
@@ -717,6 +717,11 @@ function gvInstallEarthDistanceInteractionListeners(){
     host.addEventListener('pointerup',userChangedView,{passive:true});
     host.addEventListener('touchend',userChangedView,{passive:true});
     host.addEventListener('wheel',userChangedView,{passive:true});
+    // HD image pan/pinch changes its physical ruler, not the sky coordinates or catalog distance.
+    window.addEventListener('gv-hd-viewport-changed',()=>{
+        gvSyncEarthDistanceToCenter();
+        gvUpdateLivePhysicalScale();
+    },{passive:true});
 }
 // Update immediately on sky position/zoom events as well as the 300 ms safety poll.
 try{aladin.on('positionChanged',()=>{gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
