@@ -978,23 +978,101 @@ gvSearchTile.id='gv-catalog-search-tile';
 gvSearchTile.innerHTML='<div class="gv-search-line"><input id="gv-catalog-search-input" type="search" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="SEARCH GALAXIES" placeholder="SEARCH GALAXIES"><span class="gv-search-icon" aria-hidden="true">🔍</span></div><div id="gv-catalog-search-results" aria-live="polite"></div>';
 const gvSearchInput=gvSearchTile.querySelector('#gv-catalog-search-input');
 const gvSearchResults=gvSearchTile.querySelector('#gv-catalog-search-results');
-const gvSearchIndex=Object.freeze(gvSurveyRuntimeRecords.map(record=>Object.freeze({
+let gvSearchIndex=Object.freeze(gvSurveyRuntimeRecords.map(record=>Object.freeze({
     record,
+    displayRecord:record,
     text:Object.entries(record||{}).flatMap(([key,value])=>{
         if(value===null||value===undefined)return [];
         if(Array.isArray(value))return [key,...value.map(item=>String(item??''))];
         if(typeof value==='object')return [key,JSON.stringify(value)];
         return [key,String(value)];
-    }).join(' ').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    }).join(' ').normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase()
 })));
-function gvSearchDisplayName(record){
-    return String(record?.name||record?.commonName||record?.displayName||record?.designation||record?.archiveId||record?.id||record?.sourceIndex||'UNNAMED GALAXY').trim();
+let gvFullSearchIndexPromise=null;
+function gvSearchFlatten(value,keyPath=''){
+    if(value===null||value===undefined)return [];
+    if(Array.isArray(value))return [keyPath,...value.flatMap((item,index)=>gvSearchFlatten(item,keyPath+' '+index))];
+    if(typeof value==='object')return Object.entries(value).flatMap(([key,child])=>gvSearchFlatten(child,keyPath+' '+key));
+    return [keyPath,String(value)];
 }
-function gvSearchDesignation(record){
-    const values=[record?.designation,record?.commonName,record?.pseudonym,record?.archiveId].map(v=>String(v||'').trim()).filter(Boolean);
-    const name=gvSearchDisplayName(record);
-    return values.find(v=>v.toLowerCase()!==name.toLowerCase())||'';
+function gvSearchRecordId(record){
+    return String(record?.archiveId||record?.id||record?.sourceId||'').trim().toLowerCase();
 }
+function gvSearchRecordNames(record){
+    return [record?.designation,record?.name,record?.displayName,record?.commonName,record?.title,record?.pseudonym]
+        .map(value=>String(value||'').trim().toLowerCase()).filter(Boolean);
+}
+async function gvEnsureFullSearchIndex(){
+    if(gvFullSearchIndexPromise)return gvFullSearchIndexPromise;
+    gvFullSearchIndexPromise=(async()=>{
+        const catalogKeys=['hubble','jwst','chandra','eso','noirlab','spitzer'];
+        const runtimeById=new Map(),runtimeByName=new Map();
+        for(const record of gvSurveyRuntimeRecords){
+            const provider=gvSurveyProviderKey(record);
+            const id=gvSearchRecordId(record);
+            if(id&&!runtimeById.has(provider+'|'+id))runtimeById.set(provider+'|'+id,record);
+            for(const name of gvSearchRecordNames(record)){
+                const key=provider+'|'+name;
+                if(!runtimeByName.has(key))runtimeByName.set(key,record);
+            }
+        }
+        const loaded=await Promise.allSettled(catalogKeys.map(async key=>{
+            const catalog=await gvLoadPresentationCatalog(key);
+            if(!catalog?.entries?.length)throw new Error('Empty individual catalog: '+key);
+            const provider=GV_PRESENTATION_PROVIDER_BY_CATALOG[key];
+            return catalog.entries.map((entry,index)=>{
+                const id=gvSearchRecordId(entry);
+                let record=(id&&runtimeById.get(provider+'|'+id))||null;
+                if(!record){
+                    for(const name of gvSearchRecordNames(entry)){
+                        record=runtimeByName.get(provider+'|'+name)||null;
+                        if(record)break;
+                    }
+                }
+                const navigable=record||Object.freeze({
+                    ...entry,
+                    provider,providerKey:provider,providerLabel:provider,
+                    catalogKey:key,catalogIndex:index,
+                    imageUrl:String(entry?.imageUrl||entry?.selectedImageUrl||entry?.hdUrl||entry?.sourceUrl||'').trim(),
+                    ra:entry?.ra??entry?.raDeg??entry?.raDegrees,
+                    dec:entry?.dec??entry?.decDeg??entry?.decDegrees,
+                    fovDegrees:Number(entry?.fovXDegrees??entry?.fovDegrees??entry?.fieldOfView),
+                    aladinRotation:Number(entry?.aladinRotation??entry?.spatialRotationDeg)
+                });
+                const allText=gvSearchFlatten(entry).concat(gvSearchFlatten(record||{})).join(' ')
+                    .normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+                return Object.freeze({record:navigable,displayRecord:entry,provider,text:allText});
+            });
+        }));
+        const full=[];
+        let failed=[];
+        loaded.forEach((result,index)=>{
+            if(result.status==='fulfilled')full.push(...result.value);
+            else failed.push(catalogKeys[index]+': '+String(result.reason?.message||result.reason));
+        });
+        if(!full.length){
+            console.error('GV FULL CATALOG SEARCH INDEX FAILED; using runtime index',failed);
+            return;
+        }
+        // Prefer one result per provider + archive identifier, while retaining records without identifiers.
+        const seen=new Set();
+        const unique=full.filter(item=>{
+            const id=gvSearchRecordId(item.displayRecord);
+            if(!id)return true;
+            const key=item.provider+'|'+id;
+            if(seen.has(key))return false;
+            seen.add(key);return true;
+        });
+        gvSearchIndex=Object.freeze(unique);
+        console.info('GV FULL CATALOG SEARCH INDEX READY',{records:unique.length,catalogsLoaded:catalogKeys.length,failures:failed});
+        if(failed.length)console.warn('GV FULL CATALOG SEARCH PARTIAL',failed);
+    })().catch(error=>{
+        gvFullSearchIndexPromise=null;
+        console.error('GV FULL CATALOG SEARCH INDEX ERROR',error);
+    });
+    return gvFullSearchIndexPromise;
+}
+
 const GV_SEARCH_RESULT_LIMIT=12;
 const GV_SEARCH_RENDER_DEBOUNCE_MS=120;
 let gvSearchRenderTimer=0;
@@ -1014,8 +1092,8 @@ function gvSearchRender(query){
     const matches=gvSearchIndex
         .filter(item=>tokens.every(token=>item.text.includes(token)))
         .sort((a,b)=>{
-            const an=gvSearchDisplayName(a.record).toLowerCase();
-            const bn=gvSearchDisplayName(b.record).toLowerCase();
+            const an=gvSearchDisplayName(a.displayRecord||a.record).toLowerCase();
+            const bn=gvSearchDisplayName(b.displayRecord||b.record).toLowerCase();
             const ap=tokens.every(token=>an.includes(token)),bp=tokens.every(token=>bn.includes(token));
             const as=tokens.every(token=>an.startsWith(token)),bs=tokens.every(token=>bn.startsWith(token));
             if(as!==bs)return bs-as;
@@ -1055,7 +1133,7 @@ function gvSearchRender(query){
             thumb.onerror=loadThumb;loadThumb();thumbWrap.appendChild(thumb);
             const icon=document.createElement('img');icon.className='gv-search-result-icon';
             icon.src=GV_SURVEY_PROVIDER_META[provider]?.icon||'';icon.alt=provider+' provider';icon.draggable=false;
-            const name=document.createElement('span');name.className='gv-search-result-name';name.textContent=gvSearchDisplayName(record);
+            const name=document.createElement('span');name.className='gv-search-result-name';name.textContent=gvSearchDisplayName(visibleMatches.find(item=>item.record===record)?.displayRecord||record);
             row.append(thumbWrap,name,icon);
             row.addEventListener('click',()=>gvNavigateSearchResult(record).catch(error=>console.error('GV GALAXY SEARCH SELECT FAILED',error)));
             group.appendChild(row);
