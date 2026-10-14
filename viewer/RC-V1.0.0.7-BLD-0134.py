@@ -53,7 +53,7 @@ display(HTML("""
      ======================================================================= -->
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
-#aladin-cosmic-command-test{position:relative;width:100%;height:100dvh;max-height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 44%,#123d78 0%,#0a2855 42%,#04152f 76%,#011813 100%);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}#aladin-cosmic-command-test .aladin-container,#aladin-cosmic-command-test .aladin-box{background:radial-gradient(ellipse at 50% 44%,#123d78 0%,#0a2855 42%,#04152f 76%,#011813 100%)!important}
+#aladin-cosmic-command-test{position:relative;width:100%;height:100dvh;max-height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 44%,#123d78 0%,#0a2855 42%,#04152f 76%,#011813 100%);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box;touch-action:none}#aladin-cosmic-command-test .aladin-container,#aladin-cosmic-command-test .aladin-box{background:radial-gradient(ellipse at 50% 44%,#123d78 0%,#0a2855 42%,#04152f 76%,#011813 100%)!important}
 #aladin-cosmic-command-test .aladin-logo-container,#aladin-cosmic-command-test .aladin-logo{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
 
@@ -1718,6 +1718,31 @@ function gvVignetteException(destination,record){
 }
 let directHdOverlay=null;
 let directHdDestination=null;
+// BUILD 0134 — restore two-finger pinch zoom while the HD raster is active.
+// One-finger gestures continue through Aladin's existing pan handlers.
+let gvHdPinchStart=null;
+function gvHdTouchGap(touches){
+    if(!touches||touches.length<2)return 0;
+    return Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
+}
+gvSkyRoot?.addEventListener('touchstart',event=>{
+    if(!directHdOverlay||event.touches?.length!==2)return;
+    const gap=gvHdTouchGap(event.touches),raw=aladin.getFov?.();
+    const fov=Number(Array.isArray(raw)?raw[0]:raw);
+    if(gap>0&&Number.isFinite(fov)&&fov>0)gvHdPinchStart={gap,fov};
+},{passive:false});
+gvSkyRoot?.addEventListener('touchmove',event=>{
+    if(!directHdOverlay||event.touches?.length!==2||!gvHdPinchStart)return;
+    event.preventDefault();
+    event.stopPropagation();
+    const gap=gvHdTouchGap(event.touches);
+    if(!(gap>0))return;
+    const nextFov=Math.max(0.0001,Math.min(360,gvHdPinchStart.fov*gvHdPinchStart.gap/gap));
+    try{aladin.setFov(nextFov)}catch(error){console.warn('GV0134 HD PINCH ZOOM FAILED',error)}
+},{passive:false});
+for(const eventName of ['touchend','touchcancel'])gvSkyRoot?.addEventListener(eventName,event=>{
+    if(!event.touches||event.touches.length<2)gvHdPinchStart=null;
+},{passive:true});
 let directHdObjectUrl=null;
 let directHdStaged=null;
 let directHdPresentationObjectUrl=null;
