@@ -38,7 +38,17 @@ const pointerPair=()=>{
  const points=[...pointers.values()];
  if(points.length<2)return null;
  const [a,b]=points,dx=b.x-a.x,dy=b.y-a.y;
- return {midX:(a.x+b.x)/2,midY:(a.y+b.y)/2,distance:Math.hypot(dx,dy)};
+ // Pinch translation is expressed in CSS transform coordinates around the
+ // image's 50%/50% transform-origin, not in absolute screen coordinates.
+ // Convert the two-finger centroid to viewport-center-relative coordinates
+ // before applying the scale-anchor equation; clientX/clientY directly here
+ // creates a consistent horizontal/vertical pan offset on mobile.
+ const r=viewport.getBoundingClientRect();
+ return {
+  midX:(a.x+b.x)/2-(r.left+r.width/2),
+  midY:(a.y+b.y)/2-(r.top+r.height/2),
+  distance:Math.hypot(dx,dy)
+ };
 };
 const clampTransform=()=>{
  const r=viewport.getBoundingClientRect();
