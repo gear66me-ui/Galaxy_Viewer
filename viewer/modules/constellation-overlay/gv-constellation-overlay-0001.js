@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0003";
+  const VERSION = "0004";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -24,23 +24,29 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:2.6}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);overlays.set(name,e);}
-      const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2]));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glows:[2.6,1.5,0.8,0.25].map(w=>window.A.graphicOverlay({color:"#8EDCFF",lineWidth:w})),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);e.glows.forEach(g=>aladin.addOverlay(g));overlays.set(name,e);}
+      const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glows.forEach(g=>g.add(window.A.polyline([p1,p2])));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
     }
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.glow.add(window.A.circle([ra,dec],0.055,{color:"#EAFBFF",lineWidth:1.5,fillColor:"#8EDCFF",fillOpacity:0.95}));}catch(_){}
+        try{e.glows.forEach((g,i)=>g.add(window.A.circle([ra,dec],i===0?0.055:i===1?0.045:i===2?0.035:0.025,{color:i===0?"#FFFFFF":"#8EDCFF",lineWidth:1.2,fillColor:"#8EDCFF",fillOpacity:i===0?0.95:0.65}));}catch(_){}
       }
-      e.obj.hide();e.glow.hide();
+      e.obj.hide();e.glows.forEach(g=>g.hide());
     }
     let enabled=false,glowTimer=null,glowEntry=null,phase=0;
+    const pulseSequence=[0,1,2,3,2,1]; // 2.6px -> 0.25px -> 2.6px, slow breathing pulse
+    function hideGlow(entry){if(entry)entry.glows.forEach(g=>g.hide());}
     function stopGlow(){
       if(glowTimer!==null){clearInterval(glowTimer);glowTimer=null;}
-      if(glowEntry){glowEntry.glow.hide();glowEntry.glow.setOptions?.({color:"#8EDCFF",lineWidth:2.6});}
-      glowEntry=null;
+      hideGlow(glowEntry);glowEntry=null;phase=0;
     }
-    function setEnabled(next){enabled=!!next;for(const e of overlays.values()){enabled?e.obj.show():e.obj.hide();if(!enabled)e.glow.hide();}if(!enabled)stopGlow();return enabled;}
+    function setEnabled(next){
+      enabled=!!next;
+      for(const e of overlays.values()){enabled?e.obj.show():e.obj.hide();if(!enabled)hideGlow(e);}
+      if(!enabled)stopGlow();
+      return enabled;
+    }
     function setTravelGlow(name,active){
       stopGlow();if(!active||!name)return false;
       const wanted=canon(name);let found=null;
@@ -50,11 +56,16 @@
     }
     function startGlow(found){
       stopGlow();glowEntry=found;
-      // Respect the master ON/OFF switch; a hidden layer must never be forced on.
+      // Never force the constellation layer on when the user's master toggle is off.
       if(!enabled)return false;
-      found.glow.show();
-      const colors=["#8EDCFF","#C9F3FF","#FFFFFF","#C9F3FF"],widths=[2.6,3.2,3.8,3.2];
-      glowTimer=setInterval(()=>{if(!enabled){stopGlow();return;}phase=(phase+1)%colors.length;found.glow.setOptions?.({color:colors[phase],lineWidth:widths[phase]});},180);
+      phase=0;
+      found.glows[pulseSequence[phase]].show();
+      glowTimer=setInterval(()=>{
+        if(!enabled){stopGlow();return;}
+        hideGlow(found);
+        phase=(phase+1)%pulseSequence.length;
+        found.glows[pulseSequence[phase]].show();
+      },650);
       return true;
     }
     function setTravelGlowAt(ra,dec,active=true){
