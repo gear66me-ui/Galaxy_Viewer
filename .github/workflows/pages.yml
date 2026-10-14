@@ -89,8 +89,8 @@ jobs:
           rc=rc_path.read_text()
 
           assert viewer.get('version')=='RC-V1.0.0.8'
-          assert viewer.get('viewer')=='RC-V1.0.0.8-BLD-0020.py'
-          assert viewer.get('build')=='0020'
+          assert re.fullmatch(r'\d{4}',str(viewer.get('build',''))), 'viewer build must be four digits'
+          assert viewer.get('viewer')==f"RC-V1.0.0.8-BLD-{viewer.get('build')}.py", 'pointer filename must match active build'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -103,7 +103,7 @@ jobs:
           assert 'gv-destination-presentation-0054.js' in rc
           assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
           assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
-          assert "const GV200001_BUILD='0020';" in rc, 'runtime cache-busting build identity must match pointer'
+          assert f"const GV200001_BUILD='{viewer.get('build')}';" in rc, 'runtime cache-busting build identity must match pointer'
           assert "GalaxyDestinationPresentation?.VERSION!=='0054'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.
@@ -175,14 +175,14 @@ jobs:
           assert 'NO CATALOG TARGET IN FIELD' not in rc, 'Do not inject unauthorized no-match status into Earth-distance banner'
           assert 'Poll the actual Aladin sky center before trusting event handlers' in rc and 'gvEarthDistanceLastObservedCenter' in rc, 'Earth-distance must detect live sky-center movement independently of event callbacks'
           assert 'width:min(50vw,60%);max-width:60%;overflow:hidden' in rc, 'Aladin-port Earth-distance ruler must stay bounded between side icons'
-          assert 'BUILD_NUMBER = "0020"' in rc and "const GV200001_BUILD='0020'" in rc, 'Build identity must match release pointer 0020'
+          assert f'BUILD_NUMBER = "{viewer.get(\"build\")}"' in rc and f"const GV200001_BUILD='{viewer.get('build')}'" in rc, 'Build identity must match release pointer'
           assert 'const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);' in rc and 'if(selectionChanged||!b.querySelector(\'.gv-earth-distance-icon\'))' in rc, 'Earth banner must share destination-card distance formatting and avoid rebuilding the banner on every poll'
           assert 'const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);' in rc, 'physical scale must use current live FOV'
           assert 'function gvSearchMatchedStrings(item,tokens)' in rc, 'search tiles must show catalog strings that matched the query'
           assert '.gv-search-result-match{' in rc and 'font:400 8px/10px "GV Space Age",sans-serif' in rc, 'search match detail must use the Space Age font in small secondary text'
           assert 'copy.append(name,matchLine)' in rc, 'search result tile must render matching strings under the result name'
           assert 'matchRecords:Object.freeze([...(prior.matchRecords||[prior.displayRecord,prior.record])' in rc, 'deduplicated provider rows must retain searchable source strings'
-          assert 'BUILD_NUMBER = "0020"' in rc and "const GV200001_BUILD='0020'" in rc, 'Build identity must agree with release pointer'
+          assert f'BUILD_NUMBER = "{viewer.get(\"build\")}"' in rc and f"const GV200001_BUILD='{viewer.get('build')}'" in rc, 'Build identity must agree with release pointer'
           assert "if(fieldX>1||fieldY>1)continue;" in rc, 'Earth-distance matcher must reject records outside the live FOV'
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
@@ -194,7 +194,7 @@ jobs:
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
-          print('PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD 0020 — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY')
+          print(f"PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
