@@ -141,6 +141,39 @@ jobs:
               print(f"{dest}: {len(files[start:start+chunk_size])} images, {dest.stat().st_size} bytes")
           PY
 
+      - name: Publish individual images as permanent GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, pathlib, subprocess
+          root = pathlib.Path("viewer/image-databases/Hubble/mirror")
+          manifest_path = root / "image-mirror-manifest.json"
+          manifest = json.loads(manifest_path.read_text())
+          images = [x for x in manifest["images"] if x.get("sha256")]
+          # Keep each release below GitHub's 1,000-asset release limit.
+          chunk_size = 850
+          for start in range(0, len(images), chunk_size):
+              part = start // chunk_size
+              tag = ["galaxy-image-mirror-a", "galaxy-image-mirror-b", "galaxy-image-mirror-c",
+                     "galaxy-image-mirror-d"][part]
+              chunk = images[start:start + chunk_size]
+              check = subprocess.run(["gh","release","view",tag],capture_output=True,text=True)
+              if check.returncode:
+                  subprocess.run(["gh","release","create",tag,"--title",f"Galaxy Image Mirror {tag[-1].upper()}",
+                                  "--notes","Generated mirror assets for Galaxy Viewer. Source URLs and SHA-256 checksums are recorded in the release-branch manifest."],check=True)
+              paths = [str(root / "images" / x["filename"]) for x in chunk]
+              # Upload in small batches to avoid command-line length limits.
+              for offset in range(0, len(paths), 100):
+                  subprocess.run(["gh","release","upload",tag,*paths[offset:offset+100],"--clobber"],check=True)
+              for item in chunk:
+                  item["githubImageUrl"] = f"https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/{tag}/{item['filename']}"
+                  item["releaseTag"] = tag
+              print(f"Published {len(chunk)} images to {tag}")
+          manifest["imageCount"] = len(images)
+          manifest_path.write_text(json.dumps(manifest,indent=2),encoding="utf-8")
+          PY
+
       - name: Upload manifest and chunks as workflow artifacts
         uses: actions/upload-artifact@v4
         with:
