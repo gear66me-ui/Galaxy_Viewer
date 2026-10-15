@@ -66,6 +66,14 @@ jobs:
                           chosen_quality = quality
                           if len(encoded) <= 700*1024:
                               break
+                      kept_original = len(encoded) >= len(raw)
+                      if kept_original:
+                          # Never make an already-compressed source larger just to re-encode it.
+                          encoded = raw
+                          optimized = Image.open(io.BytesIO(raw))
+                          optimized.load()
+                          optimized = ImageOps.exif_transpose(optimized).convert("RGB")
+                          chosen_quality = "original-kept"
                       base = f"{i:02d}-{item.get('provider','unknown').replace('/','_')}"
                       zf.writestr(f"optimized/{base}.jpg", encoded)
                       # contact sheet thumbnails show original and optimized side-by-side
@@ -78,13 +86,13 @@ jobs:
                       opt_img = Image.open(io.BytesIO(encoded)).convert("RGB")
                       card = Image.new("RGB",(760,320),(20,20,28))
                       d = ImageDraw.Draw(card)
-                      label = f"{i}. {item.get('provider')} | {w}x{h} | {len(raw)//1024} KB -> {len(encoded)//1024} KB | Q{chosen_quality}"
+                      label = f"{i}. {item.get('provider')} | {w}x{h} | {len(raw)//1024} KB -> {len(encoded)//1024} KB | {chosen_quality}"
                       d.text((8,5),label,fill=(255,255,255))
                       card.paste(thumb(original),(5,35))
                       card.paste(thumb(opt_img),(385,35))
                       d.text((10,305),"ORIGINAL",fill=(220,220,220)); d.text((390,305),"OPTIMIZED",fill=(220,220,220))
                       cards.append((item.get("provider","unknown"),card))
-                      report.append({"provider":item.get("provider"),"sourceUrl":item.get("sourceUrl"),"mirrorUrl":item.get("githubImageUrl"),"originalWidth":w,"originalHeight":h,"originalBytes":len(raw),"optimizedWidth":optimized.width,"optimizedHeight":optimized.height,"optimizedBytes":len(encoded),"quality":chosen_quality,"within700KB":len(encoded)<=700*1024,"reductionPercent":round((1-len(encoded)/len(raw))*100,1),"status":"ok"})
+                      report.append({"provider":item.get("provider"),"sourceUrl":item.get("sourceUrl"),"mirrorUrl":item.get("githubImageUrl"),"originalWidth":w,"originalHeight":h,"originalBytes":len(raw),"optimizedWidth":optimized.width,"optimizedHeight":optimized.height,"optimizedBytes":len(encoded),"quality":chosen_quality,"keptOriginal":kept_original,"within700KB":len(encoded)<=700*1024,"reductionPercent":round((1-len(encoded)/len(raw))*100,1),"status":"ok"})
                       print(json.dumps(report[-1]))
                   except Exception as e:
                       report.append({"provider":item.get("provider"),"sourceUrl":item.get("sourceUrl"),"status":"error","error":str(e)})
