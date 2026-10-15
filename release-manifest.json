@@ -1,7 +1,7 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "0b461e5dfa801be791586e04fcd8ac93fd986a91",
+  "sourceCommit": "c4e0c5484fb32ca00d9f25b5b4353c2d7c48d800",
   "build": "0035",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
@@ -153,7 +153,7 @@
   "dependencyPins": [
     "10ae327ec7ab126627cc1e482e27828075bbf4f4",
     "1732aa60a871e16d71df4700aed75d9085c6b8c5",
-    "3e98c4505b0c9e8ad245f347ad13a6efa046b4b1",
+    "42620e479e7fa719ca168dd1fbf96e924e23eb9d",
     "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
