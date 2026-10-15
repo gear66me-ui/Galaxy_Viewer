@@ -16,36 +16,78 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Repair validated Hubble record
+      - name: Find, validate, and repair the canonical catalog record
         run: |
           python - <<'PY'
           import json, math
           from pathlib import Path
-          p=Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
-          d=json.loads(p.read_text(encoding="utf-8")); es=d.get("entries")
-          if not isinstance(es,list): raise SystemExit("Missing entries")
-          def n(v): return str(v or "").strip().upper().replace(" ","").replace("-","")
-          ms=[]
-          for e in es:
-            s=e.get("science") or {}; vals=[e.get(k) for k in ("designation","name","title","objectName","target","id")]+[s.get("designation"),s.get("name")]
-            if any(n(v) in {"NGC6670","NGC6670A","NGC6670B"} for v in vals): ms.append(e)
-          if len(ms)!=1: raise SystemExit(f"Guard: expected exactly one NGC 6670 record, found {len(ms)}")
-          e=ms[0]; s=e.setdefault("science",{}); s["distanceMly"]=412.7
-          s["distanceMethod"]="SIMBAD_126.5_Mpc_ref_2000ApJ...529..786M_converted_to_Mly"
-          s["distanceSource"]="SIMBAD NGC 6670 distance collection; 126.5 Mpc; 2000ApJ...529..786M"
-          s["distanceVerified"]=True
-          fx=float(e.get("imageFovXDeg") or 0); fy=float(e.get("imageFovYDeg") or 0)
-          if fx<=0 or fy<=0: raise SystemExit(f"Guard: invalid FOV x={fx}, y={fy}")
-          x=412.7*1000*math.tan(math.radians(fx)); y=412.7*1000*math.tan(math.radians(fy))
-          s["sizeKly"]=[round(x,3),round(y,3)]; s["sizeMethod"]="image_footprint_fov_distance_estimate_NGC6670_repair"; s["sizeEstimated"]=True; s["sizeDisplay"]=f"EST. {x:.1f} × {y:.1f} KLY"
-          p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
-          z=json.loads(p.read_text(encoding="utf-8")); assert abs(z["entries"][es.index(e)]["science"]["distanceMly"]-412.7)<.01
-          print(f"NGC 6670 corrected to 412.7 Mly; span {x:.1f} × {y:.1f} Kly")
+
+          root = Path("viewer/image-databases")
+          def norm(v):
+              return "".join(ch for ch in str(v or "").upper() if ch.isalnum())
+
+          matches = []
+          for p in root.rglob("*.json"):
+              try:
+                  data = json.loads(p.read_text(encoding="utf-8"))
+              except (OSError, UnicodeError, json.JSONDecodeError):
+                  continue
+              entries = data.get("entries") if isinstance(data, dict) else None
+              if not isinstance(entries, list):
+                  continue
+              for i, e in enumerate(entries):
+                  if not isinstance(e, dict):
+                      continue
+                  sci = e.get("science") if isinstance(e.get("science"), dict) else {}
+                  fields = [e.get(k) for k in ("designation", "name", "title", "displayName", "objectName", "target", "id")]
+                  fields += [sci.get("designation"), sci.get("name")]
+                  if any(norm(v) in {"NGC6670", "NGC6670A", "NGC6670B"} for v in fields):
+                      matches.append((p, data, i, e))
+          if len(matches) != 1:
+              paths = [str(m[0]) for m in matches]
+              raise SystemExit(f"Safety stop: expected exactly one canonical NGC 6670 record; found {len(matches)} in {paths}")
+          p, data, idx, entry = matches[0]
+          sci = entry.setdefault("science", {})
+          # SIMBAD distance collection: 126.5 Mpc = 412.7 million light-years.
+          sci["distanceMly"] = 412.7
+          sci["distanceMethod"] = "SIMBAD_126.5_Mpc_converted_to_Mly"
+          sci["distanceSource"] = "SIMBAD NGC 6670 distance collection; 126.5 Mpc"
+          sci["distanceVerified"] = True
+          sci["distanceDisplay"] = "412.7 million light-years"
+
+          def first_positive(obj, keys):
+              for key in keys:
+                  try:
+                      val = float(obj.get(key) or 0)
+                      if math.isfinite(val) and val > 0:
+                          return val
+                  except (TypeError, ValueError):
+                      pass
+              return None
+          fx = first_positive(entry, ("imageFovXDeg", "avmHorizontalFovDegrees", "fovXDeg", "fovDegrees", "fov"))
+          fy = first_positive(entry, ("imageFovYDeg", "avmVerticalFovDegrees", "fovYDeg", "fovDegrees", "fov"))
+          if fx is None or fy is None:
+              raise SystemExit(f"Safety stop: valid FOVX/FOVY missing for {p}; no guessed image span written")
+          # Full angular footprint: 2*D*tan(theta/2), D in Mly; output Kly.
+          x = 412.7 * 1000 * 2 * math.tan(math.radians(fx) / 2)
+          y = 412.7 * 1000 * 2 * math.tan(math.radians(fy) / 2)
+          sci["sizeKly"] = [round(x, 3), round(y, 3)]
+          sci["sizeMethod"] = "FOVX_FOVY_full_angular_footprint_at_SIMBAD_distance"
+          sci["sizeEstimated"] = True
+          sci["sizeDisplay"] = f"EST. {x:.1f} × {y:.1f} KLY"
+
+          p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          check = json.loads(p.read_text(encoding="utf-8"))
+          corrected = check["entries"][idx]["science"]
+          assert abs(float(corrected["distanceMly"]) - 412.7) < 0.01
+          assert len(corrected["sizeKly"]) == 2 and all(float(v) > 0 for v in corrected["sizeKly"])
+          print(f"Corrected {p}: NGC 6670 distance=412.7 Mly; image span={x:.1f} × {y:.1f} Kly; FOV={fx}° × {fy}°")
           PY
-      - name: Commit correction
+      - name: Commit correction only if validated
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
-          git diff --cached --quiet || git commit -m "Correct NGC 6670 distance from SIMBAD"
+          git add viewer/image-databases/
+          git diff --cached --check
+          git diff --cached --quiet || git commit -m "Correct NGC 6670 distance and physical image span"
           git push
