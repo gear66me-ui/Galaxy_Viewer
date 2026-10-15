@@ -1422,12 +1422,9 @@ async function gvRuntimeAvmRecord(destination){
     const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
     const record=catalog.byUrl.get(url)||catalog.byId.get(id);
     if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(url||id));
-    // NGC 4945 (ESO potw1007a): runtime AVM camera convention requires +45 deg.
-    // Preserve source Spatial.Rotation (-45 deg); correct only the synthesized viewer WCS.
-    const effectiveRecord=id==='potw1007a'?{...record,aladinRotation:45}:record;
-    const recordUrl=String(effectiveRecord?.imageUrl||'').trim().toLowerCase();
+    const recordUrl=String(record?.imageUrl||'').trim().toLowerCase();
     if(url&&recordUrl!==url)console.warn('GV AVM RUNTIME IMAGE URL ALIAS: archiveId='+id+' destination='+url+' record='+recordUrl);
-    return effectiveRecord;
+    return record;
 }
 function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     const ra=Number(record?.ra),dec=Number(record?.dec);
