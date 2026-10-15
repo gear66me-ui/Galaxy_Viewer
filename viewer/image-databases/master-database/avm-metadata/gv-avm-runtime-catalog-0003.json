@@ -38539,7 +38539,15 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 0.0113,
+      "distance": "11,300 light-years",
+      "distanceKly": 11.3,
+      "science": {
+        "distanceMly": 0.0113,
+        "distanceKly": 11.3,
+        "distanceDisplay": "11,300 light-years"
+      }
     },
     {
       "providerKey": "hubble",
@@ -39290,7 +39298,15 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 0.0113,
+      "distance": "11,300 light-years",
+      "distanceKly": 11.3,
+      "science": {
+        "distanceMly": 0.0113,
+        "distanceKly": 11.3,
+        "distanceDisplay": "11,300 light-years"
+      }
     },
     {
       "providerKey": "hubble",
@@ -48349,7 +48365,15 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 0.0113,
+      "distance": "11,300 light-years",
+      "distanceKly": 11.3,
+      "science": {
+        "distanceMly": 0.0113,
+        "distanceKly": 11.3,
+        "distanceDisplay": "11,300 light-years"
+      }
     },
     {
       "providerKey": "noirlab",
@@ -55200,7 +55224,15 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 0.0113,
+      "distance": "11,300 light-years",
+      "distanceKly": 11.3,
+      "science": {
+        "distanceMly": 0.0113,
+        "distanceKly": 11.3,
+        "distanceDisplay": "11,300 light-years"
+      }
     },
     {
       "providerKey": "noirlab",
@@ -55749,7 +55781,15 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 0.0113,
+      "distance": "11,300 light-years",
+      "distanceKly": 11.3,
+      "science": {
+        "distanceMly": 0.0113,
+        "distanceKly": 11.3,
+        "distanceDisplay": "11,300 light-years"
+      }
     },
     {
       "providerKey": "noirlab",
@@ -55978,7 +56018,15 @@
       ],
       "cdMatrix": null,
       "projection": "TAN",
-      "coordinateFrame": "ICRS"
+      "coordinateFrame": "ICRS",
+      "distanceMly": 0.0113,
+      "distance": "11,300 light-years",
+      "distanceKly": 11.3,
+      "science": {
+        "distanceMly": 0.0113,
+        "distanceKly": 11.3,
+        "distanceDisplay": "11,300 light-years"
+      }
     },
     {
       "providerKey": "noirlab",

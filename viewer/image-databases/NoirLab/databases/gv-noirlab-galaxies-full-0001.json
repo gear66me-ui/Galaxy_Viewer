@@ -5044,7 +5044,7 @@
       "title": "The Bubble Nebula, NGC 7635",
       "ra": 350.18649117,
       "dec": 61.1965607446,
-      "distance": "10 light-years",
+      "distance": "11,300 light-years",
       "constellation": "Cassiopeia",
       "fieldOfView": "4.8607 x 4.9926 arcminutes",
       "orientation": "AVM/WCS rotation -2.320000 degrees",
@@ -5066,15 +5066,15 @@
         "T1KA"
       ],
       "science": {
-        "distanceMly": 0.00001,
+        "distanceMly": 0.0113,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
-        "distanceDisplay": "10 light-years",
+        "distanceDisplay": "11,300 light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          0.000014139278870563423,
-          0.000014523017261124225
+          1.4139278870563423e-05,
+          1.4523017261124225e-05
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
@@ -5089,7 +5089,8 @@
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshiftMethod": null,
+        "distanceKly": 11.3
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Bubble Nebula",
@@ -5109,7 +5110,9 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29021,
       "astropixLastUpdated": "2024-10-02T11:52:27.984299",
-      "age": "EST. 13.47 GYR"
+      "age": "EST. 13.47 GYR",
+      "distanceMly": 0.0113,
+      "distanceKly": 11.3
     },
     {
       "archiveId": "noao-crab1",
@@ -5498,15 +5501,15 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 0.0000042999999999999995,
+        "distanceMly": 4.2999999999999995e-06,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "4.3 light-years",
         "distanceRangeMly": null,
         "distanceDisplay": "4 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.0000015647411166075474,
-          0.0000015002494233547163
+          1.5647411166075474e-06,
+          1.5002494233547163e-06
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
@@ -11055,7 +11058,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 0.00001,
+        "distanceMly": 1e-05,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
@@ -11134,8 +11137,8 @@
         "distanceDisplay": "1500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          0.000035,
-          0.000035
+          3.5e-05,
+          3.5e-05
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
@@ -20309,7 +20312,7 @@
       "title": "Bubble Nebula (NGC 7635)",
       "ra": 350.2388195,
       "dec": 61.07226063,
-      "distance": "0.0071 million light-years",
+      "distance": "11,300 light-years",
       "constellation": "Cassiopeia",
       "fieldOfView": "8.2088 x 12.2957 arcminutes",
       "orientation": "AVM/WCS rotation -0.417023 degrees",
@@ -20330,11 +20333,11 @@
         "ODI"
       ],
       "science": {
-        "distanceMly": 0.0071,
+        "distanceMly": 0.0113,
         "distanceMethod": "Published source — web research pass 1",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "0.0071 million light-years",
+        "distanceDisplay": "11,300 light-years",
         "distanceEstimated": true,
         "sizeKly": [
           0.016954,
@@ -20353,7 +20356,8 @@
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshiftMethod": null,
+        "distanceKly": 11.3
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Bubble Nebula",
@@ -20373,7 +20377,9 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29184,
       "astropixLastUpdated": "2024-10-02T11:52:23.462961",
-      "age": "EST. 13.47 GYR"
+      "age": "EST. 13.47 GYR",
+      "distanceMly": 0.0113,
+      "distanceKly": 11.3
     },
     {
       "archiveId": "noao-noao-m17-09",
@@ -21534,7 +21540,7 @@
       "title": "The Bubble Nebula (NGC 7635)",
       "ra": 350.1747933,
       "dec": 61.27983125,
-      "distance": "0.0071 million light-years",
+      "distance": "11,300 light-years",
       "constellation": "Cassiopeia",
       "fieldOfView": "35.7600 x 36.2606 arcminutes",
       "orientation": "AVM/WCS rotation -179.831695 degrees",
@@ -21555,11 +21561,11 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 0.0071,
+        "distanceMly": 0.0113,
         "distanceMethod": "Published source — web research pass 1",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "0.0071 million light-years",
+        "distanceDisplay": "11,300 light-years",
         "distanceEstimated": true,
         "sizeKly": [
           0.073855,
@@ -21578,7 +21584,8 @@
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshiftMethod": null,
+        "distanceKly": 11.3
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Bubble Nebula",
@@ -21598,7 +21605,9 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29269,
       "astropixLastUpdated": "2024-10-02T11:52:18.974393",
-      "age": "EST. 13.47 GYR"
+      "age": "EST. 13.47 GYR",
+      "distanceMly": 0.0113,
+      "distanceKly": 11.3
     },
     {
       "archiveId": "noao0703a",
@@ -21822,7 +21831,7 @@
       "title": "Soap Bubble Nebula, PN G75.5+1.7",
       "ra": 303.9409767,
       "dec": 38.11497203,
-      "distance": "0.005 million light-years",
+      "distance": "11,300 light-years",
       "constellation": "Cygnus",
       "fieldOfView": "10.8150 x 15.1410 arcminutes",
       "orientation": "AVM/WCS rotation 89.955351 degrees",
@@ -21843,11 +21852,11 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 0.005,
+        "distanceMly": 0.0113,
         "distanceMethod": "Published/astrometric source — web research pass 3",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "0.005 million light-years",
+        "distanceDisplay": "11,300 light-years",
         "distanceEstimated": true,
         "sizeKly": [
           0.01573,
@@ -21866,7 +21875,8 @@
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshiftMethod": null,
+        "distanceKly": 11.3
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "PN G75.5+1.7",
@@ -21886,7 +21896,9 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29234,
       "astropixLastUpdated": "2024-10-02T11:52:21.426260",
-      "age": "EST. 13.47 GYR"
+      "age": "EST. 13.47 GYR",
+      "distanceMly": 0.0113,
+      "distanceKly": 11.3
     },
     {
       "archiveId": "noao1104a",
@@ -21915,7 +21927,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 0.00001,
+        "distanceMly": 1e-05,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
@@ -22038,7 +22050,7 @@
       "title": "Wide field view of NGC 7635",
       "ra": 350.176037339,
       "dec": 61.1780593841,
-      "distance": "0.0071 million light-years",
+      "distance": "11,300 light-years",
       "constellation": "Cassiopeia",
       "fieldOfView": "33.3237 x 31.1810 arcminutes",
       "orientation": "AVM/WCS rotation -0.420000 degrees",
@@ -22059,11 +22071,11 @@
         "ODI"
       ],
       "science": {
-        "distanceMly": 0.0071,
+        "distanceMly": 0.0113,
         "distanceMethod": "Published source — web research pass 1",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "0.0071 million light-years",
+        "distanceDisplay": "11,300 light-years",
         "distanceEstimated": true,
         "sizeKly": [
           0.068824,
@@ -22082,7 +22094,8 @@
         "redshift": null,
         "redshiftDisplay": null,
         "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshiftMethod": null,
+        "distanceKly": 11.3
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Bubble Nebula",
@@ -22102,7 +22115,9 @@
       "coordinateAuthority": "ASTROPIX_IMAGE_AVM_WCS",
       "astropixId": 29096,
       "astropixLastUpdated": "2024-10-02T11:52:27.245288",
-      "age": "EST. 13.47 GYR"
+      "age": "EST. 13.47 GYR",
+      "distanceMly": 0.0113,
+      "distanceKly": 11.3
     },
     {
       "archiveId": "noao1310b",
