@@ -96,7 +96,7 @@ jobs:
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
           assert re.fullmatch(r'[0-9a-f]{40}',str(manifest.get('sourceCommit',''))), 'manifest sourceCommit must be a full commit SHA'
-          assert manifest.get('dependencyPins')==["10ae327ec7ab126627cc1e482e27828075bbf4f4","1732aa60a871e16d71df4700aed75d9085c6b8c5","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","2f7c79a83f73f6a8205cde60c5125e6ad561880b","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
+          assert manifest.get('dependencyPins')==["10ae327ec7ab126627cc1e482e27828075bbf4f4","1732aa60a871e16d71df4700aed75d9085c6b8c5","9ad02b64b0c10e09938ad8276109f2a61a0229cc","d85d91201ea52aa6524a62394fc81b450b15ac23","e197403c8525b90f21c95967f11ab0bd01c3d0c4","8ad0ad5a7b07151b813e773adb1f156355f5fca3","f7740afe20a1dccd0e58644e8c154f4e6396ed83"]
           assert pointer.get('version')=='0026' and pointer.get('config')=='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/Web-Browser-0026/config.json', 'web-browser pointer must reference the active Web-Browser-0026 config independently of the RC build'
           assert avm.get('sourceBranch')=='release'
           assert 'Galaxy_Viewer@release/' not in rc
