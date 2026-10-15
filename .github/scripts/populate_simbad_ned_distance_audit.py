@@ -21,7 +21,7 @@ COLUMNS = [
     "distance_discrepancy_pct", "review_status"
 ]
 
-def fetch(url, data=None, timeout=45):
+def fetch(url, data=None, timeout=15):
     req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT, "Accept": "application/x-votable+xml, text/plain, */*"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read()
@@ -62,25 +62,22 @@ def compact(values):
     return " | ".join(seen)
 
 def get_identifiers(row):
-    # Use actual catalog object identifiers first. The original CSV's NED_query
-    # cells were populated with a concatenated descriptive phrase, not a clean name.
+    # Prioritize actual object identifiers. The original CSV's NED_query cells
+    # contain concatenated descriptive text and must not be sent as object names.
     vals = []
     for key in ("name", "designation", "displayName", "archiveId"):
         raw = (row.get(key) or "").strip()
         if not raw:
             continue
-        # Split slash-separated alternate identifiers, but preserve spaces within names.
-        parts = [p.strip() for p in re.split(r"\\s*/\\s*", raw) if p.strip()]
-        for v in parts:
+        for v in [p.strip() for p in re.split(r"\\s*/\\s*", raw) if p.strip()]:
             if v and v not in vals:
                 vals.append(v)
-    # Only accept a query column as fallback if it is a single plausible identifier,
-    # not the old concatenated text containing titles and words like "distance".
+    # Keep fallback names short and identifier-like only.
     for key in ("SIMBAD_query", "NED_query", "title"):
         v = (row.get(key) or "").strip()
         if v and len(v.split()) <= 4 and not any(token in v.lower() for token in ("distance", "redshift", "observation of")) and v not in vals:
             vals.append(v)
-    return vals
+    return vals[:3]
 
 def simbad_lookup(row):
     names = get_identifiers(row)
