@@ -1966,9 +1966,12 @@ async function gvRuntimeAvmRecord(destination){
     const id=String(destination?.archiveId||destination?.id||destination?.providerId||'').trim().toLowerCase();
     const record=catalog.byUrl.get(url)||catalog.byId.get(id);
     if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(url||id));
-    const recordUrl=String(record?.imageUrl||'').trim().toLowerCase();
+    // BUILD 0035 targeted correction: ESO potw1007a / NGC 4945 is rendered 90 deg off.
+    // Apply the camera-convention correction only to this archive image; preserve source AVM metadata.
+    const effectiveRecord=id==='potw1007a'?{...record,aladinRotation:45}:record;
+    const recordUrl=String(effectiveRecord?.imageUrl||'').trim().toLowerCase();
     if(url&&recordUrl!==url)throw new Error('GV AVM RUNTIME IMAGE MISMATCH: destination='+url+' record='+recordUrl);
-    return record;
+    return effectiveRecord;
 }
 function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     const ra=Number(record?.ra),dec=Number(record?.dec);
