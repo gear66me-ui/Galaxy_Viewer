@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0013";
+  const VERSION = "0014";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -51,7 +51,7 @@
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.glow.add(window.A.circle([ra,dec],0.10,{color:"#26AFFF",lineWidth:0.5,fillColor:"#26AFFF",fillOpacity:0.55}));e.stars.add(window.A.circle([ra,dec],0.045,{color:"#FFFFFF",lineWidth:0.5,fillColor:"#FFFFFF",fillOpacity:1}));}catch(_){}
+        try{e.glow.add(window.A.circle([ra,dec],0.075,{color:"#26AFFF",lineWidth:0.5,fillColor:"#26AFFF",fillOpacity:0.28}));e.stars.add(window.A.circle([ra,dec],0.035,{color:"#FFFFFF",lineWidth:0.5,fillColor:"#FFFFFF",fillOpacity:1}));}catch(_){}
       }
       e.obj.hide();e.glow.hide();e.stars.hide();
     }
@@ -82,14 +82,12 @@
       startGlow(found,{travel:true});return true;
     }
     function applyGlow(found,brightness){
-      // Existing Aladin Lite 3.8.2 primitives do not reliably repaint when the
-      // parent overlay options change. Pulse actual overlay visibility instead:
-      // this works on the already-created bright cyan lines and halo/core dots.
-      const visible=brightness>0.16;
+      const alpha=Math.max(0,Math.min(1,brightness));
       try{
-        if(visible){found.glow.show();found.stars.show();}
-        else {found.glow.hide();found.stars.hide();}
-      }catch(error){console.warn("GV CONSTELLATION GLOW VISIBILITY UPDATE FAILED",error)}
+        if(typeof found.glow.setOpacity==="function")found.glow.setOpacity(alpha);else found.glow.setOptions?.({opacity:alpha});
+        if(typeof found.stars.setOpacity==="function")found.stars.setOpacity(alpha);else found.stars.setOptions?.({opacity:alpha});
+        if(alpha<=0.001){found.glow.hide();found.stars.hide();}else{found.glow.show();found.stars.show();}
+      }catch(error){console.warn("GV CONSTELLATION GRADIENT FADE FAILED",error)}
     }
     function startGlow(found,{travel=false}={}){
       stopGlow();glowEntry=found;
@@ -100,7 +98,7 @@
       found.glow.show();found.stars.show();
       // A true 2-second triangular brightness ramp: 0→100% in 1s, then 100→0% in 1s.
       // Only visibility pulses; all line strokes are capped at 0.5px.
-      const started=performance.now(),period=1800;
+      const started=performance.now(),period=2000;
       const animate=now=>{
         if((!enabled&&!travel)||glowEntry!==found){frameHandle=null;return;}
         const phase=((now-started)%period)/period;
