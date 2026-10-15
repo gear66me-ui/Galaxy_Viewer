@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Batch SIMBAD distance lookup for the 771 records unresolved by NED."""
-import csv, io, os, re, sys, time, math, statistics, zipfile, urllib.request, urllib.parse, xml.etree.ElementTree as ET
+import csv, io, os, re, sys, time, math, statistics, zipfile, urllib.request, urllib.parse, urllib.error, xml.etree.ElementTree as ET
 from pathlib import Path
 from collections import defaultdict
 
@@ -67,7 +67,20 @@ def main():
     hdr={"Authorization":"Bearer "+TOKEN,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}
     # Download the completed source audit artifact from the prior workflow run.
     meta=json_load(http(f"{API}/repos/{REPO}/actions/artifacts/{ARTIFACT_ID}",headers=hdr))
-    zipbytes=http(meta["archive_download_url"],headers=hdr,timeout=180)
+    # Get the short-lived signed download URL without forwarding the GitHub token.
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            return None
+    opener=urllib.request.build_opener(NoRedirect)
+    req=urllib.request.Request(meta["archive_download_url"],headers=hdr)
+    try:
+        with opener.open(req,timeout=60) as resp:
+            zipbytes=resp.read()
+    except urllib.error.HTTPError as e:
+        if e.code not in (301,302,303,307,308): raise
+        signed_url=e.headers.get("Location")
+        if not signed_url: raise RuntimeError("Artifact redirect had no Location header")
+        zipbytes=http(signed_url,headers={"User-Agent":UA,"Accept":"application/zip"},timeout=180)
     with zipfile.ZipFile(io.BytesIO(zipbytes)) as z:
         csvname=next((n for n in z.namelist() if n.endswith(".csv")),None)
         if not csvname: raise RuntimeError("CSV not found in source artifact")
