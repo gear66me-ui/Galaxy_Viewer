@@ -137,7 +137,7 @@ jobs:
           assert 'HIGHLIGHT_WIDTH = 0.5' in constellation and 'WIDTH = 0.25' in constellation
           assert 'requestAnimationFrame' not in constellation and 'setInterval' not in constellation and 'function rebuildGlow' not in constellation, 'constellation module must contain no animation/glow workload'
           assert '.glow' not in constellation and '.stars' not in constellation, 'glow and star halo layers must be removed'
-          assert "const GV200001_BUILD='0035';" in rc
+          assert "const GV200001_BUILD='0036';" in rc
           constellation=(root/'viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js').read_text()
           assert 'const VERSION = "0018";' in constellation
           assert 'edges:2,closed:false' in constellation and 'fornax.segments=2;' in constellation, 'Fornax must be drawn as an open two-edge V'
