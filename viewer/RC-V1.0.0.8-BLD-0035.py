@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0034"
+BUILD_NUMBER = "0035"
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
