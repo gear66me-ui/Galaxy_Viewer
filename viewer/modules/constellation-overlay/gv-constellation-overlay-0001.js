@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0014";
+  const VERSION = "0015";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -25,10 +25,10 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);aladin.addOverlay(e.stars);overlays.set(name,e);}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);aladin.addOverlay(e.stars);overlays.set(name,e);}
       const p1=stars.get(a),p2=stars.get(b);
       for(const id of [a,b]){const p=stars.get(id);if(p&&!e.starIds.has(id)){e.starIds.add(id);e.points.push(p);}}
-      if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2],{color:"#39BFFF",lineWidth:0.5}));e.segments++;}
+      if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2],{color:"#39BFFF",lineWidth:0.5}));e.segmentPairs.push([p1,p2]);e.segments++;}
       else console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
     }
     // The line-source CSV omits principal stars not used by its asterism segments.
@@ -81,14 +81,35 @@
       if(!found){console.info("GV CONSTELLATION GLOW: no matching constellation",name);return false;}
       startGlow(found,{travel:true});return true;
     }
-    function applyGlow(found,brightness){
-      const alpha=Math.max(0,Math.min(1,brightness));
-      try{
-        if(typeof found.glow.setOpacity==="function")found.glow.setOpacity(alpha);else found.glow.setOptions?.({opacity:alpha});
-        if(typeof found.stars.setOpacity==="function")found.stars.setOpacity(alpha);else found.stars.setOptions?.({opacity:alpha});
-        if(alpha<=0.001){found.glow.hide();found.stars.hide();}else{found.glow.show();found.stars.show();}
-      }catch(error){console.warn("GV CONSTELLATION GRADIENT FADE FAILED",error)}
+    function mixHex(a,b,t){
+      const parse=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+      const x=parse(a),y=parse(b);
+      return "#"+x.map((v,i)=>Math.round(v+(y[i]-v)*t).toString(16).padStart(2,"0")).join("");
     }
+    function rebuildGlow(found,brightness){
+      // Rebuild actual primitives at the requested color each frame. This avoids
+      // relying on opacity/style mutation APIs that this Aladin build ignores.
+      const t=Math.max(0,Math.min(1,brightness));
+      const lineColor=mixHex("#071A25","#8EDCFF",t);
+      const haloColor=mixHex("#06121B","#26AFFF",t);
+      const coreColor=mixHex("#071018","#FFFFFF",t);
+      const nextLine=window.A.graphicOverlay({color:lineColor,lineWidth:0.5});
+      const nextStars=window.A.graphicOverlay({color:coreColor,lineWidth:0.5});
+      for(const pair of found.segmentPairs||[]){
+        nextLine.add(window.A.polyline(pair,{color:lineColor,lineWidth:0.5}));
+      }
+      for(const [ra,dec] of found.points){
+        nextLine.add(window.A.circle([ra,dec],0.075,{color:haloColor,lineWidth:0.5,fillColor:haloColor,fillOpacity:0.05+0.30*t}));
+        nextStars.add(window.A.circle([ra,dec],0.035,{color:coreColor,lineWidth:0.5,fillColor:coreColor,fillOpacity:0.15+0.85*t}));
+      }
+      try{
+        if(found.glow)aladin.removeOverlay(found.glow);
+        if(found.stars)aladin.removeOverlay(found.stars);
+      }catch(error){console.warn("GV CONSTELLATION: previous pulse layer removal failed",error)}
+      found.glow=nextLine;found.stars=nextStars;
+      aladin.addOverlay(found.glow);aladin.addOverlay(found.stars);
+    }
+    function applyGlow(found,brightness){rebuildGlow(found,brightness);}
     function startGlow(found,{travel=false}={}){
       stopGlow();glowEntry=found;
       // Destination glow is independent of the user-facing constellation-line toggle.
