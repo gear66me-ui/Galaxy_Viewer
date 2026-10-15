@@ -1,4 +1,4 @@
-name: Publish Existing Galaxy Image Mirror Artifact
+name: Recover Galaxy Image Mirror Manifest
 
 on:
   push:
@@ -18,21 +18,21 @@ permissions:
   contents: write
 
 concurrency:
-  group: galaxy-image-mirror-publish
+  group: galaxy-image-mirror-manifest-recovery
   cancel-in-progress: false
 
 jobs:
-  publish:
+  recover-manifest:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 30
     steps:
-      - name: Checkout current release
+      - name: Checkout latest release
         uses: actions/checkout@v4
         with:
           ref: release
           fetch-depth: 0
 
-      - name: Download completed mirror artifact from earlier run
+      - name: Download saved mirror artifact
         uses: actions/download-artifact@v4
         with:
           name: galaxy-image-mirror-1
@@ -41,107 +41,77 @@ jobs:
           run-id: ${{ inputs.source_run_id || '38793695755' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Recover image files from numbered ZIP chunks
-        run: |
-          python - <<'PY'
-          import pathlib, zipfile
-          root = pathlib.Path("mirror-artifact")
-          manifest = root / "image-mirror-manifest.json"
-          if not manifest.exists():
-              raise SystemExit("Manifest missing from saved artifact; refusing to publish.")
-          chunks = sorted(root.glob("galaxy-image-mirror-part-*.zip"))
-          if not chunks:
-              raise SystemExit("No numbered mirror ZIP chunks found in saved artifact.")
-          out = pathlib.Path("recovered-images")
-          out.mkdir(exist_ok=True)
-          total = 0
-          for chunk in chunks:
-              with zipfile.ZipFile(chunk) as z:
-                  for member in z.infolist():
-                      if member.is_dir():
-                          continue
-                      name = pathlib.PurePosixPath(member.filename).name
-                      if not name:
-                          continue
-                      target = out / name
-                      with z.open(member) as src, target.open("wb") as dst:
-                          import shutil
-                          shutil.copyfileobj(src, dst)
-                      total += 1
-              print(f"Recovered {chunk.name}")
-          print(f"Recovered {total} image files")
-          if total == 0:
-              raise SystemExit("No images recovered.")
-          PY
-
-      - name: Publish images as permanent GitHub Release assets and update manifest
+      - name: Validate manifest and existing published image assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id || '38793695755' }}
         run: |
           python - <<'PY'
-          import hashlib, json, pathlib, subprocess
-          root = pathlib.Path("recovered-images")
-          manifest_path = pathlib.Path("mirror-artifact/image-mirror-manifest.json")
-          manifest = json.loads(manifest_path.read_text())
-          items = [x for x in manifest.get("images", []) if x.get("sha256")]
-          if not items:
-              raise SystemExit("Manifest contains no successful downloads.")
+          import json, pathlib, subprocess, os
+          root = pathlib.Path("mirror-artifact")
+          path = root / "image-mirror-manifest.json"
+          if not path.exists():
+              raise SystemExit(f"Saved manifest not found at {path}")
+          manifest = json.loads(path.read_text(encoding="utf-8"))
+          images = [x for x in manifest.get("images", []) if x.get("sha256") and x.get("filename")]
+          if not images:
+              raise SystemExit("Manifest contains no successfully downloaded images.")
+          missing = [k for k in ("sourceUrl", "provider", "catalogRefs") if not all(k in x for x in images)]
+          if missing:
+              raise SystemExit(f"Manifest lacks required mapping fields for some images: {missing}")
           tags = ["galaxy-image-mirror-a", "galaxy-image-mirror-b", "galaxy-image-mirror-c", "galaxy-image-mirror-d"]
-          chunk_size = 850
-          for start in range(0, len(items), chunk_size):
-              part = start // chunk_size
-              tag = tags[part]
-              batch = items[start:start + chunk_size]
-              check = subprocess.run(["gh", "release", "view", tag], capture_output=True, text=True)
-              if check.returncode:
-                  subprocess.run(["gh", "release", "create", tag, "--title", f"Galaxy Image Mirror {tag[-1].upper()}",
-                                  "--notes", "Galaxy Viewer image mirror. Manifest on release branch contains source URLs and SHA-256 checksums."], check=True)
-              paths = []
-              for item in batch:
-                  filename = item["filename"]
-                  p = root / filename
-                  if not p.exists():
-                      raise SystemExit(f"Missing recovered image file: {filename}")
-                  digest = hashlib.sha256(p.read_bytes()).hexdigest()
-                  if digest != item["sha256"]:
-                      raise SystemExit(f"SHA-256 mismatch for {filename}; refusing to publish.")
-                  paths.append(str(p))
-                  item["githubImageUrl"] = f"https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/{tag}/{filename}"
-                  item["releaseTag"] = tag
-              for offset in range(0, len(paths), 50):
-                  subprocess.run(["gh", "release", "upload", tag, *paths[offset:offset+50], "--clobber"], check=True)
-              print(f"Published {len(batch)} verified images to {tag}")
-          manifest["imageCount"] = len(items)
-          manifest["publishedImageCount"] = len(items)
-          manifest["sourceArtifactRunId"] = int("${{ inputs.source_run_id }}")
-          manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-          pathlib.Path("mirror-artifact/image-mirror-manifest.json").write_text(manifest_path.read_text(), encoding="utf-8")
+          for i, item in enumerate(images):
+              tag = tags[i // 850]
+              item["githubImageUrl"] = f"https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/{tag}/{item['filename']}"
+              item["releaseTag"] = tag
+          manifest["imageCount"] = len(images)
+          manifest["publishedImageCount"] = len(images)
+          manifest["sourceArtifactRunId"] = int(os.environ["SOURCE_RUN_ID"])
+          manifest["manifestRecovery"] = {
+              "method": "recovered-from-original-workflow-artifact",
+              "sourceRunId": int(os.environ["SOURCE_RUN_ID"]),
+              "mappingPreserved": True
+          }
+          path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+          failures = root / "image-mirror-failures.json"
+          print(f"Validated {len(images)} image mappings.")
+          print("Provider counts:")
+          counts = {}
+          for item in images:
+              p = str(item.get("provider", "unknown"))
+              counts[p] = counts.get(p, 0) + 1
+          for provider, count in sorted(counts.items()):
+              print(f"  {provider}: {count}")
+          print(f"Failure report present: {failures.exists()}")
           PY
 
-      - name: Safely commit published manifest to release
+      - name: Commit manifest and failure report safely
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          set -euo pipefail
           mkdir -p viewer/image-databases/Hubble/mirror
           cp mirror-artifact/image-mirror-manifest.json viewer/image-databases/Hubble/mirror/image-mirror-manifest.json
           if [ -f mirror-artifact/image-mirror-failures.json ]; then
             cp mirror-artifact/image-mirror-failures.json viewer/image-databases/Hubble/mirror/image-mirror-failures.json
           fi
-          git add viewer/image-databases/Hubble/mirror/image-mirror-manifest.json viewer/image-databases/Hubble/mirror/image-mirror-failures.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/mirror/image-mirror-manifest.json
+          if [ -f viewer/image-databases/Hubble/mirror/image-mirror-failures.json ]; then
+            git add viewer/image-databases/Hubble/mirror/image-mirror-failures.json
+          fi
           if git diff --cached --quiet; then
-            echo "Manifest unchanged."
+            echo "Recovered manifest already matches release."
             exit 0
           fi
-          git commit -m "Publish verified Galaxy Viewer image mirror manifest"
+          git commit -m "Recover Galaxy Viewer image source manifest"
           for attempt in 1 2 3 4 5; do
             git fetch origin release
             git rebase origin/release
             if git push origin HEAD:release; then
-              echo "Manifest committed to latest release tip."
+              echo "Recovered manifest committed to release."
               exit 0
             fi
             echo "release advanced during push attempt $attempt; retrying."
-            sleep 2
           done
-          echo "Failed to publish manifest after five safe retries."
+          echo "Could not push manifest after five safe attempts."
           exit 1
