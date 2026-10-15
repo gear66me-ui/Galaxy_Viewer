@@ -2,7 +2,7 @@
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
   "sourceCommit": "29c67ae4580156b1c8c7c49d0a0bf96c8d7edfd7",
-  "build": "0030",
+  "build": "0031",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
