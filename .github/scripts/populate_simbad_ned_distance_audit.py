@@ -62,10 +62,23 @@ def compact(values):
     return " | ".join(seen)
 
 def get_identifiers(row):
+    # Use actual catalog object identifiers first. The original CSV's NED_query
+    # cells were populated with a concatenated descriptive phrase, not a clean name.
     vals = []
-    for key in ("simbad_query", "ned_query", "designation", "displayName", "name", "title", "archiveId"):
+    for key in ("name", "designation", "displayName", "archiveId"):
+        raw = (row.get(key) or "").strip()
+        if not raw:
+            continue
+        # Split slash-separated alternate identifiers, but preserve spaces within names.
+        parts = [p.strip() for p in re.split(r"\\s*/\\s*", raw) if p.strip()]
+        for v in parts:
+            if v and v not in vals:
+                vals.append(v)
+    # Only accept a query column as fallback if it is a single plausible identifier,
+    # not the old concatenated text containing titles and words like "distance".
+    for key in ("SIMBAD_query", "NED_query", "title"):
         v = (row.get(key) or "").strip()
-        if v and v not in vals:
+        if v and len(v.split()) <= 4 and not any(token in v.lower() for token in ("distance", "redshift", "observation of")) and v not in vals:
             vals.append(v)
     return vals
 
@@ -166,6 +179,10 @@ def main():
         reader = csv.DictReader(f)
         rows = list(reader)
         original_fields = reader.fieldnames or []
+    limit = int(os.environ.get("AUDIT_LIMIT", "0") or "0")
+    if limit > 0:
+        rows = rows[:limit]
+        print(f"Pilot limit enabled: first {len(rows)} records", flush=True)
     if not rows:
         raise SystemExit("Input CSV is empty")
     fields = list(original_fields)
