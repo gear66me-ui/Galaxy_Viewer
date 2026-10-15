@@ -1,12 +1,12 @@
-/* Galaxy Viewer constellation overlay module 0016.
+/* Galaxy Viewer constellation overlay module 0017.
  * Fornax uses the verified three-star V; glow layers are made visible after each redraw.
  */
 (() => {
   "use strict";
-  const VERSION = "0016";
+  const VERSION = "0017";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
-  const COLOR = "#8EDCFF", WIDTH = 0.25;
+  const COLOR = "#8EDCFF", WIDTH = 0.5;
   async function csv(url) { const r=await fetch(url,{cache:"force-cache"}); if(!r.ok)throw Error("CONSTELLATION DATA HTTP "+r.status); return r.text(); }
   function parseStars(text) {
     const map=new Map();
@@ -70,16 +70,18 @@
       }
       e.obj.hide();e.glow.hide();e.stars.hide();
     }
-    let enabled=false,glowTimer=null,glowEntry=null,frameHandle=null,phase=0;
+    let enabled=false,glowEntry=null;
     function stopGlow(){
-      if(glowTimer!==null){clearInterval(glowTimer);glowTimer=null;}
-      if(frameHandle!==null){cancelAnimationFrame(frameHandle);frameHandle=null;}
-      if(glowEntry){glowEntry.glow.hide();glowEntry.stars.hide();glowEntry.glow.setOptions?.({color:"#39BFFF",lineWidth:0.5});glowEntry.stars.setOptions?.({color:"#FFFFFF",lineWidth:0.5});}
-      glowEntry=null;phase=0;
+      if(glowEntry){glowEntry.glow.hide();glowEntry.stars.hide();glowEntry.obj.hide();}
+      glowEntry=null;
     }
     function setEnabled(next){
       enabled=!!next;
-      for(const e of overlays.values()){enabled?e.obj.show():e.obj.hide();if(!enabled)e.glow.hide();}
+      for(const e of overlays.values()){
+        if(enabled)e.obj.show();else e.obj.hide();
+        e.glow.hide();
+        if(!enabled)e.stars.hide();
+      }
       if(!enabled)stopGlow();
       return enabled;
     }
@@ -90,62 +92,22 @@
       for(const [key,e] of overlays){const k=canon(key);if(k.length>3&&(k.includes(wanted)||wanted.includes(k)))return e;}
       return null;
     }
-    function setTravelGlow(name,active){
-      stopGlow();if(!active||!name)return false;
-      const found=findByName(name);
-      if(!found){console.info("GV CONSTELLATION GLOW: no matching constellation",name);return false;}
-      startGlow(found,{travel:true});return true;
-    }
-    function mixHex(a,b,t){
-      const parse=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
-      const x=parse(a),y=parse(b);
-      return "#"+x.map((v,i)=>Math.round(v+(y[i]-v)*t).toString(16).padStart(2,"0")).join("");
-    }
-    function rebuildGlow(found,brightness){
-      // Rebuild actual primitives at the requested color each frame. This avoids
-      // relying on opacity/style mutation APIs that this Aladin build ignores.
-      const t=Math.max(0,Math.min(1,brightness));
-      const lineColor=mixHex("#071A25","#8EDCFF",t);
-      const haloColor=mixHex("#06121B","#26AFFF",t);
-      const coreColor=mixHex("#071018","#FFFFFF",t);
-      const nextLine=window.A.graphicOverlay({color:lineColor,lineWidth:0.5});
-      const nextStars=window.A.graphicOverlay({color:coreColor,lineWidth:0.5});
-      for(const pair of found.segmentPairs||[]){
-        nextLine.add(window.A.polyline(pair,{color:lineColor,lineWidth:0.5}));
-      }
-      for(const [ra,dec] of found.points){
-        nextLine.add(window.A.circle([ra,dec],0.075,{color:haloColor,lineWidth:0.5,fillColor:haloColor,fillOpacity:0.05+0.30*t}));
-        nextStars.add(window.A.circle([ra,dec],0.035,{color:coreColor,lineWidth:0.5,fillColor:coreColor,fillOpacity:0.15+0.85*t}));
-      }
-      try{
-        if(found.glow)aladin.removeOverlay(found.glow);
-        if(found.stars)aladin.removeOverlay(found.stars);
-      }catch(error){console.warn("GV CONSTELLATION: previous pulse layer removal failed",error)}
-      found.glow=nextLine;found.stars=nextStars;
-      aladin.addOverlay(found.glow);aladin.addOverlay(found.stars);
-      // Explicitly show replacement overlays after attachment.
-      found.glow.show();found.stars.show();
-    }
-    function applyGlow(found,brightness){rebuildGlow(found,brightness);}
+    // Static highlight only: no timers, frame callbacks, per-frame rebuilds, or color interpolation.
     function startGlow(found,{travel=false}={}){
-      stopGlow();glowEntry=found;
-      // Destination glow is independent of the user-facing constellation-line toggle.
+      stopGlow();
       if(!enabled&&!travel)return false;
-      found.glow.setOptions?.({color:"#39BFFF",lineWidth:0.5});
-      applyGlow(found,0);
-      found.glow.show();found.stars.show();
-      // A true 2-second triangular brightness ramp: 0→100% in 1s, then 100→0% in 1s.
-      // Only visibility pulses; all line strokes are capped at 0.5px.
-      const started=performance.now(),period=2000;
-      const animate=now=>{
-        if((!enabled&&!travel)||glowEntry!==found){frameHandle=null;return;}
-        const phase=((now-started)%period)/period;
-        const brightness=phase<0.5?phase*2:(1-phase)*2;
-        applyGlow(found,brightness);
-        frameHandle=requestAnimationFrame(animate);
-      };
-      frameHandle=requestAnimationFrame(animate);
+      glowEntry=found;
+      found.obj.setOptions?.({color:"#8EDCFF",lineWidth:0.5});
+      found.obj.show();
+      found.glow.hide();
+      found.stars.show();
       return true;
+    }
+    function setTravelGlow(name,active){
+      if(!active||!name){stopGlow();return false;}
+      const found=findByName(name);
+      if(!found)return false;
+      return startGlow(found,{travel:true});
     }
     function setTravelGlowAt(ra,dec,active=true){
       console.warn("GV CONSTELLATION GLOW: coordinate fallback deprecated; pass archive constellation name");
