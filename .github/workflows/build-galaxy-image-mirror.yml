@@ -1,0 +1,166 @@
+name: Build Galaxy Image Mirror
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_images:
+        description: "Maximum images to mirror (0 = all catalog image URLs)"
+        required: true
+        default: "0"
+        type: string
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/build-galaxy-image-mirror.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: galaxy-image-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout release source of truth
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Discover and download catalog images
+        env:
+          MAX_IMAGES: ${{ inputs.max_images || '0' }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, re, time, urllib.parse, urllib.request
+          ROOT = pathlib.Path("viewer/image-databases")
+          MIRROR = ROOT / "Hubble" / "mirror"
+          OUT = MIRROR / "images"
+          OUT.mkdir(parents=True, exist_ok=True)
+          url_keys = {"url", "imageurl", "image_url", "image", "src", "image_src", "downloadurl",
+                      "download_url", "previewurl", "preview_url", "largeimage", "large_image",
+                      "fitsurl", "fits_url", "jpegurl", "jpeg_url", "thumbnailurl", "thumbnail_url"}
+          found = {}
+          def walk(x, provider, trail=""):
+              if isinstance(x, dict):
+                  for k, v in x.items():
+                      norm = re.sub(r"[^a-z0-9]", "", str(k).lower())
+                      if isinstance(v, str) and (norm in url_keys or ("image" in norm and "url" in norm)):
+                          u = v.strip()
+                          if u.startswith(("https://", "http://")) and "aladin.u-strasbg.fr/hips" not in u.lower():
+                              found.setdefault(u, {"sourceUrl":u, "provider":provider, "catalogRefs":[]})["catalogRefs"].append(trail + "/" + str(k))
+                      walk(v, provider, trail + "/" + str(k))
+              elif isinstance(x, list):
+                  for i, v in enumerate(x):
+                      walk(v, provider, trail + "/" + str(i))
+          for p in ROOT.rglob("*.json"):
+              if "mirror" in p.parts or "vendor" in p.parts:
+                  continue
+              try:
+                  data = json.loads(p.read_text(encoding="utf-8"))
+              except Exception:
+                  continue
+              provider = next((part for part in p.parts if part in {"Hubble","ESO","NoirLab","JWST","Spitzer","Chandra"}), "master-database")
+              walk(data, provider, str(p))
+          urls = sorted(found)
+          limit = int(os.environ.get("MAX_IMAGES", "0") or "0")
+          if limit > 0:
+              urls = urls[:limit]
+          print(f"Discovered {len(urls)} unique candidate image URLs.")
+          if not urls:
+              raise SystemExit("No image URLs discovered; refusing to publish an empty mirror.")
+          manifest = {"schemaVersion":1,"repository":"gear66me-ui/Galaxy_Viewer","branch":"release",
+                      "mirrorRoot":"viewer/image-databases/Hubble/mirror/images",
+                      "imageCount":0,"failedCount":0,"images":[]}
+          failures = []
+          opener = urllib.request.build_opener()
+          opener.addheaders = [("User-Agent","GalaxyViewer-ImageMirror/1.0")]
+          for i, url in enumerate(urls, 1):
+              item = found[url]
+              suffix = pathlib.Path(urllib.parse.unquote(urllib.parse.urlsplit(url).path)).suffix.lower()
+              if suffix not in {".jpg",".jpeg",".png",".webp",".gif",".tif",".tiff",".fits",".fit"}:
+                  suffix = ".img"
+              name = hashlib.sha256(url.encode()).hexdigest() + suffix
+              target = OUT / name
+              err = None
+              for attempt in range(4):
+                  try:
+                      req = urllib.request.Request(url, headers={"Accept":"image/avif,image/webp,image/*,*/*;q=0.8"})
+                      with opener.open(req, timeout=45) as response:
+                          ctype = response.headers.get("Content-Type","").lower()
+                          data = response.read(30 * 1024 * 1024 + 1)
+                      if len(data) > 30 * 1024 * 1024:
+                          raise ValueError("image exceeds 30 MiB safety limit")
+                      if len(data) < 128 or (not ctype.startswith("image/") and not data.startswith((b"\xff\xd8\xff",b"\x89PNG",b"GIF8",b"RIFF",b"II*\x00",b"MM\x00*"))):
+                          raise ValueError(f"response does not look like an image (content-type={ctype}, bytes={len(data)})")
+                      target.write_bytes(data)
+                      item.update({"filename":name,"mirrorPath":str(target),"bytes":len(data),
+                                   "sha256":hashlib.sha256(data).hexdigest(),"contentType":ctype})
+                      break
+                  except Exception as e:
+                      err = str(e)
+                      time.sleep(1.5 * (attempt + 1))
+              if err and not target.exists():
+                  item["error"] = err
+                  failures.append({"url":url,"error":err})
+              manifest["images"].append(item)
+              if i % 25 == 0 or i == len(urls):
+                  print(f"Processed {i}/{len(urls)}; downloaded={sum('sha256' in x for x in manifest['images'])}; failures={len(failures)}")
+          good = [x for x in manifest["images"] if "sha256" in x]
+          manifest["imageCount"] = len(good)
+          manifest["failedCount"] = len(failures)
+          (MIRROR / "image-mirror-manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
+          (MIRROR / "image-mirror-failures.json").write_text(json.dumps(failures,indent=2),encoding="utf-8")
+          print(f"Mirror result: {len(good)} downloaded; {len(failures)} failed.")
+          if not good:
+              raise SystemExit("No images downloaded successfully.")
+          PY
+
+      - name: Package mirror in numbered chunks
+        run: |
+          python - <<'PY'
+          import pathlib, zipfile
+          root = pathlib.Path("viewer/image-databases/Hubble/mirror")
+          files = sorted((root / "images").glob("*"))
+          chunk_size = 450
+          for start in range(0, len(files), chunk_size):
+              part = start // chunk_size + 1
+              dest = root / f"galaxy-image-mirror-part-{part:02d}.zip"
+              with zipfile.ZipFile(dest, "w", compression=zipfile.ZIP_STORED, allowZip64=True) as z:
+                  for f in files[start:start+chunk_size]:
+                      z.write(f, arcname=f"images/{f.name}")
+              print(f"{dest}: {len(files[start:start+chunk_size])} images, {dest.stat().st_size} bytes")
+          PY
+
+      - name: Upload manifest and chunks as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: galaxy-image-mirror-${{ github.run_number }}
+          path: |
+            viewer/image-databases/Hubble/mirror/image-mirror-manifest.json
+            viewer/image-databases/Hubble/mirror/image-mirror-failures.json
+            viewer/image-databases/Hubble/mirror/galaxy-image-mirror-part-*.zip
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit mirror manifests (not image binaries) to release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/mirror/image-mirror-manifest.json viewer/image-databases/Hubble/mirror/image-mirror-failures.json
+          if git diff --cached --quiet; then
+            echo "Mirror manifest unchanged."
+          else
+            git commit -m "Add Galaxy Viewer image mirror manifest"
+            git push origin HEAD:release
+          fi
