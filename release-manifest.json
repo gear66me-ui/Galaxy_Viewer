@@ -1,8 +1,8 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "37162a006e72c5eca9ab93b65640ee39a6c8b871",
-  "build": "0034",
+  "sourceCommit": "0b461e5dfa801be791586e04fcd8ac93fd986a91",
+  "build": "0035",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
@@ -153,11 +153,11 @@
   "dependencyPins": [
     "10ae327ec7ab126627cc1e482e27828075bbf4f4",
     "1732aa60a871e16d71df4700aed75d9085c6b8c5",
-    "f7e4268cbbb97135e97da539d475da852a8ead29",
+    "3e98c4505b0c9e8ad245f347ad13a6efa046b4b1",
     "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0034-fornax-v-glow"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0035-static-constellation-highlight"
 }
