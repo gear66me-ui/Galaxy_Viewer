@@ -1,7 +1,7 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "c4e0c5484fb32ca00d9f25b5b4353c2d7c48d800",
+  "sourceCommit": "e38bfcc36a2f156517f9a77865da0c1c13d49175",
   "build": "0036",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
@@ -9,7 +9,7 @@
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
     "viewer/RC-V1.0.0.8-BLD-0036.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
-    "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
+    "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
     "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
@@ -155,6 +155,7 @@
     "1732aa60a871e16d71df4700aed75d9085c6b8c5",
     "42620e479e7fa719ca168dd1fbf96e924e23eb9d",
     "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
+    "e38bfcc36a2f156517f9a77865da0c1c13d49175",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
