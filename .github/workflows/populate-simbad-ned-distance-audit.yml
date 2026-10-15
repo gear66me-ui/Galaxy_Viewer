@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: simbad-ned-distance-audit
+  group: simbad-ned-distance-audit-corrected
   cancel-in-progress: true
 
 jobs:
