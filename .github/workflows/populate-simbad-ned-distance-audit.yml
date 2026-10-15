@@ -1,0 +1,52 @@
+name: Populate SIMBAD and NED distance audit CSV
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/populate-simbad-ned-distance-audit.yml"
+      - ".github/scripts/populate_simbad_ned_distance_audit.py"
+      - "audit/distance-age-review/galaxy-distance-age-source-audit.csv"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: simbad-ned-distance-audit
+  cancel-in-progress: false
+
+jobs:
+  enrich-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run audit-only source lookups
+        run: python .github/scripts/populate_simbad_ned_distance_audit.py
+      - name: Upload enriched CSV as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: galaxy-distance-age-source-audit-enriched
+          path: audit/distance-age-review/galaxy-distance-age-source-audit.enriched.csv
+          if-no-files-found: error
+          retention-days: 30
+      - name: Commit enriched audit CSV only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audit/distance-age-review/galaxy-distance-age-source-audit.enriched.csv
+          if git diff --cached --quiet; then
+            echo "No audit CSV changes to commit."
+          else
+            git commit -m "Populate SIMBAD and NED distance audit CSV"
+            git push origin HEAD:release
+          fi
