@@ -1,0 +1,125 @@
+name: Restore Hubble 0035 catalog integrity
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/restore-hubble-0035-catalog.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release history
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Restore full snapshot and reapply verified distance fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json"
+          GOOD="937d1bde07b977a10854a50ac7bfae9463956bba"
+          git show "${GOOD}:${FILE}" > /tmp/hubble-good.json
+          python3 - <<'PY'
+          import json, math
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json")
+          data = json.loads(Path("/tmp/hubble-good.json").read_text(encoding="utf-8"))
+          entries = data.get("entries")
+          if not isinstance(entries, list) or len(entries) < 1000:
+              raise SystemExit(f"STOP: recovery snapshot is not the expected full catalog: entries={len(entries) if isinstance(entries, list) else 'missing'}")
+          baseline_count = len(entries)
+
+          def identity(e):
+              return " ".join(str(e.get(k, "")) for k in ("name", "designation", "displayName", "title", "archiveId", "id")).lower()
+
+          # Reapply the targeted CL J1449+0856 correction introduced after the good snapshot.
+          target_ra, target_dec = 222.3083, 8.9392
+          def sep_deg(ra, dec):
+              ra1, dec1, ra2, dec2 = map(math.radians, (target_ra, target_dec, ra, dec))
+              a = math.sin((dec2-dec1)/2)**2 + math.cos(dec1)*math.cos(dec2)*math.sin((ra2-ra1)/2)**2
+              return math.degrees(2*math.asin(min(1, math.sqrt(a))))
+
+          cl_matches = []
+          for e in entries:
+              try:
+                  ra = float(e.get("ra", e.get("raDeg", e.get("raDegrees"))))
+                  dec = float(e.get("dec", e.get("decDeg", e.get("decDegrees"))))
+              except (TypeError, ValueError):
+                  continue
+              ident = identity(e)
+              if sep_deg(ra, dec) <= 0.025 and ("1449" in ident or abs(ra-target_ra) <= 0.003):
+                  cl_matches.append(e)
+          if len(cl_matches) != 1:
+              raise SystemExit(f"STOP: expected exactly one CL J1449+0856 record in recovery snapshot, found {len(cl_matches)}")
+          cl = cl_matches[0]
+          ident = identity(cl)
+          if not any(token in ident for token in ("1449", "cl j144", "clj144")):
+              raise SystemExit(f"STOP: coordinate match does not identify CL J1449+0856: {ident!r}")
+          cl["distance"] = "10 billion light-years (approx.; z=1.99)"
+          if "distanceMly" in cl:
+              cl["distanceMly"] = 10000.0
+          sci = cl.setdefault("science", {})
+          sci["distanceMly"] = 10000.0
+          sci["distanceDisplay"] = "10.0 billion light-years (approx.)"
+          sci["distanceEstimated"] = True
+          sci["distanceMethod"] = "published_CLJ1449_z1.99_approx_10_billion_light_years"
+          sci["distanceEvidence"] = "https://academic.oup.com/mnras/article/486/3/4304/5470973"
+          sci["redshift"] = 1.99
+          sci["redshiftDisplay"] = "z = 1.99"
+          sci["redshiftEstimated"] = False
+          sci["redshiftMethod"] = "spectroscopic_cluster_redshift_published_CLJ1449"
+          cl["redshift"] = 1.99
+          cl["redshiftDisplay"] = "z = 1.99"
+
+          # Reapply the subsequent Cone Nebula distance correction without touching other records.
+          cone_matches = [e for e in entries if str(e.get("archiveId", "")).lower() == "noao-04494"]
+          if len(cone_matches) != 1:
+              cone_matches = [e for e in entries if "cone nebula" in identity(e) and ("ngc 2264" in identity(e) or "fox fur" in identity(e))]
+          if len(cone_matches) != 1:
+              raise SystemExit(f"STOP: expected exactly one Cone Nebula record, found {len(cone_matches)}")
+          cone = cone_matches[0]
+          cone["distance"] = "3,000 light-years"
+          cone["distanceMly"] = 0.003
+          cs = cone.setdefault("science", {})
+          cs["distanceMly"] = 0.003
+          cs["distanceDisplay"] = "3,000 light-years"
+
+          if len(entries) != baseline_count:
+              raise SystemExit(f"STOP: record count changed unexpectedly: {baseline_count} -> {len(entries)}")
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          if len(check.get("entries", [])) != baseline_count:
+              raise SystemExit("STOP: post-write validation failed")
+          print(json.dumps({
+              "status": "validated",
+              "records": baseline_count,
+              "bytes": path.stat().st_size,
+              "cl_j1449_records": 1,
+              "cone_nebula_records": 1,
+              "cl_distanceMly": cl["science"]["distanceMly"],
+              "cone_distanceMly": cone["science"]["distanceMly"]
+          }))
+          PY
+
+      - name: Commit restored catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json
+          if git diff --cached --quiet; then
+            echo "Catalog already matches the validated recovery snapshot."
+            exit 0
+          fi
+          git commit -m "Restore full Hubble 0035 catalog and preserve distance fixes"
+          git push origin HEAD:release
