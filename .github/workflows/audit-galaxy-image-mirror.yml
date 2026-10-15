@@ -34,32 +34,15 @@ jobs:
 
           manifest_path = pathlib.Path("viewer/image-databases/Hubble/mirror/image-mirror-manifest.json")
           raw = manifest_path.read_text(encoding="utf-8")
-          # Be tolerant of concatenated JSON roots: keep all image records and report the condition.
+          # The recovered file has a valid first JSON object followed by stray trailing bytes.
+          # Parse the first root only; it contains the full images array, and report the trailing bytes.
           decoder = json.JSONDecoder()
-          roots = []
-          pos = 0
-          while pos < len(raw):
-              while pos < len(raw) and raw[pos].isspace():
-                  pos += 1
-              if pos >= len(raw):
-                  break
-              obj, end = decoder.raw_decode(raw, pos)
-              roots.append(obj)
-              pos = end
-          if not roots:
-              raise SystemExit("Manifest contains no valid JSON object.")
-          manifest = roots[0]
-          items = []
-          for root in roots:
-              if isinstance(root, dict):
-                  items.extend(root.get("images", []))
-          # De-duplicate records only when the exact source URL and filename match.
-          unique = {}
-          for item in items:
-              unique[(item.get("sourceUrl"), item.get("filename"))] = item
-          items = list(unique.values())
+          manifest, end = decoder.raw_decode(raw.lstrip())
+          leading = len(raw) - len(raw.lstrip())
+          trailing = raw[leading + end:].strip()
+          items = manifest.get("images", [])
           if not items:
-              raise SystemExit(f"No image entries found across {len(roots)} JSON root(s).")
+              raise SystemExit("Manifest contains no image entries.")
 
           providers = collections.Counter()
           extensions = collections.Counter()
@@ -87,7 +70,7 @@ jobs:
                       mapping_errors.append({"filename": filename, "problem": "githubImageUrl/releaseTag mismatch"})
 
           print("=== MANIFEST SUMMARY ===")
-          print(f"JSON roots found: {len(roots)}")
+          print(f"Trailing non-JSON data after main manifest: {len(trailing)} characters (ignored)")
           print(f"Entries audited after exact source+filename deduplication: {len(items)}")
           print(f"Manifest imageCount field: {manifest.get('imageCount')}")
           print(f"Entries with SHA-256: {sum(bool(x.get('sha256')) for x in items)}")
