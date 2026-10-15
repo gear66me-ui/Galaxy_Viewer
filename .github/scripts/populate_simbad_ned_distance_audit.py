@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Audit-only SIMBAD + NED distance comparison. Never edits catalog JSON."""
 import csv, io, os, re, sys, time, math, statistics, urllib.parse, urllib.request, xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 ROOT = Path(".")
@@ -21,7 +22,7 @@ COLUMNS = [
     "distance_discrepancy_pct", "review_status"
 ]
 
-def fetch(url, data=None, timeout=15):
+def fetch(url, data=None, timeout=8):
     req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT, "Accept": "application/x-votable+xml, text/plain, */*"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read()
@@ -77,7 +78,7 @@ def get_identifiers(row):
         v = (row.get(key) or "").strip()
         if v and len(v.split()) <= 4 and not any(token in v.lower() for token in ("distance", "redshift", "observation of")) and v not in vals:
             vals.append(v)
-    return vals[:3]
+    return vals[:2]
 
 def simbad_lookup(row):
     names = get_identifiers(row)
@@ -185,10 +186,12 @@ def main():
     fields = list(original_fields)
     for c in COLUMNS:
         if c not in fields: fields.append(c)
-    for i,row in enumerate(rows,1):
-        # Resume safely: previously completed rows are not re-queried.
+    # Run several galaxies concurrently. Each source query has an 8-second timeout,
+    # and each source still tries only the primary name plus one alternate designation.
+    def process_one(item):
+        i, row = item
         if row.get("simbad_status") and row.get("ned_status"):
-            continue
+            return i, row
         row.update(simbad_lookup(row))
         row.update(ned_lookup(row))
         candidates = [number(row.get("simbad_distance_median_mly")), number(row.get("ned_distance_median_mly"))]
@@ -201,14 +204,20 @@ def main():
         row["review_status"] = ("REVIEW_GT50_PERCENT" if current and median and abs(current-median)/median > .5 else
                                 "REVIEW_GT20_PERCENT" if current and median and abs(current-median)/median > .2 else
                                 "SOURCES_FOUND_REVIEW" if median else "NO_SOURCE_DISTANCE")
-        if i % 10 == 0:
-            print(f"Processed {i}/{len(rows)} rows", flush=True)
-        # checkpoint after every 10 records so a rerun resumes without repeating finished queries
-        if i % 10 == 0 or i == len(rows):
-            with OUTPUT.open("w", newline="", encoding="utf-8") as f:
-                w=csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
-                w.writeheader(); w.writerows(rows)
-        time.sleep(0.15)
+        return i, row
+
+    completed = 0
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = [pool.submit(process_one, (i, row)) for i, row in enumerate(rows, 1)]
+        for future in as_completed(futures):
+            i, row = future.result()
+            rows[i-1] = row
+            completed += 1
+            if completed % 10 == 0 or completed == len(rows):
+                with OUTPUT.open("w", newline="", encoding="utf-8") as f:
+                    w=csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+                    w.writeheader(); w.writerows(rows)
+                print(f"Completed {completed}/{len(rows)} records (4 concurrent workers)", flush=True)
     with OUTPUT.open("w", newline="", encoding="utf-8") as f:
         w=csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         w.writeheader(); w.writerows(rows)
