@@ -1,9 +1,9 @@
-/* Galaxy Viewer constellation overlay module 0013.
- * Repairs Fornax stars and pulses actual Aladin overlay visibility.
+/* Galaxy Viewer constellation overlay module 0016.
+ * Fornax uses the verified three-star V; glow layers are made visible after each redraw.
  */
 (() => {
   "use strict";
-  const VERSION = "0015";
+  const VERSION = "0016";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -28,13 +28,20 @@
       let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);aladin.addOverlay(e.stars);overlays.set(name,e);}
       const p1=stars.get(a),p2=stars.get(b);
       for(const id of [a,b]){const p=stars.get(id);if(p&&!e.starIds.has(id)){e.starIds.add(id);e.points.push(p);}}
-      if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2],{color:"#39BFFF",lineWidth:0.5}));e.segmentPairs.push([p1,p2]);e.segments++;}
-      else console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
+      // Fornax is deliberately rebuilt below from its three principal stars.
+      // Ignore catalogue edges for Fornax so no extra segments close or distort the V.
+      if(!["FOR","FORNAX"].includes(canon(name))&&p1&&p2){
+        e.obj.add(window.A.polyline([p1,p2]));
+        e.glow.add(window.A.polyline([p1,p2],{color:"#39BFFF",lineWidth:0.5}));
+        e.segmentPairs.push([p1,p2]);e.segments++;
+      } else if(!["FOR","FORNAX"].includes(canon(name))) {
+        console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
+      }
     }
     // The line-source CSV omits principal stars not used by its asterism segments.
     let fornax=[...overlays.values()].find(e=>["FOR","FORNAX"].includes(canon(e.name)));
     if(!fornax){
-      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[]};
+      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
       aladin.addOverlay(fornax.obj);aladin.addOverlay(fornax.glow);aladin.addOverlay(fornax.stars);overlays.set(fornax.name,fornax);
     }
     const fornaxPrincipalStars=[
@@ -42,11 +49,19 @@
       {name:"Beta Fornacis",ra:42.2725833333,dec:-32.4058888889},
       {name:"Nu Fornacis",ra:31.1226666667,dec:-29.2968055556}
     ];
-    for(const star of fornaxPrincipalStars){
-      const alreadyPresent=fornax.points.some(p=>Math.abs(p[0]-star.ra)<0.01&&Math.abs(p[1]-star.dec)<0.01);
-      if(!alreadyPresent)fornax.points.push([star.ra,star.dec]);
+    // The requested Fornax asterism is exactly two thin edges, Dalim—Beta—Nu.
+    // Reset the point list so only these three stars receive the Fornax glow.
+    fornax.points=fornaxPrincipalStars.map(star=>[star.ra,star.dec]);
+    fornax.segmentPairs=[
+      [fornax.points[0],fornax.points[1]],
+      [fornax.points[1],fornax.points[2]]
+    ];
+    fornax.segments=2;
+    for(const pair of fornax.segmentPairs){
+      fornax.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
+      fornax.glow.add(window.A.polyline(pair,{color:"#39BFFF",lineWidth:0.5}));
     }
-    console.info("GV CONSTELLATION: Fornax principal stars registered",fornaxPrincipalStars.map(s=>s.name));
+    console.info("GV CONSTELLATION: Fornax V registered",{stars:fornaxPrincipalStars.map(s=>s.name),edges:2,closed:false});
 
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
@@ -108,6 +123,8 @@
       }catch(error){console.warn("GV CONSTELLATION: previous pulse layer removal failed",error)}
       found.glow=nextLine;found.stars=nextStars;
       aladin.addOverlay(found.glow);aladin.addOverlay(found.stars);
+      // Explicitly show replacement overlays after attachment.
+      found.glow.show();found.stars.show();
     }
     function applyGlow(found,brightness){rebuildGlow(found,brightness);}
     function startGlow(found,{travel=false}={}){
