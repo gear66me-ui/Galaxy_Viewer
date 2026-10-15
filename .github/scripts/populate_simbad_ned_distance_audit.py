@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(".")
 INPUT = ROOT / "audit/distance-age-review/galaxy-distance-age-source-audit.csv"
-OUTPUT = ROOT / "audit/distance-age-review/galaxy-distance-age-source-audit.enriched.csv"
+OUTPUT = Path(os.environ.get("AUDIT_OUTPUT", str(ROOT / "audit/distance-age-review/galaxy-distance-age-source-audit.enriched.csv")))
 USER_AGENT = "GalaxyViewerDistanceAudit/1.0 (research audit; respectful low-rate queries)"
 NED_BASE = "https://ned.ipac.caltech.edu/NED::API/"
 SIMBAD_TAP = "https://simbad.cds.unistra.fr/simbad/sim-tap/sync"
