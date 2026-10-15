@@ -195,5 +195,23 @@ jobs:
             echo "Mirror manifest unchanged."
           else
             git commit -m "Add Galaxy Viewer image mirror manifest"
-            git push origin HEAD:release
+            # release may advance while the multi-hour mirror is downloading.
+            # Rebase this manifest-only commit on the newest release tip and retry
+            # normal fast-forward pushes; never force-push or overwrite newer work.
+            for attempt in 1 2 3 4 5; do
+              git fetch origin release
+              if ! git rebase origin/release; then
+                git rebase --abort || true
+                echo "Could not rebase mirror manifest cleanly; artifact and release assets remain available for recovery."
+                exit 1
+              fi
+              if git push origin HEAD:release; then
+                echo "Mirror manifest pushed to latest release tip."
+                exit 0
+              fi
+              echo "release advanced during push attempt $attempt; retrying after fetch/rebase."
+              sleep 2
+            done
+            echo "Unable to push mirror manifest after five safe fast-forward attempts."
+            exit 1
           fi
