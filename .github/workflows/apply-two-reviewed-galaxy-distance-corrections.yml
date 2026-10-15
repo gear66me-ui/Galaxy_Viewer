@@ -1,0 +1,79 @@
+name: Apply two reviewed Galaxy Viewer distance corrections
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/apply-two-reviewed-galaxy-distance-corrections.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  correct-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Apply only guarded LEDA 1313424 and IC 2431 corrections
+        run: python .github/scripts/apply_two_reviewed_distance_corrections.py
+
+      - name: Validate all source catalogs and runtime JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("viewer/image-databases")
+          files = sorted(root.rglob("*.json"))
+          if not files:
+              raise SystemExit("No catalog JSON files found")
+          for path in files:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              if path.name in {
+                  "gv-hubble-galaxies-full-0035-ESA-FOV.json",
+                  "gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+                  "gv-eso-galaxies-full-0001.json",
+                  "gv-chandra-galaxies-full-0007.json",
+                  "gv-spitzer-galaxies-full-0011.json",
+                  "gv-noirlab-galaxies-full-0001.json",
+              }:
+                  assert isinstance(data.get("entries"), list), f"{path}: missing entries list"
+                  for i, entry in enumerate(data["entries"]):
+                      distance = entry.get("science", {}).get("distanceMly")
+                      assert isinstance(distance, (int, float)) and distance > 0, f"{path} entry {i}: invalid distance {distance!r}"
+              print(f"VALID {path}")
+          print(f"Validated {len(files)} JSON files under {root}")
+          PY
+
+      - name: Check patch formatting
+        run: git diff --check
+
+      - name: Commit only in-situ catalog JSON changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u viewer/image-databases
+          if git diff --cached --quiet; then
+            echo "No catalog changes to commit."
+          else
+            git diff --cached --stat
+            git commit -m "Correct reviewed distances for LEDA 1313424 and IC 2431"
+            git push origin HEAD:release
+          fi
+
+      - name: Upload correction audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-distance-correction-audit
+          path: distance-correction-report.json
+          if-no-files-found: warn
