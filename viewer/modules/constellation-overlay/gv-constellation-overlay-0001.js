@@ -3,10 +3,10 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0017";
+  const VERSION = "0018";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
-  const COLOR = "#8EDCFF", WIDTH = 0.5;
+  const COLOR = "#8EDCFF", WIDTH = 0.25, HIGHLIGHT_WIDTH = 0.5;
   async function csv(url) { const r=await fetch(url,{cache:"force-cache"}); if(!r.ok)throw Error("CONSTELLATION DATA HTTP "+r.status); return r.text(); }
   function parseStars(text) {
     const map=new Map();
@@ -25,14 +25,14 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);aladin.addOverlay(e.stars);overlays.set(name,e);}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.highlight);overlays.set(name,e);}
       const p1=stars.get(a),p2=stars.get(b);
       for(const id of [a,b]){const p=stars.get(id);if(p&&!e.starIds.has(id)){e.starIds.add(id);e.points.push(p);}}
       // Fornax is deliberately rebuilt below from its three principal stars.
       // Ignore catalogue edges for Fornax so no extra segments close or distort the V.
       if(!["FOR","FORNAX"].includes(canon(name))&&p1&&p2){
         e.obj.add(window.A.polyline([p1,p2]));
-        e.glow.add(window.A.polyline([p1,p2],{color:"#39BFFF",lineWidth:0.5}));
+        e.highlight.add(window.A.polyline([p1,p2],{color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}));
         e.segmentPairs.push([p1,p2]);e.segments++;
       } else if(!["FOR","FORNAX"].includes(canon(name))) {
         console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
@@ -41,8 +41,8 @@
     // The line-source CSV omits principal stars not used by its asterism segments.
     let fornax=[...overlays.values()].find(e=>["FOR","FORNAX"].includes(canon(e.name)));
     if(!fornax){
-      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:0.5}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:0.5}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
-      aladin.addOverlay(fornax.obj);aladin.addOverlay(fornax.glow);aladin.addOverlay(fornax.stars);overlays.set(fornax.name,fornax);
+      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      aladin.addOverlay(fornax.obj);aladin.addOverlay(fornax.highlight);overlays.set(fornax.name,fornax);
     }
     const fornaxPrincipalStars=[
       {name:"Dalim (Alpha Fornacis)",ra:48.018875,dec:-28.9876111111},
@@ -59,29 +59,20 @@
     fornax.segments=2;
     for(const pair of fornax.segmentPairs){
       fornax.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
-      fornax.glow.add(window.A.polyline(pair,{color:"#39BFFF",lineWidth:0.5}));
+      fornax.highlight.add(window.A.polyline(pair,{color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}));
     }
     console.info("GV CONSTELLATION: Fornax V registered",{stars:fornaxPrincipalStars.map(s=>s.name),edges:2,closed:false});
 
-    // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
-    for(const e of overlays.values()){
-      for(const [ra,dec] of e.points){
-        try{e.glow.add(window.A.circle([ra,dec],0.075,{color:"#26AFFF",lineWidth:0.5,fillColor:"#26AFFF",fillOpacity:0.28}));e.stars.add(window.A.circle([ra,dec],0.035,{color:"#FFFFFF",lineWidth:0.5,fillColor:"#FFFFFF",fillOpacity:1}));}catch(_){}
-      }
-      e.obj.hide();e.glow.hide();e.stars.hide();
-    }
-    let enabled=false,glowEntry=null;
+    // Static line highlight only: no star circles, glow layers, timers, or animation.
+    for(const e of overlays.values()){e.obj.hide();e.highlight.hide();}
+    let enabled=false,highlightEntry=null;
     function stopGlow(){
-      if(glowEntry){glowEntry.glow.hide();glowEntry.stars.hide();glowEntry.obj.hide();}
-      glowEntry=null;
+      if(highlightEntry){highlightEntry.highlight.hide();highlightEntry.obj.hide();}
+      highlightEntry=null;
     }
     function setEnabled(next){
       enabled=!!next;
-      for(const e of overlays.values()){
-        if(enabled)e.obj.show();else e.obj.hide();
-        e.glow.hide();
-        if(!enabled)e.stars.hide();
-      }
+      for(const e of overlays.values()){if(enabled)e.obj.show();else e.obj.hide();e.highlight.hide();}
       if(!enabled)stopGlow();
       return enabled;
     }
@@ -92,15 +83,13 @@
       for(const [key,e] of overlays){const k=canon(key);if(k.length>3&&(k.includes(wanted)||wanted.includes(k)))return e;}
       return null;
     }
-    // Static highlight only: no timers, frame callbacks, per-frame rebuilds, or color interpolation.
+    // Highlight the destination with a separate 0.5px static line overlay.
     function startGlow(found,{travel=false}={}){
       stopGlow();
       if(!enabled&&!travel)return false;
-      glowEntry=found;
-      found.obj.setOptions?.({color:"#8EDCFF",lineWidth:0.5});
+      highlightEntry=found;
       found.obj.show();
-      found.glow.hide();
-      found.stars.show();
+      found.highlight.show();
       return true;
     }
     function setTravelGlow(name,active){
