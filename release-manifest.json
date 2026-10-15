@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "6345e9472e5901c0cce0b5ef26f8f462784efe25",
-  "build": "0029",
+  "sourceCommit": "aeb3ff1f62420b426a9677ebd9ce916164d0b250",
+  "build": "0030",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0029.py",
+    "viewer/RC-V1.0.0.8-BLD-0030.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -159,5 +159,5 @@
     "2f7c79a83f73f6a8205cde60c5125e6ad561880b",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0029-memory-zoom-glow"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0030-archive-constellation-beacon"
 }
