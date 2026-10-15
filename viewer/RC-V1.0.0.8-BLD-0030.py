@@ -2505,13 +2505,32 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
 function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
-    if(!gvConstellationPromise)return;
+    // Travel beacons must not depend on the user opening the CONSTELLATIONS menu.
+    // Lazily mount the overlay on the first trip; keep its ordinary line layer off.
+    if(!gvConstellationPromise){
+        if(!window.GalaxyViewerConstellationOverlay?.mount){
+            console.error('GV CONSTELLATION TRAVEL GLOW UNAVAILABLE: overlay export missing');
+            return;
+        }
+        gvConstellationPromise=window.GalaxyViewerConstellationOverlay.mount(aladin).then(layer=>{
+            layer.setEnabled(false);
+            return layer;
+        }).catch(error=>{
+            gvConstellationPromise=null;
+            console.error('GV CONSTELLATION OVERLAY INIT FAILED DURING TRAVEL',error);
+            throw error;
+        });
+    }
     gvConstellationPromise.then(layer=>{
-        if(active){
-            const name=String(constellationName||'').trim();
-            if(name&&typeof layer.setTravelGlowByName==='function')layer.setTravelGlowByName(name,true);
-            else {console.warn('GV CONSTELLATION ARCHIVE NAME MISSING; using coordinate fallback',{constellationName,ra,dec});layer.setTravelGlowAt?.(ra,dec,true);}
-        }else layer.clearTravelGlow?.();
+        if(!active){layer.clearTravelGlow?.();return;}
+        const name=String(constellationName||'').trim();
+        let matched=false;
+        if(name&&typeof layer.setTravelGlowByName==='function')matched=layer.setTravelGlowByName(name,true)===true;
+        if(!matched){
+            console.warn('GV CONSTELLATION ARCHIVE NAME DID NOT MATCH; using coordinate fallback',{constellationName,ra,dec});
+            matched=layer.setTravelGlowAt?.(ra,dec,true)===true;
+        }
+        if(!matched)console.error('GV CONSTELLATION TRAVEL BEACON COULD NOT BE ACTIVATED',{constellationName,ra,dec});
     }).catch(error=>console.warn('GV CONSTELLATION TRAVEL GLOW FAILED',error));
 }
 async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,onArrival=null,registeredPromise=null,switchToSphericalAtApex=false,constellationName=''}={}){
