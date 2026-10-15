@@ -100,8 +100,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
-    constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@651b993953797ae4a6f66bd4919d6f5cdb785cbe/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
-    constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/651b993953797ae4a6f66bd4919d6f5cdb785cbe/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
+    constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@15897d25f03d8e0228f81883bf319809df099ce6/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
+    constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/15897d25f03d8e0228f81883bf319809df099ce6/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0006.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
@@ -893,7 +893,7 @@ if(window.GVProviderArtwork?.VERSION!=='0004')throw new Error('PROVIDER ARTWORK 
 // ECO: GV200-001
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0012')throw new Error('HAMBURGER 0012 EXPORT MISSING');
-if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0013'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0013 EXPORT MISSING');
+if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0014'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0014 EXPORT MISSING');
 if(window.GalaxyCoordinateOverlay&&window.GalaxyCoordinateOverlay.VERSION!=='0006')console.error('COORDINATE 0006 EXPORT INVALID');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
