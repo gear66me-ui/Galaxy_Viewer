@@ -1031,6 +1031,7 @@ function gvSyncCoordinateFromAladin(){
 }
 // BUILD 0013: coordinate readback does not need to poll Aladin every rendered frame.
 // Limit getSize/pix2world/DOM updates to 10 Hz to reduce persistent main-thread work.
+// BUILD 0036 REPAIR REVISION 2: keep coordinate readback out of the zoom animation hot path.
 // Coordinate readback is throttled and suspended while the zoom slider is driving FOV.
 setInterval(()=>{if(gvZoomInteractionActive||window.GV_NAV_BACKGROUND_SUSPENDED)return;gvSyncCoordinateFromAladin()},100);
 
