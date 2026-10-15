@@ -69,7 +69,7 @@ def get_identifiers(row):
         raw = (row.get(key) or "").strip()
         if not raw:
             continue
-        for v in [p.strip() for p in re.split(r"\\s*/\\s*", raw) if p.strip()]:
+        for v in [p.strip() for p in re.split(r"\s*/\s*", raw) if p.strip()]:
             if v and v not in vals:
                 vals.append(v)
     # Keep fallback names short and identifier-like only.
