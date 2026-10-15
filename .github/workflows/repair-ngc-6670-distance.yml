@@ -49,11 +49,14 @@ jobs:
           p, data, idx, entry = matches[0]
           sci = entry.setdefault("science", {})
           # SIMBAD distance collection: 126.5 Mpc = 412.7 million light-years.
+          entry["distance"] = "412.7 million light-years"
           sci["distanceMly"] = 412.7
           sci["distanceMethod"] = "SIMBAD_126.5_Mpc_converted_to_Mly"
           sci["distanceSource"] = "SIMBAD NGC 6670 distance collection; 126.5 Mpc"
+          sci["distanceEvidence"] = "SIMBAD distance measurement: 126.5 Mpc; converted to 412.7 million light-years"
           sci["distanceVerified"] = True
           sci["distanceDisplay"] = "412.7 million light-years"
+          sci["distanceEstimated"] = False
 
           def first_positive(obj, keys):
               for key in keys:
@@ -80,6 +83,9 @@ jobs:
           check = json.loads(p.read_text(encoding="utf-8"))
           corrected = check["entries"][idx]["science"]
           assert abs(float(corrected["distanceMly"]) - 412.7) < 0.01
+          assert check["entries"][idx]["distance"] == "412.7 million light-years"
+          assert corrected["distanceDisplay"] == "412.7 million light-years"
+          assert "50,000 light-years" not in str(corrected.get("distanceEvidence", ""))
           assert len(corrected["sizeKly"]) == 2 and all(float(v) > 0 for v in corrected["sizeKly"])
           print(f"Corrected {p}: NGC 6670 distance=412.7 Mly; image span={x:.1f} × {y:.1f} Kly; FOV={fx}° × {fy}°")
           PY
