@@ -617,7 +617,8 @@ function gvShowEarthDistance(destination){
     if(!b.classList.contains('gv-visible'))b.classList.add('gv-visible');
 }
 gvInstallEarthDistanceBanner();
-// Do not run layout/scale work during continuous slider zoom; settle once on release.
+// BUILD 0036 STUTTER FIX: skip repeated ruler layout/scale work while the zoom slider is driving setFov.
+// The zoom release path schedules one final distance/scale sync.
 setInterval(()=>{if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvUpdateLivePhysicalScale()},80);
 
 // BUILD 0130 — resolve the galaxy nearest Aladin's live center coordinate.
