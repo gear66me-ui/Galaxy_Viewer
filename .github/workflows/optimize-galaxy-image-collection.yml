@@ -2,6 +2,9 @@ name: Optimize Full Galaxy Image Collection
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/optimize-galaxy-image-collection.yml"
 
 permissions:
   contents: read
