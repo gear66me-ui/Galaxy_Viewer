@@ -139,7 +139,7 @@ jobs:
           constellation=(root/'viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js').read_text()
           assert 'const VERSION = "0018";' in constellation
           assert 'edges:2,closed:false' in constellation and 'fornax.segments=2;' in constellation, 'Fornax must be drawn as an open two-edge V'
-          assert 'found.obj.show();' in constellation and 'found.stars.show();' in constellation, 'static highlighted lines and stars must be shown'
+          assert 'found.obj.show();' in constellation and 'found.highlight.show();' in constellation, 'static highlighted line overlay must be shown'
           assert 'lineWidth:0.5' in constellation, 'highlight strokes must be 0.5px'
           assert 'requestAnimationFrame' not in constellation and 'setInterval' not in constellation and 'function rebuildGlow' not in constellation, 'constellation module must not animate or rebuild overlays'
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
