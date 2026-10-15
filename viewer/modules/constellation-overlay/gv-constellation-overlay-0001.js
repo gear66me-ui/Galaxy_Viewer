@@ -1,9 +1,9 @@
-/* Galaxy Viewer constellation overlay module 0011.
- * Repairs missing endpoints, signed declinations, and Fornax principal stars.
+/* Galaxy Viewer constellation overlay module 0012.
+ * Repairs Fornax stars and pulses actual Aladin overlay visibility.
  */
 (() => {
   "use strict";
-  const VERSION = "0011";
+  const VERSION = "0012";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -82,16 +82,14 @@
       startGlow(found,{travel:true});return true;
     }
     function applyGlow(found,brightness){
-      // Aladin Lite 3.8.2 GraphicOverlay does not reliably apply opacity to
-      // existing primitives. Animate the supported overlay stroke color instead.
-      // Blend dark navy into cyan so the pulse remains visible without thick lines.
-      const t=Math.max(0,Math.min(1,brightness));
-      const rgb=[142,220,255].map(v=>Math.round(8+(v-8)*t));
-      const color="#"+rgb.map(v=>v.toString(16).padStart(2,"0")).join("");
+      // Existing Aladin Lite 3.8.2 primitives do not reliably repaint when the
+      // parent overlay options change. Pulse actual overlay visibility instead:
+      // this works on the already-created bright cyan lines and halo/core dots.
+      const visible=brightness>0.16;
       try{
-        if(typeof found.glow.setOptions==="function")found.glow.setOptions({color,lineWidth:brightness>0.45?5:3});
-        if(typeof found.stars.setOptions==="function"){const halo=brightness>0.35?"#FFFFFF":"#39BFFF";found.stars.setOptions({color:halo,lineWidth:brightness>0.35?3:2});}
-      }catch(error){console.warn("GV CONSTELLATION GLOW COLOR UPDATE FAILED",error)}
+        if(visible){found.glow.show();found.stars.show();}
+        else {found.glow.hide();found.stars.hide();}
+      }catch(error){console.warn("GV CONSTELLATION GLOW VISIBILITY UPDATE FAILED",error)}
     }
     function startGlow(found,{travel=false}={}){
       stopGlow();glowEntry=found;
@@ -102,7 +100,7 @@
       found.glow.show();found.stars.show();
       // A true 2-second triangular brightness ramp: 0→100% in 1s, then 100→0% in 1s.
       // Only opacity animates; line width is fixed and never exceeds 0.75px.
-      const started=performance.now(),period=2000;
+      const started=performance.now(),period=1800;
       const animate=now=>{
         if((!enabled&&!travel)||glowEntry!==found){frameHandle=null;return;}
         const phase=((now-started)%period)/period;
