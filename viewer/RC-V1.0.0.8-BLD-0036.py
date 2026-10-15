@@ -24,7 +24,7 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 # ============================================================================
 HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST"
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST"
-COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@af00eb9434daaf168031d7f3632fa89c88344114/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0007.js"
+COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e197403c8525b90f21c95967f11ab0bd01c3d0c4/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0002"
@@ -617,7 +617,8 @@ function gvShowEarthDistance(destination){
     if(!b.classList.contains('gv-visible'))b.classList.add('gv-visible');
 }
 gvInstallEarthDistanceBanner();
-setInterval(gvUpdateLivePhysicalScale,80);
+// Do not run layout/scale work during continuous slider zoom; settle once on release.
+setInterval(()=>{if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvUpdateLivePhysicalScale()},80);
 
 // BUILD 0130 — resolve the galaxy nearest Aladin's live center coordinate.
 // Distance comes from that galaxy's catalog record; the physical ruler then
@@ -780,9 +781,9 @@ function gvInstallEarthDistanceInteractionListeners(){
 }
 // Update immediately on Aladin sky position/zoom events and poll every 100 ms.
 // HD pan/pinch is intentionally isolated in the destination module.
-try{aladin.on('positionChanged',()=>{if(!gvNavigationTravelActive&&gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
+try{aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;if(gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
 try{aladin.on('zoomChanged',()=>{if(!gvNavigationTravelActive&&gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
-setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100);
+setInterval(()=>{gvInstallEarthDistanceInteractionListeners();if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},100);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
@@ -894,7 +895,7 @@ if(window.GVProviderArtwork?.VERSION!=='0004')throw new Error('PROVIDER ARTWORK 
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0012')throw new Error('HAMBURGER 0012 EXPORT MISSING');
 if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0018'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0015 EXPORT MISSING');
-if(!window.GalaxyCoordinateOverlay||window.GalaxyCoordinateOverlay.VERSION!=='0007'||typeof window.GalaxyCoordinateOverlay.mount!=='function')throw new Error('COORDINATE OVERLAY 0007 EXPORT MISSING');
+if(!window.GalaxyCoordinateOverlay||window.GalaxyCoordinateOverlay.VERSION!=='0008'||typeof window.GalaxyCoordinateOverlay.mount!=='function')throw new Error('COORDINATE OVERLAY 0008 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
@@ -1007,7 +1008,7 @@ hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-viewer-
 gvSetConstellationsEnabled(true);
 
 // ============================================================================
-// SECTION 024 — COORDINATE OVERLAY 0006 INITIALIZATION
+// SECTION 024 — COORDINATE OVERLAY 0008 INITIALIZATION
 // ECO: GV200-001
 // ============================================================================
 let coordinate=null;
@@ -1029,7 +1030,8 @@ function gvSyncCoordinateFromAladin(){
 }
 // BUILD 0013: coordinate readback does not need to poll Aladin every rendered frame.
 // Limit getSize/pix2world/DOM updates to 10 Hz to reduce persistent main-thread work.
-setInterval(gvSyncCoordinateFromAladin,100);
+// Coordinate readback is throttled and suspended while the zoom slider is driving FOV.
+setInterval(()=>{if(gvZoomInteractionActive||window.GV_NAV_BACKGROUND_SUSPENDED)return;gvSyncCoordinateFromAladin()},100);
 
 
 // ============================================================================
