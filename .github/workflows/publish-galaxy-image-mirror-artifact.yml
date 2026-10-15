@@ -1,6 +1,10 @@
 name: Publish Existing Galaxy Image Mirror Artifact
 
 on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/publish-galaxy-image-mirror-artifact.yml"
   workflow_dispatch:
     inputs:
       source_run_id:
@@ -34,7 +38,7 @@ jobs:
           name: galaxy-image-mirror-1
           path: mirror-artifact
           repository: ${{ github.repository }}
-          run-id: ${{ inputs.source_run_id }}
+          run-id: ${{ inputs.source_run_id || '38793695755' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Recover image files from numbered ZIP chunks
