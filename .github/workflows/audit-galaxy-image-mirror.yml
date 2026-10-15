@@ -30,15 +30,36 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python - <<'PY'
-          import collections, json, pathlib, re, subprocess, urllib.parse, urllib.request
+          import collections, json, pathlib, subprocess
 
           manifest_path = pathlib.Path("viewer/image-databases/Hubble/mirror/image-mirror-manifest.json")
-          if not manifest_path.exists():
-              raise SystemExit(f"Missing recovered manifest: {manifest_path}")
-          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-          items = manifest.get("images", [])
+          raw = manifest_path.read_text(encoding="utf-8")
+          # Be tolerant of concatenated JSON roots: keep all image records and report the condition.
+          decoder = json.JSONDecoder()
+          roots = []
+          pos = 0
+          while pos < len(raw):
+              while pos < len(raw) and raw[pos].isspace():
+                  pos += 1
+              if pos >= len(raw):
+                  break
+              obj, end = decoder.raw_decode(raw, pos)
+              roots.append(obj)
+              pos = end
+          if not roots:
+              raise SystemExit("Manifest contains no valid JSON object.")
+          manifest = roots[0]
+          items = []
+          for root in roots:
+              if isinstance(root, dict):
+                  items.extend(root.get("images", []))
+          # De-duplicate records only when the exact source URL and filename match.
+          unique = {}
+          for item in items:
+              unique[(item.get("sourceUrl"), item.get("filename"))] = item
+          items = list(unique.values())
           if not items:
-              raise SystemExit("Manifest contains no image entries.")
+              raise SystemExit(f"No image entries found across {len(roots)} JSON root(s).")
 
           providers = collections.Counter()
           extensions = collections.Counter()
@@ -47,12 +68,10 @@ jobs:
           duplicates = collections.Counter()
           sizes = []
           mapping_errors = []
-          sample_urls = []
           for item in items:
               providers[item.get("provider") or "MISSING"] += 1
               filename = item.get("filename") or ""
-              ext = pathlib.PurePosixPath(filename).suffix.lower() or "(none)"
-              extensions[ext] += 1
+              extensions[pathlib.PurePosixPath(filename).suffix.lower() or "(none)"] += 1
               content_types[item.get("contentType") or "MISSING"] += 1
               for key in ("sourceUrl", "provider", "catalogRefs", "filename", "sha256", "githubImageUrl", "bytes"):
                   if key not in item or item[key] in (None, "", []):
@@ -61,8 +80,6 @@ jobs:
                   sizes.append(int(item["bytes"]))
               if item.get("sourceUrl"):
                   duplicates[item["sourceUrl"]] += 1
-                  if len(sample_urls) < 8:
-                      sample_urls.append(item["sourceUrl"])
               if filename and item.get("githubImageUrl"):
                   tag = item.get("releaseTag")
                   expected = f"https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/{tag}/{filename}"
@@ -70,24 +87,21 @@ jobs:
                       mapping_errors.append({"filename": filename, "problem": "githubImageUrl/releaseTag mismatch"})
 
           print("=== MANIFEST SUMMARY ===")
-          print(f"Manifest schema version: {manifest.get('schemaVersion')}")
-          print(f"Manifest imageCount: {manifest.get('imageCount')}")
-          print(f"Entries audited: {len(items)}")
-          print(f"Successfully downloaded entries (sha256 present): {sum(bool(x.get('sha256')) for x in items)}")
+          print(f"JSON roots found: {len(roots)}")
+          print(f"Entries audited after exact source+filename deduplication: {len(items)}")
+          print(f"Manifest imageCount field: {manifest.get('imageCount')}")
+          print(f"Entries with SHA-256: {sum(bool(x.get('sha256')) for x in items)}")
           print("\\n=== PROVIDER COUNTS (image entries, not unique galaxies) ===")
-          for k,v in sorted(providers.items()):
-              print(f"{k}: {v}")
+          for k,v in sorted(providers.items()): print(f"{k}: {v}")
           print("\\n=== FILE EXTENSIONS ===")
-          for k,v in sorted(extensions.items()):
-              print(f"{k}: {v}")
+          for k,v in sorted(extensions.items()): print(f"{k}: {v}")
           print("\\n=== RECORDED CONTENT TYPES ===")
-          for k,v in sorted(content_types.items()):
-              print(f"{k}: {v}")
+          for k,v in sorted(content_types.items()): print(f"{k}: {v}")
           print("\\n=== RECORDED FILE SIZE SUMMARY ===")
           if sizes:
               s=sorted(sizes)
               print(f"Total: {sum(s):,} bytes ({sum(s)/1e9:.3f} GB decimal)")
-              print(f"Min: {s[0]:,} bytes; median: {s[len(s)//2]:,} bytes; max: {s[-1]:,} bytes")
+              print(f"Min: {s[0]:,}; median: {s[len(s)//2]:,}; max: {s[-1]:,} bytes")
               for threshold in (250_000,500_000,700_000,1_000_000,5_000_000):
                   print(f"Files > {threshold:,} bytes: {sum(x>threshold for x in s)}")
           print("\\n=== MISSING FIELDS ===")
@@ -95,27 +109,17 @@ jobs:
           print("\\n=== DUPLICATE SOURCE URL COUNTS ===")
           repeated=sum(1 for n in duplicates.values() if n>1)
           extra=sum(n-1 for n in duplicates.values() if n>1)
-          print(f"Repeated source URLs: {repeated}; repeated entries beyond first: {extra}")
+          print(f"Repeated source URLs: {repeated}; extra repeated entries: {extra}")
           print("\\n=== RELEASE ASSET COUNTS ===")
-          tags=["galaxy-image-mirror-a","galaxy-image-mirror-b","galaxy-image-mirror-c","galaxy-image-mirror-d"]
-          for tag in tags:
+          for tag in ["galaxy-image-mirror-a","galaxy-image-mirror-b","galaxy-image-mirror-c","galaxy-image-mirror-d"]:
               try:
-                  raw=subprocess.check_output(["gh","release","view",tag,"--json","assets"],text=True,stderr=subprocess.STDOUT)
-                  assets=json.loads(raw).get("assets",[])
+                  raw_assets=subprocess.check_output(["gh","release","view",tag,"--json","assets"],text=True,stderr=subprocess.STDOUT)
+                  assets=json.loads(raw_assets).get("assets",[])
                   print(f"{tag}: {len(assets)} assets; {sum(a.get('size',0) for a in assets):,} bytes")
-              except Exception as e:
-                  print(f"{tag}: ERROR {e}")
+              except Exception as e: print(f"{tag}: ERROR {e}")
           print("\\n=== IMAGE DIMENSIONS ===")
-          try:
-              from PIL import Image
-              print("Pillow available, but remote release files are not downloaded in this audit.")
-          except Exception:
-              print("Not measured in this pass: dimensions require fetching image bytes. This audit deliberately avoids downloading images again.")
+          print("Not measured in this pass: dimensions require reading image bytes. This audit deliberately avoids downloading images again.")
           print("\\n=== MAPPING VALIDATION ===")
           print(f"Release URL construction mismatches: {len(mapping_errors)}")
-          for e in mapping_errors[:10]:
-              print(json.dumps(e))
-          print("\\n=== SOURCE URL SAMPLES (first 8 only) ===")
-          for u in sample_urls:
-              print(u)
+          for e in mapping_errors[:10]: print(json.dumps(e))
           PY
