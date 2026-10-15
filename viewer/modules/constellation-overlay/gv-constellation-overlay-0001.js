@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0009";
+  const VERSION = "0010";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.25;
@@ -24,13 +24,13 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:0.75,opacity:0.18}),stars:window.A.graphicOverlay({color:"#EAFBFF",lineWidth:1.2}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);aladin.addOverlay(e.stars);overlays.set(name,e);}
-      const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2]));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),glow:window.A.graphicOverlay({color:"#39BFFF",lineWidth:4}),stars:window.A.graphicOverlay({color:"#FFFFFF",lineWidth:2}),segments:0,starIds:new Set(),points:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.glow);aladin.addOverlay(e.stars);overlays.set(name,e);}
+      const p1=stars.get(a),p2=stars.get(b);if(p1&&p2){e.obj.add(window.A.polyline([p1,p2]));e.glow.add(window.A.polyline([p1,p2],{color:"#39BFFF",lineWidth:4}));e.segments++;for(const id of [a,b])if(!e.starIds.has(id)&&stars.has(id)){e.starIds.add(id);e.points.push(stars.get(id));}}
     }
     // Keep the normal map quiet; a separate, wider duplicate overlay creates an actual line halo.
     for(const e of overlays.values()){
       for(const [ra,dec] of e.points){
-        try{e.glow.add(window.A.circle([ra,dec],0.045,{color:"#EAFBFF",lineWidth:1.0,fillColor:"#8EDCFF",fillOpacity:0.85}));e.stars.add(window.A.circle([ra,dec],0.065,{color:"#FFFFFF",lineWidth:1.25,fillColor:"#8EDCFF",fillOpacity:0.95}));}catch(_){}
+        try{e.glow.add(window.A.circle([ra,dec],0.14,{color:"#26AFFF",lineWidth:2.5,fillColor:"#26AFFF",fillOpacity:0.35}));e.stars.add(window.A.circle([ra,dec],0.075,{color:"#FFFFFF",lineWidth:2,fillColor:"#FFFFFF",fillOpacity:1}));}catch(_){}
       }
       e.obj.hide();e.glow.hide();e.stars.hide();
     }
@@ -38,7 +38,7 @@
     function stopGlow(){
       if(glowTimer!==null){clearInterval(glowTimer);glowTimer=null;}
       if(frameHandle!==null){cancelAnimationFrame(frameHandle);frameHandle=null;}
-      if(glowEntry){glowEntry.glow.hide();glowEntry.stars.hide();glowEntry.glow.setOptions?.({color:"#8EDCFF",lineWidth:0.75,opacity:0.18});}
+      if(glowEntry){glowEntry.glow.hide();glowEntry.stars.hide();glowEntry.glow.setOptions?.({color:"#39BFFF",lineWidth:4});glowEntry.stars.setOptions?.({color:"#FFFFFF",lineWidth:2});}
       glowEntry=null;phase=0;
     }
     function setEnabled(next){
@@ -62,15 +62,15 @@
       const rgb=[142,220,255].map(v=>Math.round(8+(v-8)*t));
       const color="#"+rgb.map(v=>v.toString(16).padStart(2,"0")).join("");
       try{
-        if(typeof found.glow.setOptions==="function")found.glow.setOptions({color,lineWidth:0.75});
-        if(typeof found.stars.setOptions==="function"){const halo=brightness>0.35?"#FFFFFF":"#48CFFF";found.stars.setOptions({color:halo,lineWidth:brightness>0.35?1.5:1.0});}
+        if(typeof found.glow.setOptions==="function")found.glow.setOptions({color,lineWidth:brightness>0.45?5:3});
+        if(typeof found.stars.setOptions==="function"){const halo=brightness>0.35?"#FFFFFF":"#39BFFF";found.stars.setOptions({color:halo,lineWidth:brightness>0.35?3:2});}
       }catch(error){console.warn("GV CONSTELLATION GLOW COLOR UPDATE FAILED",error)}
     }
     function startGlow(found,{travel=false}={}){
       stopGlow();glowEntry=found;
       // Destination glow is independent of the user-facing constellation-line toggle.
       if(!enabled&&!travel)return false;
-      found.glow.setOptions?.({color:"#080808",lineWidth:0.75});
+      found.glow.setOptions?.({color:"#39BFFF",lineWidth:4});
       applyGlow(found,0);
       found.glow.show();found.stars.show();
       // A true 2-second triangular brightness ramp: 0→100% in 1s, then 100→0% in 1s.
