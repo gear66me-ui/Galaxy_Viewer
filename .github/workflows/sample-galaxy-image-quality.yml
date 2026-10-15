@@ -1,0 +1,90 @@
+name: Sample Galaxy Image Quality
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/sample-galaxy-image-quality.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: galaxy-image-quality-sample
+  cancel-in-progress: false
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout release source of truth
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Inspect small representative image sample
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          import collections, io, json, pathlib, urllib.request
+          from PIL import Image, ImageStat
+
+          p = pathlib.Path("viewer/image-databases/Hubble/mirror/image-mirror-manifest.json")
+          manifest = json.loads(p.read_text(encoding="utf-8"))
+          records = [x for x in manifest.get("images", []) if x.get("sha256") and x.get("githubImageUrl")]
+          # Pick at most 3 per provider, prioritizing entries with known source catalog refs.
+          grouped = collections.defaultdict(list)
+          for x in records:
+              grouped[x.get("provider", "unknown")].append(x)
+          chosen = []
+          for provider, items in sorted(grouped.items()):
+              # Deterministic spread across each provider's list.
+              count = min(3, len(items))
+              indexes = sorted(set(round(i*(len(items)-1)/max(1,count-1)) for i in range(count)))
+              chosen.extend(items[i] for i in indexes)
+          print(f"Sample size: {len(chosen)} images; this does not download the full mirror.")
+          opener = urllib.request.build_opener()
+          opener.addheaders = [("User-Agent", "GalaxyViewer-QualitySample/1.0")]
+          results = []
+          for i, item in enumerate(chosen, 1):
+              result = {"provider":item.get("provider"),"sourceUrl":item.get("sourceUrl"),
+                        "mirrorUrl":item.get("githubImageUrl"),"bytesRecorded":item.get("bytes")}
+              try:
+                  req = urllib.request.Request(item["githubImageUrl"])
+                  with opener.open(req, timeout=45) as resp:
+                      data = resp.read(30*1024*1024+1)
+                  if len(data) > 30*1024*1024:
+                      raise ValueError("sample image exceeds 30 MiB")
+                  im = Image.open(io.BytesIO(data))
+                  im.verify()
+                  im = Image.open(io.BytesIO(data)).convert("RGB")
+                  w,h=im.size
+                  result.update({"status":"ok","format":Image.open(io.BytesIO(data)).format,
+                                 "width":w,"height":h,"actualBytes":len(data),
+                                 "longestDimension":max(w,h),
+                                 "aspectRatio":round(w/h,4) if h else None,
+                                 "within1536px":max(w,h)<=1536,
+                                 "meanBrightness":round(sum(ImageStat.Stat(im).mean)/3,2)})
+              except Exception as e:
+                  result.update({"status":"error","error":str(e)})
+              results.append(result)
+              print(json.dumps(result,ensure_ascii=False))
+          good=[x for x in results if x.get("status")=="ok"]
+          print("=== SAMPLE SUMMARY ===")
+          print(f"Read successfully: {len(good)}/{len(results)}")
+          if good:
+              print(f"Within 1536 px longest edge: {sum(x['within1536px'] for x in good)}/{len(good)}")
+              print(f"Size min/median/max: {min(x['actualBytes'] for x in good):,} / {sorted(x['actualBytes'] for x in good)[len(good)//2]:,} / {max(x['actualBytes'] for x in good):,} bytes")
+          # Quality sample failures are reported, not fatal to the workflow.
+          pathlib.Path("image-quality-sample-report.json").write_text(json.dumps(results,indent=2),encoding="utf-8")
+          PY
+
+      - name: Upload sample report
+        uses: actions/upload-artifact@v4
+        with:
+          name: galaxy-image-quality-sample
+          path: image-quality-sample-report.json
+          retention-days: 30
