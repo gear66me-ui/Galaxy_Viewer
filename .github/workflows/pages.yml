@@ -73,7 +73,7 @@ jobs:
           fetch-depth: 1
 
       - name: Verify production release isolation
-        if: ${{ steps.scope.outputs.review_only != 'true' && steps.scope.outputs.workflow_only != 'true' }}
+        if: ${{ steps.scope.outputs.review_only != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,7 +140,7 @@ jobs:
           assert 'const VERSION = "0018";' in constellation
           assert 'edges:2,closed:false' in constellation and 'fornax.segments=2;' in constellation, 'Fornax must be drawn as an open two-edge V'
           assert 'found.obj.show();' in constellation and 'found.highlight.show();' in constellation, 'static highlighted line overlay must be shown'
-          assert 'lineWidth:0.5' in constellation, 'highlight strokes must be 0.5px'
+          assert 'HIGHLIGHT_WIDTH = 0.5' in constellation and 'lineWidth:HIGHLIGHT_WIDTH' in constellation, 'highlight strokes must use the verified 0.5px constant'
           assert 'requestAnimationFrame' not in constellation and 'setInterval' not in constellation and 'function rebuildGlow' not in constellation, 'constellation module must not animate or rebuild overlays'
           engine=pathlib.Path('viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js').read_text()
           assert re.search(r'MAX_FOV_OCTAVES\s*:\s*2',engine), 'Route engine FoV limit is not two octaves'
