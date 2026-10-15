@@ -21,6 +21,9 @@ def http(url, data=None, headers=None, timeout=120):
         return resp.read()
 
 def parse_votable(payload):
+    # SIMBAD TAP may return CSV despite a VOTable request; support both encodings.
+    if not payload.lstrip().startswith(b"<"):
+        return list(csv.DictReader(io.StringIO(payload.decode("utf-8-sig"))))
     root = ET.fromstring(payload)
     fields = root.findall(".//{*}FIELD")
     names = [f.attrib.get("name") or f.attrib.get("ID") or f"col{i}" for i,f in enumerate(fields)]
@@ -60,7 +63,7 @@ def run_batch(names):
            "FROM ident AS i JOIN basic AS b ON i.oidref=b.oid "
            "LEFT OUTER JOIN mesDistance AS d ON d.oidref=b.oid "
            f"WHERE i.id IN ({inlist})")
-    data=urllib.parse.urlencode({"request":"doQuery","lang":"adql","format":"votable","query":query}).encode()
+    data=urllib.parse.urlencode({"request":"doQuery","lang":"adql","format":"csv","query":query}).encode()
     return parse_votable(http(TAP,data=data,timeout=180))
 
 def main():
