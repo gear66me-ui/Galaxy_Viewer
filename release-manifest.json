@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "e5f9067caa61c41e67eb2751cd6cdac0ddd9793a",
-  "build": "0043",
+  "sourceCommit": "8daf6a8cc471f4177fbde162ed6ca2ef6df6b7ba",
+  "build": "0044",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0043.py",
+    "viewer/RC-V1.0.0.8-BLD-0044.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -160,5 +160,5 @@
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
     "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0043-zoom-smoothing-fix"
+  "validationProfile": "production-release-gate-1.0.0.8-build-0044-native-slider-zoom-experiment"
 }
