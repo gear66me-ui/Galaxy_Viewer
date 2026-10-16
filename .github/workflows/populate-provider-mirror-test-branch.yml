@@ -41,8 +41,32 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p input
+          # The GitHub App installation API can be temporarily rate-limited.
+          # Retry each artifact download with backoff and log the failing provider.
+          download_with_retry() {
+            local artifact="$1" destination="$2" attempt=1 delay=15
+            while true; do
+              echo "Downloading artifact $artifact (attempt $attempt/6)"
+              if gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$artifact" --dir "$destination"; then
+                return 0
+              fi
+              if (( attempt >= 6 )); then
+                echo "::error::Could not download $artifact after $attempt attempts. No Mirror folders have been committed."
+                return 1
+              fi
+              echo "Download failed; waiting ${delay}s before retry."
+              sleep "$delay"
+              attempt=$((attempt + 1))
+              delay=$((delay * 2))
+              if (( delay > 180 )); then delay=180; fi
+            done
+          }
           for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
-            gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "provider-$provider-optimized-test" --dir "input/$provider"
+            download_with_retry "provider-$provider-optimized-test" "input/$provider"
+            test -n "$(find "input/$provider" -maxdepth 1 -type f -name '*.zip' -print -quit)" || {
+              echo "::error::Artifact for $provider downloaded but did not contain the expected ZIP."
+              exit 1
+            }
           done
 
       - name: Build provider Mirror trees and dimension-aware mapping
