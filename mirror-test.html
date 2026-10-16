@@ -51,7 +51,7 @@ function render(){
   const x=state.items[p.name],src=x?urlFor(p,x):'';
   const faded=state.base!=='none'&&state.base!==p.name?' style="opacity:'+state.opacity/100+';"':'';
   return '<article class="tile"><header><h2>'+p.name+'</h2><button data-random="'+p.name+'">🎲 Random</button></header>'+
-   (x?'<img alt="'+esc(p.name+' '+(x.mirrorFilename||''))+'" src="'+esc(src)+'"'+faded+' onerror="this.dataset.failed=1;this.alt=\'Image failed to load\';this.style.opacity=.25;document.getElementById(\'status\').textContent=\'A mirror image failed to load. Check the mapping path or browser network.\';" onload="if(this.dataset.failed!==\'1\')this.style.opacity=\'\';">':'<div style="height:230px;display:grid;place-items:center;color:#789">Waiting for manifest…</div>')+
+   (x?'<img alt="'+esc(p.name+' '+(x.mirrorFilename||''))+'" src="'+esc(src)+'"'+faded+' onerror="this.dataset.failed=1;this.alt=\'Image failed to load\';this.style.opacity=.25;document.getElementById(\'status\').textContent=\'A mirror image failed to load. Check the mapping path or browser network.\';">':'<div style="height:230px;display:grid;place-items:center;color:#789">Waiting for manifest…</div>')+
    '<div class="meta">'+(x?'<b>'+esc(x.mirrorFilename||x.sourceFilename)+'</b><br>Optimized: '+esc(x.optimizedWidthPx||'?')+' × '+esc(x.optimizedHeightPx||'?')+' px<br><a style="color:#72d8ff" href="'+esc(x.sourceUrl||'#')+'" target="_blank" rel="noopener">Original source ↗</a>':'No image selected')+'</div></article>';
  }).join('');
  grid.querySelectorAll('[data-random]').forEach(b=>b.addEventListener('click',()=>randomOne(b.dataset.random)));
