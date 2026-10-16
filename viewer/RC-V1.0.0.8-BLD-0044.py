@@ -2256,7 +2256,7 @@ function setZoomCommandFromY(clientY){
     // Slider distance from center controls Aladin's animation duration:
     // farther from center = faster; no per-frame getFov/setFov calls here.
     const speed=Math.min(1,Math.abs(zoomCommand));
-    const durationSeconds=0.20+(1-speed)*4.80;
+    const durationSeconds=2.50+(1-speed)*7.50;
     const now=Date.now();
     const params=aladin.zoomAnimationParams;
     const needsNewAnimation=
