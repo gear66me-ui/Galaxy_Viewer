@@ -1,0 +1,103 @@
+name: Publish Registration Mirror Folders to Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_publish:
+        description: "Type PUBLISH-MIRRORS-TO-RELEASE to copy only Mirror folders from registration-mirror-test into release"
+        required: true
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-registration-mirrors-to-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ inputs.confirm_publish == 'PUBLISH-MIRRORS-TO-RELEASE' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Fetch populated registration test branch
+        run: |
+          set -euo pipefail
+          git fetch origin registration-mirror-test
+          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
+            git cat-file -e "origin/registration-mirror-test:viewer/image-databases/$provider/Mirror/mirror-mapping.json"
+          done
+
+      - name: Copy only Mirror folders from test branch
+        run: |
+          set -euo pipefail
+          git checkout origin/registration-mirror-test -- \
+            viewer/image-databases/Chandra/Mirror \
+            viewer/image-databases/ESO/Mirror \
+            viewer/image-databases/Hubble/Mirror \
+            viewer/image-databases/JWST/Mirror \
+            viewer/image-databases/NoirLab/Mirror \
+            viewer/image-databases/Spitzer/Mirror \
+            viewer/image-databases/master-database/Mirror
+          python - <<'PY'
+          import json, pathlib, subprocess, sys
+          allowed = {
+              "viewer/image-databases/Chandra/Mirror/",
+              "viewer/image-databases/ESO/Mirror/",
+              "viewer/image-databases/Hubble/Mirror/",
+              "viewer/image-databases/JWST/Mirror/",
+              "viewer/image-databases/NoirLab/Mirror/",
+              "viewer/image-databases/Spitzer/Mirror/",
+              "viewer/image-databases/master-database/Mirror/",
+          }
+          changed = subprocess.check_output(["git", "status", "--porcelain"], text=True).splitlines()
+          paths = [line[3:] for line in changed]
+          unexpected = [p for p in paths if not any(p.startswith(prefix) for prefix in allowed)]
+          if unexpected:
+              print("Unexpected changed paths:", *unexpected, sep="\n")
+              sys.exit(1)
+          counts = {}
+          for prefix in sorted(allowed):
+              p = pathlib.Path(prefix.rstrip("/"))
+              counts[p.parent.name] = sum(1 for x in p.iterdir() if x.is_file()) if p.exists() else 0
+              mapping = p / "mirror-mapping.json"
+              if not mapping.is_file():
+                  raise SystemExit(f"Missing mapping file: {mapping}")
+              data = json.loads(mapping.read_text(encoding="utf-8"))
+              rows = data.get("images", []) if isinstance(data, dict) else data
+              if not rows:
+                  raise SystemExit(f"No mapped images in {mapping}")
+          print(json.dumps({"validatedMirrorFolderFileCounts": counts}, indent=2))
+          PY
+
+      - name: Commit and push only Mirror folders
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/Chandra/Mirror \
+                  viewer/image-databases/ESO/Mirror \
+                  viewer/image-databases/Hubble/Mirror \
+                  viewer/image-databases/JWST/Mirror \
+                  viewer/image-databases/NoirLab/Mirror \
+                  viewer/image-databases/Spitzer/Mirror \
+                  viewer/image-databases/master-database/Mirror
+          if git diff --cached --quiet; then
+            echo "Mirror folders already match registration-mirror-test."
+            exit 0
+          fi
+          git commit -m "Publish optimized registration test Mirror folders"
+          git push origin HEAD:release
+
+      - name: Confirm published paths
+        run: |
+          echo "Mirror folders copied from registration-mirror-test to release."
+          echo "Raw URL base: https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/"
+          echo "Catalog JSON and viewer code were not copied from the test branch."
