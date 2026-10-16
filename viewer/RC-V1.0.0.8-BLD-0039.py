@@ -2254,7 +2254,6 @@ function gvTimedZoomToTarget(targetFov,{durationMs=null,attackMs=500,releaseMs=5
 }
 function setZoomCommandFromY(clientY){
     if(gvTimedZoomFrame){cancelAnimationFrame(gvTimedZoomFrame);gvTimedZoomFrame=0;gvTimedZoomToken++;gvSetZoomCommand(0);}
-    gvZoomLastFrameAt=0;
     gvZoomInteractionActive=true;
     const r=zoomControl.rail.getBoundingClientRect();
     if(!r.height)return;
@@ -2274,6 +2273,7 @@ function releaseZoom(){
 }
 zoomControl.hit.addEventListener('pointerdown',e=>{
     e.preventDefault();e.stopPropagation();
+    gvZoomLastFrameAt=0;
     try{zoomControl.hit.setPointerCapture(e.pointerId)}catch(_){}
     setZoomCommandFromY(e.clientY);
 },{passive:false});
