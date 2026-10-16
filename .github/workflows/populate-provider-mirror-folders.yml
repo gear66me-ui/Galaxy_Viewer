@@ -42,7 +42,10 @@ jobs:
           for provider in Chandra ESO Hubble JWST NoirLab Spitzer; do
             gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "provider-$provider-optimized-test" --dir "/tmp/provider-input/$provider"
             test -n "$(find "/tmp/provider-input/$provider" -maxdepth 1 -type f -name '*.zip' -print -quit)"
-            test -f "/tmp/provider-input/$provider/mapping.json"
+          done
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "provider-image-mappings-and-summary" --dir "/tmp/provider-input/mappings"
+          for provider in Chandra ESO Hubble JWST NoirLab Spitzer; do
+            test -f "/tmp/provider-input/mappings/$provider-mapping.json"
           done
 
       - name: Populate provider Mirror directories and validate all images
@@ -83,7 +86,7 @@ jobs:
               if len(zips) != 1:
                   failures.append(f"{provider}: expected one optimized-image ZIP, found {len(zips)}")
                   continue
-              mapping_path = folder / "mapping.json"
+              mapping_path = input_root / "mappings" / f"{provider}-mapping.json"
               if not mapping_path.is_file():
                   failures.append(f"{provider}: mapping.json missing")
                   continue
