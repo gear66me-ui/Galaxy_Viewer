@@ -1,0 +1,139 @@
+name: Populate Provider Mirror Folders (Registration Test)
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/populate-provider-mirror-test-branch.yml'
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: 'Successful provider-organization workflow run ID'
+        required: true
+        default: '38828582399'
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: provider-mirror-test-population
+  cancel-in-progress: false
+
+jobs:
+  populate-test-branch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout release source of truth
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Install image inspection dependency
+        run: python -m pip install --disable-pip-version-check Pillow
+
+      - name: Download optimized provider artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id || '38828582399' }}
+        run: |
+          set -euo pipefail
+          mkdir -p input
+          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
+            gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "provider-$provider-optimized-test" --dir "input/$provider"
+          done
+
+      - name: Build provider Mirror trees and dimension-aware mapping
+        env:
+          SOURCE_RUN_ID: ${{ inputs.source_run_id || '38828582399' }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import collections, hashlib, io, json, pathlib, zipfile
+          from urllib.parse import urlparse
+          from PIL import Image
+
+          root = pathlib.Path('input')
+          out = pathlib.Path('populated-tree')
+          providers = {
+            'Chandra': 'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',
+            'ESO': 'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',
+            'Hubble': 'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',
+            'JWST': 'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',
+            'NoirLab': 'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json',
+            'Spitzer': 'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',
+            'master-database': 'viewer/image-databases/master-database/gv-master-catalog.json'
+          }
+          summary = {'sourceRunId': int(__import__('os').environ['SOURCE_RUN_ID']), 'branchPurpose': 'registration-test-only', 'releaseViewerModified': False, 'providers': {}, 'errors': []}
+          for provider, catalog_rel in providers.items():
+            zips = list((root / provider).glob('*.zip'))
+            if len(zips) != 1:
+              raise SystemExit(f'{provider}: expected exactly one optimized ZIP, found {len(zips)}')
+            with zipfile.ZipFile(zips[0]) as zf:
+              names = set(zf.namelist())
+              if 'mapping.json' not in names:
+                raise SystemExit(f'{provider}: mapping.json missing from artifact')
+              rows = json.loads(zf.read('mapping.json'))
+              target = out / 'viewer' / 'image-databases' / provider
+              mirror = target / 'Mirror'
+              mirror.mkdir(parents=True, exist_ok=True)
+              catalog_path = pathlib.Path(catalog_rel)
+              if not catalog_path.is_file():
+                raise SystemExit(f'Catalog not found in release checkout: {catalog_rel}')
+              (target / 'databases').mkdir(parents=True, exist_ok=True)
+              (target / 'databases' / catalog_path.name).write_bytes(catalog_path.read_bytes())
+              used, mapped, total_bytes = set(), [], 0
+              for row in rows:
+                bundle_name = row.get('bundleFilename')
+                if not bundle_name or bundle_name not in names:
+                  raise SystemExit(f'{provider}: mapped image absent from ZIP: {bundle_name}')
+                blob = zf.read(bundle_name)
+                try:
+                  with Image.open(io.BytesIO(blob)) as im:
+                    im.verify()
+                  with Image.open(io.BytesIO(blob)) as im:
+                    width, height = im.size
+                    fmt = im.format
+                except Exception as exc:
+                  raise SystemExit(f'{provider}: invalid image {bundle_name}: {exc}')
+                source_url = row.get('sourceUrl') or row.get('originalMirrorUrl') or ''
+                original_name = row.get('originalFilename') or pathlib.PurePosixPath(urlparse(source_url).path).name or 'image.jpg'
+                original_name = pathlib.PurePosixPath(original_name).name
+                if original_name in ('', '.', '..'):
+                  original_name = 'image.jpg'
+                suffix = pathlib.PurePosixPath(original_name).suffix or '.jpg'
+                stem = pathlib.PurePosixPath(original_name).stem or 'image'
+                filename = original_name
+                if filename.casefold() in used:
+                  digest = hashlib.sha256((source_url or bundle_name).encode()).hexdigest()[:10]
+                  filename = f'{stem}__{digest}{suffix}'
+                  serial = 2
+                  while filename.casefold() in used:
+                    filename = f'{stem}__{digest}_{serial}{suffix}'
+                    serial += 1
+                used.add(filename.casefold())
+                (mirror / filename).write_bytes(blob)
+                total_bytes += len(blob)
+                mapped.append({**row, 'optimizedFilename': filename, 'relativePath': f'Mirror/{filename}', 'optimizedWidthPx': width, 'optimizedHeightPx': height, 'optimizedFormat': fmt, 'optimizedBytes': len(blob), 'sourceRunId': int(__import__('os').environ['SOURCE_RUN_ID']), 'dimensionNote': 'Use optimizedWidthPx/optimizedHeightPx when deriving pixel-scale or WCS transforms; original-image dimensions may no longer apply.'})
+              (mirror / 'mirror-mapping.json').write_text(json.dumps(mapped, indent=2), encoding='utf-8')
+              (mirror / 'README.txt').write_text('Registration-test mirror only. Images are optimized copies. Use mirror-mapping.json for source URLs and verified optimized pixel dimensions. Original AVM/WCS metadata must be checked and transformed for any resizing; do not assume original pixel dimensions still apply. This branch is not the release viewer.\n', encoding='utf-8')
+              summary['providers'][provider] = {'images': len(mapped), 'bytes': total_bytes, 'mirror': f'viewer/image-databases/{provider}/Mirror/', 'catalog': f'viewer/image-databases/{provider}/databases/{catalog_path.name}', 'mapping': f'viewer/image-databases/{provider}/Mirror/mirror-mapping.json'}
+          (out / 'MIRROR-TEST-SUMMARY.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Publish populated trees to dedicated orphan test branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout --orphan registration-mirror-test
+          git rm -rf . >/dev/null 2>&1 || true
+          cp -a populated-tree/. .
+          git add viewer MIRROR-TEST-SUMMARY.json
+          git commit -m 'Populate provider mirrors for image registration testing'
+          git push --force origin HEAD:registration-mirror-test
