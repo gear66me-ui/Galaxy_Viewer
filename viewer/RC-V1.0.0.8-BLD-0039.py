@@ -2187,8 +2187,11 @@ function zoomStep(now=performance.now()){
                 else if(elapsed<a.attackMs+a.cruiseMs)area=(a.attackMs/2)+(elapsed-a.attackMs);
                 else{const u=Math.min(a.releaseMs,elapsed-a.attackMs-a.cruiseMs);area=(a.attackMs/2)+a.cruiseMs+u-u*u/(2*a.releaseMs)}
                 const progress=a.totalArea>0?Math.max(0,Math.min(1,area/a.totalArea)):1;
-                aladin.setFov(Math.max(.0001,Math.min(360,a.start*Math.exp(Math.log(a.target/a.start)*progress))));
-                if(elapsed>=a.totalMs){aladin.setFov(a.target);gvTimedZoom=null;gvSetZoomCommand(0);gvZoomSmoothedCommand=0;gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();const done=a.resolve;done(true);gvZoomLastFrameAt=0;return}
+                if(elapsed>=a.totalMs){
+                    aladin.setFov(a.target);gvTimedZoom=null;gvSetZoomCommand(0);gvZoomSmoothedCommand=0;
+                    gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();const done=a.resolve;done(true);gvZoomLastFrameAt=0;return;
+                }
+                aladin.setFov(Math.max(.0001,Math.min(360,a.start*Math.exp(Math.log(a.target/a.start)*progress))))
             }else{
                 if(gvAutoZoom){
                     const a=gvAutoZoom,elapsed=now-a.started,attack=Math.min(1,elapsed/a.attackMs);
