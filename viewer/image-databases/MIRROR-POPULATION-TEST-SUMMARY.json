@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "sourceManifest": "viewer/image-databases/Hubble/mirror/image-mirror-manifest.json",
+  "sourceMode": "direct GitHub Release URLs; no cross-run Actions artifacts",
+  "registrationValidated": false,
+  "viewerCodeModified": false,
+  "catalogJsonModified": false,
+  "processedRecords": 2649,
+  "failureCount": 3,
+  "providers": {
+    "Spitzer": {
+      "imageCount": 46,
+      "directory": "viewer/image-databases/Spitzer/Mirror/",
+      "mapping": "viewer/image-databases/Spitzer/Mirror/mirror-mapping.json",
+      "totalBytes": 3253416
+    },
+    "master-database": {
+      "imageCount": 27,
+      "directory": "viewer/image-databases/master-database/Mirror/",
+      "mapping": "viewer/image-databases/master-database/Mirror/mirror-mapping.json",
+      "totalBytes": 1029418
+    },
+    "Hubble": {
+      "imageCount": 1875,
+      "directory": "viewer/image-databases/Hubble/Mirror/",
+      "mapping": "viewer/image-databases/Hubble/Mirror/mirror-mapping.json",
+      "totalBytes": 664671736
+    },
+    "JWST": {
+      "imageCount": 47,
+      "directory": "viewer/image-databases/JWST/Mirror/",
+      "mapping": "viewer/image-databases/JWST/Mirror/mirror-mapping.json",
+      "totalBytes": 12636350
+    },
+    "Chandra": {
+      "imageCount": 52,
+      "directory": "viewer/image-databases/Chandra/Mirror/",
+      "mapping": "viewer/image-databases/Chandra/Mirror/mirror-mapping.json",
+      "totalBytes": 6700161
+    },
+    "NoirLab": {
+      "imageCount": 367,
+      "directory": "viewer/image-databases/NoirLab/Mirror/",
+      "mapping": "viewer/image-databases/NoirLab/Mirror/mirror-mapping.json",
+      "totalBytes": 81606927
+    },
+    "ESO": {
+      "imageCount": 232,
+      "directory": "viewer/image-databases/ESO/Mirror/",
+      "mapping": "viewer/image-databases/ESO/Mirror/mirror-mapping.json",
+      "totalBytes": 56104068
+    }
+  }
+}

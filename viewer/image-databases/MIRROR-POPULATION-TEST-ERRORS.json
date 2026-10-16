@@ -1,0 +1,20 @@
+[
+  {
+    "manifestIndex": null,
+    "provider": "Hubble",
+    "url": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-image-mirror-b/2e1809b5e6b7de47776a3901017006af06f2f02e9ab4e4348830450094bbb0af.jpg",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "manifestIndex": null,
+    "provider": "Hubble",
+    "url": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-image-mirror-b/704eac858879bd19dbcfe31274533981e6cf4317d8d50ca4dfbe6490142eda00.jpg",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "manifestIndex": null,
+    "provider": "Hubble",
+    "url": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/galaxy-image-mirror-b/0a9e9e55beea505d9ea9587fd9f6a678afcdd8e471989b7d04e0c00a3d37bf61.jpg",
+    "error": "HTTP Error 404: Not Found"
+  }
+]

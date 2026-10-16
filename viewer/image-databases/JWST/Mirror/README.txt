@@ -1,0 +1,1 @@
+Galaxy Viewer registration-test image mirror. This folder contains optimized image copies and mirror-mapping.json. The mapping records verified pixel dimensions. AVM/WCS metadata must be checked and transformed if dimensions changed. This does not mean astrometric registration has passed.
