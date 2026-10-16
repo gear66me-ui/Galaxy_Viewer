@@ -1,0 +1,189 @@
+name: Package Provider Mirrors for Registration Testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Successful optimized-image organization run ID"
+        required: true
+        default: "38828582399"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout release source of truth
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Download provider-organized optimized bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p input
+          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
+            gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "provider-$provider-optimized-test" --dir "input/$provider" || {
+              echo "Missing provider artifact: $provider" >&2
+              exit 1
+            }
+          done
+
+      - name: Build provider Mirror folders and include source catalogs
+        run: |
+          python - <<'PY'
+          import collections, hashlib, io, json, pathlib, re, zipfile
+          from urllib.parse import urlparse, unquote
+          from PIL import Image
+
+          root = pathlib.Path("input")
+          out = pathlib.Path("provider-mirror-packages")
+          out.mkdir(exist_ok=True)
+          providers = {
+            "Chandra": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
+            "ESO": "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+            "Hubble": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+            "JWST": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+            "NoirLab": "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
+            "Spitzer": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+            "master-database": "viewer/image-databases/master-database/gv-master-catalog.json"
+          }
+          summary = {"sourceRunId": 38825774745, "providers": {}, "viewerModified": False, "releaseAssetsPublished": False}
+          errors = []
+          for provider, catalog_rel in providers.items():
+            provider_input = root / provider
+            zips = list(provider_input.glob("*.zip"))
+            if len(zips) != 1:
+              errors.append(f"{provider}: expected exactly one optimized ZIP; found {len(zips)}")
+              continue
+            with zipfile.ZipFile(zips[0]) as source_zip:
+              names = set(source_zip.namelist())
+              mapping_name = "mapping.json"
+              if mapping_name not in names:
+                errors.append(f"{provider}: mapping.json missing")
+                continue
+              mapping = json.loads(source_zip.read(mapping_name))
+              target_root = out / provider
+              mirror = target_root / "Mirror"
+              mirror.mkdir(parents=True, exist_ok=True)
+              catalog_source = pathlib.Path(catalog_rel)
+              if not catalog_source.exists():
+                errors.append(f"{provider}: catalog missing: {catalog_rel}")
+                continue
+              (target_root / "catalog.json").write_bytes(catalog_source.read_bytes())
+              used = set()
+              output_mapping = []
+              for row in mapping:
+                bundle_path = row.get("bundleFilename")
+                if not bundle_path or bundle_path not in names:
+                  errors.append(f"{provider}: image missing from bundle: {bundle_path}")
+                  continue
+                blob = source_zip.read(bundle_path)
+                try:
+                  with Image.open(io.BytesIO(blob)) as im:
+                    im.verify()
+                  with Image.open(io.BytesIO(blob)) as im:
+                    width, height = im.size
+                except Exception as exc:
+                  errors.append(f"{provider}: image decode error {bundle_path}: {exc}")
+                  continue
+                original_filename = pathlib.PurePosixPath(row.get("originalFilename") or pathlib.PurePosixPath(urlparse(row.get("sourceUrl") or "").path).name or "image.jpg").name
+                if not original_filename or original_filename in (".", ".."):
+                  original_filename = "image.jpg"
+                suffix = pathlib.PurePosixPath(original_filename).suffix or ".jpg"
+                stem = pathlib.PurePosixPath(original_filename).stem or "image"
+                filename = original_filename
+                if filename.casefold() in used:
+                  digest = hashlib.sha256((row.get("originalMirrorUrl") or row.get("sourceUrl") or bundle_path).encode()).hexdigest()[:10]
+                  filename = f"{stem}__{digest}{suffix}"
+                  n = 2
+                  while filename.casefold() in used:
+                    filename = f"{stem}__{digest}_{n}{suffix}"
+                    n += 1
+                used.add(filename.casefold())
+                (mirror / filename).write_bytes(blob)
+                output_mapping.append({
+                  **row,
+                  "optimizedFilename": filename,
+                  "relativePath": f"Mirror/{filename}",
+                  "verifiedWidth": width,
+                  "verifiedHeight": height
+                })
+              (mirror / "mirror-mapping.json").write_text(json.dumps(output_mapping, indent=2), encoding="utf-8")
+              (target_root / "PACKAGE-README.txt").write_text(
+                f"Provider: {provider}\nContains optimized JPEGs in Mirror/, the provider catalog as catalog.json, and Mirror/mirror-mapping.json.\nThis is a test package only; it has not been published as release assets and Galaxy Viewer has not been changed.\n", encoding="utf-8")
+              zip_path = out / f"{provider}-Mirror-test-package.zip"
+              with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_STORED, allowZip64=True) as target_zip:
+                for file in sorted(target_root.rglob("*")):
+                  if file.is_file():
+                    target_zip.write(file, file.relative_to(out))
+              summary["providers"][provider] = {
+                "images": len(output_mapping),
+                "catalog": "catalog.json",
+                "mirrorDirectory": "Mirror/",
+                "package": zip_path.name,
+                "catalogSource": catalog_rel
+              }
+          (out / "package-summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+          print(json.dumps(summary, indent=2))
+          if errors:
+            (out / "package-errors.json").write_text(json.dumps(errors, indent=2), encoding="utf-8")
+            print(json.dumps(errors, indent=2))
+            raise SystemExit(f"Packaging stopped: {len(errors)} error(s).")
+          PY
+
+      - name: Upload Chandra package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-Chandra
+          path: provider-mirror-packages/Chandra-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload ESO package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-ESO
+          path: provider-mirror-packages/ESO-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload Hubble package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-Hubble
+          path: provider-mirror-packages/Hubble-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload JWST package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-JWST
+          path: provider-mirror-packages/JWST-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload NOIRLab package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-NoirLab
+          path: provider-mirror-packages/NoirLab-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload Spitzer package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-Spitzer
+          path: provider-mirror-packages/Spitzer-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload master database package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-master-database
+          path: provider-mirror-packages/master-database-Mirror-test-package.zip
+          retention-days: 30
+      - name: Upload package summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mirror-test-package-summary
+          path: provider-mirror-packages/package-summary.json
+          retention-days: 30
