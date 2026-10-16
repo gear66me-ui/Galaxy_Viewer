@@ -1,6 +1,10 @@
 name: Audit Full Galaxy Image Optimization
 
 on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/audit-galaxy-image-optimization.yml'
   workflow_dispatch:
     inputs:
       source_run_id:
