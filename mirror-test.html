@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Galaxy Viewer — Aladin Overlay Registration Lab</title>
-<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css">
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css">
 <style>
 :root{color-scheme:dark;--bg:#060a13;--panel:#10192a;--line:#263a56;--cyan:#72d8ff;--muted:#b2c1d6}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#122744,var(--bg) 64%);color:#eef6ff;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
@@ -36,7 +36,7 @@ a{color:var(--cyan)}code{overflow-wrap:anywhere}
  <p class="warn">For a scientifically conclusive registration test, select images with full AVM/WCS metadata. The slider changes the actual Aladin overlay layer opacity; it does not fade a separate HTML image.</p>
 </div>
 </main>
-<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
 <script>
 (() => {
 'use strict';
@@ -104,6 +104,7 @@ function getWcs(e,img){
  return exact;
 }
 function getImageUrl(provider,img){return ROOT+'viewer/image-databases/'+configs[provider].folder+'/Mirror/'+encodeURIComponent(img.mirrorFilename||img.sourceFilename||img.relativePath?.split('/').pop()||'')}
+function getReleaseMirrorUrl(img){return typeof img.originalMirrorUrl==='string'&&/^https:\/\//i.test(img.originalMirrorUrl)?img.originalMirrorUrl:null}
 async function loadAll(){
  const names=Object.keys(configs);
  const results=await Promise.all(names.map(async name=>{
@@ -133,7 +134,12 @@ function setLayerOpacity(value){
 }
 function placeCurrent(){
  if(!current||!currentWcs||!aladin)return;
- const image=A.image(currentUrl,{name:current.entry.displayName||current.entry.name||current.img.mirrorFilename,imgFormat:'jpeg',wcs:currentWcs.wcs,opacity:alpha,transparency:alpha});
+ const imageName=current.entry.displayName||current.entry.name||current.img.mirrorFilename;
+ const fallback=getReleaseMirrorUrl(current.img);
+ const image=A.image(currentUrl,{name:imageName,imgFormat:'jpg',wcs:currentWcs.wcs,opacity:alpha,transparency:alpha,
+  successCallback:()=>status('Mirror-folder image loaded and registered in Aladin Lite: '+current.provider+' / '+(current.img.mirrorFilename||'image')),
+  errorCallback:err=>{if(fallback&&currentUrl!==fallback){status('Mirror-folder URL failed; retrying the mirrored release asset…');currentUrl=fallback;const retry=A.image(currentUrl,{name:imageName,imgFormat:'jpg',wcs:currentWcs.wcs,opacity:alpha,transparency:alpha,successCallback:()=>status('Mirrored release asset loaded and registered in Aladin Lite: '+current.provider+' / '+(current.img.mirrorFilename||'image')),errorCallback:e=>status('Both mirror URLs failed: '+String(e?.message||e))});aladin.setOverlayImageLayer(retry,overlayName)}else status('Could not load mirrored image: '+String(err?.message||err))}
+ });
  aladin.setOverlayImageLayer(image,overlayName);
  const ra=currentWcs.wcs.CRVAL1,dec=currentWcs.wcs.CRVAL2;
  aladin.gotoRaDec(ra,dec);
