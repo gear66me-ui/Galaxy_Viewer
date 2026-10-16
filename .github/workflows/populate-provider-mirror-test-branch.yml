@@ -7,13 +7,16 @@ on:
       - '.github/workflows/populate-provider-mirror-test-branch.yml'
   workflow_dispatch:
     inputs:
-      source_run_id:
-        description: 'Successful provider-organization workflow run ID'
+      max_images:
+        description: 'Maximum images to process (0 = all images in the mirror manifest)'
         required: true
-        default: '38828582399'
+        default: '0'
+      confirm_publish:
+        description: 'Type POPULATE-MIRRORS to commit mirror image files to release'
+        required: true
+        default: ''
 
 permissions:
-  actions: read
   contents: write
 
 concurrency:
@@ -21,9 +24,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  populate-test-branch:
+  populate:
+    if: ${{ github.event_name == 'push' || inputs.confirm_publish == 'POPULATE-MIRRORS' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     steps:
       - name: Checkout release source of truth
         uses: actions/checkout@v4
@@ -31,136 +35,162 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Install image inspection dependency
+      - name: Install image processing dependency
         run: python -m pip install --disable-pip-version-check Pillow
 
-      - name: Download optimized provider artifacts
+      - name: Download source images directly from GitHub Release URLs, optimize, and build provider Mirror folders
         env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_RUN_ID: ${{ inputs.source_run_id || '38828582399' }}
-        run: |
-          set -euo pipefail
-          mkdir -p input
-          # The GitHub App installation API can be temporarily rate-limited.
-          # Retry each artifact download with backoff and log the failing provider.
-          download_with_retry() {
-            local artifact="$1" destination="$2" attempt=1 delay=15
-            while true; do
-              echo "Downloading artifact $artifact (attempt $attempt/6)"
-              if gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$artifact" --dir "$destination"; then
-                return 0
-              fi
-              if (( attempt >= 6 )); then
-                echo "::error::Could not download $artifact after $attempt attempts. No Mirror folders have been committed."
-                return 1
-              fi
-              echo "Download failed; waiting ${delay}s before retry."
-              sleep "$delay"
-              attempt=$((attempt + 1))
-              delay=$((delay * 2))
-              if (( delay > 180 )); then delay=180; fi
-            done
-          }
-          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
-            download_with_retry "provider-$provider-optimized-test" "input/$provider"
-            test -n "$(find "input/$provider" -maxdepth 1 -type f -name '*.zip' -print -quit)" || {
-              echo "::error::Artifact for $provider downloaded but did not contain the expected ZIP."
-              exit 1
-            }
-          done
-
-      - name: Build provider Mirror trees and dimension-aware mapping
-        env:
-          SOURCE_RUN_ID: ${{ inputs.source_run_id || '38828582399' }}
+          MAX_IMAGES: ${{ inputs.max_images || '0' }}
         run: |
           set -euo pipefail
           python - <<'PY'
-          import collections, hashlib, io, json, pathlib, zipfile
-          from urllib.parse import urlparse
-          from PIL import Image
+          import hashlib, io, json, os, pathlib, time, urllib.error, urllib.request
+          from PIL import Image, ImageOps
 
-          root = pathlib.Path('input')
-          out = pathlib.Path('populated-tree')
-          providers = {
-            'Chandra': 'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json',
-            'ESO': 'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json',
-            'Hubble': 'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json',
-            'JWST': 'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json',
-            'NoirLab': 'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json',
-            'Spitzer': 'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json',
-            'master-database': 'viewer/image-databases/master-database/gv-master-catalog.json'
+          root = pathlib.Path('viewer/image-databases')
+          manifest_path = root / 'Hubble/mirror/image-mirror-manifest.json'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          records = [r for r in manifest.get('images', []) if r.get('githubImageUrl') and r.get('provider')]
+          max_images = int(os.environ.get('MAX_IMAGES', '0') or '0')
+          if max_images > 0:
+              records = records[:max_images]
+          if not records:
+              raise SystemExit('No records with githubImageUrl and provider found in image mirror manifest.')
+          print(f'Processing {len(records)} image records directly from release URLs (no Actions-artifact API calls).')
+
+          provider_dirs = {
+              'chandra': 'Chandra', 'eso': 'ESO', 'hubble': 'Hubble',
+              'jwst': 'JWST', 'noirlab': 'NoirLab', 'spitzer': 'Spitzer',
+              'master-database': 'master-database', 'master_database': 'master-database'
           }
-          summary = {'sourceRunId': int(__import__('os').environ['SOURCE_RUN_ID']), 'branchPurpose': 'registration-test-only', 'releaseViewerModified': False, 'providers': {}, 'errors': []}
-          for provider, catalog_rel in providers.items():
-            zips = list((root / provider).glob('*.zip'))
-            if len(zips) != 1:
-              raise SystemExit(f'{provider}: expected exactly one optimized ZIP, found {len(zips)}')
-            with zipfile.ZipFile(zips[0]) as zf:
-              names = set(zf.namelist())
-              if 'mapping.json' not in names:
-                raise SystemExit(f'{provider}: mapping.json missing from artifact')
-              rows = json.loads(zf.read('mapping.json'))
-              target = out / 'viewer' / 'image-databases' / provider
-              mirror = target / 'Mirror'
-              mirror.mkdir(parents=True, exist_ok=True)
-              catalog_path = pathlib.Path(catalog_rel)
-              if not catalog_path.is_file():
-                raise SystemExit(f'Catalog not found in release checkout: {catalog_rel}')
-              (target / 'databases').mkdir(parents=True, exist_ok=True)
-              (target / 'databases' / catalog_path.name).write_bytes(catalog_path.read_bytes())
-              used, mapped, total_bytes = set(), [], 0
-              for row in rows:
-                bundle_name = row.get('bundleFilename')
-                if not bundle_name or bundle_name not in names:
-                  raise SystemExit(f'{provider}: mapped image absent from ZIP: {bundle_name}')
-                blob = zf.read(bundle_name)
-                try:
-                  with Image.open(io.BytesIO(blob)) as im:
-                    im.verify()
-                  with Image.open(io.BytesIO(blob)) as im:
-                    width, height = im.size
-                    fmt = im.format
-                except Exception as exc:
-                  raise SystemExit(f'{provider}: invalid image {bundle_name}: {exc}')
-                source_url = row.get('sourceUrl') or row.get('originalMirrorUrl') or ''
-                original_name = row.get('originalFilename') or pathlib.PurePosixPath(urlparse(source_url).path).name or 'image.jpg'
-                original_name = pathlib.PurePosixPath(original_name).name
-                if original_name in ('', '.', '..'):
-                  original_name = 'image.jpg'
-                suffix = pathlib.PurePosixPath(original_name).suffix or '.jpg'
-                stem = pathlib.PurePosixPath(original_name).stem or 'image'
-                filename = original_name
-                if filename.casefold() in used:
-                  digest = hashlib.sha256((source_url or bundle_name).encode()).hexdigest()[:10]
-                  filename = f'{stem}__{digest}{suffix}'
-                  serial = 2
-                  while filename.casefold() in used:
-                    filename = f'{stem}__{digest}_{serial}{suffix}'
-                    serial += 1
-                used.add(filename.casefold())
-                (mirror / filename).write_bytes(blob)
-                total_bytes += len(blob)
-                mapped.append({**row, 'optimizedFilename': filename, 'relativePath': f'Mirror/{filename}', 'optimizedWidthPx': width, 'optimizedHeightPx': height, 'optimizedFormat': fmt, 'optimizedBytes': len(blob), 'sourceRunId': int(__import__('os').environ['SOURCE_RUN_ID']), 'dimensionNote': 'Use optimizedWidthPx/optimizedHeightPx when deriving pixel-scale or WCS transforms; original-image dimensions may no longer apply.'})
-              (mirror / 'mirror-mapping.json').write_text(json.dumps(mapped, indent=2), encoding='utf-8')
-              (mirror / 'README.txt').write_text('Registration-test mirror only. Images are optimized copies. Use mirror-mapping.json for source URLs and verified optimized pixel dimensions. Original AVM/WCS metadata must be checked and transformed for any resizing; do not assume original pixel dimensions still apply. This branch is not the release viewer.\n', encoding='utf-8')
-              summary['providers'][provider] = {'images': len(mapped), 'bytes': total_bytes, 'mirror': f'viewer/image-databases/{provider}/Mirror/', 'catalog': f'viewer/image-databases/{provider}/databases/{catalog_path.name}', 'mapping': f'viewer/image-databases/{provider}/Mirror/mirror-mapping.json'}
-          (out / 'MIRROR-TEST-SUMMARY.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
-          print(json.dumps(summary, indent=2))
+          mappings = {}
+          failures = []
+          opener = urllib.request.build_opener()
+          opener.addheaders = [('User-Agent', 'GalaxyViewer-ProviderMirrorPopulation/1.0')]
+          for index, row in enumerate(records, 1):
+              provider_raw = str(row.get('provider', '')).strip()
+              provider = provider_dirs.get(provider_raw.lower(), provider_dirs.get(provider_raw.lower().replace('_','-')))
+              if not provider:
+                  failures.append({'manifestIndex': row.get('manifestIndex'), 'provider': provider_raw, 'url': row.get('githubImageUrl'), 'error': 'unrecognized provider'})
+                  continue
+              url = row['githubImageUrl']
+              try:
+                  request = urllib.request.Request(url, headers={'Accept':'image/*,*/*;q=0.8'})
+                  for attempt in range(5):
+                      try:
+                          with opener.open(request, timeout=90) as response:
+                              raw = response.read(40 * 1024 * 1024 + 1)
+                          break
+                      except Exception:
+                          if attempt == 4:
+                              raise
+                          time.sleep(2 ** attempt)
+                  if len(raw) > 40 * 1024 * 1024:
+                      raise ValueError('source image exceeds 40 MiB safety limit')
+                  im = Image.open(io.BytesIO(raw))
+                  im.load()
+                  im = ImageOps.exif_transpose(im).convert('RGB')
+                  original_width, original_height = im.size
+                  resized = im.copy()
+                  resized.thumbnail((1536,1536), Image.Resampling.LANCZOS)
+                  optimized = None
+                  quality_used = None
+                  for quality in (90,87,85,82,80,77,74,70):
+                      buf = io.BytesIO()
+                      resized.save(buf, 'JPEG', quality=quality, optimize=True, progressive=True, subsampling=0)
+                      candidate = buf.getvalue()
+                      if optimized is None or len(candidate) < len(optimized):
+                          optimized, quality_used = candidate, quality
+                      if len(candidate) <= 700*1024:
+                          optimized, quality_used = candidate, quality
+                          break
+                  kept_original = len(optimized) >= len(raw)
+                  if kept_original:
+                      optimized = raw
+                      with Image.open(io.BytesIO(raw)) as check:
+                          check.load()
+                          final_width, final_height = check.size
+                          final_format = check.format
+                  else:
+                      final_width, final_height = resized.size
+                      final_format = 'JPEG'
+
+                  original_name = pathlib.PurePosixPath(row.get('filename') or pathlib.PurePosixPath(url.split('?')[0]).name).name
+                  stem = pathlib.PurePosixPath(original_name).stem or 'image'
+                  digest = hashlib.sha256(url.encode('utf-8')).hexdigest()
+                  ext = '.jpg' if not kept_original else (pathlib.PurePosixPath(original_name).suffix or '.img')
+                  filename = f'{stem}__{digest[:10]}{ext}'
+                  mirror = root / provider / 'Mirror'
+                  mirror.mkdir(parents=True, exist_ok=True)
+                  (mirror / filename).write_bytes(optimized)
+                  mappings.setdefault(provider, []).append({
+                      'provider': provider,
+                      'manifestIndex': row.get('manifestIndex'),
+                      'sourceUrl': row.get('sourceUrl'),
+                      'originalMirrorUrl': url,
+                      'sourceFilename': original_name,
+                      'mirrorFilename': filename,
+                      'relativePath': f'Mirror/{filename}',
+                      'sha256': hashlib.sha256(optimized).hexdigest(),
+                      'originalSha256': row.get('sha256'),
+                      'originalWidthPx': original_width,
+                      'originalHeightPx': original_height,
+                      'optimizedWidthPx': final_width,
+                      'optimizedHeightPx': final_height,
+                      'optimizedFormat': final_format,
+                      'optimizedBytes': len(optimized),
+                      'quality': 'original-kept' if kept_original else quality_used,
+                      'keptOriginal': kept_original,
+                      'dimensionsChanged': (original_width != final_width or original_height != final_height),
+                      'astrometryNote': 'Optimized dimensions are authoritative for this file. Recalculate/transform pixel-dependent WCS/AVM metadata before registration; do not blindly reuse original image dimensions.'
+                  })
+              except Exception as exc:
+                  failures.append({'manifestIndex': row.get('manifestIndex'), 'provider': provider, 'url': url, 'error': str(exc)})
+              if index % 25 == 0 or index == len(records):
+                  success_count = sum(len(v) for v in mappings.values())
+                  print(f'Progress {index}/{len(records)}; images written={success_count}; failures={len(failures)}')
+
+          summary = {'schemaVersion':1,'sourceManifest':'viewer/image-databases/Hubble/mirror/image-mirror-manifest.json',
+                     'sourceMode':'direct GitHub Release URLs; no cross-run Actions artifacts',
+                     'registrationValidated':False,'viewerCodeModified':False,'catalogJsonModified':False,
+                     'processedRecords':len(records),'failureCount':len(failures),'providers':{}}
+          for provider, rows in mappings.items():
+              mirror = root / provider / 'Mirror'
+              mapping_path = mirror / 'mirror-mapping.json'
+              mapping_path.write_text(json.dumps({'schemaVersion':1,'provider':provider,'imageCount':len(rows),'images':rows},indent=2,ensure_ascii=False)+'\\n',encoding='utf-8')
+              (mirror / 'README.txt').write_text(
+                  'Galaxy Viewer registration-test image mirror. This folder contains optimized image copies and mirror-mapping.json. '
+                  'The mapping records verified pixel dimensions. AVM/WCS metadata must be checked and transformed if dimensions changed. '
+                  'This does not mean astrometric registration has passed.\\n',encoding='utf-8')
+              summary['providers'][provider]={'imageCount':len(rows),'directory':f'viewer/image-databases/{provider}/Mirror/','mapping':f'viewer/image-databases/{provider}/Mirror/mirror-mapping.json','totalBytes':sum(x['optimizedBytes'] for x in rows)}
+          (root/'MIRROR-POPULATION-TEST-SUMMARY.json').write_text(json.dumps(summary,indent=2)+'\\n',encoding='utf-8')
+          (root/'MIRROR-POPULATION-TEST-ERRORS.json').write_text(json.dumps(failures,indent=2)+'\\n',encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+          if failures:
+              print(json.dumps(failures[:25],indent=2))
+              raise SystemExit(f'{len(failures)} image(s) failed; refusing to publish a partial population.')
           PY
 
-      - name: Publish populated Mirror folders to release
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Validate only Mirror assets and audit summaries are staged
         run: |
           set -euo pipefail
-          # Keep the checked-out release tree intact; copy only generated Mirror
-          # directories and the test summary into their provider folders.
-          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
-            mkdir -p "viewer/image-databases/$provider"
-            cp -a "populated-tree/viewer/image-databases/$provider/Mirror" "viewer/image-databases/$provider/"
-          done
-          cp "populated-tree/MIRROR-TEST-SUMMARY.json" "viewer/image-databases/MIRROR-TEST-SUMMARY.json"
-          # Do not overwrite production catalogs or viewer files.
+          python - <<'PY'
+          import pathlib, subprocess, sys
+          root = pathlib.Path('viewer/image-databases')
+          allowed_providers = {'Chandra','ESO','Hubble','JWST','NoirLab','Spitzer','master-database'}
+          for provider in allowed_providers:
+              mirror = root / provider / 'Mirror'
+              if not mirror.is_dir():
+                  continue
+              mapping_path = mirror / 'mirror-mapping.json'
+              if not mapping_path.is_file():
+                  raise SystemExit(f'Missing mapping: {mapping_path}')
+          PY
+          git status --short
+
+      - name: Commit provider Mirror folders and summary to release
+        run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add viewer/image-databases/Chandra/Mirror \
@@ -170,20 +200,21 @@ jobs:
                   viewer/image-databases/NoirLab/Mirror \
                   viewer/image-databases/Spitzer/Mirror \
                   viewer/image-databases/master-database/Mirror \
-                  viewer/image-databases/MIRROR-TEST-SUMMARY.json
+                  viewer/image-databases/MIRROR-POPULATION-TEST-SUMMARY.json \
+                  viewer/image-databases/MIRROR-POPULATION-TEST-ERRORS.json
           python - <<'PY'
           import subprocess, sys
-          changed = subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()
-          allowed = ('viewer/image-databases/Chandra/Mirror/', 'viewer/image-databases/ESO/Mirror/', 'viewer/image-databases/Hubble/Mirror/', 'viewer/image-databases/JWST/Mirror/', 'viewer/image-databases/NoirLab/Mirror/', 'viewer/image-databases/Spitzer/Mirror/', 'viewer/image-databases/master-database/Mirror/', 'viewer/image-databases/MIRROR-TEST-SUMMARY.json')
-          bad = [p for p in changed if not any(p.startswith(a) for a in allowed)]
+          paths = subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          allowed_prefixes = tuple(f'viewer/image-databases/{p}/Mirror/' for p in ('Chandra','ESO','Hubble','JWST','NoirLab','Spitzer','master-database')) + ('viewer/image-databases/MIRROR-POPULATION-TEST-SUMMARY.json','viewer/image-databases/MIRROR-POPULATION-TEST-ERRORS.json')
+          bad = [p for p in paths if not p.startswith(allowed_prefixes)]
           if bad:
-              print('Unexpected staged paths:', *bad, sep='\\n')
+              print('Unexpected staged files:', *bad, sep='\\n')
               sys.exit(1)
-          print(f'Validated {len(changed)} staged mirror files.')
+          print(f'Validated staged paths: {len(paths)}')
           PY
           if git diff --cached --quiet; then
-            echo 'Mirror folders already up to date.'
+            echo 'Mirror files already match; no commit needed.'
             exit 0
           fi
-          git commit -m 'Populate provider Mirror folders for image registration testing'
+          git commit -m 'Populate provider Mirror folders for registration testing'
           git push origin HEAD:release
