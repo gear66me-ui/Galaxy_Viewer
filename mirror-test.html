@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Mirror Image Test</title>
+<style>
+:root{color-scheme:dark;--bg:#070b16;--panel:#10192b;--line:#273958;--cyan:#72d8ff;--muted:#aab9cf}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#142846,var(--bg) 60%);color:#edf5ff;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1100px;margin:auto;padding:22px 16px 44px}h1{font-size:clamp(24px,4vw,38px);margin:0 0 6px}p{color:var(--muted)}.intro{margin-top:0}
+.toolbar,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0}
+button,select,input{accent-color:var(--cyan)}button,select{background:#172943;color:#edf5ff;border:1px solid #3c5c7b;border-radius:9px;padding:10px 12px;font:inherit}button{cursor:pointer}button:hover{border-color:var(--cyan)}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.slider{display:grid;grid-template-columns:auto minmax(120px,1fr) 3.5em;gap:12px;align-items:center;margin-top:12px}.slider input{width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.tile{background:#0b1220;border:1px solid var(--line);border-radius:14px;overflow:hidden}.tile header{padding:10px 12px;display:flex;justify-content:space-between;gap:8px;align-items:center}.tile h2{font-size:16px;margin:0}.tile img{width:100%;height:230px;object-fit:contain;background:#02050b;display:block}.meta{font-size:12px;color:var(--muted);padding:9px 12px;overflow-wrap:anywhere;min-height:60px}.status{color:var(--cyan);font-size:12px}.note{border-left:3px solid var(--cyan);padding:8px 12px;background:#0b1525;color:#d6e8ff}.small{font-size:13px}code{overflow-wrap:anywhere;color:#aee6ff}
+</style>
+</head>
+<body><main>
+<h1>Galaxy Viewer · Mirror Lab</h1>
+<p class="intro">Live smoke test for the six provider mirrors on the <b>release</b> branch. Pick random images, compare them, and adjust the overlay opacity.</p>
+<div class="toolbar">
+ <div class="controls"><button id="all">🎲 Randomize all six</button><label for="base">Comparison base:</label><select id="base"><option value="none">No base (individual images)</option><option value="Hubble">Hubble</option><option value="ESO">ESO</option><option value="NOIRLab">NOIRLab</option><option value="Chandra">Chandra</option><option value="JWST">JWST</option><option value="Spitzer">Spitzer</option></select><button id="next">↻ Randomize selected pair</button></div>
+ <div class="slider"><label for="opacity">Overlay opacity</label><input id="opacity" type="range" min="0" max="100" value="65"><output id="opval">65%</output></div>
+ <p class="small">Opacity applies to the selected comparison overlay when a base provider is selected. Otherwise it is a visual control preview only; the cards remain independent so image loading can be checked per provider.</p>
+</div>
+<div id="status" class="panel status">Loading provider manifests…</div>
+<div id="grid" class="grid"></div>
+<div class="panel"><h2>Registration / decoded metadata plan</h2>
+<p><b>1 · Resolve the image.</b> Each provider's <code>mirror-mapping.json</code> supplies the descriptive mirror filename, original source URL, and optimized dimensions. The test loads the mirror copy, not the origin website.</p>
+<p><b>2 · Decode astrometry from the runtime AVM catalog.</b> The authority is <code>master-database/avm-metadata/gv-avm-runtime-catalog-0001…0003.json</code>. Match the selected catalog record to the image using stable source/image identifiers and source URL—not just a potentially duplicated display name. Read its RA/Dec, field of view / scale, rotation, projection, reference pixel (CRPIX), scale or CD matrix, image dimensions, and parity/flip indicators.</p>
+<p><b>3 · Adapt WCS to the optimized raster.</b> The mirror mapping records original and optimized pixel dimensions. If dimensions changed, transform pixel-dependent WCS values (especially CRPIX and pixel scale / CD matrix) before registration; never blindly reuse original pixel coordinates. Keep handedness/parity explicit and calculate the matrix determinant as a diagnostic.</p>
+<p><b>4 · Register on the sky.</b> Once a record has validated WCS, use Aladin Lite to position the raster at its celestial coordinates and orientation, then compare against the sky/HiPS layer. The opacity slider controls the image layer, so stars/galaxy structure can be visually checked for alignment. Missing or ambiguous WCS must be marked “not registered” rather than guessed.</p>
+<p class="note">This page currently tests mirror retrieval, mapping metadata, and opacity comparison. It does <b>not</b> claim that every image is astrometrically registered yet; the decoded runtime AVM-to-image join and WCS validation are the next step.</p>
+</div>
+</main>
+<script>
+const owner='gear66me-ui',repo='Galaxy_Viewer',branch='release';
+const providers=[
+ {name:'Hubble',folder:'Hubble'},
+ {name:'ESO',folder:'ESO'},
+ {name:'NOIRLab',folder:'NoirLab'},
+ {name:'Chandra',folder:'Chandra'},
+ {name:'JWST',folder:'JWST'},
+ {name:'Spitzer',folder:'Spitzer'}
+];
+const raw='https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+branch+'/';
+const state={items:{},base:'none',opacity:65};
+const grid=document.getElementById('grid'),status=document.getElementById('status');
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function choose(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function urlFor(p,item){return raw+'viewer/image-databases/'+p.folder+'/Mirror/'+encodeURIComponent(item.mirrorFilename||item.sourceFilename||item.relativePath?.split('/').pop()||'');}
+function render(){
+ grid.innerHTML=providers.map(p=>{
+  const x=state.items[p.name],src=x?urlFor(p,x):'';
+  const faded=state.base!=='none'&&state.base!==p.name?' style="opacity:'+state.opacity/100+';"':'';
+  return '<article class="tile"><header><h2>'+p.name+'</h2><button data-random="'+p.name+'">🎲 Random</button></header>'+
+   (x?'<img alt="'+esc(p.name+' '+(x.mirrorFilename||''))+'" src="'+esc(src)+'"'+faded+' onerror="this.dataset.failed=1;this.alt=\'Image failed to load\';this.style.opacity=.25;document.getElementById(\'status\').textContent=\'A mirror image failed to load. Check the mapping path or browser network.\';" onload="if(this.dataset.failed!==\'1\')this.style.opacity=\'\';">':'<div style="height:230px;display:grid;place-items:center;color:#789">Waiting for manifest…</div>')+
+   '<div class="meta">'+(x?'<b>'+esc(x.mirrorFilename||x.sourceFilename)+'</b><br>Optimized: '+esc(x.optimizedWidthPx||'?')+' × '+esc(x.optimizedHeightPx||'?')+' px<br><a style="color:#72d8ff" href="'+esc(x.sourceUrl||'#')+'" target="_blank" rel="noopener">Original source ↗</a>':'No image selected')+'</div></article>';
+ }).join('');
+ grid.querySelectorAll('[data-random]').forEach(b=>b.addEventListener('click',()=>randomOne(b.dataset.random)));
+}
+async function loadManifests(){
+ const results=await Promise.all(providers.map(async p=>{
+  try{const r=await fetch(raw+'viewer/image-databases/'+p.folder+'/Mirror/mirror-mapping.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();return [p.name,j.images||[]];}
+  catch(e){return [p.name,{error:String(e)}];}
+ }));
+ let good=0;for(const [name,items] of results){if(Array.isArray(items)&&items.length){state.items[name]=choose(items);good++;}else state.items[name]=null;}
+ status.textContent='Manifests loaded for '+good+' / 6 providers. Select Random to test each provider; a broken image is reported above.';
+ render();
+}
+function randomOne(name){const p=providers.find(x=>x.name===name);if(!p)return;fetch(raw+'viewer/image-databases/'+p.folder+'/Mirror/mirror-mapping.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{state.items[name]=choose(j.images||[]);render();}).catch(e=>{status.textContent='Could not reload '+name+' manifest: '+e;});}
+document.getElementById('all').addEventListener('click',()=>Promise.all(providers.map(p=>randomOne(p.name))));
+document.getElementById('next').addEventListener('click',()=>{const base=document.getElementById('base').value;randomOne(base==='none'?'Hubble':base);const other=providers.find(p=>p.name!==base);if(other)randomOne(other.name);});
+document.getElementById('base').addEventListener('change',e=>{state.base=e.target.value;render();});
+document.getElementById('opacity').addEventListener('input',e=>{state.opacity=Number(e.target.value);document.getElementById('opval').textContent=state.opacity+'%';render();});
+loadManifests();
+</script></body></html>
