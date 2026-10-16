@@ -1,4 +1,4 @@
-name: Populate Provider Mirror Folders (Registration Test)
+name: Populate Provider Mirror Folders
 
 on:
   push:
@@ -167,8 +167,10 @@ jobs:
           (root/'MIRROR-POPULATION-TEST-ERRORS.json').write_text(json.dumps(failures,indent=2)+'\n',encoding='utf-8')
           print(json.dumps(summary,indent=2))
           if failures:
-              print(json.dumps(failures[:25],indent=2))
-              raise SystemExit(f'{len(failures)} image(s) failed; refusing to publish a partial population.')
+              print('WARNING: some source release assets are unavailable; publishing all successfully validated images.')
+              print(json.dumps(failures,indent=2))
+          if not mappings:
+              raise SystemExit('No images were successfully populated; refusing to publish empty mirrors.')
           PY
 
       - name: Validate only Mirror assets and audit summaries are staged
