@@ -157,14 +157,14 @@ jobs:
           for provider, rows in mappings.items():
               mirror = root / provider / 'Mirror'
               mapping_path = mirror / 'mirror-mapping.json'
-              mapping_path.write_text(json.dumps({'schemaVersion':1,'provider':provider,'imageCount':len(rows),'images':rows},indent=2,ensure_ascii=False)+'\\n',encoding='utf-8')
+              mapping_path.write_text(json.dumps({'schemaVersion':1,'provider':provider,'imageCount':len(rows),'images':rows},indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
               (mirror / 'README.txt').write_text(
                   'Galaxy Viewer registration-test image mirror. This folder contains optimized image copies and mirror-mapping.json. '
                   'The mapping records verified pixel dimensions. AVM/WCS metadata must be checked and transformed if dimensions changed. '
-                  'This does not mean astrometric registration has passed.\\n',encoding='utf-8')
+                  'This does not mean astrometric registration has passed.\n',encoding='utf-8')
               summary['providers'][provider]={'imageCount':len(rows),'directory':f'viewer/image-databases/{provider}/Mirror/','mapping':f'viewer/image-databases/{provider}/Mirror/mirror-mapping.json','totalBytes':sum(x['optimizedBytes'] for x in rows)}
-          (root/'MIRROR-POPULATION-TEST-SUMMARY.json').write_text(json.dumps(summary,indent=2)+'\\n',encoding='utf-8')
-          (root/'MIRROR-POPULATION-TEST-ERRORS.json').write_text(json.dumps(failures,indent=2)+'\\n',encoding='utf-8')
+          (root/'MIRROR-POPULATION-TEST-SUMMARY.json').write_text(json.dumps(summary,indent=2)+'\n',encoding='utf-8')
+          (root/'MIRROR-POPULATION-TEST-ERRORS.json').write_text(json.dumps(failures,indent=2)+'\n',encoding='utf-8')
           print(json.dumps(summary,indent=2))
           if failures:
               print(json.dumps(failures[:25],indent=2))
@@ -193,6 +193,9 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
+            mkdir -p "viewer/image-databases/$provider/Mirror"
+          done
           git add viewer/image-databases/Chandra/Mirror \
                   viewer/image-databases/ESO/Mirror \
                   viewer/image-databases/Hubble/Mirror \
@@ -208,7 +211,7 @@ jobs:
           allowed_prefixes = tuple(f'viewer/image-databases/{p}/Mirror/' for p in ('Chandra','ESO','Hubble','JWST','NoirLab','Spitzer','master-database')) + ('viewer/image-databases/MIRROR-POPULATION-TEST-SUMMARY.json','viewer/image-databases/MIRROR-POPULATION-TEST-ERRORS.json')
           bad = [p for p in paths if not p.startswith(allowed_prefixes)]
           if bad:
-              print('Unexpected staged files:', *bad, sep='\\n')
+              print('Unexpected staged files:', *bad, sep='\n')
               sys.exit(1)
           print(f'Validated staged paths: {len(paths)}')
           PY
