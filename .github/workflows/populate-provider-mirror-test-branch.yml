@@ -124,16 +124,42 @@ jobs:
           print(json.dumps(summary, indent=2))
           PY
 
-      - name: Publish populated trees to dedicated orphan test branch
+      - name: Publish populated Mirror folders to release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # Keep the checked-out release tree intact; copy only generated Mirror
+          # directories and the test summary into their provider folders.
+          for provider in Chandra ESO Hubble JWST NoirLab Spitzer master-database; do
+            mkdir -p "viewer/image-databases/$provider"
+            cp -a "populated-tree/viewer/image-databases/$provider/Mirror" "viewer/image-databases/$provider/"
+          done
+          cp "populated-tree/MIRROR-TEST-SUMMARY.json" "viewer/image-databases/MIRROR-TEST-SUMMARY.json"
+          # Do not overwrite production catalogs or viewer files.
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git checkout --orphan registration-mirror-test
-          git rm -rf . >/dev/null 2>&1 || true
-          cp -a populated-tree/. .
-          git add viewer MIRROR-TEST-SUMMARY.json
-          git commit -m 'Populate provider mirrors for image registration testing'
-          git push --force origin HEAD:registration-mirror-test
+          git add viewer/image-databases/Chandra/Mirror \
+                  viewer/image-databases/ESO/Mirror \
+                  viewer/image-databases/Hubble/Mirror \
+                  viewer/image-databases/JWST/Mirror \
+                  viewer/image-databases/NoirLab/Mirror \
+                  viewer/image-databases/Spitzer/Mirror \
+                  viewer/image-databases/master-database/Mirror \
+                  viewer/image-databases/MIRROR-TEST-SUMMARY.json
+          python - <<'PY'
+          import subprocess, sys
+          changed = subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()
+          allowed = ('viewer/image-databases/Chandra/Mirror/', 'viewer/image-databases/ESO/Mirror/', 'viewer/image-databases/Hubble/Mirror/', 'viewer/image-databases/JWST/Mirror/', 'viewer/image-databases/NoirLab/Mirror/', 'viewer/image-databases/Spitzer/Mirror/', 'viewer/image-databases/master-database/Mirror/', 'viewer/image-databases/MIRROR-TEST-SUMMARY.json')
+          bad = [p for p in changed if not any(p.startswith(a) for a in allowed)]
+          if bad:
+              print('Unexpected staged paths:', *bad, sep='\\n')
+              sys.exit(1)
+          print(f'Validated {len(changed)} staged mirror files.')
+          PY
+          if git diff --cached --quiet; then
+            echo 'Mirror folders already up to date.'
+            exit 0
+          fi
+          git commit -m 'Populate provider Mirror folders for image registration testing'
+          git push origin HEAD:release
