@@ -1,0 +1,57 @@
+{
+  "sourceRunId": 38828582399,
+  "branchPurpose": "registration-test-only",
+  "releaseViewerModified": false,
+  "providers": {
+    "Chandra": {
+      "images": 52,
+      "bytes": 6700161,
+      "mirror": "viewer/image-databases/Chandra/Mirror/",
+      "catalog": "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
+      "mapping": "viewer/image-databases/Chandra/Mirror/mirror-mapping.json"
+    },
+    "ESO": {
+      "images": 232,
+      "bytes": 56104068,
+      "mirror": "viewer/image-databases/ESO/Mirror/",
+      "catalog": "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+      "mapping": "viewer/image-databases/ESO/Mirror/mirror-mapping.json"
+    },
+    "Hubble": {
+      "images": 1878,
+      "bytes": 665669775,
+      "mirror": "viewer/image-databases/Hubble/Mirror/",
+      "catalog": "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+      "mapping": "viewer/image-databases/Hubble/Mirror/mirror-mapping.json"
+    },
+    "JWST": {
+      "images": 47,
+      "bytes": 12636350,
+      "mirror": "viewer/image-databases/JWST/Mirror/",
+      "catalog": "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+      "mapping": "viewer/image-databases/JWST/Mirror/mirror-mapping.json"
+    },
+    "NoirLab": {
+      "images": 367,
+      "bytes": 81606927,
+      "mirror": "viewer/image-databases/NoirLab/Mirror/",
+      "catalog": "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
+      "mapping": "viewer/image-databases/NoirLab/Mirror/mirror-mapping.json"
+    },
+    "Spitzer": {
+      "images": 46,
+      "bytes": 3253416,
+      "mirror": "viewer/image-databases/Spitzer/Mirror/",
+      "catalog": "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+      "mapping": "viewer/image-databases/Spitzer/Mirror/mirror-mapping.json"
+    },
+    "master-database": {
+      "images": 27,
+      "bytes": 1029418,
+      "mirror": "viewer/image-databases/master-database/Mirror/",
+      "catalog": "viewer/image-databases/master-database/databases/gv-master-catalog.json",
+      "mapping": "viewer/image-databases/master-database/Mirror/mirror-mapping.json"
+    }
+  },
+  "errors": []
+}

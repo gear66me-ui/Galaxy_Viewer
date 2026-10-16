@@ -1,0 +1,1 @@
+Registration-test mirror only. Images are optimized copies. Use mirror-mapping.json for source URLs and verified optimized pixel dimensions. Original AVM/WCS metadata must be checked and transformed for any resizing; do not assume original pixel dimensions still apply. This branch is not the release viewer.
