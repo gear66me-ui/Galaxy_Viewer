@@ -1,0 +1,174 @@
+name: Organize Optimized Images by Provider (Test Artifacts Only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Successful full optimization workflow run ID"
+        required: true
+        default: "38825774745"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  organize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout release source of truth
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Download optimization artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p input
+          for shard in 0 1 2 3 4 5; do
+            gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "galaxy-optimized-shard-$shard" --dir "input/shard-$shard"
+          done
+          find input -type f -printf '%p %s bytes\n' | sort
+
+      - name: Organize by provider using original filenames
+        run: |
+          python - <<'PY'
+          import collections, hashlib, io, json, pathlib, re, zipfile
+          root = pathlib.Path("input")
+          out = pathlib.Path("organized-output")
+          out.mkdir(exist_ok=True)
+          providers = collections.defaultdict(list)
+          errors = []
+          for shard in range(6):
+              folder = root / f"shard-{shard}"
+              zips = list(folder.glob(f"galaxy-optimized-shard-{shard}.zip"))
+              reports = list(folder.glob(f"report-shard-{shard}.json"))
+              if len(zips) != 1 or len(reports) != 1:
+                  raise SystemExit(f"Shard {shard}: expected one ZIP and report; found {len(zips)} ZIP(s), {len(reports)} report(s)")
+              report = json.loads(reports[0].read_text(encoding="utf-8"))
+              with zipfile.ZipFile(zips[0]) as archive:
+                  names = set(archive.namelist())
+                  for row in report:
+                      if row.get("status") != "ok":
+                          errors.append({"shard": shard, "manifestIndex": row.get("manifestIndex"), "error": row.get("error", "optimization status not ok")})
+                          continue
+                      internal = row.get("optimizedFilename")
+                      if not internal or internal not in names:
+                          errors.append({"shard": shard, "manifestIndex": row.get("manifestIndex"), "error": f"missing image in shard ZIP: {internal}"})
+                          continue
+                      provider = re.sub(r"[^A-Za-z0-9._-]+", "_", row.get("provider") or "unknown").strip("._") or "unknown"
+                      source_name = pathlib.PurePosixPath(row.get("sourceFilename") or "image.jpg").name
+                      if not source_name or source_name in (".", ".."):
+                          source_name = "image.jpg"
+                      providers[provider].append((row, archive.read(internal), source_name))
+          if errors:
+              (out / "organization-errors.json").write_text(json.dumps(errors, indent=2), encoding="utf-8")
+              raise SystemExit(f"Refusing to produce provider bundles: {len(errors)} optimization/mapping error(s). See organization-errors.json.")
+          summary = {"sourceRunId": 38825774745, "providers": {}, "viewerModified": False, "releaseAssetsPublished": False}
+          for provider, items in sorted(providers.items()):
+              used = set()
+              mapping = []
+              zip_path = out / f"{provider}-optimized-images.zip"
+              with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_STORED, allowZip64=True) as zf:
+                  for row, blob, original_name in sorted(items, key=lambda x: (x[0].get("manifestIndex", -1), x[2])):
+                      name = original_name
+                      if name.casefold() in used:
+                          p = pathlib.PurePosixPath(original_name)
+                          digest = hashlib.sha256((row.get("originalMirrorUrl") or "").encode()).hexdigest()[:10]
+                          name = f"{p.stem}__{digest}{p.suffix or '.jpg'}"
+                          counter = 2
+                          while name.casefold() in used:
+                              name = f"{p.stem}__{digest}_{counter}{p.suffix or '.jpg'}"
+                              counter += 1
+                      used.add(name.casefold())
+                      zf.writestr(f"images/{name}", blob)
+                      mapping.append({
+                          "provider": provider,
+                          "manifestIndex": row.get("manifestIndex"),
+                          "originalFilename": original_name,
+                          "bundleFilename": f"images/{name}",
+                          "sourceUrl": row.get("sourceUrl"),
+                          "originalMirrorUrl": row.get("originalMirrorUrl"),
+                          "optimizedBytes": len(blob),
+                          "optimizedWidth": row.get("optimizedWidth"),
+                          "optimizedHeight": row.get("optimizedHeight"),
+                          "quality": row.get("quality"),
+                          "keptOriginal": row.get("keptOriginal")
+                      })
+                  zf.writestr("mapping.json", json.dumps(mapping, indent=2))
+              (out / f"{provider}-mapping.json").write_text(json.dumps(mapping, indent=2), encoding="utf-8")
+              summary["providers"][provider] = {"images": len(items), "zip": zip_path.name, "mapping": f"{provider}-mapping.json"}
+          (out / "organization-summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+          print(json.dumps(summary, indent=2))
+          print("READY FOR TESTING ONLY: provider ZIPs preserve source filenames where unique; duplicate names receive a short hash suffix. No releases or viewer files were changed.")
+          PY
+
+      - name: Upload Chandra test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-Chandra-optimized-test
+          path: organized-output/Chandra-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload ESO test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-ESO-optimized-test
+          path: organized-output/ESO-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload Hubble test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-Hubble-optimized-test
+          path: organized-output/Hubble-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload JWST test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-JWST-optimized-test
+          path: organized-output/JWST-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload NOIRLab test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-NoirLab-optimized-test
+          path: organized-output/NoirLab-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload Spitzer test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-Spitzer-optimized-test
+          path: organized-output/Spitzer-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload master database test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-master-database-optimized-test
+          path: organized-output/master-database-optimized-images.zip
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload mapping and summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-image-mappings-and-summary
+          path: |
+            organized-output/*-mapping.json
+            organized-output/organization-summary.json
+          retention-days: 30
+          if-no-files-found: error
