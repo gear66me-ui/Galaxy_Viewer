@@ -2151,9 +2151,11 @@ setInterval(gvSyncFovReadout,GV_FOV_REPORT_MS);
 let zoomCommand=0;
 let zoomFrame=0;
 let gvAutoZoom=null;
+let gvTimedZoom=null;
 let gvZoomLastFrameAt=0;
-let gvTimedZoomFrame=0;
-let gvTimedZoomToken=0;
+let gvZoomSmoothedCommand=0;
+const GV_ZOOM_RATE_PER_SECOND=1.08;
+const GV_ZOOM_COMMAND_TAU_SECONDS=0.04;
 // SINGLE HD TRAVEL AUTHORITY — keep the active raster registered during
 // Random Galaxy travel. Visibility is retired only by the 55° FOV rule below.
 let gvHdTravelHoldAt=0;
@@ -2172,33 +2174,43 @@ function gvSetZoomCommand(command){
 }
 function zoomStep(now=performance.now()){
     zoomFrame=0;
-    if(!zoomCommand){gvZoomLastFrameAt=0;return;}
+    const dt=gvZoomLastFrameAt?Math.min(.05,Math.max(0,(now-gvZoomLastFrameAt)/1000)):(1/60);
+    gvZoomLastFrameAt=now;
+    if(!zoomCommand&&!gvAutoZoom&&!gvTimedZoom){gvZoomLastFrameAt=0;gvZoomSmoothedCommand=0;return}
     try{
-        const dt=gvZoomLastFrameAt?Math.min(.05,Math.max(0,(now-gvZoomLastFrameAt)/1000)):(1/60);
-        gvZoomLastFrameAt=now;
         const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(current)&&current>0){
-            if(gvAutoZoom){
-                const a=gvAutoZoom,elapsed=performance.now()-a.started;
-                const attack=Math.min(1,elapsed/a.attackMs);
-                const eta=Math.abs(Math.log(current/a.target)/1.08)*1000;
-                if(!a.approachStarted&&eta<=a.approachMs){a.approachStarted=true;try{a.onApproach?.()}catch(error){console.error('GV ZOOM APPROACH CALLBACK FAILED',error)}}
-                let level=attack;
-                if(a.linearLanding&&eta<=a.landingMs)level=Math.min(level,Math.max(0.035,eta/a.landingMs));
-                gvSetZoomCommand(a.direction*Math.max(0.035,Math.min(1,level)));
-                if((a.direction<0&&current>=a.target)||(a.direction>0&&current<=a.target)||Math.abs(a.target-current)<=Math.max(1e-7,a.target*.001)){
-                    aladin.setFov(a.target);const done=a.resolve;gvAutoZoom=null;gvSetZoomCommand(0);gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();done(true);return;
+            if(gvTimedZoom){
+                const a=gvTimedZoom,elapsed=Math.min(a.totalMs,now-a.started);
+                let area;
+                if(elapsed<a.attackMs)area=elapsed*elapsed/(2*a.attackMs);
+                else if(elapsed<a.attackMs+a.cruiseMs)area=(a.attackMs/2)+(elapsed-a.attackMs);
+                else{const u=Math.min(a.releaseMs,elapsed-a.attackMs-a.cruiseMs);area=(a.attackMs/2)+a.cruiseMs+u-u*u/(2*a.releaseMs)}
+                const progress=a.totalArea>0?Math.max(0,Math.min(1,area/a.totalArea)):1;
+                aladin.setFov(Math.max(.0001,Math.min(360,a.start*Math.exp(Math.log(a.target/a.start)*progress))));
+                if(elapsed>=a.totalMs){aladin.setFov(a.target);gvTimedZoom=null;gvSetZoomCommand(0);gvZoomSmoothedCommand=0;gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();const done=a.resolve;done(true);gvZoomLastFrameAt=0;return}
+            }else{
+                if(gvAutoZoom){
+                    const a=gvAutoZoom,elapsed=now-a.started,attack=Math.min(1,elapsed/a.attackMs);
+                    const effectiveCommand=Math.max(.035,Math.abs(zoomCommand)||.035);
+                    const eta=Math.abs(Math.log(current/a.target)/(GV_ZOOM_RATE_PER_SECOND*effectiveCommand))*1000;
+                    if(!a.approachStarted&&eta<=a.approachMs){a.approachStarted=true;try{a.onApproach?.()}catch(error){console.error('GV ZOOM APPROACH CALLBACK FAILED',error)}}
+                    let level=attack;if(a.linearLanding&&eta<=a.landingMs)level=Math.min(level,Math.max(.035,eta/a.landingMs));
+                    gvSetZoomCommand(a.direction*Math.max(.035,Math.min(1,level)));
+                    if((a.direction<0&&current>=a.target)||(a.direction>0&&current<=a.target)||Math.abs(Math.log(current/a.target))<=.001){aladin.setFov(a.target);const done=a.resolve;gvAutoZoom=null;gvSetZoomCommand(0);gvZoomSmoothedCommand=0;gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();done(true);gvZoomLastFrameAt=0;return}
                 }
+                const smoothing=1-Math.exp(-dt/GV_ZOOM_COMMAND_TAU_SECONDS);
+                gvZoomSmoothedCommand+=(zoomCommand-gvZoomSmoothedCommand)*smoothing;
+                if(Math.abs(gvZoomSmoothedCommand)>1e-5)aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-GV_ZOOM_RATE_PER_SECOND*gvZoomSmoothedCommand*dt))));
             }
-            aladin.setFov(Math.max(.0001,Math.min(360,current*Math.exp(-zoomCommand*1.08*dt))));
         }
     }catch(error){console.error('GV ZOOM SLIDER FRAME FAILED',{build:GV200001_BUILD,command:zoomCommand,error:String(error)});}
-    zoomFrame=requestAnimationFrame(zoomStep);
+    if(zoomCommand||gvAutoZoom||gvTimedZoom)zoomFrame=requestAnimationFrame(zoomStep);else{gvZoomLastFrameAt=0;gvZoomSmoothedCommand=0}
 }
 function gvSettleAutoZoom(result=false){
-    if(!gvAutoZoom)return;
-    const done=gvAutoZoom.resolve;gvAutoZoom=null;gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();
-    try{done(result)}catch(_){}
+    let done=null;if(gvAutoZoom){done=gvAutoZoom.resolve;gvAutoZoom=null}
+    if(gvTimedZoom){done=gvTimedZoom.resolve;gvTimedZoom=null}
+    if(done){gvZoomInteractionActive=false;gvScheduleEarthDistanceAfterZoom();try{done(result)}catch(_){}}
 }
 function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,approachMs=500,linearLanding=true,onApproach=null}={}){
     const target=Number(targetFov),direction=Math.sign(Number(command));
@@ -2206,54 +2218,22 @@ function gvEnergizeZoomJoystick(command,targetFov,{attackMs=500,landingMs=2500,a
     const raw=aladin.getFov?.(),start=Number(Array.isArray(raw)?raw[0]:raw);
     if(!Number.isFinite(start)||start<=0)return Promise.resolve(false);
     gvSettleAutoZoom(false);
-    if(gvTimedZoomFrame){cancelAnimationFrame(gvTimedZoomFrame);gvTimedZoomFrame=0;gvTimedZoomToken++;}
+    gvSettleAutoZoom(false);
+    gvZoomSmoothedCommand=0;
     gvZoomInteractionActive=true;
     return new Promise(resolve=>{gvAutoZoom={target,start,direction,started:performance.now(),attackMs,landingMs,approachMs,linearLanding,onApproach,approachStarted:false,resolve};gvZoomLastFrameAt=0;gvSetZoomCommand(direction*.035);if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep)});
 }
 function gvTimedZoomToTarget(targetFov,{durationMs=null,attackMs=500,releaseMs=500}={}){
     const target=Number(targetFov),raw=aladin.getFov?.(),start=Number(Array.isArray(raw)?raw[0]:raw);
     if(!Number.isFinite(target)||target<=0||!Number.isFinite(start)||start<=0)return Promise.resolve(false);
-    gvSettleAutoZoom(false);
-    if(gvTimedZoomFrame){cancelAnimationFrame(gvTimedZoomFrame);gvTimedZoomFrame=0;}
-    const token=++gvTimedZoomToken;
-    if(zoomFrame){cancelAnimationFrame(zoomFrame);zoomFrame=0;}
-    gvZoomLastFrameAt=0;
-    gvSetZoomCommand(0);
-    const direction=target>start?-1:1,logDistance=Math.abs(Math.log(target/start));
-    const naturalMs=(logDistance/1.08)*1000+(attackMs+releaseMs)/2;
-    const totalMs=Math.max(attackMs+releaseMs+1,Number.isFinite(durationMs)?durationMs:naturalMs);
-    const cruiseMs=Math.max(0,totalMs-attackMs-releaseMs);
-    const totalArea=(attackMs/2)+cruiseMs+(releaseMs/2);
-    return new Promise(resolve=>{
-        gvZoomInteractionActive=true;
-        const started=performance.now();
-        function frame(now){
-            if(token!==gvTimedZoomToken)return;
-            const elapsed=Math.min(totalMs,now-started);
-            let level,area;
-            if(elapsed<attackMs){
-                level=elapsed/attackMs;area=elapsed*elapsed/(2*attackMs);
-            }else if(elapsed<attackMs+cruiseMs){
-                level=1;area=(attackMs/2)+(elapsed-attackMs);
-            }else{
-                const u=Math.min(releaseMs,elapsed-attackMs-cruiseMs);
-                level=Math.max(0,1-u/releaseMs);
-                area=(attackMs/2)+cruiseMs+u-u*u/(2*releaseMs);
-            }
-            const progress=totalArea>0?Math.max(0,Math.min(1,area/totalArea)):1;
-            gvSetZoomCommand(direction*Math.min(.8,level));
-            aladin.setFov(start*Math.exp(Math.log(target/start)*progress));
-            if(elapsed<totalMs)gvTimedZoomFrame=requestAnimationFrame(frame);
-            else{
-                gvTimedZoomFrame=0;gvSetZoomCommand(0);gvZoomInteractionActive=false;
-                gvScheduleEarthDistanceAfterZoom();resolve(true);
-            }
-        }
-        gvTimedZoomFrame=requestAnimationFrame(frame);
-    });
+    gvSettleAutoZoom(false);gvSetZoomCommand(0);gvZoomSmoothedCommand=0;gvZoomLastFrameAt=0;
+    const logDistance=Math.abs(Math.log(target/start));
+    const totalMs=Math.max(attackMs+releaseMs+1,Number.isFinite(durationMs)?durationMs:(logDistance/GV_ZOOM_RATE_PER_SECOND)*1000+(attackMs+releaseMs)/2);
+    const cruiseMs=Math.max(0,totalMs-attackMs-releaseMs),totalArea=(attackMs/2)+cruiseMs+(releaseMs/2);
+    return new Promise(resolve=>{gvZoomInteractionActive=true;gvTimedZoom={target,start,started:performance.now(),attackMs,releaseMs,totalMs,cruiseMs,totalArea,resolve};if(!zoomFrame)zoomFrame=requestAnimationFrame(zoomStep)});
 }
 function setZoomCommandFromY(clientY){
-    if(gvTimedZoomFrame){cancelAnimationFrame(gvTimedZoomFrame);gvTimedZoomFrame=0;gvTimedZoomToken++;gvSetZoomCommand(0);}
+    gvSettleAutoZoom(false);gvZoomSmoothedCommand=0;
     gvZoomInteractionActive=true;
     const r=zoomControl.rail.getBoundingClientRect();
     if(!r.height)return;
@@ -2263,7 +2243,7 @@ function setZoomCommandFromY(clientY){
 }
 function releaseZoom(){
     gvSettleAutoZoom(false);
-    if(gvTimedZoomFrame){cancelAnimationFrame(gvTimedZoomFrame);gvTimedZoomFrame=0;gvTimedZoomToken++;}
+    gvZoomSmoothedCommand=0;
     gvZoomLastFrameAt=0;
     gvZoomInteractionActive=false;
     gvScheduleEarthDistanceAfterZoom();
