@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
-      - name: Create one runtime-backed distance/FOV calculation and roll build to 0049
+      - name: Create runtime-backed distance-FOV calculation and roll build to 0049
         shell: bash
         run: |
           set -euo pipefail
