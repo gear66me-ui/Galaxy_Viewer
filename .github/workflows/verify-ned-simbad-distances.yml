@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: ned-simbad-distance-verification
+  group: ned-simbab-published-distance-update
   cancel-in-progress: false
 
 jobs:
