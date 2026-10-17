@@ -212,7 +212,7 @@ def main():
             done += 1
             if done % 25 == 0 or done == len(rows):
                 print(f"Processed {done}/{len(rows)} records", flush=True)
-    counters = {"records":len(rows),"publishedDistanceUpdated":0,"redshiftPopulated":0,"absurdDistanceReplaced":0,"absurdDistanceCleared":0,"noExternalValue":0}
+    counters = {"records":len(rows),"publishedDistanceUpdated":0,"redshiftPopulated":0,"redshiftSynchronized":0,"absurdDistanceReplaced":0,"absurdDistanceCleared":0,"noExternalValue":0}
     for entry, result in zip(rows, results):
         if not isinstance(entry.get("science"), dict):
             entry["science"] = {}
@@ -228,16 +228,33 @@ def main():
             science["distanceDisplay"] = f"{dist:,.4g} million light-years"
             entry["distance"] = science["distanceDisplay"]
             counters["publishedDistanceUpdated"] += 1
-        if z is not None:
-            science["redshift"] = round(z, 8)
-            science["redshiftDisplay"] = f"z {z:.6f}"
-            science["redshiftEstimated"] = False
-            science["redshiftMethod"] = "published_NED_SIMBAD_redshift"
-            science["redshiftSource"] = "NED/SIMBAD"
-            counters["redshiftPopulated"] += 1
-        elif positive(science.get("redshift", entry.get("redshift"))) is None:
-            # No redshift found; do not fabricate one.
-            pass
+        # Synchronize science-card and top-level compatibility fields.
+        # Use a published NED/SIMBAD redshift when found; otherwise preserve existing catalog data.
+        existing_z = number(science.get("redshift"))
+        if existing_z is None:
+            existing_z = number(entry.get("redshift"))
+        selected_z = z if z is not None else existing_z
+        if selected_z is not None and selected_z >= 0:
+            redshift_value = round(selected_z, 8)
+            redshift_display = f"z = {selected_z:.6f}"
+            if z is not None:
+                redshift_estimated = False
+                redshift_method = "published_NED_SIMBAD_redshift"
+                redshift_source = "NED/SIMBAD"
+            else:
+                redshift_estimated = science.get("redshiftEstimated", entry.get("redshiftEstimated", False))
+                redshift_method = science.get("redshiftMethod", entry.get("redshiftMethod", "existing_catalog_redshift"))
+                redshift_source = science.get("redshiftSource", entry.get("redshiftSource", "existing runtime catalog"))
+            for target in (science, entry):
+                target["redshift"] = redshift_value
+                target["redshiftDisplay"] = redshift_display
+                target["redshiftEstimated"] = redshift_estimated
+                target["redshiftMethod"] = redshift_method
+                target["redshiftSource"] = redshift_source
+            counters["redshiftSynchronized"] += 1
+            if z is not None:
+                counters["redshiftPopulated"] += 1
+        # If neither a source nor the existing catalog has redshift, do not fabricate one.
         # Never leave trillion-light-year-scale values in the runtime catalog.
         current = positive(science.get("distanceMly", entry.get("distanceMly")))
         if current is not None and current > ABSURD_MLY:
