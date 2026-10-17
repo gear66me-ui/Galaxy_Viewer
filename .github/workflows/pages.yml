@@ -128,7 +128,7 @@ jobs:
           assert 'gv-avm-runtime-catalog-0003.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','d4c95ace9c0ec81e948b2440ead7b06c269b344d','42620e479e7fa719ca168dd1fbf96e924e23eb9d','f7740afe20a1dccd0e58644e8c154f4e6396ed83','e38bfcc36a2f156517f9a77865da0c1c13d49175']), pins
+          assert pins==sorted(['10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','d4c95ace9c0ec81e948b2440ead7b06c269b344d','42620e479e7fa719ca168dd1fbf96e924e23eb9d','f7740afe20a1dccd0e58644e8c154f4e6396ed83','e38bfcc36a2f156517f9a77865da0c1c13d49175','fceee6a4b7ba1cacb5632e09c00c4f3ad4e05b51']), pins
           assert 'Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           assert "GalaxyViewerConstellationOverlay?.VERSION!=='0018'" in rc
