@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
-          fetch-depth: 0
       - name: Create one runtime-backed distance/FOV calculation and roll build to 0049
         shell: bash
         run: |
