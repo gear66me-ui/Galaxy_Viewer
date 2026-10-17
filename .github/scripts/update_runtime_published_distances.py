@@ -221,12 +221,25 @@ def main():
         z = result.get("selectedRedshift")
         old = result.get("oldDistanceMly")
         if dist is not None:
-            science["distanceMly"] = round(dist, 4)
-            science["distanceMethod"] = "median_of_published_NED_SIMBAD_measurements" if len(result["distanceValuesMly"]) > 1 else "single_published_NED_SIMBAD_measurement"
-            science["distanceEvidence"] = json.dumps(result["sources"], ensure_ascii=False, separators=(",", ":"))[:4000]
+            # Canonical runtime field is top-level distanceMly (Mly).
+            # Keep science.distanceMly synchronized as a compatibility mirror so older
+            # cards/modules do not disagree with the canonical runtime value.
+            canonical_distance = round(dist, 4)
+            method = "median_of_published_NED_SIMBAD_measurements" if len(result["distanceValuesMly"]) > 1 else "single_published_NED_SIMBAD_measurement"
+            evidence = json.dumps(result["sources"], ensure_ascii=False, separators=(",", ":"))[:4000]
+            display = f"{dist:,.4g} million light-years"
+            entry["distanceMly"] = canonical_distance
+            entry["distanceDisplay"] = display
+            entry["distance"] = display
+            entry["distanceMethod"] = method
+            entry["distanceEvidence"] = evidence
+            entry["distanceEstimated"] = False
+            entry["distanceSource"] = "NED/SIMBAD published measurements"
+            science["distanceMly"] = canonical_distance
+            science["distanceMethod"] = method
+            science["distanceEvidence"] = evidence
             science["distanceEstimated"] = False
-            science["distanceDisplay"] = f"{dist:,.4g} million light-years"
-            entry["distance"] = science["distanceDisplay"]
+            science["distanceDisplay"] = display
             counters["publishedDistanceUpdated"] += 1
         # Synchronize science-card and top-level compatibility fields.
         # Use a published NED/SIMBAD redshift when found; otherwise preserve existing catalog data.
