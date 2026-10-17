@@ -1,0 +1,93 @@
+name: Correct z=3.4 Galaxy Comoving Distance
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/correct-z34-galaxy-distance.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  correct-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Find and correct the z≈3.4 catalog record
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          matches = []
+          root = pathlib.Path("viewer/image-databases")
+          for path in root.rglob("*.json"):
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  continue
+              def walk(obj, trail="$"):
+                  if isinstance(obj, dict):
+                      science = obj.get("science") if isinstance(obj.get("science"), dict) else {}
+                      z = science.get("redshift", obj.get("redshift"))
+                      d = science.get("distanceMly", obj.get("distanceMly"))
+                      try:
+                          z, d = float(z), float(d)
+                      except (TypeError, ValueError):
+                          z = d = None
+                      if z is not None and d is not None and 3.35 <= z <= 3.45 and 10000 <= d <= 13000:
+                          matches.append((path, data, obj, science, z, d, trail))
+                      for k, v in obj.items():
+                          walk(v, f"{trail}.{k}")
+                  elif isinstance(obj, list):
+                      for i, v in enumerate(obj):
+                          walk(v, f"{trail}[{i}]")
+              walk(data)
+          unique = {}
+          for item in matches:
+              unique[(str(item[0]), item[6])] = item
+          matches = list(unique.values())
+          if len(matches) != 1:
+              print(f"Expected exactly one z≈3.4 record with distance 10,000–13,000 Mly; found {len(matches)}.")
+              for path, data, obj, science, z, d, trail in matches[:20]:
+                  print(f"CANDIDATE {path} {trail} name={obj.get('name') or obj.get('title') or obj.get('designation')} z={z} distanceMly={d}")
+              sys.exit(2)
+          path, data, obj, science, z, old, trail = matches[0]
+          # Present-day comoving distance, in millions of light-years.
+          new_mly = round((14.4 * z / (1 + 0.35 * z)) * 1000, 1)
+          display = f"{new_mly/1000:.2f} billion light-years (comoving, estimated)"
+          science["distanceMly"] = new_mly
+          science["distanceDisplay"] = display
+          science["distanceMethod"] = "Galaxy Viewer approximation 14.4*z/(1+0.35*z); present-day comoving distance"
+          science["distanceEstimated"] = True
+          if isinstance(obj.get("science"), dict):
+              obj["science"] = science
+          else:
+              obj["distanceMly"] = new_mly
+              obj["distanceDisplay"] = display
+              obj["distanceMethod"] = science["distanceMethod"]
+          if "distance" in obj:
+              obj["distance"] = display
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          print(f"UPDATED {path} record={trail} z={z} old_distanceMly={old} new_distanceMly={new_mly} display={display}")
+          PY
+
+      - name: Commit corrected database record
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No database changes were made."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases
+          git commit -m "Correct z=3.4 galaxy comoving distance"
+          git push origin HEAD:release
