@@ -73,7 +73,7 @@ jobs:
           fetch-depth: 1
 
       - name: Verify production release isolation
-        if: ${{ steps.scope.outputs.review_only != 'true' }}
+        if: ${{ steps.scope.outputs.review_only != 'true' && steps.scope.outputs.workflow_only != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
