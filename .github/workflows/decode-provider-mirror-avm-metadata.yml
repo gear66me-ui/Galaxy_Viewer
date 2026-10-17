@@ -58,12 +58,12 @@ jobs:
           # arbitrary numbers (e.g. dates, pixel dimensions, wavelengths) as distances.
           distance_re = re.compile(
               r"(?i)(?P<approx>about|approximately|roughly|around|nearly|over|more than|"
-              r"less than|at least|up to|estimated at|distance of)?\\s*"
-              r"(?P<num>\\d+(?:[.,]\\d+)?)\\s*"
-              r"(?P<unit>billion|million|thousand|bn|m|k)?\\s*"
+              r"less than|at least|up to|estimated at|distance of)?\s*"
+              r"(?P<num>\d+(?:[.,]\d+)?)\s*"
+              r"(?P<unit>billion|million|thousand|bn|m|k)?\s*"
               r"(?P<unit2>light[- ]?years?|ly|parsecs?|pc|kiloparsecs?|kpc|megaparsecs?|mpc)"
           )
-          direct_distance_key = re.compile(r"(?i)(distance|redshift|lookback|light.?year|parsec|\\bml y\\b|\\bMly\\b|\\bMpc\\b|\\bGpc\\b|\\b\\bz\\b)")
+          direct_distance_key = re.compile(r"(?i)(distance|redshift|lookback|light.?year|parsec|\bml y\b|\bMly\b|\bMpc\b|\bGpc\b|\b\bz\b)")
 
           def flatten_strings(value, path="$"):
               out = []
@@ -81,7 +81,7 @@ jobs:
               evidence = []
               for field, text in flatten_strings(metadata):
                   if not direct_distance_key.search(field) and not re.search(
-                      r"(?i)(light[- ]?years?|\\bly\\b|parsecs?|\\bpc\\b|\\bkpc\\b|\\bMpc\\b|\\bGpc\\b)",
+                      r"(?i)(light[- ]?years?|\bly\b|parsecs?|\bpc\b|\bkpc\b|\bMpc\b|\bGpc\b)",
                       text
                   ):
                       continue
@@ -227,7 +227,7 @@ jobs:
               # Write a separate full catalog into each mirror directory found for this provider.
               for out_dir in sorted(output_dirs):
                   out_path = out_dir / f"{provider} decoded AVM metadata.json"
-                  out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+                  out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
                   print(f"{provider}: wrote {out_path} ({len(provider_records)} image records)")
               provider_summary[provider] = {
                   "status": "decoded",
@@ -248,7 +248,7 @@ jobs:
           }
           out = root / "master-database" / "avm-metadata" / "gv-decoded-image-metadata-summary.json"
           out.parent.mkdir(parents=True, exist_ok=True)
-          out.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          out.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           print(json.dumps(summary, indent=2))
           if total_images == 0:
               raise SystemExit("No mirror images were decoded; refusing a successful empty run.")
