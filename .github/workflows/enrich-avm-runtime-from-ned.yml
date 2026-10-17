@@ -1,6 +1,11 @@
 name: Enrich AVM Runtime Distances and Redshifts from NED
 
 on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/enrich-avm-runtime-from-ned.yml"
+      - ".github/scripts/enrich_avm_runtime_from_ned.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -37,7 +42,7 @@ jobs:
 
       - name: Query NED API and audit proposed canonical distance/redshift values
         env:
-          MODE: ${{ inputs.mode }}
+          MODE: ${{ inputs.mode || 'audit' }}
         run: python .github/scripts/enrich_avm_runtime_from_ned.py
 
       - name: Upload full NED lookup audit
