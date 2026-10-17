@@ -742,7 +742,7 @@
       "dec": -25.499858333299514,
       "raText": "8 18 45.92",
       "decText": "-25 29 59.49",
-      "distance": "26.06 million light-years",
+      "distance": "76.10 million light-years",
       "constellation": "Puppis",
       "fieldOfView": "2.05 x 2.25 arcminutes",
       "orientation": null,
@@ -767,28 +767,28 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 26.059895,
-        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceMly": 76.100084,
+        "distanceMethod": "redshift_Hubble_flow_H0_70_from_SIMBAD_z_0.005448",
         "sizeKly": [
-          45.33,
-          49.752
+          45.38,
+          49.807
         ],
-        "sizeMethod": "estimated_from_fov_and_published_distance",
+        "sizeMethod": "estimated_from_fov_and_redshift_Hubble_flow_distance",
         "ageGyr": 13.390983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 13.39 GYR",
-        "redshift": null,
-        "redshiftDisplay": null,
-        "redshiftEstimated": null,
-        "redshiftMethod": null,
-        "distanceDisplay": "26.06 million light-years",
-        "distanceEstimated": false,
+        "redshift": 0.005448,
+        "redshiftDisplay": "z = 0.005448 (SIMBAD emission redshift)",
+        "redshiftEstimated": false,
+        "redshiftMethod": "SIMBAD_emission_redshift",
+        "distanceDisplay": "76.10 million light-years",
+        "distanceEstimated": true,
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 45.3 × 49.8 KLY",
-        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
+        "sizeDisplay": "EST. 45.38 × 49.807 KLY",
+        "distanceEvidence": "Derived from SIMBAD NGC 2566 emission redshift z=0.005448 using v≈cz and H0=70 km/s/Mpc; peculiar velocity may materially affect distance."
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2566",
@@ -821,7 +821,8 @@
       "imageFovSource": "https://esawebb.org/images/potm2412a/",
       "imageFovProvider": "ESA/Webb",
       "imageFovFetchedAt": "2026-09-17T01:23:44.703578+00:00",
-      "imageFovParseUnit": "arcminutes"
+      "imageFovParseUnit": "arcminutes",
+      "redshift": 0.005448
     },
     {
       "archiveId": "potm2411a",
