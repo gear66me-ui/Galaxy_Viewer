@@ -36,7 +36,7 @@ jobs:
 
       - name: Audit six provider catalogs and optionally inject runtime distance
         env:
-          MODE: ${{ inputs.mode || 'audit' }}
+          MODE: ${{ inputs.mode || 'apply' }}
         run: |
           python3 - <<'PY'
           import json, os, pathlib, sys
