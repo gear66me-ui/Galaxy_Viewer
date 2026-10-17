@@ -47833,10 +47833,10 @@
         "distanceMly": 79.58206399999999,
         "distanceMethod": "light_travel_distance_backfilled_from_age_range_0010",
         "sizeKly": [
-          750.492,
-          573.05
+          59.726,
+          45.604
         ],
-        "sizeMethod": "estimated_from_fov_and_light_travel_distance_0011",
+        "sizeMethod": "estimated_from_catalog_distance_and_image_fov_full_angular_footprint",
         "ageGyr": 12.467091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "ageMinGyr": 0,
@@ -47853,7 +47853,7 @@
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_lcdm_from_age_range_0011",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 750.5 × 573.0 KLY"
+        "sizeDisplay": "EST. 59.73 × 45.60 KLY"
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2655",
