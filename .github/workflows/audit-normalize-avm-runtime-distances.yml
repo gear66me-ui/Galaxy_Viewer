@@ -1,6 +1,11 @@
 name: Audit and Normalize AVM Runtime Distances
 
 on:
+  push:
+    branches:
+      - release
+    paths:
+      - '.github/workflows/audit-normalize-avm-runtime-distances.yml'
   workflow_dispatch:
     inputs:
       mode:
@@ -31,7 +36,7 @@ jobs:
 
       - name: Audit six provider catalogs and optionally inject runtime distance
         env:
-          MODE: ${{ inputs.mode }}
+          MODE: ${{ inputs.mode || 'audit' }}
         run: |
           python3 - <<'PY'
           import json, os, pathlib, sys
