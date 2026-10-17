@@ -40,7 +40,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install astronomy query client
-        run: python -m pip install --upgrade pip astroquery astropy requests
+        run: python -m pip install --upgrade pip astroquery astropy scipy requests
 
       - name: Query NED and SIMBAD; calculate source median where supported
         env:
