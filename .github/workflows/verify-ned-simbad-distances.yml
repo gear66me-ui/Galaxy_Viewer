@@ -1,0 +1,239 @@
+name: Verify Galaxy Distances with NED and SIMBAD
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "audit writes a report; apply updates only records with independently retrieved, compatible distance measurements"
+        required: true
+        type: choice
+        options: [audit, apply]
+        default: audit
+  schedule:
+    - cron: "23 7 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ned-simbad-distance-verification
+  cancel-in-progress: false
+
+jobs:
+  verify-distances:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install astronomy query client
+        run: python -m pip install --upgrade pip astroquery astropy requests
+
+      - name: Query NED and SIMBAD; calculate source median where supported
+        env:
+          MODE: ${{ inputs.mode || 'audit' }}
+        run: |
+          cat > /tmp/verify_distances.py <<'PY'
+          import json, math, os, pathlib, re, statistics, time
+          from datetime import datetime, timezone
+          from astroquery.simbad import Simbad
+          from astroquery.ipac.ned import Ned
+          from astropy import units as u
+
+          ROOT = pathlib.Path(".")
+          RUNTIME = ROOT / "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json"
+          REPORT = ROOT / "ned-simbad-distance-verification.json"
+          MODE = os.getenv("MODE", "audit").lower()
+          EXPECTED = 1847
+          MLY_PER_MPC = 3.261563777
+          if MODE not in ("audit", "apply"):
+              raise SystemExit("MODE must be audit or apply")
+
+          def records(obj):
+              if isinstance(obj, list):
+                  return [x for x in obj if isinstance(x, dict)]
+              if isinstance(obj, dict):
+                  for k in ("records", "galaxies", "catalog", "items", "data"):
+                      if isinstance(obj.get(k), list):
+                          return [x for x in obj[k] if isinstance(x, dict)]
+              raise RuntimeError("Unknown runtime catalog structure; refusing changes")
+
+          def positive(v):
+              try:
+                  x = float(v)
+                  return x if math.isfinite(x) and x > 0 else None
+              except (TypeError, ValueError):
+                  return None
+
+          def object_name(r):
+              for k in ("simbadName", "nedName", "targetName", "objectName", "name", "title"):
+                  v = r.get(k)
+                  if isinstance(v, str) and v.strip():
+                      return v.strip()
+              return ""
+
+          def current_distance(r):
+              return positive(r.get("distanceMly"))
+
+          def get_redshift(table):
+              if table is None or len(table) == 0:
+                  return None
+              names = {str(c).lower(): c for c in table.colnames}
+              for candidate in ("redshift", "z", "redshift_helio", "z_helio"):
+                  if candidate in names:
+                      try:
+                          v = float(table[names[candidate]][0])
+                          if math.isfinite(v) and v >= 0:
+                              return v
+                      except Exception:
+                          pass
+              return None
+
+          def redshift_distance_mly(z):
+              # Flat LCDM luminosity distance; used only as a cross-check, never
+              # mixed into the median of published direct distance measurements.
+              from astropy.cosmology import FlatLambdaCDM
+              cosmo = FlatLambdaCDM(H0=70 * u.km/u.s/u.Mpc, Om0=0.3)
+              return float(cosmo.luminosity_distance(z).to_value(u.Mpc) * MLY_PER_MPC)
+
+          data = json.loads(RUNTIME.read_text(encoding="utf-8"))
+          rows = records(data)
+          if len(rows) != EXPECTED:
+              raise SystemExit(f"Expected {EXPECTED} runtime records; found {len(rows)}. No changes made.")
+
+          simbad = Simbad()
+          simbad.TIMEOUT = 30
+          report_rows = []
+          changes = []
+          counters = {"records": len(rows), "queried": 0, "simbad_matched": 0,
+                      "ned_matched": 0, "both_redshift_available": 0,
+                      "distance_disagreement_over_20pct": 0, "query_errors": 0,
+                      "no_external_match": 0, "updated": 0}
+
+          for i, r in enumerate(rows, 1):
+              name = object_name(r)
+              old = current_distance(r)
+              item = {"index": i, "name": name, "archiveId": r.get("archiveId") or r.get("id"),
+                      "currentDistanceMly": old, "simbad": {}, "ned": {},
+                      "status": "unverified"}
+              if not name:
+                  item["status"] = "missing_object_name"
+                  report_rows.append(item)
+                  continue
+              counters["queried"] += 1
+              sz = nz = None
+              try:
+                  st = simbad.query_object(name)
+                  if st is not None and len(st):
+                      counters["simbad_matched"] += 1
+                      cols = {str(c).lower(): c for c in st.colnames}
+                      for key in ("main_id", "ra", "dec", "rvz_redshift", "z_value"):
+                          if key in cols:
+                              value = st[cols[key]][0]
+                              if hasattr(value, "item"):
+                                  value = value.item()
+                              item["simbad"][key] = str(value)
+                      for key in ("rvz_redshift", "z_value"):
+                          if key in cols:
+                              try:
+                                  sz = float(st[cols[key]][0])
+                                  if not math.isfinite(sz) or sz < 0: sz = None
+                              except Exception: pass
+              except Exception as e:
+                  item["simbad"]["error"] = str(e)[:300]
+                  counters["query_errors"] += 1
+              try:
+                  nt = Ned.query_object(name)
+                  if nt is not None and len(nt):
+                      counters["ned_matched"] += 1
+                      cols = {str(c).lower(): c for c in nt.colnames}
+                      for key in ("object name", "redshift", "ra", "dec", "object type"):
+                          if key in cols:
+                              item["ned"][key] = str(nt[cols[key]][0])
+                      nz = get_redshift(nt)
+              except Exception as e:
+                  item["ned"]["error"] = str(e)[:300]
+                  counters["query_errors"] += 1
+
+              if sz is not None:
+                  item["simbad"]["redshift"] = sz
+              if nz is not None:
+                  item["ned"]["redshift"] = nz
+              # Distances inferred from redshift are diagnostics only. Do not mix
+              # these with published direct/secondary distance measurements.
+              if sz is not None:
+                  item["simbad"]["redshiftLuminosityDistanceMly"] = round(redshift_distance_mly(sz), 3)
+              if nz is not None:
+                  item["ned"]["redshiftLuminosityDistanceMly"] = round(redshift_distance_mly(nz), 3)
+              if sz is not None and nz is not None:
+                  counters["both_redshift_available"] += 1
+                  if abs(sz - nz) > max(0.0001, max(sz, nz) * 0.05):
+                      item["status"] = "redshift_conflict_review"
+                  else:
+                      item["status"] = "redshift_crosscheck_only"
+              elif sz is not None or nz is not None:
+                  item["status"] = "single_redshift_crosscheck_only"
+              else:
+                  counters["no_external_match"] += 1
+                  item["status"] = "no_usable_redshift"
+
+              # No automatic catalog write from redshift-derived values: this is
+              # not a published distance measurement and may not match the
+              # viewer's established distance convention (light-travel vs
+              # luminosity/comoving distance). This protects the catalog from
+              # silently replacing one wrong number with a different definition.
+              report_rows.append(item)
+              if i % 25 == 0:
+                  print(f"Queried {i}/{len(rows)} records")
+              time.sleep(0.15)
+
+          result = {
+              "schema": "gv-ned-simbad-distance-verification-0001",
+              "generatedUtc": datetime.now(timezone.utc).isoformat(),
+              "mode": MODE,
+              "runtimePath": str(RUNTIME),
+              "runtimeRecordCount": len(rows),
+              "distanceUnit": "Mly",
+              "medianPolicy": "Median may only be computed from multiple published measurements of the same distance definition. NED/SIMBAD redshifts are recorded as independent cross-checks and are not mixed with distance measurements.",
+              "counters": counters,
+              "records": report_rows,
+              "limitations": [
+                  "The public NED and SIMBAD object lookup endpoints provide object metadata/redshift, not a guaranteed common set of published distance measurements for every target.",
+                  "Redshift-derived luminosity distance is not interchangeable with light-travel distance, comoving distance, or redshift-independent distance.",
+                  "This workflow deliberately does not overwrite the runtime catalog with inferred distances. It creates an auditable object-by-object verification report and prevents unsafe automatic changes."
+              ]
+          }
+          REPORT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(counters, indent=2))
+          PY
+          python /tmp/verify_distances.py
+
+      - name: Upload verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ned-simbad-distance-verification
+          path: ned-simbad-distance-verification.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit verification report on release
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ned-simbad-distance-verification.json
+          if git diff --cached --quiet; then
+            echo "No report changes to commit."
+          else
+            git commit -m "Add NED and SIMBAD distance verification report"
+            git push origin HEAD:release
+          fi
