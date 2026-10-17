@@ -13533,7 +13533,7 @@
       "dec": -25.500308117589395,
       "raText": "8 18 45.59",
       "decText": "-25° 29' 58.66\"",
-      "distance": 26.0598644,
+      "distance": 76.100084,
       "constellation": "Puppis",
       "fieldOfView": "0.045000 x 0.044833 degrees",
       "orientation": "North is 54.4° left of vertical",
@@ -13564,25 +13564,28 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/potw2451a.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
-        "distanceMly": 26.0598644,
-        "distanceMethod": "esa",
+        "distanceMly": 76.100084,
+        "distanceMethod": "redshift_Hubble_flow_H0_70_from_SIMBAD_z_0.005448",
         "sizeKly": [
-          59.69,
-          59.47
+          59.769,
+          59.547
         ],
-        "sizeMethod": "distance_fov_estimate",
+        "sizeMethod": "estimated_from_fov_and_redshift_Hubble_flow_distance",
         "ageGyr": 13.391091,
         "ageMethod": "cosmic_age_at_emission_from_light_travel_distance_flat_lcdm_H0_70_Om_0.3_0018",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 60 x 59 KLY",
+        "sizeDisplay": "EST. 60 × 60 KLY",
         "ageMinGyr": null,
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 13.39 GYR",
-        "redshift": 0.005279,
-        "redshiftDisplay": "EST. z 0.00528",
-        "redshiftEstimated": true,
-        "redshiftMethod": "inverted_lcdm_from_age_0011"
+        "redshift": 0.005448,
+        "redshiftDisplay": "z = 0.005448 (SIMBAD emission redshift)",
+        "redshiftEstimated": false,
+        "redshiftMethod": "SIMBAD_emission_redshift",
+        "distanceDisplay": "76.10 million light-years",
+        "distanceEstimated": true,
+        "distanceEvidence": "Derived from SIMBAD NGC 2566 emission redshift z=0.005448 using v≈cz and H0=70 km/s/Mpc; peculiar velocity may materially affect distance."
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 2566",
@@ -13617,7 +13620,8 @@
       "imageFovSource": "https://esahubble.org/images/potw2451a/",
       "imageFovProvider": "ESA/Hubble",
       "imageFovFetchedAt": "2026-09-17T01:10:19.462199+00:00",
-      "imageFovParseUnit": "arcminutes"
+      "imageFovParseUnit": "arcminutes",
+      "redshift": 0.005448
     },
     {
       "archiveId": "potw2450a",
