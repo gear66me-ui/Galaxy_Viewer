@@ -182,12 +182,10 @@ def main():
         new_d = finite_positive(result.get("distanceMly"))
         old_z = record.get("redshift")
         new_z = result.get("redshift")
-        # Do not silently replace a published source distance with a modelled one.
-        # Independent NED distance may replace existing value; a Hubble-flow value
-        # fills only a missing/invalid canonical distance. All choices are reported.
+        # Apply one consistent hierarchy to the canonical field:
+        # NED mean independent distance first; if absent, NED Hubble-flow distance.
+        # This intentionally replaces stale/inconsistent values and logs old/new.
         chosen_d = new_d
-        if result.get("distanceEstimated") is True and old_d is not None:
-            chosen_d = old_d
         item = {
             "index": index,
             "name": record.get("name"),
@@ -234,7 +232,7 @@ def main():
             "canonicalDistanceField": "distanceMly",
             "units": "million light-years (Mly)",
             "redshiftField": "redshift",
-            "distanceRule": "Use NED mean redshift-independent distance when available; otherwise use NED 3K-CMB Hubble-flow distance only to fill a missing/invalid distance. Preserve existing distance against model-derived replacement.",
+            "distanceRule": "Set canonical distanceMly from NED mean redshift-independent distance when available; otherwise use NED 3K-CMB Hubble-flow distance. Replace stale canonical values and record the previous value in the audit report.",
             "ambiguities": "Unresolved names are left unchanged and listed in this report."
         }
     }
