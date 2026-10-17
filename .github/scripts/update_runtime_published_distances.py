@@ -2,6 +2,7 @@
 """Populate Galaxy Viewer runtime distances from published NED/SIMBAD values and redshifts."""
 import json, math, os, statistics, time, urllib.parse, urllib.request, xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import lru_cache
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -77,6 +78,7 @@ def identifiers(entry):
     # Avoid sending long descriptive captions to either archive.
     return [v for v in values if len(v) <= 100][:4]
 
+@lru_cache(maxsize=10000)
 def ned_lookup(name):
     url = NED + urllib.parse.urlencode({"TARGET": name, "MAXREC": 1000})
     rows = parse_votable(fetch(url))
@@ -92,6 +94,7 @@ def ned_lookup(name):
             redshifts.append(z)
     return {"distances": distances, "redshifts": redshifts, "methods": methods, "references": refs, "url": url}
 
+@lru_cache(maxsize=10000)
 def simbad_lookup(name):
     q = name.replace("'", "''")
     adql = ("SELECT b.main_id, b.rvz_redshift FROM ident AS i "
