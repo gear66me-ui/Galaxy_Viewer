@@ -1,0 +1,126 @@
+name: Unify Runtime Distance-FOV Span (Build 0049)
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/unify-runtime-distance-fov-span-build-0049.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gv-distance-fov-build-0049
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+      - name: Create one runtime-backed distance/FOV calculation and roll build to 0049
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re, shutil
+
+          root = Path(".")
+          module_dir = root / "viewer/modules/destination-presentation"
+          old_module = module_dir / "gv-destination-presentation-0055.js"
+          new_module = module_dir / "gv-destination-presentation-0056.js"
+          source = old_module.read_text(encoding="utf-8")
+
+          # One equation for the destination card and HD destination card.
+          old_size = next((line for line in source.splitlines() if line.startswith("function size(d){")), None)
+          if not old_size or "d?.sizeKly" in old_size or "d?.physicalSizeLy" in old_size:
+              # The current 0055 file is expected to be the source with the existing distance/FOV equation.
+              if not old_size:
+                  raise SystemExit("STOP: size(d) function not found")
+          new_size = "function size(d){const distanceMly=finite(d?.distanceMly),fx=finite(d?.fovXDegrees)*60,fy=finite(d?.fovYDegrees)*60;if(!(distanceMly>0)||!(fx>0)||!(fy>0))return['IMG SPAN (KLY)','N/A'];const x=distanceMly*0.291*fx,y=distanceMly*0.291*fy;if(!Number.isFinite(x)||!Number.isFinite(y)||!(x>0)||!(y>0))return['IMG SPAN (KLY)','N/A'];return['IMG SPAN (KLY)',x.toFixed(2)+' × '+y.toFixed(2)]}"
+          source = source.replace(old_size, new_size, 1)
+          source = source.replace("const VERSION='0055';", "const VERSION='0056';", 1)
+
+          # Read only the canonical runtime catalog and hydrate both distance and axis FOV.
+          start = source.index(" const hydrateAvmFov=async requested=>{")
+          end = source.index("\n const zoomGeometry=", start)
+          hydrate = """ const hydrateAvmFov=async requested=>{
+          try{
+           if(!avmRuntimeFovPromise)avmRuntimeFovPromise=fetch(AVM_RUNTIME_URL,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('AVM runtime catalog HTTP '+r.status);return r.json()}).then(p=>{const records=Array.isArray(p)?p:p?.records;if(!Array.isArray(records))throw new Error('AVM runtime catalog has no records');return records});
+           const records=await avmRuntimeFovPromise;
+           const id=clean(requested?.archiveId||requested?.id||requested?.providerId).toLowerCase();
+           const imageUrl=clean(requested?.imageUrl||requested?.hdUrl||'').toLowerCase();
+           const provider=clean(requested?.provider).toUpperCase();
+           const record=records.find(r=>{
+            const rid=clean(r?.archiveId||r?.id||r?.providerId).toLowerCase();
+            const rurl=clean(r?.imageUrl||r?.hdUrl||'').toLowerCase();
+            const rp=clean(r?.provider||r?.providerKey||r?.survey||'').toUpperCase();
+            return (id&&rid===id&&(!provider||!rp||rp===provider))||(imageUrl&&rurl===imageUrl);
+           });
+           if(!record)throw new Error('No AVM runtime record for '+(id||imageUrl||'destination'));
+           const distanceMly=finite(record?.distanceMly);
+           const x=finite(record?.fovXDegrees),y=finite(record?.fovYDegrees);
+           if(!(distanceMly>0))throw new Error('Runtime distanceMly missing or invalid');
+           if(!(x>0&&x<360&&y>0&&y<360))throw new Error('Runtime FOVX/FOVY missing or invalid');
+           if(destination!==requested)return;
+           destination={...requested,distanceMly,fovXDegrees:x,fovYDegrees:y};
+           populate(destination);
+           scaleValue=null;
+           if(hd.classList.contains('gvdp-open')){updateScale(true);scheduleScale()}
+           console.info('GV DESTINATION DISTANCE/FOV HYDRATED',{archiveId:record.archiveId,imageUrl:record.imageUrl,distanceMly,fovXDegrees:x,fovYDegrees:y,source:'AVM runtime catalog'});
+          }catch(error){console.error('GV DESTINATION DISTANCE/FOV HYDRATION FAILED',error)}
+         }"""
+          source = source[:start] + hydrate + source[end:]
+          # All span, distance display, FOV display and scale geometry consume canonical hydrated fields only.
+          source = source.replace("finite(d?.distanceMly??d?.distance)", "finite(d?.distanceMly)")
+          source = source.replace("finite(d?.fovXDegrees??d?.avmHorizontalFovDegrees??d?.imageFovXDeg)", "finite(d?.fovXDegrees)")
+          source = source.replace("finite(d?.fovYDegrees??d?.avmVerticalFovDegrees??d?.imageFovYDeg)", "finite(d?.fovYDegrees)")
+          source = source.replace("finite(d?.imageFovXArcmin??(finite(d?.fovXDegrees)*60))", "finite(d?.fovXDegrees)*60")
+          source = source.replace("finite(d?.imageFovYArcmin??(finite(d?.fovYDegrees)*60))", "finite(d?.fovYDegrees)*60")
+          if "d?.sizeKly" in source[source.index("function size(d){"):source.index("\n",source.index("function size(d){"))]:
+              raise SystemExit("STOP: precomputed size fallback remains in size()")
+          if "distanceMly*0.291*fx" not in source or "distanceMly*0.291*fy" not in source:
+              raise SystemExit("STOP: canonical equation not found")
+          new_module.write_text(source,encoding="utf-8")
+
+          old_runtime = root / "viewer/RC-V1.0.0.8-BLD-0048.py"
+          new_runtime = root / "viewer/RC-V1.0.0.8-BLD-0049.py"
+          runtime = old_runtime.read_text(encoding="utf-8")
+          runtime = runtime.replace('BUILD_NUMBER = "0048"', 'BUILD_NUMBER = "0049"', 1)
+          pattern = r"destinationPresentationUrl:'[^']*gv-destination-presentation-[^']*'"
+          runtime, n = re.subn(pattern, "destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0056.js'", runtime)
+          if n != 1: raise SystemExit(f"STOP: expected one destination presentation URL, got {n}")
+          new_runtime.write_text(runtime,encoding="utf-8")
+
+          pointer = root / "viewer/gv-current-viewer.json"
+          pointer.write_text(json.dumps({"version":"RC-V1.0.0.8","viewer":"RC-V1.0.0.8-BLD-0049.py","build":"0049"},indent=2)+"\n",encoding="utf-8")
+
+          manifest_path = root / "release-manifest.json"
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          manifest["build"]="0049"
+          manifest["runtime"]=[("viewer/RC-V1.0.0.8-BLD-0049.py" if x=="viewer/RC-V1.0.0.8-BLD-0048.py" else "viewer/modules/destination-presentation/gv-destination-presentation-0056.js" if x=="viewer/modules/destination-presentation/gv-destination-presentation-0055.js" else x) for x in manifest.get("runtime",[])]
+          for required in ["viewer/RC-V1.0.0.8-BLD-0049.py","viewer/modules/destination-presentation/gv-destination-presentation-0056.js","viewer/gv-current-viewer.json"]:
+              if required not in manifest["runtime"]: manifest["runtime"].append(required)
+          manifest_path.write_text(json.dumps(manifest,indent=2)+"\n",encoding="utf-8")
+          print("Prepared build 0049, module 0056, runtime-only distanceMly/FOV axes, one shared span equation.")
+          PY
+      - name: Validate and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check viewer/modules/destination-presentation/gv-destination-presentation-0056.js
+          python3 -m py_compile viewer/RC-V1.0.0.8-BLD-0049.py
+          python3 -m json.tool viewer/gv-current-viewer.json >/dev/null
+          python3 -m json.tool release-manifest.json >/dev/null
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/modules/destination-presentation/gv-destination-presentation-0056.js viewer/RC-V1.0.0.8-BLD-0049.py viewer/gv-current-viewer.json release-manifest.json
+          git commit -m "Unify runtime distance-FOV span calculation build 0049"
+          git push origin HEAD:release
