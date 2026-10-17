@@ -41,7 +41,8 @@ jobs:
                           z, d = float(z), float(d)
                       except (TypeError, ValueError):
                           z = d = None
-                      if z is not None and d is not None and 3.35 <= z <= 3.45 and 10000 <= d <= 13000:
+                      # Match the catalog record itself, not its nested science object (which duplicates the same values).
+                      if "science" in obj and isinstance(obj.get("science"), dict) and z is not None and d is not None and 3.35 <= z <= 3.45 and 10000 <= d <= 13000:
                           matches.append((path, data, obj, science, z, d, trail))
                       for k, v in obj.items():
                           walk(v, f"{trail}.{k}")
