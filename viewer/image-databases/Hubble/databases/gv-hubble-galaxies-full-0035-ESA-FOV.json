@@ -28659,7 +28659,7 @@
       "dec": 29.346155555599992,
       "raText": "15 2 36.78",
       "decText": "29° 20' 46.16\"",
-      "distance": "EST. 11.65 billion light-years",
+      "distance": "22.44 billion light-years (comoving, estimated)",
       "constellation": "Boötes",
       "fieldOfView": "0.037000 x 0.033000 degrees",
       "orientation": "North is 10.0° left of vertical",
@@ -28695,8 +28695,8 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/potw2024a.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
-        "distanceMly": 11650.479,
-        "distanceMethod": "estimate_z_light_travel_0017",
+        "distanceMly": 22439.9,
+        "distanceMethod": "Galaxy Viewer approximation 14.4*z/(1+0.35*z); present-day comoving distance",
         "sizeKly": [
           3204.63,
           2858.18
@@ -28717,7 +28717,7 @@
         "lightTravelDistanceMly": 11650.479,
         "lightTravelDistanceMethod0017": "lookback_from_redshift_flat_lcdm_H0_70_Om_0.3",
         "distanceEstimated": true,
-        "distanceDisplay": "EST. 11.65 billion light-years",
+        "distanceDisplay": "22.44 billion light-years (comoving, estimated)",
         "distanceSemantic0017": "light_travel_distance",
         "sizeDistanceSemantic0017": "angular_diameter_distance"
       },
