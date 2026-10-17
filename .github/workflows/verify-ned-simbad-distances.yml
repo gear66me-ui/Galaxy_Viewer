@@ -1,6 +1,10 @@
 name: Verify Galaxy Distances with NED and SIMBAD
 
 on:
+  push:
+    branches: [release]
+    paths:
+      - '.github/workflows/verify-ned-simbad-distances.yml'
   workflow_dispatch:
     inputs:
       mode:
@@ -62,7 +66,7 @@ jobs:
               if isinstance(obj, list):
                   return [x for x in obj if isinstance(x, dict)]
               if isinstance(obj, dict):
-                  for k in ("records", "galaxies", "catalog", "items", "data"):
+                  for k in ("records", "entries", "galaxies", "catalog", "items", "data"):
                       if isinstance(obj.get(k), list):
                           return [x for x in obj[k] if isinstance(x, dict)]
               raise RuntimeError("Unknown runtime catalog structure; refusing changes")
