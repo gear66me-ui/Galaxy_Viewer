@@ -1,0 +1,63 @@
+{
+  "schema": "galaxy-viewer-decoded-image-metadata-run",
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-10-17T15:46:53.497138+00:00",
+  "providerSummary": {
+    "Hubble": {
+      "status": "decoded",
+      "mirrorDirectories": [
+        "viewer/image-databases/Hubble/mirror"
+      ],
+      "imagesDecoded": 0,
+      "imagesFailed": 0,
+      "distanceCandidateImageCount": 0
+    },
+    "ESO": {
+      "status": "decoded",
+      "mirrorDirectories": [
+        "viewer/image-databases/ESO"
+      ],
+      "imagesDecoded": 232,
+      "imagesFailed": 0,
+      "distanceCandidateImageCount": 138
+    },
+    "NoirLab": {
+      "status": "decoded",
+      "mirrorDirectories": [
+        "viewer/image-databases/NoirLab"
+      ],
+      "imagesDecoded": 367,
+      "imagesFailed": 0,
+      "distanceCandidateImageCount": 202
+    },
+    "JWST": {
+      "status": "decoded",
+      "mirrorDirectories": [
+        "viewer/image-databases/JWST"
+      ],
+      "imagesDecoded": 47,
+      "imagesFailed": 0,
+      "distanceCandidateImageCount": 30
+    },
+    "Spitzer": {
+      "status": "decoded",
+      "mirrorDirectories": [
+        "viewer/image-databases/Spitzer"
+      ],
+      "imagesDecoded": 49,
+      "imagesFailed": 0,
+      "distanceCandidateImageCount": 26
+    },
+    "Chandra": {
+      "status": "decoded",
+      "mirrorDirectories": [
+        "viewer/image-databases/Chandra"
+      ],
+      "imagesDecoded": 52,
+      "imagesFailed": 0,
+      "distanceCandidateImageCount": 1
+    }
+  },
+  "totalImagesDecoded": 747,
+  "errors": []
+}

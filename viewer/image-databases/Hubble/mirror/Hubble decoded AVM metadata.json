@@ -1,0 +1,13 @@
+{
+  "schema": "galaxy-viewer-decoded-image-metadata",
+  "schemaVersion": 1,
+  "provider": "Hubble",
+  "generatedAtUtc": "2026-10-17T15:45:51.930064+00:00",
+  "sourceBranch": "release",
+  "imageCountDiscovered": 0,
+  "imagesDecoded": 0,
+  "imagesFailed": 0,
+  "distanceCandidateImageCount": 0,
+  "note": "allMetadata preserves ExifTool's decoded tags; distanceEvidence records text/numeric candidates only and does not certify scientific validity.",
+  "images": []
+}
