@@ -33,7 +33,7 @@ jobs:
 
       - name: Audit all 1,847 runtime distances and apply reviewed corrections
         env:
-          MODE: ${{ inputs.mode || 'apply' }}
+          MODE: ${{ inputs.mode || 'audit' }}
         run: |
           python3 - <<'PY'
           import json, os, pathlib, re, math
@@ -78,7 +78,7 @@ jobs:
               if isinstance(obj, dict):
                   if isinstance(obj.get("records"), list):
                       return [r for r in obj["records"] if isinstance(r, dict)]
-                  for key in ("galaxies", "catalog", "items", "data"):
+                  for key in ("entries", "galaxies", "catalog", "items", "data"):
                       if isinstance(obj.get(key), list) and obj[key] and all(isinstance(r, dict) for r in obj[key]):
                           return obj[key]
               if isinstance(obj, list):
