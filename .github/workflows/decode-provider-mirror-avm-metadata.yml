@@ -1,0 +1,310 @@
+name: Decode Provider Mirror AVM Metadata
+
+on:
+  workflow_dispatch:
+    inputs:
+      providers:
+        description: "Providers to decode (all, or comma-separated: Hubble,ESO,NoirLab,JWST,Spitzer,Chandra)"
+        required: true
+        default: "all"
+        type: string
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/decode-provider-mirror-avm-metadata.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: decode-provider-mirror-avm-metadata
+  cancel-in-progress: false
+
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout release source of truth
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Install ExifTool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libimage-exiftool-perl
+
+      - name: Decode all image metadata and extract distance evidence
+        env:
+          PROVIDERS: ${{ inputs.providers || 'all' }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re, subprocess, hashlib, datetime
+
+          root = pathlib.Path("viewer/image-databases")
+          provider_names = ["Hubble", "ESO", "NoirLab", "JWST", "Spitzer", "Chandra"]
+          requested = os.environ.get("PROVIDERS", "all").strip()
+          selected = provider_names if requested.lower() == "all" else [
+              x.strip() for x in requested.split(",") if x.strip()
+          ]
+          unknown = sorted(set(selected) - set(provider_names))
+          if unknown:
+              raise SystemExit("Unknown provider(s): " + ", ".join(unknown))
+
+          image_exts = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp", ".gif", ".fits", ".fit"}
+          # Capture numeric distance expressions and natural-language distances without treating
+          # arbitrary numbers (e.g. dates, pixel dimensions, wavelengths) as distances.
+          distance_re = re.compile(
+              r"(?i)(?P<approx>about|approximately|roughly|around|nearly|over|more than|"
+              r"less than|at least|up to|estimated at|distance of)?\\s*"
+              r"(?P<num>\\d+(?:[.,]\\d+)?)\\s*"
+              r"(?P<unit>billion|million|thousand|bn|m|k)?\\s*"
+              r"(?P<unit2>light[- ]?years?|ly|parsecs?|pc|kiloparsecs?|kpc|megaparsecs?|mpc)"
+          )
+          direct_distance_key = re.compile(r"(?i)(distance|redshift|lookback|light.?year|parsec|\\bml y\\b|\\bMly\\b|\\bMpc\\b|\\bGpc\\b|\\b\\bz\\b)")
+
+          def flatten_strings(value, path="$"):
+              out = []
+              if isinstance(value, dict):
+                  for k, v in value.items():
+                      out.extend(flatten_strings(v, path + "." + str(k)))
+              elif isinstance(value, list):
+                  for i, v in enumerate(value):
+                      out.extend(flatten_strings(v, f"{path}[{i}]"))
+              elif isinstance(value, str):
+                  out.append((path, value))
+              return out
+
+          def parse_distance_evidence(metadata):
+              evidence = []
+              for field, text in flatten_strings(metadata):
+                  if not direct_distance_key.search(field) and not re.search(
+                      r"(?i)(light[- ]?years?|\\bly\\b|parsecs?|\\bpc\\b|\\bkpc\\b|\\bMpc\\b|\\bGpc\\b)",
+                      text
+                  ):
+                      continue
+                  for match in distance_re.finditer(text):
+                      unit = (match.group("unit2") or "").lower().replace(" ", "")
+                      number_text = match.group("num").replace(",", ".")
+                      try:
+                          number = float(number_text)
+                      except ValueError:
+                          number = None
+                      prefix = (match.group("unit") or "").lower()
+                      multiplier = 1
+                      if prefix in ("billion", "bn"):
+                          multiplier = 1_000_000_000
+                      elif prefix == "million":
+                          multiplier = 1_000_000
+                      elif prefix == "thousand":
+                          multiplier = 1_000
+                      if unit.startswith("light"):
+                          normalized_unit = "ly"
+                      elif unit in ("ly",):
+                          normalized_unit = "ly"
+                      elif unit.startswith("parsec") or unit == "pc":
+                          normalized_unit = "pc"
+                      elif unit == "kpc":
+                          normalized_unit = "kpc"
+                      elif unit == "mpc":
+                          normalized_unit = "Mpc"
+                      elif unit == "gpc":
+                          normalized_unit = "Gpc"
+                      else:
+                          normalized_unit = unit
+                      evidence.append({
+                          "sourceField": field,
+                          "matchedText": match.group(0),
+                          "surroundingText": text[max(0, match.start()-100):min(len(text), match.end()+100)],
+                          "numericValue": number,
+                          "writtenMagnitude": prefix or None,
+                          "unit": normalized_unit,
+                          "approximationLanguage": match.group("approx"),
+                          "classification": "verbal_or_textual_candidate",
+                          "verified": False
+                      })
+                  # Preserve direct numeric metadata fields with distance/redshift-like names.
+                  if direct_distance_key.search(field) and not evidence:
+                      evidence.append({
+                          "sourceField": field,
+                          "matchedText": text,
+                          "surroundingText": text,
+                          "numericValue": None,
+                          "unit": None,
+                          "classification": "distance_or_redshift_field_candidate",
+                          "verified": False
+                      })
+              # Deduplicate exact field/text candidates.
+              unique = {}
+              for item in evidence:
+                  unique[(item["sourceField"], item["matchedText"])] = item
+              return list(unique.values())
+
+          total_images = 0
+          provider_summary = {}
+          errors = []
+          for provider in selected:
+              provider_root = root / provider
+              if not provider_root.exists():
+                  provider_summary[provider] = {"status": "provider_directory_missing", "imagesDecoded": 0}
+                  continue
+              mirror_dirs = sorted(p for p in provider_root.rglob("mirror") if p.is_dir())
+              # Existing layout also has a shared Hubble mirror/images directory.
+              if not mirror_dirs:
+                  mirror_dirs = [provider_root] if any(
+                      p.is_file() and p.suffix.lower() in image_exts for p in provider_root.rglob("*")
+                  ) else []
+              if not mirror_dirs:
+                  provider_summary[provider] = {"status": "no_mirror_directory_or_images_found", "imagesDecoded": 0}
+                  continue
+
+              provider_records = []
+              visited = set()
+              output_dirs = set()
+              for mirror_dir in mirror_dirs:
+                  output_dirs.add(mirror_dir)
+                  for image_path in sorted(p for p in mirror_dir.rglob("*")
+                                           if p.is_file() and p.suffix.lower() in image_exts):
+                      if image_path in visited:
+                          continue
+                      visited.add(image_path)
+                      try:
+                          proc = subprocess.run(
+                              ["exiftool", "-json", "-a", "-u", "-G1", str(image_path)],
+                              capture_output=True, text=True, errors="replace", timeout=90
+                          )
+                          if proc.returncode not in (0, 1):
+                              raise RuntimeError(proc.stderr.strip() or f"ExifTool exit {proc.returncode}")
+                          parsed = json.loads(proc.stdout or "[]")
+                          metadata = parsed[0] if parsed else {}
+                          raw_xmp_avm = {k: v for k, v in metadata.items()
+                                         if "avm" in k.lower() or "spatial" in k.lower()}
+                          descriptions = {}
+                          for k, v in metadata.items():
+                              if isinstance(v, str) and any(token in k.lower() for token in
+                                  ("description", "caption", "comment", "subject", "title", "keywords")):
+                                  descriptions[k] = v
+                          record = {
+                              "filename": image_path.name,
+                              "relativePath": image_path.as_posix(),
+                              "fileSizeBytes": image_path.stat().st_size,
+                              "sha256": hashlib.sha256(image_path.read_bytes()).hexdigest(),
+                              "exiftoolExitCode": proc.returncode,
+                              "metadataReadWarning": proc.stderr.strip() or None,
+                              "allMetadata": metadata,
+                              "avmAndSpatialFields": raw_xmp_avm,
+                              "descriptiveFields": descriptions,
+                              "distanceEvidence": parse_distance_evidence(metadata),
+                              "distanceStatus": "candidate_found" if parse_distance_evidence(metadata) else "no_distance_candidate_found"
+                          }
+                          provider_records.append(record)
+                      except Exception as e:
+                          errors.append({"provider": provider, "path": image_path.as_posix(), "error": str(e)})
+                          provider_records.append({
+                              "filename": image_path.name,
+                              "relativePath": image_path.as_posix(),
+                              "error": str(e),
+                              "allMetadata": None,
+                              "distanceEvidence": [],
+                              "distanceStatus": "metadata_decode_failed"
+                          })
+
+              payload = {
+                  "schema": "galaxy-viewer-decoded-image-metadata",
+                  "schemaVersion": 1,
+                  "provider": provider,
+                  "generatedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  "sourceBranch": "release",
+                  "imageCountDiscovered": len(provider_records),
+                  "imagesDecoded": sum("allMetadata" in x and x["allMetadata"] is not None for x in provider_records),
+                  "imagesFailed": sum("error" in x for x in provider_records),
+                  "distanceCandidateImageCount": sum(bool(x.get("distanceEvidence")) for x in provider_records),
+                  "note": "allMetadata preserves ExifTool's decoded tags; distanceEvidence records text/numeric candidates only and does not certify scientific validity.",
+                  "images": provider_records
+              }
+              # Write a separate full catalog into each mirror directory found for this provider.
+              for out_dir in sorted(output_dirs):
+                  out_path = out_dir / f"{provider} decoded AVM metadata.json"
+                  out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+                  print(f"{provider}: wrote {out_path} ({len(provider_records)} image records)")
+              provider_summary[provider] = {
+                  "status": "decoded",
+                  "mirrorDirectories": [p.as_posix() for p in sorted(output_dirs)],
+                  "imagesDecoded": payload["imagesDecoded"],
+                  "imagesFailed": payload["imagesFailed"],
+                  "distanceCandidateImageCount": payload["distanceCandidateImageCount"]
+              }
+              total_images += payload["imagesDecoded"]
+
+          summary = {
+              "schema": "galaxy-viewer-decoded-image-metadata-run",
+              "schemaVersion": 1,
+              "generatedAtUtc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "providerSummary": provider_summary,
+              "totalImagesDecoded": total_images,
+              "errors": errors
+          }
+          out = root / "master-database" / "avm-metadata" / "gv-decoded-image-metadata-summary.json"
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          print(json.dumps(summary, indent=2))
+          if total_images == 0:
+              raise SystemExit("No mirror images were decoded; refusing a successful empty run.")
+          PY
+
+      - name: Validate generated JSON catalogs
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path("viewer/image-databases")
+          files = list(root.rglob("* decoded AVM metadata.json"))
+          if not files:
+              raise SystemExit("No provider metadata catalogs were generated.")
+          for path in files:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              assert isinstance(data.get("images"), list), f"Missing images array: {path}"
+              print(f"VALID {path}: {len(data['images'])} images")
+          summary = root / "master-database/avm-metadata/gv-decoded-image-metadata-summary.json"
+          json.loads(summary.read_text(encoding="utf-8"))
+          print(f"VALID {summary}")
+          PY
+
+      - name: Commit decoded JSON catalogs to release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases
+          if git diff --cached --quiet; then
+            echo "Decoded metadata catalogs are unchanged."
+            exit 0
+          fi
+          git commit -m "Decode provider mirror image metadata catalogs"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin release
+            if ! git rebase origin/release; then
+              git rebase --abort || true
+              echo "Rebase conflict; generated catalogs remain available in the workflow workspace."
+              exit 1
+            fi
+            if git push origin HEAD:release; then
+              echo "Decoded JSON catalogs committed to release."
+              exit 0
+            fi
+            echo "release advanced during push attempt $attempt; retrying."
+            sleep 2
+          done
+          echo "Could not push decoded catalogs after five attempts."
+          exit 1
+
+      - name: Upload catalogs and summary as workflow artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: decoded-provider-metadata-${{ github.run_number }}
+          path: |
+            viewer/image-databases/**/*decoded AVM metadata.json
+            viewer/image-databases/master-database/avm-metadata/gv-decoded-image-metadata-summary.json
+          if-no-files-found: warn
+          retention-days: 90
